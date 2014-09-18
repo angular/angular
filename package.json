@@ -1,0 +1,25 @@
+{
+  "name": "angular",
+  "version": "0.0.0",
+  "description": "Angular",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "./postinstall.sh"
+  },
+  "author": "Tobias Bosch <tbosch@google.com>",
+  "license": "MIT",
+  "dependencies": {
+    "gulp": "^3.8.8",
+    "gulp-rename": "^1.2.0",
+    "gulp-shell": "^0.2.9",
+    "gulp-watch": "^1.0.3",
+    "q": "^1.0.1",
+    "through2": "^0.6.1",
+    "event-stream": "^3.1.5",
+    "gulp-connect": "~1.0.5",
+    "gulp-rimraf": "^0.1.0",
+    "run-sequence": "^0.3.6",
+    "glob": "^4.0.6",
+    "gulp-ejs": "^0.3.1"
+   }
+}

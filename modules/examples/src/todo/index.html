@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<body>
+    <input type="test">
+    <ul></ul>
+
+
+    <% if(type === 'dart') { %>
+    <script src="main.dart" type="application/dart"></script>
+    <% } else { %>
+    <script src="../../traceur-runtime.js" type="text/javascript"></script>
+    <script src="../../assert.js" type="text/javascript"></script>
+    <script src="app.js" type="text/javascript"></script>
+    <script src="dom.js" type="text/javascript"></script>
+    <script>
+        new (System.get("examples/todo/app").App)().run();
+    </script>
+    <% } %>
+</body>
+</html>

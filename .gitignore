@@ -2,6 +2,10 @@
 build/
 packages/
 .buildlog
+node_modules
+packages
+
+.DS_STORE
 
 # Or the files created by dart2js.
 *.dart.js
