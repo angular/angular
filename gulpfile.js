@@ -34,9 +34,9 @@ var sourceTypeConfigs = {
     compiler: function() {
       return js2dart({replace: true});
     },
-    transpileSrc: ['modules/*/src/**/*.es6d'],
+    transpileSrc: ['modules/**/*.es6d'],
     htmlSrc: ['modules/*/src/**/*.html'],
-    copySrc: ['modules/*/src/**/*.dart'],
+    copySrc: ['modules/**/*.dart'],
     outputDir: 'build/dart',
     outputExt: 'dart',
     mimeType: 'application/dart'
@@ -45,7 +45,7 @@ var sourceTypeConfigs = {
     compiler: function() {
       return traceur(traceurJsOptions);
     },
-    transpileSrc: ['modules/*/src/**/*.es*', 'tools/rtts-assert/src/assert.js'],
+    transpileSrc: ['modules/**/*.es*', 'tools/rtts-assert/src/assert.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['tools/traceur/bin/traceur-runtime.js'],
     outputDir: 'build/js',
@@ -59,7 +59,7 @@ gulp.task('modules/clean', function() {
 });
 
 function removeSrc(path) {
-  path.dirname = path.dirname.replace('/src', '');
+  //path.dirname = path.dirname.replace('/src', '');
 }
 
 function createModuleTask(sourceTypeConfig, isWatch) {
