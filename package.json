@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "description": "Angular",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "./postinstall.sh"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tobias Bosch <tbosch@google.com>",
   "license": "MIT",
