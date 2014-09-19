@@ -1,6 +1,8 @@
-library dom;
+library angular.core.facade.dom;
 
 import 'dart:html';
+
+export 'dart:html' show DocumentFragment, Node, Element, TemplateElement;
 
 class DOM {
   static query(selector) {

@@ -58,9 +58,10 @@ var sourceTypeConfigs = {
     compiler: function() {
       return traceur(js2dartOptions, true);
     },
-    transpileSrc: ['modules/**/*.es6d'],
+    transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
-    copySrc: ['modules/**/*.dart'],
+    // TODO: execute pub get after a yaml changed and was copied over to 'build' folder
+    copySrc: ['modules/**/*.dart', 'modules/**/*.yaml'],
     outputDir: 'build/dart',
     outputExt: 'dart',
     mimeType: 'application/dart'
@@ -69,9 +70,9 @@ var sourceTypeConfigs = {
     compiler: function() {
       return traceur(js2es5Options, true);
     },
-    transpileSrc: ['modules/**/*.es*'],
+    transpileSrc: ['modules/**/*.js', 'modules/**/*.es6'],
     htmlSrc: ['modules/*/src/**/*.html'],
-    copySrc: ['modules/**/*.js'],
+    copySrc: ['modules/**/*.es5'],
     outputDir: 'build/js',
     outputExt: 'js'
   }
@@ -82,18 +83,25 @@ gulp.task('modules/clean', function() {
       .pipe(clean());
 });
 
+function renameSrcToLib(file) {
+  file.dirname = file.dirname.replace(/\bsrc\b/, 'lib');
+}
+
 function createModuleTask(sourceTypeConfig, isWatch) {
   var start = isWatch ? watch : gulp.src.bind(gulp);
   return function(done) {
     var transpile = start(sourceTypeConfig.transpileSrc)
       .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
+      .pipe(rename(renameSrcToLib))
       .pipe(sourceTypeConfig.compiler())
       .pipe(gulp.dest(sourceTypeConfig.outputDir));
     var copy = start(sourceTypeConfig.copySrc)
+      .pipe(rename(renameSrcToLib))
       .pipe(gulp.dest(sourceTypeConfig.outputDir));
     // TODO: provide the list of files to the template
     // automatically!
     var html = start(sourceTypeConfig.htmlSrc)
+      .pipe(rename(renameSrcToLib))
       .pipe(ejs({
         type: sourceTypeConfig.outputExt
       }))

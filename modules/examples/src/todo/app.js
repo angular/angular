@@ -1,5 +1,6 @@
 import {DOM} from './dom';
 export class App {
+  @field('input:Element')
   constructor() {
     this.input = null;
     this.list = null;

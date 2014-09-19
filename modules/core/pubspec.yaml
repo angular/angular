@@ -1,0 +1,12 @@
+name: core
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+  change_detection:
+    path: ../change_detection
+  di:
+    path: ../di
+  facade:
+    path: ../facade
+dev_dependencies:
+  unittest: '>=0.10.1 <0.12.0'

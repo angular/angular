@@ -1,0 +1,12 @@
+/**
+ * This is a special facade used to bootstrap JS automatically. 
+ * (In contrast to door wheere the user needs to explicitly call into angular.)
+ * This file is appened to AngularJS and needs to be written in ES5.
+ */
+(function(window, document) {
+  document.addEventListener('DOMContentLoaded', bootstrap, false);
+  function bootstrap() {
+    // TODO(misko): load application factory from the module system.
+    applicationFactory().run();  
+  }
+})(window, document);

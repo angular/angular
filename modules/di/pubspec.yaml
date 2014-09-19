@@ -1,0 +1,6 @@
+name: di
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+dev_dependencies:
+  unittest: '>=0.10.1 <0.12.0'

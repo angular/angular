@@ -1,3 +1,8 @@
+export var DocumentFragment = window.DocumentFragment;
+export var Node = window.Node;
+export var Element = window.HTMLElement;
+export var TemplateElement = window.HTMLTemplateElement;
+
 export class DOM {
   static query(selector) {
     return document.querySelector(selector);
