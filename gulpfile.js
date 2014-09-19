@@ -101,7 +101,6 @@ gulp.task('serve', connect.server({
     return [function(req, resp, next){
       if (req.url.match(/\.dart$/)) {
         resp.setHeader("Content-Type", "application/dart");
-        console.log('now', req.url);
       }
       next();
     }];
