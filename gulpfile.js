@@ -11,7 +11,8 @@ var ejs = require('gulp-ejs');
 var path = require('path');
 
 // import js2dart and traceur build tasks
-require('./tools/js2dart/gulpfile').install(gulp);
+var js2dartTasks = require('./tools/js2dart/gulp-tasks');
+js2dartTasks.install(gulp);
 
 var traceurJsOptions = {
   annotations: true, // parse annotations
@@ -20,8 +21,7 @@ var traceurJsOptions = {
   modules: 'register',
   typeAssertionModule: 'assert',
   typeAssertions: true,
-  moduleName: true,
-  reload: true
+  moduleName: true
 };
 
 var traceur = require('./tools/js2dart/gulp-traceur');
@@ -58,24 +58,18 @@ gulp.task('modules/clean', function() {
       .pipe(clean());
 });
 
-function removeSrc(path) {
-  //path.dirname = path.dirname.replace('/src', '');
-}
-
 function createModuleTask(sourceTypeConfig, isWatch) {
   var start = isWatch ? watch : gulp.src.bind(gulp);
   return function(done) {
     var transpile = start(sourceTypeConfig.transpileSrc)
       .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
-      .pipe(rename(removeSrc))
       .pipe(sourceTypeConfig.compiler())
       .pipe(gulp.dest(sourceTypeConfig.outputDir));
     var copy = start(sourceTypeConfig.copySrc)
-      .pipe(rename(removeSrc))
       .pipe(gulp.dest(sourceTypeConfig.outputDir));
     // TODO: provide the list of files to the template
+    // automatically!
     var html = start(sourceTypeConfig.htmlSrc)
-      .pipe(rename(removeSrc))
       .pipe(ejs({
         type: sourceTypeConfig.outputExt
       }))
@@ -86,9 +80,7 @@ function createModuleTask(sourceTypeConfig, isWatch) {
 }
 
 gulp.task('modules/build.dart', createModuleTask(sourceTypeConfigs.dart, false));
-gulp.task('modules/watch.dart', createModuleTask(sourceTypeConfigs.dart, true));
 gulp.task('modules/build.js', createModuleTask(sourceTypeConfigs.js, false));
-gulp.task('modules/watch.js', createModuleTask(sourceTypeConfigs.js, true));
 
 // ------------------
 // WEB SERVER
@@ -111,27 +103,36 @@ gulp.task('serve', connect.server({
 // general targets
 
 gulp.task('clean', function(done) {
-  return runSequence(['traceur/clean', 'modules/clean'], done);
+  return runSequence(['traceur/clean', 'js2dart/clean', 'modules/clean'], done);
 });
 
-gulp.task('build', function(done) {
-  // By using runSequence here we are decoupling the cleaning from the rest of the build tasks
-  // Otherwise, we have to add clean as a dependency on every task to ensure that it completes
-  // before they begin.
-  runSequence(
-    'js2dart/build',
-    ['modules/build.dart', 'modules/build.js'],
-    done
+gulp.task('build', function() {
+  return runSequence(
+    // sequential
+    'traceur/build', 'js2dart/build',
+    // parallel
+    ['modules/build.dart', 'modules/build.js']
   );
 });
 
-gulp.task('watch', function(done) {
-  // By using runSequence here we are decoupling the cleaning from the rest of the build tasks
-  // Otherwise, we have to add clean as a dependency on every task to ensure that it completes
-  // before they begin.
-  runSequence(
-    'build',
-    ['js2dart/watch', 'modules/watch.dart', 'modules/watch.js'],
-    done
-  );
+gulp.task('watch', function() {
+  var traceurWatch = watch(js2dartTasks.paths.traceurSrc, function(_, done) {
+    runSequence(
+      // sequential
+      'traceur/build', 'js2dart/build', 'js2dart/test',
+      // parallel
+      ['modules/build.dart', 'modules/build.js'],
+      done);
+  });
+  var js2dartWatch = watch(js2dartTasks.paths.js2dartSrc, function(_, done) {
+    runSequence(
+      // sequential
+      'js2dart/build', 'js2dart/test',
+      // parallel
+      ['modules/build.dart', 'modules/build.js'],
+      done);
+  });
+  var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true)();
+  var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true)();
+  return mergeStreams(traceurWatch, js2dartWatch, dartModuleWatch, jsModuleWatch);
 });
