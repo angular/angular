@@ -24,8 +24,8 @@ export class Compiler extends TraceurCompiler {
   }
 
   write(tree, outputName = undefined, sourceRoot = undefined) {
-   if (this.options_.outputLanguage.toLowerCase() === 'dart') {
-      var writer = new DartTreeWriter(outputName);
+    if (this.options_.outputLanguage.toLowerCase() === 'dart') {
+      var writer = new DartTreeWriter(this.options_.moduleName, outputName);
       writer.visitAny(tree);
       return writer.toString();
     } else {

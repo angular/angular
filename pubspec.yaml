@@ -2,9 +2,13 @@ name: angular
 version: 0.0.0
 authors:
 - Vojta Jina <vojta.jina@gmail.com>
-description: Compile JavaScript to Dart so that you can compile it back to JavaScript and run.
+description: Angular
 environment:
   sdk: '>=1.4.0'
 dependencies:
 dev_dependencies:
+  test_lib:
+    path: modules/test_lib
   unittest: '>=0.10.1 <0.12.0'
+  guinness: ">=0.1.5 <0.2.0"
+  browser: '>=0.10.0 <0.11.0'

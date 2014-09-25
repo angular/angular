@@ -4,13 +4,11 @@ import {EQUAL_EQUAL_EQUAL, OPEN_PAREN, CLOSE_PAREN, IMPORT, SEMI_COLON, STAR, OP
 import {ParseTreeWriter as JavaScriptParseTreeWriter} from 'traceur/src/outputgeneration/ParseTreeWriter';
 
 export class DartTreeWriter extends JavaScriptParseTreeWriter {
-  constructor(moduleName) {
-    super();
+  constructor(moduleName, outputPath) {
+    super(outputPath);
     this.libName = moduleName
         .replace(/\//g, '.')
-        .replace(/[^\w.]/g, '_')
-        .replace('.lib.', '.')
-        .replace(/\.dart$/, '');
+        .replace(/[^\w.]/g, '_');
   }
 
   // VARIABLES - types

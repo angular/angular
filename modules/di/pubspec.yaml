@@ -5,4 +5,5 @@ dependencies:
   facade:
     path: ../facade
 dev_dependencies:
-  unittest: '>=0.10.1 <0.12.0'
+  test_lib:
+    path: ../test_lib

@@ -1,61 +1,37 @@
-var traceur = require('traceur');
+var js2dart = require('./index.js');
 
-var createTraceurPreprocessor = function(args, config, logger, helper) {
-  config = config || {};
+module.exports = {
+  'preprocessor:traceur': ['factory', createJs2DartPreprocessor]
+};
 
-  var log = logger.create('preprocessor.traceur');
-  var defaultOptions = {
-    sourceMaps: false,
-    modules: 'amd'
-  };
-  var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
-
-  var transformPath = args.transformPath || config.transformPath || function(filepath) {
-    return filepath.replace(/\.es6.js$/, '.js').replace(/\.es6$/, '.js');
-  };
+function createJs2DartPreprocessor(logger, basePath, config) {
+  var log = logger.create('traceur');
 
   return function(content, file, done) {
-    log.debug('Processing "%s".', file.originalPath);
-    file.path = transformPath(file.originalPath);
-    options.filename = file.originalPath;
 
-    var result = traceur.compile(content, options);
-    var transpiledContent = result.js;
-
-    result.errors.forEach(function(err) {
-      log.error(err);
-    });
-
-    if (result.errors.length) {
-      return done(new Error('TRACEUR COMPILE ERRORS\n' + result.errors.join('\n')));
+    try {
+      var moduleName = config.resolveModuleName(file.originalPath);
+      if (config.transformPath) {
+        file.path = config.transformPath(file.originalPath);
+      }
+      done(null, js2dart.compile(config.options, {
+        inputPath: file.originalPath,
+        moduleName: moduleName
+      }, content));
+    } catch (errors) {
+      var errorString;
+      if (errors.forEach) {
+        errors.forEach(function(error) {
+          log.error(error);
+        });
+        errorString = errors.join('\n');
+      } else {
+        log.error(errors);
+        errorString = errors;
+      }
+      done(new Error('TRACEUR COMPILE ERRORS\n' + errorString));
     }
-
-    // TODO(vojta): Tracer should return JS object, rather than a string.
-    if (result.generatedSourceMap) {
-      var map = JSON.parse(result.generatedSourceMap);
-      map.file = file.path;
-      transpiledContent += '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,';
-      transpiledContent += new Buffer(JSON.stringify(map)).toString('base64') + '\n';
-
-      file.sourceMap = map;
-    }
-
-    return done(null, transpiledContent);
   };
-};
+}
 
-createTraceurPreprocessor.$inject = ['args', 'config.traceurPreprocessor', 'logger', 'helper'];
-
-
-var initTraceurFramework = function(files) {
-  files.unshift({pattern: traceur.RUNTIME_PATH, included: true, served: true, watched: false});
-};
-
-initTraceurFramework.$inject = ['config.files'];
-
-
-// PUBLISH DI MODULE
-module.exports = {
-  'preprocessor:traceur': ['factory', createTraceurPreprocessor],
-  'framework:traceur': ['factory', initTraceurFramework]
-};
+createJs2DartPreprocessor.$inject = ['logger', 'config.basePath', 'config.traceurPreprocessor'];

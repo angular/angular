@@ -1,7 +1,6 @@
-name: examples
+name: test_lib
 environment:
   sdk: '>=1.4.0'
 dependencies:
 dev_dependencies:
-  test_lib:
-    path: ../test_lib
+  guinness: ">=0.1.5 <0.2.0"

@@ -21,19 +21,27 @@ var js2es5Options = {
   script: false, // parse as a module
   modules: 'register',
   typeAssertionModule: 'assert',
-  typeAssertions: true,
-  moduleName: true
+  typeAssertions: true
 };
 
 var js2dartOptions = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
-  outputLanguage: 'dart',
-  moduleName: true
+  outputLanguage: 'dart'
 };
 
-var traceur = require('./tools/js2dart/gulp-traceur');
+var gulpTraceur = require('./tools/js2dart/gulp-traceur');
+
+function resolveModuleName(fileName) {
+  var moduleName = fileName
+    .replace(/.*\/modules\//, '')
+    .replace(/\/src\//, '/')
+    .replace(/\/lib\//, '/')
+    .replace(/\/test\//, '/');
+  return moduleName;
+}
+
 
 // ---------
 // rtts-assert and traceur runtime
@@ -45,9 +53,9 @@ gulp.task('jsRuntime/build', function() {
 function createJsRuntimeTask(isWatch) {
   var srcFn = isWatch ? watch : gulp.src.bind(gulp);
   var rttsAssert = srcFn('tools/rtts-assert/src/assert.js')
-    .pipe(traceur(js2es5Options))
+    .pipe(gulpTraceur(js2es5Options, resolveModuleName))
     .pipe(gulp.dest('build/js'));
-  var traceurRuntime = srcFn('tools/js2dart/node_modules/traceur/bin/traceur-runtime.js')
+  var traceurRuntime = srcFn(gulpTraceur.RUNTIME_PATH)
     .pipe(gulp.dest('build/js'));
   return mergeStreams(rttsAssert, traceurRuntime);
 }
@@ -57,7 +65,7 @@ function createJsRuntimeTask(isWatch) {
 var sourceTypeConfigs = {
   dart: {
     compiler: function() {
-      return traceur(js2dartOptions, true);
+      return gulpTraceur(js2dartOptions, resolveModuleName);
     },
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
@@ -78,7 +86,7 @@ var sourceTypeConfigs = {
   },
   js: {
     compiler: function() {
-      return traceur(js2es5Options, true);
+      return gulpTraceur(js2es5Options, resolveModuleName);
     },
     transpileSrc: ['modules/**/*.js', 'modules/**/*.es6'],
     htmlSrc: ['modules/*/src/**/*.html'],
@@ -174,26 +182,12 @@ gulp.task('serve', connect.server({
 
 gulp.task('clean', ['js2dart/clean', 'modules/clean']);
 
-gulp.task('build', function() {
-  return runSequence(
-    // sequential
-    'js2dart/build',
-    // parallel
-    ['jsRuntime/build', 'modules/build.dart', 'modules/build.js']
-  );
-});
+gulp.task('build', ['jsRuntime/build', 'modules/build.dart', 'modules/build.js']);
 
 gulp.task('watch', function() {
-  runSequence('js2dart/test/watch');
-  var js2dartWatch = watch(js2dartTasks.paths.js2dartSrc, function(_, done) {
-    runSequence(
-      // sequential
-      'js2dart/build', 'js2dart/test',
-      // parallel
-      ['jsRuntime/build', 'modules/build.dart', 'modules/build.js'],
-      done);
-  });
+  // parallel is important as both streams are infinite!
+  runSequence(['js2dart/test/watch', 'js2dart/src/watch']);
   var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true);
   var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true);
-  return mergeStreams(js2dartWatch, dartModuleWatch, jsModuleWatch, createJsRuntimeTask(true));
+  return mergeStreams(dartModuleWatch, jsModuleWatch, createJsRuntimeTask(true));
 });

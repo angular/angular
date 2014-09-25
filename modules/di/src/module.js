@@ -1,5 +1,6 @@
 import {Type} from 'facade/lang';
 import {Map, MapWrapper wraps Map} from 'facade/collection';
+import {Key} from './key';
 
 /// becouse we need to know when toValue was not set.
 /// (it could be that toValue is set to null or undefined in js)

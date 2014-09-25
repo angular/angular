@@ -12,6 +12,10 @@
     "gulp-rename": "^1.2.0",
     "gulp-shell": "^0.2.9",
     "gulp-watch": "^1.0.3",
+    "karma": "^0.12.23",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-dart": "^0.2.8",
+    "karma-jasmine": "^0.2.2",
     "q": "^1.0.1",
     "through2": "^0.6.1",
     "event-stream": "^3.1.5",
@@ -19,6 +23,7 @@
     "gulp-rimraf": "^0.1.0",
     "run-sequence": "^0.3.6",
     "glob": "^4.0.6",
-    "gulp-ejs": "^0.3.1"
-   }
+    "gulp-ejs": "^0.3.1",
+    "traceur": "0.0.66"
+  }
 }
