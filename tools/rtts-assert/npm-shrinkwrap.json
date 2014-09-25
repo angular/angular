@@ -1,0 +1,24 @@
+{
+  "name": "rtts-assert",
+  "version": "0.0.0",
+  "dependencies": {
+    "gulp-traceur": {
+      "version": "0.4.0",
+      "from": "gulp-traceur@0.4.0",
+      "dependencies": {
+        "gulp-util": {
+          "version": "2.2.5",
+          "from": "gulp-util@2.2.5"
+        },
+        "through2": {
+          "version": "0.4.0",
+          "from": "through2@0.4.0"
+        },
+        "traceur": {
+          "version": "0.0..0",
+          "from": "git://github.com/vojtajina/traceur-compiler#add-es6-pure-transformer-dist"
+        }
+      }
+    }
+  }
+}

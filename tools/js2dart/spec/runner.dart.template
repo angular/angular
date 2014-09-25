@@ -1,0 +1,13 @@
+import 'package:unittest/unittest.dart';
+
+<% files.forEach(function(file, index) { %>
+import '<%= file %>' as spec<%=index%>;
+<% }); %>
+
+void main() {
+  <% files.forEach(function(file, index) { %>
+  test('<%= file %>', () {
+    spec<%= index %>.main();
+  });
+  <% }); %>
+}

@@ -1,0 +1,10 @@
+name: js2dart
+version: 0.0.0
+authors:
+- Vojta Jina <vojta.jina@gmail.com>
+description: Compile JavaScript to Dart so that you can compile it back to JavaScript and run.
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+dev_dependencies:
+  unittest: '>=0.10.1 <0.12.0'
