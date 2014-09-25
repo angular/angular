@@ -1,7 +1,7 @@
 import {Type, List} from 'facade/lang';
 
 export class TemplateConfig {
-  @CONST constructor({
+  constructor({
       url,
       directives,
       formatters,

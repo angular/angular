@@ -1,7 +1,7 @@
 import {Directive} from './directive';
 
 export class Component extends Directive {
-  @CONST constructor({
+  constructor({
       selector,
       template,
       elementServices,

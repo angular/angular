@@ -5,7 +5,7 @@ import {createVariableStatement, createCallExpression, createIdentifierExpressio
 // var CONSTRUCTOR = token.CONSTRUCTOR;
 
 import {PROPERTY_METHOD_ASSIGNMENT, MEMBER_EXPRESSION, THIS_EXPRESSION, BINARY_EXPRESSION} from 'traceur/src/syntax/trees/ParseTreeType';
-import {EQUAL_EQUAL_EQUAL} from 'traceur/src/syntax/TokenType';
+import {EQUAL_EQUAL_EQUAL, NOT_EQUAL_EQUAL} from 'traceur/src/syntax/TokenType';
 import {CONSTRUCTOR} from 'traceur/src/syntax/PredefinedName';
 
 import {VariableStatement, VariableDeclarationList} from 'traceur/src/syntax/trees/ParseTrees';
@@ -61,12 +61,23 @@ export class ClassTransformer extends ParseTreeTransformer {
   // Transform triple equals into identical() call.
   // TODO(vojta): move to a separate transformer
   transformBinaryExpression(tree) {
-    if (tree.operator.type === EQUAL_EQUAL_EQUAL) {
+    tree.left = this.transformAny(tree.left);
+    tree.right = this.transformAny(tree.right);
+    if (tree.operator.type === 'instanceof') {
+      // a instanceof b -> a is b
+      // TODO(vojta): do this in a cleaner way.
+      tree.operator.type = 'is';
+      return tree;
+    } else if (tree.operator.type === EQUAL_EQUAL_EQUAL) {
       // a === b -> identical(a, b)
       return createCallExpression(createIdentifierExpression('identical'), createArgumentList([tree.left, tree.right]));
+    } else if (tree.operator.type === NOT_EQUAL_EQUAL) {
+      // a !== b -> !identical(a, b)
+      // TODO(vojta): do this in a cleaner way.
+      return createCallExpression(createIdentifierExpression('!identical'), createArgumentList([tree.left, tree.right]));
+    } else {
+      return tree;
     }
-
-    return tree;
   };
 
   transformClassDeclaration(tree) {

@@ -3,7 +3,7 @@ import {ElementServicesFunction} from './facade';
 
 @ABSTRACT
 export class Directive {
-	@CONST constructor({
+	constructor({
       selector,
       lightDomServices,
       implementsTypes

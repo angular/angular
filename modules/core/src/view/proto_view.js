@@ -6,5 +6,5 @@ export class ProtoView {
   @FIELD('final _module:Module')
   @FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
   @FIELD('final _protoWatchGroup:ProtoWatchGroup')
-  @CONST constructor() { }
+  constructor() { }
 }

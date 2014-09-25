@@ -15,7 +15,7 @@ function namedObjectType({a,b}:{a:A,b:B<C>}) {
 }
 
 class Bar {
-  @CONST constructor({
+  constructor({
       selector,
       lightDomServices,
       implementsTypes
@@ -47,6 +47,7 @@ function main() {
   // TODO(vojta): test this better.
   var f = new Foo(1, 2);
   assert(f.sum() == 3);
+  assert(f instanceof Foo);
 
   f.typedVariables();
 }
