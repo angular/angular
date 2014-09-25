@@ -4,6 +4,3 @@
 [submodule "tools/rtts-assert"]
 	path = tools/rtts-assert
 	url = git@github.com:angular/assert.git
-[submodule "tools/traceur"]
-	path = tools/traceur
-	url = git@github.com:google/traceur-compiler.git

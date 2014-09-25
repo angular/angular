@@ -13,5 +13,6 @@ export class App {
     var html = DOM.getInnerHTML(this.list);
     html += '<li>'+this.input.value+'</li>';
     DOM.setInnerHTML(this.list, html);
+    this.input.value = '';
   }
 }

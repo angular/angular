@@ -4,13 +4,13 @@ import {ProtoView} from './proto_view';
 export class Compiler {
   /**
    * # Why future?
-   *   - compilation will load templates. Instantiating views before templates are loaded will 
+   *   - compilation will load templates. Instantiating views before templates are loaded will
    *     complicate the Directive code. BENEFIT: view instantiation become synchrnous.
    * # Why result that is independent of injector?
    *   - don't know about injector in deserialization
    *   - compile does not need the injector, only the ViewFactory does
    */
-  @of(ProtoView) Future compile(TemplateElement element) {
+  @of(ProtoView) compile(element:TemplateElement):Future {
   }
 
 }
