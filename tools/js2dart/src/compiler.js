@@ -9,28 +9,33 @@ import {
 } from 'traceur/src/Options';
 
 export class Compiler extends TraceurCompiler {
+
   constructor(options, sourceRoot) {
     super(options, sourceRoot);
+    this.generateDart = this.options_.outputLanguage.toLowerCase() === 'dart';
   }
-  compile(source, filename) {
-    var parsed = this.parse(source, filename || '<unknown_file>');
-    if (this.options_.outputLanguage === 'dart') {
-      return this.writeDart(this.transformDart(parsed), filename);
+
+  transform(tree, moduleName = undefined) {
+    if (!this.generateDart) {
+      return super(tree, moduleName);
     } else {
-      return this.write(this.transform(parsed));
+      var transformer = new ClassTransformer();
+      return transformer.transformAny(tree);
     }
   }
-  transformDart(tree) {
-    var transformer = new ClassTransformer();
-    return transformer.transformAny(tree);
+
+  write(tree, outputName = undefined, sourceRoot = undefined) {
+    if (!this.generateDart) {
+      return super.write(tree, outputName, sourceRoot);
+    } else {
+      var writer = new DartTreeWriter();
+      writer.visitAny(tree);
+      // TODO: Do this in the writer...
+      var library = 'library '+this.resolveModuleName(outputName).replace(/\//g, '.')+';\n';
+      return library + writer.toString();
+    }
   }
-  writeDart(tree, filename) {
-    var writer = new DartTreeWriter();
-    writer.visitAny(tree);
-    // TODO: Do this in the writer...
-    var library = 'library '+this.resolveModuleName(filename).replace(/\//g, '.')+';\n';
-    return library + writer.toString();
-  }
+
   // Copy of the original method to use our custom Parser
   parse(content, sourceName) {
     if (!content) {
