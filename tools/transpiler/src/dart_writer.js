@@ -91,7 +91,7 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
 
   normalizeType_(typeName) {
     if (typeName === 'number') {
-      return 'int';
+      return 'num';
     }
 
     if (typeName === 'boolean') {
