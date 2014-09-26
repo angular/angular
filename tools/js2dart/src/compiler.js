@@ -28,8 +28,11 @@ export class Compiler extends TraceurCompiler {
     var writer = new DartTreeWriter();
     writer.visitAny(tree);
     // TODO: Do this in the writer...
-    var library = 'library '+this.resolveModuleName(filename).replace(/\//g, '.')+';\n';
-    return library + writer.toString();
+    var library = this.resolveModuleName(filename)
+        .replace(/\//g, '.')
+        .replace('.lib.', '.')
+        .replace(/\.dart$/, '');
+    return 'library ' + library + ';\n' + writer.toString();
   }
   // Copy of the original method to use our custom Parser
   parse(content, sourceName) {
