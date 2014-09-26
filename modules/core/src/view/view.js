@@ -1,5 +1,6 @@
 import {Node, DocumentFragment} from 'facade/dom';
 import {ListWrapper wraps List} from 'facade/collection';
+import {WatchGroupDispatcher} from 'change_detection/watch_group_dispatcher';
 import {Record} from 'change_detection/record';
 
 @IMPLEMENTS(WatchGroupDispatcher)
@@ -18,17 +19,17 @@ export class View {
     this._nodes = ListWrapper.clone(fragment.childNodes);
   }
 
-  notify(record:Record, target) {
-    /*
+  onRecordChange(record:Record, target) {
     // dispatch to element injector or text nodes based on context
-    if (Number.is(target)) {
-      // we know it refferst to _textNodes.
-    } else {
+    if (target is ElementInjectorTarge) {
       // we know that it is ElementInjectorTarge
       var eTarget:ElementInjectorTarget = target;
       onChangeDispatcher.notify(this, eTarget);
       eTarget.invoke(record, _elementInjectors);
+    } else {
+      // we know it refferst to _textNodes.
+      var textNodeIndex:number = target;
+      DOM.setText(this._textNodes[textNodeIndex], record.currentValue);
     }
-    */
   }
 }

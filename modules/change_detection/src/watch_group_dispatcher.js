@@ -1,4 +1,5 @@
+import {Record} from './record';
 
 export class WatchGroupDispatcher {
-  notify(record:Record, context) {}
+  onRecordChange(record:Record, context) {}
 }

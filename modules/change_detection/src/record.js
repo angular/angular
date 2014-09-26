@@ -1,4 +1,54 @@
-import {WatchGroup} from './watch_group';
+import {ProtoWatchGroup, WatchGroup} from './watch_group';
+
+export class ProtoRecord {
+
+  @FIELD('final watchGroup:ProtoWatchGroup')
+  @FIELD('final fieldName:String')
+  /// order list of all records. Including head/tail markers
+  @FIELD('next:ProtoRecord')
+  @FIELD('prev:ProtoRecord')
+  /// next record to dirty check
+  @FIELD('_checkNext:ProtoRecord')
+  @FIELD('_checkPrev:ProtoRecord')
+  // next notifier
+  @FIELD('_notifierNext:ProtoRecord')
+  // Opeque data which will be presented to WatchGroupDispatcher
+  @FIELD('dispatcherContext')
+  // IF we detect change, we have to update the _context of the
+  // next record.
+  @FIELD('_updateContext:ProtoRecord')
+  // May be removed if we don't support coelsence.
+  @FIELD('_updateContextNext:ProtoRecord')
+  @FIELD('_clone')
+  constructor(watchGroup:ProtoWatchGroup, fieldName:String) {
+    this.watchGroup = watchGroup;
+    this.fieldName = fieldName;
+    this._next = null;
+    this._prev = null;
+    this._checkNext = null;
+    this._checkPrev = null;
+    this._notifierNext = null;
+    this.dispatcherContext = null;
+    this._updateContext = null;
+    this._updateContextNext = null;
+    this._clone = null;
+  }
+
+  instantiate(watchGroup:WatchGroup):Record {
+    var record = this._clone = new Record(watchGroup, this);
+    record._prev = this._prev._clone;
+    record._checkPrev = this._checkPrev._clone;
+    return _clone;
+  }
+
+  instantiateComplete():Record {
+    var record = this._clone;
+    record._next = this._next._clone;
+    record._checkNext = this._checkNext._clone;
+    this._clone = null;
+    return this._next;
+  }
+}
 
 
 /**
@@ -19,13 +69,8 @@ import {WatchGroup} from './watch_group';
  */
 export class Record {
   
-  @FIELD('final _watchGroup:WatchGroup')
-  @FIELD('final _protoRecord:ProtoRecord')
-  @FIELD('_context')
-  @FIELD('_getter')
-  @FIELD('_arguments')
-  @FIELD('_previousValue')
-  @FIELD('_mode:int')
+  @FIELD('final watchGroup:WatchGroup')
+  @FIELD('final protoRecord:ProtoRecord')
   /// order list of all records. Including head/tail markers
   @FIELD('_next:Record')
   @FIELD('_prev:Record')
@@ -37,18 +82,40 @@ export class Record {
   // notifier context will be present to the notifier to release
   // the object from notification/watching.
   @FIELD('_notifierContext')
-  // Opeque data which will be presented to WatchGroupDispatcher
-  @FIELD('_watchContext')
   // IF we detect change, we have to update the _context of the
   // next record.
   @FIELD('_updateContext:Record')
   // May be removed if we don't support coelsence.
   @FIELD('_updateContextNext:Record')
-  constructor() {
+
+  @FIELD('_mode:int')
+  @FIELD('_context')
+  @FIELD('_getter')
+  @FIELD('_arguments')
+  @FIELD('currentValue')
+  @FIELD('previousValue')
+  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord) {
+    this.protoRecord = protoRecord;
+    this.watchGroup = watchGroup;
+    this._next = null;
+    this._prev = null;
+    this._checkNext = null;
+    this._checkPrev = null;
+    this._notifierNext = null;
+    this._notifierContext = null;
+    this._updateContext = null;
+    this._updateContextNext = null;
+
+    this._mode = MODE_STATE_MARKER;
+    this._context = null;
+    this._getter = null;
+    this._arguments = null;
+    this.currentValue = null;
+    this.previousValue = null;
   }
 
   check():bool {
-    var mode = this.mode;
+    var mode = this._mode;
     var state = mode & MODE_MASK_STATE;
     var notify = mode & MODE_MASK_NOTIFY;
     var currentValue;
@@ -67,14 +134,15 @@ export class Record {
       case MODE_STATE_MAP:
       case MODE_STATE_LIST:
     }
-    var previousValue = this._previousValue;
+    var previousValue = this.previousValue;
     if (isSame(previousValue, currentValue)) return false;
     if (previousValue instanceof String && currentValue instanceof String  
         && previousValue == currentValue) {
-      this._previousValue = currentValue;
+      this.previousValue = currentValue;
       return false
     }
-    this.previousValue = previousValue;
+    this.previousValue = currentValue;
+    this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatcherContext);
     return true;
   }
 }
@@ -83,24 +151,24 @@ export class Record {
 // to use and which dereference mode to execute.
 
 // We use dirty checking aka no notification
-var MODE_MASK_NOTIFY:number = 0xFF00;
+const MODE_MASK_NOTIFY = 0xFF00;
 // Encodes the state of dereference
-var MODE_MASK_STATE:int = 0x00FF;
+const MODE_MASK_STATE = 0x00FF;
 
-var MODE_PLUGIN_DIRTY_CHECK:int = 0x0000;
-var MODE_STATE_MARKER:int = 0x0000;
+const MODE_PLUGIN_DIRTY_CHECK = 0x0000;
+const MODE_STATE_MARKER = 0x0000;
 
 /// _context[_protoRecord.propname] => _getter(_context)
-var MODE_STATE_PROPERTY:int = 0x0001;
+const MODE_STATE_PROPERTY = 0x0001;
 /// _context(_arguments)
-var MODE_STATE_INVOKE_CLOSURE:int = 0x0002;
+const MODE_STATE_INVOKE_CLOSURE = 0x0002;
 /// _getter(_context, _arguments)
-var MODE_STATE_INVOKE_METHOD:int = 0x0003;
+const MODE_STATE_INVOKE_METHOD = 0x0003;
 
 /// _context is Map => _previousValue is MapChangeRecord
-var MODE_STATE_MAP:int = 0x0004;
+const MODE_STATE_MAP = 0x0004;
 /// _context is Array/List/Iterable => _previousValue = ListChangeRecord
-var MODE_STATE_LIST:int = 0x0005;
+const MODE_STATE_LIST = 0x0005;
 
 function isSame(a, b) {
   if (a === b) {

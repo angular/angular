@@ -1,5 +1,6 @@
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
+export var Text = window.Text;
 export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
 
@@ -15,5 +16,8 @@ export class DOM {
   }
   static setInnerHTML(el, value) {
     el.innerHTML = value;
+  }
+  static setText(text:Text, value:String) {
+    text.nodeValue = value;
   }
 }
