@@ -4,6 +4,10 @@ import {EQUAL_EQUAL_EQUAL, OPEN_PAREN, CLOSE_PAREN, IMPORT, SEMI_COLON, STAR, OP
 import {ParseTreeWriter as JavaScriptParseTreeWriter} from 'traceur/src/outputgeneration/ParseTreeWriter';
 
 export class DartTreeWriter extends JavaScriptParseTreeWriter {
+  constructor(moduleName) {
+    super();
+    this.libName = 'j2d_' + moduleName.replace(/\//g, '.').replace(/[^\w.]/, '_');
+  }
 
   // VARIABLES - types
   // ```
@@ -236,6 +240,10 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     this.writeSpace_()
+  }
+
+  toString() {
+    return "library " + this.libName + ";\n" + super.toString();
   }
 }
 
