@@ -17,3 +17,4 @@ packages
 # Include when developing application packages.
 pubspec.lock
 .c9
+.idea/
