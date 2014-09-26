@@ -11,12 +11,7 @@ export class Parser extends TraceurParser {
   }
   parseTypeName_() {
     // Copy of original implementation
-    var start = this.getTreeStartLocation_();
-    var typeName = new TypeName(this.getTreeLocation_(start), null, this.eatId_());
-    while (this.eatIf_(PERIOD)) {
-      var memberName = this.eatIdName_();
-      typeName = new TypeName(this.getTreeLocation_(start), typeName, memberName);
-    }
+    var typeName = super.parseTypeName_();
     var next = this.peekType_();
     // Generics support
     if (this.eatIf_(OPEN_ANGLE)) {
