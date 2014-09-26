@@ -17,4 +17,10 @@ class ListWrapper {
   static get(m, k) => m[k];
   static void set(m, k, v) { m[k] = v; }
   static contains(m, k) => m.containsKey(k);
+  static void push(List l, e) { l.add(e); }
+}
+
+class SetWrapper {
+  static Set createFromList(List l) { return new Set.from(l); }
+  static bool has(Set s, key) { return s.contains(key); }
 }

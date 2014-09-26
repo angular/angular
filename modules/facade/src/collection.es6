@@ -15,4 +15,10 @@ export class ListWrapper {
   static clone(array) {
     return Array.prototype.slice.call(array, 0);
   }
+  static push(l, e) { l.push(e); }
+}
+
+export class SetWrapper {
+  static createFromList(lst:List) { return new Set(lst); }
+  static has(s:Set, key):boolean { return s.has(key); }
 }
