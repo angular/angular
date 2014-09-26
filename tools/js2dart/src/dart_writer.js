@@ -8,7 +8,7 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     super();
     this.libName = moduleName
         .replace(/\//g, '.')
-        .replace(/[^\w.]/, '_')
+        .replace(/[^\w.]/g, '_')
         .replace('.lib.', '.')
         .replace(/\.dart$/, '');
   }
