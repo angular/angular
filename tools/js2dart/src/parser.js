@@ -9,6 +9,7 @@ export class Parser extends TraceurParser {
   constructor(file, errorReporter = new SyntaxErrorReporter()) {
     super(file, errorReporter);
   }
+
   parseTypeName_() {
     // Copy of original implementation
     var typeName = super.parseTypeName_();
@@ -24,6 +25,7 @@ export class Parser extends TraceurParser {
     }
     return typeName;
   }
+
   parseImportSpecifier_() {
     // Copy of original implementation
     var start = this.getTreeStartLocation_();
@@ -33,7 +35,7 @@ export class Parser extends TraceurParser {
     var name = this.eatIdName_();
     // Support for wraps keywoard
     if (this.peekToken_().value === WRAPS) {
-      var token = this.nextToken_();
+      token = this.nextToken_();
       var wrappedIdentifier = this.eatId_();
       // TODO: Save the fact that this is a wrapper type and
       // also the wrapped type
@@ -48,9 +50,10 @@ export class Parser extends TraceurParser {
     }
     return new ImportSpecifier(this.getTreeLocation_(start), binding, name);
   }
+
   parseObjectType_() {
    //TODO(misko): save the type information
-   this.eat_(OPEN_CURLY)
+   this.eat_(OPEN_CURLY);
    do {
      var identifier = this.eatId_();
      this.eat_(COLON);
