@@ -9,6 +9,7 @@ var runSequence = require('run-sequence');
 var glob = require('glob');
 var ejs = require('gulp-ejs');
 var path = require('path');
+var through2 = require('through2');
 
 // import js2dart build tasks
 var js2dartTasks = require('./tools/js2dart/gulp-tasks');
@@ -38,10 +39,10 @@ var traceur = require('./tools/js2dart/gulp-traceur');
 // rtts-assert and traceur runtime
 
 gulp.task('jsRuntime/build', function() {
-  return jsRuntime(false);
+  return createJsRuntimeTask(false);
 });
 
-function jsRuntime(isWatch) {
+function createJsRuntimeTask(isWatch) {
   var srcFn = isWatch ? watch : gulp.src.bind(gulp);
   var rttsAssert = srcFn('tools/rtts-assert/src/assert.js')
     .pipe(traceur(js2es5Options))
@@ -60,11 +61,20 @@ var sourceTypeConfigs = {
     },
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
-    // TODO: execute pub get after a yaml changed and was copied over to 'build' folder
     copySrc: ['modules/**/*.dart', 'modules/**/*.yaml'],
     outputDir: 'build/dart',
     outputExt: 'dart',
-    mimeType: 'application/dart'
+    mimeType: 'application/dart',
+    postProcess: function(file, done) {
+      if (file.path.match(/pubspec\.yaml/)) {
+        console.log(file.path);
+        shell.task(['pub get'], {
+          cwd: path.dirname(file.path)
+        })().on('end', done);
+      } else {
+        done();
+      }
+    }
   },
   js: {
     compiler: function() {
@@ -74,13 +84,43 @@ var sourceTypeConfigs = {
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.es5'],
     outputDir: 'build/js',
-    outputExt: 'js'
+    outputExt: 'js',
+    postProcess: function() {
+
+    }
   }
 };
+
 
 gulp.task('modules/clean', function() {
   return gulp.src('build', {read: false})
       .pipe(clean());
+});
+
+gulp.task('modules/build.dart/src', function() {
+  return createModuleTask(sourceTypeConfigs.dart, false);
+});
+
+gulp.task('modules/build.dart/analyzer', function() {
+  var baseDir = sourceTypeConfigs.dart.outputDir;
+  var files = [].slice.call(glob.sync('*/lib/*.dart', {
+    cwd: baseDir
+  }));
+  files = files.filter(function(fileName) {
+    return fileName.match(/(\w+)\/lib\/\1/);
+  });
+  var commands = files.map(function(fileName) {
+    return 'dartanalyzer '+baseDir+'/'+fileName
+  });
+  return shell.task(commands)();
+});
+
+gulp.task('modules/build.dart', function(done) {
+  runSequence('modules/build.dart/src', 'modules/build.dart/analyzer', done);
+});
+
+gulp.task('modules/build.js', function() {
+  return createModuleTask(sourceTypeConfigs.js, false);
 });
 
 function renameSrcToLib(file) {
@@ -89,30 +129,28 @@ function renameSrcToLib(file) {
 
 function createModuleTask(sourceTypeConfig, isWatch) {
   var start = isWatch ? watch : gulp.src.bind(gulp);
-  return function(done) {
-    var transpile = start(sourceTypeConfig.transpileSrc)
-      .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
-      .pipe(rename(renameSrcToLib))
-      .pipe(sourceTypeConfig.compiler())
-      .pipe(gulp.dest(sourceTypeConfig.outputDir));
-    var copy = start(sourceTypeConfig.copySrc)
-      .pipe(rename(renameSrcToLib))
-      .pipe(gulp.dest(sourceTypeConfig.outputDir));
-    // TODO: provide the list of files to the template
-    // automatically!
-    var html = start(sourceTypeConfig.htmlSrc)
-      .pipe(rename(renameSrcToLib))
-      .pipe(ejs({
-        type: sourceTypeConfig.outputExt
-      }))
-      .pipe(gulp.dest(sourceTypeConfig.outputDir));
+  var transpile = start(sourceTypeConfig.transpileSrc)
+    .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
+    .pipe(rename(renameSrcToLib))
+    .pipe(sourceTypeConfig.compiler())
+    .pipe(gulp.dest(sourceTypeConfig.outputDir));
+  var copy = start(sourceTypeConfig.copySrc)
+    .pipe(rename(renameSrcToLib))
+    .pipe(gulp.dest(sourceTypeConfig.outputDir));
+  // TODO: provide the list of files to the template
+  // automatically!
+  var html = start(sourceTypeConfig.htmlSrc)
+    .pipe(rename(renameSrcToLib))
+    .pipe(ejs({
+      type: sourceTypeConfig.outputExt
+    }))
+    .pipe(gulp.dest(sourceTypeConfig.outputDir));
 
-    return mergeStreams(transpile, copy, html);
-  };
+  var s = mergeStreams(transpile, copy, html);
+  return s.pipe(through2.obj(function(file, enc, done) {
+    sourceTypeConfig.postProcess(file, done);
+  }));
 }
-
-gulp.task('modules/build.dart', createModuleTask(sourceTypeConfigs.dart, false));
-gulp.task('modules/build.js', createModuleTask(sourceTypeConfigs.js, false));
 
 // ------------------
 // WEB SERVER
@@ -155,7 +193,7 @@ gulp.task('watch', function() {
       ['jsRuntime/build', 'modules/build.dart', 'modules/build.js'],
       done);
   });
-  var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true)();
-  var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true)();
-  return mergeStreams(js2dartWatch, dartModuleWatch, jsModuleWatch, jsRuntime(true));
+  var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true);
+  var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true);
+  return mergeStreams(js2dartWatch, dartModuleWatch, jsModuleWatch, createJsRuntimeTask(true));
 });
