@@ -9,26 +9,30 @@ import {
 } from 'traceur/src/Options';
 
 export class Compiler extends TraceurCompiler {
+
   constructor(options, sourceRoot) {
     super(options, sourceRoot);
   }
-  compile(source, filename) {
-    var parsed = this.parse(source, filename || '<unknown_file>');
-    if (this.options_.outputLanguage === 'dart') {
-      return this.writeDart(this.transformDart(parsed), filename);
+
+  transform(tree, moduleName = undefined) {
+    if (this.options_.outputLanguage.toLowerCase() === 'dart') {
+      var transformer = new ClassTransformer();
+      return transformer.transformAny(tree);
     } else {
-      return this.write(this.transform(parsed));
+      return super(tree, moduleName);
     }
   }
-  transformDart(tree) {
-    var transformer = new ClassTransformer();
-    return transformer.transformAny(tree);
+
+  write(tree, outputName = undefined, sourceRoot = undefined) {
+   if (this.options_.outputLanguage.toLowerCase() === 'dart') {
+      var writer = new DartTreeWriter(outputName);
+      writer.visitAny(tree);
+      return writer.toString();
+    } else {
+      return super.write(tree, outputName, sourceRoot);
+    }
   }
-  writeDart(tree, filename) {
-    var writer = new DartTreeWriter(this.resolveModuleName(filename));
-    writer.visitAny(tree);
-    return writer.toString();
-  }
+
   // Copy of the original method to use our custom Parser
   parse(content, sourceName) {
     if (!content) {
