@@ -7,12 +7,12 @@ var mergeStreams = require('event-stream').merge;
 tasks.install(gulp);
 
 gulp.task('test', function() {
-  return runSequence('js2dart/test');
+  return runSequence('transpiler/test');
 });
 
-gulp.task('clean', ['js2dart/clean']);
+gulp.task('clean', ['transpiler/clean']);
 
 gulp.task('watch', function(done) {
   // parallel is important as both streams are infinite!
-  runSequence(['js2dart/test/watch', 'js2dart/src/watch'], done);
+  runSequence(['transpiler/test/watch', 'transpiler/src/watch'], done);
 });

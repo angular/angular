@@ -1,4 +1,4 @@
-name: js2dart
+name: transpiler
 version: 0.0.0
 authors:
 - Vojta Jina <vojta.jina@gmail.com>

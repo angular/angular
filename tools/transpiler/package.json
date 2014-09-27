@@ -1,10 +1,10 @@
 {
-  "name": "js2dart",
+  "name": "transpiler",
   "version": "0.0.0",
   "description": "Compile JavaScript to Dart so that you can compile it back to JavaScript and run.",
   "main": "index.js",
   "scripts": {
-    "test": "gulp js2dart/test",
+    "test": "gulp transpiler/test",
     "postinstall": "pub install"
   },
   "author": "Vojta Jina <vojta.jina@gmail.com>",

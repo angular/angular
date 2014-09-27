@@ -1,7 +1,7 @@
 #! /bin/sh
 git submodule init && git submodule update
 
-rm node_modules/js2dart
-ln -s ../tools/js2dart node_modules/js2dart
+rm node_modules/transpiler
+ln -s ../tools/transpiler node_modules/transpiler
 
-(cd tools/js2dart; npm install)
+(cd tools/transpiler; npm install)

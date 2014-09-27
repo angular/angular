@@ -11,9 +11,9 @@ var ejs = require('gulp-ejs');
 var path = require('path');
 var through2 = require('through2');
 
-// import js2dart build tasks
-var js2dartTasks = require('./tools/js2dart/gulp-tasks');
-js2dartTasks.install(gulp);
+// import transpiler build tasks
+var transpilerTasks = require('./tools/transpiler/gulp-tasks');
+transpilerTasks.install(gulp);
 
 var js2es5Options = {
   annotations: true, // parse annotations
@@ -24,14 +24,14 @@ var js2es5Options = {
   typeAssertions: true
 };
 
-var js2dartOptions = {
+var transpilerOptions = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
   outputLanguage: 'dart'
 };
 
-var gulpTraceur = require('./tools/js2dart/gulp-traceur');
+var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
 function resolveModuleName(fileName) {
   var moduleName = fileName
@@ -62,7 +62,7 @@ function createJsRuntimeTask(isWatch) {
 var sourceTypeConfigs = {
   dart: {
     compiler: function() {
-      return gulpTraceur(js2dartOptions, resolveModuleName);
+      return gulpTraceur(transpilerOptions, resolveModuleName);
     },
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
@@ -177,13 +177,13 @@ gulp.task('serve', connect.server({
 // --------------
 // general targets
 
-gulp.task('clean', ['js2dart/clean', 'modules/clean']);
+gulp.task('clean', ['transpiler/clean', 'modules/clean']);
 
 gulp.task('build', ['jsRuntime/build', 'modules/build.dart', 'modules/build.js']);
 
 gulp.task('watch', function() {
   // parallel is important as both streams are infinite!
-  runSequence(['js2dart/test/watch', 'js2dart/src/watch']);
+  runSequence(['transpiler/test/watch', 'transpiler/src/watch']);
   var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true);
   var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true);
   return mergeStreams(dartModuleWatch, jsModuleWatch, createJsRuntimeTask(true));

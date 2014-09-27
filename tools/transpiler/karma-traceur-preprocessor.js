@@ -1,4 +1,4 @@
-var js2dart = require('./index.js');
+var transpiler = require('./index.js');
 
 module.exports = {
   'preprocessor:traceur': ['factory', createJs2DartPreprocessor]
@@ -14,7 +14,7 @@ function createJs2DartPreprocessor(logger, basePath, config) {
       if (config.transformPath) {
         file.path = config.transformPath(file.originalPath);
       }
-      done(null, js2dart.compile(config.options, {
+      done(null, transpiler.compile(config.options, {
         inputPath: file.originalPath,
         moduleName: moduleName
       }, content));

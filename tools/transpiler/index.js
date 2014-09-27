@@ -7,7 +7,7 @@ var traceur = require('traceur');
 
 exports.RUNTIME_PATH = traceur.RUNTIME_PATH;
 var TRACEUR_PATH = traceur.RUNTIME_PATH.replace('traceur-runtime.js', 'traceur.js');
-var SELF_SOURCE_REGEX = /js2dart\/src/;
+var SELF_SOURCE_REGEX = /transpiler\/src/;
 var SELF_COMPILE_OPTIONS = {
   modules: 'register',
   moduleName: true,
@@ -41,7 +41,7 @@ exports.compile = function compile(options, paths, source) {
   var localOptions = extend(options, {
     moduleName: moduleName
   });
-  var CompilerCls = System.get('js2dart/src/compiler').Compiler;
+  var CompilerCls = System.get('transpiler/src/compiler').Compiler;
   return (new CompilerCls(localOptions)).compile(source, inputPath, outputPath);
 };
 
@@ -63,7 +63,7 @@ function loadModule(filepath, transpile) {
 
   if (transpile) {
     var moduleName = filepath
-      .replace(__dirname, 'js2dart')
+      .replace(__dirname, 'transpiler')
       .replace(/\.\w*$/, '');
     data = (new traceur.NodeCompiler(
       extend(SELF_COMPILE_OPTIONS, { moduleName: moduleName } )

@@ -228,7 +228,7 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     if (tree.name.identifierToken) {
       var nameValue = tree.name.identifierToken.value;
       if (nameValue === nameValue.toUpperCase()) {
-        // control annotations for js2dart
+        // control annotations for transpiler
         return;
       }
     }

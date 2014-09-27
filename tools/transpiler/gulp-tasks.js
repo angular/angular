@@ -12,7 +12,7 @@ var traceurDir = baseDir+'/../traceur';
 var buildDir = baseDir + '/build';
 
 var paths = {
-  js2dartSrc: baseDir + '/src/**/*.js',
+  transpilerSrc: baseDir + '/src/**/*.js',
   specTranspile: baseDir + '/spec/**/*.js',
   specTemplates: baseDir + '/spec/**/*.template',
   specCopy: baseDir + '/spec/**/*.dart'
@@ -32,31 +32,31 @@ function install(gulp) {
     outputLanguage: 'dart'
   };
 
-  gulp.task('js2dart/clean', function() {
+  gulp.task('transpiler/clean', function() {
     return gulp.src(buildDir, {read: false})
         .pipe(clean());
   });
 
-  gulp.task('js2dart/test/build', function() {
+  gulp.task('transpiler/test/build', function() {
     return mergeStreams(specTranspile(false), specCopy(false), specRunner(false));
   });
 
-  gulp.task('js2dart/test/run', shell.task([
+  gulp.task('transpiler/test/run', shell.task([
     'cd '+baseDir+' && dart --checked run_specs.dart'
   ]));
 
-  gulp.task('js2dart/test', function(done) {
-    runSequence('js2dart/test/build', 'js2dart/test/run', done);
+  gulp.task('transpiler/test', function(done) {
+    runSequence('transpiler/test/build', 'transpiler/test/run', done);
   });
 
-  gulp.task('js2dart/src/watch', function(done) {
-    return watch(paths.js2dartSrc, function(changes, done) {
+  gulp.task('transpiler/src/watch', function(done) {
+    return watch(paths.transpilerSrc, function(changes, done) {
       gulpTraceur.sourcesChanged();
-      runSequence('js2dart/test', done);
+      runSequence('transpiler/test', done);
     });
   });
 
-  gulp.task('js2dart/test/watch', function(done) {
+  gulp.task('transpiler/test/watch', function(done) {
     var streams = [];
     streams.push(specTranspile(true)
       .on('data', specRunner));
@@ -65,7 +65,7 @@ function install(gulp) {
     streams.forEach(function(stream) {
       stream.on('error', done);
       stream.on('data', function() {
-        runSequence('js2dart/test/run');
+        runSequence('transpiler/test/run');
       });
     });
   });

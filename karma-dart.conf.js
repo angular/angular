@@ -57,5 +57,5 @@ module.exports = function(config) {
   });
 
 
-  config.plugins.push(require('./tools/js2dart/karma-traceur-preprocessor'));
+  config.plugins.push(require('./tools/transpiler/karma-traceur-preprocessor'));
 };
