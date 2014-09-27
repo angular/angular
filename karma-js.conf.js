@@ -26,9 +26,8 @@ module.exports = function(config) {
         script: false,
         modules: 'register',
         types: true,
-        // TODO: turn this on!
-        // typeAssertions: true,
-        // typeAssertionModule: 'assert',
+        typeAssertions: true,
+        typeAssertionModule: 'rtts_assert/rtts_assert',
         annotations: true
       },
       resolveModuleName: function(fileName) {

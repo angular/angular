@@ -21,7 +21,7 @@ export class View {
 
   onRecordChange(record:Record, target) {
     // dispatch to element injector or text nodes based on context
-    if (target is ElementInjectorTarge) {
+    if (target instanceof ElementInjectorTarge) {
       // we know that it is ElementInjectorTarge
       var eTarget:ElementInjectorTarget = target;
       onChangeDispatcher.notify(this, eTarget);

@@ -7,6 +7,9 @@ Object.keys(window.__karma__.files).forEach(function(path) {
       .replace(/\/src\//, '/')
       .replace(/\/test\//, '/')
       .replace(/\.\w*$/, '');
-    System.get(moduleName).main();
+    var mod = System.get(moduleName);
+    if (mod.main) {
+      mod.main();
+    }
   }
 });

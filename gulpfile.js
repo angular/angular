@@ -20,7 +20,7 @@ var js2es5Options = {
   types: true, // parse types
   script: false, // parse as a module
   modules: 'register',
-  typeAssertionModule: 'assert',
+  typeAssertionModule: 'rtts_assert/rtts_assert',
   typeAssertions: true
 };
 
@@ -52,12 +52,9 @@ gulp.task('jsRuntime/build', function() {
 
 function createJsRuntimeTask(isWatch) {
   var srcFn = isWatch ? watch : gulp.src.bind(gulp);
-  var rttsAssert = srcFn('tools/rtts-assert/src/assert.js')
-    .pipe(gulpTraceur(js2es5Options, resolveModuleName))
-    .pipe(gulp.dest('build/js'));
   var traceurRuntime = srcFn(gulpTraceur.RUNTIME_PATH)
     .pipe(gulp.dest('build/js'));
-  return mergeStreams(rttsAssert, traceurRuntime);
+  return traceurRuntime;
 }
 
 // -----------------------
