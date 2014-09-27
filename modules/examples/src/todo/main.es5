@@ -1,0 +1,1 @@
+new (System.get("examples/todo/app").App)().run();

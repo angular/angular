@@ -1,6 +1,5 @@
-import {DOM} from './dom';
+import {DOM} from 'facade/dom';
 export class App {
-  @field('input:Element')
   constructor() {
     this.input = null;
     this.list = null;
