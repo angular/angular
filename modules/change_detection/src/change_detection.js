@@ -11,12 +11,11 @@ export class ChangeDetection {
   detectChanges():int {
     var current:Record = _rootWatchGroup._headRecord;
     var count:number = 0;
-    while(current != null) {
-      if(current.check()) {
+    while (current != null) {
+      if (current.check()) {
         count++;
       }
     }
     return count;
   }
-  
 }

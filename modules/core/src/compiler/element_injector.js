@@ -17,11 +17,25 @@ ElementInjector (ElementModule):
   - Query mechanism for children
   - 1:1 to DOM structure.
  */
- 
+
 export class ProtoElementInjector {
   @FIELD('final _parent:ProtoElementInjector')
   /// Temporory instance while instantiating
-  @FIELD('_instance:ElementInjector')
-  constructor() {}
+  @FIELD('_clone:ElementInjector')
+  constructor(parent:ProtoElementInjector) {
+    this._parent = parent;
+  }
+
+  instantiate():ElementInjector {
+    return new ElementInjector(this);
+  }
 }
- 
+
+export class ElementInjector {
+  @FIELD('final protoInjector:ProtoElementInjector')
+  constructor(protoInjector:ProtoElementInjector) {
+    this.protoInjector = protoInjector;
+  }
+
+}
+

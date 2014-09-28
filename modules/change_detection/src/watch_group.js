@@ -1,5 +1,4 @@
 import {ProtoRecord, Record} from './record';
-import {WatchGroupDispatcher} from './watch_group_dispatcher';
 
 export class ProtoWatchGroup {
   @FIELD('final _headRecord:ProtoRecord')
@@ -31,7 +30,8 @@ export class ProtoWatchGroup {
 
     proto = this._headRecord;
     while(proto != null) {
-      proto = proto.instantiateComplete();
+      proto.instantiateComplete();
+      proto = proto.next;
     }
 
     watchGroup._headRecord = head;
@@ -60,4 +60,8 @@ export class WatchGroup {
     /// IMPLEMENT
   }
 
+}
+
+export class WatchGroupDispatcher {
+  onRecordChange(record:Record, context) {}
 }

@@ -23,8 +23,8 @@ export class ProtoRecord {
   constructor(watchGroup:ProtoWatchGroup, fieldName:String) {
     this.watchGroup = watchGroup;
     this.fieldName = fieldName;
-    this._next = null;
-    this._prev = null;
+    this.next = null;
+    this.prev = null;
     this._checkNext = null;
     this._checkPrev = null;
     this._notifierNext = null;
@@ -36,17 +36,17 @@ export class ProtoRecord {
 
   instantiate(watchGroup:WatchGroup):Record {
     var record = this._clone = new Record(watchGroup, this);
-    record._prev = this._prev._clone;
+    record.prev = this.prev._clone;
     record._checkPrev = this._checkPrev._clone;
     return _clone;
   }
 
   instantiateComplete():Record {
     var record = this._clone;
-    record._next = this._next._clone;
+    record.next = this.next._clone;
     record._checkNext = this._checkNext._clone;
     this._clone = null;
-    return this._next;
+    return this.next;
   }
 }
 
@@ -97,8 +97,8 @@ export class Record {
   constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord) {
     this.protoRecord = protoRecord;
     this.watchGroup = watchGroup;
-    this._next = null;
-    this._prev = null;
+    this.next = null;
+    this.prev = null;
     this._checkNext = null;
     this._checkPrev = null;
     this._notifierNext = null;

@@ -1,6 +1,6 @@
 import {Future, Type} from 'facade/lang';
 import {Element} from 'facade/dom';
-import {ProtoView} from '../view/proto_view';
+import {ProtoView} from './view';
 import {TemplateLoader} from './template_loader';
 
 export class Compiler {

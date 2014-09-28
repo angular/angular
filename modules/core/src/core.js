@@ -11,6 +11,5 @@ export * from 'change_detection/record';
 
 export * from './compiler/compiler';
 export * from './compiler/template_loader';
+export * from './compiler/view';
 
-export * from './view/proto_view';
-export * from './view/view';
