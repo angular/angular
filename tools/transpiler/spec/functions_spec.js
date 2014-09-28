@@ -1,7 +1,13 @@
+import {describe, it, expect} from 'test_lib/test_lib';
+
 function sum(a, b) {
   return a + b;
 }
 
-function main() {
-  assert(sum(1, 2) == 3);
+export function main() {
+  describe('functions', function() {
+    it('should work', function() {
+      expect(sum(1, 2)).toBe(3);
+    });
+  });
 }

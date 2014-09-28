@@ -1,19 +1,26 @@
-import annotations from './fixtures/annotations';
+import {describe, it, expect} from 'test_lib/test_lib';
+import {Provide, readFirstAnnotation} from './fixtures/annotations';
 
 class Inject {}
 class Bar {}
 
-@annotations.Provide('Foo')
+@Provide('Foo')
 class Foo {
   @Inject
   constructor() {}
 }
 
-@annotations.Provide(Foo)
+@Provide(Foo)
 function baz() {}
 
 function annotatedParams(@Inject(Foo) f, @Inject(Bar) b) {}
 
-function main() {
-  annotations.main();
+export function main() {
+  describe('annotations', function() {
+    it('should work', function() {
+      // Assert `Foo` class has `Provide` annotation.
+      var clazz = readFirstAnnotation(Foo);
+      expect(clazz instanceof Provide).toBe(true);
+    });
+  });
 }

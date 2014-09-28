@@ -1,5 +1,7 @@
 import {Type} from 'facade/lang';
 import {ElementServicesFunction} from './facade';
+import {ABSTRACT} from 'facade/lang';
+
 
 @ABSTRACT
 export class Directive {

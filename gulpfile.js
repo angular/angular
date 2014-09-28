@@ -10,10 +10,7 @@ var glob = require('glob');
 var ejs = require('gulp-ejs');
 var path = require('path');
 var through2 = require('through2');
-
-// import transpiler build tasks
-var transpilerTasks = require('./tools/transpiler/gulp-tasks');
-transpilerTasks.install(gulp);
+var file2moduleName = require('./file2modulename');
 
 var js2es5Options = {
   annotations: true, // parse annotations
@@ -24,7 +21,7 @@ var js2es5Options = {
   typeAssertions: true
 };
 
-var transpilerOptions = {
+var js2dartOptions = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
@@ -33,37 +30,20 @@ var transpilerOptions = {
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
-function resolveModuleName(fileName) {
-  var moduleName = fileName
-    .replace(/.*\/modules\//, '')
-    .replace(/\/src\//, '/')
-    .replace(/\/lib\//, '/')
-    .replace(/\/test\//, '/');
-  return moduleName;
-}
-
-
 // ---------
-// rtts-assert and traceur runtime
+// traceur runtime
 
 gulp.task('jsRuntime/build', function() {
-  return createJsRuntimeTask(false);
-});
-
-function createJsRuntimeTask(isWatch) {
-  var srcFn = isWatch ? watch : gulp.src.bind(gulp);
-  var traceurRuntime = srcFn(gulpTraceur.RUNTIME_PATH)
+  var traceurRuntime = gulp.src(gulpTraceur.RUNTIME_PATH)
     .pipe(gulp.dest('build/js'));
   return traceurRuntime;
-}
+});
 
 // -----------------------
 // modules
 var sourceTypeConfigs = {
   dart: {
-    compiler: function() {
-      return gulpTraceur(transpilerOptions, resolveModuleName);
-    },
+    compilerOptions: js2dartOptions,
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.dart', 'modules/**/*.yaml'],
@@ -82,9 +62,7 @@ var sourceTypeConfigs = {
     }
   },
   js: {
-    compiler: function() {
-      return gulpTraceur(js2es5Options, resolveModuleName);
-    },
+    compilerOptions: js2es5Options,
     transpileSrc: ['modules/**/*.js', 'modules/**/*.es6'],
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.es5'],
@@ -103,7 +81,7 @@ gulp.task('modules/clean', function() {
 });
 
 gulp.task('modules/build.dart/src', function() {
-  return createModuleTask(sourceTypeConfigs.dart, false);
+  return createModuleTask(sourceTypeConfigs.dart);
 });
 
 gulp.task('modules/build.dart/analyzer', function() {
@@ -125,26 +103,25 @@ gulp.task('modules/build.dart', function(done) {
 });
 
 gulp.task('modules/build.js', function() {
-  return createModuleTask(sourceTypeConfigs.js, false);
+  return createModuleTask(sourceTypeConfigs.js);
 });
 
 function renameSrcToLib(file) {
   file.dirname = file.dirname.replace(/\bsrc\b/, 'lib');
 }
 
-function createModuleTask(sourceTypeConfig, isWatch) {
-  var start = isWatch ? watch : gulp.src.bind(gulp);
-  var transpile = start(sourceTypeConfig.transpileSrc)
+function createModuleTask(sourceTypeConfig) {
+  var transpile = gulp.src(sourceTypeConfig.transpileSrc)
     .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
     .pipe(rename(renameSrcToLib))
-    .pipe(sourceTypeConfig.compiler())
+    .pipe(gulpTraceur(sourceTypeConfig.compilerOptions, file2moduleName))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
-  var copy = start(sourceTypeConfig.copySrc)
+  var copy = gulp.src(sourceTypeConfig.copySrc)
     .pipe(rename(renameSrcToLib))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
   // TODO: provide the list of files to the template
   // automatically!
-  var html = start(sourceTypeConfig.htmlSrc)
+  var html = gulp.src(sourceTypeConfig.htmlSrc)
     .pipe(rename(renameSrcToLib))
     .pipe(ejs({
       type: sourceTypeConfig.outputExt
@@ -177,14 +154,6 @@ gulp.task('serve', connect.server({
 // --------------
 // general targets
 
-gulp.task('clean', ['transpiler/clean', 'modules/clean']);
+gulp.task('clean', ['modules/clean']);
 
 gulp.task('build', ['jsRuntime/build', 'modules/build.dart', 'modules/build.js']);
-
-gulp.task('watch', function() {
-  // parallel is important as both streams are infinite!
-  runSequence(['transpiler/test/watch', 'transpiler/src/watch']);
-  var dartModuleWatch = createModuleTask(sourceTypeConfigs.dart, true);
-  var jsModuleWatch = createModuleTask(sourceTypeConfigs.js, true);
-  return mergeStreams(dartModuleWatch, jsModuleWatch, createJsRuntimeTask(true));
-});

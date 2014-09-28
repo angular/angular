@@ -16,8 +16,7 @@ var SELF_COMPILE_OPTIONS = {
 
 var needsReload = true;
 
-// TODO(vojta): call this if sources changed
-exports.sourcesChanged = function() {
+exports.reloadSources = function() {
   needsReload = true;
 };
 

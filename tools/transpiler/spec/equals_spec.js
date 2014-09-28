@@ -1,3 +1,5 @@
+import {describe, it, expect} from 'test_lib/test_lib';
+
 function same(a, b) {
   return a === b;
 }
@@ -7,10 +9,14 @@ function notSame(a, b) {
   return a !== b;
 }
 
-function main() {
-  var obj = {};
-  assert(same({}, {}) == false);
-  assert(same(obj, obj) == true);
-  assert(notSame({}, {}) == true);
-  assert(notSame(obj, obj) == false);
+export function main() {
+  describe('equals', function() {
+    it('should work', function() {
+      var obj = {};
+      expect(same({}, {}) == false).toBe(true);
+      expect(same(obj, obj) == true).toBe(true);
+      expect(notSame({}, {}) == true).toBe(true);
+      expect(notSame(obj, obj) == false).toBe(true);
+    });
+  });
 }

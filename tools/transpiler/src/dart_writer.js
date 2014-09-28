@@ -6,9 +6,7 @@ import {ParseTreeWriter as JavaScriptParseTreeWriter} from 'traceur/src/outputge
 export class DartTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
     super(outputPath);
-    this.libName = moduleName
-        .replace(/\//g, '.')
-        .replace(/[^\w.]/g, '_');
+    this.libName = moduleName.replace(/\//g, '.');
   }
 
   // VARIABLES - types
@@ -182,10 +180,9 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     this.visitAny(tree.moduleSpecifier);
 
     if (tree.importClause.binding) {
-      // Default import - import the entire module.
-      // import foo from './bar';
-      this.write_(' as ');
-      this.visitAny(tree.importClause.binding);
+      // Default import, not supported as dart does not distinguish
+      // between explicit exports and default exports
+      throw new Error('default imports/exports not supported');
     } else {
       // Regular - import list of members.
       // import {Foo, Bar} from './baz';
@@ -221,6 +218,16 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     }
   }
 
+  visitModuleDeclaration(tree) {
+    // module import - import the entire module.
+    // import * as foo from './bar';
+    this.write_(IMPORT);
+    this.writeSpace_();
+    this.visitAny(tree.expression);
+    this.write_(' as ');
+    this.visitAny(tree.binding);
+    this.write_(SEMI_COLON);
+  }
 
   // ANNOTATIONS
   // TODO(vojta): this is just fixing a bug in Traceur, send a PR.

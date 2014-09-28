@@ -3,8 +3,6 @@ import {SyntaxErrorReporter} from 'traceur/src/util/SyntaxErrorReporter';
 import {TypeName, ImportSpecifier, ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {PERIOD, IMPORT, STAR, AS, FROM, CLOSE_ANGLE, OPEN_ANGLE, COMMA, OPEN_CURLY, CLOSE_CURLY, COLON} from 'traceur/src/syntax/TokenType';
 
-var WRAPS = 'wraps';
-
 export class Parser extends TraceurParser {
   constructor(file, errorReporter = new SyntaxErrorReporter()) {
     super(file, errorReporter);
@@ -24,31 +22,6 @@ export class Parser extends TraceurParser {
       // TODO: save the generics into the typeName and use them e.g. for assertions, ...
     }
     return typeName;
-  }
-
-  parseImportSpecifier_() {
-    // Copy of original implementation
-    var start = this.getTreeStartLocation_();
-    var token = this.peekToken_();
-    var isKeyword = token.isKeyword();
-    var binding;
-    var name = this.eatIdName_();
-    // Support for wraps keywoard
-    if (this.peekToken_().value === WRAPS) {
-      token = this.nextToken_();
-      var wrappedIdentifier = this.eatId_();
-      // TODO: Save the fact that this is a wrapper type and
-      // also the wrapped type
-    }
-    // Copy of original implementation
-    if (isKeyword || this.peekPredefinedString_(AS)) {
-      this.eatId_(AS);
-      binding = this.parseImportedBinding_();
-    } else {
-      binding = new ImportedBinding(name.location, new BindingIdentifier(name.location, name));
-      name = null;
-    }
-    return new ImportSpecifier(this.getTreeLocation_(start), binding, name);
   }
 
   parseObjectType_() {

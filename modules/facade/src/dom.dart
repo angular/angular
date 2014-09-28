@@ -14,11 +14,16 @@ class DOM {
   static getInnerHTML(el) {
     return el.innerHtml;
   }
-  static setInnerHTML(el:, value) {
+  static setInnerHTML(el, value) {
     el.innerHtml = value;
   }
   static setText(Text text, String value) {
     text.text = value;
+  }
+  static createTemplate(html) {
+    var t = document.createElement('template');
+    t.setInnerHtml(html);
+    return t;
   }
   static clone(Node node) {
     return node.clone(true);

@@ -1,14 +1,10 @@
-var TEST_REGEXP = /^\/base\/modules\/[^\/]*\/test\/.*/;
+var TEST_REGEXP = /_spec.*/;
 
 Object.keys(window.__karma__.files).forEach(function(path) {
   if (TEST_REGEXP.test(path)) {
-    var moduleName = path
-      .replace(/.*\/modules\//, '')
-      .replace(/\/src\//, '/')
-      .replace(/\/test\//, '/')
-      .replace(/\.\w*$/, '');
+    var moduleName = window.file2moduleName(path);
     var mod = System.get(moduleName);
-    if (mod.main) {
+    if (mod && mod.main) {
       mod.main();
     }
   }

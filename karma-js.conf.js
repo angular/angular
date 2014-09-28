@@ -1,5 +1,6 @@
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
+var file2moduleName = require('./file2modulename');
 
 module.exports = function(config) {
   config.set({
@@ -8,16 +9,20 @@ module.exports = function(config) {
 
     files: [
       'node_modules/traceur/bin/traceur-runtime.js',
-      './karma-mock-annotations.js',
       'modules/**/test_lib/**/*.es6',
       'modules/**/*.js',
       'modules/**/*.es6',
+      'tools/transpiler/spec/**/*.js',
+      'tools/transpiler/spec/**/*.es6',
+      'file2modulename.js',
       'test-main.js'
     ],
 
     preprocessors: {
       'modules/**/*.js': ['traceur'],
-      'modules/**/*.es6': ['traceur']
+      'modules/**/*.es6': ['traceur'],
+      'tools/transpiler/**/*.js': ['traceur'],
+      'tools/transpiler/**/*.es6': ['traceur'],
     },
 
     traceurPreprocessor: {
@@ -30,13 +35,7 @@ module.exports = function(config) {
         typeAssertionModule: 'rtts_assert/rtts_assert',
         annotations: true
       },
-      resolveModuleName: function(fileName) {
-        var moduleName = fileName
-          .replace(/.*\/modules\//, '')
-          .replace(/\/src\//, '/')
-          .replace(/\/test\//, '/');
-        return moduleName;
-      },
+      resolveModuleName: file2moduleName,
       transformPath: function(fileName) {
         return fileName.replace('.es6', '');
       }

@@ -1,1 +1,1 @@
-export 'package:guinness/guinness.dart' show describe, it, beforeEach, afterEach, expect;
+export 'package:guinness/guinness.dart' show describe, ddescribe, it, iit, beforeEach, afterEach, expect;

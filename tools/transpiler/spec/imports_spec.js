@@ -1,22 +1,28 @@
+import {describe, it, expect} from 'test_lib/test_lib';
+
 import {Foo, Bar} from './foo';
+// TODO: Does not work, as dart does not support renaming imports
 // import {Foo as F} from './fixtures/foo';
-import fooModule from './foo';
+import * as fooModule from './foo';
 
-import {MapWrapper wraps Map} from './fixtures/facade';
+import * as exportModule from './export';
 
-import exportModule from './export';
+import {Type} from 'facade/lang';
 
-import unittest from 'unittest/unittest';
+export function main() {
+  describe('imports', function() {
+    it('should work', function() {
+      expect(Foo).toBe('FOO');
+      expect(Bar).toBe('BAR');
+      // TODO: Does not work
+      // assert(F == 'FOO');
+      expect(fooModule.Foo).toBe('FOO');
+      expect(fooModule.Bar).toBe('BAR');
 
-function main() {
-  assert(Foo == 'FOO');
-  assert(Bar == 'BAR');
-  // assert(F == 'FOO');
-  assert(fooModule.Foo == 'FOO');
-  assert(fooModule.Bar == 'BAR');
+      expect(exportModule.Foo).toBe('FOO');
+      expect(exportModule.Bar).toBe('BAR');
 
-  assert(exportModule.Foo == 'FOO');
-  assert(exportModule.Bar == 'BAR');
-
-  assert(unittest.PASS != null);
+      expect(Type).toBeTruthy();
+    });
+  });
 }

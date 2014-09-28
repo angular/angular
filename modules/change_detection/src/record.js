@@ -1,4 +1,5 @@
 //import {ProtoWatchGroup, WatchGroup} from './watch_group';
+import {FIELD} from 'facade/lang';
 
 export class ProtoRecord {
 
@@ -53,28 +54,28 @@ export class ProtoRecord {
 
 /**
  * Represents a Record for keeping track of changes. A change is a difference between previous
- * and current value. 
- * 
+ * and current value.
+ *
  * By default changes are detected using dirty checking, but a notifier can be present which can
  * notify the records of changes by means other than dirty checking. For example Object.observe
  * or events on DOM elements.
- * 
- * DESIGN NOTES:  
- *  - No inheritance allowed so that code is monomorphic for performance. 
+ *
+ * DESIGN NOTES:
+ *  - No inheritance allowed so that code is monomorphic for performance.
  *  - Atomic watch operations
  *  - Defaults to dirty checking
  *  - Keep this object as lean as possible. (Lean in number of fields)
- * 
+ *
  * MEMORY COST: 13 Words;
  */
 export class Record {
-  
+
   @FIELD('final watchGroup:WatchGroup')
   @FIELD('final protoRecord:ProtoRecord')
   /// order list of all records. Including head/tail markers
   @FIELD('_next:Record')
   @FIELD('_prev:Record')
-  /// next record to dirty check 
+  /// next record to dirty check
   @FIELD('_checkNext:Record')
   @FIELD('_checkPrev:Record')
   // next notifier
@@ -120,7 +121,7 @@ export class Record {
     var notify = mode & MODE_MASK_NOTIFY;
     var currentValue;
     switch (state) {
-      case MODE_STATE_MARKER: 
+      case MODE_STATE_MARKER:
         return false;
       case MODE_STATE_PROPERTY:
         currentValue = this._getter(this._context);
@@ -136,7 +137,7 @@ export class Record {
     }
     var previousValue = this.previousValue;
     if (isSame(previousValue, currentValue)) return false;
-    if (previousValue instanceof String && currentValue instanceof String  
+    if (previousValue instanceof String && currentValue instanceof String
         && previousValue == currentValue) {
       this.previousValue = currentValue;
       return false
@@ -178,4 +179,4 @@ function isSame(a, b) {
   } else {
     return false;
   }
-} 
+}

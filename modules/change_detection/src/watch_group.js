@@ -1,4 +1,5 @@
 import {ProtoRecord, Record} from './record';
+import {FIELD} from 'facade/lang';
 
 export class ProtoWatchGroup {
   @FIELD('final _headRecord:ProtoRecord')

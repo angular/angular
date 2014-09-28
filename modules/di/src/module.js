@@ -1,5 +1,6 @@
+import {FIELD} from 'facade/lang';
 import {Type} from 'facade/lang';
-import {Map, MapWrapper wraps Map} from 'facade/collection';
+import {Map, MapWrapper} from 'facade/collection';
 import {Key} from './key';
 
 /// becouse we need to know when toValue was not set.

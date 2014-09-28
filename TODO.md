@@ -1,6 +1,4 @@
 ## Setup
-- use package.json's out of the individual projects
-
 - auto start Chromium when start serving
 - auto refresh Chromium when s/t changed
 - transform index.html:

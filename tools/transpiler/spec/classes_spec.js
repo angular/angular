@@ -1,3 +1,5 @@
+import {describe, it, expect} from 'test_lib/test_lib';
+
 // Constructor
 // Define fields
 class Foo {
@@ -11,10 +13,14 @@ class Foo {
   }
 }
 
-function main() {
-  var foo = new Foo(2, 3);
+export function main() {
+  describe('classes', function() {
+    it('should work', function() {
+      var foo = new Foo(2, 3);
 
-  assert(foo.a == 2);
-  assert(foo.b == 3);
-  assert(foo.sum() == 5);
+      expect(foo.a).toBe(2);
+      expect(foo.b).toBe(3);
+      expect(foo.sum()).toBe(5);
+    });
+  });
 }

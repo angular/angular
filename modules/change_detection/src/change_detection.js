@@ -1,5 +1,6 @@
 import {WatchGroup} from './watch_group';
 import {Record} from './record';
+import {FIELD} from 'facade/lang';
 
 export class ChangeDetection {
 

@@ -1,10 +1,12 @@
 import {DOM, Node, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper wraps List} from 'facade/collection';
+import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
 import {Module} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {SetterFn} from 'change_detection/facade';
+import {FIELD, IMPLEMENTS} from 'facade/lang';
+import {List} from 'facade/collection';
 
 @IMPLEMENTS(WatchGroupDispatcher)
 export class View {
