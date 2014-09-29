@@ -40,7 +40,12 @@ module.exports = function(config) {
       }
     },
 
-    browsers: ['Dartium']
+    customLaunchers: {
+      DartiumWithWebPlatform: {
+        base: 'Dartium',
+        flags: ['--enable-experimental-web-platform-features'] }
+    },
+    browsers: ['DartiumWithWebPlatform'],
   });
 
 
