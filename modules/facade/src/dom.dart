@@ -20,4 +20,7 @@ class DOM {
   static setText(Text text, String value) {
     text.text = value;
   }
+  static clone(Node node) {
+    return node.clone(true);
+  }
 }

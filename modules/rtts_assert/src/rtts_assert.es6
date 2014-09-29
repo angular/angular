@@ -162,6 +162,7 @@ function type(actual, T) {
 
     throw new Error(msg);
   }
+  return actual;
 }
 
 function returnType(actual, T) {

@@ -6,24 +6,6 @@ import {Module} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {SetterFn} from 'change_detection/facade';
 
-export class ProtoView {
-  @FIELD('final _template:TemplateElement')
-  @FIELD('final _module:Module')
-  @FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
-  @FIELD('final _protoWatchGroup:ProtoWatchGroup')
-  constructor(
-      template:TemplateElement,
-      module:Module,
-      protoElementInjector:ProtoElementInjector,
-      protoWatchGroup:ProtoWatchGroup)
-  {
-    this._template = template;
-    this._module = module;
-    this._protoElementInjectors = protoElementInjector;
-    this._protoWatchGroup = protoWatchGroup;
-  }
-}
-
 @IMPLEMENTS(WatchGroupDispatcher)
 export class View {
   @FIELD('final _fragment:DocumentFragment')
@@ -56,6 +38,28 @@ export class View {
       var textNodeIndex:number = target;
       DOM.setText(this._textNodes[textNodeIndex], record.currentValue);
     }
+  }
+}
+
+export class ProtoView {
+@FIELD('final _template:TemplateElement')
+@FIELD('final _module:Module')
+@FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
+@FIELD('final _protoWatchGroup:ProtoWatchGroup')
+  constructor(
+      template:TemplateElement,
+      module:Module,
+      protoElementInjector:ProtoElementInjector,
+      protoWatchGroup:ProtoWatchGroup)
+  {
+    this._template = template;
+    this._module = module;
+    this._protoElementInjectors = protoElementInjector;
+    this._protoWatchGroup = protoWatchGroup;
+  }
+
+  instantiate():View {
+    return new View(DOM.clone(this._template.content));
   }
 }
 

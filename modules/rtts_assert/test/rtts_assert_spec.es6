@@ -147,8 +147,8 @@ describe('primitive value check', function() {
   describe('boolean', function() {
 
     it('should pass', function() {
-      assert.type(true, primitive.boolean);
-      assert.type(false, primitive.boolean);
+      expect(assert.type(true, primitive.boolean)).toBe(true);
+      expect(assert.type(false, primitive.boolean)).toBe(false);
     });
 
 

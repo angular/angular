@@ -20,4 +20,12 @@ export class DOM {
   static setText(text:Text, value:String) {
     text.nodeValue = value;
   }
+  static createTemplate(html) {
+    var t = document.createElement('template');
+    t.innerHTML = html;
+    return t;
+  }
+  static clone(node:Node) {
+    return node.cloneNode(true);
+  }
 }

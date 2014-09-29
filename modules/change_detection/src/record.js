@@ -1,4 +1,4 @@
-import {ProtoWatchGroup, WatchGroup} from './watch_group';
+//import {ProtoWatchGroup, WatchGroup} from './watch_group';
 
 export class ProtoRecord {
 
@@ -20,7 +20,7 @@ export class ProtoRecord {
   // May be removed if we don't support coelsence.
   @FIELD('_updateContextNext:ProtoRecord')
   @FIELD('_clone')
-  constructor(watchGroup:ProtoWatchGroup, fieldName:String) {
+  constructor(watchGroup/*:ProtoWatchGroup*/, fieldName:String) {
     this.watchGroup = watchGroup;
     this.fieldName = fieldName;
     this.next = null;
@@ -34,7 +34,7 @@ export class ProtoRecord {
     this._clone = null;
   }
 
-  instantiate(watchGroup:WatchGroup):Record {
+  instantiate(watchGroup/*:WatchGroup*/):Record {
     var record = this._clone = new Record(watchGroup, this);
     record.prev = this.prev._clone;
     record._checkPrev = this._checkPrev._clone;
@@ -94,7 +94,7 @@ export class Record {
   @FIELD('_arguments')
   @FIELD('currentValue')
   @FIELD('previousValue')
-  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord) {
+  constructor(watchGroup/*:WatchGroup*/, protoRecord:ProtoRecord) {
     this.protoRecord = protoRecord;
     this.watchGroup = watchGroup;
     this.next = null;

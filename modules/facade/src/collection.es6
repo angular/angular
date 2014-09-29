@@ -11,5 +11,8 @@ export class MapWrapper {
 export class ListWrapper {
   static create():List { return new List(); }
   static get(m, k) { return m[k]; }
-  static set(m, k, v) { m[k] = v; }  
+  static set(m, k, v) { m[k] = v; }
+  static clone(array) {
+    return Array.prototype.slice.call(array, 0);
+  }
 }
