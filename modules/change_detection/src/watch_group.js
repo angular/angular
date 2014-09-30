@@ -48,15 +48,6 @@ export class ProtoWatchGroup {
     return watchGroup;
   }
 
-  /**
-   * Sets the context (the object) on which the change detection expressions will
-   * dereference themselves on. Since the WatchGroup can be reused the context
-   * can be re-set many times during the lifetime of the WatchGroup.
-   *
-   * @param context the new context for change dection for the curren WatchGroup
-   */
-  setContext(context) {
-  }
 }
 
 export class WatchGroup {
@@ -79,6 +70,15 @@ export class WatchGroup {
     /// IMPLEMENT
   }
 
+  /**
+   * Sets the context (the object) on which the change detection expressions will
+   * dereference themselves on. Since the WatchGroup can be reused the context
+   * can be re-set many times during the lifetime of the WatchGroup.
+   *
+   * @param context the new context for change dection for the curren WatchGroup
+   */
+  setContext(context) {
+  }
 }
 
 export class WatchGroupDispatcher {
