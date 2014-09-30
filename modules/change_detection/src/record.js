@@ -1,51 +1,43 @@
-//import {ProtoWatchGroup, WatchGroup} from './watch_group';
+//import * as wg from './watch_group';
 import {FIELD} from 'facade/lang';
 
+/**
+ * For now we are dropping expression coelescence. We can always add it later, but
+ * real world numbers should that it does not provide significant benefits.
+ */
 export class ProtoRecord {
 
-  @FIELD('final watchGroup:ProtoWatchGroup')
+  @FIELD('final watchGroup:wg.ProtoWatchGroup')
   @FIELD('final fieldName:String')
   /// order list of all records. Including head/tail markers
   @FIELD('next:ProtoRecord')
   @FIELD('prev:ProtoRecord')
-  /// next record to dirty check
-  @FIELD('_checkNext:ProtoRecord')
-  @FIELD('_checkPrev:ProtoRecord')
-  // next notifier
-  @FIELD('_notifierNext:ProtoRecord')
-  // Opeque data which will be presented to WatchGroupDispatcher
-  @FIELD('dispatcherContext')
-  // IF we detect change, we have to update the _context of the
-  // next record.
-  @FIELD('_updateContext:ProtoRecord')
-  // May be removed if we don't support coelsence.
-  @FIELD('_updateContextNext:ProtoRecord')
+  // Opeque data which will be the target of notification.
+  // If the object is instance of Record, than it it is directly procssed
+  // Otherwise it is the context used by  WatchGroupDispatcher.
+  @FIELD('memento')
   @FIELD('_clone')
-  constructor(watchGroup/*:ProtoWatchGroup*/, fieldName:String) {
+  constructor(watchGroup/*:wg.ProtoWatchGroup*/, fieldName:String, memento) {
     this.watchGroup = watchGroup;
     this.fieldName = fieldName;
+    this.memento = memento;
     this.next = null;
     this.prev = null;
-    this._checkNext = null;
-    this._checkPrev = null;
-    this._notifierNext = null;
-    this.dispatcherContext = null;
-    this._updateContext = null;
-    this._updateContextNext = null;
+    this.changeNotifier = null;
     this._clone = null;
   }
 
-  instantiate(watchGroup/*:WatchGroup*/):Record {
+  instantiate(watchGroup/*:wg.WatchGroup*/):Record {
     var record = this._clone = new Record(watchGroup, this);
     record.prev = this.prev._clone;
-    record._checkPrev = this._checkPrev._clone;
+    record._checkPrev = this._prev._clone;
     return _clone;
   }
 
   instantiateComplete():Record {
     var record = this._clone;
     record.next = this.next._clone;
-    record._checkNext = this._checkNext._clone;
+    record._checkNext = this.next._clone;
     this._clone = null;
     return this.next;
   }
@@ -80,14 +72,6 @@ export class Record {
   @FIELD('_checkPrev:Record')
   // next notifier
   @FIELD('_notifierNext:Record')
-  // notifier context will be present to the notifier to release
-  // the object from notification/watching.
-  @FIELD('_notifierContext')
-  // IF we detect change, we have to update the _context of the
-  // next record.
-  @FIELD('_updateContext:Record')
-  // May be removed if we don't support coelsence.
-  @FIELD('_updateContextNext:Record')
 
   @FIELD('_mode:int')
   @FIELD('_context')
@@ -95,7 +79,7 @@ export class Record {
   @FIELD('_arguments')
   @FIELD('currentValue')
   @FIELD('previousValue')
-  constructor(watchGroup/*:WatchGroup*/, protoRecord:ProtoRecord) {
+  constructor(watchGroup/*:wg.WatchGroup*/, protoRecord:ProtoRecord) {
     this.protoRecord = protoRecord;
     this.watchGroup = watchGroup;
     this.next = null;
@@ -103,9 +87,6 @@ export class Record {
     this._checkNext = null;
     this._checkPrev = null;
     this._notifierNext = null;
-    this._notifierContext = null;
-    this._updateContext = null;
-    this._updateContextNext = null;
 
     this._mode = MODE_STATE_MARKER;
     this._context = null;
@@ -143,7 +124,12 @@ export class Record {
       return false
     }
     this.previousValue = currentValue;
-    this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatcherContext);
+    if (this.protoRecord.changeContext instanceof ProtoRecord) {
+      // forward propaget to the next record
+    } else {
+      // notify throught dispatcher
+      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatcherContext);
+    }
     return true;
   }
 }

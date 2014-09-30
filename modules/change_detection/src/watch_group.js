@@ -9,12 +9,20 @@ export class ProtoWatchGroup {
     this._tailRecord = null;
   }
 
+  /**
+   * Parses [expression] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
+   *
+   * @param expression The expression to watch
+   * @param memento an opeque object which will be bassed to WatchGroupDispatcher on
+   *        detecting a change.
+   * @param shallow Should collections be shallow watched
+   */
   watch(
     expression:String,
-    context,
-    {isCollection})
+    memento,
+    {shallow/*=false*/}:{shallow:bool})
   {
-    /// IMPREMENT
+    /// IMPLEMENT
   }
 
   instantiate(dispatcher:WatchGroupDispatcher):WatchGroup {
@@ -38,6 +46,16 @@ export class ProtoWatchGroup {
     watchGroup._headRecord = head;
     watchGroup._tailRecord = tail;
     return watchGroup;
+  }
+
+  /**
+   * Sets the context (the object) on which the change detection expressions will
+   * dereference themselves on. Since the WatchGroup can be reused the context
+   * can be re-set many times during the lifetime of the WatchGroup.
+   *
+   * @param context the new context for change dection for the curren WatchGroup
+   */
+  setContext(context) {
   }
 }
 
