@@ -8,22 +8,49 @@ module.exports = function(config) {
     frameworks: ['dart-unittest'],
 
     files: [
-      {pattern: 'modules/**/*_spec.js', included: true},
-      {pattern: 'modules/*/src/**/*', included: false},
-      {pattern: 'modules/*/test/**/*', included: false},
+      // Unit test files needs to be included.
+      // Karma-dart generates `__adapter_unittest.dart` that imports these files.
+      {pattern: 'modules/*/test/**/*_spec.js', included: true},
       {pattern: 'tools/transpiler/spec/**/*_spec.js', included: true},
+
+      // These files are not included, they are imported by the unit tests above.
+      {pattern: 'modules/**', included: false},
       {pattern: 'tools/transpiler/spec/**/*', included: false},
-      'test-main.dart'
+
+      // Dependencies, installed with `pub install`.
+      {pattern: 'packages/**/*.dart', included: false, watched: false},
+
+      // Init and configure guiness.
+      {pattern: 'test-main.dart', included: true}
     ],
 
     karmaDartImports: {
       guinness: 'package:guinness/guinness_html.dart'
     },
 
+    // Map packages to the correct urls where Karma serves them.
+    proxies: {
+      // Dependencies installed with `pub install`.
+      '/packages/unittest': '/base/packages/unittest',
+      '/packages/guinness': '/base/packages/guinness',
+      '/packages/matcher': '/base/packages/matcher',
+      '/packages/stack_trace': '/base/packages/stack_trace',
+      '/packages/collection': '/base/packages/collection',
+      '/packages/path': '/base/packages/path',
+
+      // Local dependencies, transpiled from the source.
+      '/packages/core': '/base/modules/core/src',
+      '/packages/change_detection': '/base/modules/change_detection/src',
+      '/packages/di': '/base/modules/di/src',
+      '/packages/facade': '/base/modules/facade/src',
+      '/packages/test_lib': '/base/modules/test_lib/src',
+    },
+
     preprocessors: {
       'modules/**/*.js': ['traceur'],
       'tools/**/*.js': ['traceur']
     },
+
     traceurPreprocessor: {
       options: {
         outputLanguage: 'dart',
