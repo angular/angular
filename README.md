@@ -5,9 +5,9 @@
 ### Prerequisites:
 
 1. `npm install`
-2. `pub get`
-3. `install -g gulp`
-4. `install -g karma`
+2. `npm install -g gulp karma`
+3. `gulp build`
+4. `pub get`
 
 ### Folder structure
 
@@ -25,7 +25,7 @@
 
 1. `gulp build` -> result is in `build` folder
 
-  * will also to `pubg get` for the subfolders in `modules`
+  * will also run `pub get` for the subfolders in `modules`
     and run `dartanalyzer` for every file that matches
     `<module>/src/<module>.dart`, e.g. `di/src/di.dart`
 
