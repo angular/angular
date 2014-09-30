@@ -1,5 +1,5 @@
 import {Compiler as TraceurCompiler} from 'traceur/src/Compiler';
-import {ClassTransformer} from './dart_class_transformer';
+import {DartTransformer} from './codegeneration/DartTransformer';
 import {DartTreeWriter} from './dart_writer';
 import {CollectingErrorReporter} from 'traceur/src/util/CollectingErrorReporter';
 import {Parser} from './parser';
@@ -16,8 +16,11 @@ export class Compiler extends TraceurCompiler {
 
   transform(tree, moduleName = undefined) {
     if (this.options_.outputLanguage.toLowerCase() === 'dart') {
-      var transformer = new ClassTransformer();
-      return transformer.transformAny(tree);
+      var errorReporter = new CollectingErrorReporter();
+      var transformer = new DartTransformer(errorReporter);
+      var transformedTree = transformer.transform(tree);
+      this.throwIfErrors(errorReporter);
+      return transformedTree;
     } else {
       return super(tree, moduleName);
     }
