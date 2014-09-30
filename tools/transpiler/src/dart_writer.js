@@ -1,7 +1,7 @@
 import {CONSTRUCTOR, FROM} from 'traceur/src/syntax/PredefinedName';
-import {EQUAL_EQUAL_EQUAL, OPEN_PAREN, CLOSE_PAREN, IMPORT, SEMI_COLON, STAR, OPEN_CURLY, CLOSE_CURLY, COMMA, AT, EQUAL} from 'traceur/src/syntax/TokenType';
+import {EQUAL_EQUAL_EQUAL, OPEN_PAREN, CLOSE_PAREN, IMPORT, SEMI_COLON, STAR, OPEN_CURLY, CLOSE_CURLY, COMMA, AT, EQUAL, COLON} from 'traceur/src/syntax/TokenType';
 
-import {ParseTreeWriter as JavaScriptParseTreeWriter} from 'traceur/src/outputgeneration/ParseTreeWriter';
+import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 
 export class DartTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -123,6 +123,14 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
   // FUNCTION/METHOD ARGUMENTS
   // - type infront of the arg name
   visitBindingElement(tree) {
+    this._visitBindingElement(tree, EQUAL);
+  }
+
+  visitObjectPatternBindingElement(tree) {
+    this._visitBindingElement(tree, COLON);
+  }
+
+  _visitBindingElement(tree, initSeparator) {
     // TODO(vojta): This is awful, just copy/pasted from Traceur,
     // we should still clean it up.
     var typeAnnotation = this.currentParameterTypeAnnotation_;
@@ -134,7 +142,7 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
 
     if (tree.initializer) {
       this.writeSpace_();
-      this.write_(EQUAL);
+      this.write_(initSeparator);
       this.writeSpace_();
       this.visitAny(tree.initializer);
     }
@@ -264,6 +272,10 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     this.writeSpace_()
+  }
+
+  visitNamedParamsExpression(tree) {
+    this.writeList_(tree.propertyNameAndValues, COMMA, false);
   }
 
   toString() {
