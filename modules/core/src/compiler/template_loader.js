@@ -1,4 +1,4 @@
-import {Future} from 'facade/lang';
+import {Future} from 'facade/async';
 //import {Document} from 'facade/dom';
 
 export class TemplateLoader {

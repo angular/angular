@@ -16,3 +16,35 @@ window.print = function(msg) {
     window.console.log(msg);
   }
 };
+
+window.beforeEach(function() {
+  jasmine.addMatchers({
+    toBeFuture: function() {
+      return {
+        compare: function (actual, expectedClass) {
+          var pass = typeof actual === 'object' && typeof actual.then === 'function';
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be a future';
+            }
+          };
+        }
+      };
+    },
+
+    toBeAnInstanceOf: function() {
+      return {
+        compare: function(actual, expectedClass) {
+          var pass = typeof actual === 'object' && actual instanceof expectedClass;
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
+            }
+          };
+        }
+      };
+    }
+  });
+});

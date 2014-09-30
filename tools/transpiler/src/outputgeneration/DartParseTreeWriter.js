@@ -11,7 +11,8 @@ import {
   OPEN_CURLY,
   OPEN_PAREN,
   SEMI_COLON,
-  STAR
+  STAR,
+  STATIC
 } from 'traceur/src/syntax/TokenType';
 
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';

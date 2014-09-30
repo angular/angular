@@ -1,4 +1,3 @@
-export var Future = Promise;
 export var Type = Function;
 
 export class FIELD {
@@ -11,6 +10,30 @@ export class CONST {}
 export class ABSTRACT {}
 export class IMPLEMENTS {}
 
+
+export function isPresent(obj){
+  return obj != undefined && obj != null;
+}
+
+export function isBlank(obj){
+  return obj == undefined || obj == null;
+}
+
+export function humanize(token) {
+  if (typeof token === 'string') {
+    return token;
+  }
+
+  if (token === undefined || token === null) {
+    return '' + token;
+  }
+
+  if (token.name) {
+    return token.name;
+  }
+
+  return token.toString();
+}
 
 export class StringWrapper {
   static fromCharCode(code:int) {

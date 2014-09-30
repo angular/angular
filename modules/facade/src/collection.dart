@@ -8,14 +8,25 @@ class MapWrapper {
   static get(m, k) => m[k];
   static void set(m, k, v){ m[k] = v; }
   static contains(m, k) => m.containsKey(k);
+  static forEach(m, fn) {
+    m.forEach(fn);
+  }
 }
 
 class ListWrapper {
   static List clone(List l) => new List.from(l);
   static List create() => new List();
+  static List createFixedSize(int size) => new List(size);
   static get(m, k) => m[k];
   static void set(m, k, v) { m[k] = v; }
   static contains(m, k) => m.containsKey(k);
+  static map(list, fn) => list.map(fn).toList();
+  static forEach(list, fn) {
+    list.forEach(fn);
+  }
+  static last(list) {
+    return list.last;
+  }
   static void push(List l, e) { l.add(e); }
 }
 

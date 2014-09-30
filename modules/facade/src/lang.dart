@@ -1,7 +1,6 @@
-library angular.core.facade.async;
+library angular.core.facade.lang;
 
-export 'dart:async' show Future;
-export 'dart:core' show Type, int;
+export 'dart:core' show Type;
 
 class FIELD {
   final String definition;
@@ -19,6 +18,10 @@ class IMPLEMENTS {
   const IMPLEMENTS(this.interfaceClass);
 }
 
+bool isPresent(obj) => obj != null;
+bool isBlank(obj) => obj == null;
+
+String humanize(obj) => obj.toString();
 
 class StringWrapper {
   static String fromCharCode(int code) {

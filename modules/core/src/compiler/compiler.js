@@ -1,4 +1,5 @@
-import {Future, Type} from 'facade/lang';
+import {Type} from 'facade/lang';
+import {Future} from 'facade/async';
 import {Element} from 'facade/dom';
 //import {ProtoView} from './view';
 import {TemplateLoader} from './template_loader';

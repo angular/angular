@@ -73,7 +73,8 @@ export class ClassTransformer extends ParseTreeTransformer {
         // Collect all fields, defined in the constructor.
         elementTree.body.statements.forEach(function(statement) {
           var exp = statement.expression;
-          if (exp.type === BINARY_EXPRESSION &&
+          if (exp &&
+              exp.type === BINARY_EXPRESSION &&
               exp.operator.type === EQUAL &&
               exp.left.type === MEMBER_EXPRESSION &&
               exp.left.operand.type === THIS_EXPRESSION) {
@@ -170,7 +171,8 @@ export class ClassTransformer extends ParseTreeTransformer {
     var superCall = null;
 
     body.statements.forEach(function (statement) {
-      if (statement.expression.type === CALL_EXPRESSION &&
+      if (statement.expression &&
+          statement.expression.type === CALL_EXPRESSION &&
           statement.expression.operand.type === SUPER_EXPRESSION) {
         superCall = statement.expression;
       } else {
