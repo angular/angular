@@ -12,7 +12,7 @@ export class ChangeDetection {
   }
 
   detectChanges():int {
-    var current:Record = _rootWatchGroup._headRecord;
+    var current:Record = _rootWatchGroup.headRecord;
     var count:number = 0;
     while (current != null) {
       if (current.check()) {

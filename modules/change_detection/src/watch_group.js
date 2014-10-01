@@ -2,11 +2,11 @@ import {ProtoRecord, Record} from './record';
 import {FIELD} from 'facade/lang';
 
 export class ProtoWatchGroup {
-  @FIELD('final _headRecord:ProtoRecord')
-  @FIELD('final _tailRecord:ProtoRecord')
+  @FIELD('final headRecord:ProtoRecord')
+  @FIELD('final tailRecord:ProtoRecord')
   constructor() {
-    this._headRecord = null;
-    this._tailRecord = null;
+    this.headRecord = null;
+    this.tailRecord = null;
   }
 
   /**
@@ -29,7 +29,7 @@ export class ProtoWatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
     var head:Record = null;
     var tail:Record = null;
-    var proto:ProtoRecord = this._headRecord;
+    var proto:ProtoRecord = this.headRecord;
 
     while(proto != null) {
       tail = proto.instantiate(watchGroup);
@@ -37,14 +37,14 @@ export class ProtoWatchGroup {
       proto = proto.next;
     }
 
-    proto = this._headRecord;
+    proto = this.headRecord;
     while(proto != null) {
       proto.instantiateComplete();
       proto = proto.next;
     }
 
-    watchGroup._headRecord = head;
-    watchGroup._tailRecord = tail;
+    watchGroup.headRecord = head;
+    watchGroup.tailRecord = tail;
     return watchGroup;
   }
 
@@ -53,13 +53,13 @@ export class ProtoWatchGroup {
 export class WatchGroup {
   @FIELD('final protoWatchGroup:ProtoWatchGroup')
   @FIELD('final dispatcher:WatchGroupDispatcher')
-  @FIELD('final _headRecord:Record')
-  @FIELD('final _tailRecord:Record')
+  @FIELD('final headRecord:Record')
+  @FIELD('final tailRecord:Record')
   constructor(protoWatchGroup:ProtoWatchGroup, dispatcher:WatchGroupDispatcher) {
     this.protoWatchGroup = protoWatchGroup;
     this.dispatcher = dispatcher;
-    this._headRecord = null;
-    this._tailRecord = null;
+    this.headRecord = null;
+    this.tailRecord = null;
   }
 
   insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {

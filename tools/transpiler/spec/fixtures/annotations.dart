@@ -11,6 +11,10 @@ class Provide {
   const Provide(this.token);
 }
 
+class CONST {
+  const CONST();
+}
+
 // TODO: this api does not yet return an array as we don't have
 // a nice array wrapper for Dart
 readFirstAnnotation(clazz) {

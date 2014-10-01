@@ -1,6 +1,6 @@
 import {INSTANCEOF} from 'traceur/src/syntax/TokenType';
 
-import {ParseTreeTransformer} from 'traceur/src/codegeneration/ParseTreeTransformer';
+import {ParseTreeTransformer} from './ParseTreeTransformer';
 
 /**
  * Transforms `a instanceof b` to `a is b`,

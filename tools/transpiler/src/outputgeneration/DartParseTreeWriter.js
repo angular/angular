@@ -1,9 +1,22 @@
 import {CONSTRUCTOR, FROM} from 'traceur/src/syntax/PredefinedName';
-import {EQUAL_EQUAL_EQUAL, OPEN_PAREN, CLOSE_PAREN, IMPORT, SEMI_COLON, STAR, OPEN_CURLY, CLOSE_CURLY, COMMA, AT, EQUAL, COLON} from 'traceur/src/syntax/TokenType';
+import {
+  AT,
+  CLOSE_CURLY,
+  CLOSE_PAREN,
+  COLON,
+  COMMA,
+  EQUAL,
+  EQUAL_EQUAL_EQUAL,
+  IMPORT,
+  OPEN_CURLY,
+  OPEN_PAREN,
+  SEMI_COLON,
+  STAR
+} from 'traceur/src/syntax/TokenType';
 
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 
-export class DartTreeWriter extends JavaScriptParseTreeWriter {
+export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
     super(outputPath);
     this.libName = moduleName.replace(/\//g, '.');
@@ -104,20 +117,42 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     this.visitAny(tree.body);
   }
 
+  /**
+   * @param {PropertyMethodAssignment} tree
+   */
+  visitPropertyConstructorAssignment(tree) {
+    this.writeAnnotations_(tree.annotations);
+
+    if (tree.isConst) {
+      this.write_('const');
+      this.writeSpace_();
+    }
+
+    this.writeType_(tree.typeAnnotation);
+    this.visitAny(tree.name);
+    this.write_(OPEN_PAREN);
+    this.visitAny(tree.parameterList);
+    this.write_(CLOSE_PAREN);
+    if (tree.initializerList.length > 0) {
+      this.write_(COLON);
+      this.writeSpace_();
+      this.writeList_(tree.initializerList, ', ');
+    }
+    if (tree.isConst) {
+      this.write_(SEMI_COLON);
+    } else {
+      this.writeSpace_();
+      this.visitAny(tree.body);
+    }
+  }
+
   normalizeType_(typeName) {
-    if (typeName === 'number') {
-      return 'num';
+    switch (typeName) {
+      case 'number': return 'num';
+      case 'boolean': return 'bool';
+      case 'string': return 'String';
+      default: return typeName;
     }
-
-    if (typeName === 'boolean') {
-      return 'bool';
-    }
-
-    if (typeName === 'string') {
-      return 'String';
-    }
-
-    return typeName;
   }
 
   // FUNCTION/METHOD ARGUMENTS
@@ -148,14 +183,23 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
     }
   }
 
-  visitClassField(tree) {
-    this.writeType_(tree.typeAnnotation);
-
-    if (!tree.typeAnnotation) {
-      this.write_('var ');
+  visitClassFieldDeclaration(tree) {
+    if (tree.isFinal) {
+      // `final <type> name;` or `final name;` for untyped variable
+      this.write_('final');
+      this.writeSpace_();
+      this.writeType_(tree.typeAnnotation);
+    } else {
+      // `<type> name;` or `var name;`
+      if (tree.typeAnnotation) {
+        this.writeType_(tree.typeAnnotation);
+      } else {
+        this.write_('var');
+        this.writeSpace_();
+      }
     }
 
-    this.write_(tree.identifier);
+    this.write_(tree.lvalue.getStringValue());
     this.write_(SEMI_COLON);
   }
 
@@ -179,7 +223,8 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
   // EXPORTS
   visitExportDeclaration(tree) {
     if (tree.declaration.moduleSpecifier) {
-      this.write_('export ');
+      this.write_('export');
+      this.writeSpace_();
       this.visitModuleSpecifier(tree.declaration.moduleSpecifier);
       this.write_(SEMI_COLON);
     } else {
