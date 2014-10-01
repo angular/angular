@@ -34,7 +34,7 @@
 ### Tests:
 
 1. `karma start karma-js.conf.js`: JS tests
-2. `karma start karma-dart.conf.js`: JS tests
+2. `karma start karma-dart.conf.js`: Dart tests
 
 Notes for all tests:
 
@@ -49,3 +49,22 @@ Restriction for Dart tests (for now):
     this will use the files in the `build` folder for resolving
     `package:` dependencies (created e.g. for `import ... from 'di:di'`).
     So you need to execute `gulp build` before this.
+
+## Debug the transpiler
+
+If you need to debug the transpiler:
+
+- add a `debugger;` statement in the transpiler code,
+- from the root folder, execute `node debug node_modules/.bin/gulp build` to enter the node
+  debugger
+- press "c" to execute the program until you reach the `debugger;` statement,
+- you can then type "repl" to enter the REPL and inspect variables in the context.
+
+See the [Node.js manual](http://nodejs.org/api/debugger.html) for more information.
+
+Notes:
+- You can also execute `node node_modules/.bin/karma start karma-dart.conf.js` depending on which
+  code you want to debug (the former will process the "modules" folder while the later processes
+  the transpiler specs),
+- You can also add `debugger;` statements in the specs (JavaScript). The execution will halt when
+  the developer tools are opened in the browser running Karma.
