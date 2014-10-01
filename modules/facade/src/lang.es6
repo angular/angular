@@ -13,11 +13,11 @@ export class IMPLEMENTS {}
 
 
 export class StringWrapper {
-  static fromCharCode(code:number/*int*/) {
+  static fromCharCode(code:int) {
     return String.fromCharCode(code);
   }
 
-  static charCodeAt(s:string, index:number/*int*/) {
+  static charCodeAt(s:string, index:int) {
     return s.charCodeAt(index);
   }
 }
@@ -37,16 +37,16 @@ export class StringJoiner {
 }
 
 export class NumberWrapper {
-  static parseIntAutoRadix(text:string):number/*int*/ {
-    var result:number/*int*/ = parseInt(text);
+  static parseIntAutoRadix(text:string):int {
+    var result:int = parseInt(text);
     if (isNaN(result)) {
       throw new Error("Invalid integer literal when parsing " + text);
     }
     return result;
   }
 
-  static parseInt(text:string, radix:number/*int*/):number/*int*/ {
-    var result:number/*int*/ = parseInt(text, radix);
+  static parseInt(text:string, radix:int):int {
+    var result:int = parseInt(text, radix);
     if (isNaN(result)) {
       throw new Error("Invalid integer literal when parsing " + text + " in base " + radix);
     }
@@ -54,7 +54,12 @@ export class NumberWrapper {
   }
 
   // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
-  static parseFloat(text:string):number/*int*/ {
+  static parseFloat(text:string):number {
     return parseFloat(text);
   }
+}
+
+export function int() {};
+int.assert = function(value) {
+  return value == null || typeof value == 'number' && value === Math.floor(value);
 }

@@ -1,7 +1,7 @@
 library angular.core.facade.async;
 
 export 'dart:async' show Future;
-export 'dart:core' show Type;
+export 'dart:core' show Type, int;
 
 class FIELD {
   const constructor(this.definition);
