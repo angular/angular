@@ -1,14 +1,15 @@
 import {
+  createArgumentList,
   createCallExpression,
-  createIdentifierExpression,
-  createArgumentList} from 'traceur/src/codegeneration/ParseTreeFactory';
+  createIdentifierExpression
+} from 'traceur/src/codegeneration/ParseTreeFactory';
 
 import {
   EQUAL_EQUAL_EQUAL,
   NOT_EQUAL_EQUAL
 } from 'traceur/src/syntax/TokenType';
 
-import {ParseTreeTransformer} from 'traceur/src/codegeneration/ParseTreeTransformer';
+import {ParseTreeTransformer} from './ParseTreeTransformer';
 
 /**
  * Transforms:

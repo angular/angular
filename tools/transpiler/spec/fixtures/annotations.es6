@@ -10,6 +10,8 @@ export class Provide {
   }
 }
 
+export class CONST {
+}
 
 // TODO: this api does not yet return an array as we don't have
 // a nice array wrapper for Dart

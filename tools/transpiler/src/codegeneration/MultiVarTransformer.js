@@ -1,6 +1,6 @@
 import {VariableStatement, VariableDeclarationList} from 'traceur/src/syntax/trees/ParseTrees';
 
-import {ParseTreeTransformer} from 'traceur/src/codegeneration/ParseTreeTransformer';
+import {ParseTreeTransformer} from './ParseTreeTransformer';
 
 /**
  * Transforms `var a, b;` to `var a; var b;`
