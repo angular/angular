@@ -2,6 +2,7 @@ import {MultiTransformer} from 'traceur/src/codegeneration/MultiTransformer';
 import {UniqueIdentifierGenerator} from 'traceur/src/codegeneration/UniqueIdentifierGenerator';
 import {options} from 'traceur/src/Options';
 
+import {ArrowFunctionTransformer} from './ArrowFunctionTransformer';
 import {ClassTransformer} from './ClassTransformer';
 import {InstanceOfTransformer} from './InstanceOfTransformer';
 import {MultiVarTransformer} from './MultiVarTransformer';
@@ -20,6 +21,7 @@ export class DartTransformer extends MultiTransformer {
       });
     };
 
+    append(ArrowFunctionTransformer);
     append(MultiVarTransformer);
     append(InstanceOfTransformer);
     append(StrictEqualityTransformer);
