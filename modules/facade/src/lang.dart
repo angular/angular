@@ -4,12 +4,20 @@ export 'dart:async' show Future;
 export 'dart:core' show Type, int;
 
 class FIELD {
-  const constructor(this.definition);
+  final String definition;
+  const FIELD(this.definition);
 }
 
-class CONST {}
-class ABSTRACT {}
-class IMPLEMENTS {}
+class CONST {
+  const CONST();
+}
+class ABSTRACT {
+  const ABSTRACT();
+}
+class IMPLEMENTS {
+  final interfaceClass;
+  const IMPLEMENTS(this.interfaceClass);
+}
 
 
 class StringWrapper {

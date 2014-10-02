@@ -1,3 +1,5 @@
+library core.annotations.facade;
+
 import 'package:di/di.dart' show Module;
 import '../compiler/element_module.dart' show ElementModule;
 

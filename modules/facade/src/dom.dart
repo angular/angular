@@ -6,7 +6,7 @@ export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text;
 
 class DOM {
   static query(selector) {
-    return document.query(selector);
+    return document.querySelector(selector);
   }
   static on(element, event, callback) {
     element.addEventListener(event, callback);

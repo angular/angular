@@ -10,7 +10,10 @@ var ejs = require('gulp-ejs');
 var path = require('path');
 var through2 = require('through2');
 var file2moduleName = require('./file2modulename');
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
+var fs = require('fs');
+var path = require('path');
+var readline = require('readline');
 var Q = require('q');
 
 var js2es5Options = {
@@ -31,14 +34,6 @@ var js2dartOptions = {
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
-function execWithLog(command, options, done) {
-  exec(command, options, function (err, stdout, stderr) {
-    stdout && console.log(stdout);
-    stderr && console.log(stderr);
-    done(err);
-  });
-}
-
 // ---------
 // traceur runtime
 
@@ -55,20 +50,10 @@ var sourceTypeConfigs = {
     compilerOptions: js2dartOptions,
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
-    copySrc: ['modules/**/*.dart', 'modules/**/*.yaml'],
+    copySrc: ['modules/**/*.dart'],
     outputDir: 'build/dart',
     outputExt: 'dart',
-    mimeType: 'application/dart',
-    postProcess: function(file, done) {
-      if (file.path.match(/pubspec\.yaml/)) {
-        console.log('pub get ' + file.path);
-        execWithLog('pub get', {
-          cwd: path.dirname(file.path)
-        }, done);
-      } else {
-        done();
-      }
-    }
+    mimeType: 'application/dart'
   },
   js: {
     compilerOptions: js2es5Options,
@@ -76,8 +61,7 @@ var sourceTypeConfigs = {
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.es5'],
     outputDir: 'build/js',
-    outputExt: 'js',
-    postProcess: null
+    outputExt: 'js'
   }
 };
 
@@ -91,24 +75,35 @@ gulp.task('modules/build.dart/src', function() {
   return createModuleTask(sourceTypeConfigs.dart);
 });
 
-gulp.task('modules/build.dart/analyzer', function() {
-  var baseDir = sourceTypeConfigs.dart.outputDir;
-  var files = [].slice.call(glob.sync('*/lib/*.dart', {
-    cwd: baseDir
-  }));
-  files = files.filter(function(fileName) {
-    return fileName.match(/(\w+)\/lib\/\1/);
-  });
-  return Q.all(files.map(function(fileName) {
-    var deferred = Q.defer();
-    execWithLog('dartanalyzer '+baseDir+'/'+fileName, {}, deferred.makeNodeResolver());
-    return deferred.promise;
-  }));
+gulp.task('modules/build.dart/pubspec', function(done) {
+  var outputDir = sourceTypeConfigs.dart.outputDir;
+  return gulp.src('modules/*/pubspec.yaml')
+    .pipe(through2.obj(function(file, enc, done) {
+      var targetFile = path.join(outputDir, file.relative);
+      if (fs.existsSync(targetFile)) {
+        file.previousContents = fs.readFileSync(targetFile);
+      } else {
+        file.previousContents = '';
+      }
+      this.push(file);
+      done();
+    }))
+    .pipe(gulp.dest(outputDir))
+    .pipe(through2.obj(function(file, enc, done) {
+      if (file.previousContents.toString() !== file.contents.toString()) {
+        console.log(file.path + ' changed, calling pub get');
+        var stream = spawn('pub', ['get'], {
+          stdio: [process.stdin, process.stdout, process.stderr],
+          cwd: path.dirname(file.path)
+        });
+        stream.on('close', done);
+      } else {
+        done();
+      }
+    }));
 });
 
-gulp.task('modules/build.dart', function(done) {
-  runSequence('modules/build.dart/src', 'modules/build.dart/analyzer', done);
-});
+gulp.task('modules/build.dart', ['modules/build.dart/src', 'modules/build.dart/pubspec']);
 
 gulp.task('modules/build.js', function() {
   return createModuleTask(sourceTypeConfigs.js);
@@ -136,14 +131,76 @@ function createModuleTask(sourceTypeConfig) {
     }))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
 
-  var s = mergeStreams(transpile, copy, html);
-  if (!sourceTypeConfig.postProcess) {
-    return s;
-  }
-  return s.pipe(through2.obj(function(file, enc, done) {
-    sourceTypeConfig.postProcess(file, done);
-  }));
+  return mergeStreams(transpile, copy, html);
 }
+
+// ------------------
+// ANALYZE
+
+gulp.task('analyze/dartanalyzer', function(done) {
+  var pubSpecs = [].slice.call(glob.sync('build/dart/*/pubspec.yaml', {
+    cwd: __dirname
+  }));
+  var tempFile = '_analyzer.dart';
+  // analyze in parallel!
+  return Q.all(pubSpecs.map(function(pubSpecFile) {
+    var dir = path.dirname(pubSpecFile);
+    var srcFiles = [].slice.call(glob.sync('lib/**/*.dart', {
+      cwd: dir
+    }));
+    var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
+      cwd: dir
+    }));
+    var analyzeFile = ['library _analyzer;'];
+    srcFiles.concat(testFiles).forEach(function(fileName, index) {
+      if (fileName !== tempFile) {
+        analyzeFile.push('import "./'+fileName+'" as mod'+index+';');
+      }
+    });
+    fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
+    var defer = Q.defer();
+    analyze(dir, defer.makeNodeResolver());
+    return defer.promise;
+  }));
+
+  function analyze(dirName, done) {
+    var stream = spawn('dartanalyzer', ['--fatal-warnings', tempFile], {
+      // inherit stdin and stderr, but filter stdout
+      stdio: [process.stdin, 'pipe', process.stderr],
+      cwd: dirName
+    });
+    // Filter out unused imports from our generated file.
+    // We don't reexports from the generated file
+    // as this could lead to name clashes when two files
+    // export the same thing.
+    var rl = require('readline').createInterface({
+      input: stream.stdout,
+      output: process.stdout,
+      terminal: false
+    });
+    var hintCount = 0;
+    rl.on('line', function(line) {
+      if (line.match(/Unused import .*_analyzer\.dart/)) {
+        return;
+      }
+      if (line.match(/\[hint\]/)) {
+        hintCount++;
+      }
+      console.log(dirName + ':' + line);
+    });
+    stream.on('close', function(code) {
+      var error;
+      if (code !== 0) {
+        error = new Error('Dartanalyzer failed with exit code ' + code);
+      }
+      if (hintCount > 0) {
+        error = new Error('Dartanalyzer showed hints');
+      }
+      done(error);
+    });
+  }
+});
+
 
 // ------------------
 // WEB SERVER
@@ -167,4 +224,15 @@ gulp.task('serve', connect.server({
 
 gulp.task('clean', ['modules/clean']);
 
-gulp.task('build', ['jsRuntime/build', 'modules/build.dart', 'modules/build.js']);
+gulp.task('build', function(done) {
+  runSequence(
+    // parallel
+    ['jsRuntime/build', 'modules/build.dart', 'modules/build.js'],
+    // sequential
+    'analyze/dartanalyzer'
+  );
+});
+
+gulp.task('analyze', function(done) {
+  runSequence('analyze/dartanalyzer');
+});

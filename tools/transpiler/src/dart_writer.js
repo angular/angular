@@ -255,13 +255,16 @@ export class DartTreeWriter extends JavaScriptParseTreeWriter {
   // ANNOTATIONS
   // TODO(vojta): this is just fixing a bug in Traceur, send a PR.
   visitAnnotation(tree) {
-    if (tree.name.identifierToken) {
-      var nameValue = tree.name.identifierToken.value;
-      if (nameValue === nameValue.toUpperCase()) {
-        // control annotations for transpiler
-        return;
-      }
-    }
+    // TODO(tbosch): Disabled the removal of control annotations (annotations in uppercase),
+    // as they should be handeled by a transformer and right now lead
+    // to errors (unused import) in dartanalyzer.
+    // if (tree.name.identifierToken) {
+    //   var nameValue = tree.name.identifierToken.value;
+    //   if (nameValue === nameValue.toUpperCase()) {
+    //     // control annotations for transpiler
+    //     return;
+    //   }
+    // }
     this.write_(AT);
     this.visitAny(tree.name);
 

@@ -4,7 +4,10 @@ export class LifeCycle {
 
   @FIELD('final _changeDetection:ChangeDetection')
   @FIELD('final _onChangeDispatcher:OnChangeDispatcher')
-  constructor() {}
+  constructor() {
+    this._changeDetection = null;
+    this._onChangeDispatcher = null;
+  }
 
   digest() {
     _changeDetection.detectChanges();

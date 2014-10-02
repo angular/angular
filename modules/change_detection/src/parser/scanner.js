@@ -368,7 +368,7 @@ export class Scanner {
   }
 
   error(message:string) {
-    var position:int = this.index + this.offset;
+    var position:int = this.index;
     throw `Lexer Error: ${message} at column ${position} in expression [${input}]`;
   }
 }

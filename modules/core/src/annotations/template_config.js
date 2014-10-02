@@ -1,4 +1,4 @@
-import {Type, List} from 'facade/lang';
+// import {Type, List} from 'facade/lang';
 
 export class TemplateConfig {
   constructor({
@@ -6,11 +6,11 @@ export class TemplateConfig {
       directives,
       formatters,
       source
-    }: {
+    }/*: {
       url: String,
       directives: List<Type>,
       formatters: List<Type>,
       source: List<TemplateConfig>
-    })
+    }*/)
   {}
 }

@@ -1,13 +1,11 @@
-import {describe, it, expect} from 'test_lib/test_lib';
-import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/change_detection';
-import {DOM} from 'facade/dom';
+import {describe, it, xit, expect} from 'test_lib/test_lib';
+import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher, ChangeDetection} from 'change_detection/change_detection';
 
 
 export function main() {
   describe('change_detection', function() {
     describe('ChangeDetection', function() {
-      it('should do simple watching', function() {
-        return; // remove me once xit or CD works.
+      xit('should do simple watching', function() {
         var person = new Person('misko', 38);
         var pwg = new ProtoWatchGroup();
         pwg.watch('name', 'nameToken');
@@ -32,11 +30,16 @@ export function main() {
 
 class Person {
   constructor(name:string, age:number) {
-    this.name = null;
-    this.a
+    this.name = name;
+    this.age = age;
   }
 }
 
-class Dispatcher extends WatchGroupDispatcher {
+class LoggingDispatcher extends WatchGroupDispatcher {
+  constructor() {
+    this.log = null;
+  }
+  clear() {
 
+  }
 }

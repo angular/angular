@@ -25,12 +25,14 @@ export class ProtoRecord {
     this.prev = null;
     this.changeNotifier = null;
     this._clone = null;
-  }
+    this.changeContext = null;
+    this.dispatcherContext = null;
+ }
 
   instantiate(watchGroup/*:wg.WatchGroup*/):Record {
     var record = this._clone = new Record(watchGroup, this);
     record.prev = this.prev._clone;
-    record._checkPrev = this._prev._clone;
+    record._checkPrev = this.prev._clone;
     return _clone;
   }
 

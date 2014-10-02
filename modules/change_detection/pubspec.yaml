@@ -2,8 +2,9 @@ name: change_detection
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  facade:
+    path: ../facade
 dev_dependencies:
   test_lib:
     path: ../test_lib
-  facade:
-    path: ../facade
+  guinness: ">=0.1.5 <0.2.0"
