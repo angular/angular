@@ -13,38 +13,46 @@ export class ProtoWatchGroup {
    * Parses [expression] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
    *
    * @param expression The expression to watch
-   * @param memento an opeque object which will be bassed to WatchGroupDispatcher on
+   * @param memento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
    * @param shallow Should collections be shallow watched
    */
-  watch(
-    expression:String,
-    memento,
-    {shallow/*=false*/}:{shallow:bool})
+  watch(expression:string,
+        memento,
+        shallow /*= false*/) // TODO(vicb): comment out when opt-params are supported
   {
-    /// IMPLEMENT
+    var protoRecord = new ProtoRecord(this, expression, memento);
+
+    if (this.headRecord === null) {
+      this.headRecord = this.tailRecord = protoRecord;
+    } else {
+      this.tailRecord.next = protoRecord;
+      protoRecord.prev = this.tailRecord;
+      this.tailRecord = protoRecord;
+    }
   }
 
   instantiate(dispatcher:WatchGroupDispatcher):WatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
-    var head:Record = null;
     var tail:Record = null;
-    var proto:ProtoRecord = this.headRecord;
+    var proto:ProtoRecord;
+    var prevRecord:Record = null;
 
-    while(proto != null) {
-      tail = proto.instantiate(watchGroup);
-      if (head == null) head = tail;
-      proto = proto.next;
+    if (this.headRecord !== null) {
+      watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord);
+
+      for (proto = this.headRecord.next; proto != null; proto = proto.next) {
+        prevRecord = tail;
+        tail = new Record(watchGroup, proto);
+        tail.prev = prevRecord;
+        prevRecord.next = tail;
+        tail.checkPrev = prevRecord;
+        prevRecord.checkNext = tail;
+      }
+
+      watchGroup.tailRecord = tail;
     }
 
-    proto = this.headRecord;
-    while(proto != null) {
-      proto.instantiateComplete();
-      proto = proto.next;
-    }
-
-    watchGroup.headRecord = head;
-    watchGroup.tailRecord = tail;
     return watchGroup;
   }
 
@@ -60,14 +68,15 @@ export class WatchGroup {
     this.dispatcher = dispatcher;
     this.headRecord = null;
     this.tailRecord = null;
+    this.context = null;
   }
 
   insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {
-    /// IMPLEMENT
+    throw 'not implemented';
   }
 
   remove() {
-    /// IMPLEMENT
+    throw 'not implemented';
   }
 
   /**
@@ -75,12 +84,18 @@ export class WatchGroup {
    * dereference themselves on. Since the WatchGroup can be reused the context
    * can be re-set many times during the lifetime of the WatchGroup.
    *
-   * @param context the new context for change dection for the curren WatchGroup
+   * @param context the new context for change detection for the current WatchGroup
    */
   setContext(context) {
+    for (var record:Record = this.headRecord;
+         record != null;
+         record = record.next) {
+      record.setContext(context);
+    }
   }
 }
 
 export class WatchGroupDispatcher {
+  // The record holds the previous value at the time of the call
   onRecordChange(record:Record, context) {}
 }

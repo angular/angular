@@ -1,48 +1,28 @@
-//import * as wg from './watch_group';
+import {ProtoWatchGroup, WatchGroup} from './watch_group';
 import {FIELD} from 'facade/lang';
+import {FieldGetterFactory} from './facade';
 
 /**
- * For now we are dropping expression coelescence. We can always add it later, but
- * real world numbers should that it does not provide significant benefits.
+ * For now we are dropping expression coalescence. We can always add it later, but
+ * real world numbers show that it does not provide significant benefits.
  */
 export class ProtoRecord {
-
   @FIELD('final watchGroup:wg.ProtoWatchGroup')
   @FIELD('final fieldName:String')
   /// order list of all records. Including head/tail markers
   @FIELD('next:ProtoRecord')
   @FIELD('prev:ProtoRecord')
-  // Opeque data which will be the target of notification.
-  // If the object is instance of Record, than it it is directly procssed
+  // Opaque data which will be the target of notification.
+  // If the object is instance of Record, than it it is directly processed
   // Otherwise it is the context used by  WatchGroupDispatcher.
   @FIELD('memento')
-  @FIELD('_clone')
-  constructor(watchGroup/*:wg.ProtoWatchGroup*/, fieldName:String, memento) {
+  constructor(watchGroup:ProtoWatchGroup, fieldName:string, dispatchMemento) {
     this.watchGroup = watchGroup;
     this.fieldName = fieldName;
-    this.memento = memento;
+    this.dispatchMemento = dispatchMemento;
     this.next = null;
     this.prev = null;
-    this.changeNotifier = null;
-    this._clone = null;
-    this.changeContext = null;
-    this.dispatcherContext = null;
  }
-
-  instantiate(watchGroup/*:wg.WatchGroup*/):Record {
-    var record = this._clone = new Record(watchGroup, this);
-    record.prev = this.prev._clone;
-    record._checkPrev = this.prev._clone;
-    return _clone;
-  }
-
-  instantiateComplete():Record {
-    var record = this._clone;
-    record.next = this.next._clone;
-    record._checkNext = this.next._clone;
-    this._clone = null;
-    return this.next;
-  }
 }
 
 
@@ -59,11 +39,8 @@ export class ProtoRecord {
  *  - Atomic watch operations
  *  - Defaults to dirty checking
  *  - Keep this object as lean as possible. (Lean in number of fields)
- *
- * MEMORY COST: 13 Words;
  */
 export class Record {
-
   @FIELD('final watchGroup:WatchGroup')
   @FIELD('final protoRecord:ProtoRecord')
   /// order list of all records. Including head/tail markers
@@ -79,64 +56,93 @@ export class Record {
   @FIELD('_context')
   @FIELD('_getter')
   @FIELD('_arguments')
-  @FIELD('currentValue')
   @FIELD('previousValue')
   constructor(watchGroup/*:wg.WatchGroup*/, protoRecord:ProtoRecord) {
     this.protoRecord = protoRecord;
     this.watchGroup = watchGroup;
     this.next = null;
     this.prev = null;
-    this._checkNext = null;
-    this._checkPrev = null;
-    this._notifierNext = null;
+    this.checkNext = null;
+    this.checkPrev = null;
+    this.notifierNext = null;
 
-    this._mode = MODE_STATE_MARKER;
-    this._context = null;
-    this._getter = null;
-    this._arguments = null;
-    this.currentValue = null;
+    this.mode = MODE_STATE_MARKER;
+    this.context = null;
+    this.getter = null;
+    this.arguments = null;
     this.previousValue = null;
+    this.currentValue = null;
   }
 
-  check():bool {
-    var mode = this._mode;
+  check():boolean {
+    var mode = this.mode;
     var state = mode & MODE_MASK_STATE;
     var notify = mode & MODE_MASK_NOTIFY;
-    var currentValue;
+    var newValue;
     switch (state) {
       case MODE_STATE_MARKER:
         return false;
       case MODE_STATE_PROPERTY:
-        currentValue = this._getter(this._context);
+        newValue = this.getter(this.context);
         break;
       case MODE_STATE_INVOKE_CLOSURE:
-        currentValue = this._context(this._arguments);
+        newValue = this.context(this.arguments);
         break;
       case MODE_STATE_INVOKE_METHOD:
-        currentValue = this._getter(this._context, this._arguments);
+        newValue = this.getter(this.context, this.arguments);
         break;
       case MODE_STATE_MAP:
+        throw 'not implemented';
       case MODE_STATE_LIST:
+        throw 'not implemented';
+      default:
+        throw 'not implemented';
     }
-    var previousValue = this.previousValue;
-    if (isSame(previousValue, currentValue)) return false;
-    if (previousValue instanceof String && currentValue instanceof String
-        && previousValue == currentValue) {
-      this.previousValue = currentValue;
-      return false
-    }
-    this.previousValue = currentValue;
-    if (this.protoRecord.changeContext instanceof ProtoRecord) {
-      // forward propaget to the next record
+
+
+    var previousValue = this.currentValue;
+    if (previousValue === this) {
+      // When the record is checked for the first time we should always notify
+      this.currentValue = newValue;
+      this.previousValue = previousValue = null;
     } else {
-      // notify throught dispatcher
-      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatcherContext);
+      this.currentValue = newValue;
+      this.previousValue = previousValue;
+
+      if (isSame(previousValue, newValue)) return false;
+
+      // In Dart, we can have `str1 !== str2` but `str1 == str2`
+      if (previousValue instanceof String &&
+          newValue instanceof String &&
+          previousValue == newValue) {
+        return false
+      }
     }
+
+
+    // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
+    if (this.protoRecord.dispatchMemento === null) {
+      // forward propagate to the next record
+    } else {
+      // notify through dispatcher
+      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatchMemento);
+    }
+
     return true;
   }
+
+  setContext(context) {
+    // use `this` as a marker for a fresh record
+    this.currentValue = this;
+    this.mode = MODE_STATE_PROPERTY;
+    this.context = context;
+    var factory = new FieldGetterFactory();
+    this.getter = factory.getter(context, this.protoRecord.fieldName);
+  }
+
 }
 
-// The mode is devided into two partes. Which notification mechanism
+// The mode is divided into two parts. Which notification mechanism
 // to use and which dereference mode to execute.
 
 // We use dirty checking aka no notification
@@ -160,11 +166,7 @@ const MODE_STATE_MAP = 0x0004;
 const MODE_STATE_LIST = 0x0005;
 
 function isSame(a, b) {
-  if (a === b) {
-    return true;
-  } else if ((a !== a) && (b !== b)) {
-    return true;
-  } else {
-    return false;
-  }
+  if (a === b) return true;
+  if ((a !== a) && (b !== b)) return true;
+  return false;
 }
