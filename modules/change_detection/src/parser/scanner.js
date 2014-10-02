@@ -109,59 +109,58 @@ function newNumberToken(index:int, n:number):Token {
 
 var EOF:Token = new Token(-1, 0, 0, "");
 
-// TODO(chirayu): Rewrite as consts when possible.
-var $EOF       = 0;
-var $TAB       = 9;
-var $LF        = 10;
-var $VTAB      = 11;
-var $FF        = 12;
-var $CR        = 13;
-var $SPACE     = 32;
-var $BANG      = 33;
-var $DQ        = 34;
-var $$         = 36;
-var $PERCENT   = 37;
-var $AMPERSAND = 38;
-var $SQ        = 39;
-var $LPAREN    = 40;
-var $RPAREN    = 41;
-var $STAR      = 42;
-var $PLUS      = 43;
-var $COMMA     = 44;
-var $MINUS     = 45;
-var $PERIOD    = 46;
-var $SLASH     = 47;
-var $COLON     = 58;
-var $SEMICOLON = 59;
-var $LT        = 60;
-var $EQ        = 61;
-var $GT        = 62;
-var $QUESTION  = 63;
+const $EOF       = 0;
+const $TAB       = 9;
+const $LF        = 10;
+const $VTAB      = 11;
+const $FF        = 12;
+const $CR        = 13;
+const $SPACE     = 32;
+const $BANG      = 33;
+const $DQ        = 34;
+const $$         = 36;
+const $PERCENT   = 37;
+const $AMPERSAND = 38;
+const $SQ        = 39;
+const $LPAREN    = 40;
+const $RPAREN    = 41;
+const $STAR      = 42;
+const $PLUS      = 43;
+const $COMMA     = 44;
+const $MINUS     = 45;
+const $PERIOD    = 46;
+const $SLASH     = 47;
+const $COLON     = 58;
+const $SEMICOLON = 59;
+const $LT        = 60;
+const $EQ        = 61;
+const $GT        = 62;
+const $QUESTION  = 63;
 
-var $0 = 48;
-var $9 = 57;
+const $0 = 48;
+const $9 = 57;
 
-var $A = 65, $B = 66, $C = 67, $D = 68, $E = 69, $F = 70, $G = 71, $H = 72,
-    $I = 73, $J = 74, $K = 75, $L = 76, $M = 77, $N = 78, $O = 79, $P = 80,
-    $Q = 81, $R = 82, $S = 83, $T = 84, $U = 85, $V = 86, $W = 87, $X = 88,
-    $Y = 89, $Z = 90;
+const $A = 65, $B = 66, $C = 67, $D = 68, $E = 69, $F = 70, $G = 71, $H = 72,
+      $I = 73, $J = 74, $K = 75, $L = 76, $M = 77, $N = 78, $O = 79, $P = 80,
+      $Q = 81, $R = 82, $S = 83, $T = 84, $U = 85, $V = 86, $W = 87, $X = 88,
+      $Y = 89, $Z = 90;
 
-var $LBRACKET  = 91;
-var $BACKSLASH = 92;
-var $RBRACKET  = 93;
-var $CARET     = 94;
-var $_         = 95;
+const $LBRACKET  = 91;
+const $BACKSLASH = 92;
+const $RBRACKET  = 93;
+const $CARET     = 94;
+const $_         = 95;
 
-var $a =  97, $b =  98, $c =  99, $d = 100, $e = 101, $f = 102, $g = 103,
-    $h = 104, $i = 105, $j = 106, $k = 107, $l = 108, $m = 109, $n = 110,
-    $o = 111, $p = 112, $q = 113, $r = 114, $s = 115, $t = 116, $u = 117,
-    $v = 118, $w = 119, $x = 120, $y = 121, $z = 122;
+const $a =  97, $b =  98, $c =  99, $d = 100, $e = 101, $f = 102, $g = 103,
+      $h = 104, $i = 105, $j = 106, $k = 107, $l = 108, $m = 109, $n = 110,
+      $o = 111, $p = 112, $q = 113, $r = 114, $s = 115, $t = 116, $u = 117,
+      $v = 118, $w = 119, $x = 120, $y = 121, $z = 122;
 
-var $LBRACE = 123;
-var $BAR    = 124;
-var $RBRACE = 125;
-var $TILDE  = 126;
-var $NBSP   = 160;
+const $LBRACE = 123;
+const $BAR    = 124;
+const $RBRACE = 125;
+const $TILDE  = 126;
+const $NBSP   = 160;
 
 
 
@@ -251,7 +250,7 @@ export class Scanner {
         return this.scanToken();
     }
 
-    this.error('Unexpected character [$' + StringWrapper.fromCharCode(peek) + ']');
+    this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`);
     return null;
   }
 

@@ -34,13 +34,13 @@ function expectOperatorToken(token, index, operator) {
 function expectNumberToken(token, index, n) {
   expectToken(token, index);
   expect(token.isNumber()).toBe(true);
-  expect(token.toNumber()).toBe(n);
+  expect(token.toNumber()).toEqual(n);
 }
 
 function expectStringToken(token, index, str) {
   expectToken(token, index);
   expect(token.isString()).toBe(true);
-  expect(token.toString()).toBe(str);
+  expect(token.toString()).toEqual(str);
 }
 
 function expectIdentifierToken(token, index, identifier) {
