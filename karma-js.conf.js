@@ -46,7 +46,7 @@ module.exports = function(config) {
         base: 'Dartium',
         flags: ['--enable-experimental-web-platform-features'] }
     },
-    browsers: ['DartiumWithWebPlatform'],
+    browsers: ['ChromeCanary'],
   });
 
   config.plugins.push(require('./tools/transpiler/karma-traceur-preprocessor'));
