@@ -3,6 +3,7 @@ import {
   AT,
   CLOSE_CURLY,
   CLOSE_PAREN,
+  CLOSE_SQUARE,
   COLON,
   COMMA,
   EQUAL,
@@ -10,6 +11,8 @@ import {
   IMPORT,
   OPEN_CURLY,
   OPEN_PAREN,
+  OBJECT_PATTERN,
+  OPEN_SQUARE,
   SEMI_COLON,
   STAR,
   STATIC
@@ -116,6 +119,34 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.write_(CLOSE_PAREN);
     this.writeSpace_();
     this.visitAny(tree.body);
+  }
+
+  visitFormalParameterList(tree) {
+    var hasPosOptionalParams = false;
+    var first = true;
+    for (var i = 0; i < tree.parameters.length; i++) {
+      var parameter = tree.parameters[i];
+      if (first) {
+        first = false;
+      } else {
+        this.write_(COMMA);
+        this.writeSpace_();
+      }
+
+      if (!hasPosOptionalParams && this._isOptionalPositionParam(parameter.parameter)) {
+        hasPosOptionalParams = true;
+        this.write_(OPEN_SQUARE);
+      }
+      this.visitAny(parameter);
+    }
+
+    if (hasPosOptionalParams) {
+      this.write_(CLOSE_SQUARE);
+    }
+  }
+
+  _isOptionalPositionParam(parameter) {
+    return parameter.initializer && parameter.binding.type !== OBJECT_PATTERN;
   }
 
   /**

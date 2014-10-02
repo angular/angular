@@ -36,5 +36,22 @@ export function main() {
         expect(f()).toBe(3);
       });
     });
+    
+    describe("optional params", function () {
+      it("should work", function () {
+        function optional(a=1,b=2){return a + b;}
+
+        expect(optional()).toEqual(3);
+        expect(optional(10)).toEqual(12);
+        expect(optional(10, 20)).toEqual(30);
+      });
+
+      it("should support a mix of optional and mandatory params", function () {
+        function optional(a,b=2){return a + b;}
+
+        expect(optional(1)).toEqual(3);
+        expect(optional(10)).toEqual(12);
+      });
+    });
   });
 }
