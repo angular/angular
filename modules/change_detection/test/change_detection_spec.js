@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'test_lib/test_lib';
-import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
+import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/change_detection';
 import {DOM} from 'facade/dom';
 
 
@@ -7,7 +7,7 @@ export function main() {
   describe('change_detection', function() {
     describe('ChangeDetection', function() {
       it('should do simple watching', function() {
-        return; // remove me after getting the test to pass.
+        return; // remove me once xit or CD works.
         var person = new Person('misko', 38);
         var pwg = new ProtoWatchGroup();
         pwg.watch('name', 'nameToken');

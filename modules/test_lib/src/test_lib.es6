@@ -1,6 +1,8 @@
 export var describe = window.describe;
+export var xdescribe = window.xdescribe;
 export var ddescribe = window.ddescribe;
 export var it = window.it;
+export var xit = window.xit;
 export var iit = window.iit;
 export var beforeEach = window.beforeEach;
 export var afterEach = window.afterEach;

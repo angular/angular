@@ -1,6 +1,8 @@
-import {WatchGroup} from './watch_group';
-import {Record} from './record';
+import {ProtoWatchGrou, WatchGroup} from './watch_group';
+import {ProtoRecord, Record} from './record';
 import {FIELD} from 'facade/lang';
+export * from './record';
+export * from './watch_group'
 
 export class ChangeDetection {
 
