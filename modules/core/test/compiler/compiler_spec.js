@@ -3,8 +3,5 @@ import {describe, it} from 'test_lib/test_lib';
 
 export function main() {
   describe('compiler', function() {
-    it('should hello', function() {
-      print('I am working');
-    });
   });
 }
