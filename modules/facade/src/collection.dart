@@ -1,8 +1,7 @@
 library facade.collection;
 
 import 'dart:collection' show HashMap;
-export 'dart:collection' show Map;
-export 'dart:core' show List;
+export 'dart:core' show Map, List, Set;
 
 class MapWrapper {
   static HashMap create() => new HashMap();

@@ -1,5 +1,7 @@
 export var List = window.Array;
 export var Map = window.Map;
+export var Set = window.Set;
+
 export class MapWrapper {
   static create():HashMap { return new HashMap(); }
   static get(m, k) { return m[k]; }
