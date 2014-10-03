@@ -17,7 +17,7 @@ export class MapWrapper {
 
 export class ListWrapper {
   static create():List { return new List(); }
-  static createFixedSize(size):List { return new List(); }
+  static createFixedSize(size):List { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
   static clone(array) {
