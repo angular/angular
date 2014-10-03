@@ -24,8 +24,14 @@ class ListWrapper {
   static forEach(list, fn) {
     list.forEach(fn);
   }
-  static last(list) {
+  static first(List list) {
+    return list.first;
+  }
+  static last(List list) {
     return list.last;
+  }
+  static reversed(List list) {
+    return list.reversed;
   }
   static void push(List l, e) { l.add(e); }
 }

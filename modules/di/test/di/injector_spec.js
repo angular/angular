@@ -2,7 +2,10 @@ import {describe, it, expect, beforeEach} from 'test_lib/test_lib';
 import {Injector, Inject, bind} from 'di/di';
 
 class Engine {}
-class Dashboard {}
+class DashboardSoftware {}
+class Dashboard {
+  constructor(software: DashboardSoftware){}
+}
 class TurboEngine extends Engine{}
 
 class Car {
@@ -135,10 +138,9 @@ export function main() {
     });
 
     it('should show the full path when no provider', function() {
-      var injector = new Injector([CarWithDashboard, Engine]);
-
+      var injector = new Injector([CarWithDashboard, Engine, Dashboard]);
       expect(() => injector.get(CarWithDashboard)).
-        toThrowError('No provider for Dashboard! (CarWithDashboard -> Dashboard)');
+        toThrowError('No provider for DashboardSoftware! (CarWithDashboard -> Dashboard -> DashboardSoftware)');
     });
   });
 }

@@ -72,5 +72,7 @@ export function main () {
       expect(() => injector.get(UserController))
         .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future! (UserController -> UserList)');
     });
+
+    // resolve exceptions and async
   });
 }

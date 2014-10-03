@@ -1,23 +1,27 @@
 import {ListWrapper, List} from 'facade/collection';
 import {stringify} from 'facade/lang';
+import {Key} from './key';
 
 function constructResolvingPath(keys: List) {
   if (keys.length > 1) {
-    var tokenStrs = ListWrapper.map(keys, (k) => stringify(k.token));
+    var reversed = ListWrapper.reversed(keys);
+    var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
     return " (" + tokenStrs.join(' -> ') + ")";
   } else {
     return "";
   }
 }
 
-export class NoProviderError extends Error {
-  constructor(keys:List){
-    this.message = this._constructResolvingMessage(keys);
+export class ProviderError extends Error {
+  constructor(key:Key, constructResolvingMessage:Function){
+    this.keys = [key];
+    this.constructResolvingMessage = constructResolvingMessage;
+    this.message = this.constructResolvingMessage(this.keys);
   }
 
-  _constructResolvingMessage(keys:List) {
-    var last = stringify(ListWrapper.last(keys).token);
-    return `No provider for ${last}!${constructResolvingPath(keys)}`;
+  addKey(key: Key) {
+    ListWrapper.push(this.keys, key);
+    this.message = this.constructResolvingMessage(this.keys);
   }
 
   toString() {
@@ -25,19 +29,22 @@ export class NoProviderError extends Error {
   }
 }
 
-export class AsyncProviderError extends Error {
-  constructor(keys:List){
-    this.message = this._constructResolvingMessage(keys);
+export class NoProviderError extends ProviderError {
+  constructor(key:Key){
+    super(key, function(keys:List) {
+      var first = stringify(ListWrapper.first(keys).token);
+      return `No provider for ${first}!${constructResolvingPath(keys)}`;
+    });
   }
+}
 
-  _constructResolvingMessage(keys:List) {
-    var last = stringify(ListWrapper.last(keys).token);
-    return `Cannot instantiate ${last} synchronously. ` +
-      `It is provided as a future!${constructResolvingPath(keys)}`;
-  }
-
-  toString() {
-    return this.message;
+export class AsyncProviderError extends ProviderError {
+  constructor(key:Key){
+    super(key, function(keys:List) {
+      var first = stringify(ListWrapper.first(keys).token);
+      return `Cannot instantiate ${first} synchronously. ` +
+        `It is provided as a future!${constructResolvingPath(keys)}`;
+    });
   }
 }
 
