@@ -21,7 +21,7 @@ class IMPLEMENTS {
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 
-String humanize(obj) => obj.toString();
+String stringify(obj) => obj.toString();
 
 class StringWrapper {
   static String fromCharCode(int code) {

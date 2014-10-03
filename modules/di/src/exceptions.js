@@ -1,9 +1,9 @@
 import {ListWrapper, List} from 'facade/collection';
-import {humanize} from 'facade/lang';
+import {stringify} from 'facade/lang';
 
 function constructResolvingPath(keys: List) {
   if (keys.length > 1) {
-    var tokenStrs = ListWrapper.map(keys, (k) => humanize(k.token));
+    var tokenStrs = ListWrapper.map(keys, (k) => stringify(k.token));
     return " (" + tokenStrs.join(' -> ') + ")";
   } else {
     return "";
@@ -16,7 +16,7 @@ export class NoProviderError extends Error {
   }
 
   _constructResolvingMessage(keys:List) {
-    var last = humanize(ListWrapper.last(keys).token);
+    var last = stringify(ListWrapper.last(keys).token);
     return `No provider for ${last}!${constructResolvingPath(keys)}`;
   }
 
@@ -31,7 +31,7 @@ export class AsyncProviderError extends Error {
   }
 
   _constructResolvingMessage(keys:List) {
-    var last = humanize(ListWrapper.last(keys).token);
+    var last = stringify(ListWrapper.last(keys).token);
     return `Cannot instantiate ${last} synchronously. ` +
       `It is provided as a future!${constructResolvingPath(keys)}`;
   }

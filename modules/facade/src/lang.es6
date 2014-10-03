@@ -19,7 +19,7 @@ export function isBlank(obj){
   return obj == undefined || obj == null;
 }
 
-export function humanize(token) {
+export function stringify(token) {
   if (typeof token === 'string') {
     return token;
   }
