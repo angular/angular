@@ -1,12 +1,15 @@
 import {Directive} from './directive';
+import {ABSTRACT, CONST} from 'facade/lang';
 
 export class Component extends Directive {
+  @CONST()
   constructor({
       selector,
+      lightDomServices,
+      implementsTypes,
       template,
       elementServices,
-      componentServices,
-      implementsTypes
+      componentServices
     }:{
       selector:String,
       template:TemplateConfig,
@@ -16,7 +19,13 @@ export class Component extends Directive {
       implementsTypes:Array<Type>
     })
   {
-    // super({selector, lightDomServices, implementsTypes});
+    super({
+        selector: selector,
+        lightDomServices: lightDomServices,
+        implementsTypes: implementsTypes});
+    this.template = template;
+    this.elementServices = elementServices;
+    this.componentServices = componentServices;
   }
 }
 
