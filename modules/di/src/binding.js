@@ -1,6 +1,6 @@
 import {Type} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
-import {Reflector} from 'facade/di/reflector';
+import {Reflector} from './reflector';
 import {Key} from './key';
 
 export class Binding {
