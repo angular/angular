@@ -17,7 +17,7 @@ export class MapWrapper {
 
 export class ListWrapper {
   static create():List { return new List(); }
-  static createFixedSize(size):List { return new List(); }
+  static createFixedSize(size):List { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
   static clone(array) {
@@ -34,9 +34,17 @@ export class ListWrapper {
   static push(array, el) {
     array.push(el);
   }
+  static first(array) {
+    if (!array) return null;
+    return array[0];
+  }
   static last(array) {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
+  }
+  static reversed(array) {
+    var a = ListWrapper.clone(array);
+    return a.reverse();
   }
 }
 

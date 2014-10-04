@@ -1,11 +1,7 @@
 library facade.di.reflector;
 
 import 'dart:mirrors';
-
-class Inject {
-  final Object token;
-  const Inject(this.token);
-}
+import 'annotations.dart' show Inject;
 
 class Reflector {
   factoryFor(Type type) {

@@ -1,6 +1,6 @@
 import {Map, List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
-import {NoProviderError, InvalidBindingError, AsyncProviderError} from './exceptions';
+import {ProviderError, NoProviderError, InvalidBindingError, AsyncProviderError} from './exceptions';
 import {Type, isPresent, isBlank} from 'facade/lang';
 import {Future, FutureWrapper} from 'facade/async';
 import {Key} from './key';
@@ -32,19 +32,15 @@ export class Injector {
   }
 
   getByKey(key:Key) {
-    return this._getByKey(key, [], false);
+    return this._getByKey(key, false);
   }
 
   asyncGetByKey(key:Key) {
-    return this._getByKey(key, [], true);
+    return this._getByKey(key, true);
   }
 
-  _getByKey(key:Key, resolving:List, async) {
+  _getByKey(key:Key, async) {
     var keyId = key.id;
-    //TODO: vsavkin: use LinkedList to remove clone
-    resolving = ListWrapper.clone(resolving)
-    ListWrapper.push(resolving, key);
-
     if (key.token === Injector) return this._injector(async);
 
     var instance = this._get(this._instances, keyId);
@@ -53,14 +49,14 @@ export class Injector {
     var binding = this._get(this._bindings, keyId);
 
     if (isPresent(binding)) {
-      return this._instantiate(key, binding, resolving, async);
+      return this._instantiate(key, binding, async);
     }
 
     if (isPresent(this._parent)) {
-      return this._parent._getByKey(key, resolving, async);
+      return this._parent._getByKey(key, async);
     }
 
-    throw new NoProviderError(resolving);
+    throw new NoProviderError(key);
   }
 
   createChild(bindings:List):Injector {
@@ -78,31 +74,37 @@ export class Injector {
     return ListWrapper.get(list, index);
   }
 
-  _instantiate(key:Key, binding:Binding, resolving:List, async) {
+  _instantiate(key:Key, binding:Binding, async) {
     if (binding.async && !async) {
-      throw new AsyncProviderError(resolving);
+      throw new AsyncProviderError(key);
     }
 
     if (async) {
-      return this._instantiateAsync(key, binding, resolving, async);
+      return this._instantiateAsync(key, binding, async);
     } else {
-      return this._instantiateSync(key, binding, resolving, async);
+      return this._instantiateSync(key, binding, async);
     }
   }
 
-  _instantiateSync(key:Key, binding:Binding, resolving:List, async) {
-    var deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d, resolving, false));
-    var instance = binding.factory(deps);
-    ListWrapper.set(this._instances, key.id, instance);
-    if (!binding.async && async) {
-      return FutureWrapper.value(instance);
+  _instantiateSync(key:Key, binding:Binding, async) {
+    try {
+      var deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d, false));
+      var instance = binding.factory(deps);
+      ListWrapper.set(this._instances, key.id, instance);
+      if (!binding.async && async) {
+        return FutureWrapper.value(instance);
+      }
+      return instance;
+
+    } catch (e) {
+      if (e instanceof ProviderError) e.addKey(key);
+      throw e;
     }
-    return instance;
   }
 
-  _instantiateAsync(key:Key, binding:Binding, resolving:List, async):Future {
+  _instantiateAsync(key:Key, binding:Binding, async):Future {
     var instances = this._createInstances();
-    var futures = ListWrapper.map(binding.dependencies, d => this._getByKey(d, resolving, true));
+    var futures = ListWrapper.map(binding.dependencies, d => this._getByKey(d, true));
     return FutureWrapper.wait(futures).
       then(binding.factory).
       then(function(instance) {

@@ -1,11 +1,5 @@
 import {Type} from 'facade/lang';
-
-//TODO: vsvakin: remove when const constructors are implemented
-export class Inject {
-  constructor(token){
-    this.token = token;
-  }
-}
+import {Inject} from './annotations';
 
 export class Reflector {
   factoryFor(type:Type) {
