@@ -3,6 +3,14 @@ import {MapWrapper} from 'facade/collection';
 var _allKeys = {};
 var _id = 0;
 
+//TODO: vsavkin: move to binding once cyclic deps are supported
+export class Dependency {
+  constructor(key:Key, asFuture){
+    this.key = key;
+    this.asFuture = asFuture;
+  }
+}
+
 export class Key {
   constructor(token, id) {
     this.token = token;

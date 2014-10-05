@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {Injector, Inject, bind} from 'di/di';
 
 class Engine {}
@@ -33,6 +33,10 @@ class CarWithInject {
   }
 }
 
+class NoAnnotations {
+  constructor(secretDependency){}
+}
+
 export function main() {
   describe('injector', function() {
     it('should instantiate a class without dependencies', function() {
@@ -56,6 +60,11 @@ export function main() {
 
       expect(car).toBeAnInstanceOf(CarWithInject);
       expect(car.engine).toBeAnInstanceOf(TurboEngine);
+    });
+
+    it('should throw when no type and not @Inject', function () {
+      expect(() => new Injector([NoAnnotations])).toThrowError(
+        'Cannot resolve all parameters for NoAnnotations');
     });
 
     it('should cache instances', function() {

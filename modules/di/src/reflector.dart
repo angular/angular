@@ -1,7 +1,9 @@
 library facade.di.reflector;
 
 import 'dart:mirrors';
-import 'annotations.dart' show Inject;
+import 'annotations.dart' show Inject, InjectFuture;
+import 'key.dart' show Key, Dependency;
+import 'exceptions.dart' show NoAnnotationError;
 
 class Reflector {
   factoryFor(Type type) {
@@ -27,26 +29,19 @@ class Reflector {
     return new List.generate(ctor.parameters.length, (int pos) {
       ParameterMirror p = ctor.parameters[pos];
 
-      if (p.type.qualifiedName == #dynamic) {
-        var name = MirrorSystem.getName(p.simpleName);
-        throw "Error getting params for '$type': "
-          "The '$name' parameter must be typed";
-      }
+      final metadata = p.metadata.map((m) => m.reflectee);
 
-      if (p.type is TypedefMirror) {
-        throw "Typedef '${p.type}' in constructor "
-        "'${classMirror.simpleName}' is not supported.";
-      }
-
-      ClassMirror pTypeMirror = (p.type as ClassMirror);
-      var pType = pTypeMirror.reflectedType;
-
-      final inject = p.metadata.map((m) => m.reflectee).where((m) => m is Inject);
+      var inject = metadata.where((m) => m is Inject);
+      var injectFuture = metadata.where((m) => m is InjectFuture);
 
       if (inject.isNotEmpty) {
-        return inject.first.token;
+        return new Dependency(Key.get(inject.first.token), false);
+      } else if (injectFuture.isNotEmpty) {
+        return new Dependency(Key.get(injectFuture.first.token), true);
+      } else if (p.type.qualifiedName != #dynamic) {
+        return new Dependency(Key.get(p.type.reflectedType), false);
       } else {
-        return pType;
+        throw new NoAnnotationError(type);
       }
     }, growable:false);
   }

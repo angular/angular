@@ -1,6 +1,6 @@
 import {Map, List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError, InvalidBindingError, AsyncProviderError} from './exceptions';
+import {ProviderError, NoProviderError, InvalidBindingError, AsyncBindingError} from './exceptions';
 import {Type, isPresent, isBlank} from 'facade/lang';
 import {Future, FutureWrapper} from 'facade/async';
 import {Key} from './key';
@@ -39,21 +39,19 @@ export class Injector {
     return this._getByKey(key, true);
   }
 
-  _getByKey(key:Key, async) {
+  _getByKey(key:Key, returnFuture) {
     var keyId = key.id;
-    if (key.token === Injector) return this._injector(async);
+    if (key.token === Injector) return this._injector(returnFuture);
 
     var instance = this._get(this._instances, keyId);
     if (isPresent(instance)) return instance;
 
     var binding = this._get(this._bindings, keyId);
-
     if (isPresent(binding)) {
-      return this._instantiate(key, binding, async);
+      return this._instantiate(key, binding, returnFuture);
     }
-
     if (isPresent(this._parent)) {
-      return this._parent._getByKey(key, async);
+      return this._parent._getByKey(key, returnFuture);
     }
 
     throw new NoProviderError(key);
@@ -65,8 +63,8 @@ export class Injector {
     return inj;
   }
 
-  _injector(async){
-    return async ? FutureWrapper.value(this) : this;
+  _injector(returnFuture){
+    return returnFuture ? FutureWrapper.value(this) : this;
   }
 
   _get(list:List, index){
@@ -74,39 +72,40 @@ export class Injector {
     return ListWrapper.get(list, index);
   }
 
-  _instantiate(key:Key, binding:Binding, async) {
-    if (binding.async && !async) {
-      throw new AsyncProviderError(key);
+  _instantiate(key:Key, binding:Binding, returnFuture) {
+    if (binding.providedAsFuture && !returnFuture) {
+      throw new AsyncBindingError(key);
     }
 
-    if (async) {
-      return this._instantiateAsync(key, binding, async);
+    if (returnFuture) {
+      return this._instantiateAsync(key, binding);
     } else {
-      return this._instantiateSync(key, binding, async);
+      return this._instantiateSync(key, binding);
     }
   }
 
-  _instantiateSync(key:Key, binding:Binding, async) {
+  _instantiateSync(key:Key, binding:Binding) {
     try {
-      var deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d, false));
+      var deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d.key, d.asFuture));
       var instance = binding.factory(deps);
       ListWrapper.set(this._instances, key.id, instance);
-      if (!binding.async && async) {
-        return FutureWrapper.value(instance);
-      }
       return instance;
-
     } catch (e) {
       if (e instanceof ProviderError) e.addKey(key);
       throw e;
     }
   }
 
-  _instantiateAsync(key:Key, binding:Binding, async):Future {
+  _instantiateAsync(key:Key, binding:Binding):Future {
     var instances = this._createInstances();
-    var futures = ListWrapper.map(binding.dependencies, d => this._getByKey(d, true));
+    var futures = ListWrapper.map(binding.dependencies, d => this._getByKey(d.key, true));
     return FutureWrapper.wait(futures).
       then(binding.factory).
+      catch(function(e) {
+        console.log('sdfsdfsd', e)
+        //e.addKey(key)
+        //return e;
+      }).
       then(function(instance) {
         ListWrapper.set(instances, key.id, instance);
         return instance

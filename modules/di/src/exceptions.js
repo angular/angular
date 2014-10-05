@@ -12,7 +12,13 @@ function constructResolvingPath(keys: List) {
   }
 }
 
-export class ProviderError extends Error {
+class DIError extends Error {
+  toString() {
+    return this.message;
+  }
+}
+
+export class ProviderError extends DIError {
   constructor(key:Key, constructResolvingMessage:Function){
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -22,10 +28,6 @@ export class ProviderError extends Error {
   addKey(key: Key) {
     ListWrapper.push(this.keys, key);
     this.message = this.constructResolvingMessage(this.keys);
-  }
-
-  toString() {
-    return this.message;
   }
 }
 
@@ -38,7 +40,7 @@ export class NoProviderError extends ProviderError {
   }
 }
 
-export class AsyncProviderError extends ProviderError {
+export class AsyncBindingError extends ProviderError {
   constructor(key:Key){
     super(key, function(keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
@@ -48,12 +50,14 @@ export class AsyncProviderError extends ProviderError {
   }
 }
 
-export class InvalidBindingError extends Error {
+export class InvalidBindingError extends DIError {
   constructor(binding){
     this.message = `Invalid binding ${binding}`;
   }
+}
 
-  toString() {
-    return this.message;
+export class NoAnnotationError extends DIError {
+  constructor(type){
+    this.message = `Cannot resolve all parameters for ${stringify(type)}`;
   }
 }

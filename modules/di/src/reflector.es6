@@ -1,5 +1,7 @@
-import {Type} from 'facade/lang';
-import {Inject} from './annotations';
+import {Type, isPresent} from 'facade/lang';
+import {Inject, InjectFuture} from './annotations';
+import {Dependency, Key} from './key';
+import {NoAnnotationError} from './exceptions';
 
 export class Reflector {
   factoryFor(type:Type) {
@@ -12,24 +14,34 @@ export class Reflector {
 
   dependencies(type:Type) {
     var p = type.parameters;
-    if (p == undefined) return [];
-    return type.parameters.map((p) => this._extractToken(p));
+    if (p == undefined && type.length == 0) return [];
+    if (p == undefined) throw new NoAnnotationError(type);
+    return type.parameters.map((p) => this._extractToken(type, p));
   }
 
-  _extractToken(annotations) {
-    var type, inject;
+  _extractToken(constructedType:Type, annotations) {
+    var type;
+
     for (var paramAnnotation of annotations) {
-      if (isFunction(paramAnnotation)) {
+      if (paramAnnotation instanceof Type) {
         type = paramAnnotation;
 
       } else if (paramAnnotation instanceof Inject) {
-        inject = paramAnnotation.token;
+        return this._createDependency(paramAnnotation.token, false);
+
+      } else if (paramAnnotation instanceof InjectFuture) {
+        return this._createDependency(paramAnnotation.token, true);
       }
     }
-    return inject != undefined ? inject : type;
-  }
-}
 
-function isFunction(value) {
-  return typeof value === 'function';
+    if (isPresent(type)) {
+      return this._createDependency(type, false);
+    } else {
+      throw new NoAnnotationError(constructedType);
+    }
+  }
+
+  _createDependency(token, asFuture):Dependency {
+    return new Dependency(Key.get(token), asFuture);
+  }
 }

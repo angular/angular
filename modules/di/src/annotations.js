@@ -6,3 +6,10 @@ export class Inject {
     this.token = token;
   }
 }
+
+export class InjectFuture {
+  @CONST()
+  constructor(token){
+    this.token = token;
+  }
+}

@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
-import {Injector, Inject, bind, Key} from 'di/di';
+import {Injector, Inject, InjectFuture, bind, Key} from 'di/di';
 import {Future, FutureWrapper} from 'facade/async';
 
 class UserList {}
@@ -10,69 +10,108 @@ function fetchUsers() {
 
 class SynchronousUserList {}
 
-
 class UserController {
   constructor(list:UserList) {
     this.list = list;
   }
 }
 
+class AsyncUserController {
+  constructor(@InjectFuture(UserList) userList) {
+    this.userList = userList;
+  }
+}
+
 export function main () {
   describe("async injection", function () {
-    it('should return a future', function() {
-      var injector = new Injector([
-        bind(UserList).toAsyncFactory([], fetchUsers)
-      ]);
-      var p = injector.asyncGet(UserList);
-      expect(p).toBeFuture();
-    });
 
-    it('should throw when instantiating async provider synchronously', function() {
-      var injector = new Injector([
-        bind(UserList).toAsyncFactory([], fetchUsers)
-      ]);
+    describe("asyncGet", function () {
+      it('should return a future', function() {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers)
+        ]);
+        var p = injector.asyncGet(UserList);
+        expect(p).toBeFuture();
+      });
 
-      expect(() => injector.get(UserList))
-        .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future!');
-    });
+      it('should return a future when if the binding is sync', function() {
+        var injector = new Injector([
+          SynchronousUserList
+        ]);
+        var p = injector.asyncGet(SynchronousUserList);
+        expect(p).toBeFuture();
+      });
 
-    it('should return a future even if the provider is sync', function() {
-      var injector = new Injector([
-        SynchronousUserList
-      ]);
-      var p = injector.asyncGet(SynchronousUserList);
-      expect(p).toBeFuture();
-    });
+      it('should return the injector', function() {
+        var injector = new Injector([]);
+        var p = injector.asyncGet(Injector);
+        expect(p).toBeFuture();
+      });
 
-    it('should provide itself', function() {
-      var injector = new Injector([]);
-      var p = injector.asyncGet(Injector);
-      expect(p).toBeFuture();
-    });
+      it('should return a future when instantiating a sync binding ' +
+        'with an async dependency', function(done) {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers),
+          UserController
+        ]);
 
-    it('should return a future when a dependency is async', function(done) {
-      var injector = new Injector([
-        bind(UserList).toAsyncFactory([], fetchUsers),
-        UserController
-      ]);
-
-      injector.asyncGet(UserController).then(function(userController) {
-        expect(userController).toBeAnInstanceOf(UserController);
-        expect(userController.list).toBeAnInstanceOf(UserList);
-        done();
+        injector.asyncGet(UserController).then(function(userController) {
+          expect(userController).toBeAnInstanceOf(UserController);
+          expect(userController.list).toBeAnInstanceOf(UserList);
+          done();
+        });
       });
     });
 
-    it('should throw when a dependency is async', function() {
-      var injector = new Injector([
-        bind(UserList).toAsyncFactory([], fetchUsers),
-        UserController
-      ]);
+    describe("get", function () {
+      it('should throw when instantiating an async binding', function() {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers)
+        ]);
 
-      expect(() => injector.get(UserController))
-        .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future! (UserController -> UserList)');
+        expect(() => injector.get(UserList))
+          .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future!');
+      });
+
+      it('should throw when instantiating a sync binding with an dependency', function() {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers),
+          UserController
+        ]);
+
+        expect(() => injector.get(UserController))
+          .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future! (UserController -> UserList)');
+      });
+
+      it('should resolve synchronously when an async dependency requested as a future', function() {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers),
+          AsyncUserController
+        ]);
+        var controller = injector.get(AsyncUserController);
+
+        expect(controller).toBeAnInstanceOf(AsyncUserController);
+        expect(controller.userList).toBeFuture();
+      });
+
+      it('should wrap sync dependencies into futures if required', function() {
+        var injector = new Injector([
+          bind(UserList).toFactory([], () => new UserList()),
+          AsyncUserController
+        ]);
+        var controller = injector.get(AsyncUserController);
+
+        expect(controller).toBeAnInstanceOf(AsyncUserController);
+        expect(controller.userList).toBeFuture();
+      });
     });
 
+
+    // InjectFuture toFactory([@AsyncInject(UserList)], (userListFuutre)]
+    // InjectFuture toFactory((@AsyncInject(UsrList) userListFuutre) => ]
+
     // resolve exceptions and async
+    // do not construct two instances of the same async dependency if there is one in progress
+    // cycles
   });
 }

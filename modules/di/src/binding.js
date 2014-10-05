@@ -1,14 +1,14 @@
 import {Type} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Reflector} from './reflector';
-import {Key} from './key';
+import {Key, Dependency} from './key';
 
 export class Binding {
-  constructor(key:Key, factory:Function, dependencies:List, async) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;
-    this.async = async;
+    this.providedAsFuture = providedAsFuture;
   }
 }
 
@@ -26,7 +26,7 @@ export class BindingBuilder {
     return new Binding(
       Key.get(this.token),
       this.reflector.factoryFor(type),
-      this._wrapKeys(this.reflector.dependencies(type)),
+      this.reflector.dependencies(type),
       false
     );
   }
@@ -44,7 +44,7 @@ export class BindingBuilder {
     return new Binding(
       Key.get(this.token),
       this.reflector.convertToFactory(factoryFunction),
-      this._wrapKeys(dependencies),
+      this._constructDependencies(dependencies),
       false
     );
   }
@@ -53,12 +53,12 @@ export class BindingBuilder {
     return new Binding(
       Key.get(this.token),
       this.reflector.convertToFactory(factoryFunction),
-      this._wrapKeys(dependencies),
+      this._constructDependencies(dependencies),
       true
     );
   }
 
-  _wrapKeys(deps:List) {
-    return ListWrapper.map(deps, (t) => Key.get(t));
+  _constructDependencies(deps:List) {
+    return ListWrapper.map(deps, (t) => new Dependency(Key.get(t), false));
   }
 }
