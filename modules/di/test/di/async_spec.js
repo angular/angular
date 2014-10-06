@@ -61,6 +61,45 @@ export function main () {
           done();
         });
       });
+
+      it("should return a future when the binding is sync from cache", function () {
+        var injector = new Injector([
+          UserList
+        ]);
+        expect(injector.get(UserList)).toBeAnInstanceOf(UserList);
+        expect(injector.asyncGet(UserList)).toBeFuture();
+      });
+
+      it("should create only one instance (async + async)", function (done) {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory([], fetchUsers)
+        ]);
+
+        var ul1 = injector.asyncGet(UserList);
+        var ul2 = injector.asyncGet(UserList);
+
+        FutureWrapper.wait([ul1, ul2]).then(function (uls) {
+          expect(uls[0]).toBe(uls[1]);
+          done();
+        });
+      });
+
+      it("should create only one instance (sync + async)", function (done) {
+        var injector = new Injector([
+          UserList
+        ]);
+
+        var future = injector.asyncGet(UserList);
+        var ul = injector.get(UserList);
+
+        expect(future).toBeFuture();
+        expect(ul).toBeAnInstanceOf(UserList);
+
+        future.then(function (ful) {
+          expect(ful).toBe(ul);
+          done();
+        });
+      });
     });
 
     describe("get", function () {
@@ -105,13 +144,5 @@ export function main () {
         expect(controller.userList).toBeFuture();
       });
     });
-
-
-    // InjectFuture toFactory([@AsyncInject(UserList)], (userListFuutre)]
-    // InjectFuture toFactory((@AsyncInject(UsrList) userListFuutre) => ]
-
-    // resolve exceptions and async
-    // do not construct two instances of the same async dependency if there is one in progress
-    // cycles
   });
 }
