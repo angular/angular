@@ -50,6 +50,24 @@ export class AsyncBindingError extends ProviderError {
   }
 }
 
+export class CyclicDependencyError extends ProviderError {
+  constructor(key:Key){
+    super(key, function(keys:List) {
+      return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
+    });
+  }
+}
+
+export class InstantiationError extends ProviderError {
+  constructor(originalException, key:Key){
+    super(key, function(keys:List) {
+      var first = stringify(ListWrapper.first(keys).token);
+      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.`+
+        ` ORIGINAL ERROR: ${originalException}`;
+    });
+  }
+}
+
 export class InvalidBindingError extends DIError {
   constructor(binding){
     this.message = `Invalid binding ${binding}`;

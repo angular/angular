@@ -1,9 +1,12 @@
 import {Map, List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError, InvalidBindingError, AsyncBindingError} from './exceptions';
+import {ProviderError, NoProviderError, InvalidBindingError,
+  AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
 import {Type, isPresent, isBlank} from 'facade/lang';
 import {Future, FutureWrapper} from 'facade/async';
 import {Key} from './key';
+
+var _creating = new Object();
 
 export class Injector {
   constructor(bindings:List) {
@@ -44,6 +47,9 @@ export class Injector {
     if (key.token === Injector) return this._injector(returnFuture);
 
     var instance = this._get(this._instances, keyId);
+    if (instance === _creating) {
+      throw new CyclicDependencyError(key);
+    }
     if (isPresent(instance)) return instance;
 
     var binding = this._get(this._bindings, keyId);
@@ -73,6 +79,8 @@ export class Injector {
   }
 
   _instantiate(key:Key, binding:Binding, returnFuture) {
+    ListWrapper.set(this._instances, key.id, _creating);
+
     if (binding.providedAsFuture && !returnFuture) {
       throw new AsyncBindingError(key);
     }
@@ -85,14 +93,20 @@ export class Injector {
   }
 
   _instantiateSync(key:Key, binding:Binding) {
+    var deps;
     try {
-      var deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d.key, d.asFuture));
+      deps = ListWrapper.map(binding.dependencies, d => this._getByKey(d.key, d.asFuture));
+    } catch (e) {
+      if (e instanceof ProviderError) e.addKey(key);
+      throw e;
+    }
+
+    try {
       var instance = binding.factory(deps);
       ListWrapper.set(this._instances, key.id, instance);
       return instance;
     } catch (e) {
-      if (e instanceof ProviderError) e.addKey(key);
-      throw e;
+      throw new InstantiationError(e, key);
     }
   }
 
@@ -101,11 +115,6 @@ export class Injector {
     var futures = ListWrapper.map(binding.dependencies, d => this._getByKey(d.key, true));
     return FutureWrapper.wait(futures).
       then(binding.factory).
-      catch(function(e) {
-        console.log('sdfsdfsd', e)
-        //e.addKey(key)
-        //return e;
-      }).
       then(function(instance) {
         ListWrapper.set(instances, key.id, instance);
         return instance

@@ -2,6 +2,11 @@ import {describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {Injector, Inject, bind} from 'di/di';
 
 class Engine {}
+class BrokenEngine {
+  constructor() {
+    throw "Broken Engine";
+  }
+}
 class DashboardSoftware {}
 class Dashboard {
   constructor(software: DashboardSoftware){}
@@ -31,6 +36,10 @@ class CarWithInject {
   constructor(@Inject(TurboEngine) engine:Engine) {
     this.engine = engine;
   }
+}
+
+class CyclicEngine {
+  constructor(car:Car){}
 }
 
 class NoAnnotations {
@@ -150,6 +159,30 @@ export function main() {
       var injector = new Injector([CarWithDashboard, Engine, Dashboard]);
       expect(() => injector.get(CarWithDashboard)).
         toThrowError('No provider for DashboardSoftware! (CarWithDashboard -> Dashboard -> DashboardSoftware)');
+    });
+
+    it('should throw when trying to instantiate a cyclic dependency', function() {
+      var injector = new Injector([
+        Car,
+        bind(Engine).toClass(CyclicEngine)
+      ]);
+
+      expect(() => injector.get(Car))
+        .toThrowError('Cannot instantiate cyclic dependency! (Car -> Engine -> Car)');
+    });
+
+    it('should show the full path when error happens in a constructor', function() {
+      var injector = new Injector([
+        Car,
+        bind(Engine).toClass(BrokenEngine)
+      ]);
+
+      try {
+        injector.get(Car);
+        throw "Must throw";
+      } catch (e) {
+        expect(e.message).toContain("Error during instantiation of Engine! (Car -> Engine)");
+      }
     });
   });
 }
