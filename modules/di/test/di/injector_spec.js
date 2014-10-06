@@ -150,6 +150,9 @@ export function main() {
 
       expect(() => injector.get(Car))
         .toThrowError('Cannot instantiate cyclic dependency! (Car -> Engine -> Car)');
+
+      expect(() => injector.asyncGet(Car))
+        .toThrowError('Cannot instantiate cyclic dependency! (Car -> Engine -> Car)');
     });
 
     it('should show the full path when error happens in a constructor', function() {

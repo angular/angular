@@ -6,14 +6,15 @@ import {Type, isPresent, isBlank} from 'facade/lang';
 import {Future, FutureWrapper} from 'facade/async';
 import {Key} from './key';
 
-class _InProgress {
+var _constructing = new Object();
+
+class _Waiting {
   constructor(future:Future) {
     this.future = future;
   }
 }
-var _isInProgressSync = new _InProgress(null);
-function _isInProgress(obj) {
-  return obj instanceof _InProgress;
+function _isWaiting(obj) {
+  return obj instanceof _Waiting;
 }
 
 
@@ -108,10 +109,9 @@ class _SyncInjectorStrategy {
 
     var instance = this.injector._getInstance(key);
 
-    // skip async in-progress
-    if (instance === _isInProgressSync) {
+    if (instance === _constructing) {
       throw new CyclicDependencyError(key);
-    } else if (isPresent(instance) && !_isInProgress(instance)) {
+    } else if (isPresent(instance) && !_isWaiting(instance)) {
       return instance;
     } else {
       return null;
@@ -125,7 +125,7 @@ class _SyncInjectorStrategy {
     if (binding.providedAsFuture) throw new AsyncBindingError(key);
 
     //add a marker so we can detect cyclic dependencies
-    this.injector._setInstance(key, _isInProgressSync);
+    this.injector._setInstance(key, _constructing);
 
     var deps = this._resolveDependencies(key, binding);
     return this._createInstance(key, binding, deps);
@@ -136,6 +136,7 @@ class _SyncInjectorStrategy {
       var getDependency = d => this.injector._getByKey(d.key, d.asFuture, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
+      this.injector._setInstance(key, null);
       if (e instanceof ProviderError) e.addKey(key);
       throw e;
     }
@@ -165,7 +166,10 @@ class _AsyncInjectorStrategy {
     }
 
     var instance = this.injector._getInstance(key);
-    if (_isInProgress(instance)) {
+
+    if (instance === _constructing) {
+      throw new CyclicDependencyError(key);
+    } else if (_isWaiting(instance)) {
       return instance.future;
     } else if (isPresent(instance)) {
       return FutureWrapper.value(instance);
@@ -178,23 +182,32 @@ class _AsyncInjectorStrategy {
     var binding = this.injector._getBinding(key);
     if (isBlank(binding)) return null;
 
+    //add a marker so we can detect cyclic dependencies
+    this.injector._setInstance(key, _constructing);
+
     var deps = this._resolveDependencies(key, binding);
     var future = FutureWrapper.wait(deps).
       then(deps => this._findOrCreate(key, binding, deps)).
       then(instance => this._cacheInstance(key, instance));
 
-    this.injector._setInstance(key, new _InProgress(future));
+    this.injector._setInstance(key, new _Waiting(future));
     return future;
   }
 
   _resolveDependencies(key:Key, binding:Binding):List {
-    var getDependency = d => this.injector._getByKey(d.key, true, d.lazy);
-    return ListWrapper.map(binding.dependencies, getDependency);
+    try {
+      var getDependency = d => this.injector._getByKey(d.key, true, d.lazy);
+      return ListWrapper.map(binding.dependencies, getDependency);
+    } catch (e) {
+      this.injector._setInstance(key, null);
+      if (e instanceof ProviderError) e.addKey(key);
+      throw e;
+    }
   }
 
   _findOrCreate(key:Key, binding: Binding, deps:List) {
     var instance = this.injector._getInstance(key);
-    if (! _isInProgress(instance)) return instance;
+    if (! _isWaiting(instance)) return instance;
     return binding.factory(deps);
   }
 
