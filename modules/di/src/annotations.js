@@ -13,3 +13,10 @@ export class InjectFuture {
     this.token = token;
   }
 }
+
+export class InjectLazy {
+  @CONST()
+  constructor(token){
+    this.token = token;
+  }
+}

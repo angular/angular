@@ -59,6 +59,6 @@ export class BindingBuilder {
   }
 
   _constructDependencies(deps:List) {
-    return ListWrapper.map(deps, (t) => new Dependency(Key.get(t), false));
+    return ListWrapper.map(deps, (t) => new Dependency(Key.get(t), false, false));
   }
 }

@@ -5,9 +5,10 @@ var _id = 0;
 
 //TODO: vsavkin: move to binding once cyclic deps are supported
 export class Dependency {
-  constructor(key:Key, asFuture){
+  constructor(key:Key, asFuture, lazy){
     this.key = key;
     this.asFuture = asFuture;
+    this.lazy = lazy;
   }
 }
 

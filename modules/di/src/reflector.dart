@@ -1,7 +1,7 @@
 library facade.di.reflector;
 
 import 'dart:mirrors';
-import 'annotations.dart' show Inject, InjectFuture;
+import 'annotations.dart' show Inject, InjectFuture, InjectLazy;
 import 'key.dart' show Key, Dependency;
 import 'exceptions.dart' show NoAnnotationError;
 
@@ -31,15 +31,18 @@ class Reflector {
 
       final metadata = p.metadata.map((m) => m.reflectee);
 
-      var inject = metadata.where((m) => m is Inject);
-      var injectFuture = metadata.where((m) => m is InjectFuture);
+      var inject = metadata.firstWhere((m) => m is Inject, orElse: () => null);
+      var injectFuture = metadata.firstWhere((m) => m is InjectFuture, orElse: () => null);
+      var injectLazy = metadata.firstWhere((m) => m is InjectLazy, orElse: () => null);
 
-      if (inject.isNotEmpty) {
-        return new Dependency(Key.get(inject.first.token), false);
-      } else if (injectFuture.isNotEmpty) {
-        return new Dependency(Key.get(injectFuture.first.token), true);
+      if (inject != null) {
+        return new Dependency(Key.get(inject.token), false, false);
+      } else if (injectFuture != null) {
+        return new Dependency(Key.get(injectFuture.token), true, false);
+      } else if (injectLazy != null) {
+        return new Dependency(Key.get(injectLazy.token), false, true);
       } else if (p.type.qualifiedName != #dynamic) {
-        return new Dependency(Key.get(p.type.reflectedType), false);
+        return new Dependency(Key.get(p.type.reflectedType), false, false);
       } else {
         throw new NoAnnotationError(type);
       }

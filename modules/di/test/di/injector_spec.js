@@ -1,5 +1,5 @@
-import {describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {Injector, Inject, bind} from 'di/di';
+import {describe, ddescribe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
+import {Injector, Inject, InjectLazy, bind} from 'di/di';
 
 class Engine {}
 class BrokenEngine {
@@ -16,6 +16,12 @@ class TurboEngine extends Engine{}
 class Car {
   constructor(engine:Engine) {
     this.engine = engine;
+  }
+}
+
+class CarWithLazyEngine {
+  constructor(@InjectLazy(Engine) engineFactory) {
+    this.engineFactory = engineFactory;
   }
 }
 
@@ -118,31 +124,6 @@ export function main() {
       expect(() => new Injector([bind("blah")])).toThrowError('Invalid binding blah');
     });
 
-    describe("child", function () {
-      it('should load instances from parent injector', function() {
-        var parent = new Injector([Engine]);
-        var child = parent.createChild([]);
-
-        var engineFromParent = parent.get(Engine);
-        var engineFromChild = child.get(Engine);
-
-        expect(engineFromChild).toBe(engineFromParent);
-      });
-
-      it('should create new instance in a child injector', function() {
-        var parent = new Injector([Engine]);
-        var child = parent.createChild([
-          bind(Engine).toClass(TurboEngine)
-        ]);
-
-        var engineFromParent = parent.get(Engine);
-        var engineFromChild = child.get(Engine);
-
-        expect(engineFromParent).not.toBe(engineFromChild);
-        expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
-      });
-    });
-
     it('should provide itself', function() {
       var parent = new Injector([]);
       var child = parent.createChild([]);
@@ -183,6 +164,57 @@ export function main() {
       } catch (e) {
         expect(e.message).toContain("Error during instantiation of Engine! (Car -> Engine)");
       }
+    });
+
+
+    describe("child", function () {
+      it('should load instances from parent injector', function() {
+        var parent = new Injector([Engine]);
+        var child = parent.createChild([]);
+
+        var engineFromParent = parent.get(Engine);
+        var engineFromChild = child.get(Engine);
+
+        expect(engineFromChild).toBe(engineFromParent);
+      });
+
+      it('should create new instance in a child injector', function() {
+        var parent = new Injector([Engine]);
+        var child = parent.createChild([
+          bind(Engine).toClass(TurboEngine)
+        ]);
+
+        var engineFromParent = parent.get(Engine);
+        var engineFromChild = child.get(Engine);
+
+        expect(engineFromParent).not.toBe(engineFromChild);
+        expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
+      });
+    });
+
+    describe("lazy", function () {
+      it("should create dependencies lazily", function () {
+        var injector = new Injector([
+          Engine,
+          CarWithLazyEngine
+        ]);
+
+        var car = injector.get(CarWithLazyEngine);
+        expect(car.engineFactory()).toBeAnInstanceOf(Engine);
+      });
+
+      it("should cache instance created lazily", function () {
+        var injector = new Injector([
+          Engine,
+          CarWithLazyEngine
+        ]);
+
+        var car = injector.get(CarWithLazyEngine);
+        var e1 = car.engineFactory();
+        var e2 = car.engineFactory();
+
+        expect(e1).toBe(e2);
+      });
     });
   });
 }

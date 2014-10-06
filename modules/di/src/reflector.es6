@@ -1,5 +1,5 @@
 import {Type, isPresent} from 'facade/lang';
-import {Inject, InjectFuture} from './annotations';
+import {Inject, InjectFuture, InjectLazy} from './annotations';
 import {Dependency, Key} from './key';
 import {NoAnnotationError} from './exceptions';
 
@@ -27,10 +27,13 @@ export class Reflector {
         type = paramAnnotation;
 
       } else if (paramAnnotation instanceof Inject) {
-        return this._createDependency(paramAnnotation.token, false);
+        return this._createDependency(paramAnnotation.token, false, false);
 
       } else if (paramAnnotation instanceof InjectFuture) {
-        return this._createDependency(paramAnnotation.token, true);
+        return this._createDependency(paramAnnotation.token, true, false);
+
+      } else if (paramAnnotation instanceof InjectLazy) {
+        return this._createDependency(paramAnnotation.token, false, true);
       }
     }
 
@@ -41,7 +44,7 @@ export class Reflector {
     }
   }
 
-  _createDependency(token, asFuture):Dependency {
-    return new Dependency(Key.get(token), asFuture);
+  _createDependency(token, asFuture, lazy):Dependency {
+    return new Dependency(Key.get(token), asFuture, lazy);
   }
 }

@@ -37,11 +37,11 @@ export class Injector {
   }
 
   getByKey(key:Key) {
-    return this._getByKey(key, false);
+    return this._getByKey(key, false, false);
   }
 
   asyncGetByKey(key:Key) {
-    return this._getByKey(key, true);
+    return this._getByKey(key, true, false);
   }
 
   createChild(bindings:List):Injector {
@@ -61,7 +61,11 @@ export class Injector {
     return ListWrapper.createFixedSize(Key.numberOfKeys() + 1);
   }
 
-  _getByKey(key:Key, returnFuture) {
+  _getByKey(key:Key, returnFuture, returnLazy) {
+    if (returnLazy) {
+      return () => this._getByKey(key, returnFuture, false);
+    }
+
     var strategy = returnFuture ? this._asyncStrategy : this._syncStrategy;
 
     var instance = strategy.readFromCache(key);
@@ -71,7 +75,7 @@ export class Injector {
     if (isPresent(instance)) return instance;
 
     if (isPresent(this._parent)) {
-      return this._parent._getByKey(key, returnFuture);
+      return this._parent._getByKey(key, returnFuture, returnLazy);
     }
     throw new NoProviderError(key);
   }
@@ -129,7 +133,7 @@ class _SyncInjectorStrategy {
 
   _resolveDependencies(key:Key, binding:Binding) {
     try {
-      var getDependency = d => this.injector._getByKey(d.key, d.asFuture);
+      var getDependency = d => this.injector._getByKey(d.key, d.asFuture, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
       if (e instanceof ProviderError) e.addKey(key);
@@ -184,7 +188,7 @@ class _AsyncInjectorStrategy {
   }
 
   _resolveDependencies(key:Key, binding:Binding):List {
-    var getDependency = d => this.injector._getByKey(d.key, true);
+    var getDependency = d => this.injector._getByKey(d.key, true, d.lazy);
     return ListWrapper.map(binding.dependencies, getDependency);
   }
 
