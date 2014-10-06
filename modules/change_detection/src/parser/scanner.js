@@ -163,6 +163,15 @@ const $TILDE  = 126;
 const $NBSP   = 160;
 
 
+export class ScannerError extends Error {
+  constructor(message) {
+    this.message = message;
+  }
+
+  toString() {
+    return this.message;
+  }
+}
 
 export class Scanner {
   @FIELD('final input:String')
@@ -214,8 +223,8 @@ export class Scanner {
     switch (peek) {
       case $PERIOD:
         this.advance();
-        return isDigit(peek) ? scanNumber(start) :
-                               newCharacterToken(start, $PERIOD);
+        return isDigit(this.peek) ? this.scanNumber(start) :
+                                    newCharacterToken(start, $PERIOD);
       case $LPAREN:   case $RPAREN:
       case $LBRACE:   case $RBRACE:
       case $LBRACKET: case $RBRACKET:
@@ -250,7 +259,7 @@ export class Scanner {
         return this.scanToken();
     }
 
-    this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`);
+    this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`, 0);
     return null;
   }
 
@@ -305,7 +314,7 @@ export class Scanner {
       } else if (isExponentStart(this.peek)) {
         this.advance();
         if (isExponentSign(this.peek)) this.advance();
-        if (!isDigit(this.peek)) this.error('Invalid exponent');
+        if (!isDigit(this.peek)) this.error('Invalid exponent', -1);
         simple = false;
       } else {
         break;
@@ -324,7 +333,7 @@ export class Scanner {
     var quote:int = this.peek;
     this.advance();  // Skip initial quote.
 
-    var buffer:StringJoiner; //ckck
+    var buffer:StringJoiner;
     var marker:int = this.index;
     var input:string = this.input;
 
@@ -337,7 +346,11 @@ export class Scanner {
         if (this.peek == $u) {
           // 4 character hex code for unicode character.
           var hex:string = input.substring(this.index + 1, this.index + 5);
-          unescapedCode = NumberWrapper.parseInt(hex, 16);
+          try {
+            unescapedCode = NumberWrapper.parseInt(hex, 16);
+          } catch (e) {
+            this.error(`Invalid unicode escape [\\u${hex}]`, 0);
+          }
           for (var i:int = 0; i < 5; i++) {
             this.advance();
           }
@@ -348,7 +361,7 @@ export class Scanner {
         buffer.add(StringWrapper.fromCharCode(unescapedCode));
         marker = this.index;
       } else if (this.peek == $EOF) {
-        this.error('Unterminated quote');
+        this.error('Unterminated quote', 0);
       } else {
         this.advance();
       }
@@ -367,9 +380,9 @@ export class Scanner {
     return newStringToken(start, unescaped);
   }
 
-  error(message:string) {
-    var position:int = this.index;
-    throw `Lexer Error: ${message} at column ${position} in expression [${input}]`;
+  error(message:string, offset:int) {
+    var position:int = this.index + offset;
+    throw new ScannerError(`Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
   }
 }
 
