@@ -36,12 +36,20 @@ export function main() {
         expect(p).toBeFuture();
       });
 
-      it('should return a future if the binding is sync', function () {
+      it('should return a future when the binding is sync', function () {
         var injector = new Injector([
           SynchronousUserList
         ]);
         var p = injector.asyncGet(SynchronousUserList);
         expect(p).toBeFuture();
+      });
+
+      it("should return a future when the binding is sync (from cache)", function () {
+        var injector = new Injector([
+          UserList
+        ]);
+        expect(injector.get(UserList)).toBeAnInstanceOf(UserList);
+        expect(injector.asyncGet(UserList)).toBeFuture();
       });
 
       it('should return the injector', function (done) {
@@ -65,14 +73,6 @@ export function main() {
           expect(userController.list).toBeAnInstanceOf(UserList);
           done();
         });
-      });
-
-      it("should return a future when the binding is sync from cache", function () {
-        var injector = new Injector([
-          UserList
-        ]);
-        expect(injector.get(UserList)).toBeAnInstanceOf(UserList);
-        expect(injector.asyncGet(UserList)).toBeFuture();
       });
 
       it("should create only one instance (async + async)", function (done) {

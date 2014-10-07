@@ -19,7 +19,7 @@ export function isBlank(obj):bool{
   return obj == undefined || obj == null;
 }
 
-export function stringify(token) {
+export function stringify(token):string {
   if (typeof token === 'string') {
     return token;
   }
