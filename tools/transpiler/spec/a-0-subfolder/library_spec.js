@@ -1,3 +1,1 @@
-function main() {
-  assert(true);
-}
+export function main() {}

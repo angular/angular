@@ -9,7 +9,6 @@ function file2moduleName(filePath) {
     // module name should not include `src`, `test`, `lib`
     .replace(/\/src\//, '/')
     .replace(/\/lib\//, '/')
-    .replace(/\/test\//, '/')
     // module name should not have a suffix
     .replace(/\.\w*$/, '');
 }

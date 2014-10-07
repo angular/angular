@@ -13,6 +13,7 @@
 import {assert} from 'rtts_assert/rtts_assert';
 
 
+export function main() {
 
 // ## Basic Type Check
 // By default, `instanceof` is used to check the type.
@@ -375,3 +376,5 @@ describe('Traceur', function() {
 // <center><small>
 // This documentation was generated from [assert.spec.js](https://github.com/vojtajina/assert/blob/master/test/assert.spec.js) using [Docco](http://jashkenas.github.io/docco/).
 // </small></center>
+
+}

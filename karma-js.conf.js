@@ -8,12 +8,15 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
     files: [
+      // Sources and specs.
+      // Loaded through the es6-module-loader, in `test-main.js`.
+      {pattern: 'modules/**', included: false},
+      {pattern: 'tools/transpiler/**', included: false},
+
       'node_modules/traceur/bin/traceur-runtime.js',
-      'modules/**/test_lib/**/*.es6',
-      'modules/**/*.js',
-      'modules/**/*.es6',
-      'tools/transpiler/spec/**/*.js',
-      'tools/transpiler/spec/**/*.es6',
+      'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
+      'node_modules/systemjs/lib/extension-register.js',
+
       'file2modulename.js',
       'test-main.js'
     ],
@@ -29,7 +32,7 @@ module.exports = function(config) {
       options: {
         outputLanguage: 'es5',
         script: false,
-        modules: 'register',
+        modules: 'instantiate',
         types: true,
         typeAssertions: true,
         typeAssertionModule: 'rtts_assert/rtts_assert',
@@ -37,7 +40,7 @@ module.exports = function(config) {
       },
       resolveModuleName: file2moduleName,
       transformPath: function(fileName) {
-        return fileName.replace('.es6', '');
+        return fileName.replace(/\.es6$/, '.js');
       }
     },
 
