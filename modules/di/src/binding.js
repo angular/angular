@@ -1,10 +1,10 @@
-import {Type} from 'facade/lang';
+import {Type, bool} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Reflector} from './reflector';
 import {Key, Dependency} from './key';
 
 export class Binding {
-  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture:bool) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;

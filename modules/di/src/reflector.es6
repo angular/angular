@@ -38,7 +38,7 @@ export class Reflector {
     }
 
     if (isPresent(type)) {
-      return this._createDependency(type, false);
+      return this._createDependency(type, false, false);
     } else {
       throw new NoAnnotationError(constructedType);
     }
