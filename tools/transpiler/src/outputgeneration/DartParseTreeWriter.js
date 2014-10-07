@@ -20,7 +20,7 @@ import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} f
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
     super(outputPath);
-    this.libName = moduleName.replace(/\//g, '.');
+    this.libName = moduleName.replace(/\//g, '.').replace(/[^\w.\/]/g, '_');
   }
 
   // VARIABLES - types
