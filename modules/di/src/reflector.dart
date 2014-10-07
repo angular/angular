@@ -37,12 +37,16 @@ class Reflector {
 
       if (inject != null) {
         return new Dependency(Key.get(inject.token), false, false);
+
       } else if (injectFuture != null) {
         return new Dependency(Key.get(injectFuture.token), true, false);
+
       } else if (injectLazy != null) {
         return new Dependency(Key.get(injectLazy.token), false, true);
+
       } else if (p.type.qualifiedName != #dynamic) {
         return new Dependency(Key.get(p.type.reflectedType), false, false);
+
       } else {
         throw new NoAnnotationError(type);
       }

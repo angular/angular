@@ -2,13 +2,15 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/te
 import {Injector, Inject, InjectFuture, bind, Key} from 'di/di';
 import {Future, FutureWrapper} from 'facade/async';
 
-class UserList {}
+class UserList {
+}
 
 function fetchUsers() {
   return FutureWrapper.value(new UserList());
 }
 
-class SynchronousUserList {}
+class SynchronousUserList {
+}
 
 class UserController {
   constructor(list:UserList) {
@@ -22,11 +24,11 @@ class AsyncUserController {
   }
 }
 
-export function main () {
+export function main() {
   describe("async injection", function () {
 
     describe("asyncGet", function () {
-      it('should return a future', function() {
+      it('should return a future', function () {
         var injector = new Injector([
           bind(UserList).toAsyncFactory([], fetchUsers)
         ]);
@@ -34,7 +36,7 @@ export function main () {
         expect(p).toBeFuture();
       });
 
-      it('should return a future if the binding is sync', function() {
+      it('should return a future if the binding is sync', function () {
         var injector = new Injector([
           SynchronousUserList
         ]);
@@ -42,23 +44,23 @@ export function main () {
         expect(p).toBeFuture();
       });
 
-      it('should return the injector', function(done) {
+      it('should return the injector', function (done) {
         var injector = new Injector([]);
         var p = injector.asyncGet(Injector);
-        p.then(function(injector) {
+        p.then(function (injector) {
           expect(injector).toBe(injector);
           done();
         });
       });
 
       it('should return a future when instantiating a sync binding ' +
-        'with an async dependency', function(done) {
+      'with an async dependency', function (done) {
         var injector = new Injector([
           bind(UserList).toAsyncFactory([], fetchUsers),
           UserController
         ]);
 
-        injector.asyncGet(UserController).then(function(userController) {
+        injector.asyncGet(UserController).then(function (userController) {
           expect(userController).toBeAnInstanceOf(UserController);
           expect(userController.list).toBeAnInstanceOf(UserList);
           done();
@@ -104,10 +106,12 @@ export function main () {
         });
       });
 
-      it('should show the full path when error happens in a constructor', function(done) {
+      it('should show the full path when error happens in a constructor', function (done) {
         var injector = new Injector([
           UserController,
-          bind(UserList).toAsyncFactory([], function(){throw "Broken UserList";})
+          bind(UserList).toAsyncFactory([], function () {
+            throw "Broken UserList";
+          })
         ]);
 
         var future = injector.asyncGet(UserController);
@@ -119,7 +123,7 @@ export function main () {
     });
 
     describe("get", function () {
-      it('should throw when instantiating an async binding', function() {
+      it('should throw when instantiating an async binding', function () {
         var injector = new Injector([
           bind(UserList).toAsyncFactory([], fetchUsers)
         ]);
@@ -128,7 +132,7 @@ export function main () {
           .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future!');
       });
 
-      it('should throw when instantiating a sync binding with an dependency', function() {
+      it('should throw when instantiating a sync binding with an dependency', function () {
         var injector = new Injector([
           bind(UserList).toAsyncFactory([], fetchUsers),
           UserController
@@ -138,7 +142,7 @@ export function main () {
           .toThrowError('Cannot instantiate UserList synchronously. It is provided as a future! (UserController -> UserList)');
       });
 
-      it('should resolve synchronously when an async dependency requested as a future', function() {
+      it('should resolve synchronously when an async dependency requested as a future', function () {
         var injector = new Injector([
           bind(UserList).toAsyncFactory([], fetchUsers),
           AsyncUserController
@@ -149,7 +153,7 @@ export function main () {
         expect(controller.userList).toBeFuture();
       });
 
-      it('should wrap sync dependencies into futures if required', function() {
+      it('should wrap sync dependencies into futures if required', function () {
         var injector = new Injector([
           bind(UserList).toFactory([], () => new UserList()),
           AsyncUserController

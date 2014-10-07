@@ -1,17 +1,24 @@
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {Injector, Inject, InjectLazy, bind} from 'di/di';
 
-class Engine {}
+class Engine {
+}
+
 class BrokenEngine {
   constructor() {
     throw "Broken Engine";
   }
 }
-class DashboardSoftware {}
-class Dashboard {
-  constructor(software: DashboardSoftware){}
+
+class DashboardSoftware {
 }
-class TurboEngine extends Engine{}
+
+class Dashboard {
+  constructor(software: DashboardSoftware) {}
+}
+
+class TurboEngine extends Engine {
+}
 
 class Car {
   constructor(engine:Engine) {
@@ -45,23 +52,23 @@ class CarWithInject {
 }
 
 class CyclicEngine {
-  constructor(car:Car){}
+  constructor(car:Car) {}
 }
 
 class NoAnnotations {
-  constructor(secretDependency){}
+  constructor(secretDependency) {}
 }
 
 export function main() {
-  describe('injector', function() {
-    it('should instantiate a class without dependencies', function() {
+  describe('injector', function () {
+    it('should instantiate a class without dependencies', function () {
       var injector = new Injector([Engine]);
       var engine = injector.get(Engine);
 
       expect(engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should resolve dependencies based on type information', function() {
+    it('should resolve dependencies based on type information', function () {
       var injector = new Injector([Engine, Car]);
       var car = injector.get(Car);
 
@@ -69,7 +76,7 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should resolve dependencies based on @Inject annotation', function() {
+    it('should resolve dependencies based on @Inject annotation', function () {
       var injector = new Injector([TurboEngine, Engine, CarWithInject]);
       var car = injector.get(CarWithInject);
 
@@ -82,7 +89,7 @@ export function main() {
         'Cannot resolve all parameters for NoAnnotations');
     });
 
-    it('should cache instances', function() {
+    it('should cache instances', function () {
       var injector = new Injector([Engine]);
 
       var e1 = injector.get(Engine);
@@ -91,7 +98,7 @@ export function main() {
       expect(e1).toBe(e2);
     });
 
-    it('should bind to a value', function() {
+    it('should bind to a value', function () {
       var injector = new Injector([
         bind(Engine).toValue("fake engine")
       ]);
@@ -100,7 +107,7 @@ export function main() {
       expect(engine).toEqual("fake engine");
     });
 
-    it('should bind to a factory', function() {
+    it('should bind to a factory', function () {
       var injector = new Injector([
         Engine,
         bind(Car).toFactory([Engine], (e) => new SportsCar(e))
@@ -111,7 +118,7 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should use non-type tokens', function() {
+    it('should use non-type tokens', function () {
       var injector = new Injector([
         bind('token').toValue('value')
       ]);
@@ -119,30 +126,30 @@ export function main() {
       expect(injector.get('token')).toEqual('value');
     });
 
-    it('should throw when given invalid bindings', function() {
+    it('should throw when given invalid bindings', function () {
       expect(() => new Injector(["blah"])).toThrowError('Invalid binding blah');
       expect(() => new Injector([bind("blah")])).toThrowError('Invalid binding blah');
     });
 
-    it('should provide itself', function() {
+    it('should provide itself', function () {
       var parent = new Injector([]);
       var child = parent.createChild([]);
 
       expect(child.get(Injector)).toBe(child);
     });
 
-    it('should throw when no provider defined', function() {
+    it('should throw when no provider defined', function () {
       var injector = new Injector([]);
       expect(() => injector.get('NonExisting')).toThrowError('No provider for NonExisting!');
     });
 
-    it('should show the full path when no provider', function() {
+    it('should show the full path when no provider', function () {
       var injector = new Injector([CarWithDashboard, Engine, Dashboard]);
       expect(() => injector.get(CarWithDashboard)).
         toThrowError('No provider for DashboardSoftware! (CarWithDashboard -> Dashboard -> DashboardSoftware)');
     });
 
-    it('should throw when trying to instantiate a cyclic dependency', function() {
+    it('should throw when trying to instantiate a cyclic dependency', function () {
       var injector = new Injector([
         Car,
         bind(Engine).toClass(CyclicEngine)
@@ -155,7 +162,7 @@ export function main() {
         .toThrowError('Cannot instantiate cyclic dependency! (Car -> Engine -> Car)');
     });
 
-    it('should show the full path when error happens in a constructor', function() {
+    it('should show the full path when error happens in a constructor', function () {
       var injector = new Injector([
         Car,
         bind(Engine).toClass(BrokenEngine)
@@ -171,7 +178,7 @@ export function main() {
 
 
     describe("child", function () {
-      it('should load instances from parent injector', function() {
+      it('should load instances from parent injector', function () {
         var parent = new Injector([Engine]);
         var child = parent.createChild([]);
 
@@ -181,7 +188,7 @@ export function main() {
         expect(engineFromChild).toBe(engineFromParent);
       });
 
-      it('should create new instance in a child injector', function() {
+      it('should create new instance in a child injector', function () {
         var parent = new Injector([Engine]);
         var child = parent.createChild([
           bind(Engine).toClass(TurboEngine)

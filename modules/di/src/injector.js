@@ -81,16 +81,16 @@ export class Injector {
     throw new NoProviderError(key);
   }
 
-  _getInstance(key:Key){
+  _getInstance(key:Key) {
     if (this._instances.length <= key.id) return null;
     return ListWrapper.get(this._instances, key.id);
   }
 
-  _setInstance(key:Key, obj){
+  _setInstance(key:Key, obj) {
     ListWrapper.set(this._instances, key.id, obj);
   }
 
-  _getBinding(key:Key){
+  _getBinding(key:Key) {
     if (this._bindings.length <= key.id) return null;
     return ListWrapper.get(this._bindings, key.id);
   }
@@ -154,7 +154,6 @@ class _SyncInjectorStrategy {
 }
 
 
-
 class _AsyncInjectorStrategy {
   constructor(injector:Injector) {
     this.injector = injector;
@@ -212,13 +211,13 @@ class _AsyncInjectorStrategy {
     return FutureWrapper.error(e);
   }
 
-  _findOrCreate(key:Key, binding: Binding, deps:List) {
+  _findOrCreate(key:Key, binding:Binding, deps:List) {
     try {
       var instance = this.injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
       return binding.factory(deps);
     } catch (e) {
-     throw new InstantiationError(e, key);
+      throw new InstantiationError(e, key);
     }
   }
 
@@ -229,10 +228,9 @@ class _AsyncInjectorStrategy {
 }
 
 
-
 function _flattenBindings(bindings:List) {
   var res = {};
-  ListWrapper.forEach(bindings, function (b){
+  ListWrapper.forEach(bindings, function (b) {
     if (b instanceof Binding) {
       MapWrapper.set(res, b.key.id, b);
 

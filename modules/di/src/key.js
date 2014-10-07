@@ -9,7 +9,7 @@ var _id:int = 0;
 @FIELD('final asFuture:bool')
 @FIELD('final lazy:bool')
 export class Dependency {
-  constructor(key:Key, asFuture:bool, lazy:bool){
+  constructor(key:Key, asFuture:bool, lazy:bool) {
     this.key = key;
     this.asFuture = asFuture;
     this.lazy = lazy;
