@@ -186,7 +186,9 @@ class _AsyncInjectorStrategy {
     this.injector._setInstance(key, _constructing);
 
     var deps = this._resolveDependencies(key, binding);
-    var future = FutureWrapper.wait(deps).
+    var depsFuture = FutureWrapper.wait(deps);
+
+    var future = FutureWrapper.catchError(depsFuture, (e) => this._errorHandler(key, e)).
       then(deps => this._findOrCreate(key, binding, deps)).
       then(instance => this._cacheInstance(key, instance));
 
@@ -205,10 +207,19 @@ class _AsyncInjectorStrategy {
     }
   }
 
+  _errorHandler(key:Key, e):Future {
+    if (e instanceof ProviderError) e.addKey(key);
+    return FutureWrapper.error(e);
+  }
+
   _findOrCreate(key:Key, binding: Binding, deps:List) {
-    var instance = this.injector._getInstance(key);
-    if (! _isWaiting(instance)) return instance;
-    return binding.factory(deps);
+    try {
+      var instance = this.injector._getInstance(key);
+      if (!_isWaiting(instance)) return instance;
+      return binding.factory(deps);
+    } catch (e) {
+     throw new InstantiationError(e, key);
+    }
   }
 
   _cacheInstance(key, instance) {

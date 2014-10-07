@@ -100,6 +100,19 @@ export function main () {
           done();
         });
       });
+
+      it('should show the full path when error happens in a constructor', function(done) {
+        var injector = new Injector([
+          UserController,
+          bind(UserList).toAsyncFactory([], function(){throw "Broken UserList";})
+        ]);
+
+        var future = injector.asyncGet(UserController);
+        FutureWrapper.catchError(future, function (e) {
+          expect(e.message).toContain("Error during instantiation of UserList! (UserController -> UserList)");
+          done();
+        });
+      });
     });
 
     describe("get", function () {
