@@ -30,8 +30,8 @@ class ListWrapper {
   static last(List list) {
     return list.last;
   }
-  static reversed(List list) {
-    return list.reversed;
+  static List reversed(List list) {
+    return list.reversed.toList();
   }
   static void push(List l, e) { l.add(e); }
 }

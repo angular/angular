@@ -6,11 +6,11 @@ import 'key.dart' show Key, Dependency;
 import 'exceptions.dart' show NoAnnotationError;
 
 class Reflector {
-  factoryFor(Type type) {
+  Function factoryFor(Type type) {
     return _generateFactory(type);
   }
 
-  convertToFactory(Function factory) {
+  Function convertToFactory(Function factory) {
     return (args) => Function.apply(factory, args);
   }
 
@@ -22,7 +22,7 @@ class Reflector {
     return (args) => create(name, args).reflectee;
   }
 
-  dependencies(Type type) {
+  List<Dependency> dependencies(Type type) {
     ClassMirror classMirror = reflectType(type);
     MethodMirror ctor = classMirror.declarations[classMirror.simpleName];
 

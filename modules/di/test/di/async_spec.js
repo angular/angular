@@ -34,7 +34,7 @@ export function main () {
         expect(p).toBeFuture();
       });
 
-      it('should return a future when if the binding is sync', function() {
+      it('should return a future if the binding is sync', function() {
         var injector = new Injector([
           SynchronousUserList
         ]);
@@ -42,10 +42,13 @@ export function main () {
         expect(p).toBeFuture();
       });
 
-      it('should return the injector', function() {
+      it('should return the injector', function(done) {
         var injector = new Injector([]);
         var p = injector.asyncGet(Injector);
-        expect(p).toBeFuture();
+        p.then(function(injector) {
+          expect(injector).toBe(injector);
+          done();
+        });
       });
 
       it('should return a future when instantiating a sync binding ' +
