@@ -1,6 +1,6 @@
 import {Type, bool} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
-import {Reflector} from './reflector';
+import {reflector} from './reflector';
 import {Key, Dependency} from './key';
 
 export class Binding {
@@ -19,14 +19,13 @@ export function bind(token):BindingBuilder {
 export class BindingBuilder {
   constructor(token) {
     this.token = token;
-    this.reflector = new Reflector();
   }
 
   toClass(type:Type):Binding {
     return new Binding(
       Key.get(this.token),
-      this.reflector.factoryFor(type),
-      this.reflector.dependencies(type),
+      reflector.factoryFor(type),
+      reflector.dependencies(type),
       false
     );
   }
@@ -43,7 +42,7 @@ export class BindingBuilder {
   toFactory(dependencies:List, factoryFunction:Function):Binding {
     return new Binding(
       Key.get(this.token),
-      this.reflector.convertToFactory(factoryFunction),
+      reflector.convertToFactory(factoryFunction),
       this._constructDependencies(dependencies),
       false
     );
@@ -52,7 +51,7 @@ export class BindingBuilder {
   toAsyncFactory(dependencies:List, factoryFunction:Function):Binding {
     return new Binding(
       Key.get(this.token),
-      this.reflector.convertToFactory(factoryFunction),
+      reflector.convertToFactory(factoryFunction),
       this._constructDependencies(dependencies),
       true
     );

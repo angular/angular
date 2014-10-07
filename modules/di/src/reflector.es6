@@ -1,18 +1,19 @@
 import {Type, isPresent} from 'facade/lang';
+import {List} from 'facade/collection';
 import {Inject, InjectFuture, InjectLazy} from './annotations';
 import {Dependency, Key} from './key';
 import {NoAnnotationError} from './exceptions';
 
-export class Reflector {
-  factoryFor(type:Type) {
+class Reflector {
+  factoryFor(type:Type):Function {
     return (args) => new type(...args);
   }
 
-  convertToFactory(factoryFunction:Function) {
+  convertToFactory(factoryFunction:Function):Function {
     return (args) => factoryFunction(...args);
   }
 
-  dependencies(type:Type) {
+  dependencies(type:Type):List {
     var p = type.parameters;
     if (p == undefined && type.length == 0) return [];
     if (p == undefined) throw new NoAnnotationError(type);
@@ -48,3 +49,5 @@ export class Reflector {
     return new Dependency(Key.get(token), asFuture, lazy);
   }
 }
+
+export var reflector:Reflector = new Reflector();

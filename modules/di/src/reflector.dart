@@ -49,3 +49,5 @@ class Reflector {
     }, growable:false);
   }
 }
+
+final Reflector reflector = new Reflector();
