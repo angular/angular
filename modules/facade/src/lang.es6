@@ -11,11 +11,11 @@ export class ABSTRACT {}
 export class IMPLEMENTS {}
 
 
-export function isPresent(obj){
+export function isPresent(obj):bool{
   return obj != undefined && obj != null;
 }
 
-export function isBlank(obj){
+export function isBlank(obj):bool{
   return obj == undefined || obj == null;
 }
 
@@ -83,6 +83,7 @@ export class NumberWrapper {
 }
 
 export function int() {};
+export var bool = $traceurRuntime.type.boolean;
 int.assert = function(value) {
   return value == null || typeof value == 'number' && value === Math.floor(value);
 }
