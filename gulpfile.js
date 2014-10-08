@@ -15,15 +15,24 @@ var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
 var Q = require('q');
+var merge = require('merge');
+var benchpress = require('angular-benchpress/lib/cli');
 
 var js2es5Options = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
-  modules: 'register',
+  modules: 'instantiate'
+};
+
+var js2es5OptionsProd = merge(true, js2es5Options, {
+  typeAssertions: false
+});
+
+var js2es5OptionsDev = merge(true, js2es5Options, {
   typeAssertionModule: 'rtts_assert/rtts_assert',
   typeAssertions: true
-};
+});
 
 var js2dartOptions = {
   annotations: true, // parse annotations
@@ -38,8 +47,11 @@ var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 // traceur runtime
 
 gulp.task('jsRuntime/build', function() {
-  var traceurRuntime = gulp.src(gulpTraceur.RUNTIME_PATH)
-    .pipe(gulp.dest('build/js'));
+  var traceurRuntime = gulp.src([
+    gulpTraceur.RUNTIME_PATH,
+    "node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js",
+    "node_modules/systemjs/lib/extension-register.js"
+  ]).pipe(gulp.dest('build/js'));
   return traceurRuntime;
 });
 
@@ -47,7 +59,6 @@ gulp.task('jsRuntime/build', function() {
 // modules
 var sourceTypeConfigs = {
   dart: {
-    compilerOptions: js2dartOptions,
     transpileSrc: ['modules/**/*.js'],
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.dart'],
@@ -56,7 +67,6 @@ var sourceTypeConfigs = {
     mimeType: 'application/dart'
   },
   js: {
-    compilerOptions: js2es5Options,
     transpileSrc: ['modules/**/*.js', 'modules/**/*.es6'],
     htmlSrc: ['modules/*/src/**/*.html'],
     copySrc: ['modules/**/*.es5'],
@@ -72,7 +82,7 @@ gulp.task('modules/clean', function() {
 });
 
 gulp.task('modules/build.dart/src', function() {
-  return createModuleTask(sourceTypeConfigs.dart);
+  return createModuleTask(merge(sourceTypeConfigs.dart, {compilerOptions: js2dartOptions}));
 });
 
 gulp.task('modules/build.dart/pubspec', function(done) {
@@ -105,12 +115,22 @@ gulp.task('modules/build.dart/pubspec', function(done) {
 
 gulp.task('modules/build.dart', ['modules/build.dart/src', 'modules/build.dart/pubspec']);
 
-gulp.task('modules/build.js', function() {
-  return createModuleTask(sourceTypeConfigs.js);
+gulp.task('modules/build.dev.js', function() {
+  return createModuleTask(merge(true, sourceTypeConfigs.js, {compilerOptions: js2es5OptionsDev}));
+});
+
+gulp.task('modules/build.prod.js', function() {
+  return createModuleTask(merge(true, sourceTypeConfigs.js, {compilerOptions: js2es5OptionsProd}));
 });
 
 function renameSrcToLib(file) {
   file.dirname = file.dirname.replace(/\bsrc\b/, 'lib');
+}
+
+function renameEs5ToJs(file) {
+  if (file.extname == '.es5') {
+    file.extname = '.js';
+  }
 }
 
 function createModuleTask(sourceTypeConfig) {
@@ -121,6 +141,7 @@ function createModuleTask(sourceTypeConfig) {
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
   var copy = gulp.src(sourceTypeConfig.copySrc)
     .pipe(rename(renameSrcToLib))
+    .pipe(rename(renameEs5ToJs))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
   // TODO: provide the list of files to the template
   // automatically!
@@ -202,22 +223,50 @@ gulp.task('analyze/dartanalyzer', function(done) {
 });
 
 
+
+// ------------------
+// BENCHMARKS
+
+var benchmarksBuildPath = 'build/benchpress';
+var benchmarksCompiledJsPath = 'build/js/benchmarks/lib';
+
+gulp.task('benchmarks/build.benchpress', function () {
+  benchpress.build({
+    benchmarksPath: benchmarksCompiledJsPath,
+    buildPath: benchmarksBuildPath
+  })
+});
+
+gulp.task('benchmarks/build', function() {
+  runSequence(
+    ['jsRuntime/build', 'modules/build.prod.js'],
+    'benchmarks/build.benchpress'
+  );
+});
+
+
+
 // ------------------
 // WEB SERVER
-gulp.task('serve', connect.server({
-  root: [__dirname+'/build'],
-  port: 8000,
-  livereload: false,
-  open: false,
-  middleware: function() {
-    return [function(req, resp, next){
-      if (req.url.match(/\.dart$/)) {
-        resp.setHeader("Content-Type", "application/dart");
-      }
-      next();
-    }];
-  }
-}));
+
+gulp.task('serve', function() {
+  connect.server({
+    root: [__dirname+'/build'],
+    port: 8000,
+    livereload: false,
+    open: false,
+    middleware: function() {
+      return [function(req, resp, next){
+        if (req.url.match(/\.dart$/)) {
+          resp.setHeader("Content-Type", "application/dart");
+        }
+        next();
+      }];
+    }
+  })();
+});
+
+
 
 // --------------
 // general targets
@@ -227,7 +276,7 @@ gulp.task('clean', ['modules/clean']);
 gulp.task('build', function(done) {
   runSequence(
     // parallel
-    ['jsRuntime/build', 'modules/build.dart', 'modules/build.js'],
+    ['jsRuntime/build', 'modules/build.dart', 'modules/build.dev.js'],
     // sequential
     'analyze/dartanalyzer'
   );

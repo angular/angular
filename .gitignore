@@ -1,5 +1,6 @@
 # Don’t commit the following directories created by pub.
 build/
+benchpress-build/
 packages/
 .buildlog
 node_modules

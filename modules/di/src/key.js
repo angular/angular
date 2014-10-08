@@ -1,5 +1,5 @@
 import {MapWrapper} from 'facade/collection';
-import {FIELD, int} from 'facade/lang';
+import {FIELD, int, isPresent} from 'facade/lang';
 
 var _allKeys = {};
 var _id:int = 0;
@@ -15,9 +15,8 @@ export class Key {
   static get(token) {
     if (token instanceof Key) return token;
 
-    if (MapWrapper.contains(_allKeys, token)) {
-      return MapWrapper.get(_allKeys, token)
-    }
+    var obj = MapWrapper.get(_allKeys, token);
+    if (isPresent(obj)) return obj;
 
     var newKey = new Key(token, ++_id);
     MapWrapper.set(_allKeys, token, newKey);
