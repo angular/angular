@@ -1,12 +1,15 @@
-import {ParseTreeTransformer} from 'traceur/src/codegeneration/ParseTreeTransformer';
+import {ParseTreeTransformer} from './ParseTreeTransformer';
+
 import {
   BINDING_ELEMENT,
   OBJECT_PATTERN,
   OBJECT_LITERAL_EXPRESSION
 } from 'traceur/src/syntax/trees/ParseTreeType';
 
-import {NamedParams} from '../ast/named_params';
-import {ObjectPatternBindingElement} from '../ast/object_pattern_binding_element';
+import {
+  NamedParameterList,
+  ObjectPatternBindingElement
+} from '../syntax/trees/ParseTrees';
 
 /**
  * Transforms maps into named parameters:
@@ -22,6 +25,8 @@ import {ObjectPatternBindingElement} from '../ast/object_pattern_binding_element
  */
 export class NamedParamsTransformer extends ParseTreeTransformer {
   /**
+   * Transform function calls.
+   *
    * @param {CallExpression} tree
    * @return {ParseTree}
    */
@@ -58,10 +63,12 @@ export class NamedParamsTransformer extends ParseTreeTransformer {
   _replaceLastArgWithNamedParams(tree) {
     var args = tree.args.args;
     var last = this._last(args);
-    args[args.length - 1] = new NamedParams(last.location, last.propertyNameAndValues);
+    args[args.length - 1] = new NamedParameterList(last.location, last.propertyNameAndValues);
   }
 
   /**
+   * Transform function declaration.
+   *
    * @param {ObjectPattern} tree
    * @return {ParseTree}
    */

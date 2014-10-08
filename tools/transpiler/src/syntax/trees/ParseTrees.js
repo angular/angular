@@ -4,9 +4,7 @@ import {PropertyMethodAssignment} from 'traceur/src/syntax/trees/ParseTrees';
 
 import * as ParseTreeType from './ParseTreeType';
 
-/**
- * Property declaration
- */
+// Class field declaration
 export class ClassFieldDeclaration extends ParseTree {
   constructor(location, lvalue, typeAnnotation, isFinal) {
     this.location = location;
@@ -30,9 +28,7 @@ export class ClassFieldDeclaration extends ParseTree {
 
 var CLASS_FIELD_DECLARATION = ParseTreeType.CLASS_FIELD_DECLARATION;
 
-/**
- * Class constructor
- */
+// Class constructor
 export class PropertyConstructorAssignment extends PropertyMethodAssignment {
   /**
    * @param {SourceRange} location
@@ -78,3 +74,73 @@ export class PropertyConstructorAssignment extends PropertyMethodAssignment {
 
 var PROPERTY_CONSTRUCTOR_ASSIGNMENT = ParseTreeType.PROPERTY_CONSTRUCTOR_ASSIGNMENT;
 
+// Named parameters
+export class NamedParameterList extends ParseTree {
+  /**
+   * @param {SourceRange} location
+   * @param {Array.<ParseTree>} parameterNameAndValues
+   */
+  constructor(location, parameterNameAndValues) {
+    this.location = location;
+    this.parameterNameAndValues = parameterNameAndValues;
+  }
+
+  /**
+   * @param {ParseTreeTransformer} transformer
+   */
+  transform(transformer) {
+    return transformer.transformNamedParameterList(this);
+  }
+
+  /**
+   * @param {ParseTreeVisitor} visitor
+   */
+  visit(visitor) {
+    visitor.visitNamedParameterList(this);
+  }
+
+  /**
+   * @type {ParseTreeType}
+   */
+  get type() {
+    return NAMED_PARAMETER_LIST;
+  }
+}
+
+var NAMED_PARAMETER_LIST = ParseTreeType.NAMED_PARAMETER_LIST;
+
+// Object pattern binding element
+export class ObjectPatternBindingElement extends ParseTree {
+  /**
+   * @param {SourceRange} location
+   * @param {BindingIdentifier|ObjectPattern|ArrayPattern} binding
+   * @param {ParseTree} initializer
+   */
+  constructor(location, binding, initializer) {
+    this.location = location;
+    this.binding = binding;
+    this.initializer = initializer;
+  }
+
+  /**
+   * @param {ParseTreeTransformer} transformer
+   */
+  transform(transformer) {
+    return transformer.transformObjectPatternBindingElement(this);
+  }
+
+  /**
+   * @param {ParseTreeVisitor} visitor
+   */
+  visit(visitor) {
+    visitor.visitObjectPatternBindingElement(this);
+  }
+
+  /**
+   * @type {ParseTreeType}
+   */
+  get type() {
+    return OBJECT_PATTERN_BINDING_ELEMENT;
+  }
+}
+var OBJECT_PATTERN_BINDING_ELEMENT = ParseTreeType.OBJECT_PATTERN_BINDING_ELEMENT;

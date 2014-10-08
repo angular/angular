@@ -323,8 +323,8 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.writeSpace_()
   }
 
-  visitNamedParamsExpression(tree) {
-    this.writeList_(tree.propertyNameAndValues, COMMA, false);
+  visitNamedParameterList(tree) {
+    this.writeList_(tree.parameterNameAndValues, COMMA, false);
   }
 
   toString() {
