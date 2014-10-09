@@ -50,6 +50,8 @@ module.exports = function(config) {
         flags: ['--enable-experimental-web-platform-features'] }
     },
     browsers: ['ChromeCanary'],
+
+    port: 9876
   });
 
   config.plugins.push(require('./tools/transpiler/karma-traceur-preprocessor'));

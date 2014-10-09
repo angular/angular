@@ -28,22 +28,25 @@ module.exports = function(config) {
       guinness: 'package:guinness/guinness_html.dart'
     },
 
+    // TODO(vojta): Remove the localhost:9877 from urls, once the proxy fix is merged:
+    // https://github.com/karma-runner/karma/pull/1207
+    //
     // Map packages to the correct urls where Karma serves them.
     proxies: {
       // Dependencies installed with `pub install`.
-      '/packages/unittest': '/base/packages/unittest',
-      '/packages/guinness': '/base/packages/guinness',
-      '/packages/matcher': '/base/packages/matcher',
-      '/packages/stack_trace': '/base/packages/stack_trace',
-      '/packages/collection': '/base/packages/collection',
-      '/packages/path': '/base/packages/path',
+      '/packages/unittest': 'http://localhost:9877/base/packages/unittest',
+      '/packages/guinness': 'http://localhost:9877/base/packages/guinness',
+      '/packages/matcher': 'http://localhost:9877/base/packages/matcher',
+      '/packages/stack_trace': 'http://localhost:9877/base/packages/stack_trace',
+      '/packages/collection': 'http://localhost:9877/base/packages/collection',
+      '/packages/path': 'http://localhost:9877/base/packages/path',
 
       // Local dependencies, transpiled from the source.
-      '/packages/core': '/base/modules/core/src',
-      '/packages/change_detection': '/base/modules/change_detection/src',
-      '/packages/di': '/base/modules/di/src',
-      '/packages/facade': '/base/modules/facade/src',
-      '/packages/test_lib': '/base/modules/test_lib/src',
+      '/packages/core': 'http://localhost:9877/base/modules/core/src',
+      '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection/src',
+      '/packages/di': 'http://localhost:9877/base/modules/di/src',
+      '/packages/facade': 'http://localhost:9877/base/modules/facade/src',
+      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib/src',
     },
 
     preprocessors: {
@@ -73,6 +76,8 @@ module.exports = function(config) {
         flags: ['--enable-experimental-web-platform-features'] }
     },
     browsers: ['DartiumWithWebPlatform'],
+
+    port: 9877
   });
 
 
