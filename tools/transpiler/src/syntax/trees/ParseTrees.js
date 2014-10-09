@@ -18,11 +18,17 @@ export class ClassFieldDeclaration extends ParseTree {
   }
 
   visit(visitor) {
-    visitor.visitClassFieldDeclaration(this);
+    if (visitor.visitClassFieldDeclaration) {
+      visitor.visitClassFieldDeclaration(this);
+    }
   }
 
   transform(transformer) {
-    return transformer.transformClassFieldDeclaration(this);
+    if (transformer.transformClassFieldDeclaration) {
+      return transformer.transformClassFieldDeclaration(this);
+    }
+
+    return this;
   }
 }
 
@@ -54,14 +60,20 @@ export class PropertyConstructorAssignment extends PropertyMethodAssignment {
    * @param {ParseTreeTransformer} transformer
    */
   transform(transformer) {
-    return transformer.transformPropertyConstructorAssignment(this);
+    if (transformer.transformPropertyConstructorAssignment) {
+      return transformer.transformPropertyConstructorAssignment(this);
+    }
+
+    return this;
   }
 
   /**
    * @param {ParseTreeVisitor} visitor
    */
   visit(visitor) {
-    visitor.visitPropertyConstructorAssignment(this);
+    if (visitor.visitPropertyConstructorAssignment) {
+      visitor.visitPropertyConstructorAssignment(this);
+    }
   }
 
   /**
@@ -89,14 +101,20 @@ export class NamedParameterList extends ParseTree {
    * @param {ParseTreeTransformer} transformer
    */
   transform(transformer) {
-    return transformer.transformNamedParameterList(this);
+    if (transformer.transformNamedParameterList) {
+      return transformer.transformNamedParameterList(this);
+    }
+
+    return this;
   }
 
   /**
    * @param {ParseTreeVisitor} visitor
    */
   visit(visitor) {
-    visitor.visitNamedParameterList(this);
+    if (visitor.visitNamedParameterList) {
+      visitor.visitNamedParameterList(this);
+    }
   }
 
   /**
@@ -126,14 +144,20 @@ export class ObjectPatternBindingElement extends ParseTree {
    * @param {ParseTreeTransformer} transformer
    */
   transform(transformer) {
-    return transformer.transformObjectPatternBindingElement(this);
+    if (transformer.transformObjectPatternBindingElement) {
+      return transformer.transformObjectPatternBindingElement(this);
+    }
+
+    return this;
   }
 
   /**
    * @param {ParseTreeVisitor} visitor
    */
   visit(visitor) {
-    visitor.visitObjectPatternBindingElement(this);
+    if (visitor.visitObjectPatternBindingElement) {
+      visitor.visitObjectPatternBindingElement(this);
+    }
   }
 
   /**
