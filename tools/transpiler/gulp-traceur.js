@@ -20,6 +20,7 @@ function gulpTraceur(options, resolveModuleName) {
     }
 
     try {
+      var originalFilePath = file.history[0];
       var moduleName = resolveModuleName ? resolveModuleName(file.relative) : null;
       var compiled = compiler.compile(options, {
         inputPath: file.relative,
@@ -33,6 +34,7 @@ function gulpTraceur(options, resolveModuleName) {
       if (errors.join) {
          throw new Error('gulp-traceur: '+errors.join('\n'));
       } else {
+        console.error('Error when transpiling:\n  ' + originalFilePath);
         throw errors;
       }
     }
