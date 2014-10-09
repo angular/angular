@@ -77,8 +77,8 @@ export class InvalidBindingError extends Error {
 }
 
 export class NoAnnotationError extends Error {
-  constructor(type) {
-    this.message = `Cannot resolve all parameters for ${stringify(type)}`;
+  constructor(typeOrFunc) {
+    this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}`;
   }
 
   toString() {

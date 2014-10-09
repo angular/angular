@@ -108,9 +108,24 @@ export function main() {
     });
 
     it('should bind to a factory', function () {
+      function sportsCarFactory(e:Engine) {
+        return new SportsCar(e);
+      }
+
       var injector = new Injector([
         Engine,
-        bind(Car).toFactory([Engine], (e) => new SportsCar(e))
+        bind(Car).toFactory(sportsCarFactory)
+      ]);
+
+      var car = injector.get(Car);
+      expect(car).toBeAnInstanceOf(SportsCar);
+      expect(car.engine).toBeAnInstanceOf(Engine);
+    });
+
+    it('should support overriding factory dependencies', function () {
+      var injector = new Injector([
+        Engine,
+        bind(Car).toFactory((e) => new SportsCar(e), {dependencies: [Engine]})
       ]);
 
       var car = injector.get(Car);
@@ -181,7 +196,7 @@ export function main() {
 
       var injector = new Injector([
         Car,
-        bind(Engine).toFactory([], () => isBroken ? new BrokenEngine() : new Engine())
+        bind(Engine).toFactory(() => isBroken ? new BrokenEngine() : new Engine())
       ]);
 
       expect(() => injector.get(Car)).toThrow();
