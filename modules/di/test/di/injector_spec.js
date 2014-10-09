@@ -176,6 +176,21 @@ export function main() {
       }
     });
 
+    it('should instantiate an object after a failed attempt', function () {
+      var isBroken = true;
+
+      var injector = new Injector([
+        Car,
+        bind(Engine).toFactory([], () => isBroken ? new BrokenEngine() : new Engine())
+      ]);
+
+      expect(() => injector.get(Car)).toThrow();
+
+      isBroken = false;
+
+      expect(injector.get(Car)).toBeAnInstanceOf(Car);
+    });
+
 
     describe("child", function () {
       it('should load instances from parent injector', function () {

@@ -94,6 +94,14 @@ export class Injector {
     if (this._bindings.length <= key.id) return null;
     return ListWrapper.get(this._bindings, key.id);
   }
+
+  _markAsConstructing(key:Key) {
+    this._setInstance(key, _constructing);
+  }
+
+  _clear(key:Key) {
+    this._setInstance(key, null);
+  }
 }
 
 
@@ -125,7 +133,7 @@ class _SyncInjectorStrategy {
     if (binding.providedAsFuture) throw new AsyncBindingError(key);
 
     //add a marker so we can detect cyclic dependencies
-    this.injector._setInstance(key, _constructing);
+    this.injector._markAsConstructing(key);
 
     var deps = this._resolveDependencies(key, binding);
     return this._createInstance(key, binding, deps);
@@ -136,7 +144,7 @@ class _SyncInjectorStrategy {
       var getDependency = d => this.injector._getByKey(d.key, d.asFuture, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
-      this.injector._setInstance(key, null);
+      this.injector._clear(key);
       if (e instanceof ProviderError) e.addKey(key);
       throw e;
     }
@@ -148,6 +156,7 @@ class _SyncInjectorStrategy {
       this.injector._setInstance(key, instance);
       return instance;
     } catch (e) {
+      this.injector._clear(key);
       throw new InstantiationError(e, key);
     }
   }
@@ -182,7 +191,7 @@ class _AsyncInjectorStrategy {
     if (isBlank(binding)) return null;
 
     //add a marker so we can detect cyclic dependencies
-    this.injector._setInstance(key, _constructing);
+    this.injector._markAsConstructing(key);
 
     var deps = this._resolveDependencies(key, binding);
     var depsFuture = FutureWrapper.wait(deps);
@@ -200,7 +209,7 @@ class _AsyncInjectorStrategy {
       var getDependency = d => this.injector._getByKey(d.key, true, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
-      this.injector._setInstance(key, null);
+      this.injector._clear(key);
       if (e instanceof ProviderError) e.addKey(key);
       throw e;
     }
@@ -217,6 +226,7 @@ class _AsyncInjectorStrategy {
       if (!_isWaiting(instance)) return instance;
       return binding.factory(deps);
     } catch (e) {
+      this.injector._clear(key);
       throw new InstantiationError(e, key);
     }
   }
