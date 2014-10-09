@@ -1,4 +1,4 @@
-import {FIELD, Type, bool} from 'facade/lang';
+import {FIELD, Type, bool, isBlank} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
 import {reflector} from './reflector';
 import {Key} from './key';
@@ -13,6 +13,7 @@ export class Dependency {
     this.lazy = lazy;
   }
 }
+
 export class Binding {
   constructor(key:Key, factory:Function, dependencies:List, providedAsFuture:bool) {
     this.key = key;
@@ -49,25 +50,27 @@ export class BindingBuilder {
     );
   }
 
-  toFactory(dependencies:List, factoryFunction:Function):Binding {
+  toFactory(factoryFunction:Function, {dependencies=null}={}):Binding {
     return new Binding(
       Key.get(this.token),
       reflector.convertToFactory(factoryFunction),
-      this._constructDependencies(dependencies),
+      this._constructDependencies(factoryFunction, dependencies),
       false
     );
   }
 
-  toAsyncFactory(dependencies:List, factoryFunction:Function):Binding {
+  toAsyncFactory(factoryFunction:Function, {dependencies=null}={}):Binding {
     return new Binding(
       Key.get(this.token),
       reflector.convertToFactory(factoryFunction),
-      this._constructDependencies(dependencies),
+      this._constructDependencies(factoryFunction, dependencies),
       true
     );
   }
 
-  _constructDependencies(deps:List) {
-    return ListWrapper.map(deps, (t) => new Dependency(Key.get(t), false, false));
+  _constructDependencies(factoryFunction:Function, dependencies:List) {
+    return isBlank(dependencies) ?
+      reflector.dependencies(factoryFunction) :
+      ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false));
   }
 }

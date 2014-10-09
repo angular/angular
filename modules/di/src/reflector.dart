@@ -23,12 +23,13 @@ class Reflector {
     return (args) => create(name, args).reflectee;
   }
 
-  List<Dependency> dependencies(Type type) {
-    ClassMirror classMirror = reflectType(type);
-    MethodMirror ctor = classMirror.declarations[classMirror.simpleName];
+  List<Dependency> dependencies(typeOrFunc) {
+    final parameters = typeOrFunc is Type ?
+        _constructorParameters(typeOrFunc) :
+        _functionParameters(typeOrFunc);
 
-    return new List.generate(ctor.parameters.length, (int pos) {
-      ParameterMirror p = ctor.parameters[pos];
+    return new List.generate(parameters.length, (int pos) {
+      ParameterMirror p = parameters[pos];
 
       final metadata = p.metadata.map((m) => m.reflectee);
 
@@ -49,9 +50,19 @@ class Reflector {
         return new Dependency(Key.get(p.type.reflectedType), false, false);
 
       } else {
-        throw new NoAnnotationError(type);
+        throw new NoAnnotationError(typeOrFunc);
       }
     }, growable:false);
+  }
+
+  List<ParameterMirror> _functionParameters(Function func) {
+    return reflect(func).function.parameters;
+  }
+
+  List<ParameterMirror> _constructorParameters(Type type) {
+    ClassMirror classMirror = reflectType(type);
+    MethodMirror ctor = classMirror.declarations[classMirror.simpleName];
+    return ctor.parameters;
   }
 }
 

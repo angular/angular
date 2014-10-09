@@ -14,14 +14,14 @@ class Reflector {
     return (args) => factoryFunction(...args);
   }
 
-  dependencies(type:Type):List {
-    var p = type.parameters;
-    if (p == undefined && type.length == 0) return [];
-    if (p == undefined) throw new NoAnnotationError(type);
-    return type.parameters.map((p) => this._extractToken(type, p));
+  dependencies(typeOrFunc):List {
+    var p = typeOrFunc.parameters;
+    if (p == undefined && typeOrFunc.length == 0) return [];
+    if (p == undefined) throw new NoAnnotationError(typeOrFunc);
+    return typeOrFunc.parameters.map((p) => this._extractToken(typeOrFunc, p));
   }
 
-  _extractToken(constructedType:Type, annotations) {
+  _extractToken(typeOrFunc, annotations) {
     var type;
 
     for (var paramAnnotation of annotations) {
@@ -42,7 +42,7 @@ class Reflector {
     if (isPresent(type)) {
       return this._createDependency(type, false, false);
     } else {
-      throw new NoAnnotationError(constructedType);
+      throw new NoAnnotationError(typeOrFunc);
     }
   }
 
