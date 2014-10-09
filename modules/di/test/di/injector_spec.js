@@ -133,6 +133,15 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
+    it("should flatten passed-in bindings", function () {
+      var injector = new Injector([
+        [[Engine, Car]]
+      ]);
+
+      var car = injector.get(Car);
+      expect(car).toBeAnInstanceOf(Car);
+    });
+
     it('should use non-type tokens', function () {
       var injector = new Injector([
         bind('token').toValue('value')

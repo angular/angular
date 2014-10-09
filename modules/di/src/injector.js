@@ -20,7 +20,7 @@ function _isWaiting(obj):bool {
 
 export class Injector {
   constructor(bindings:List) {
-    var flatten = _flattenBindings(bindings);
+    var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
     this._parent = null; //TODO: vsavkin make a parameter
@@ -227,8 +227,7 @@ class _AsyncInjectorStrategy {
 }
 
 
-function _flattenBindings(bindings:List) {
-  var res = {};
+function _flattenBindings(bindings:List, res:Map) {
   ListWrapper.forEach(bindings, function (b) {
     if (b instanceof Binding) {
       MapWrapper.set(res, b.key.id, b);
@@ -236,6 +235,9 @@ function _flattenBindings(bindings:List) {
     } else if (b instanceof Type) {
       var s = bind(b).toClass(b);
       MapWrapper.set(res, s.key.id, s);
+
+    } else if (b instanceof List) {
+      _flattenBindings(b, res);
 
     } else if (b instanceof BindingBuilder) {
       throw new InvalidBindingError(b.token);
