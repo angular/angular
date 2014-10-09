@@ -81,6 +81,17 @@ export class Injector {
     throw new NoProviderError(key);
   }
 
+  _resolveDependencies(key:Key, binding:Binding, forceAsync:bool):List {
+    try {
+      var getDependency = d => this._getByKey(d.key, forceAsync || d.asFuture, d.lazy);
+      return ListWrapper.map(binding.dependencies, getDependency);
+    } catch (e) {
+      this._clear(key);
+      if (e instanceof ProviderError) e.addKey(key);
+      throw e;
+    }
+  }
+
   _getInstance(key:Key) {
     if (this._instances.length <= key.id) return null;
     return ListWrapper.get(this._instances, key.id);
@@ -135,19 +146,8 @@ class _SyncInjectorStrategy {
     //add a marker so we can detect cyclic dependencies
     this.injector._markAsConstructing(key);
 
-    var deps = this._resolveDependencies(key, binding);
+    var deps = this.injector._resolveDependencies(key, binding, false);
     return this._createInstance(key, binding, deps);
-  }
-
-  _resolveDependencies(key:Key, binding:Binding) {
-    try {
-      var getDependency = d => this.injector._getByKey(d.key, d.asFuture, d.lazy);
-      return ListWrapper.map(binding.dependencies, getDependency);
-    } catch (e) {
-      this.injector._clear(key);
-      if (e instanceof ProviderError) e.addKey(key);
-      throw e;
-    }
   }
 
   _createInstance(key:Key, binding:Binding, deps:List) {
@@ -193,7 +193,7 @@ class _AsyncInjectorStrategy {
     //add a marker so we can detect cyclic dependencies
     this.injector._markAsConstructing(key);
 
-    var deps = this._resolveDependencies(key, binding);
+    var deps = this.injector._resolveDependencies(key, binding, true);
     var depsFuture = FutureWrapper.wait(deps);
 
     var future = FutureWrapper.catchError(depsFuture, (e) => this._errorHandler(key, e)).
@@ -202,17 +202,6 @@ class _AsyncInjectorStrategy {
 
     this.injector._setInstance(key, new _Waiting(future));
     return future;
-  }
-
-  _resolveDependencies(key:Key, binding:Binding):List {
-    try {
-      var getDependency = d => this.injector._getByKey(d.key, true, d.lazy);
-      return ListWrapper.map(binding.dependencies, getDependency);
-    } catch (e) {
-      this.injector._clear(key);
-      if (e instanceof ProviderError) e.addKey(key);
-      throw e;
-    }
   }
 
   _errorHandler(key:Key, e):Future {
