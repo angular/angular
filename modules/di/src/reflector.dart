@@ -2,7 +2,8 @@ library facade.di.reflector;
 
 import 'dart:mirrors';
 import 'annotations.dart' show Inject, InjectFuture, InjectLazy;
-import 'key.dart' show Key, Dependency;
+import 'key.dart' show Key;
+import 'binding.dart' show Dependency;
 import 'exceptions.dart' show NoAnnotationError;
 
 class Reflector {

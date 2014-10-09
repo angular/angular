@@ -1,7 +1,8 @@
 import {Type, isPresent} from 'facade/lang';
 import {List} from 'facade/collection';
 import {Inject, InjectFuture, InjectLazy} from './annotations';
-import {Dependency, Key} from './key';
+import {Key} from './key';
+import {Dependency} from './binding';
 import {NoAnnotationError} from './exceptions';
 
 class Reflector {
