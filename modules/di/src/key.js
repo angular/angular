@@ -1,5 +1,5 @@
 import {MapWrapper} from 'facade/collection';
-import {FIELD, int, bool} from 'facade/lang';
+import {FIELD, int} from 'facade/lang';
 
 var _allKeys = {};
 var _id:int = 0;

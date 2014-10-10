@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'test_lib/test_lib';
 import {Scanner, Token} from 'change_detection/parser/scanner';
 import {List, ListWrapper} from "facade/collection";
-import {StringWrapper} from "facade/lang";
+import {StringWrapper, int} from "facade/lang";
 
 function lex(text:string):List {
   var scanner:Scanner = new Scanner(text);

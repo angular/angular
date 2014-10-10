@@ -32,7 +32,7 @@ export function main() {
         spanPI.hasProperties = true;
         var protoElementInjector:List<ProtoElementInjector> = [sectionPI, divPI, spanPI];
         var protoWatchGroup:ProtoWatchGroup = null;
-        var hasSingleRoot:bool = false;
+        var hasSingleRoot:boolean = false;
         var pv = new ProtoView(template, module, protoElementInjector, protoWatchGroup, hasSingleRoot);
         var view:View = pv.instantiate();
         var section:Element = template.content.firstChild;

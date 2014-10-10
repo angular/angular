@@ -49,7 +49,7 @@ export class ProtoElementInjector {
   queryKeyId1:int;
 
   textNodes:List<int>;
-  hasProperties:bool;
+  hasProperties:boolean;
   events:Map<string, Expression>;
 
   elementInjector:ElementInjector;

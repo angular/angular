@@ -1,4 +1,4 @@
-import {FIELD, Type, bool, isBlank} from 'facade/lang';
+import {FIELD, Type, isBlank} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
 import {reflector} from './reflector';
 import {Key} from './key';
@@ -7,7 +7,7 @@ export class Dependency {
   @FIELD('final key:Key')
   @FIELD('final asFuture:bool')
   @FIELD('final lazy:bool')
-  constructor(key:Key, asFuture:bool, lazy:bool) {
+  constructor(key:Key, asFuture:boolean, lazy:boolean) {
     this.key = key;
     this.asFuture = asFuture;
     this.lazy = lazy;
@@ -15,7 +15,7 @@ export class Dependency {
 }
 
 export class Binding {
-  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture:bool) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture:boolean) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;

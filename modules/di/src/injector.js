@@ -2,7 +2,7 @@ import {Map, List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
 import {ProviderError, NoProviderError, InvalidBindingError,
   AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
-import {Type, isPresent, isBlank, bool} from 'facade/lang';
+import {Type, isPresent, isBlank} from 'facade/lang';
 import {Future, FutureWrapper} from 'facade/async';
 import {Key} from './key';
 
@@ -13,7 +13,7 @@ class _Waiting {
     this.future = future;
   }
 }
-function _isWaiting(obj):bool {
+function _isWaiting(obj):boolean {
   return obj instanceof _Waiting;
 }
 
@@ -52,7 +52,7 @@ export class Injector {
     return ListWrapper.createFixedSize(Key.numberOfKeys() + 1);
   }
 
-  _getByKey(key:Key, returnFuture:bool, returnLazy:bool) {
+  _getByKey(key:Key, returnFuture:boolean, returnLazy:boolean) {
     if (returnLazy) {
       return () => this._getByKey(key, returnFuture, false);
     }
@@ -71,7 +71,7 @@ export class Injector {
     throw new NoProviderError(key);
   }
 
-  _resolveDependencies(key:Key, binding:Binding, forceAsync:bool):List {
+  _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List {
     try {
       var getDependency = d => this._getByKey(d.key, forceAsync || d.asFuture, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);

@@ -5,7 +5,7 @@ import {Record} from 'change_detection/record';
 import {Module} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {SetterFn} from 'change_detection/facade';
-import {FIELD, IMPLEMENTS} from 'facade/lang';
+import {FIELD, IMPLEMENTS, int} from 'facade/lang';
 import {List} from 'facade/collection';
 
 /***
@@ -61,7 +61,7 @@ export class ProtoView {
       module:Module,
       protoElementInjector:List<ProtoElementInjector>,
       protoWatchGroup:ProtoWatchGroup,
-      useRootElement:bool)
+      useRootElement:boolean)
   {
     this._template = template;
     this._module = module;
