@@ -13,6 +13,8 @@ export class Key {
   }
 
   static get(token) {
+    if (token instanceof Key) return token;
+
     if (MapWrapper.contains(_allKeys, token)) {
       return MapWrapper.get(_allKeys, token)
     }

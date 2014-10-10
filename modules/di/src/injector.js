@@ -30,19 +30,11 @@ export class Injector {
   }
 
   get(token) {
-    return this.getByKey(Key.get(token));
+    return this._getByKey(Key.get(token), false, false);
   }
 
   asyncGet(token) {
-    return this.asyncGetByKey(Key.get(token));
-  }
-
-  getByKey(key:Key) {
-    return this._getByKey(key, false, false);
-  }
-
-  asyncGetByKey(key:Key) {
-    return this._getByKey(key, true, false);
+    return this._getByKey(Key.get(token), true, false);
   }
 
   createChild(bindings:List):Injector {
