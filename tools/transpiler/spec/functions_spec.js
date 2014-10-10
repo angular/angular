@@ -4,6 +4,11 @@ function sum(a, b) {
   return a + b;
 }
 
+class ConstructorWithNamedParams {
+  constructor(a, {b=1, c=2}) {
+    this.sum = a + b + c;
+  }
+}
 
 export function main() {
   describe('functions', function() {
@@ -34,6 +39,11 @@ export function main() {
 
         expect(f({a: 10})).toBe(12);
         expect(f()).toBe(3);
+      });
+
+      it("should support new expressions", function () {
+        var obj = new ConstructorWithNamedParams(100, {b:10});
+        expect(obj.sum).toEqual(112);
       });
     });
     

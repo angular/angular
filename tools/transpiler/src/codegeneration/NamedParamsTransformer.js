@@ -32,11 +32,27 @@ export class NamedParamsTransformer extends ParseTreeTransformer {
    */
   transformCallExpression(tree) {
     tree = super.transformCallExpression(tree);
+    this._handleNamedParams(tree);
+    return tree;
+  }
+
+  /**
+   * Transform new expressions.
+   *
+   * @param {NewExpression} tree
+   * @return {ParseTree}
+   */
+  transformNewExpression(tree) {
+    tree = super.transformNewExpression(tree);
+    this._handleNamedParams(tree);
+    return tree;
+  }
+
+  _handleNamedParams(tree) {
     if (this._isLastArgAnNonEmptyObjectLiteral(tree) &&
       ! this._isLastArgObjectLiteralWithQuotedKeys(tree)) {
       this._replaceLastArgWithNamedParams(tree);
     }
-    return tree;
   }
 
   _isLastArgAnNonEmptyObjectLiteral(tree) {
