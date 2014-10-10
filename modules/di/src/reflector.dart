@@ -56,7 +56,8 @@ class Reflector {
   }
 
   List<ParameterMirror> _functionParameters(Function func) {
-    return reflect(func).function.parameters;
+    var closureMirror = reflect(func);
+    return closureMirror.function.parameters;
   }
 
   List<ParameterMirror> _constructorParameters(Type type) {

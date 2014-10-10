@@ -208,7 +208,7 @@ export function main() {
         bind(Engine).toFactory(() => isBroken ? new BrokenEngine() : new Engine())
       ]);
 
-      expect(() => injector.get(Car)).toThrow();
+      expect(() => injector.get(Car)).toThrowError(new RegExp("Error"));
 
       isBroken = false;
 
