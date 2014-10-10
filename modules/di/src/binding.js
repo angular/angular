@@ -50,7 +50,7 @@ export class BindingBuilder {
     );
   }
 
-  toFactory(factoryFunction:Function, {dependencies=null}={}):Binding {
+  toFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(
       Key.get(this.token),
       reflector.convertToFactory(factoryFunction),
@@ -59,7 +59,7 @@ export class BindingBuilder {
     );
   }
 
-  toAsyncFactory(factoryFunction:Function, {dependencies=null}={}):Binding {
+  toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(
       Key.get(this.token),
       reflector.convertToFactory(factoryFunction),
