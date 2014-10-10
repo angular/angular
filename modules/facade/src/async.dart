@@ -3,20 +3,20 @@ library angular.core.facade.async;
 import 'dart:async';
 export 'dart:async' show Future;
 
-class FutureWrapper {
-  static Future value(obj) {
+class PromiseWrapper {
+  static Future resolve(obj) {
     return new Future.value(obj);
   }
 
-  static Future error(obj) {
+  static Future reject(obj) {
     return new Future.error(obj);
   }
 
-  static Future wait(List<Future> futures){
-    return Future.wait(futures);
+  static Future all(List<Future> promises){
+    return Future.wait(promises);
   }
 
-  static Future catchError(Future future, Function onError){
-    return future.catchError(onError);
+  static Future then(Future promise, Function success, Function onError){
+    return promise.then(success, onError: onError);
   }
 }

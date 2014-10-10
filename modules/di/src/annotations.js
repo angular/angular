@@ -7,7 +7,7 @@ export class Inject {
   }
 }
 
-export class InjectFuture {
+export class InjectPromise {
   @CONST()
   constructor(token) {
     this.token = token;

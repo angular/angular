@@ -1,6 +1,6 @@
 import {Type, isPresent} from 'facade/lang';
 import {List} from 'facade/collection';
-import {Inject, InjectFuture, InjectLazy} from './annotations';
+import {Inject, InjectPromise, InjectLazy} from './annotations';
 import {Key} from './key';
 import {Dependency} from './binding';
 import {NoAnnotationError} from './exceptions';
@@ -31,7 +31,7 @@ class Reflector {
       } else if (paramAnnotation instanceof Inject) {
         return this._createDependency(paramAnnotation.token, false, false);
 
-      } else if (paramAnnotation instanceof InjectFuture) {
+      } else if (paramAnnotation instanceof InjectPromise) {
         return this._createDependency(paramAnnotation.token, true, false);
 
       } else if (paramAnnotation instanceof InjectLazy) {
@@ -46,8 +46,8 @@ class Reflector {
     }
   }
 
-  _createDependency(token, asFuture, lazy):Dependency {
-    return new Dependency(Key.get(token), asFuture, lazy);
+  _createDependency(token, asPromise, lazy):Dependency {
+    return new Dependency(Key.get(token), asPromise, lazy);
   }
 }
 

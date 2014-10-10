@@ -43,7 +43,7 @@ export class AsyncBindingError extends ProviderError {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Cannot instantiate ${first} synchronously. ` +
-        `It is provided as a future!${constructResolvingPath(keys)}`;
+        `It is provided as a promise!${constructResolvingPath(keys)}`;
     });
   }
 }

@@ -5,21 +5,21 @@ import {Key} from './key';
 
 export class Dependency {
   @FIELD('final key:Key')
-  @FIELD('final asFuture:bool')
+  @FIELD('final asPromise:bool')
   @FIELD('final lazy:bool')
-  constructor(key:Key, asFuture:boolean, lazy:boolean) {
+  constructor(key:Key, asPromise:boolean, lazy:boolean) {
     this.key = key;
-    this.asFuture = asFuture;
+    this.asPromise = asPromise;
     this.lazy = lazy;
   }
 }
 
 export class Binding {
-  constructor(key:Key, factory:Function, dependencies:List, providedAsFuture:boolean) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;
-    this.providedAsFuture = providedAsFuture;
+    this.providedAsPromise = providedAsPromise;
   }
 }
 

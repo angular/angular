@@ -1,20 +1,20 @@
-export var Future = Promise;
+export var Promise = window.Promise;
 
-export class FutureWrapper {
-  static value(obj):Future {
-    return Future.resolve(obj);
+export class PromiseWrapper {
+  static resolve(obj):Promise {
+    return Promise.resolve(obj);
   }
 
-  static error(obj):Future {
-    return Future.reject(obj);
+  static reject(obj):Promise {
+    return Promise.reject(obj);
   }
 
-  static wait(futures):Future {
-    if (futures.length == 0) return Future.resolve([]);
-    return Future.all(futures);
+  static all(promises):Promise {
+    if (promises.length == 0) return Promise.resolve([]);
+    return Promise.all(promises);
   }
 
-  static catchError(future:Future, onError:Function):Future {
-    return future.catch(onError);
+  static then(promise:Promise, success:Function, rejection:Function):Promise {
+    return promise.then(success, rejection);
   }
 }

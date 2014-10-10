@@ -19,14 +19,14 @@ window.print = function(msg) {
 
 window.beforeEach(function() {
   jasmine.addMatchers({
-    toBeFuture: function() {
+    toBePromise: function() {
       return {
         compare: function (actual, expectedClass) {
           var pass = typeof actual === 'object' && typeof actual.then === 'function';
           return {
             pass: pass,
             get message() {
-              return 'Expected ' + actual + ' to be a future';
+              return 'Expected ' + actual + ' to be a promise';
             }
           };
         }

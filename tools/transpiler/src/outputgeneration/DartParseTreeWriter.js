@@ -19,6 +19,8 @@ import {
 } from 'traceur/src/syntax/TokenType';
 
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
+import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
+import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
 
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -183,6 +185,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       case 'number': return 'num';
       case 'boolean': return 'bool';
       case 'string': return 'String';
+      case 'Promise': return 'Future';
       default: return typeName;
     }
   }
@@ -307,6 +310,18 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       throw new Error('"as" syntax not supported');
     }
     this.visitAny(tree.binding);
+  }
+
+  visitImportedBinding(tree) {
+    if (tree.binding && tree.binding.identifierToken) {
+      var b = tree.binding;
+      var t = b.identifierToken;
+      var token = new IdentifierToken(t.location, this.normalizeType_(t.value));
+      var binding = new BindingIdentifier(b.location, token);
+      super.visitImportedBinding(new ImportedBinding(tree.location, binding));
+    } else {
+      super.visitImportedBinding(tree);
+    }
   }
 
   visitImportSpecifierSet(tree) {

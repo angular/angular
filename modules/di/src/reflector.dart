@@ -1,7 +1,7 @@
 library facade.di.reflector;
 
 import 'dart:mirrors';
-import 'annotations.dart' show Inject, InjectFuture, InjectLazy;
+import 'annotations.dart' show Inject, InjectPromise, InjectLazy;
 import 'key.dart' show Key;
 import 'binding.dart' show Dependency;
 import 'exceptions.dart' show NoAnnotationError;
@@ -34,14 +34,14 @@ class Reflector {
       final metadata = p.metadata.map((m) => m.reflectee);
 
       var inject = metadata.firstWhere((m) => m is Inject, orElse: () => null);
-      var injectFuture = metadata.firstWhere((m) => m is InjectFuture, orElse: () => null);
+      var injectPromise = metadata.firstWhere((m) => m is InjectPromise, orElse: () => null);
       var injectLazy = metadata.firstWhere((m) => m is InjectLazy, orElse: () => null);
 
       if (inject != null) {
         return new Dependency(Key.get(inject.token), false, false);
 
-      } else if (injectFuture != null) {
-        return new Dependency(Key.get(injectFuture.token), true, false);
+      } else if (injectPromise != null) {
+        return new Dependency(Key.get(injectPromise.token), true, false);
 
       } else if (injectLazy != null) {
         return new Dependency(Key.get(injectLazy.token), false, true);
