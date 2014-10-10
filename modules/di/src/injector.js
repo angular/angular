@@ -19,11 +19,12 @@ function _isWaiting(obj):boolean {
 
 
 export class Injector {
-  constructor(bindings:List, parent:Injector = null) {
+  constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
     this._parent = parent;
+    this._defaultBindings = defaultBindings;
 
     this._asyncStrategy = new _AsyncInjectorStrategy(this);
     this._syncStrategy = new _SyncInjectorStrategy(this);
@@ -38,7 +39,7 @@ export class Injector {
   }
 
   createChild(bindings:List):Injector {
-    return new Injector(bindings, this);
+    return new Injector(bindings, {parent: this});
   }
 
 
@@ -92,8 +93,15 @@ export class Injector {
   }
 
   _getBinding(key:Key) {
-    if (this._bindings.length <= key.id) return null;
-    return ListWrapper.get(this._bindings, key.id);
+    var binding = this._bindings.length <= key.id ?
+      null :
+      ListWrapper.get(this._bindings, key.id);
+
+    if (isBlank(binding) && this._defaultBindings) {
+      return bind(key.token).toClass(key.token);
+    } else {
+      return binding;
+    }
   }
 
   _markAsConstructing(key:Key) {

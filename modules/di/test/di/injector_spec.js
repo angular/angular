@@ -215,6 +215,25 @@ export function main() {
       expect(injector.get(Car)).toBeAnInstanceOf(Car);
     });
 
+    describe("default bindings", function () {
+      it("should be used when no matching binding found", function () {
+        var injector = new Injector([], {defaultBindings: true});
+
+        var car = injector.get(Car);
+
+        expect(car).toBeAnInstanceOf(Car);
+      });
+
+      it("should use the matching binding when it is available", function () {
+        var injector = new Injector([
+          bind(Car).toClass(SportsCar)
+        ], {defaultBindings: true});
+
+        var car = injector.get(Car);
+
+        expect(car).toBeAnInstanceOf(SportsCar);
+      });
+    });
 
     describe("child", function () {
       it('should load instances from parent injector', function () {
@@ -238,6 +257,17 @@ export function main() {
 
         expect(engineFromParent).not.toBe(engineFromChild);
         expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
+      });
+
+      it("should create child injectors without default bindings", function () {
+        var parent = new Injector([], {defaultBindings: true});
+        var child = parent.createChild([]);
+
+        //child delegates to parent the creation of Car
+        var childCar = child.get(Car);
+        var parentCar = parent.get(Car);
+
+        expect(childCar).toBe(parentCar);
       });
     });
 

@@ -62,7 +62,7 @@ export class ClassTransformer extends ParseTreeTransformer {
         // so that we can use them to set the types of simple-assigned fields.
         elementTree.parameterList.parameters.forEach(function(p) {
           var binding = p.parameter.binding;
-          if (binding.identifierToken) {
+          if (binding && binding.identifierToken) {
             argumentTypesMap[binding.identifierToken.value] = p.typeAnnotation;
           }
         });
