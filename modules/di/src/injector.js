@@ -19,11 +19,11 @@ function _isWaiting(obj):bool {
 
 
 export class Injector {
-  constructor(bindings:List) {
+  constructor(bindings:List, parent:Injector = null) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
-    this._parent = null; //TODO: vsavkin make a parameter
+    this._parent = parent;
 
     this._asyncStrategy = new _AsyncInjectorStrategy(this);
     this._syncStrategy = new _SyncInjectorStrategy(this);
@@ -46,9 +46,7 @@ export class Injector {
   }
 
   createChild(bindings:List):Injector {
-    var inj = new Injector(bindings);
-    inj._parent = this; //TODO: vsavkin: change it when optional parameters are working
-    return inj;
+    return new Injector(bindings, this);
   }
 
 

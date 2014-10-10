@@ -125,7 +125,7 @@ export function main() {
     it('should support overriding factory dependencies', function () {
       var injector = new Injector([
         Engine,
-        bind(Car).toFactory((e) => new SportsCar(e), {dependencies: [Engine]})
+        bind(Car).toFactory((e) => new SportsCar(e), [Engine])
       ]);
 
       var car = injector.get(Car);
