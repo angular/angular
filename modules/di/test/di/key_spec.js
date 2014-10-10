@@ -10,5 +10,9 @@ export function main() {
     it('should not be equal to another key if types are different', function () {
       expect(Key.get('car')).not.toBe(Key.get('porsche'));
     });
+
+    it('should return the passed in key', function () {
+      expect(Key.get(Key.get('car'))).toBe(Key.get('car'));
+    });
   });
 }
