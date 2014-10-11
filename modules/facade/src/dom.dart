@@ -1,6 +1,7 @@
 library angular.core.facade.dom;
 
 import 'dart:html';
+import 'dart:js' show JsObject;
 
 export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text;
 
@@ -27,5 +28,14 @@ class DOM {
   }
   static clone(Node node) {
     return node.clone(true);
+  }
+  static setProperty(Element element, String name, value) {
+    new JsObject.fromBrowserObject(element)[name] = value;
+  }
+  static getElementsByClassName(Element element, String name) {
+    return element.getElementsByClassName(name);
+  }
+  static getElementsByTagName(Element element, String name) {
+    return element.querySelectorAll(name);
   }
 }

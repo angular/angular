@@ -11,7 +11,6 @@ export class Parser extends TraceurParser {
   parseTypeName_() {
     // Copy of original implementation
     var typeName = super.parseTypeName_();
-    var next = this.peekType_();
     // Generics support
     if (this.eatIf_(OPEN_ANGLE)) {
       var generics = [];

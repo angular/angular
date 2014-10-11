@@ -28,4 +28,13 @@ export class DOM {
   static clone(node:Node) {
     return node.cloneNode(true);
   }
+  static setProperty(element:Element, name:string, value) {
+    element[name] = value;
+  }
+  static getElementsByClassName(element:Element, name:string) {
+    return element.getElementsByClassName(name);
+  }
+  static getElementsByTagName(element:Element, name:string) {
+    return element.getElementsByTagName(name);
+  }
 }

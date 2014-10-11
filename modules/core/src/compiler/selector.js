@@ -13,7 +13,7 @@ export class Selector {
    * @param elementName Name of the element
    * @param attributes Attributes on the Element.
    */
-  visitElement(elementName:String, attributes:Map<string, string>):List<AnnotatedType> {
+  visitElement(elementName:string, attributes:Map<string, string>):List<AnnotatedType> {
     return null;
   }
 }

@@ -57,3 +57,4 @@ class NumberWrapper {
     return double.parse(text);
   }
 }
+

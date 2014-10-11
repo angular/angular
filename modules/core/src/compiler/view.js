@@ -1,4 +1,4 @@
-import {DOM, Node, DocumentFragment, TemplateElement} from 'facade/dom';
+import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
 import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
@@ -8,56 +8,66 @@ import {SetterFn} from 'change_detection/facade';
 import {FIELD, IMPLEMENTS} from 'facade/lang';
 import {List} from 'facade/collection';
 
+/***
+ * Const of making objects: http://jsperf.com/instantiate-size-of-object
+ */
 @IMPLEMENTS(WatchGroupDispatcher)
 export class View {
-  @FIELD('final _fragment:DocumentFragment')
+  @FIELD('final fragment:DocumentFragment')
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
-  @FIELD('final _rootElementInjectors:List<ElementInjector>')
-  @FIELD('final _elementInjectors:List<ElementInjector>')
-  @FIELD('final _textNodes:List<Text>')
-  @FIELD('final _watchGroup:WatchGroup')
+  @FIELD('final rootElementInjectors:List<ElementInjector>')
+  @FIELD('final elementInjectors:List<ElementInjector>')
+  @FIELD('final bindElements:List<Element>')
+  @FIELD('final textNodes:List<Text>')
+  @FIELD('final watchGroup:WatchGroup')
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
-  @FIELD('final _nodes:List<Node>')
-  @FIELD('final _onChangeDispatcher:OnChangeDispatcher')
+  @FIELD('final nodes:List<Node>')
+  @FIELD('final onChangeDispatcher:OnChangeDispatcher')
   constructor(fragment:DocumentFragment) {
-    this._fragment = fragment;
-    this._nodes = ListWrapper.clone(fragment.childNodes);
-    this._onChangeDispatcher = null;
-    this._elementInjectors = null;
-    this._textNodes = null;
+    this.fragment = fragment;
+    this.nodes = ListWrapper.clone(fragment.childNodes);
+    this.onChangeDispatcher = null;
+    this.elementInjectors = null;
+    this.textNodes = null;
+    this.bindElements = null;
   }
 
   onRecordChange(record:Record, target) {
     // dispatch to element injector or text nodes based on context
-    if (target instanceof ElementInjectorTarget) {
-      // we know that it is ElementInjectorTarget
-      var eTarget:ElementInjectorTarget = target;
-      this._onChangeDispatcher.notify(this, eTarget);
-      eTarget.invoke(record, this._elementInjectors);
+    if (target instanceof DirectivePropertyMemento) {
+      // we know that it is DirectivePropertyMemento
+      var directiveMemento:DirectivePropertyMemento = target;
+      directiveMemento.invoke(record, this.elementInjectors);
+    } else if (target instanceof  ElementPropertyMemento) {
+      var elementMemento:ElementPropertyMemento = target;
+      elementMemento.invoke(record, this.bindElements);
     } else {
-      // we know it refferst to _textNodes.
+      // we know it refers to _textNodes.
       var textNodeIndex:number = target;
-      DOM.setText(this._textNodes[textNodeIndex], record.currentValue);
+      DOM.setText(this.textNodes[textNodeIndex], record.currentValue);
     }
   }
 }
 
 export class ProtoView {
-@FIELD('final _template:TemplateElement')
-@FIELD('final _module:Module')
-@FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
-@FIELD('final _protoWatchGroup:ProtoWatchGroup')
+  @FIELD('final _template:TemplateElement')
+  @FIELD('final _module:Module')
+  @FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
+  @FIELD('final _protoWatchGroup:ProtoWatchGroup')
+  @FIELD('final _useRootElement:bool')
   constructor(
       template:TemplateElement,
       module:Module,
-      protoElementInjector:ProtoElementInjector,
-      protoWatchGroup:ProtoWatchGroup)
+      protoElementInjector:List<ProtoElementInjector>,
+      protoWatchGroup:ProtoWatchGroup,
+      useRootElement:bool)
   {
     this._template = template;
     this._module = module;
     this._protoElementInjectors = protoElementInjector;
     this._protoWatchGroup = protoWatchGroup;
+    this._useRootElement = useRootElement;
   }
 
   instantiate():View {
@@ -65,8 +75,21 @@ export class ProtoView {
   }
 }
 
+export class ElementPropertyMemento {
+  @FIELD('final _elementIndex:int')
+  @FIELD('final _propertyIndex:string')
+  constructor(elementIndex:int, propertyName:string) {
+    this._elementIndex = elementIndex;
+    this._propertyName = propertyName;
+  }
 
-export class ElementInjectorTarget {
+  invoke(record:Record, elementInjectors:List<Element>) {
+    var element:Element = elementInjectors[this._elementIndex];
+    DOM.setProperty(element, this._propertyName, record.currentValue);
+  }
+}
+
+export class DirectivePropertyMemento {
   @FIELD('final _elementInjectorIndex:int')
   @FIELD('final _directiveIndex:int')
   @FIELD('final _setterName:String')
@@ -97,13 +120,13 @@ export class ElementInjectorTarget {
 export class OnChangeDispatcher {
 
   @FIELD('_lastView:View')
-  @FIELD('_lastTarget:ElementInjectorTarget')
+  @FIELD('_lastTarget:DirectivePropertyMemento')
   constructor() {
     this._lastView = null;
     this._lastTarget = null;
   }
 
-  notify(view:View, eTarget:ElementInjectorTarget) {
+  notify(view:View, eTarget:DirectivePropertyMemento) {
 
   }
 
