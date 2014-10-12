@@ -4,9 +4,9 @@ import {FIELD, int, bool} from 'facade/lang';
 var _allKeys = {};
 var _id:int = 0;
 
-@FIELD('final token')
-@FIELD('final id:int')
 export class Key {
+  @FIELD('final token')
+  @FIELD('final id:int')
   constructor(token, id:int) {
     this.token = token;
     this.id = id;

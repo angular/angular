@@ -3,10 +3,10 @@ import {List, MapWrapper, ListWrapper} from 'facade/collection';
 import {reflector} from './reflector';
 import {Key} from './key';
 
-@FIELD('final key:Key')
-@FIELD('final asFuture:bool')
-@FIELD('final lazy:bool')
 export class Dependency {
+  @FIELD('final key:Key')
+  @FIELD('final asFuture:bool')
+  @FIELD('final lazy:bool')
   constructor(key:Key, asFuture:bool, lazy:bool) {
     this.key = key;
     this.asFuture = asFuture;
