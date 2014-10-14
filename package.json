@@ -14,6 +14,7 @@
     "gulp": "^3.8.8",
     "gulp-rename": "^1.2.0",
     "gulp-watch": "^1.0.3",
+    "gulp-shell": "^0.2.10",
     "karma-cli": "^0.0.4",
     "karma": "^0.12.23",
     "karma-chrome-launcher": "^0.1.4",

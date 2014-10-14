@@ -25,10 +25,10 @@ export function main() {
                '</div>' +
              '</section>');
         var module:Module = null;
-        var sectionPI = new ProtoElementInjector(null);
+        var sectionPI = new ProtoElementInjector(null, null, null);
         sectionPI.textNodes = [0];
-        var divPI = new ProtoElementInjector(null);
-        var spanPI = new ProtoElementInjector(null);
+        var divPI = new ProtoElementInjector(null, null, null);
+        var spanPI = new ProtoElementInjector(null, null, null);
         spanPI.hasProperties = true;
         var protoElementInjector:List<ProtoElementInjector> = [sectionPI, divPI, spanPI];
         var protoWatchGroup:ProtoWatchGroup = null;

@@ -41,6 +41,18 @@ export class ListWrapper {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
+  static find(list:List, pred:Function) {
+    for (var i = 0 ; i < list.length; ++i) {
+      if (pred(list[i])) return list[i];
+    }
+    return null;
+  }
+  static any(list:List, pred:Function) {
+    for (var i = 0 ; i < list.length; ++i) {
+      if (pred(list[i])) return true;
+    }
+    return false;
+  }
   static reversed(array) {
     var a = ListWrapper.clone(array);
     return a.reverse();

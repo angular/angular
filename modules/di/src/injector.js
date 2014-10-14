@@ -5,6 +5,7 @@ import {ProviderError, NoProviderError, InvalidBindingError,
 import {Type, isPresent, isBlank} from 'facade/lang';
 import {Promise, PromiseWrapper} from 'facade/async';
 import {Key} from './key';
+import {reflector} from './reflector';
 
 var _constructing = new Object();
 
@@ -150,7 +151,7 @@ class _SyncInjectorStrategy {
 
   _createInstance(key:Key, binding:Binding, deps:List) {
     try {
-      var instance = binding.factory(deps);
+      var instance = reflector.invoke(binding.factory, deps);
       this.injector._setInstance(key, instance);
       return instance;
     } catch (e) {
@@ -211,7 +212,7 @@ class _AsyncInjectorStrategy {
     try {
       var instance = this.injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
-      return binding.factory(deps);
+      return reflector.invoke(binding.factory, deps);
     } catch (e) {
       this.injector._clear(key);
       throw new InstantiationError(e, key);

@@ -1,0 +1,10 @@
+name: bnehcmarks
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+  facade:
+    path: ../facade
+  di:
+    path: ../di
+  core:
+    path: ../core

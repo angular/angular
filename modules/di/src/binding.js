@@ -7,10 +7,11 @@ export class Dependency {
   @FIELD('final key:Key')
   @FIELD('final asPromise:bool')
   @FIELD('final lazy:bool')
-  constructor(key:Key, asPromise:boolean, lazy:boolean) {
+  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List) {
     this.key = key;
     this.asPromise = asPromise;
     this.lazy = lazy;
+    this.properties = properties;
   }
 }
 
@@ -44,7 +45,7 @@ export class BindingBuilder {
   toValue(value):Binding {
     return new Binding(
       Key.get(this.token),
-      (_) => value,
+      () => value,
       [],
       false
     );
@@ -53,7 +54,7 @@ export class BindingBuilder {
   toFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(
       Key.get(this.token),
-      reflector.convertToFactory(factoryFunction),
+      factoryFunction,
       this._constructDependencies(factoryFunction, dependencies),
       false
     );
@@ -62,7 +63,7 @@ export class BindingBuilder {
   toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(
       Key.get(this.token),
-      reflector.convertToFactory(factoryFunction),
+      factoryFunction,
       this._constructDependencies(factoryFunction, dependencies),
       true
     );
@@ -71,6 +72,6 @@ export class BindingBuilder {
   _constructDependencies(factoryFunction:Function, dependencies:List) {
     return isBlank(dependencies) ?
       reflector.dependencies(factoryFunction) :
-      ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false));
+      ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false, []));
   }
 }

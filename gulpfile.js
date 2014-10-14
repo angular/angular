@@ -1,7 +1,9 @@
+var shell = require('gulp-shell');
 var gulp = require('gulp');
 var rename = require('gulp-rename');
 var watch = require('gulp-watch');
 var mergeStreams = require('event-stream').merge;
+var es = require('event-stream');
 var connect = require('gulp-connect');
 var clean = require('gulp-rimraf');
 var runSequence = require('run-sequence');
@@ -225,22 +227,58 @@ gulp.task('analyze/dartanalyzer', function(done) {
 
 
 // ------------------
-// BENCHMARKS
+// BENCHMARKS JS
 
-var benchmarksBuildPath = 'build/benchpress';
-var benchmarksCompiledJsPath = 'build/js/benchmarks/lib';
-
-gulp.task('benchmarks/build.benchpress', function () {
+gulp.task('benchmarks/build.benchpress.js', function () {
   benchpress.build({
-    benchmarksPath: benchmarksCompiledJsPath,
-    buildPath: benchmarksBuildPath
+    benchmarksPath: 'build/js/benchmarks/lib',
+    buildPath: 'build/benchpress/js'
   })
 });
 
-gulp.task('benchmarks/build', function() {
+gulp.task('benchmarks/build.js', function() {
   runSequence(
     ['jsRuntime/build', 'modules/build.prod.js'],
-    'benchmarks/build.benchpress'
+    'benchmarks/build.benchpress.js'
+  );
+});
+
+
+// ------------------
+// BENCHMARKS DART
+
+gulp.task('benchmarks/build.dart2js.dart', function () {
+  return gulp.src([
+    "build/dart/benchmarks/lib/**/benchmark.dart"
+  ]).pipe(shell(['dart2js --package-root="build/dart/benchmarks/packages" -o "<%= file.path %>.js" <%= file.path %>']));
+});
+
+gulp.task('benchmarks/create-bpconf.dart', function () {
+  var bpConfContent = "module.exports = function(c) {c.set({scripts: [{src: 'benchmark.dart.js'}]});}";
+  var createBpConfJs = es.map(function(file, cb) {
+    var dir = path.dirname(file.path);
+    fs.writeFileSync(path.join(dir, "bp.conf.js"), bpConfContent);
+    cb();
+  });
+
+  return gulp.src([
+    "build/dart/benchmarks/lib/**/benchmark.dart"
+  ]).pipe(createBpConfJs);
+});
+
+gulp.task('benchmarks/build.benchpress.dart', function () {
+  benchpress.build({
+    benchmarksPath: 'build/dart/benchmarks/lib',
+    buildPath: 'build/benchpress/dart'
+  })
+});
+
+gulp.task('benchmarks/build.dart', function() {
+  runSequence(
+    'modules/build.dart',
+    'benchmarks/build.dart2js.dart',
+    'benchmarks/create-bpconf.dart',
+    'benchmarks/build.benchpress.dart'
   );
 });
 

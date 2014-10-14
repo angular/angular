@@ -10,8 +10,6 @@ export function run () {
     var child = injector.createChild([E]);
     child.get(E);
   }
-
-  console.log(count)
 }
 
 class A {
