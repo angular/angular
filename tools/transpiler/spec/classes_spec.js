@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {ddescribe, describe, it, expect} from 'test_lib/test_lib';
 import {CONST} from './fixtures/annotations';
 
 // Constructor
@@ -36,6 +36,16 @@ class SubConst extends Const {
   }
 }
 
+class HasGetters {
+  get getter():string {
+    return 'getter';
+  }
+
+  static get staticGetter():string {
+    return 'getter';
+  }
+}
+
 export function main() {
   describe('classes', function() {
     it('should work', function() {
@@ -58,6 +68,17 @@ export function main() {
         expect(subFoo.a).toBe(1);
         expect(subFoo.b).toBe(2);
         expect(subFoo.c).toBe(3);
+      });
+    });
+
+    describe("getters", function () {
+      it("should call instance getters", function () {
+        var obj = new HasGetters();
+        expect(obj.getter).toEqual('getter');
+      });
+
+      it("should call static getters", function () {
+        expect(HasGetters.staticGetter).toEqual('getter');
       });
     });
   });

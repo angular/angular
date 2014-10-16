@@ -18,6 +18,10 @@ import {
   STATIC
 } from 'traceur/src/syntax/TokenType';
 
+import {
+  GET
+} from 'traceur/src/syntax/PredefinedName';
+
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
@@ -367,6 +371,21 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     this.writeSpace_()
+  }
+
+  visitGetAccessor(tree) {
+    this.writeAnnotations_(tree.annotations);
+    if (tree.isStatic) {
+      this.write_(STATIC);
+      this.writeSpace_();
+    }
+    this.writeType_(tree.typeAnnotation);
+    this.writeSpace_();
+    this.write_(GET);
+    this.writeSpace_();
+    this.visitAny(tree.name);
+    this.writeSpace_();
+    this.visitAny(tree.body);
   }
 
   visitNamedParameterList(tree) {
