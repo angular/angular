@@ -1,9 +1,13 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
-import {isBlank, FIELD} from 'facade/lang';
+import {isBlank, FIELD, IMPLEMENTS} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {ProtoElementInjector} from 'core/compiler/element_injector';
+import {ProtoElementInjector, VIEW_KEY} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
+import {View} from 'core/compiler/view';
+
+@IMPLEMENTS(View)
+class DummyView {}
 
 class Directive {
 }
@@ -36,6 +40,13 @@ class NeedsService {
   }
 }
 
+class NeedsView {
+  @FIELD("view:Object")
+  constructor(@Inject(View) view) {
+    this.view = view;
+  }
+}
+
 export function main() {
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -45,6 +56,30 @@ export function main() {
     if (tree.children.length == 0) return lookupName(tree);
     var children = tree.children.map(m => humanize(m, names));
     return [lookupName(tree), children];
+  }
+
+  function injector(bindings, appInjector = null, props = null) {
+    if (isBlank(appInjector)) appInjector = new Injector([]);
+    if (isBlank(props)) props = {};
+
+    var proto = new ProtoElementInjector(null, bindings, []);
+    var inj = proto.instantiate({view: props["view"]});
+    inj.instantiateDirectives(appInjector);
+    return inj;
+  }
+
+  function parentChildInjectors(parentBindings, childBindings) {
+    var inj = new Injector([]);
+
+    var protoParent = new ProtoElementInjector(null, parentBindings, []);
+    var parent = protoParent.instantiate({view: null});
+    parent.instantiateDirectives(inj);
+
+    var protoChild = new ProtoElementInjector(protoParent, childBindings, []);
+    var child = protoChild.instantiate({view: null});
+    child.instantiateDirectives(inj);
+
+    return child;
   }
 
   describe("ElementInjector", function () {
@@ -68,9 +103,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, [], []);
         var protoChild2 = new ProtoElementInjector(protoParent, [], []);
 
-        var p = protoParent.instantiate();
-        var c1 = protoChild1.instantiate();
-        var c2 = protoChild2.instantiate();
+        var p = protoParent.instantiate({view: null});
+        var c1 = protoChild1.instantiate({view: null});
+        var c2 = protoChild2.instantiate({view: null});
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -93,29 +128,6 @@ export function main() {
     });
 
     describe("instantiateDirectives", function () {
-      function injector(bindings, appInjector = null) {
-        var proto = new ProtoElementInjector(null, bindings, []);
-        var inj = proto.instantiate();
-
-        if (isBlank(appInjector)) appInjector = new Injector([]);
-        inj.instantiateDirectives(appInjector);
-        return inj;
-      }
-
-      function parentChildInjectors(parentBindings, childBindings) {
-        var inj = new Injector([]);
-
-        var protoParent = new ProtoElementInjector(null, parentBindings, []);
-        var parent = protoParent.instantiate();
-        parent.instantiateDirectives(inj);
-
-        var protoChild = new ProtoElementInjector(protoParent, childBindings, []);
-        var child = protoChild.instantiate();
-        child.instantiateDirectives(inj);
-
-        return child;
-      }
-
       it("should instantiate directives that have no dependencies", function () {
         var inj = injector([Directive]);
         expect(inj.get(Directive)).toBeAnInstanceOf(Directive);
@@ -139,6 +151,13 @@ export function main() {
         var d = inj.get(NeedsService);
         expect(d).toBeAnInstanceOf(NeedsService);
         expect(d.service).toEqual("service");
+      });
+
+      it("should instantiate directives that depend on speical objects", function () {
+        var view = new DummyView();
+        var inj = injector([NeedsView], null, {"view" : view});
+
+        expect(inj.get(NeedsView).view).toBe(view);
       });
 
       it("should return app services", function () {
@@ -171,6 +190,15 @@ export function main() {
       it("should throw when no directive found", function () {
         expect(() => injector([NeedDirectiveFromParent])).
             toThrowError('No provider for Directive! (NeedDirectiveFromParent -> Directive)');
+      });
+    });
+
+    describe("special objects", function () {
+      it("should return view", function () {
+        var view = new DummyView();
+        var inj = injector([], null, {"view" : view});
+
+        expect(inj.get(View)).toEqual(view);
       });
     });
   });

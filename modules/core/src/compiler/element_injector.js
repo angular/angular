@@ -3,8 +3,10 @@ import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {StaticKeys} from './static_keys';
 
 var MAX_DEPTH = Math.pow(2, 30) - 1;
+var _undefined = new Object();
 
 class TreeNode {
   @FIELD('_parent:TreeNode')
@@ -180,12 +182,13 @@ export class ProtoElementInjector extends TreeNode {
     this.hasProperties = false;
   }
 
-  instantiate():ElementInjector {
+  instantiate({view}):ElementInjector {
     var p = this._parent;
-    var parentElementInjector = p == null ? null : p._elementInjector;
+    var parentElementInjector = p === null ? null : p._elementInjector;
     this._elementInjector = new ElementInjector({
       proto: this,
-      parent: parentElementInjector
+      parent: parentElementInjector,
+      view: view
     });
     return this._elementInjector;
   }
@@ -261,9 +264,11 @@ export class ElementInjector extends TreeNode {
   @FIELD('_obj7:Object')
   @FIELD('_obj8:Object')
   @FIELD('_obj9:Object')
-  constructor({proto, parent}) {
+  @FIELD('_view:View')
+  constructor({proto, parent, view}) {
     super(parent);
     this._proto = proto;
+    this._view = view;
 
     //we cannot call clearDirectives because fields won't be detected
     this._appInjector = null;
@@ -358,20 +363,46 @@ export class ElementInjector extends TreeNode {
     return this._getByKey(dep.key, dep.depth);
   }
 
+
+  /*
+   * It is fairly easy to annotate keys with metadata.
+   * For example, key.metadata = 'directive'.
+   *
+   * This would allows to do the lookup more efficiently.
+   *
+   * for example
+   * we would lookup special objects only when metadata = 'special'
+   * we would lookup directives only when metadata = 'directive'
+   *
+   * Write benchmarks before doing this optimization.
+   */
   _getByKey(key:Key, depth:int) {
     var ei = this;
     while (ei != null && depth >= 0) {
-      var obj = ei._getDirectiveByKey(key);
-      if (isPresent(obj)) return obj;
+      var specObj = ei._getSpecialObjectByKey(key);
+      if (specObj !== _undefined) return specObj;
+
+      var dir = ei._getDirectiveByKey(key);
+      if (dir !== _undefined) return dir;
+
       ei = ei._parent;
       depth -= 1;
     }
     return this._appInjector.get(key);
   }
 
+  _getSpecialObjectByKey(key:Key) {
+    var staticKeys = StaticKeys.instance();
+    var keyId = key.id;
+
+    if (keyId === staticKeys.viewId) return this._view;
+    //TODO add other objects as needed
+    return _undefined;
+  }
+
   _getDirectiveByKey(key:Key) {
     var p = this._proto;
-    var keyId=  key.id;
+    var keyId = key.id;
     if (p._keyId0 === keyId) return this._obj0;
     if (p._keyId1 === keyId) return this._obj1;
     if (p._keyId2 === keyId) return this._obj2;
@@ -382,7 +413,7 @@ export class ElementInjector extends TreeNode {
     if (p._keyId7 === keyId) return this._obj7;
     if (p._keyId8 === keyId) return this._obj8;
     if (p._keyId9 === keyId) return this._obj9;
-    return null;
+    return _undefined;
   }
 }
 

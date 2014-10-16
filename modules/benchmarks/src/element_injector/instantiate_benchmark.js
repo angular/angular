@@ -9,7 +9,7 @@ export function run () {
   var bindings = [A, B, C];
   var proto = new ProtoElementInjector(null, bindings, []);
   for (var i = 0; i < 20000; ++i) {
-    var ei = proto.instantiate();
+    var ei = proto.instantiate({view:null});
     ei.instantiateDirectives(appInjector);
   }
 }
