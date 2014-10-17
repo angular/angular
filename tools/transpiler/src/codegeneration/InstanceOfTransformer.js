@@ -14,7 +14,7 @@ export class InstanceOfTransformer extends ParseTreeTransformer {
    * @return {ParseTree}
    */
   transformBinaryExpression(tree) {
-    tree = super(tree);
+    tree = super.transformBinaryExpression(tree);
 
     if (tree.operator.type === INSTANCEOF) {
       return createBinaryExpression(tree.left, createOperatorToken('is'), tree.right);

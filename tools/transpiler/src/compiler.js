@@ -22,7 +22,7 @@ export class Compiler extends TraceurCompiler {
       this.throwIfErrors(errorReporter);
       return transformedTree;
     } else {
-      return super(tree, moduleName);
+      return super.transform(tree, moduleName);
     }
   }
 

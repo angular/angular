@@ -127,7 +127,7 @@ export class ClassTransformer extends ParseTreeTransformer {
     // Add the field definitions to the beginning of the class.
     tree.elements = fields.concat(tree.elements);
 
-    return super(tree);
+    return super.transformClassDeclaration(tree);
   }
 
   /**
