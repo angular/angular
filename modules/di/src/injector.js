@@ -45,7 +45,7 @@ export class Injector {
 
   _createListOfBindings(flattenBindings):List {
     var bindings = ListWrapper.createFixedSize(Key.numberOfKeys() + 1);
-    MapWrapper.forEach(flattenBindings, (keyId, v) => bindings[keyId] = v);
+    MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
     return bindings;
   }
 

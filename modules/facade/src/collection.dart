@@ -9,7 +9,7 @@ class MapWrapper {
   static void set(m, k, v){ m[k] = v; }
   static contains(m, k) => m.containsKey(k);
   static forEach(m, fn) {
-    m.forEach(fn);
+    m.forEach((k,v) => fn(v,k));
   }
 }
 
