@@ -44,13 +44,13 @@ export class Injector {
 
 
   _createListOfBindings(flattenBindings):List {
-    var bindings = ListWrapper.createFixedSize(Key.numberOfKeys() + 1);
+    var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
     MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
     return bindings;
   }
 
   _createInstances():List {
-    return ListWrapper.createFixedSize(Key.numberOfKeys() + 1);
+    return ListWrapper.createFixedSize(Key.numberOfKeys + 1);
   }
 
   _getByKey(key:Key, returnPromise:boolean, returnLazy:boolean) {

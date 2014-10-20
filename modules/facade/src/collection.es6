@@ -10,6 +10,7 @@ export class MapWrapper {
   static forEach(m, fn) {
     m.forEach(fn);
   }
+  static size(m) {return m.size;}
 }
 
 

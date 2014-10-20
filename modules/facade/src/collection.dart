@@ -11,6 +11,7 @@ class MapWrapper {
   static forEach(m, fn) {
     m.forEach((k,v) => fn(v,k));
   }
+  static int size(m) {return m.length;}
 }
 
 class ListWrapper {

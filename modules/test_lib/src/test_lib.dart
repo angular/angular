@@ -15,7 +15,7 @@ Expect expect(actual, [matcher]) {
 class Expect extends gns.Expect {
   Expect(actual) : super(actual);
 
-  void toThrowError(message) => this.toThrowWith(message: message);
+  void toThrowError([message=""]) => this.toThrowWith(message: message);
   void toBePromise() => _expect(actual is Future, equals(true));
   Function get _expect => gns.guinness.matchers.expect;
 }

@@ -12,6 +12,8 @@ function constructResolvingPath(keys:List) {
   }
 }
 
+export class KeyMetadataError extends Error {}
+
 export class ProviderError extends Error {
   constructor(key:Key, constructResolvingMessage:Function) {
     this.keys = [key];
