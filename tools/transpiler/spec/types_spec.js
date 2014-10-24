@@ -7,6 +7,14 @@ function sum(a: number, b: number): number {
   return a + b;
 }
 
+function div(a: int, b: int): int {
+  return Math.floor(a / b);
+}
+
+function rem(a: int, b: int): int {
+  return a % b;
+}
+
 function not(a: boolean): boolean {
   return !a;
 }
@@ -55,6 +63,13 @@ export function main() {
       var f = new Foo(1, 2);
       assert(f.sum() == 3);
       assert(f instanceof Foo);
+      // divison, remainder
+      assert(div(15, 3) == 5);
+      assert(div(16, 3) == 5);
+      assert(div(17, 3) == 5);
+      assert(div(18, 3) == 6);
+      assert(rem(15, 3) == 0);
+      assert(rem(16, 3) == 1);
 
       f.typedVariables();
     });
