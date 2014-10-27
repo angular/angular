@@ -61,8 +61,9 @@ function loadModule(filepath, transpile) {
   }
 
   if (transpile) {
-    var moduleName = filepath
+    var moduleName = path.normalize(filepath)
       .replace(__dirname, 'transpiler')
+      .replace(/\\/g, '/')
       .replace(/\.\w*$/, '');
     data = (new traceur.NodeCompiler(
       extend(SELF_COMPILE_OPTIONS, { moduleName: moduleName } )

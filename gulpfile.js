@@ -103,7 +103,8 @@ gulp.task('modules/build.dart/pubspec', function(done) {
     .pipe(through2.obj(function(file, enc, done) {
       if (file.previousContents.toString() !== file.contents.toString()) {
         console.log(file.path + ' changed, calling pub get');
-        var stream = spawn('pub', ['get'], {
+        var pubCmd = (process.platform === "win32" ? "pub.bat" : "pub");
+        var stream = spawn(pubCmd, ['get'], {
           stdio: [process.stdin, process.stdout, process.stderr],
           cwd: path.dirname(file.path)
         });
@@ -186,7 +187,8 @@ gulp.task('analyze/dartanalyzer', function(done) {
   }));
 
   function analyze(dirName, done) {
-    var stream = spawn('dartanalyzer', ['--fatal-warnings', tempFile], {
+    var dartanalyzerCmd = (process.platform === "win32" ? "dartanalyzer.bat" : "dartanalyzer");
+    var stream = spawn(dartanalyzerCmd, ['--fatal-warnings', tempFile], {
       // inherit stdin and stderr, but filter stdout
       stdio: [process.stdin, 'pipe', process.stderr],
       cwd: dirName
