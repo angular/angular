@@ -1,5 +1,6 @@
 import {ProtoRecord, Record} from './record';
 import {FIELD} from 'facade/lang';
+import {ListWrapper} from 'facade/collection';
 
 export class ProtoWatchGroup {
   @FIELD('final headRecord:ProtoRecord')
@@ -19,16 +20,25 @@ export class ProtoWatchGroup {
    */
   watch(expression:string,
         memento,
-        shallow /*= false*/) // TODO(vicb): comment out when opt-params are supported
+        shallow = false)
   {
-    var protoRecord = new ProtoRecord(this, expression, memento);
+    var parts = expression.split('.');
+    var protoRecords = ListWrapper.createFixedSize(parts.length);
 
-    if (this.headRecord === null) {
-      this.headRecord = this.tailRecord = protoRecord;
-    } else {
-      this.tailRecord.next = protoRecord;
-      protoRecord.prev = this.tailRecord;
-      this.tailRecord = protoRecord;
+    for (var i = parts.length - 1; i >= 0; i--) {
+      protoRecords[i] = new ProtoRecord(this, parts[i], memento);
+      memento = null;
+    }
+
+    for (var i = 0; i < parts.length; i++) {
+      var protoRecord = protoRecords[i];
+      if (this.headRecord === null) {
+        this.headRecord = this.tailRecord = protoRecord;
+      } else {
+        this.tailRecord.next = protoRecord;
+        protoRecord.prev = this.tailRecord;
+        this.tailRecord = protoRecord;
+      }
     }
   }
 

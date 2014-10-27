@@ -17,8 +17,8 @@ export function main() {
       it('should do simple watching', function() {
         var person = new Person('misko', 38);
         var pwg = new ProtoWatchGroup();
-        pwg.watch('name', 'name', false); // TODO(vicb): remove opt shallow when supported
-        pwg.watch('age', 'age', false);
+        pwg.watch('name', 'name');
+        pwg.watch('age', 'age');
         var dispatcher = new LoggingDispatcher();
         var wg = pwg.instantiate(dispatcher);
         wg.setContext(person);
@@ -33,18 +33,53 @@ export function main() {
         cd.detectChanges();
         expect(dispatcher.log).toEqual(['name=Misko', 'age=1']);
       });
+
+      it('should watch chained properties', function() {
+        var address = new Address('Grenoble');
+        var person = new Person('Victor', 36, address);
+        var pwg = new ProtoWatchGroup();
+        pwg.watch('address.city', 'address.city', false);
+        var dispatcher = new LoggingDispatcher();
+        var wg = pwg.instantiate(dispatcher);
+        wg.setContext(person);
+        var cd = new ChangeDetector(wg);
+        cd.detectChanges();
+        expect(dispatcher.log).toEqual(['address.city=Grenoble']);
+        dispatcher.clear();
+        cd.detectChanges();
+        expect(dispatcher.log).toEqual([]);
+        address.city = 'Mountain View';
+        cd.detectChanges();
+        expect(dispatcher.log).toEqual(['address.city=Mountain View']);
+      });
+
     });
   });
 }
 
 class Person {
-  constructor(name:string, age:number) {
+  constructor(name:string, age:number, address:Address = null) {
     this.name = name;
     this.age = age;
+    this.address = address;
   }
 
-  toString() {
-    return 'name=' + this.name + ' age=' + this.age.toString();
+  toString():string {
+    var address = this.address == null ? '' : ' address=' + this.address.toString();
+
+    return 'name=' + this.name +
+           ' age=' + this.age.toString() +
+           address;
+  }
+}
+
+class Address {
+  constructor(city:string) {
+    this.city = city;
+  }
+
+  toString():string {
+    return this.city;
   }
 }
 

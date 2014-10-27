@@ -44,19 +44,19 @@ export class Record {
   @FIELD('final watchGroup:WatchGroup')
   @FIELD('final protoRecord:ProtoRecord')
   /// order list of all records. Including head/tail markers
-  @FIELD('_next:Record')
-  @FIELD('_prev:Record')
+  @FIELD('next:Record')
+  @FIELD('prev:Record')
   /// next record to dirty check
-  @FIELD('_checkNext:Record')
-  @FIELD('_checkPrev:Record')
+  @FIELD('checkNext:Record')
+  @FIELD('checkPrev:Record')
   // next notifier
-  @FIELD('_notifierNext:Record')
+  @FIELD('notifierNext:Record')
 
-  @FIELD('_mode:int')
-  @FIELD('_context')
-  @FIELD('_getter')
-  @FIELD('_arguments')
+  @FIELD('mode:int')
+  @FIELD('context')
+  @FIELD('getter')
   @FIELD('previousValue')
+  @FIELD('currentValue')
   constructor(watchGroup/*:wg.WatchGroup*/, protoRecord:ProtoRecord) {
     this.protoRecord = protoRecord;
     this.watchGroup = watchGroup;
@@ -71,7 +71,8 @@ export class Record {
     this.getter = null;
     this.arguments = null;
     this.previousValue = null;
-    this.currentValue = null;
+    // `this` means that the record is fresh
+    this.currentValue = this;
   }
 
   check():boolean {
@@ -119,10 +120,9 @@ export class Record {
       }
     }
 
-
     // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
     if (this.protoRecord.dispatchMemento === null) {
-      // forward propagate to the next record
+      this.next.setContext(this.currentValue);
     } else {
       // notify through dispatcher
       this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatchMemento);
@@ -132,8 +132,6 @@ export class Record {
   }
 
   setContext(context) {
-    // use `this` as a marker for a fresh record
-    this.currentValue = this;
     this.mode = MODE_STATE_PROPERTY;
     this.context = context;
     var factory = new FieldGetterFactory();
