@@ -5,7 +5,7 @@
 ### Prerequisites:
 
 1. `npm install`
-2. `npm install -g gulp karma`
+2. `npm install -g gulp karma karma-cli`
 3. `gulp build`
 4. `pub get`
 
