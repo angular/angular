@@ -191,6 +191,11 @@ export function main() {
         expect(() => injector([NeedDirectiveFromParent])).
             toThrowError('No provider for Directive! (NeedDirectiveFromParent -> Directive)');
       });
+
+      it("should accept bindings instead of directive types", function () {
+        var inj = injector([bind(Directive).toClass(Directive)]);
+        expect(inj.get(Directive)).toBeAnInstanceOf(Directive);
+      });
     });
 
     describe("special objects", function () {

@@ -145,7 +145,7 @@ export class ProtoElementInjector extends TreeNode {
   @FIELD('_key8:int')
   @FIELD('_key9:int')
   @FIELD('textNodes:List<int>')
-  constructor(parent:ProtoElementInjector, directiveTypes:List, textNodes:List) {
+  constructor(parent:ProtoElementInjector, bindings:List, textNodes:List) {
     super(parent);
 
     this._elementInjector = null;
@@ -161,18 +161,18 @@ export class ProtoElementInjector extends TreeNode {
     this._binding8 = null; this._keyId8 = null;
     this._binding9 = null; this._keyId9 = null;
 
-    var length = directiveTypes.length;
+    var length = bindings.length;
 
-    if (length > 0) {this._binding0 = this._createBinding(directiveTypes[0]); this._keyId0 = this._binding0.key.id;}
-    if (length > 1) {this._binding1 = this._createBinding(directiveTypes[1]); this._keyId1 = this._binding1.key.id;}
-    if (length > 2) {this._binding2 = this._createBinding(directiveTypes[2]); this._keyId2 = this._binding2.key.id;}
-    if (length > 3) {this._binding3 = this._createBinding(directiveTypes[3]); this._keyId3 = this._binding3.key.id;}
-    if (length > 4) {this._binding4 = this._createBinding(directiveTypes[4]); this._keyId4 = this._binding4.key.id;}
-    if (length > 5) {this._binding5 = this._createBinding(directiveTypes[5]); this._keyId5 = this._binding5.key.id;}
-    if (length > 6) {this._binding6 = this._createBinding(directiveTypes[6]); this._keyId6 = this._binding6.key.id;}
-    if (length > 7) {this._binding7 = this._createBinding(directiveTypes[7]); this._keyId7 = this._binding7.key.id;}
-    if (length > 8) {this._binding8 = this._createBinding(directiveTypes[8]); this._keyId8 = this._binding8.key.id;}
-    if (length > 9) {this._binding9 = this._createBinding(directiveTypes[9]); this._keyId9 = this._binding9.key.id;}
+    if (length > 0) {this._binding0 = this._createBinding(bindings[0]); this._keyId0 = this._binding0.key.id;}
+    if (length > 1) {this._binding1 = this._createBinding(bindings[1]); this._keyId1 = this._binding1.key.id;}
+    if (length > 2) {this._binding2 = this._createBinding(bindings[2]); this._keyId2 = this._binding2.key.id;}
+    if (length > 3) {this._binding3 = this._createBinding(bindings[3]); this._keyId3 = this._binding3.key.id;}
+    if (length > 4) {this._binding4 = this._createBinding(bindings[4]); this._keyId4 = this._binding4.key.id;}
+    if (length > 5) {this._binding5 = this._createBinding(bindings[5]); this._keyId5 = this._binding5.key.id;}
+    if (length > 6) {this._binding6 = this._createBinding(bindings[6]); this._keyId6 = this._binding6.key.id;}
+    if (length > 7) {this._binding7 = this._createBinding(bindings[7]); this._keyId7 = this._binding7.key.id;}
+    if (length > 8) {this._binding8 = this._createBinding(bindings[8]); this._keyId8 = this._binding8.key.id;}
+    if (length > 9) {this._binding9 = this._createBinding(bindings[9]); this._keyId9 = this._binding9.key.id;}
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
     }
@@ -194,8 +194,10 @@ export class ProtoElementInjector extends TreeNode {
     return this._elementInjector;
   }
 
-  _createBinding(directiveType:Type) {
-    var b = bind(directiveType).toClass(directiveType);
+  _createBinding(bindingOrType) {
+    var b = (bindingOrType instanceof Type) ?
+      bind(bindingOrType).toClass(bindingOrType) :
+      bindingOrType;
     var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
     return new Binding(b.key, b.factory, deps, b.providedAsPromise);
   }
