@@ -5,3 +5,7 @@ System.import('benchmarks/element_injector/instantiate_benchmark').then(function
 System.import('benchmarks/element_injector/instantiate_directive_benchmark').then(function (bm) {
   window.benchmarkSteps.push({name: 'ElementInjector.instantiateDirectives', fn: bm.run});
 }, console.log.bind(console));
+
+System.import('benchmarks/element_injector/instantiate_benchmark_codegen').then(function (bm) {
+  window.benchmarkSteps.push({name: 'ElementInjector.instantiate + instantiateDirectives (codegen)', fn: bm.run});
+}, console.log.bind(console));
