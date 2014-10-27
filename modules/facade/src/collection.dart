@@ -22,6 +22,7 @@ class ListWrapper {
   static void set(m, k, v) { m[k] = v; }
   static contains(m, k) => m.containsKey(k);
   static map(list, fn) => list.map(fn).toList();
+  static filter(List list, fn) => list.where(fn).toList();
   static find(List list, fn) => list.firstWhere(fn, orElse:() => null);
   static any(List list, fn) => list.any(fn);
   static forEach(list, fn) {

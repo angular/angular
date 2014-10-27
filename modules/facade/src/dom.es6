@@ -1,12 +1,17 @@
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
+export var NodeList = window.NodeList;
 export var Text = window.Text;
 export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
+import {List} from 'facade/collection';
 
 export class DOM {
   static query(selector) {
     return document.querySelector(selector);
+  }
+  static querySelectorAll(el, selector:string):NodeList {
+    return el.querySelectorAll(selector);
   }
   static on(el, evt, listener) {
     el.addEventListener(evt, listener, false);
@@ -14,10 +19,16 @@ export class DOM {
   static getInnerHTML(el) {
     return el.innerHTML;
   }
+  static firstChild(el):Node {
+    return el.firstChild;
+  }
+  static childNodes(el):NodeList {
+    return el.childNodes;
+  }
   static setInnerHTML(el, value) {
     el.innerHTML = value;
   }
-  static setText(text:Text, value:String) {
+  static setText(text:Text, value:string) {
     text.nodeValue = value;
   }
   static createTemplate(html) {

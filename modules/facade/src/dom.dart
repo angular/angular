@@ -9,6 +9,9 @@ class DOM {
   static query(selector) {
     return document.querySelector(selector);
   }
+  static ElementList querySelectorAll(el, String selector) {
+    return el.querySelectorAll(selector);
+  }
   static on(element, event, callback) {
     element.addEventListener(event, callback);
   }
@@ -17,6 +20,12 @@ class DOM {
   }
   static setInnerHTML(el, value) {
     el.innerHtml = value;
+  }
+  static Node firstChild(el) {
+    return el.firstChild;
+  }
+  static List<Node> childNodes(el) {
+    return el.childNodes;
   }
   static setText(Text text, String value) {
     text.text = value;

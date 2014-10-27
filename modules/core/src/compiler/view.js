@@ -2,10 +2,9 @@ import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facad
 import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
-import {Module} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {SetterFn} from 'change_detection/facade';
-import {FIELD, IMPLEMENTS, int} from 'facade/lang';
+import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
 
 /***
@@ -24,12 +23,13 @@ export class View {
   /// to keep track of the nodes.
   @FIELD('final nodes:List<Node>')
   @FIELD('final onChangeDispatcher:OnChangeDispatcher')
-  constructor(fragment:DocumentFragment) {
+  constructor(fragment:DocumentFragment, elementInjector:List, rootElementInjectors:List, textNodes:List) {
     this.fragment = fragment;
     this.nodes = ListWrapper.clone(fragment.childNodes);
+    this.elementInjectors = elementInjector;
+    this.rootElementInjectors = rootElementInjectors;
     this.onChangeDispatcher = null;
-    this.elementInjectors = null;
-    this.textNodes = null;
+    this.textNodes = textNodes;
     this.bindElements = null;
   }
 
@@ -52,26 +52,72 @@ export class View {
 
 export class ProtoView {
   @FIELD('final _template:TemplateElement')
-  @FIELD('final _module:Module')
+  @FIELD('final _bindings:List')
   @FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
   @FIELD('final _protoWatchGroup:ProtoWatchGroup')
   @FIELD('final _useRootElement:bool')
   constructor(
       template:TemplateElement,
-      module:Module,
-      protoElementInjector:List<ProtoElementInjector>,
+      bindings:List,
+      protoElementInjectors:List,
       protoWatchGroup:ProtoWatchGroup,
-      useRootElement:boolean)
-  {
+      useRootElement:boolean) {
     this._template = template;
-    this._module = module;
-    this._protoElementInjectors = protoElementInjector;
+    this._bindings = bindings;
+    this._protoElementInjectors = protoElementInjectors;
+
+    // not implemented
     this._protoWatchGroup = protoWatchGroup;
     this._useRootElement = useRootElement;
   }
 
   instantiate():View {
-    return new View(DOM.clone(this._template.content));
+    var fragment = DOM.clone(this._template.content);
+    var elements = DOM.querySelectorAll(fragment, ".ng-binding");
+    var protos = this._protoElementInjectors;
+
+    /**
+     * TODO: vsavkin: benchmark
+     * If this performs poorly, the three loops can be collapsed into one.
+     */
+    var elementInjectors = ProtoView._createElementInjectors(elements, protos);
+    var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
+    var textNodes = ProtoView._textNodes(elements, protos);
+
+    return new View(fragment, elementInjectors, rootElementInjectors, textNodes);
+  }
+
+  static _createElementInjectors(elements, protos) {
+    var injectors = ListWrapper.createFixedSize(protos.length);
+    for (var i = 0; i < protos.length; ++i) {
+      injectors[i] = ProtoView._createElementInjector(elements[i], protos[i]);
+    }
+    ListWrapper.forEach(protos, p => p.clearElementInjector());
+    return injectors;
+  }
+
+  static _createElementInjector(element, proto) {
+    //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
+    return proto.hasBindings ? proto.instantiate({view:null}) : null;
+  }
+
+  static _rootElementInjectors(injectors) {
+    return ListWrapper.filter(injectors, inj => isPresent(inj) && isBlank(inj.parent));
+  }
+
+  static _textNodes(elements, protos) {
+    var textNodes = [];
+    for (var i = 0; i < protos.length; ++i) {
+      ProtoView._collectTextNodes(textNodes, elements[i], protos[i]);
+    }
+    return textNodes;
+  }
+
+  static _collectTextNodes(allTextNodes, element, proto) {
+    var childNodes = DOM.childNodes(element);
+    ListWrapper.forEach(proto.textNodes, (i) => {
+      ListWrapper.push(allTextNodes, childNodes[i]);
+    });
   }
 }
 

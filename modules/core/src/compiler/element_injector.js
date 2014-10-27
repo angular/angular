@@ -177,8 +177,9 @@ export class ProtoElementInjector extends TreeNode {
       throw 'Maximum number of directives per element has been reached.';
     }
 
+    this.textNodes = textNodes;
+
     // dummy fields to make analyzer happy
-    this.textNodes = [];
     this.hasProperties = false;
   }
 

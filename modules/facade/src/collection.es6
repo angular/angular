@@ -47,6 +47,9 @@ export class ListWrapper {
     }
     return null;
   }
+  static filter(array, pred:Function) {
+    return array.filter(pred);
+  }
   static any(list:List, pred:Function) {
     for (var i = 0 ; i < list.length; ++i) {
       if (pred(list[i])) return true;
