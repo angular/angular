@@ -5,11 +5,11 @@
 ### Prerequisites:
 
 1. `npm install`
-2. `npm install -g gulp karma`
+2. `npm install -g gulp karma karma-cli`
 3. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
 4. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
-3. `gulp build`
-4. `pub get`
+5. `gulp build`
+6. `pub get`
 
 ### Folder structure
 
