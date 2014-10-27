@@ -69,6 +69,9 @@ export class ListWrapper {
     }
     return false;
   }
+  static contains(list:List, el) {
+    return list.indexOf(el) !== -1;
+  }
   static reversed(array) {
     var a = ListWrapper.clone(array);
     return a.reverse();

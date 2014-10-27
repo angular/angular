@@ -1,11 +1,14 @@
 import {FIELD, isPresent, isBlank, Type, int} from 'facade/lang';
 import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
-import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError} from 'di/di';
+import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {StaticKeys} from './static_keys';
 
+var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
+
 var MAX_DEPTH = Math.pow(2, 30) - 1;
+
 var _undefined = new Object();
 
 class TreeNode {
@@ -284,6 +287,7 @@ export class ElementInjector extends TreeNode {
     this._obj7 = null;
     this._obj8 = null;
     this._obj9 = null;
+    this._constructionCounter = 0;
   }
 
   clearDirectives() {
@@ -298,22 +302,23 @@ export class ElementInjector extends TreeNode {
     this._obj7 = null;
     this._obj8 = null;
     this._obj9 = null;
+    this._constructionCounter = 0;
   }
 
   instantiateDirectives(appInjector:Injector) {
     this._appInjector = appInjector;
 
     var p = this._proto;
-    if (isPresent(p._keyId0)) this._obj0 = this._new(p._binding0);
-    if (isPresent(p._keyId1)) this._obj1 = this._new(p._binding1);
-    if (isPresent(p._keyId2)) this._obj2 = this._new(p._binding2);
-    if (isPresent(p._keyId3)) this._obj3 = this._new(p._binding3);
-    if (isPresent(p._keyId4)) this._obj4 = this._new(p._binding4);
-    if (isPresent(p._keyId5)) this._obj5 = this._new(p._binding5);
-    if (isPresent(p._keyId6)) this._obj6 = this._new(p._binding6);
-    if (isPresent(p._keyId7)) this._obj7 = this._new(p._binding7);
-    if (isPresent(p._keyId8)) this._obj8 = this._new(p._binding8);
-    if (isPresent(p._keyId9)) this._obj9 = this._new(p._binding9);
+    if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
+    if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
+    if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);;
+    if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);;
+    if (isPresent(p._keyId4)) this._getDirectiveByKeyId(p._keyId4);;
+    if (isPresent(p._keyId5)) this._getDirectiveByKeyId(p._keyId5);;
+    if (isPresent(p._keyId6)) this._getDirectiveByKeyId(p._keyId6);;
+    if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);;
+    if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);;
+    if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);;
   }
 
   get(token) {
@@ -321,6 +326,10 @@ export class ElementInjector extends TreeNode {
   }
 
   _new(binding:Binding) {
+    if (this._constructionCounter++ > _MAX_DIRECTIVE_CONSTRUCTION_COUNTER) {
+      throw new CyclicDependencyError(binding.key);
+    }
+
     var factory = binding.factory;
     var deps = binding.dependencies;
     var length = deps.length;
@@ -365,7 +374,6 @@ export class ElementInjector extends TreeNode {
     return this._getByKey(dep.key, dep.depth);
   }
 
-
   /*
    * It is fairly easy to annotate keys with metadata.
    * For example, key.metadata = 'directive'.
@@ -381,10 +389,10 @@ export class ElementInjector extends TreeNode {
   _getByKey(key:Key, depth:int) {
     var ei = this;
     while (ei != null && depth >= 0) {
-      var specObj = ei._getSpecialObjectByKey(key);
+      var specObj = ei._getSpecialObjectByKeyId(key.id);
       if (specObj !== _undefined) return specObj;
 
-      var dir = ei._getDirectiveByKey(key);
+      var dir = ei._getDirectiveByKeyId(key.id);
       if (dir !== _undefined) return dir;
 
       ei = ei._parent;
@@ -393,28 +401,25 @@ export class ElementInjector extends TreeNode {
     return this._appInjector.get(key);
   }
 
-  _getSpecialObjectByKey(key:Key) {
+  _getSpecialObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
-    var keyId = key.id;
-
     if (keyId === staticKeys.viewId) return this._view;
     //TODO add other objects as needed
     return _undefined;
   }
 
-  _getDirectiveByKey(key:Key) {
+  _getDirectiveByKeyId(keyId:int) {
     var p = this._proto;
-    var keyId = key.id;
-    if (p._keyId0 === keyId) return this._obj0;
-    if (p._keyId1 === keyId) return this._obj1;
-    if (p._keyId2 === keyId) return this._obj2;
-    if (p._keyId3 === keyId) return this._obj3;
-    if (p._keyId4 === keyId) return this._obj4;
-    if (p._keyId5 === keyId) return this._obj5;
-    if (p._keyId6 === keyId) return this._obj6;
-    if (p._keyId7 === keyId) return this._obj7;
-    if (p._keyId8 === keyId) return this._obj8;
-    if (p._keyId9 === keyId) return this._obj9;
+    if (p._keyId0 === keyId) {if (isBlank(this._obj0)){this._obj0 = this._new(p._binding0);} return this._obj0;}
+    if (p._keyId1 === keyId) {if (isBlank(this._obj1)){this._obj1 = this._new(p._binding1);} return this._obj1;}
+    if (p._keyId2 === keyId) {if (isBlank(this._obj2)){this._obj2 = this._new(p._binding2);} return this._obj2;}
+    if (p._keyId3 === keyId) {if (isBlank(this._obj3)){this._obj3 = this._new(p._binding3);} return this._obj3;}
+    if (p._keyId4 === keyId) {if (isBlank(this._obj4)){this._obj4 = this._new(p._binding4);} return this._obj4;}
+    if (p._keyId5 === keyId) {if (isBlank(this._obj5)){this._obj5 = this._new(p._binding5);} return this._obj5;}
+    if (p._keyId6 === keyId) {if (isBlank(this._obj6)){this._obj6 = this._new(p._binding6);} return this._obj6;}
+    if (p._keyId7 === keyId) {if (isBlank(this._obj7)){this._obj7 = this._new(p._binding7);} return this._obj7;}
+    if (p._keyId8 === keyId) {if (isBlank(this._obj8)){this._obj8 = this._new(p._binding8);} return this._obj8;}
+    if (p._keyId9 === keyId) {if (isBlank(this._obj9)){this._obj9 = this._new(p._binding9);} return this._obj9;}
     return _undefined;
   }
 

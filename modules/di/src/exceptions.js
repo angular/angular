@@ -2,9 +2,22 @@ import {ListWrapper, List} from 'facade/collection';
 import {stringify} from 'facade/lang';
 import {Key} from './key';
 
+function findFirstClosedCycle(keys:List) {
+  var res = [];
+  for(var i = 0; i < keys.length; ++i) {
+    if (ListWrapper.contains(res, keys[i])) {
+      ListWrapper.push(res, keys[i]);
+      return res;
+    } else {
+      ListWrapper.push(res, keys[i]);
+    }
+  }
+  return res;
+}
+
 function constructResolvingPath(keys:List) {
   if (keys.length > 1) {
-    var reversed = ListWrapper.reversed(keys);
+    var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
     return " (" + tokenStrs.join(' -> ') + ")";
   } else {

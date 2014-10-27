@@ -31,7 +31,7 @@ class ListWrapper {
   static List createFixedSize(int size) => new List(size);
   static get(m, k) => m[k];
   static void set(m, k, v) { m[k] = v; }
-  static contains(m, k) => m.containsKey(k);
+  static contains(List m, k) => m.contains(k);
   static map(list, fn) => list.map(fn).toList();
   static filter(List list, fn) => list.where(fn).toList();
   static find(List list, fn) => list.firstWhere(fn, orElse:() => null);

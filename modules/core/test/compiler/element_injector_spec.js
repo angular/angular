@@ -40,6 +40,14 @@ class NeedsService {
   }
 }
 
+class A_Needs_B {
+  constructor(dep){}
+}
+
+class B_Needs_A {
+  constructor(dep){}
+}
+
 class NeedsView {
   @FIELD("view:Object")
   constructor(@Inject(View) view) {
@@ -214,6 +222,16 @@ export function main() {
         var inj = injector([], null, {"view" : view});
 
         expect(inj.get(View)).toEqual(view);
+      });
+
+      it("should handle cyclic dependencies", function () {
+        expect(() => {
+          injector([
+            bind(A_Needs_B).toFactory((a) => new A_Needs_B(a), [B_Needs_A]),
+            bind(B_Needs_A).toFactory((a) => new B_Needs_A(a), [A_Needs_B])
+          ]);
+        }).toThrowError('Cannot instantiate cyclic dependency! ' +
+            '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
       });
     });
   });
