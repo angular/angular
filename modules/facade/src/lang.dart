@@ -1,6 +1,13 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type;
+export 'dart:core' show Type, RegExp;
+import 'dart:math' as math;
+
+class Math {
+  static final _random = new math.Random();
+  static int floor(num n) => n.floor();
+  static double random() => _random.nextDouble();
+}
 
 class FIELD {
   final String definition;
@@ -55,6 +62,24 @@ class NumberWrapper {
 
   static double parseFloat(String text) {
     return double.parse(text);
+  }
+}
+
+class RegExpWrapper {
+  static RegExp create(regExpStr) {
+    return new RegExp(regExpStr);
+  }
+  static matcher(regExp, input) {
+    return regExp.allMatches(input).iterator;
+  }
+}
+
+class RegExpMatcherWrapper {
+  static next(matcher) {
+    if (matcher.moveNext()) {
+      return matcher.current;
+    }
+    return null;
   }
 }
 

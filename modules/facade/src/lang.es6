@@ -1,4 +1,5 @@
 export var Type = Function;
+export var Math = window.Math;
 
 export class FIELD {
   constructor(definition) {
@@ -107,3 +108,24 @@ export function int() {};
 int.assert = function(value) {
   return value == null || typeof value == 'number' && value === Math.floor(value);
 }
+
+export var RegExp = window.RegExp;
+
+export class RegExpWrapper {
+  static create(regExpStr):RegExp {
+    return new RegExp(regExpStr, 'g');
+  }
+  static matcher(regExp, input) {
+    return {
+      re: regExp,
+      input: input
+    };
+  }
+}
+
+export class RegExpMatcherWrapper {
+  static next(matcher) {
+    return matcher.re.exec(matcher.input);
+  }
+}
+
