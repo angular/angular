@@ -23,14 +23,15 @@ export class View {
   /// to keep track of the nodes.
   @FIELD('final nodes:List<Node>')
   @FIELD('final onChangeDispatcher:OnChangeDispatcher')
-  constructor(fragment:DocumentFragment, elementInjector:List, rootElementInjectors:List, textNodes:List) {
+  constructor(fragment:DocumentFragment, elementInjector:List,
+      rootElementInjectors:List, textNodes:List, bindElements:List) {
     this.fragment = fragment;
     this.nodes = ListWrapper.clone(fragment.childNodes);
     this.elementInjectors = elementInjector;
     this.rootElementInjectors = rootElementInjectors;
     this.onChangeDispatcher = null;
     this.textNodes = textNodes;
-    this.bindElements = null;
+    this.bindElements = bindElements;
   }
 
   onRecordChange(record:Record, target) {
@@ -39,7 +40,7 @@ export class View {
       // we know that it is DirectivePropertyMemento
       var directiveMemento:DirectivePropertyMemento = target;
       directiveMemento.invoke(record, this.elementInjectors);
-    } else if (target instanceof  ElementPropertyMemento) {
+    } else if (target instanceof ElementPropertyMemento) {
       var elementMemento:ElementPropertyMemento = target;
       elementMemento.invoke(record, this.bindElements);
     } else {
@@ -83,8 +84,10 @@ export class ProtoView {
     var elementInjectors = ProtoView._createElementInjectors(elements, protos);
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
     var textNodes = ProtoView._textNodes(elements, protos);
+    var bindElements = ProtoView._bindElements(elements, protos);
 
-    return new View(fragment, elementInjectors, rootElementInjectors, textNodes);
+    return new View(fragment, elementInjectors, rootElementInjectors, textNodes,
+        bindElements);
   }
 
   static _createElementInjectors(elements, protos) {
@@ -92,7 +95,11 @@ export class ProtoView {
     for (var i = 0; i < protos.length; ++i) {
       injectors[i] = ProtoView._createElementInjector(elements[i], protos[i]);
     }
-    ListWrapper.forEach(protos, p => p.clearElementInjector());
+    // Cannot be rolled into loop above, because parentInjector pointers need
+    // to be set on the children.
+    for (var i = 0; i < protos.length; ++i) {
+      protos[i].clearElementInjector();
+    }
     return injectors;
   }
 
@@ -108,16 +115,26 @@ export class ProtoView {
   static _textNodes(elements, protos) {
     var textNodes = [];
     for (var i = 0; i < protos.length; ++i) {
-      ProtoView._collectTextNodes(textNodes, elements[i], protos[i]);
+      ProtoView._collectTextNodes(textNodes, elements[i],
+          protos[i].textNodeIndices);
     }
     return textNodes;
   }
 
-  static _collectTextNodes(allTextNodes, element, proto) {
+  static _bindElements(elements, protos):List<Element> {
+    var bindElements = [];
+    for (var i = 0; i < protos.length; ++i) {
+      if (protos[i].hasElementPropertyBindings) ListWrapper.push(
+          bindElements, elements[i]);
+    }
+    return bindElements;
+  }
+
+  static _collectTextNodes(allTextNodes, element, indices) {
     var childNodes = DOM.childNodes(element);
-    ListWrapper.forEach(proto.textNodes, (i) => {
-      ListWrapper.push(allTextNodes, childNodes[i]);
-    });
+    for (var i = 0; i < indices.length; ++i) {
+      ListWrapper.push(allTextNodes, childNodes[indices[i]]);
+    }
   }
 }
 
@@ -129,8 +146,8 @@ export class ElementPropertyMemento {
     this._propertyName = propertyName;
   }
 
-  invoke(record:Record, elementInjectors:List<Element>) {
-    var element:Element = elementInjectors[this._elementIndex];
+  invoke(record:Record, bindElements:List<Element>) {
+    var element:Element = bindElements[this._elementIndex];
     DOM.setProperty(element, this._propertyName, record.currentValue);
   }
 }
@@ -138,14 +155,13 @@ export class ElementPropertyMemento {
 export class DirectivePropertyMemento {
   @FIELD('final _elementInjectorIndex:int')
   @FIELD('final _directiveIndex:int')
-  @FIELD('final _setterName:String')
+  @FIELD('final _setterName:string')
   @FIELD('final _setter:SetterFn')
   constructor(
       elementInjectorIndex:number,
       directiveIndex:number,
-      setterName:String,
-      setter:SetterFn)
-  {
+      setterName:string,
+      setter:SetterFn) {
     this._elementInjectorIndex = elementInjectorIndex;
     this._directiveIndex = directiveIndex;
     this._setterName = setterName;
@@ -154,7 +170,7 @@ export class DirectivePropertyMemento {
 
   invoke(record:Record, elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    var directive = elementInjectors[this._directiveIndex];
+    var directive = elementInjector.getAtIndex(this._directiveIndex);
     this._setter(directive, record.currentValue);
   }
 }
