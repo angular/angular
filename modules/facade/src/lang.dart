@@ -63,6 +63,10 @@ class NumberWrapper {
   static double parseFloat(String text) {
     return double.parse(text);
   }
+
+  static get NaN => double.NAN;
+
+  static bool isNaN(num value) => value.isNaN;
 }
 
 class RegExpWrapper {

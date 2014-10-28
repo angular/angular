@@ -102,6 +102,14 @@ export class NumberWrapper {
   static parseFloat(text:string):number {
     return parseFloat(text);
   }
+
+  static isNaN(value) {
+    return isNaN(value);
+  }
+
+  static get NaN():number {
+    return NaN;
+  }
 }
 
 export function int() {};
