@@ -14,6 +14,17 @@ class MapWrapper {
   static int size(m) {return m.length;}
 }
 
+// TODO: how to export StringMap=Map as a type?
+class StringMapWrapper {
+  static HashMap create() => new HashMap();
+  static get(map, key) {
+    return map[key];
+  }
+  static set(map, key, value) {
+    map[key] = value;
+  }
+}
+
 class ListWrapper {
   static List clone(List l) => new List.from(l);
   static List create() => new List();

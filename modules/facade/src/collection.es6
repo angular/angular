@@ -13,6 +13,19 @@ export class MapWrapper {
   static size(m) {return m.size;}
 }
 
+// TODO: cannot export StringMap as a type as Dart does not support
+// renaming types...
+export class StringMapWrapper {
+  // Note: We are not using Object.create(null) here due to
+  // performance!
+  static create():Object { return { }; }
+  static get(map, key) {
+    return map.hasOwnProperty(key) ? map[key] : undefined;
+  }
+  static set(map, key, value) {
+    map[key] = value;
+  }
+}
 
 export class ListWrapper {
   static create():List { return new List(); }
