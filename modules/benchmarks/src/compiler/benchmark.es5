@@ -1,0 +1,17 @@
+System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'CssSelector.parse', fn: bm.runParse});
+}, console.log.bind(console));
+
+System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'SelectorMatcher.addSelectable', fn: bm.runAdd});
+}, console.log.bind(console));
+
+System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'SelectorMatcher.match', fn: bm.runMatch});
+}, console.log.bind(console));
