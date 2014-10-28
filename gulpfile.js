@@ -1,24 +1,23 @@
-var shell = require('gulp-shell');
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var watch = require('gulp-watch');
-var mergeStreams = require('event-stream').merge;
-var es = require('event-stream');
-var connect = require('gulp-connect');
-var clean = require('gulp-rimraf');
-var runSequence = require('run-sequence');
-var glob = require('glob');
-var ejs = require('gulp-ejs');
-var path = require('path');
-var through2 = require('through2');
-var file2moduleName = require('./file2modulename');
-var spawn = require('child_process').spawn;
-var fs = require('fs');
-var path = require('path');
-var readline = require('readline');
-var Q = require('q');
-var merge = require('merge');
 var benchpress = require('angular-benchpress/lib/cli');
+var clean = require('gulp-rimraf');
+var connect = require('gulp-connect');
+var ejs = require('gulp-ejs');
+var es = require('event-stream');
+var file2moduleName = require('./file2modulename');
+var fs = require('fs');
+var glob = require('glob');
+var gulp = require('gulp');
+var merge = require('merge');
+var mergeStreams = require('event-stream').merge;
+var path = require('path');
+var Q = require('q');
+var readline = require('readline');
+var rename = require('gulp-rename');
+var runSequence = require('run-sequence');
+var shell = require('gulp-shell');
+var spawn = require('child_process').spawn;
+var through2 = require('through2');
+var watch = require('gulp-watch');
 
 var js2es5Options = {
   annotations: true, // parse annotations
@@ -196,7 +195,7 @@ gulp.task('analyze/dartanalyzer', function(done) {
     // We don't reexports from the generated file
     // as this could lead to name clashes when two files
     // export the same thing.
-    var rl = require('readline').createInterface({
+    var rl = readline.createInterface({
       input: stream.stdout,
       output: process.stdout,
       terminal: false
