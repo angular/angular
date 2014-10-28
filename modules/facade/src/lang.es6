@@ -12,11 +12,11 @@ export class IMPLEMENTS {}
 
 
 export function isPresent(obj):boolean {
-  return obj != undefined && obj != null;
+  return obj !== undefined && obj !== null;
 }
 
 export function isBlank(obj):boolean {
-  return obj == undefined || obj == null;
+  return obj === undefined || obj === null;
 }
 
 export function stringify(token):string {
