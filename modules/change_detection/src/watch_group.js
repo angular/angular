@@ -1,45 +1,42 @@
 import {ProtoRecord, Record} from './record';
-import {FIELD} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
+import {FIELD, IMPLEMENTS, isBlank, isPresent} from 'facade/lang';
+import {AST, FieldRead, ImplicitReceiver, AstVisitor} from './parser/ast';
 
 export class ProtoWatchGroup {
-  @FIELD('final headRecord:ProtoRecord')
-  @FIELD('final tailRecord:ProtoRecord')
+  @FIELD('headRecord:ProtoRecord')
+  @FIELD('tailRecord:ProtoRecord')
   constructor() {
     this.headRecord = null;
     this.tailRecord = null;
   }
 
   /**
-   * Parses [expression] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
+   * Parses [ast] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
    *
-   * @param expression The expression to watch
+   * @param ast The expression to watch
    * @param memento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
    * @param shallow Should collections be shallow watched
    */
-  watch(expression:string,
+  watch(ast:AST,
         memento,
         shallow = false)
   {
-    var parts = expression.split('.');
-    var protoRecords = ListWrapper.createFixedSize(parts.length);
+    var creator = new ProtoRecordCreator(this);
+    creator.createRecordsFromAST(ast, memento);
+    this._addRecords(creator.headRecord, creator.tailRecord);
+  }
 
-    for (var i = parts.length - 1; i >= 0; i--) {
-      protoRecords[i] = new ProtoRecord(this, parts[i], memento);
-      memento = null;
+  // try to encapsulate this behavior in some class (e.g., LinkedList)
+  // so we can say: group.appendList(creator.list);
+  _addRecords(head:ProtoRecord, tail:ProtoRecord) {
+    if (isBlank(this.headRecord)) {
+      this.headRecord = head;
+    } else {
+      this.tailRecord.next = head;
+      head.prev = this.tailRecord;
     }
-
-    for (var i = 0; i < parts.length; i++) {
-      var protoRecord = protoRecords[i];
-      if (this.headRecord === null) {
-        this.headRecord = this.tailRecord = protoRecord;
-      } else {
-        this.tailRecord.next = protoRecord;
-        protoRecord.prev = this.tailRecord;
-        this.tailRecord = protoRecord;
-      }
-    }
+    this.tailRecord = tail;
   }
 
   instantiate(dispatcher:WatchGroupDispatcher):WatchGroup {
@@ -108,4 +105,42 @@ export class WatchGroup {
 export class WatchGroupDispatcher {
   // The record holds the previous value at the time of the call
   onRecordChange(record:Record, context) {}
+}
+
+@IMPLEMENTS(AstVisitor)
+class ProtoRecordCreator {
+  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+  @FIELD('headRecord:ProtoRecord')
+  @FIELD('tailRecord:ProtoRecord')
+  constructor(protoWatchGroup) {
+    this.protoWatchGroup = protoWatchGroup;
+    this.headRecord = null;
+    this.tailRecord = null;
+  }
+
+  visitImplicitReceiver(ast:ImplicitReceiver) {
+    //do nothing
+  }
+
+  visitFieldRead(ast:FieldRead) {
+    ast.receiver.visit(this);
+    this.add(new ProtoRecord(this.protoWatchGroup, ast.name, null));
+  }
+
+  createRecordsFromAST(ast:AST, memento){
+    ast.visit(this);
+    if (isPresent(this.tailRecord)) {
+      this.tailRecord.dispatchMemento = memento;
+    }
+  }
+
+  add(protoRecord:ProtoRecord) {
+    if (this.headRecord === null) {
+      this.headRecord = this.tailRecord = protoRecord;
+    } else {
+      this.tailRecord.next = protoRecord;
+      protoRecord.prev = this.tailRecord;
+      this.tailRecord = protoRecord;
+    }
+  }
 }

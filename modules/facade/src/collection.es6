@@ -60,6 +60,9 @@ export class ListWrapper {
     }
     return null;
   }
+  static reduce(list:List, fn:Function, init) {
+    return list.reduce(fn, init);
+}
   static filter(array, pred:Function) {
     return array.filter(pred);
   }

@@ -1,13 +1,25 @@
 import {List, ListWrapper, SetWrapper} from "facade/collection";
 import {int, FIELD, NumberWrapper, StringJoiner, StringWrapper} from "facade/lang";
 
-// TODO(chirayu): Rewrite as consts when possible.
-export var TOKEN_TYPE_CHARACTER  = 1;
-export var TOKEN_TYPE_IDENTIFIER = 2;
-export var TOKEN_TYPE_KEYWORD    = 3;
-export var TOKEN_TYPE_STRING     = 4;
-export var TOKEN_TYPE_OPERATOR   = 5;
-export var TOKEN_TYPE_NUMBER     = 6;
+export const TOKEN_TYPE_CHARACTER  = 1;
+export const TOKEN_TYPE_IDENTIFIER = 2;
+export const TOKEN_TYPE_KEYWORD    = 3;
+export const TOKEN_TYPE_STRING     = 4;
+export const TOKEN_TYPE_OPERATOR   = 5;
+export const TOKEN_TYPE_NUMBER     = 6;
+
+export class Lexer {
+  tokenize(text:string):List {
+    var scanner = new _Scanner(text);
+    var tokens = [];
+    var token = scanner.scanToken();
+    while (token != null) {
+      ListWrapper.push(tokens, token);
+      token = scanner.scanToken();
+    }
+    return tokens;
+  }
+}
 
 export class Token {
   @FIELD('final index:int')
@@ -107,35 +119,35 @@ function newNumberToken(index:int, n:number):Token {
 }
 
 
-var EOF:Token = new Token(-1, 0, 0, "");
+export var EOF:Token = new Token(-1, 0, 0, "");
 
-const $EOF       = 0;
-const $TAB       = 9;
-const $LF        = 10;
-const $VTAB      = 11;
-const $FF        = 12;
-const $CR        = 13;
-const $SPACE     = 32;
-const $BANG      = 33;
-const $DQ        = 34;
-const $$         = 36;
-const $PERCENT   = 37;
-const $AMPERSAND = 38;
-const $SQ        = 39;
-const $LPAREN    = 40;
-const $RPAREN    = 41;
-const $STAR      = 42;
-const $PLUS      = 43;
-const $COMMA     = 44;
-const $MINUS     = 45;
-const $PERIOD    = 46;
-const $SLASH     = 47;
-const $COLON     = 58;
-const $SEMICOLON = 59;
-const $LT        = 60;
-const $EQ        = 61;
-const $GT        = 62;
-const $QUESTION  = 63;
+export const $EOF       = 0;
+export const $TAB       = 9;
+export const $LF        = 10;
+export const $VTAB      = 11;
+export const $FF        = 12;
+export const $CR        = 13;
+export const $SPACE     = 32;
+export const $BANG      = 33;
+export const $DQ        = 34;
+export const $$         = 36;
+export const $PERCENT   = 37;
+export const $AMPERSAND = 38;
+export const $SQ        = 39;
+export const $LPAREN    = 40;
+export const $RPAREN    = 41;
+export const $STAR      = 42;
+export const $PLUS      = 43;
+export const $COMMA     = 44;
+export const $MINUS     = 45;
+export const $PERIOD    = 46;
+export const $SLASH     = 47;
+export const $COLON     = 58;
+export const $SEMICOLON = 59;
+export const $LT        = 60;
+export const $EQ        = 61;
+export const $GT        = 62;
+export const $QUESTION  = 63;
 
 const $0 = 48;
 const $9 = 57;
@@ -173,7 +185,7 @@ export class ScannerError extends Error {
   }
 }
 
-export class Scanner {
+class _Scanner {
   @FIELD('final input:String')
   @FIELD('final length:int')
   @FIELD('peek:int')
@@ -190,7 +202,6 @@ export class Scanner {
   advance() {
     this.peek = ++this.index >= this.length ? $EOF : StringWrapper.charCodeAt(this.input, this.index);
   }
-
 
   scanToken():Token {
     var input = this.input,

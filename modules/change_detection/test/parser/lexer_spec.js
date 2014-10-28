@@ -1,17 +1,10 @@
 import {describe, it, expect} from 'test_lib/test_lib';
-import {Scanner, Token} from 'change_detection/parser/scanner';
+import {Lexer, Token} from 'change_detection/parser/lexer';
 import {List, ListWrapper} from "facade/collection";
 import {StringWrapper, int} from "facade/lang";
 
 function lex(text:string):List {
-  var scanner:Scanner = new Scanner(text);
-  var tokens:List<Token> = [];
-  var token:Token = scanner.scanToken();
-  while (token != null) {
-    ListWrapper.push(tokens, token);
-    token = scanner.scanToken();
-  }
-  return tokens;
+  return new Lexer().tokenize(text);
 }
 
 function expectToken(token, index) {
@@ -56,7 +49,7 @@ function expectKeywordToken(token, index, keyword) {
 
 
 export function main() {
-  describe('scanner', function() {
+  describe('lexer', function() {
     describe('token', function() {
       it('should tokenize a simple identifier', function() {
         var tokens:List<int> = lex("j");

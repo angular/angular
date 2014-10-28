@@ -1,33 +1,47 @@
 import {describe, it, xit, expect} from 'test_lib/test_lib';
 
 import {List, ListWrapper} from 'facade/collection';
+import {ImplicitReceiver, FieldRead} from 'change_detection/parser/ast';
+import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,
   ProtoWatchGroup,
   WatchGroup,
-  WatchGroupDispatcher
+  WatchGroupDispatcher,
+  ProtoRecord
 } from 'change_detection/change_detector';
 
 import {Record} from 'change_detection/record';
 
 export function main() {
+  function ast(exp:string) {
+    var parts = exp.split(".");
+    var cm = new ClosureMap();
+    return ListWrapper.reduce(parts, function (ast, fieldName) {
+      return new FieldRead(ast, fieldName, cm.getter(fieldName));
+    }, new ImplicitReceiver());
+  }
+
   describe('change_detection', function() {
     describe('ChangeDetection', function() {
       it('should do simple watching', function() {
         var person = new Person('misko', 38);
         var pwg = new ProtoWatchGroup();
-        pwg.watch('name', 'name');
-        pwg.watch('age', 'age');
+        pwg.watch(ast('name'), 'name');
+        pwg.watch(ast('age'), 'age');
         var dispatcher = new LoggingDispatcher();
         var wg = pwg.instantiate(dispatcher);
         wg.setContext(person);
+
         var cd = new ChangeDetector(wg);
         cd.detectChanges();
         expect(dispatcher.log).toEqual(['name=misko', 'age=38']);
+
         dispatcher.clear();
         cd.detectChanges();
         expect(dispatcher.log).toEqual([]);
+
         person.age = 1;
         person.name = "Misko";
         cd.detectChanges();
@@ -38,16 +52,19 @@ export function main() {
         var address = new Address('Grenoble');
         var person = new Person('Victor', 36, address);
         var pwg = new ProtoWatchGroup();
-        pwg.watch('address.city', 'address.city', false);
+        pwg.watch(ast('address.city'), 'address.city', false);
         var dispatcher = new LoggingDispatcher();
         var wg = pwg.instantiate(dispatcher);
         wg.setContext(person);
+
         var cd = new ChangeDetector(wg);
         cd.detectChanges();
         expect(dispatcher.log).toEqual(['address.city=Grenoble']);
+
         dispatcher.clear();
         cd.detectChanges();
         expect(dispatcher.log).toEqual([]);
+
         address.city = 'Mountain View';
         cd.detectChanges();
         expect(dispatcher.log).toEqual(['address.city=Mountain View']);
