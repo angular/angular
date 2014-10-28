@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - '0.10'
 env:
-  stable:
+  global:
   - CHANNEL=stable
   - BROWSERS=DartiumWithWebPlatform
   - LOGS_DIR=/tmp/angular-build/logs
