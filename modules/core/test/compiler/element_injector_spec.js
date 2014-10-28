@@ -62,7 +62,7 @@ export function main() {
     if (isBlank(appInjector)) appInjector = new Injector([]);
     if (isBlank(props)) props = {};
 
-    var proto = new ProtoElementInjector(null, bindings, []);
+    var proto = new ProtoElementInjector(null, bindings, [], false);
     var inj = proto.instantiate({view: props["view"]});
     inj.instantiateDirectives(appInjector);
     return inj;
@@ -71,11 +71,12 @@ export function main() {
   function parentChildInjectors(parentBindings, childBindings) {
     var inj = new Injector([]);
 
-    var protoParent = new ProtoElementInjector(null, parentBindings, []);
+    var protoParent = new ProtoElementInjector(null, parentBindings, [], false);
     var parent = protoParent.instantiate({view: null});
     parent.instantiateDirectives(inj);
 
-    var protoChild = new ProtoElementInjector(protoParent, childBindings, []);
+    var protoChild = new ProtoElementInjector(protoParent, childBindings, [],
+        false);
     var child = protoChild.instantiate({view: null});
     child.instantiateDirectives(inj);
 
@@ -85,9 +86,9 @@ export function main() {
   describe("ElementInjector", function () {
     describe("proto injectors", function () {
       it("should construct a proto tree", function () {
-        var p = new ProtoElementInjector(null, [], []);
-        var c1 = new ProtoElementInjector(p, [], []);
-        var c2 = new ProtoElementInjector(p, [], []);
+        var p = new ProtoElementInjector(null, [], [], false);
+        var c1 = new ProtoElementInjector(p, [], [], false);
+        var c2 = new ProtoElementInjector(p, [], [], false);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -99,9 +100,9 @@ export function main() {
 
     describe("instantiate", function () {
       it("should create an element injector", function () {
-        var protoParent = new ProtoElementInjector(null, [], []);
-        var protoChild1 = new ProtoElementInjector(protoParent, [], []);
-        var protoChild2 = new ProtoElementInjector(protoParent, [], []);
+        var protoParent = new ProtoElementInjector(null, [], [], false);
+        var protoChild1 = new ProtoElementInjector(protoParent, [], [], false);
+        var protoChild2 = new ProtoElementInjector(protoParent, [], [], false);
 
         var p = protoParent.instantiate({view: null});
         var c1 = protoChild1.instantiate({view: null});
@@ -117,12 +118,12 @@ export function main() {
 
     describe("hasBindings", function () {
       it("should be true when there are bindings", function () {
-        var p = new ProtoElementInjector(null, [Directive], []);
+        var p = new ProtoElementInjector(null, [Directive], [], false);
         expect(p.hasBindings).toBeTruthy();
       });
 
       it("should be false otherwise", function () {
-        var p = new ProtoElementInjector(null, [], []);
+        var p = new ProtoElementInjector(null, [], [], false);
         expect(p.hasBindings).toBeFalsy();
       });
     });
@@ -195,6 +196,15 @@ export function main() {
       it("should accept bindings instead of directive types", function () {
         var inj = injector([bind(Directive).toClass(Directive)]);
         expect(inj.get(Directive)).toBeAnInstanceOf(Directive);
+      });
+
+      it("should allow for direct access using getAtIndex", function () {
+        var inj = injector([bind(Directive).toClass(Directive)]);
+        expect(inj.getAtIndex(0)).toBeAnInstanceOf(Directive);
+        expect(() => inj.getAtIndex(-1)).toThrowError(
+          'Index -1 is out-of-bounds.');
+        expect(() => inj.getAtIndex(10)).toThrowError(
+          'Index 10 is out-of-bounds.');
       });
     });
 

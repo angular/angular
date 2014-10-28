@@ -16,7 +16,7 @@ export function run () {
     ], false)];
 
 
-  var proto = new ProtoElementInjector(null, bindings, []);
+  var proto = new ProtoElementInjector(null, bindings, [], false);
   for (var i = 0; i < ITERATIONS; ++i) {
     var ei = proto.instantiate({view:null});
     ei.instantiateDirectives(appInjector);

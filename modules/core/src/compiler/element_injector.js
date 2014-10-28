@@ -118,7 +118,6 @@ export class ProtoElementInjector extends TreeNode {
   query_keyId1:int;
 
   textNodes:List<int>;
-  hasProperties:boolean;
   events:Map<string, Expression>;
 
   elementInjector:ElementInjector;
@@ -144,8 +143,10 @@ export class ProtoElementInjector extends TreeNode {
   @FIELD('_key7:int')
   @FIELD('_key8:int')
   @FIELD('_key9:int')
-  @FIELD('textNodes:List<int>')
-  constructor(parent:ProtoElementInjector, bindings:List, textNodes:List) {
+  @FIELD('textNodeIndices:List<int>')
+  @FIELD('hasElementPropertyBindings:bool')
+  constructor(parent:ProtoElementInjector, bindings:List, textNodeIndices:List,
+      hasElementPropertyBindings:boolean) {
     super(parent);
 
     this._elementInjector = null;
@@ -177,10 +178,8 @@ export class ProtoElementInjector extends TreeNode {
       throw 'Maximum number of directives per element has been reached.';
     }
 
-    this.textNodes = textNodes;
-
-    // dummy fields to make analyzer happy
-    this.hasProperties = false;
+    this.textNodeIndices = textNodeIndices;
+    this.hasElementPropertyBindings = hasElementPropertyBindings;
   }
 
   instantiate({view}):ElementInjector {
@@ -418,5 +417,28 @@ export class ElementInjector extends TreeNode {
     if (p._keyId9 === keyId) return this._obj9;
     return _undefined;
   }
+
+  getAtIndex(index:int) {
+    if (index == 0) return this._obj0;
+    if (index == 1) return this._obj1;
+    if (index == 2) return this._obj2;
+    if (index == 3) return this._obj3;
+    if (index == 4) return this._obj4;
+    if (index == 5) return this._obj5;
+    if (index == 6) return this._obj6;
+    if (index == 7) return this._obj7;
+    if (index == 8) return this._obj8;
+    if (index == 9) return this._obj9;
+    throw new OutOfBoundsAccess(index);
+  }
 }
 
+class OutOfBoundsAccess extends Error {
+  constructor(index) {
+    this.message = `Index ${index} is out-of-bounds.`;
+  }
+
+  toString() {
+    return this.message;
+  }
+}
