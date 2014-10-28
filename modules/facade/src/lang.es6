@@ -110,6 +110,14 @@ export class NumberWrapper {
   static parseFloat(text:string):number {
     return parseFloat(text);
   }
+
+  static isNaN(value) {
+    return isNaN(value);
+  }
+
+  static get NaN():number {
+    return NaN;
+  }
 }
 
 export function int() {};
@@ -151,4 +159,16 @@ export class BaseException extends Error {
   toString():String {
     return this.message;
   }
+}
+
+// JS has NaN !== NaN
+export function looseIdentical(a, b):boolean {
+  return a === b ||
+         typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
+}
+
+// JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
+// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+export function getMapKey(value) {
+  return value;
 }

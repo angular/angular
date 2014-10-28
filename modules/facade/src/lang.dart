@@ -83,6 +83,10 @@ class NumberWrapper {
   static double parseFloat(String text) {
     return double.parse(text);
   }
+
+  static get NaN => double.NAN;
+
+  static bool isNaN(num value) => value.isNaN;
 }
 
 class RegExpWrapper {
@@ -118,3 +122,13 @@ class BaseException extends Error {
     return this.message;
   }
 }
+
+// Dart can have identical(str1, str2) == false while str1 == str2
+bool looseIdentical(a, b) => a is String && b is String ? a == b : identical(a, b);
+
+// Dart compare map keys by equality and we can have NaN != NaN
+dynamic getMapKey(value) {
+  if (value is! num) return value;
+  return value.isNaN ? _NAN_KEY : value;
+}
+

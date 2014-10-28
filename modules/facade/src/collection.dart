@@ -12,6 +12,8 @@ class MapWrapper {
     m.forEach((k,v) => fn(v,k));
   }
   static int size(m) {return m.length;}
+  static void delete(m, k) { m.remove(k); }
+  static void clear(m) { m.clear(); }
 }
 
 // TODO: how to export StringMap=Map as a type?
@@ -47,6 +49,10 @@ class ListWrapper {
   static List reversed(List list) => list.reversed.toList();
   static void push(List l, e) { l.add(e); }
   static List concat(List a, List b) {a.addAll(b); return a;}
+  static bool isList(l) => l is List;
+  static void insert(List l, int index, value) { l.insert(index, value); }
+  static void removeAt(List l, int index) { l.removeAt(index); }
+  static void clear(List l) { l.clear(); }
 }
 
 class SetWrapper {

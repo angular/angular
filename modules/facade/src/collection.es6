@@ -1,3 +1,5 @@
+import {int} from 'facade/lang';
+
 export var List = window.Array;
 export var Map = window.Map;
 export var Set = window.Set;
@@ -11,6 +13,8 @@ export class MapWrapper {
     m.forEach(fn);
   }
   static size(m) {return m.size;}
+  static delete(m, k) { m.delete(k); }
+  static clear(m) { m.clear(); }
 }
 
 // TODO: cannot export StringMap as a type as Dart does not support
@@ -80,6 +84,18 @@ export class ListWrapper {
     return a.reverse();
   }
   static concat(a, b) {return a.concat(b);}
+  static isList(list) {
+    return Array.isArray(list);
+  }
+  static insert(list, index:int, value) {
+    list.splice(index, 0, value);
+  }
+  static removeAt(list, index:int) {
+    list.splice(index, 1);
+  }
+  static clear(list) {
+    list.splice(0, list.length);
+  }
 }
 
 export class SetWrapper {
