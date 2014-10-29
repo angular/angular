@@ -123,6 +123,8 @@ class BaseException extends Error {
   }
 }
 
+const _NAN_KEY = const Object();
+
 // Dart can have identical(str1, str2) == false while str1 == str2
 bool looseIdentical(a, b) => a is String && b is String ? a == b : identical(a, b);
 

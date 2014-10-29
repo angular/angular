@@ -54,7 +54,7 @@ export class CollectionChanges {
 
   forEachItem(fn:Function) {
     var record:CollectionChangeRecord;
-    for (record = this._itHead; record !== null; record = record.next) {
+    for (record = this._itHead; record !== null; record = record._next) {
       fn(record);
     }
   }
@@ -348,7 +348,7 @@ export class CollectionChanges {
   }
 
   _remove(record:CollectionChangeRecord):CollectionChangeRecord {
-    this._addToRemovals(this._unlink(record));
+    return this._addToRemovals(this._unlink(record));
   }
 
   _unlink(record:CollectionChangeRecord):CollectionChangeRecord {
