@@ -6,16 +6,19 @@ import {
   CLOSE_SQUARE,
   COLON,
   COMMA,
+  CONST,
   EQUAL,
   EQUAL_EQUAL_EQUAL,
   IMPORT,
+  LET,
+  OBJECT_PATTERN,
   OPEN_CURLY,
   OPEN_PAREN,
-  OBJECT_PATTERN,
   OPEN_SQUARE,
   SEMI_COLON,
   STAR,
-  STATIC
+  STATIC,
+  VAR
 } from 'traceur/src/syntax/TokenType';
 
 import {
@@ -25,6 +28,8 @@ import {
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
+
+const FINAL = 'final';
 
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -38,10 +43,24 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   // ==>
   // bool foo = true;
   // ```
+
+  static transformDeclarationTypes(type) {
+    if (type == CONST) return FINAL;
+    // TODO(rado): look into turning off the 'let' block-scoping shim since dart
+    // does not need it.
+    if (type == LET) return VAR;
+    return type;
+  }
+
   visitVariableDeclarationList(tree) {
-    // Write `var`, only if no type declaration.
-    if (!tree.declarations[0].typeAnnotation) {
-      this.write_(tree.declarationType);
+    //   untyped             typed
+    // var a -> var a;     var a:T -> T a;
+    // let a -> var a;     let a:T -> T a;
+    // const a -> final a; const a:T -> final T a;
+    // The MultivarTransformer has already handled multiple declarations.
+    if (!tree.declarations[0].typeAnnotation || tree.declarationType == CONST) {
+      this.write_(DartParseTreeWriter.transformDeclarationTypes(
+          tree.declarationType));
       this.writeSpace_();
     }
 

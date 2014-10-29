@@ -1,6 +1,6 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
-import {FIELD} from 'facade/lang';
-import {FieldGetterFactory} from './facade';
+import {CONST, FIELD} from 'facade/lang';
+import { FieldGetterFactory, MODE_MASK_NOTIFY, MODE_MASK_STATE, MODE_PLUGIN_DIRTY_CHECK, MODE_STATE_MARKER, MODE_STATE_PROPERTY, MODE_STATE_INVOKE_CLOSURE, MODE_STATE_INVOKE_METHOD, MODE_STATE_MAP, MODE_STATE_LIST, $EOF, $TAB, $LF, $VTAB, $FF, $CR, $SPACE, $BANG, $DQ, $$, $PERCENT, $AMPERSAND, $SQ, $LPAREN, $RPAREN, $STAR, $PLUS, $COMMA, $MINUS, $PERIOD, $SLASH, $COLON, $SEMICOLON, $LT, $EQ, $GT, $QUESTION, $0, $9, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $K, $L, $M, $N, $O, $P, $Q, $R, $S, $T, $U, $V, $W, $X, $Y, $Z, $LBRACKET, $BACKSLASH, $RBRACKET, $CARET, $_, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $LBRACE, $BAR, $RBRACE, $TILDE, $NBSP } from './facade';
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -142,26 +142,6 @@ export class Record {
 
 // The mode is divided into two parts. Which notification mechanism
 // to use and which dereference mode to execute.
-
-// We use dirty checking aka no notification
-const MODE_MASK_NOTIFY = 0xFF00;
-// Encodes the state of dereference
-const MODE_MASK_STATE = 0x00FF;
-
-const MODE_PLUGIN_DIRTY_CHECK = 0x0000;
-const MODE_STATE_MARKER = 0x0000;
-
-/// _context[_protoRecord.propname] => _getter(_context)
-const MODE_STATE_PROPERTY = 0x0001;
-/// _context(_arguments)
-const MODE_STATE_INVOKE_CLOSURE = 0x0002;
-/// _getter(_context, _arguments)
-const MODE_STATE_INVOKE_METHOD = 0x0003;
-
-/// _context is Map => _previousValue is MapChangeRecord
-const MODE_STATE_MAP = 0x0004;
-/// _context is Array/List/Iterable => _previousValue = ListChangeRecord
-const MODE_STATE_LIST = 0x0005;
 
 function isSame(a, b) {
   if (a === b) return true;
