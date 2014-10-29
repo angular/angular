@@ -16,4 +16,4 @@ dependencies:
     path: build/dart/change_detection
 
 dev_dependencies:
-  guinness: ">=0.1.5 <0.2.0"
+  guinness: ">=0.1.16 <0.2.0"

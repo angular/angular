@@ -15,9 +15,18 @@ Expect expect(actual, [matcher]) {
 class Expect extends gns.Expect {
   Expect(actual) : super(actual);
 
+  NotExpect get not => new NotExpect(actual);
+
+  void toEqual(expected) => toHaveSameProps(expected);
   void toThrowError([message=""]) => this.toThrowWith(message: message);
   void toBePromise() => _expect(actual is Future, equals(true));
   Function get _expect => gns.guinness.matchers.expect;
+}
+
+class NotExpect extends gns.NotExpect {
+  NotExpect(actual) : super(actual);
+
+  void toEqual(expected) => toHaveSameProps(expected);
 }
 
 it(name, fn) {
