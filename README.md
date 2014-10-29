@@ -70,3 +70,21 @@ Notes:
   the transpiler specs),
 - You can also add `debugger;` statements in the specs (JavaScript). The execution will halt when
   the developer tools are opened in the browser running Karma.
+
+## Debug the tests
+
+If you need to debug the tests:
+
+- add a `debugger;` statement to the test you want to debug (oe the source code),
+- execute karma `node_modules/karma/bin/karma start karma-js.conf.js`,
+- press the top right "DEBUG" button,
+- open the dev tools and press F5,
+- the execution halt at the `debugger;` statement
+
+Note (WebStorm users):
+You can create a Karma run config from WebStorm.
+Then in the "Run" menu, press "Debug 'karma-js.conf.js'", WebStorm will stop in the generated code
+on the `debugger;` statement.
+You can then step into the code and add watches.
+The `debugger;` statement is needed because WebStorm will stop in a transpiled file. Breakpoints in
+the original source files are not supported at the moment.
