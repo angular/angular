@@ -6,6 +6,7 @@ import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {SetterFn} from 'change_detection/facade';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
+import {Injector} from 'di/di';
 
 /***
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
@@ -24,7 +25,8 @@ export class View {
   @FIELD('final nodes:List<Node>')
   @FIELD('final onChangeDispatcher:OnChangeDispatcher')
   constructor(fragment:DocumentFragment, elementInjector:List,
-      rootElementInjectors:List, textNodes:List, bindElements:List) {
+      rootElementInjectors:List, textNodes:List, bindElements:List,
+      protoWatchGroup:ProtoWatchGroup, context) {
     this.fragment = fragment;
     this.nodes = ListWrapper.clone(fragment.childNodes);
     this.elementInjectors = elementInjector;
@@ -32,6 +34,8 @@ export class View {
     this.onChangeDispatcher = null;
     this.textNodes = textNodes;
     this.bindElements = bindElements;
+    this.watchGroup = protoWatchGroup.instantiate(this);
+    this.watchGroup.setContext(context);
   }
 
   onRecordChange(record:Record, target) {
@@ -66,28 +70,29 @@ export class ProtoView {
     this._template = template;
     this._bindings = bindings;
     this._protoElementInjectors = protoElementInjectors;
+    this._protoWatchGroup = protoWatchGroup;
 
     // not implemented
-    this._protoWatchGroup = protoWatchGroup;
     this._useRootElement = useRootElement;
   }
 
-  instantiate():View {
+  instantiate(context, appInjector:Injector):View {
     var fragment = DOM.clone(this._template.content);
     var elements = DOM.querySelectorAll(fragment, ".ng-binding");
     var protos = this._protoElementInjectors;
 
     /**
      * TODO: vsavkin: benchmark
-     * If this performs poorly, the three loops can be collapsed into one.
+     * If this performs poorly, the five loops can be collapsed into one.
      */
     var elementInjectors = ProtoView._createElementInjectors(elements, protos);
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
     var textNodes = ProtoView._textNodes(elements, protos);
     var bindElements = ProtoView._bindElements(elements, protos);
+    ProtoView._instantiateDirectives(elementInjectors, appInjector);
 
     return new View(fragment, elementInjectors, rootElementInjectors, textNodes,
-        bindElements);
+        bindElements, this._protoWatchGroup, context);
   }
 
   static _createElementInjectors(elements, protos) {
@@ -101,6 +106,13 @@ export class ProtoView {
       protos[i].clearElementInjector();
     }
     return injectors;
+  }
+
+  static _instantiateDirectives(
+      injectors:List<ElementInjectors>, appInjector:Injector) {
+    for (var i = 0; i < injectors.length; ++i) {
+      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector);
+    }
   }
 
   static _createElementInjector(element, proto) {

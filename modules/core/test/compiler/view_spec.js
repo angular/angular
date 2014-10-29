@@ -2,8 +2,12 @@ import {describe, xit, it, expect, beforeEach} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {Record} from 'change_detection/record';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
+import {ProtoWatchGroup} from 'change_detection/watch_group';
+import {ChangeDetector} from 'change_detection/change_detector';
 import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
+import {ImplicitReceiver, FieldRead} from 'change_detection/parser/ast';
+import {ClosureMap} from 'change_detection/parser/closure_map';
 
 class Directive {
   @FIELD('prop')
@@ -13,32 +17,36 @@ class Directive {
 }
 
 export function main() {
+  var oneFieldAst = (fieldName) =>
+      new FieldRead(new ImplicitReceiver(), fieldName,
+          (new ClosureMap()).getter(fieldName));
+
   describe('view', function() {
     var tempalteWithThreeTypesOfBindings =
             '<section class="ng-binding">' +
                'Hello {}!' +
                '<div directive class="ng-binding">' +
-                 '<span class="ng-binding" [hidden]="exp">don\'t show me</span>' +
+                 '<span class="ng-binding" [id]="exp">don\'t show me</span>' +
                '</div>' +
              '</section>';
+
+    function templateElInj() {
+        var sectionPI = new ProtoElementInjector(null, [], [0], false);
+        var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
+        var spanPI = new ProtoElementInjector(divPI, [], [], true);
+        return [sectionPI, divPI, spanPI];
+    }
 
     describe('ProtoView', function() {
       it('should create view instance and locate basic parts', function() {
         var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
 
         var diBindings = [];
-
-        var sectionPI = new ProtoElementInjector(null, [], [0], false);
-        var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
-        var spanPI = new ProtoElementInjector(divPI, [], [], true);
-        var protoElementInjectors = [sectionPI, divPI, spanPI];
-
-        var protoWatchGroup = null;
         var hasSingleRoot = false;
-        var pv = new ProtoView(template, diBindings, protoElementInjectors,
-            protoWatchGroup, hasSingleRoot);
+        var pv = new ProtoView(template, diBindings, templateElInj(),
+            new ProtoWatchGroup(), hasSingleRoot);
 
-        var view = pv.instantiate();
+        var view = pv.instantiate(null, null);
 
         var section = DOM.firstChild(template.content);
 
@@ -63,8 +71,9 @@ export function main() {
         var sectionPI = new ProtoElementInjector(null, [Directive], [], false);
         var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
 
-        var pv = new ProtoView(template, [], [sectionPI, divPI], null, false);
-        var view = pv.instantiate();
+        var pv = new ProtoView(template, [], [sectionPI, divPI],
+          new ProtoWatchGroup(), false);
+        var view = pv.instantiate(null, null);
 
         expect(view.rootElementInjectors.length).toEqual(1);
       });
@@ -73,20 +82,9 @@ export function main() {
         var view;
         beforeEach(() => {
           var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
-
-          var diBindings = [];
-
-          var sectionPI = new ProtoElementInjector(null, [], [0], false);
-          var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
-          var spanPI = new ProtoElementInjector(divPI, [], [], true);
-          var protoElementInjectors = [sectionPI, divPI, spanPI];
-
-          var protoWatchGroup = null;
-          var hasSingleRoot = false;
-          var pv = new ProtoView(template, diBindings, protoElementInjectors,
-              protoWatchGroup, hasSingleRoot);
-
-          view = pv.instantiate();
+          var pv = new ProtoView(template, [], templateElInj(),
+            new ProtoWatchGroup(), false);
+          view = pv.instantiate(null, null);
         });
 
         it('should consume text node changes', () => {
@@ -98,20 +96,17 @@ export function main() {
 
         it('should consume element binding changes', () => {
           var elementWithBinding = view.bindElements[0];
-          expect(elementWithBinding.hidden).toEqual(false);
+          expect(elementWithBinding.id).toEqual('');
           var record = new Record(null, null);
-          var memento = new ElementPropertyMemento(0, 'hidden');
-          record.currentValue = true;
+          var memento = new ElementPropertyMemento(0, 'id');
+          record.currentValue = 'foo';
           view.onRecordChange(record, memento);
-          expect(elementWithBinding.hidden).toEqual(true);
+          expect(elementWithBinding.id).toEqual('foo');
         });
 
         it('should consume directive watch expression change.', () => {
           var elInj = view.elementInjectors[1];
 
-          // TODO(rado): hook-up instantiateDirectives in implementation and
-          // remove from here.
-          elInj.instantiateDirectives(null);
           expect(elInj.get(Directive).prop).toEqual('foo');
           var record = new Record(null, null);
           var memento = new DirectivePropertyMemento(1, 0, 'prop',
@@ -121,6 +116,64 @@ export function main() {
           expect(elInj.get(Directive).prop).toEqual('bar');
         });
       });
+
+      describe('integration view update with change detector', () => {
+        var view, cd, ctx;
+        function setUp(memento) {
+          var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
+
+          var protoWatchGroup = new ProtoWatchGroup();
+          protoWatchGroup.watch(oneFieldAst('foo'), memento);
+
+          var pv = new ProtoView(template, [], templateElInj(),
+              protoWatchGroup, false);
+
+          ctx = new MyEvaluationContext();
+          view = pv.instantiate(ctx, null);
+
+          cd = new ChangeDetector(view.watchGroup);
+        }
+
+        it('should consume text node changes', () => {
+          setUp(0);
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(view.textNodes[0].nodeValue).toEqual('buz');
+        });
+
+        it('should consume element binding changes', () => {
+          setUp(new ElementPropertyMemento(0, 'id'));
+
+          var elementWithBinding = view.bindElements[0];
+          expect(elementWithBinding.id).toEqual('');
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(elementWithBinding.id).toEqual('buz');
+        });
+
+        it('should consume directive watch expression change.', () => {
+          var memento = new DirectivePropertyMemento(1, 0, 'prop',
+              (o, v) => o.prop = v);
+          setUp(memento);
+
+          var elInj = view.elementInjectors[1];
+          expect(elInj.get(Directive).prop).toEqual('foo');
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(elInj.get(Directive).prop).toEqual('buz');
+        });
+
+      });
     });
   });
+}
+
+class MyEvaluationContext {
+  @FIELD('foo')
+  constructor() {
+    this.foo = 'bar';
+  };
 }

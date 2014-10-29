@@ -39,10 +39,12 @@ export class ProtoWatchGroup {
     this.tailRecord = tail;
   }
 
-  instantiate(dispatcher:WatchGroupDispatcher):WatchGroup {
+  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // but @Implements is not ready yet.
+  instantiate(dispatcher):WatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
     var tail:Record = null;
-    var proto:ProtoRecord;
+    var proto:ProtoRecord = null;
     var prevRecord:Record = null;
 
     if (this.headRecord !== null) {
@@ -70,7 +72,9 @@ export class WatchGroup {
   @FIELD('final dispatcher:WatchGroupDispatcher')
   @FIELD('final headRecord:Record')
   @FIELD('final tailRecord:Record')
-  constructor(protoWatchGroup:ProtoWatchGroup, dispatcher:WatchGroupDispatcher) {
+  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // but @Implements is not ready yet.
+  constructor(protoWatchGroup:ProtoWatchGroup, dispatcher) {
     this.protoWatchGroup = protoWatchGroup;
     this.dispatcher = dispatcher;
     this.headRecord = null;
