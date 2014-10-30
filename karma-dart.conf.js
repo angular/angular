@@ -57,6 +57,7 @@ module.exports = function(config) {
     traceurPreprocessor: {
       options: {
         outputLanguage: 'dart',
+        sourceMaps: true,
         script: false,
         modules: 'register',
         types: true,

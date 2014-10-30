@@ -20,6 +20,7 @@ var through2 = require('through2');
 var watch = require('gulp-watch');
 
 var js2es5Options = {
+  sourceMaps: true,
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
@@ -36,6 +37,7 @@ var js2es5OptionsDev = merge(true, js2es5Options, {
 });
 
 var js2dartOptions = {
+  sourceMaps: true,
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module

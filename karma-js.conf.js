@@ -15,6 +15,8 @@ module.exports = function(config) {
 
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
+      // Including systemjs because it defines `__eval`, which produces correct stack traces.
+      'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
 
       'file2modulename.js',
@@ -31,6 +33,7 @@ module.exports = function(config) {
     traceurPreprocessor: {
       options: {
         outputLanguage: 'es5',
+        sourceMaps: true,
         script: false,
         modules: 'instantiate',
         types: true,

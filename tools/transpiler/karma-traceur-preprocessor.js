@@ -20,10 +20,23 @@ function createJs2DartPreprocessor(logger, basePath, config, emitter) {
       if (config.transformPath) {
         file.path = config.transformPath(file.originalPath);
       }
-      done(null, transpiler.compile(config.options, {
+
+      var result = transpiler.compile(config.options, {
         inputPath: file.originalPath,
+        outputPath: file.path,
         moduleName: moduleName
-      }, content));
+      }, content);
+
+      var transpiledContent = result.js;
+      var sourceMap = result.sourceMap;
+
+      if (sourceMap) {
+        transpiledContent += '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,';
+        transpiledContent += new Buffer(JSON.stringify(sourceMap)).toString('base64') + '\n';
+        file.sourceMap = sourceMap;
+      }
+
+      done(null, transpiledContent);
     } catch (errors) {
       var errorString;
       if (errors.forEach) {

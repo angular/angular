@@ -41,7 +41,19 @@ exports.compile = function compile(options, paths, source) {
     moduleName: moduleName
   });
   var CompilerCls = System.get('transpiler/src/compiler').Compiler;
-  return (new CompilerCls(localOptions)).compile(source, inputPath, outputPath);
+
+  var compiler = new CompilerCls(localOptions);
+  var result = {
+    js: compiler.compile(source, inputPath, outputPath),
+    sourceMap: null
+  };
+
+  var sourceMapString = compiler.getSourceMap();
+  if (sourceMapString) {
+    result.sourceMap = JSON.parse(sourceMapString);
+  }
+
+  return result;
 };
 
 // Transpile and evaluate the code in `src`.
