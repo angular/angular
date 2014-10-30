@@ -146,10 +146,7 @@ export class ProtoElementInjector extends TreeNode {
   @FIELD('_key7:int')
   @FIELD('_key8:int')
   @FIELD('_key9:int')
-  @FIELD('textNodeIndices:List<int>')
-  @FIELD('hasElementPropertyBindings:bool')
-  constructor(parent:ProtoElementInjector, bindings:List, textNodeIndices:List,
-      hasElementPropertyBindings:boolean) {
+  constructor(parent:ProtoElementInjector, bindings:List) {
     super(parent);
 
     this._elementInjector = null;
@@ -180,9 +177,6 @@ export class ProtoElementInjector extends TreeNode {
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
     }
-
-    this.textNodeIndices = textNodeIndices;
-    this.hasElementPropertyBindings = hasElementPropertyBindings;
   }
 
   instantiate({view}):ElementInjector {

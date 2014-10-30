@@ -8,7 +8,7 @@ export function run () {
   var appInjector = new Injector([]);
 
   var bindings = [A, B, C];
-  var proto = new ProtoElementInjector(null, bindings, [], false);
+  var proto = new ProtoElementInjector(null, bindings);
   var ei = proto.instantiate({view:null});
 
   for (var i = 0; i < ITERATIONS; ++i) {

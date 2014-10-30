@@ -3,6 +3,7 @@ import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
+import {ElementBinder} from './element_binder';
 import {SetterFn} from 'change_detection/facade';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
@@ -57,19 +58,16 @@ export class View {
 
 export class ProtoView {
   @FIELD('final _template:TemplateElement')
-  @FIELD('final _bindings:List')
-  @FIELD('final _protoElementInjectors:List<ProtoElementInjector>')
+  @FIELD('final _elementBinders:List<ElementBinder>')
   @FIELD('final _protoWatchGroup:ProtoWatchGroup')
   @FIELD('final _useRootElement:bool')
   constructor(
       template:TemplateElement,
-      bindings:List,
-      protoElementInjectors:List,
+      elementBinders:List,
       protoWatchGroup:ProtoWatchGroup,
       useRootElement:boolean) {
     this._template = template;
-    this._bindings = bindings;
-    this._protoElementInjectors = protoElementInjectors;
+    this._elementBinders = elementBinders;
     this._protoWatchGroup = protoWatchGroup;
 
     // not implemented
@@ -79,31 +77,32 @@ export class ProtoView {
   instantiate(context, appInjector:Injector):View {
     var fragment = DOM.clone(this._template.content);
     var elements = DOM.querySelectorAll(fragment, ".ng-binding");
-    var protos = this._protoElementInjectors;
+    var binders = this._elementBinders;
 
     /**
      * TODO: vsavkin: benchmark
      * If this performs poorly, the five loops can be collapsed into one.
      */
-    var elementInjectors = ProtoView._createElementInjectors(elements, protos);
+    var elementInjectors = ProtoView._createElementInjectors(elements, binders);
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
-    var textNodes = ProtoView._textNodes(elements, protos);
-    var bindElements = ProtoView._bindElements(elements, protos);
+    var textNodes = ProtoView._textNodes(elements, binders);
+    var bindElements = ProtoView._bindElements(elements, binders);
     ProtoView._instantiateDirectives(elementInjectors, appInjector);
 
     return new View(fragment, elementInjectors, rootElementInjectors, textNodes,
         bindElements, this._protoWatchGroup, context);
   }
 
-  static _createElementInjectors(elements, protos) {
-    var injectors = ListWrapper.createFixedSize(protos.length);
-    for (var i = 0; i < protos.length; ++i) {
-      injectors[i] = ProtoView._createElementInjector(elements[i], protos[i]);
+  static _createElementInjectors(elements, binders) {
+    var injectors = ListWrapper.createFixedSize(binders.length);
+    for (var i = 0; i < binders.length; ++i) {
+      injectors[i] = ProtoView._createElementInjector(
+          elements[i], binders[i].protoElementInjector);
     }
     // Cannot be rolled into loop above, because parentInjector pointers need
     // to be set on the children.
-    for (var i = 0; i < protos.length; ++i) {
-      protos[i].clearElementInjector();
+    for (var i = 0; i < binders.length; ++i) {
+      binders[i].protoElementInjector.clearElementInjector();
     }
     return injectors;
   }
@@ -124,19 +123,19 @@ export class ProtoView {
     return ListWrapper.filter(injectors, inj => isPresent(inj) && isBlank(inj.parent));
   }
 
-  static _textNodes(elements, protos) {
+  static _textNodes(elements, binders) {
     var textNodes = [];
-    for (var i = 0; i < protos.length; ++i) {
+    for (var i = 0; i < binders.length; ++i) {
       ProtoView._collectTextNodes(textNodes, elements[i],
-          protos[i].textNodeIndices);
+          binders[i].textNodeIndices);
     }
     return textNodes;
   }
 
-  static _bindElements(elements, protos):List<Element> {
+  static _bindElements(elements, binders):List<Element> {
     var bindElements = [];
-    for (var i = 0; i < protos.length; ++i) {
-      if (protos[i].hasElementPropertyBindings) ListWrapper.push(
+    for (var i = 0; i < binders.length; ++i) {
+      if (binders[i].hasElementPropertyBindings) ListWrapper.push(
           bindElements, elements[i]);
     }
     return bindElements;

@@ -8,6 +8,7 @@ import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
 import {ImplicitReceiver, FieldRead} from 'change_detection/parser/ast';
 import {ClosureMap} from 'change_detection/parser/closure_map';
+import {ElementBinder} from 'core/compiler/element_binder';
 
 class Directive {
   @FIELD('prop')
@@ -30,10 +31,15 @@ export function main() {
                '</div>' +
              '</section>';
 
-    function templateElInj() {
-        var sectionPI = new ProtoElementInjector(null, [], [0], false);
-        var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
-        var spanPI = new ProtoElementInjector(divPI, [], [], true);
+    function templateElementBinders() {
+        var sectionPI = new ElementBinder(new ProtoElementInjector(null, []),
+            [0], false);
+
+        var divPI = new ElementBinder(new ProtoElementInjector(
+            sectionPI.protoElementInjector, [Directive]), [], false);
+
+        var spanPI = new ElementBinder(new ProtoElementInjector(
+            divPI.protoElementInjector, []), [], true);
         return [sectionPI, divPI, spanPI];
     }
 
@@ -41,9 +47,8 @@ export function main() {
       it('should create view instance and locate basic parts', function() {
         var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
 
-        var diBindings = [];
         var hasSingleRoot = false;
-        var pv = new ProtoView(template, diBindings, templateElInj(),
+        var pv = new ProtoView(template, templateElementBinders(),
             new ProtoWatchGroup(), hasSingleRoot);
 
         var view = pv.instantiate(null, null);
@@ -68,10 +73,12 @@ export function main() {
             '<div directive class="ng-binding"></div>' +
           '</section>');
 
-        var sectionPI = new ProtoElementInjector(null, [Directive], [], false);
-        var divPI = new ProtoElementInjector(sectionPI, [Directive], [], false);
+        var sectionPI = new ElementBinder(new ProtoElementInjector(
+            null, [Directive]), [], false);
+        var divPI = new ElementBinder(new ProtoElementInjector(
+            sectionPI.protoElementInjector, [Directive]), [], false);
 
-        var pv = new ProtoView(template, [], [sectionPI, divPI],
+        var pv = new ProtoView(template, [sectionPI, divPI],
           new ProtoWatchGroup(), false);
         var view = pv.instantiate(null, null);
 
@@ -82,7 +89,7 @@ export function main() {
         var view;
         beforeEach(() => {
           var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
-          var pv = new ProtoView(template, [], templateElInj(),
+          var pv = new ProtoView(template, templateElementBinders(),
             new ProtoWatchGroup(), false);
           view = pv.instantiate(null, null);
         });
@@ -125,7 +132,7 @@ export function main() {
           var protoWatchGroup = new ProtoWatchGroup();
           protoWatchGroup.watch(oneFieldAst('foo'), memento);
 
-          var pv = new ProtoView(template, [], templateElInj(),
+          var pv = new ProtoView(template, templateElementBinders(),
               protoWatchGroup, false);
 
           ctx = new MyEvaluationContext();
