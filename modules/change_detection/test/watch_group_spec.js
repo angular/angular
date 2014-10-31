@@ -53,6 +53,92 @@ export function main() {
       });
     });
 
+    describe("adding children", () => {
+      it("should add child watch group", () => {
+        var parent = new WatchGroup(null, null);
+        var child1 = new WatchGroup(null, null);
+        var child2 = new WatchGroup(null, null);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        expect(parent.childHead).toBe(child1);
+        expect(parent.childTail).toBe(child2);
+
+        expect(child1.next).toBe(child2);
+        expect(child2.prev).toBe(child1);
+      });
+
+      it("should link all records", () => {
+        var parent = new WatchGroup(null, null);
+        var parentRecord = createRecord(parent);
+        parent.addRecord(parentRecord);
+
+        var child = new WatchGroup(null, null);
+        var childRecord = createRecord(child);
+        child.addRecord(childRecord);
+
+        parent.addChild(child);
+
+        expect(parent.headRecord).toBe(parentRecord);
+        expect(parent.tailRecord).toBe(childRecord);
+
+        expect(parent.headEnabledRecord).toBe(parentRecord);
+        expect(parent.tailEnabledRecord).toBe(childRecord);
+
+        expect(parentRecord.next).toBe(childRecord);
+        expect(childRecord.prev).toBe(parentRecord);
+      });
+
+      it("should work when parent has no records", () => {
+        var parent = new WatchGroup(null, null);
+
+        var child = new WatchGroup(null, null);
+        var childRecord = createRecord(child);
+        child.addRecord(childRecord);
+
+        parent.addChild(child);
+
+        expect(parent.headRecord).toBe(childRecord);
+        expect(parent.tailRecord).toBe(childRecord);
+
+        expect(parent.headEnabledRecord).toBe(childRecord);
+        expect(parent.tailEnabledRecord).toBe(childRecord);
+      });
+
+      it("should work when parent has no records and first child has no records", () => {
+        var parent = new WatchGroup(null, null);
+        var firstChild = new WatchGroup(null, null);
+        parent.addChild(firstChild);
+
+        var child = new WatchGroup(null, null);
+        var childRecord = createRecord(child);
+        child.addRecord(childRecord);
+
+        parent.addChild(child);
+
+        expect(parent.headRecord).toBe(childRecord);
+        expect(parent.tailRecord).toBe(childRecord);
+
+        expect(parent.headEnabledRecord).toBe(childRecord);
+        expect(parent.tailEnabledRecord).toBe(childRecord);
+      });
+
+      it("should work when second child has no records", () => {
+        var parent = new WatchGroup(null, null);
+
+        var firstChild = new WatchGroup(null, null);
+        var childRecord = createRecord(firstChild);
+        firstChild.addRecord(childRecord);
+        parent.addChild(firstChild);
+
+        var secondChild = new WatchGroup(null, null);
+        parent.addChild(secondChild);
+
+        expect(parent.childHead).toBe(firstChild);
+        expect(parent.childTail).toBe(secondChild);
+      });
+    });
+
     describe("enabling/disabling records", () => {
       it("should disable a single record", () => {
         var wg = new WatchGroup(null, null);
