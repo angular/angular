@@ -132,10 +132,14 @@ export class Record {
   }
 
   setContext(context) {
-    this.mode = MODE_STATE_PROPERTY;
-    this.context = context;
-    var factory = new FieldGetterFactory();
-    this.getter = factory.getter(context, this.protoRecord.fieldName);
+    // todo(vicb) set the context only for first level records
+    // for now this.protoRecord !== null means everything but markers
+    if (this.protoRecord !== null) {
+      this.mode = MODE_STATE_PROPERTY;
+      this.context = context;
+      var factory = new FieldGetterFactory();
+      this.getter = factory.getter(context, this.protoRecord.fieldName);
+    }
   }
 
 }
