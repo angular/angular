@@ -43,28 +43,29 @@ export class ProtoWatchGroup {
   // but @Implements is not ready yet.
   instantiate(dispatcher):WatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
-    var tail:Record = null;
+    var tail:Record = watchGroup.headRecord = new Record(watchGroup, null);
     var proto:ProtoRecord = null;
-    var prevRecord:Record = null;
+    var tmpRecord:Record;
 
-    if (this.headRecord !== null) {
-      watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord);
-
-      for (proto = this.headRecord.next; proto != null; proto = proto.next) {
-        prevRecord = tail;
-        tail = new Record(watchGroup, proto);
-        tail.prev = prevRecord;
-        prevRecord.next = tail;
-        tail.checkPrev = prevRecord;
-        prevRecord.checkNext = tail;
-      }
-
-      watchGroup.tailRecord = tail;
+    for (proto = this.headRecord; proto != null; proto = proto.next) {
+      tmpRecord = tail;
+      tail = new Record(watchGroup, proto);
+      tail.prev = tmpRecord;
+      tmpRecord.next = tail;
+      tail.checkPrev = tmpRecord;
+      tmpRecord.checkNext = tail;
     }
+
+    // Create and link the tail marker
+    tmpRecord = new Record(watchGroup, null);
+    tail.next = tmpRecord;
+    tmpRecord.prev = tail;
+    tail.checkNext = tmpRecord;
+    tmpRecord.checkPrev = tail;
+    watchGroup.tailRecord = tmpRecord;
 
     return watchGroup;
   }
-
 }
 
 export class WatchGroup {
@@ -80,14 +81,112 @@ export class WatchGroup {
     this.headRecord = null;
     this.tailRecord = null;
     this.context = null;
+    this.childHead = null;
+    this.childTail = null;
+    this.next = null;
+    this.prev = null;
+    this.parent = null;
   }
 
-  insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {
-    throw 'not implemented';
+  // todo(vicb): check records should not include the markers for perf
+  addChild(child:WatchGroup, insertAfter:WatchGroup) {
+    child.parent = this;
+    if (this.childHead === null) {
+      // groups
+      //todo(vicb)
+      //assert(this.childTail === null);
+      this.childHead = this.childTail = child;
+      // records
+      this.tailRecord.next = child.headRecord;
+      child.headRecord.prev = this.tailRecord;
+      this.tailRecord.checkNext = child.headRecord;
+      child.headRecord.checkPrev = this.tailRecord;
+    } else {
+      if (insertAfter === null) {
+        // insert as first child
+        var childHead = this.childHead;
+        // groups
+        childHead.prev = child;
+        child.next = childHead;
+        this.childHead = child;
+        // records
+        childHead.headRecord.prev = child.tailRecord;
+        child.tailRecord.next = childHead.headRecord;
+        childHead.headRecord.checkPrev = child.tailRecord;
+        child.tailRecord.checkNext = childHead.headRecord;
+        this.headRecord = child.headRecord;
+        var prevGroupTailRecord = this._tailRecordIncludingChildren;
+        child.headRecord.prev = prevGroupTailRecord;
+        prevGroupTailRecord.next = child;
+        child.headRecord.checkPrev = prevGroupTailRecord;
+        prevGroupTailRecord.checkNext = child;
+
+      } else {
+        // groups
+        child.prev = insertAfter;
+        child.next = insertAfter.next;
+        insertAfter.next = child;
+        if (child.next === null) {
+          this.childTail == child;
+        }
+        // records
+        var prevGroupTailRecord = insertAfter._tailRecordIncludingChildren;
+        child.headRecord.prev = prevGroupTailRecord;
+        prevGroupTailRecord.next = child.headRecord;
+        child.headRecord.checkPrev = prevGroupTailRecord;
+        prevGroupTailRecord.checkNext = child.headRecord;
+        if (child.next !== null) {
+          child.tailRecord.next = this.childTail.headRecord;
+          this.childTail.tailRecord.prev = child.headRecord;
+          child.tailRecord.checkNext = this.childTail.headRecord;
+          this.childTail.tailRecord.checkPrev = child.headRecord;
+        }
+      }
+    }
   }
 
   remove() {
-    throw 'not implemented';
+    var prev = this.prev;
+    var next = this.next;
+
+    // todo(vicb) unregister releasable records from plugins
+
+    // Unlink the records
+    var nextGroupHeadRecord = this._tailRecordIncludingChildren.next;
+    var prevGroupTailRecord = this.headRecord.prev;
+
+    if (prevGroupTailRecord !== null) {
+      prevGroupTail.next = nextGroupHeadRecord;
+      prevGroupTail.checkNext = nextGroupHeadRecord;
+    }
+
+    if (nextGroupHeadRecord !== null) {
+      nextGroupHeadRecord.prev = prevGroupTailRecord;
+      nextGroupHeadRecord.checkPrev = prevGroupTailRecord;
+    }
+
+    // unlink the group
+    if (prev === null) {
+      this.parent.childHead = next;
+    } else {
+      prev.next = next;
+    }
+
+    if (next === null) {
+      this.parent.childTail = prev;
+    } else {
+      next.prev = prev;
+    }
+
+    this.dispatcher = null;
+    this.headRecord = null;
+    this.tailRecord = null;
+    this.context = null;
+    this.childHead = null;
+    this.childTail = null;
+    this.next = null;
+    this.prev = null;
+    this.parent = null;
   }
 
   /**
@@ -103,6 +202,14 @@ export class WatchGroup {
          record = record.next) {
       record.setContext(context);
     }
+  }
+
+  get _tailRecordIncludingChildren():Record {
+    var lastGroup = this;
+    while (lastGroup.childTail !== null) {
+      lastGroup = lastGroup.childTail;
+    }
+    return lastGroup.tailRecord;
   }
 }
 
