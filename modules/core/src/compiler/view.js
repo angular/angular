@@ -4,7 +4,7 @@ import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detectio
 import {Record} from 'change_detection/record';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {ElementBinder} from './element_binder';
-import {SetterFn} from 'change_detection/facade';
+import {SetterFn} from 'change_detection/parser/closure_map';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
 import {Injector} from 'di/di';

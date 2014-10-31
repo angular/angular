@@ -20,6 +20,14 @@ export function isBlank(obj):boolean {
   return obj === undefined || obj === null;
 }
 
+export function toBool(obj) {
+  return !!obj;
+}
+
+export function autoConvertAdd(a, b) {
+  return a + b;
+}
+
 export function stringify(token):string {
   if (typeof token === 'string') {
     return token;

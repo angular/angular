@@ -1,6 +1,6 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
 import {FIELD} from 'facade/lang';
-import {FieldGetterFactory} from './facade';
+import {ClosureMap} from 'change_detection/parser/closure_map';
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -134,8 +134,8 @@ export class Record {
   setContext(context) {
     this.mode = MODE_STATE_PROPERTY;
     this.context = context;
-    var factory = new FieldGetterFactory();
-    this.getter = factory.getter(context, this.protoRecord.fieldName);
+    var closureMap = new ClosureMap();
+    this.getter = closureMap.getter(this.protoRecord.fieldName);
   }
 
 }
