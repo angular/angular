@@ -50,7 +50,6 @@ export class ProtoWatchGroup {
     if (this.headRecord !== null) {
       this._createRecords(watchGroup, formatters);
       this._setDestination();
-
     }
     return watchGroup;
   }
@@ -88,6 +87,11 @@ export class WatchGroup {
     this.headEnabledRecord = null;
     this.tailEnabledRecord = null;
     this.context = null;
+
+    this.childHead = null;
+    this.childTail = null;
+    this.next = null;
+    this.prev = null;
   }
 
   addRecord(record:Record) {
@@ -149,12 +153,35 @@ export class WatchGroup {
     }
   }
 
-  insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {
-    throw 'not implemented';
+  addChild(child:WatchGroup) {
+    if (isBlank(this.childTail)) {
+      this.childHead = this.childTail = child;
+      this._attachRecordsFromWatchGroup(child);
+
+    } else {
+      this.childTail.next = child;
+      child.prev = this.childTail;
+      this.childTail = child;
+      this._attachRecordsFromWatchGroup(child);
+    }
   }
 
-  remove() {
-    throw 'not implemented';
+  _attachRecordsFromWatchGroup(child:WatchGroup) {
+    if (isPresent(this.tailRecord)) {
+      if (isPresent(child.headRecord)) {
+        this.tailRecord.next = child.headRecord;
+        this.tailRecord.nextEnabled = child.headRecord;
+
+        child.headRecord.prev = this.tailRecord;
+        child.headRecord.prevEnabled = this.tailRecord;
+      }
+    } else {
+      this.headRecord = child.headRecord;
+      this.headEnabledRecord = child.headEnabledRecord;
+    }
+
+    this.tailRecord = child.tailRecord;
+    this.tailEnabledRecord = child.tailEnabledRecord;
   }
 
   /**
@@ -171,6 +198,14 @@ export class WatchGroup {
 
       record.updateContext(context);
     }
+  }
+
+  get _tailRecordIncludingChildren():Record {
+    var lastGroup = this;
+    while (lastGroup.childTail !== null) {
+      lastGroup = lastGroup.childTail;
+    }
+    return lastGroup.tailRecord;
   }
 }
 
