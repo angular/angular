@@ -21,6 +21,9 @@ class SubFoo extends Foo {
   }
 }
 
+@CONST
+class ConstClass {}
+
 class Const {
   @CONST
   constructor(a:number) {
@@ -60,6 +63,11 @@ export function main() {
       var subConst = new SubConst(1, 2);
       expect(subConst.a).toBe(1);
       expect(subConst.b).toBe(2);
+    });
+
+    it('@CONST on class without constructor should generate const constructor', function () {
+      var constClass = new ConstClass();
+      expect(constClass).not.toBe(null);
     });
 
     describe('inheritance', function() {
