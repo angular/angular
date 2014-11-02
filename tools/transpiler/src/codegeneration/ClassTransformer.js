@@ -19,6 +19,8 @@ import {propName} from 'traceur/src/staticsemantics/PropName';
 import {
   BinaryExpression,
   BindingIdentifier,
+  FormalParameterList,
+  FunctionBody,
   IdentifierExpression
 } from 'traceur/src/syntax/trees/ParseTrees';
 
@@ -48,6 +50,7 @@ export class ClassTransformer extends ParseTreeTransformer {
     var argumentTypesMap = {};
     var fields = [];
     var isConst;
+    var hasConstructor = false;
     var that = this;
 
     tree.elements.forEach(function(elementTree, index) {
@@ -55,8 +58,8 @@ export class ClassTransformer extends ParseTreeTransformer {
           !elementTree.isStatic &&
           propName(elementTree) === CONSTRUCTOR) {
 
-        isConst = elementTree.annotations.some((annotation) =>
-          annotation.name.identifierToken.value === 'CONST');
+        hasConstructor = true;
+        isConst = elementTree.annotations.some(that._isConstAnnotation);
 
         // Store constructor argument types,
         // so that we can use them to set the types of simple-assigned fields.
@@ -124,6 +127,26 @@ export class ClassTransformer extends ParseTreeTransformer {
       }
     });
 
+    // If no constructor exists then look to see if we should create a const constructor
+    // when the class is annotated with @CONST.
+    if (!hasConstructor) {
+      let constClassAnnotation = this._extractConstAnnotation(tree);
+      if (constClassAnnotation !== null) {
+        tree.elements = [(new PropertyConstructorAssignment(
+            constClassAnnotation.location,
+            false,
+            null,
+            tree.name,
+            new FormalParameterList(constClassAnnotation.location, []),
+            null,
+            [constClassAnnotation],
+            new FunctionBody(constClassAnnotation.location, []),
+            true,
+            []
+          ))].concat(tree.elements);
+      }
+    }
+
     // Add the field definitions to the beginning of the class.
     tree.elements = fields.concat(tree.elements);
 
@@ -183,4 +206,32 @@ export class ClassTransformer extends ParseTreeTransformer {
     body.statements = statements;
     return superCall;
   }
+
+  /**
+   * Extract the @CONST annotation from the class annotations.
+   * When found the annotation is removed from the class annotations and returned.
+   */
+  _extractConstAnnotation(tree) {
+    var annotations = [];
+    var constAnnotation = null;
+    var that = this;
+
+    tree.annotations.forEach((annotation) => {
+      if (that._isConstAnnotation(annotation)) {
+        constAnnotation = annotation;
+      } else {
+        annotations.push(annotation);
+      }
+    });
+
+    tree.annotations = annotations;
+    return constAnnotation;
+  }
+  /**
+   * Returns true if the annotation is @CONST
+   */
+  _isConstAnnotation(annotation) {
+    return annotation.name.identifierToken.value === 'CONST';
+  }
+
 }
