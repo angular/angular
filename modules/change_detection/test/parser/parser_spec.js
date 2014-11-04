@@ -18,6 +18,10 @@ export function main() {
   var context = td();
   var formatters;
 
+  function createParser() {
+    return new Parser(new Lexer(), new ClosureMap());
+  }
+
   function _eval(text) {
     return new Parser(new Lexer(), new ClosureMap()).parse(text)
       .eval(context, formatters);
@@ -36,7 +40,7 @@ export function main() {
       var parser;
 
       beforeEach(() => {
-        parser = new Parser(new Lexer(), new ClosureMap());
+        parser = createParser();
       });
 
       it("should parse field access",() => {
@@ -118,6 +122,22 @@ export function main() {
         expectEval("4 + 4").toEqual(8);
         expectEval("4 + 4 + ' str'").toEqual("8 str");
         expectEval("'str ' + 4 + 4").toEqual("str 44");
+      });
+
+      it('should behave gracefully with a null scope', () => {
+        var exp = createParser().parse("null");
+        expect(exp.eval(null, null)).toEqual(null);
+      });
+
+      it('should eval binary operators with null as null', () => {
+        expectEval("null < 0").toBeNull();
+        expectEval("null * 3").toBeNull();
+        expectEval("null + 6").toBeNull();
+        expectEval("5 + null").toBeNull();
+        expectEval("null - 4").toBeNull();
+        expectEval("3 - null").toBeNull();
+        expectEval("null + null").toBeNull();
+        expectEval("null - null").toBeNull();
       });
     });
     

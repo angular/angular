@@ -86,19 +86,7 @@ export class Binary extends AST {
     var right = this.right.eval(context, formatters);
 
     // Null check for the operations.
-    if (left == null || right == null) {
-      switch (this.operation) {
-        case '+':
-          if (left != null) return left;
-          if (right != null) return right;
-          return 0;
-        case '-':
-          if (left != null) return left;
-          if (right != null) return 0 - right;
-          return 0;
-      }
-      return null;
-    }
+    if (left == null || right == null) return null;
 
     switch (this.operation) {
       case '+'  : return autoConvertAdd(left, right);
