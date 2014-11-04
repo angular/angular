@@ -241,6 +241,9 @@ class _ParseAST {
 
   parseIdentifier():string {
     var n = this.next;
+    if (!n.isIdentifier() && !n.isKeyword()) {
+      this.error(`Unexpected token ${n}, expected identifier or keyword`)
+    }
     this.advance();
     return n.toString();
   }
@@ -249,7 +252,7 @@ class _ParseAST {
     if (isBlank(index)) index = this.index;
 
     var location = (index < this.tokens.length)
-      ? `at column ${tokens[index].index + 1} in`
+      ? `at column ${this.tokens[index].index + 1} in`
       : `at the end of the expression`;
 
     throw new ParserError(`Parser Error: ${message} ${location} [${this.input}]`);

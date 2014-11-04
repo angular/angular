@@ -10,6 +10,12 @@ class TestData {
   }
 }
 
+class ContextWithErrors {
+  get boo() {
+    throw new Error("boo to you");
+  }
+}
+
 export function main() {
   function td(a = 0, b = 0) {
     return new TestData(a, b);
@@ -144,6 +150,18 @@ export function main() {
     describe("error handling", () => {
       it('should throw on incorrect ternary operator syntax', () => {
         expectEvalError("true?1").toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
+      });
+
+      it('should pass exceptions', () => {
+        expect(() => {
+          createParser().parse('boo').eval(new ContextWithErrors(), null);
+        }).toThrowError('boo to you');
+      });
+
+      it('should only allow identifier or keyword as member names', () => {
+        expectEvalError('x.(').toThrowError(new RegExp('identifier or keyword'));
+        expectEvalError('x. 1234').toThrowError(new RegExp('identifier or keyword'));
+        expectEvalError('x."foo"').toThrowError(new RegExp('identifier or keyword'));
       });
     });
   });
