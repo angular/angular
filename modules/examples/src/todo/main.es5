@@ -1,1 +1,20 @@
-new (System.get("examples/todo/app").App)().run();
+register(System);
+
+System.baseURL = '../../../';
+
+// So that we can import packages like `core/foo`, instead of `core/src/foo`.
+System.paths = {
+  'core/*': './core/src/*.js',
+  'change_detection/*': './change_detection/src/*.js',
+  'facade/*': './facade/lib/*.js',
+  'di/*': './di/src/*.js',
+  'rtts_assert/*': './rtts_assert/lib/*.js',
+  'examples/*': './examples/lib/*.js'
+};
+
+
+System.import('examples/todo/app').then(function(m) {
+  (new m.App).run();
+}, function(e) {
+  console.error(e.stack || e);
+});

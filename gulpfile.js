@@ -53,6 +53,7 @@ gulp.task('jsRuntime/build', function() {
   var traceurRuntime = gulp.src([
     gulpTraceur.RUNTIME_PATH,
     "node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js",
+    "node_modules/systemjs/dist/system.src.js",
     "node_modules/systemjs/lib/extension-register.js"
   ]).pipe(gulp.dest('build/js'));
   return traceurRuntime;
