@@ -103,3 +103,18 @@ class RegExpMatcherWrapper {
   }
 }
 
+class FunctionWrapper {
+  static apply(Function fn, posArgs) {
+    return Function.apply(fn, posArgs);
+  }
+}
+
+class BaseException extends Error {
+  final String message;
+
+  BaseException(this.message);
+
+  String toString() {
+    return this.message;
+  }
+}

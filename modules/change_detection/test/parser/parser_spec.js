@@ -1,4 +1,5 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
+import {BaseException} from 'facade/lang';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -12,7 +13,7 @@ class TestData {
 
 class ContextWithErrors {
   get boo() {
-    throw new Error("boo to you");
+    throw new BaseException("boo to you");
   }
 }
 
@@ -146,10 +147,41 @@ export function main() {
         expectEval("null - null").toBeNull();
       });
     });
+
+    describe('formatters', () => {
+      beforeEach(() => {
+        formatters = {
+          "uppercase": (s) => s.toUpperCase(),
+          "lowercase": (s) => s.toLowerCase(),
+          "increment": (a,b) => a + b
+        }
+      });
+
+      it('should call a formatter', () => {
+        expectEval("'Foo'|uppercase").toEqual("FOO");
+        expectEval("'fOo'|uppercase|lowercase").toEqual("foo");
+      });
+
+      it('should call a formatter with arguments', () => {
+        expectEval("1|increment:2").toEqual(3);
+      });
+
+      it('should throw when invalid formatter', () => {
+        expectEvalError("1|nonexistent").toThrowError('No formatter \'nonexistent\' found!');
+      });;
+
+      it('should not allow formatters in a chain', () => {
+        expectEvalError("1;'World'|hello").
+            toThrowError(new RegExp('Cannot have a formatter in a chain'));
+        expectEvalError("'World'|hello;1").
+            toThrowError(new RegExp('Cannot have a formatter in a chain'));
+      });
+    });
     
     describe("error handling", () => {
       it('should throw on incorrect ternary operator syntax', () => {
-        expectEvalError("true?1").toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
+        expectEvalError("true?1").
+            toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
       });
 
       it('should pass exceptions', () => {

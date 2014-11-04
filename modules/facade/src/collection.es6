@@ -79,6 +79,7 @@ export class ListWrapper {
     var a = ListWrapper.clone(array);
     return a.reverse();
   }
+  static concat(a, b) {return a.concat(b);}
 }
 
 export class SetWrapper {

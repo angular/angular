@@ -1,9 +1,18 @@
 import {FIELD, int, isBlank} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
-import {Lexer, EOF, Token, $PERIOD, $COLON} from './lexer';
+import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON} from './lexer';
 import {ClosureMap} from './closure_map';
-import {AST, ImplicitReceiver, FieldRead, LiteralPrimitive, Expression,
-   Binary, PrefixNot, Conditional} from './ast';
+import {
+  AST,
+  ImplicitReceiver,
+  FieldRead,
+  LiteralPrimitive,
+  Expression,
+  Binary,
+  PrefixNot,
+  Conditional,
+  Formatter
+  } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
 
@@ -70,10 +79,33 @@ class _ParseAST {
 
   parseChain():AST {
     var exprs = [];
+    var isChain = false;
     while (this.index < this.tokens.length) {
-      ListWrapper.push(exprs, this.parseConditional());
+      var expr = this.parseFormatter();
+      ListWrapper.push(exprs, expr);
+
+      while (this.optionalCharacter($SEMICOLON)) {
+        isChain = true;
+      }
+
+      if (isChain && expr instanceof Formatter) {
+        this.error('Cannot have a formatter in a chain');
+      }
     }
     return ListWrapper.first(exprs);
+  }
+
+  parseFormatter() {
+    var result = this.parseExpression();
+    while (this.optionalOperator("|")) {
+      var name = this.parseIdentifier();
+      var args = ListWrapper.create();
+      while (this.optionalCharacter($COLON)) {
+        ListWrapper.push(args, this.parseExpression());
+      }
+      result = new Formatter(result, name, args);
+    }
+    return result;
   }
 
   parseExpression() {

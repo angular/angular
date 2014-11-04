@@ -46,6 +46,7 @@ class ListWrapper {
   static last(List list) => list.last;
   static List reversed(List list) => list.reversed.toList();
   static void push(List l, e) { l.add(e); }
+  static List concat(List a, List b) {a.addAll(b); return a;}
 }
 
 class SetWrapper {

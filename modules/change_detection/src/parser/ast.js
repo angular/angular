@@ -1,4 +1,5 @@
-import {FIELD, toBool, autoConvertAdd} from "facade/lang";
+import {FIELD, toBool, autoConvertAdd, isBlank, FunctionWrapper, BaseException} from "facade/lang";
+import {List, ListWrapper} from "facade/collection";
 
 export class AST {
   eval(context, formatters) {
@@ -47,6 +48,28 @@ export class FieldRead extends AST {
 
   visit(visitor) {
     visitor.visitFieldRead(this);
+  }
+}
+
+export class Formatter extends AST {
+  constructor(exp:AST, name:string, args:List) {
+    this.exp = exp;
+    this.name = name;
+    this.args = args;
+    this.allArgs = ListWrapper.concat([exp], args);
+  }
+
+  eval(context, formatters) {
+    var formatter = formatters[this.name];
+    if (isBlank(formatter)) {
+      throw new BaseException(`No formatter '${this.name}' found!`);
+    }
+    var evaledArgs = evalList(context, this.allArgs, formatters);
+    return FunctionWrapper.apply(formatter, evaledArgs);
+  }
+
+  visit(visitor) {
+    visitor.visitFormatter(this);
   }
 }
 
@@ -128,4 +151,15 @@ export class AstVisitor {
   visitBinary(ast:Binary) {}
   visitPrefixNot(ast:PrefixNot) {}
   visitLiteralPrimitive(ast:LiteralPrimitive) {}
+  visitFormatter(ast:Formatter) {}
+}
+
+var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];
+function evalList(context, exps:List, formatters){
+  var length = exps.length;
+  var result = _evalListCache[length];
+  for (var i = 0; i < length; i++) {
+    result[i] = exps[i].eval(context, formatters);
+  }
+  return result;
 }

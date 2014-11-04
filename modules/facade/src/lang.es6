@@ -137,3 +137,18 @@ export class RegExpMatcherWrapper {
   }
 }
 
+export class FunctionWrapper {
+  static apply(fn:Function, posArgs) {
+    return fn.apply(null, posArgs);
+  }
+}
+
+export class BaseException extends Error {
+  constructor(message){
+    this.message = message;
+  }
+
+  toString():String {
+    return this.message;
+  }
+}
