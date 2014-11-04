@@ -36,7 +36,7 @@ export class Parser {
 }
 
 class _ParseAST {
-  @FIELD('final input:String')
+  @FIELD('final input:string')
   @FIELD('final tokens:List<Token>')
   @FIELD('final closureMap:ClosureMap')
   @FIELD('final parseAction:boolean')

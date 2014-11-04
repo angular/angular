@@ -21,6 +21,9 @@ export class ImplicitReceiver extends AST {
 }
 
 export class Conditional extends AST {
+  @FIELD('final condition:AST')
+  @FIELD('final trueExp:AST')
+  @FIELD('final falseExp:AST')
   constructor(condition:AST, trueExp:AST, falseExp:AST){
     this.condition = condition;
     this.trueExp = trueExp;
@@ -37,6 +40,9 @@ export class Conditional extends AST {
 }
 
 export class FieldRead extends AST {
+  @FIELD('final receiver:AST')
+  @FIELD('final name:string')
+  @FIELD('final getter:Function')
   constructor(receiver:AST, name:string, getter:Function) {
     this.receiver = receiver;
     this.name = name;
@@ -53,6 +59,9 @@ export class FieldRead extends AST {
 }
 
 export class Formatter extends AST {
+  @FIELD('final exp:AST')
+  @FIELD('final name:string')
+  @FIELD('final args:List<AST>')
   constructor(exp:AST, name:string, args:List) {
     this.exp = exp;
     this.name = name;
