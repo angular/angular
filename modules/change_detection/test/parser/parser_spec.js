@@ -20,7 +20,15 @@ export function main() {
 
   function _eval(text) {
     return new Parser(new Lexer(), new ClosureMap()).parse(text)
-        .eval(context, formatters);
+      .eval(context, formatters);
+  }
+
+  function expectEval(text) {
+    return expect(_eval(text));
+  }
+
+  function expectEvalError(text) {
+    return expect(() => _eval(text));
   }
 
   describe("parser", () => {
@@ -47,64 +55,75 @@ export function main() {
     describe('expressions', () => {
 
       it('should parse numerical expressions', () => {
-        expect(_eval("1")).toEqual(1);
+        expectEval("1").toEqual(1);
       });
 
 
       it('should parse unary - expressions', () => {
-        expect(_eval("-1")).toEqual(-1);
-        expect(_eval("+1")).toEqual(1);
+        expectEval("-1").toEqual(-1);
+        expectEval("+1").toEqual(1);
       });
 
 
       it('should parse unary ! expressions', () => {
-        expect(_eval("!true")).toEqual(!true);
+        expectEval("!true").toEqual(!true);
       });
 
 
       it('should parse multiplicative expressions', () => {
-        expect(_eval("3*4/2%5")).toEqual(3*4/2%5);
+        expectEval("3*4/2%5").toEqual(3*4/2%5);
         // TODO(rado): This exists only in Dart, figure out whether to support it.
-        // expect(_eval("3*4~/2%5")).toEqual(3*4~/2%5);
+        // expectEval("3*4~/2%5")).toEqual(3*4~/2%5);
       });
 
 
       it('should parse additive expressions', () => {
-        expect(_eval("3+6-2")).toEqual(3+6-2);
+        expectEval("3+6-2").toEqual(3+6-2);
       });
 
 
       it('should parse relational expressions', () => {
-        expect(_eval("2<3")).toEqual(2<3);
-        expect(_eval("2>3")).toEqual(2>3);
-        expect(_eval("2<=2")).toEqual(2<=2);
-        expect(_eval("2>=2")).toEqual(2>=2);
+        expectEval("2<3").toEqual(2<3);
+        expectEval("2>3").toEqual(2>3);
+        expectEval("2<=2").toEqual(2<=2);
+        expectEval("2>=2").toEqual(2>=2);
       });
 
 
       it('should parse equality expressions', () => {
-        expect(_eval("2==3")).toEqual(2==3);
-        expect(_eval("2!=3")).toEqual(2!=3);
+        expectEval("2==3").toEqual(2==3);
+        expectEval("2!=3").toEqual(2!=3);
       });
 
 
       it('should parse logicalAND expressions', () => {
-        expect(_eval("true&&true")).toEqual(true&&true);
-        expect(_eval("true&&false")).toEqual(true&&false);
+        expectEval("true&&true").toEqual(true&&true);
+        expectEval("true&&false").toEqual(true&&false);
       });
 
 
       it('should parse logicalOR expressions', () => {
-        expect(_eval("false||true")).toEqual(false||true);
-        expect(_eval("false||false")).toEqual(false||false);
+        expectEval("false||true").toEqual(false||true);
+        expectEval("false||false").toEqual(false||false);
+      });
+
+      it('should parse ternary/conditional expressions', () => {
+        expectEval("7==3+4?10:20").toEqual(10);
+        expectEval("false?10:20").toEqual(20);
       });
 
       it('should auto convert ints to strings', () => {
-        expect(_eval("'str ' + 4")).toEqual("str 4");
-        expect(_eval("4 + ' str'")).toEqual("4 str");
-        expect(_eval("4 + 4")).toEqual(8);
-        expect(_eval("4 + 4 + ' str'")).toEqual("8 str");
-        expect(_eval("'str ' + 4 + 4")).toEqual("str 44");
+        expectEval("'str ' + 4").toEqual("str 4");
+        expectEval("4 + ' str'").toEqual("4 str");
+        expectEval("4 + 4").toEqual(8);
+        expectEval("4 + 4 + ' str'").toEqual("8 str");
+        expectEval("'str ' + 4 + 4").toEqual("str 44");
+      });
+    });
+    
+    describe("error handling", () => {
+      it('should throw on incorrect ternary operator syntax', () => {
+        expectEvalError("true?1").toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
       });
     });
   });

@@ -1,9 +1,9 @@
-import {FIELD, int} from 'facade/lang';
+import {FIELD, int, isBlank} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
-import {Lexer, EOF, Token, $PERIOD} from './lexer';
+import {Lexer, EOF, Token, $PERIOD, $COLON} from './lexer';
 import {ClosureMap} from './closure_map';
 import {AST, ImplicitReceiver, FieldRead, LiteralPrimitive, Expression,
-   Binary, PrefixNot } from './ast';
+   Binary, PrefixNot, Conditional} from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
 
@@ -17,15 +17,17 @@ export class Parser {
 
   parse(input:string):AST {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(tokens, this._closureMap).parseChain();
+    return new _ParseAST(input, tokens, this._closureMap).parseChain();
   }
 }
 
 class _ParseAST {
+  @FIELD('final input:String')
   @FIELD('final tokens:List<Token>')
   @FIELD('final closureMap:ClosureMap')
   @FIELD('index:int')
-  constructor(tokens:List, closureMap:ClosureMap) {
+  constructor(input:string, tokens:List, closureMap:ClosureMap) {
+    this.input = input;
     this.tokens = tokens;
     this.index = 0;
     this.closureMap = closureMap;
@@ -38,6 +40,10 @@ class _ParseAST {
 
   get next():Token {
     return this.peek(0);
+  }
+
+  get inputIndex():int {
+    return (this.index < this.tokens.length) ? this.next.index : this.input.length;
   }
 
   advance() {
@@ -59,6 +65,36 @@ class _ParseAST {
       return true;
     } else {
       return false;
+    }
+  }
+
+  parseChain():AST {
+    var exprs = [];
+    while (this.index < this.tokens.length) {
+      ListWrapper.push(exprs, this.parseConditional());
+    }
+    return ListWrapper.first(exprs);
+  }
+
+  parseExpression() {
+    return this.parseConditional();
+  }
+
+  parseConditional() {
+    var start = this.inputIndex;
+    var result = this.parseLogicalOr();
+
+    if (this.optionalOperator('?')) {
+      var yes = this.parseExpression();
+      if (!this.optionalCharacter($COLON)) {
+        var end = this.inputIndex;
+        var expression = this.input.substring(start, end);
+        this.error(`Conditional expression ${expression} requires all 3 expressions`);
+      }
+      var no = this.parseExpression();
+      return new Conditional(result, yes, no);
+    } else {
+      return result;
     }
   }
 
@@ -157,23 +193,6 @@ class _ParseAST {
     }
   }
 
-
-  parseChain():AST {
-    var exprs = [];
-    while (this.index < this.tokens.length) {
-      ListWrapper.push(exprs, this.parseLogicalOr());
-    }
-    return ListWrapper.first(exprs);
-  }
-
-  parseAccess():AST {
-    var result = this.parseFieldRead(_implicitReceiver);
-    while(this.optionalCharacter($PERIOD)) {
-      result = this.parseFieldRead(result);
-    }
-    return result;
-  }
-
   parseAccessOrCallMember() {
     var result = this.parsePrimary();
     // TODO: add missing cases.
@@ -181,9 +200,6 @@ class _ParseAST {
   }
 
   parsePrimary() {
-    var value;
-    // TODO: add missing cases.
-
     if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
       this.advance();
       return new LiteralPrimitive(null);
@@ -196,11 +212,11 @@ class _ParseAST {
     } else if (this.next.isIdentifier()) {
       return this.parseAccess();
     } else if (this.next.isNumber()) {
-      value = this.next.toNumber();
+      var value = this.next.toNumber();
       this.advance();
       return new LiteralPrimitive(value);
     } else if (this.next.isString()) {
-      value = this.next.toString();
+      var value = this.next.toString();
       this.advance();
       return new LiteralPrimitive(value);
     } else if (this.index >= this.tokens.length) {
@@ -208,6 +224,14 @@ class _ParseAST {
     } else {
       throw `Unexpected token ${this.next}`;
     }
+  }
+
+  parseAccess():AST {
+    var result = this.parseFieldRead(_implicitReceiver);
+    while(this.optionalCharacter($PERIOD)) {
+      result = this.parseFieldRead(result);
+    }
+    return result;
   }
 
   parseFieldRead(receiver):AST {
@@ -219,5 +243,25 @@ class _ParseAST {
     var n = this.next;
     this.advance();
     return n.toString();
+  }
+
+  error(message:string, index:int = null) {
+    if (isBlank(index)) index = this.index;
+
+    var location = (index < this.tokens.length)
+      ? `at column ${tokens[index].index + 1} in`
+      : `at the end of the expression`;
+
+    throw new ParserError(`Parser Error: ${message} ${location} [${this.input}]`);
+  }
+}
+
+class ParserError extends Error {
+  constructor(message) {
+    this.message = message;
+  }
+
+  toString() {
+    return this.message;
   }
 }

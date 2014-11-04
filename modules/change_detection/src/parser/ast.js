@@ -18,14 +18,23 @@ export class ImplicitReceiver extends AST {
   }
 }
 
-export class Expression extends AST {
-  constructor() {
-    this.isAssignable = false;
-    this.isChain = false;
+export class Conditional extends AST {
+  constructor(condition:AST, yes:AST, no:AST){
+    this.condition = condition;
+    this.yes = yes;
+    this.no = no;
+  }
+
+  eval(context, formatters) {
+    if(this.condition.eval(context, formatters)) {
+      return this.yes.eval(context, formatters);
+    } else {
+      return this.no.eval(context, formatters);
+    }
   }
 }
 
-export class FieldRead extends Expression {
+export class FieldRead extends AST {
   constructor(receiver:AST, name:string, getter:Function) {
     this.receiver = receiver;
     this.name = name;
@@ -41,7 +50,7 @@ export class FieldRead extends Expression {
   }
 }
 
-export class LiteralPrimitive extends Expression {
+export class LiteralPrimitive extends AST {
   @FIELD('final value')
   constructor(value) {
     this.value = value;
@@ -54,11 +63,11 @@ export class LiteralPrimitive extends Expression {
   }
 }
 
-export class Binary extends Expression {
+export class Binary extends AST {
   @FIELD('final operation:string')
-  @FIELD('final left:Expression')
-  @FIELD('final right:Expression')
-  constructor(operation:string, left:Expression, right:Expression) {
+  @FIELD('final left:AST')
+  @FIELD('final right:AST')
+  constructor(operation:string, left:AST, right:AST) {
     this.operation = operation;
     this.left = left;
     this.right = right;
@@ -112,10 +121,10 @@ export class Binary extends Expression {
   }
 }
 
-export class PrefixNot extends Expression {
+export class PrefixNot extends AST {
   @FIELD('final operation:string')
-  @FIELD('final expression:Expression')
-  constructor(expression:Expression) {
+  @FIELD('final expression:AST')
+  constructor(expression:AST) {
     this.expression = expression;
   }
   visit(visitor) { visitor.visitPrefixNot(this); }
