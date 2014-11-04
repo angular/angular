@@ -2,7 +2,8 @@ import {FIELD, toBool, autoConvertAdd, isBlank, FunctionWrapper, BaseException} 
 import {List, ListWrapper} from "facade/collection";
 
 export class AST {
-  eval(context, formatters) {
+  eval(context) {
+    throw new BaseException("Not supported");
   }
 
   visit(visitor) {
@@ -10,7 +11,7 @@ export class AST {
 }
 
 export class ImplicitReceiver extends AST {
-  eval(context, formatters) {
+  eval(context) {
     return context;
   }
 
@@ -20,17 +21,17 @@ export class ImplicitReceiver extends AST {
 }
 
 export class Conditional extends AST {
-  constructor(condition:AST, yes:AST, no:AST){
+  constructor(condition:AST, trueExp:AST, falseExp:AST){
     this.condition = condition;
-    this.yes = yes;
-    this.no = no;
+    this.trueExp = trueExp;
+    this.falseExp = falseExp;
   }
 
-  eval(context, formatters) {
-    if(this.condition.eval(context, formatters)) {
-      return this.yes.eval(context, formatters);
+  eval(context) {
+    if(this.condition.eval(context)) {
+      return this.trueExp.eval(context);
     } else {
-      return this.no.eval(context, formatters);
+      return this.falseExp.eval(context);
     }
   }
 }
@@ -42,8 +43,8 @@ export class FieldRead extends AST {
     this.getter = getter;
   }
 
-  eval(context, formatters) {
-    return this.getter(this.receiver.eval(context, formatters));
+  eval(context) {
+    return this.getter(this.receiver.eval(context));
   }
 
   visit(visitor) {
@@ -59,15 +60,6 @@ export class Formatter extends AST {
     this.allArgs = ListWrapper.concat([exp], args);
   }
 
-  eval(context, formatters) {
-    var formatter = formatters[this.name];
-    if (isBlank(formatter)) {
-      throw new BaseException(`No formatter '${this.name}' found!`);
-    }
-    var evaledArgs = evalList(context, this.allArgs, formatters);
-    return FunctionWrapper.apply(formatter, evaledArgs);
-  }
-
   visit(visitor) {
     visitor.visitFormatter(this);
   }
@@ -78,7 +70,7 @@ export class LiteralPrimitive extends AST {
   constructor(value) {
     this.value = value;
   }
-  eval(context, formatters) {
+  eval(context) {
     return this.value;
   }
   visit(visitor) {
@@ -100,16 +92,18 @@ export class Binary extends AST {
     visitor.visitBinary(this);
   }
 
-  eval(context, formatters) {
-    var left = this.left.eval(context, formatters);
+  eval(context) {
+    var left = this.left.eval(context);
     switch (this.operation) {
-      case '&&': return toBool(left) && toBool(this.right.eval(context, formatters));
-      case '||': return toBool(left) || toBool(this.right.eval(context, formatters));
+      case '&&': return toBool(left) && toBool(this.right.eval(context));
+      case '||': return toBool(left) || toBool(this.right.eval(context));
     }
-    var right = this.right.eval(context, formatters);
+    var right = this.right.eval(context);
 
     // Null check for the operations.
-    if (left == null || right == null) return null;
+    if (left == null || right == null) {
+      throw new BaseException("One of the operands is null");
+    }
 
     switch (this.operation) {
       case '+'  : return autoConvertAdd(left, right);
@@ -139,8 +133,8 @@ export class PrefixNot extends AST {
     this.expression = expression;
   }
   visit(visitor) { visitor.visitPrefixNot(this); }
-  eval(context, formatters) {
-    return !toBool(this.expression.eval(context, formatters));
+  eval(context) {
+    return !toBool(this.expression.eval(context));
   }
 }
 
@@ -155,11 +149,11 @@ export class AstVisitor {
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];
-function evalList(context, exps:List, formatters){
+function evalList(context, exps:List){
   var length = exps.length;
   var result = _evalListCache[length];
   for (var i = 0; i < length; i++) {
-    result[i] = exps[i].eval(context, formatters);
+    result[i] = exps[i].eval(context);
   }
   return result;
 }

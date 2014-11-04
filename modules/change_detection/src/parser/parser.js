@@ -24,9 +24,14 @@ export class Parser {
     this._closureMap = closureMap;
   }
 
-  parse(input:string):AST {
+  parseAction(input:string):AST {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, tokens, this._closureMap).parseChain();
+    return new _ParseAST(input, tokens, this._closureMap, true).parseChain();
+  }
+
+  parseBinding(input:string):AST {
+    var tokens = this._lexer.tokenize(input);
+    return new _ParseAST(input, tokens, this._closureMap, false).parseChain();
   }
 }
 
@@ -34,12 +39,14 @@ class _ParseAST {
   @FIELD('final input:String')
   @FIELD('final tokens:List<Token>')
   @FIELD('final closureMap:ClosureMap')
+  @FIELD('final parseAction:boolean')
   @FIELD('index:int')
-  constructor(input:string, tokens:List, closureMap:ClosureMap) {
+  constructor(input:string, tokens:List, closureMap:ClosureMap, parseAction:boolean) {
     this.input = input;
     this.tokens = tokens;
     this.index = 0;
     this.closureMap = closureMap;
+    this.parseAction = parseAction;
   }
 
   peek(offset:int):Token {
@@ -79,17 +86,14 @@ class _ParseAST {
 
   parseChain():AST {
     var exprs = [];
-    var isChain = false;
     while (this.index < this.tokens.length) {
       var expr = this.parseFormatter();
       ListWrapper.push(exprs, expr);
 
       while (this.optionalCharacter($SEMICOLON)) {
-        isChain = true;
-      }
-
-      if (isChain && expr instanceof Formatter) {
-        this.error('Cannot have a formatter in a chain');
+        if (! this.parseAction) {
+          this.error("Binding expression cannot contain chained expression");
+        }
       }
     }
     return ListWrapper.first(exprs);
@@ -98,6 +102,9 @@ class _ParseAST {
   parseFormatter() {
     var result = this.parseExpression();
     while (this.optionalOperator("|")) {
+      if (this.parseAction) {
+        this.error("Cannot have a formatter in an action expression");
+      }
       var name = this.parseIdentifier();
       var args = ListWrapper.create();
       while (this.optionalCharacter($COLON)) {
