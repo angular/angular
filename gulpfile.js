@@ -18,6 +18,7 @@ var shell = require('gulp-shell');
 var spawn = require('child_process').spawn;
 var through2 = require('through2');
 var watch = require('gulp-watch');
+var changed = require('gulp-changed');
 
 var js2es5Options = {
   sourceMaps: true,
@@ -43,6 +44,8 @@ var js2dartOptions = {
   script: false, // parse as a module
   outputLanguage: 'dart'
 };
+
+var PUB_CMD = process.platform === 'win32' ? 'pub.bat' : 'pub';
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
@@ -92,29 +95,14 @@ gulp.task('modules/build.dart/src', function() {
 gulp.task('modules/build.dart/pubspec', function(done) {
   var outputDir = sourceTypeConfigs.dart.outputDir;
   return gulp.src('modules/*/pubspec.yaml')
+    .pipe(changed(outputDir)) // Only forward files that changed.
+    .pipe(gulpDestWithForward(outputDir))
     .pipe(through2.obj(function(file, enc, done) {
-      var targetFile = path.join(outputDir, file.relative);
-      if (fs.existsSync(targetFile)) {
-        file.previousContents = fs.readFileSync(targetFile);
-      } else {
-        file.previousContents = '';
-      }
-      this.push(file);
-      done();
-    }))
-    .pipe(gulp.dest(outputDir))
-    .pipe(through2.obj(function(file, enc, done) {
-      if (file.previousContents.toString() !== file.contents.toString()) {
-        console.log(file.path + ' changed, calling pub get');
-        var pubCmd = (process.platform === "win32" ? "pub.bat" : "pub");
-        var stream = spawn(pubCmd, ['get'], {
-          stdio: [process.stdin, process.stdout, process.stderr],
-          cwd: path.dirname(file.path)
-        });
-        stream.on('close', done);
-      } else {
-        done();
-      }
+      // After a `pubspec.yml` is copied, we run `pub install`.
+      spawn(PUB_CMD, ['get'], {
+        stdio: [process.stdin, process.stdout, process.stderr],
+        cwd: path.dirname(file.path)
+      }).on('close', done);
     }));
 });
 
@@ -158,6 +146,23 @@ function createModuleTask(sourceTypeConfig) {
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
 
   return mergeStreams(transpile, copy, html);
+}
+
+
+// Act as `gulp.dest()` but does forward the files to the next stream.
+// I believe this is how `gulp.dest` should work.
+function gulpDestWithForward(destDir) {
+  var stream = gulp.dest(destDir);
+  var originalTransform = stream._transform;
+
+  stream._transform = function(file, enc, done) {
+    return originalTransform.call(this, file, enc, function() {
+      stream.push(file);
+      done();
+    });
+  };
+
+  return stream;
 }
 
 // ------------------
