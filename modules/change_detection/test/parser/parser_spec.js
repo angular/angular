@@ -59,6 +59,10 @@ export function main() {
         expectEval("a.a", td(td(999))).toEqual(999);
       });
 
+      it('should throw when accessing a field on null', () => {
+        expectEvalError("a.a.a").toThrowError();
+      });
+
       it('should parse numerical expressions', () => {
         expectEval("1").toEqual(1);
       });
@@ -107,17 +111,17 @@ export function main() {
         expectEval("false?10:20").toEqual(20);
       });
 
+      it('should throw on incorrect ternary operator syntax', () => {
+        expectEvalError("true?1").
+          toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
+      });
+
       it('should auto convert ints to strings', () => {
         expectEval("'str ' + 4").toEqual("str 4");
         expectEval("4 + ' str'").toEqual("4 str");
         expectEval("4 + 4").toEqual(8);
         expectEval("4 + 4 + ' str'").toEqual("8 str");
         expectEval("'str ' + 4 + 4").toEqual("str 44");
-      });
-
-      it('should behave gracefully with a null scope', () => {
-        var exp = createParser().parseAction("null");
-        expect(exp.eval(null)).toEqual(null);
       });
 
       it('should eval binary operators with null as null', () => {
@@ -131,27 +135,20 @@ export function main() {
         expectEvalError("null - null").toThrowError();
       });
 
-      describe("error handling", () => {
-        it('should throw on incorrect ternary operator syntax', () => {
-          expectEvalError("true?1").
-            toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
-        });
+      it('should only allow identifier or keyword as member names', () => {
+        expect(() => parseAction("x.(")).toThrowError(new RegExp('identifier or keyword'));
+        expect(() => parseAction('x. 1234')).toThrowError(new RegExp('identifier or keyword'));
+        expect(() => parseAction('x."foo"')).toThrowError(new RegExp('identifier or keyword'));
+      });
 
-        it('should pass exceptions', () => {
-          expect(() => {
-            createParser().parseAction('boo').eval(new ContextWithErrors());
-          }).toThrowError('boo to you');
-        });
+      it("should error when using formatters", () => {
+        expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a formatter'));
+      });
 
-        it('should only allow identifier or keyword as member names', () => {
-          expect(() => parseAction("x.(")).toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseAction('x. 1234')).toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseAction('x."foo"')).toThrowError(new RegExp('identifier or keyword'));
-        });
-
-        it("should error when using formatters", () => {
-          expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a formatter'));
-        });
+      it('should pass exceptions', () => {
+        expect(() => {
+          createParser().parseAction('boo').eval(new ContextWithErrors());
+        }).toThrowError('boo to you');
       });
     });
 
