@@ -19,7 +19,7 @@ export function main() {
     var parts = exp.split(".");
     var cm = new ClosureMap();
     return ListWrapper.reduce(parts, function (ast, fieldName) {
-      return new FieldRead(ast, fieldName, cm.getter(fieldName));
+      return new FieldRead(ast, fieldName, cm.getter(fieldName), cm.setter(fieldName));
     }, new ImplicitReceiver());
   }
 

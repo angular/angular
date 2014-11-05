@@ -6,6 +6,10 @@ export class AST {
     throw new BaseException("Not supported");
   }
 
+  assign(context, value) {
+    throw new BaseException("Not supported");
+  }
+
   visit(visitor) {
   }
 }
@@ -19,6 +23,22 @@ export class ImplicitReceiver extends AST {
     visitor.visitImplicitReceiver(this);
   }
 }
+
+export class Chain extends AST {
+  constructor(expressions:List) {
+    this.expressions = expressions;
+  }
+
+  eval(context) {
+    var result;
+    for (var i = 0; i < this.expressions.length; i++) {
+      var last = this.expressions[i].eval(context);
+      if (last != null) result = last;
+    }
+    return result;
+  }
+}
+
 
 export class Conditional extends AST {
   @FIELD('final condition:AST')
@@ -43,18 +63,31 @@ export class FieldRead extends AST {
   @FIELD('final receiver:AST')
   @FIELD('final name:string')
   @FIELD('final getter:Function')
-  constructor(receiver:AST, name:string, getter:Function) {
+  @FIELD('final setter:Function')
+  constructor(receiver:AST, name:string, getter:Function, setter:Function) {
     this.receiver = receiver;
     this.name = name;
     this.getter = getter;
+    this.setter = setter;
   }
 
   eval(context) {
     return this.getter(this.receiver.eval(context));
   }
 
+  assign(context, value) {
+    return this.setter(this.receiver.eval(context), value);
+  }
+
   visit(visitor) {
     visitor.visitFieldRead(this);
+  }
+}
+
+export class KeyedAccess extends AST {
+  constructor(obj:AST, key:AST) {
+    this.obj = obj;
+    this.key = key;
   }
 }
 
@@ -147,6 +180,20 @@ export class PrefixNot extends AST {
   }
 }
 
+export class Assignment extends AST {
+  @FIELD('final target:AST')
+  @FIELD('final value:AST')
+  constructor(target:AST, value:AST) {
+    this.target = target;
+    this.value = value;
+  }
+  visit(visitor) { visitor.visitAssignment(this); }
+
+  eval(context) {
+    return this.target.assign(context, this.value.eval(context));
+  }
+}
+
 //INTERFACE
 export class AstVisitor {
   visitImplicitReceiver(ast:ImplicitReceiver) {}
@@ -155,6 +202,7 @@ export class AstVisitor {
   visitPrefixNot(ast:PrefixNot) {}
   visitLiteralPrimitive(ast:LiteralPrimitive) {}
   visitFormatter(ast:Formatter) {}
+  visitAssignment(ast:Assignment) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

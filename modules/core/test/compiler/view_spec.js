@@ -18,9 +18,11 @@ class Directive {
 }
 
 export function main() {
-  var oneFieldAst = (fieldName) =>
-      new FieldRead(new ImplicitReceiver(), fieldName,
-          (new ClosureMap()).getter(fieldName));
+  var oneFieldAst = (fieldName) => {
+    var cm = new ClosureMap();
+    return new FieldRead(new ImplicitReceiver(), fieldName,
+      cm.getter(fieldName), cm.setter(fieldName));
+  };
 
   describe('view', function() {
     var tempalteWithThreeTypesOfBindings =

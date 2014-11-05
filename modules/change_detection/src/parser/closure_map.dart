@@ -7,4 +7,9 @@ class ClosureMap {
     var symbol = new Symbol(name);
     return (receiver) => reflect(receiver).getField(symbol).reflectee;
   }
+
+  Function setter(String name) {
+    var symbol = new Symbol(name);
+    return (receiver, value) => reflect(receiver).setField(symbol, value).reflectee;
+  }
 }

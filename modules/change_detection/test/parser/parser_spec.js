@@ -150,25 +150,43 @@ export function main() {
           createParser().parseAction('boo').eval(new ContextWithErrors());
         }).toThrowError('boo to you');
       });
-    });
 
-    describe("parseBinding", () => {
-      it("should parse formatters", function () {
-        var exp = parseBinding("'Foo'|uppercase");
-        expect(exp).toBeAnInstanceOf(Formatter);
-        expect(exp.name).toEqual("uppercase");
+      it('should evaluate assignments', () => {
+        var context = td();
+        expectEval("a=12", context).toEqual(12);
+        expect(context.a).toEqual(12);
+
+        context = td(td(td()));
+        expectEval("a.a.a=123;", context).toEqual(123);
+        expect(context.a.a.a).toEqual(123);
+
+        context = td();
+        expectEval("a=123; b=234", context).toEqual(234);
+        expect(context.a).toEqual(123);
+        expect(context.b).toEqual(234);
       });
 
-      it("should parse formatters with args", function () {
-        var exp = parseBinding("1|increment:2");
-        expect(exp).toBeAnInstanceOf(Formatter);
-        expect(exp.name).toEqual("increment");
-        expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
-      });
+      describe("parseBinding", () => {
+        //throw on assignment
 
-      it('should throw on chain expressions', () => {
-        expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
+        it("should parse formatters", function () {
+          var exp = parseBinding("'Foo'|uppercase");
+          expect(exp).toBeAnInstanceOf(Formatter);
+          expect(exp.name).toEqual("uppercase");
+        });
+
+        it("should parse formatters with args", function () {
+          var exp = parseBinding("1|increment:2");
+          expect(exp).toBeAnInstanceOf(Formatter);
+          expect(exp.name).toEqual("increment");
+          expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
+        });
+
+        it('should throw on chain expressions', () => {
+          expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
+        });
       });
     });
   });
 }
+

@@ -1,6 +1,6 @@
-import {FIELD, int, isBlank} from 'facade/lang';
+import {FIELD, int, isBlank,  BaseException} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
-import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON} from './lexer';
+import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET} from './lexer';
 import {ClosureMap} from './closure_map';
 import {
   AST,
@@ -11,7 +11,10 @@ import {
   Binary,
   PrefixNot,
   Conditional,
-  Formatter
+  Formatter,
+  Assignment,
+  Chain,
+  KeyedAccess
   } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -75,6 +78,12 @@ class _ParseAST {
     }
   }
 
+  expectCharacter(code:int) {
+    if (this.optionalCharacter(code)) return;
+    this.error(`Missing expected ${code}`);
+  }
+
+
   optionalOperator(op:string):boolean {
     if (this.next.isOperator(op)) {
       this.advance();
@@ -82,6 +91,20 @@ class _ParseAST {
     } else {
       return false;
     }
+  }
+
+  expectOperator(operator:string) {
+    if (this.optionalOperator(operator)) return;
+    this.error(`Missing expected operator ${operator}`);
+  }
+
+  expectIdentifierOrKeyword():string {
+    var n = this.next;
+    if (!n.isIdentifier() && !n.isKeyword()) {
+      this.error(`Unexpected token ${n}, expected identifier or keyword`)
+    }
+    this.advance();
+    return n.toString();
   }
 
   parseChain():AST {
@@ -96,7 +119,7 @@ class _ParseAST {
         }
       }
     }
-    return ListWrapper.first(exprs);
+    return exprs.length == 1 ? exprs[0] : new Chain(exprs);
   }
 
   parseFormatter() {
@@ -105,7 +128,7 @@ class _ParseAST {
       if (this.parseAction) {
         this.error("Cannot have a formatter in an action expression");
       }
-      var name = this.parseIdentifier();
+      var name = this.expectIdentifierOrKeyword();
       var args = ListWrapper.create();
       while (this.optionalCharacter($COLON)) {
         ListWrapper.push(args, this.parseExpression());
@@ -116,7 +139,19 @@ class _ParseAST {
   }
 
   parseExpression() {
-    return this.parseConditional();
+    var result = this.parseConditional();
+
+    while (this.next.isOperator('=')) {
+      //if (!backend.isAssignable(result)) {
+    //    int end = (index < tokens.length) ? next.index : input.length;
+    //    String expression = input.substring(start, end);
+    //    error('Expression $expression is not assignable');
+    //  }
+      this.expectOperator('=');
+      result = new Assignment(result, this.parseConditional());
+    }
+
+    return result;
   }
 
   parseConditional() {
@@ -202,7 +237,7 @@ class _ParseAST {
   }
 
   parseMultiplicative() {
-    // '*', '%', '/', '~/'
+    // '*', '%', '/'
     var result = this.parsePrefix();
     while (true) {
       if (this.optionalOperator('*')) {
@@ -211,9 +246,6 @@ class _ParseAST {
         result = new Binary('%', result, this.parsePrefix());
       } else if (this.optionalOperator('/')) {
         result = new Binary('/', result, this.parsePrefix());
-      // TODO(rado): This exists only in Dart, figure out whether to support it.
-      // } else if (this.optionalOperator('~/')) {
-      //   result = new BinaryTruncatingDivide(result, this.parsePrefix());
       } else {
         return result;
       }
@@ -232,59 +264,54 @@ class _ParseAST {
     }
   }
 
-  parseAccessOrCallMember() {
+  parseAccessOrCallMember():AST {
     var result = this.parsePrimary();
-    // TODO: add missing cases.
-    return result;
+    while (true) {
+      if (this.optionalCharacter($PERIOD)) {
+        result = this.parseFieldRead(result);
+      } else {
+        return result;
+      }
+    }
   }
 
   parsePrimary() {
     if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
       this.advance();
       return new LiteralPrimitive(null);
+
     } else if (this.next.isKeywordTrue()) {
       this.advance();
       return new LiteralPrimitive(true);
+
     } else if (this.next.isKeywordFalse()) {
       this.advance();
       return new LiteralPrimitive(false);
+
     } else if (this.next.isIdentifier()) {
-      return this.parseAccess();
+      return this.parseFieldRead(_implicitReceiver);
+
     } else if (this.next.isNumber()) {
       var value = this.next.toNumber();
       this.advance();
       return new LiteralPrimitive(value);
+
     } else if (this.next.isString()) {
       var value = this.next.toString();
       this.advance();
       return new LiteralPrimitive(value);
-    } else if (this.index >= this.tokens.length) {
-      throw `Unexpected end of expression: ${this.input}`;
-    } else {
-      throw `Unexpected token ${this.next}`;
-    }
-  }
 
-  parseAccess():AST {
-    var result = this.parseFieldRead(_implicitReceiver);
-    while(this.optionalCharacter($PERIOD)) {
-      result = this.parseFieldRead(result);
+    } else if (this.index >= this.tokens.length) {
+      this.error(`Unexpected end of expression: ${this.input}`);
+
+    } else {
+      this.error(`Unexpected token ${this.next}`);
     }
-    return result;
   }
 
   parseFieldRead(receiver):AST {
-    var id = this.parseIdentifier();
-    return new FieldRead(receiver, id, this.closureMap.getter(id));
-  }
-
-  parseIdentifier():string {
-    var n = this.next;
-    if (!n.isIdentifier() && !n.isKeyword()) {
-      this.error(`Unexpected token ${n}, expected identifier or keyword`)
-    }
-    this.advance();
-    return n.toString();
+    var id = this.expectIdentifierOrKeyword();
+    return new FieldRead(receiver, id, this.closureMap.getter(id), this.closureMap.setter(id));
   }
 
   error(message:string, index:int = null) {
@@ -294,16 +321,6 @@ class _ParseAST {
       ? `at column ${this.tokens[index].index + 1} in`
       : `at the end of the expression`;
 
-    throw new ParserError(`Parser Error: ${message} ${location} [${this.input}]`);
-  }
-}
-
-class ParserError extends Error {
-  constructor(message) {
-    this.message = message;
-  }
-
-  toString() {
-    return this.message;
+    throw new BaseException(`Parser Error: ${message} ${location} [${this.input}]`);
   }
 }
