@@ -179,6 +179,10 @@ export function main() {
         expect(MapWrapper.get(context.a[0], "key")).toEqual(200);
       });
 
+      it('should throw on bad assignment', () => {
+        expectEvalError("5=4").toThrowError(new RegExp("Expression 5 is not assignable"));
+      });
+
       it('should evaluate array', () => {
         expectEval("[1][0]").toEqual(1);
         expectEval("[[1]][0][0]").toEqual(1);
@@ -188,7 +192,7 @@ export function main() {
       });
 
       it("should error when unfinished exception", () => {
-        expectEvalError('a[0 = 200').toThrowError(new RegExp("Missing expected ]"));
+        expectEvalError('a[0').toThrowError(new RegExp("Missing expected ]"));
       });
 
       it('should evaluate map', () => {
@@ -201,8 +205,6 @@ export function main() {
       });
 
       describe("parseBinding", () => {
-        //throw on assignment
-
         it("should parse formatters", function () {
           var exp = parseBinding("'Foo'|uppercase");
           expect(exp).toBeAnInstanceOf(Formatter);

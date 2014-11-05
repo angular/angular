@@ -6,6 +6,10 @@ export class AST {
     throw new BaseException("Not supported");
   }
 
+  get isAssignable() {
+    return false;
+  }
+
   assign(context, value) {
     throw new BaseException("Not supported");
   }
@@ -75,6 +79,10 @@ export class FieldRead extends AST {
     return this.getter(this.receiver.eval(context));
   }
 
+  get isAssignable() {
+    return true;
+  }
+
   assign(context, value) {
     return this.setter(this.receiver.eval(context), value);
   }
@@ -101,6 +109,11 @@ export class KeyedAccess extends AST {
       throw new BaseException(`Cannot access ${key} on ${obj}`);
     }
   }
+
+  get isAssignable() {
+    return true;
+  }
+
   assign(context, value) {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);

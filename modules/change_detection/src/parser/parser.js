@@ -150,9 +150,16 @@ class _ParseAST {
   }
 
   parseExpression() {
+    var start = this.inputIndex;
     var result = this.parseConditional();
 
     while (this.next.isOperator('=')) {
+      if (!result.isAssignable) {
+        var end = this.inputIndex;
+        var expression = this.input.substring(start, end);
+        this.error(`Expression ${expression} is not assignable`);
+      }
+
       this.expectOperator('=');
       result = new Assignment(result, this.parseConditional());
     }
