@@ -1,5 +1,6 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {BaseException, isBlank} from 'facade/lang';
+import {MapWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
@@ -164,6 +165,39 @@ export function main() {
         expectEval("a=123; b=234", context).toEqual(234);
         expect(context.a).toEqual(123);
         expect(context.b).toEqual(234);
+
+        context = td([100]);
+        expectEval('a[0] = 200', context).toEqual(200);
+        expect(context.a[0]).toEqual(200);
+
+        context = td(MapWrapper.createFromPairs([["key", 100]]));
+        expectEval('a["key"] = 200', context).toEqual(200);
+        expect(MapWrapper.get(context.a, "key")).toEqual(200);
+
+        context = td([MapWrapper.createFromPairs([["key", 100]])]);
+        expectEval('a[0]["key"] = 200', context).toEqual(200);
+        expect(MapWrapper.get(context.a[0], "key")).toEqual(200);
+      });
+
+      it('should evaluate array', () => {
+        expectEval("[1][0]").toEqual(1);
+        expectEval("[[1]][0][0]").toEqual(1);
+        expectEval("[]").toEqual([]);
+        expectEval("[].length").toEqual(0);
+        expectEval("[1, 2].length").toEqual(2);
+      });
+
+      it("should error when unfinished exception", () => {
+        expectEvalError('a[0 = 200').toThrowError(new RegExp("Missing expected ]"));
+      });
+
+      it('should evaluate map', () => {
+        expectEval("{}").toEqual(MapWrapper.create());
+        expectEval("{a:'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
+        expectEval("{'a':'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
+        expectEval("{\"a\":'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
+        expectEval("{\"a\":'b'}['a']").toEqual("b");
+        expectEval("{\"a\":'b'}['invalid']").not.toBeDefined();
       });
 
       describe("parseBinding", () => {

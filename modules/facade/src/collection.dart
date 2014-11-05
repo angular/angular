@@ -5,6 +5,12 @@ export 'dart:core' show Map, List, Set;
 
 class MapWrapper {
   static HashMap create() => new HashMap();
+  static HashMap createFromPairs(List pairs) {
+    return pairs.fold({}, (m, p){
+      m[p[0]] = p[1];
+      return m;
+    });
+  }
   static get(m, k) => m[k];
   static void set(m, k, v){ m[k] = v; }
   static contains(m, k) => m.containsKey(k);

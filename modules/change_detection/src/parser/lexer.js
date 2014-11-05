@@ -157,9 +157,9 @@ const $A = 65, $B = 66, $C = 67, $D = 68, $E = 69, $F = 70, $G = 71, $H = 72,
       $Q = 81, $R = 82, $S = 83, $T = 84, $U = 85, $V = 86, $W = 87, $X = 88,
       $Y = 89, $Z = 90;
 
-const $LBRACKET  = 91;
-const $BACKSLASH = 92;
-const $RBRACKET  = 93;
+export const $LBRACKET  = 91;
+export const $BACKSLASH = 92;
+export const $RBRACKET  = 93;
 const $CARET     = 94;
 const $_         = 95;
 
@@ -168,9 +168,9 @@ const $a =  97, $b =  98, $c =  99, $d = 100, $e = 101, $f = 102, $g = 103,
       $o = 111, $p = 112, $q = 113, $r = 114, $s = 115, $t = 116, $u = 117,
       $v = 118, $w = 119, $x = 120, $y = 121, $z = 122;
 
-const $LBRACE = 123;
-const $BAR    = 124;
-const $RBRACE = 125;
+export const $LBRACE = 123;
+export const $BAR    = 124;
+export const $RBRACE = 125;
 const $TILDE  = 126;
 const $NBSP   = 160;
 

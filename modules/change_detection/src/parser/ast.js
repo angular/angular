@@ -1,5 +1,5 @@
 import {FIELD, toBool, autoConvertAdd, isBlank, FunctionWrapper, BaseException} from "facade/lang";
-import {List, ListWrapper} from "facade/collection";
+import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
 
 export class AST {
   eval(context) {
@@ -89,6 +89,32 @@ export class KeyedAccess extends AST {
     this.obj = obj;
     this.key = key;
   }
+  eval(context) {
+    var obj = this.obj.eval(context);
+    var key = this.key.eval(context);
+
+    if (obj instanceof Map) {
+      return MapWrapper.get(obj, key);
+    } else if (obj instanceof List) {
+      return ListWrapper.get(obj, key);
+    } else {
+      throw new BaseException(`Cannot access ${key} on ${obj}`);
+    }
+  }
+  assign(context, value) {
+    var obj = this.obj.eval(context);
+    var key = this.key.eval(context);
+
+    if (obj instanceof Map) {
+      MapWrapper.set(obj, key, value);
+    } else if (obj instanceof List) {
+      ListWrapper.set(obj, key, value);
+    } else {
+      throw new BaseException(`Cannot access ${key} on ${obj}`);
+    }
+    return value;
+  }
+
 }
 
 export class Formatter extends AST {
@@ -117,6 +143,36 @@ export class LiteralPrimitive extends AST {
   }
   visit(visitor) {
     visitor.visitLiteralPrimitive(this);
+  }
+}
+
+export class LiteralArray extends AST {
+  @FIELD('final expressions:List')
+  constructor(expressions:List) {
+    this.expressions = expressions;
+  }
+  eval(context) {
+    return ListWrapper.map(this.expressions, (e) => e.eval(context));
+  }
+  visit(visitor) {
+    visitor.visitLiteralArray(this);
+  }
+}
+
+export class LiteralMap extends AST {
+  @FIELD('final keys:List')
+  @FIELD('final values:List')
+  constructor(keys:List, values:List) {
+    this.keys = keys;
+    this.values = values;
+  }
+
+  eval(context) {
+    var res = MapWrapper.create();
+    for(var i = 0; i < this.keys.length; ++i) {
+      MapWrapper.set(res, this.keys[i], this.values[i].eval(context));
+    }
+    return res;
   }
 }
 
@@ -203,6 +259,7 @@ export class AstVisitor {
   visitLiteralPrimitive(ast:LiteralPrimitive) {}
   visitFormatter(ast:Formatter) {}
   visitAssignment(ast:Assignment) {}
+  visitLiteralArray(ast:LiteralArray) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

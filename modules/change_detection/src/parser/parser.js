@@ -1,6 +1,6 @@
-import {FIELD, int, isBlank,  BaseException} from 'facade/lang';
+import {FIELD, int, isBlank,  BaseException, StringWrapper} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
-import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET} from './lexer';
+import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET, $COMMA, $LBRACE, $RBRACE} from './lexer';
 import {ClosureMap} from './closure_map';
 import {
   AST,
@@ -14,7 +14,9 @@ import {
   Formatter,
   Assignment,
   Chain,
-  KeyedAccess
+  KeyedAccess,
+  LiteralArray,
+  LiteralMap
   } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -80,7 +82,7 @@ class _ParseAST {
 
   expectCharacter(code:int) {
     if (this.optionalCharacter(code)) return;
-    this.error(`Missing expected ${code}`);
+    this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
   }
 
 
@@ -102,6 +104,15 @@ class _ParseAST {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`)
+    }
+    this.advance();
+    return n.toString();
+  }
+
+  expectIdentifierOrKeywordOrString():string {
+    var n = this.next;
+    if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
+      this.error(`Unexpected token ${n}, expected identifier, or keyword, or string`)
     }
     this.advance();
     return n.toString();
@@ -142,11 +153,6 @@ class _ParseAST {
     var result = this.parseConditional();
 
     while (this.next.isOperator('=')) {
-      //if (!backend.isAssignable(result)) {
-    //    int end = (index < tokens.length) ? next.index : input.length;
-    //    String expression = input.substring(start, end);
-    //    error('Expression $expression is not assignable');
-    //  }
       this.expectOperator('=');
       result = new Assignment(result, this.parseConditional());
     }
@@ -269,6 +275,12 @@ class _ParseAST {
     while (true) {
       if (this.optionalCharacter($PERIOD)) {
         result = this.parseFieldRead(result);
+
+      } else if (this.optionalCharacter($LBRACKET)) {
+        var key = this.parseExpression();
+        this.expectCharacter($RBRACKET);
+        result = new KeyedAccess(result, key);
+
       } else {
         return result;
       }
@@ -287,6 +299,14 @@ class _ParseAST {
     } else if (this.next.isKeywordFalse()) {
       this.advance();
       return new LiteralPrimitive(false);
+
+    } else if (this.optionalCharacter($LBRACKET)) {
+      var elements = this.parseExpressionList($RBRACKET);
+      this.expectCharacter($RBRACKET);
+      return new LiteralArray(elements);
+
+    } else if (this.next.isCharacter($LBRACE)) {
+      return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
       return this.parseFieldRead(_implicitReceiver);
@@ -307,6 +327,32 @@ class _ParseAST {
     } else {
       this.error(`Unexpected token ${this.next}`);
     }
+  }
+
+  parseExpressionList(terminator:int):List {
+    var result = [];
+    if (!this.next.isCharacter(terminator)) {
+      do {
+        ListWrapper.push(result, this.parseExpression());
+      } while (this.optionalCharacter($COMMA));
+    }
+    return result;
+  }
+
+  parseLiteralMap() {
+    var keys = [];
+    var values = [];
+    this.expectCharacter($LBRACE);
+    if (!this.optionalCharacter($RBRACE)) {
+      do {
+        var key = this.expectIdentifierOrKeywordOrString();
+        ListWrapper.push(keys, key);
+        this.expectCharacter($COLON);
+        ListWrapper.push(values, this.parseExpression());
+      } while (this.optionalCharacter($COMMA));
+      this.expectCharacter($RBRACE);
+    }
+    return new LiteralMap(keys, values);
   }
 
   parseFieldRead(receiver):AST {
