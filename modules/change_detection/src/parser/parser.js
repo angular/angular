@@ -1,6 +1,7 @@
 import {FIELD, int, isBlank,  BaseException, StringWrapper} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
-import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET, $COMMA, $LBRACE, $RBRACE} from './lexer';
+import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
+  $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
 import {ClosureMap} from './closure_map';
 import {
   AST,
@@ -16,7 +17,9 @@ import {
   Chain,
   KeyedAccess,
   LiteralArray,
-  LiteralMap
+  LiteralMap,
+  MethodCall,
+  FunctionCall
   } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -273,20 +276,25 @@ class _ParseAST {
     } else if (this.optionalOperator('!')) {
       return new PrefixNot(this.parsePrefix());
     } else {
-      return this.parseAccessOrCallMember();
+      return this.parseCallChain();
     }
   }
 
-  parseAccessOrCallMember():AST {
+  parseCallChain():AST {
     var result = this.parsePrimary();
     while (true) {
       if (this.optionalCharacter($PERIOD)) {
-        result = this.parseFieldRead(result);
+        result = this.parseAccessorOrMethodCall(result);
 
       } else if (this.optionalCharacter($LBRACKET)) {
         var key = this.parseExpression();
         this.expectCharacter($RBRACKET);
         result = new KeyedAccess(result, key);
+
+      } else if (this.optionalCharacter($LPAREN)) {
+        var args = this.parseCallArguments();
+        this.expectCharacter($RPAREN);
+        result = new FunctionCall(result, this.closureMap, args);
 
       } else {
         return result;
@@ -316,7 +324,7 @@ class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      return this.parseFieldRead(_implicitReceiver);
+      return this.parseAccessorOrMethodCall(_implicitReceiver);
 
     } else if (this.next.isNumber()) {
       var value = this.next.toNumber();
@@ -362,9 +370,29 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseFieldRead(receiver):AST {
+  parseAccessorOrMethodCall(receiver):AST {
     var id = this.expectIdentifierOrKeyword();
-    return new FieldRead(receiver, id, this.closureMap.getter(id), this.closureMap.setter(id));
+
+    if (this.optionalCharacter($LPAREN)) {
+      var args = this.parseCallArguments();
+      this.expectCharacter($RPAREN);
+      var fn = this.closureMap.fn(id);
+      return new MethodCall(receiver, fn, args);
+
+    } else {
+      var getter = this.closureMap.getter(id);
+      var setter = this.closureMap.setter(id);
+      return new FieldRead(receiver, id, getter, setter);
+    }
+  }
+
+  parseCallArguments() {
+    if (this.next.isCharacter($RPAREN)) return [];
+    var positionals = [];
+    do {
+      ListWrapper.push(positionals, this.parseExpression());
+    } while (this.optionalCharacter($COMMA))
+    return positionals;
   }
 
   error(message:string, index:int = null) {

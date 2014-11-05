@@ -8,4 +8,8 @@ export class ClosureMap {
   setter(name:string) {
     return new Function('o', 'v', 'return o.' + name + ' = v;');
   }
+
+  fn(name:string) {
+    return new Function('o', 'pos', 'return o.' + name + '.apply(o, pos);');
+  }
 }

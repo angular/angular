@@ -7,13 +7,14 @@ import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
 class TestData {
-  constructor(a, b) {
+  constructor(a, b, fnReturnValue) {
     this.a = a;
     this.b = b;
+    this.fnReturnValue = fnReturnValue;
   }
 
-  constant() {
-    return "constant";
+  fn() {
+    return this.fnReturnValue;
   }
 
   add(a, b) {
@@ -28,8 +29,8 @@ class ContextWithErrors {
 }
 
 export function main() {
-  function td(a = 0, b = 0) {
-    return new TestData(a, b);
+  function td(a = 0, b = 0, fnReturnValue = "constant") {
+    return new TestData(a, b, fnReturnValue);
   }
 
   function createParser() {
@@ -181,6 +182,17 @@ export function main() {
 
       it('should throw on bad assignment', () => {
         expectEvalError("5=4").toThrowError(new RegExp("Expression 5 is not assignable"));
+      });
+
+      it("should evaluate method calls", () => {
+        expectEval("fn()", td(0,0, "constant")).toEqual("constant");
+        expectEval("add(1,2)").toEqual(3);
+        expectEval("a.add(1,2)", td(td())).toEqual(3);
+        expectEval("fn().add(1,2)", td(0,0,td())).toEqual(3);
+      });
+
+      it("should evaluate function calls", () => {
+        expectEval("fn()(1,2)", td(0, 0, (a,b) => a + b)).toEqual(3);
       });
 
       it('should evaluate array', () => {

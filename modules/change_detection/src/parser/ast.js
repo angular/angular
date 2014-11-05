@@ -1,5 +1,6 @@
 import {FIELD, toBool, autoConvertAdd, isBlank, FunctionWrapper, BaseException} from "facade/lang";
 import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
+import {ClosureMap} from "./closure_map";
 
 export class AST {
   eval(context) {
@@ -221,8 +222,6 @@ export class Binary extends AST {
       case '-'  : return left - right;
       case '*'  : return left * right;
       case '/'  : return left / right;
-      // This exists only in Dart, TODO(rado) figure out whether to support it.
-      // case '~/' : return left ~/ right;
       case '%'  : return left % right;
       case '==' : return left == right;
       case '!=' : return left != right;
@@ -260,6 +259,38 @@ export class Assignment extends AST {
 
   eval(context) {
     return this.target.assign(context, this.value.eval(context));
+  }
+}
+
+export class MethodCall extends AST {
+  @FIELD('final receiver:AST')
+  @FIELD('final fn:Function')
+  @FIELD('final args:List')
+  constructor(receiver:AST, fn:Function, args:List) {
+    this.receiver = receiver;
+    this.fn = fn;
+    this.args = args;
+  }
+
+  eval(context) {
+    var obj = this.receiver.eval(context);
+    return this.fn(obj, evalList(context, this.args));
+  }
+}
+
+export class FunctionCall extends AST {
+  @FIELD('final receiver:AST')
+  @FIELD('final closureMap:ClosureMap')
+  @FIELD('final args:List')
+  constructor(target:AST, closureMap:ClosureMap, args:List) {
+    this.target = target;
+    this.closureMap = closureMap;
+    this.args = args;
+  }
+
+  eval(context) {
+    var obj = this.target.eval(context);
+    return FunctionWrapper.apply(obj, evalList(context, this.args));
   }
 }
 
