@@ -93,39 +93,7 @@ ElementInjector (ElementModule):
  PERF BENCHMARK: http://www.williambrownstreet.net/blog/2014/04/faster-angularjs-rendering-angularjs-and-reactjs/
  */
 
-export class ProtoElementInjector extends TreeNode {
-  /**
-  parent:ProtoDirectiveInjector;
-  next:ProtoDirectiveInjector;
-  prev:ProtoDirectiveInjector;
-  head:ProtoDirectiveInjector;
-  tail:ProtoDirectiveInjector;
-  DirectiveInjector cloningInstance;
-  KeyMap keyMap;
-  /// Because DI tree is sparse, this shows how far away is the Parent DI
-  parentDistance:int = 1; /// 1 for non-sparse/normal depth.
-
-  cKey:int; cFactory:Function; cParams:List<int>;
-  _keyId0:int; factory0:Function; params0:List<int>;
-  _keyId1:int; factory1:Function; params1:List<int>;
-  _keyId2:int; factory2:Function; params2:List<int>;
-  _keyId3:int; factory3:Function; params3:List<int>;
-  _keyId4:int; factory4:Function; params4:List<int>;
-  _keyId5:int; factory5:Function; params5:List<int>;
-  _keyId6:int; factory6:Function; params6:List<int>;
-  _keyId7:int; factory7:Function; params7:List<int>;
-  _keyId8:int; factory8:Function; params8:List<int>;
-  _keyId9:int; factory9:Function; params9:List<int>;
-
-  query_keyId0:int;
-  query_keyId1:int;
-
-  textNodes:List<int>;
-  events:Map<string, Expression>;
-
-  elementInjector:ElementInjector;
-  */
-  @FIELD('_elementInjector:ElementInjector')
+export class ProtoElementInjector  {
   @FIELD('_binding0:Binding')
   @FIELD('_binding1:Binding')
   @FIELD('_binding2:Binding')
@@ -146,10 +114,11 @@ export class ProtoElementInjector extends TreeNode {
   @FIELD('_key7:int')
   @FIELD('_key8:int')
   @FIELD('_key9:int')
-  constructor(parent:ProtoElementInjector, bindings:List) {
-    super(parent);
-
-    this._elementInjector = null;
+  @FIELD('final parent:ProtoElementInjector')
+  @FIELD('final index:int')
+  constructor(parent:ProtoElementInjector, index:int, bindings:List) {
+    this.parent = parent;
+    this.index = index;
 
     this._binding0 = null; this._keyId0 = null;
     this._binding1 = null; this._keyId1 = null;
@@ -179,15 +148,12 @@ export class ProtoElementInjector extends TreeNode {
     }
   }
 
-  instantiate({view}):ElementInjector {
-    var p = this._parent;
-    var parentElementInjector = p === null ? null : p._elementInjector;
-    this._elementInjector = new ElementInjector({
+  instantiate({view, parentElementInjector}):ElementInjector {
+    return new ElementInjector({
       proto: this,
       parent: parentElementInjector,
       view: view
     });
-    return this._elementInjector;
   }
 
   _createBinding(bindingOrType) {
@@ -196,10 +162,6 @@ export class ProtoElementInjector extends TreeNode {
       bindingOrType;
     var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
     return new Binding(b.key, b.factory, deps, b.providedAsPromise);
-  }
-
-  clearElementInjector() {
-    this._elementInjector = null;
   }
 
   get hasBindings():boolean {

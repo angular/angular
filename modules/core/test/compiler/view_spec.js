@@ -34,14 +34,14 @@ export function main() {
              '</section>';
 
     function templateElementBinders() {
-        var sectionPI = new ElementBinder(new ProtoElementInjector(null, []),
+        var sectionPI = new ElementBinder(new ProtoElementInjector(null, 0, []),
             [0], false);
 
         var divPI = new ElementBinder(new ProtoElementInjector(
-            sectionPI.protoElementInjector, [Directive]), [], false);
+            sectionPI.protoElementInjector, 1, [Directive]), [], false);
 
         var spanPI = new ElementBinder(new ProtoElementInjector(
-            divPI.protoElementInjector, []), [], true);
+            divPI.protoElementInjector, 2, []), [], true);
         return [sectionPI, divPI, spanPI];
     }
 
@@ -76,9 +76,9 @@ export function main() {
           '</section>');
 
         var sectionPI = new ElementBinder(new ProtoElementInjector(
-            null, [Directive]), [], false);
+            null, 0, [Directive]), [], false);
         var divPI = new ElementBinder(new ProtoElementInjector(
-            sectionPI.protoElementInjector, [Directive]), [], false);
+            sectionPI.protoElementInjector, 1, [Directive]), [], false);
 
         var pv = new ProtoView(template, [sectionPI, divPI],
           new ProtoWatchGroup(), false);

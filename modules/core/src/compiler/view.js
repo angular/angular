@@ -99,13 +99,9 @@ export class ProtoView {
   static _createElementInjectors(elements, binders) {
     var injectors = ListWrapper.createFixedSize(binders.length);
     for (var i = 0; i < binders.length; ++i) {
-      injectors[i] = ProtoView._createElementInjector(
-          elements[i], binders[i].protoElementInjector);
-    }
-    // Cannot be rolled into loop above, because parentInjector pointers need
-    // to be set on the children.
-    for (var i = 0; i < binders.length; ++i) {
-      binders[i].protoElementInjector.clearElementInjector();
+      var proto = binders[i].protoElementInjector;
+      var parentElementInjector = isPresent(proto.parent) ? injectors[proto.parent.index] : null;
+      injectors[i] = ProtoView._createElementInjector(elements[i], parentElementInjector, proto);
     }
     return injectors;
   }
@@ -117,9 +113,9 @@ export class ProtoView {
     }
   }
 
-  static _createElementInjector(element, proto) {
+  static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
     //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
-    return proto.hasBindings ? proto.instantiate({view:null}) : null;
+    return proto.hasBindings ? proto.instantiate({view:null, parentElementInjector:parent}) : null;
   }
 
   static _rootElementInjectors(injectors) {

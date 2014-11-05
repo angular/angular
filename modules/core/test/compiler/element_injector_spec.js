@@ -70,8 +70,8 @@ export function main() {
     if (isBlank(appInjector)) appInjector = new Injector([]);
     if (isBlank(props)) props = {};
 
-    var proto = new ProtoElementInjector(null, bindings);
-    var inj = proto.instantiate({view: props["view"]});
+    var proto = new ProtoElementInjector(null, 0, bindings);
+    var inj = proto.instantiate({view: props["view"], parentElementInjector:null});
     inj.instantiateDirectives(appInjector);
     return inj;
   }
@@ -79,41 +79,27 @@ export function main() {
   function parentChildInjectors(parentBindings, childBindings) {
     var inj = new Injector([]);
 
-    var protoParent = new ProtoElementInjector(null, parentBindings);
-    var parent = protoParent.instantiate({view: null});
+    var protoParent = new ProtoElementInjector(null, 0, parentBindings);
+    var parent = protoParent.instantiate({view: null, parentElementInjector: null});
     parent.instantiateDirectives(inj);
 
-    var protoChild = new ProtoElementInjector(protoParent, childBindings);
-    var child = protoChild.instantiate({view: null});
+    var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
+    var child = protoChild.instantiate({view: null, parentElementInjector: parent});
     child.instantiateDirectives(inj);
 
     return child;
   }
 
   describe("ElementInjector", function () {
-    describe("proto injectors", function () {
-      it("should construct a proto tree", function () {
-        var p = new ProtoElementInjector(null, []);
-        var c1 = new ProtoElementInjector(p, []);
-        var c2 = new ProtoElementInjector(p, []);
-
-        expect(humanize(p, [
-          [p, 'parent'],
-          [c1, 'child1'],
-          [c2, 'child2']
-        ])).toEqual(["parent", ["child1", "child2"]]);
-      });
-    });
-
     describe("instantiate", function () {
       it("should create an element injector", function () {
-        var protoParent = new ProtoElementInjector(null, []);
-        var protoChild1 = new ProtoElementInjector(protoParent, []);
-        var protoChild2 = new ProtoElementInjector(protoParent, []);
+        var protoParent = new ProtoElementInjector(null, 0, []);
+        var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
+        var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate({view: null});
-        var c1 = protoChild1.instantiate({view: null});
-        var c2 = protoChild2.instantiate({view: null});
+        var p = protoParent.instantiate({view: null, parentElementInjector: null});
+        var c1 = protoChild1.instantiate({view: null, parentElementInjector: p});
+        var c2 = protoChild2.instantiate({view: null, parentElementInjector: p});
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -125,12 +111,12 @@ export function main() {
 
     describe("hasBindings", function () {
       it("should be true when there are bindings", function () {
-        var p = new ProtoElementInjector(null, [Directive]);
+        var p = new ProtoElementInjector(null, 0, [Directive]);
         expect(p.hasBindings).toBeTruthy();
       });
 
       it("should be false otherwise", function () {
-        var p = new ProtoElementInjector(null, []);
+        var p = new ProtoElementInjector(null, 0, []);
         expect(p.hasBindings).toBeFalsy();
       });
     });

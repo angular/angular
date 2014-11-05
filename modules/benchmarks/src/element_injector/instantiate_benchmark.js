@@ -8,9 +8,9 @@ export function run () {
   var appInjector = new Injector([]);
 
   var bindings = [A, B, C];
-  var proto = new ProtoElementInjector(null, bindings);
+  var proto = new ProtoElementInjector(null, 0, bindings);
   for (var i = 0; i < ITERATIONS; ++i) {
-    var ei = proto.instantiate({view:null});
+    var ei = proto.instantiate({view:null, parentElementInjector: null});
     ei.instantiateDirectives(appInjector);
   }
 }
