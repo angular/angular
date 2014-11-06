@@ -115,7 +115,7 @@ class _ParseAST {
   expectIdentifierOrKeywordOrString():string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
-      this.error(`Unexpected token ${n}, expected identifier, or keyword, or string`)
+      this.error(`Unexpected token ${n}, expected identifier, keyword, or string`)
     }
     this.advance();
     return n.toString();
@@ -127,10 +127,13 @@ class _ParseAST {
       var expr = this.parseFormatter();
       ListWrapper.push(exprs, expr);
 
-      while (this.optionalCharacter($SEMICOLON)) {
+      if (this.optionalCharacter($SEMICOLON)) {
         if (! this.parseAction) {
           this.error("Binding expression cannot contain chained expression");
         }
+        while (this.optionalCharacter($SEMICOLON)){} //read all semicolons
+      } else if (this.index < this.tokens.length) {
+        this.error(`Unexpected token '${this.next}'`);
       }
     }
     return exprs.length == 1 ? exprs[0] : new Chain(exprs);
@@ -161,6 +164,10 @@ class _ParseAST {
         var end = this.inputIndex;
         var expression = this.input.substring(start, end);
         this.error(`Expression ${expression} is not assignable`);
+      }
+
+      if (!this.parseAction) {
+        this.error("Binding expression cannot contain assignments");
       }
 
       this.expectOperator('=');
@@ -303,7 +310,12 @@ class _ParseAST {
   }
 
   parsePrimary() {
-    if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
+    if (this.optionalCharacter($LPAREN)) {
+      var result = this.parseFormatter();
+      this.expectCharacter($RPAREN);
+      return result;
+
+    } else if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
       this.advance();
       return new LiteralPrimitive(null);
 

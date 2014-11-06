@@ -10,6 +10,9 @@ export class ClosureMap {
   }
 
   fn(name:string) {
-    return new Function('o', 'args', 'return o.' + name + '.apply(o, args);');
+    var method = `o.${name}`;
+    return new Function('o', 'args',
+      `if (!${method}) throw new Error('"${name}" is undefined');` +
+      `return ${method}.apply(o, args);`);
   }
 }

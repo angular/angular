@@ -326,6 +326,9 @@ export class FunctionCall extends AST {
 
   eval(context) {
     var obj = this.target.eval(context);
+    if (! (obj instanceof Function)) {
+      throw new BaseException(`${obj} is not a function`);
+    }
     return FunctionWrapper.apply(obj, evalList(context, this.args));
   }
 
