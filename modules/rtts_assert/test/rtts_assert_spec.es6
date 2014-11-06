@@ -361,13 +361,13 @@ describe('Traceur', function() {
 
     it('should fail when a value returned', function() {
       expect(() => foo('bar'))
-        .toThrowError('Expected to return an instance of voidType, got "bar"!');
+        .toThrowError('Expected to return an instance of void, got "bar"!');
     });
 
 
     it('should fail when null returned', function() {
       expect(() => foo(null))
-        .toThrowError('Expected to return an instance of voidType, got null!');
+        .toThrowError('Expected to return an instance of void, got null!');
     });
   });
 });

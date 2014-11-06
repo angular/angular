@@ -62,6 +62,10 @@ function prettyPrint(value) {
   }
 
   if (typeof value === 'object') {
+    if (value.__assertName) {
+      return value.__assertName;
+    }
+
     if (value.map) {
       return '[' + value.map(prettyPrint).join(', ') + ']';
     }
