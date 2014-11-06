@@ -6,7 +6,7 @@ import {ClosureMap} from './closure_map';
 import {
   AST,
   ImplicitReceiver,
-  FieldRead,
+  AccessMember,
   LiteralPrimitive,
   Expression,
   Binary,
@@ -284,7 +284,7 @@ class _ParseAST {
     var result = this.parsePrimary();
     while (true) {
       if (this.optionalCharacter($PERIOD)) {
-        result = this.parseAccessorOrMethodCall(result);
+        result = this.parseAccessMemberOrMethodCall(result);
 
       } else if (this.optionalCharacter($LBRACKET)) {
         var key = this.parseExpression();
@@ -324,7 +324,7 @@ class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      return this.parseAccessorOrMethodCall(_implicitReceiver);
+      return this.parseAccessMemberOrMethodCall(_implicitReceiver);
 
     } else if (this.next.isNumber()) {
       var value = this.next.toNumber();
@@ -370,7 +370,7 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseAccessorOrMethodCall(receiver):AST {
+  parseAccessMemberOrMethodCall(receiver):AST {
     var id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {
@@ -382,7 +382,7 @@ class _ParseAST {
     } else {
       var getter = this.closureMap.getter(id);
       var setter = this.closureMap.setter(id);
-      return new FieldRead(receiver, id, getter, setter);
+      return new AccessMember(receiver, id, getter, setter);
     }
   }
 

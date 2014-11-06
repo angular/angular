@@ -30,6 +30,7 @@ export class ImplicitReceiver extends AST {
 }
 
 export class Chain extends AST {
+  @FIELD('final expressions:List')
   constructor(expressions:List) {
     this.expressions = expressions;
   }
@@ -42,8 +43,11 @@ export class Chain extends AST {
     }
     return result;
   }
-}
 
+  visit(visitor) {
+    visitor.visitChain(this);
+  }
+}
 
 export class Conditional extends AST {
   @FIELD('final condition:AST')
@@ -62,9 +66,13 @@ export class Conditional extends AST {
       return this.falseExp.eval(context);
     }
   }
+
+  visit(visitor) {
+    visitor.visitConditional(this);
+  }
 }
 
-export class FieldRead extends AST {
+export class AccessMember extends AST {
   @FIELD('final receiver:AST')
   @FIELD('final name:string')
   @FIELD('final getter:Function')
@@ -89,15 +97,18 @@ export class FieldRead extends AST {
   }
 
   visit(visitor) {
-    visitor.visitFieldRead(this);
+    visitor.visitAccessMember(this);
   }
 }
 
 export class KeyedAccess extends AST {
+  @FIELD('final obj:AST')
+  @FIELD('final key:AST')
   constructor(obj:AST, key:AST) {
     this.obj = obj;
     this.key = key;
   }
+  
   eval(context) {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);
@@ -129,6 +140,9 @@ export class KeyedAccess extends AST {
     return value;
   }
 
+  visit(visitor) {
+    visitor.visitKeyedAccess(this);
+  }
 }
 
 export class Formatter extends AST {
@@ -152,9 +166,11 @@ export class LiteralPrimitive extends AST {
   constructor(value) {
     this.value = value;
   }
+  
   eval(context) {
     return this.value;
   }
+  
   visit(visitor) {
     visitor.visitLiteralPrimitive(this);
   }
@@ -165,9 +181,11 @@ export class LiteralArray extends AST {
   constructor(expressions:List) {
     this.expressions = expressions;
   }
+  
   eval(context) {
     return ListWrapper.map(this.expressions, (e) => e.eval(context));
   }
+  
   visit(visitor) {
     visitor.visitLiteralArray(this);
   }
@@ -188,6 +206,10 @@ export class LiteralMap extends AST {
     }
     return res;
   }
+
+  visit(visitor) {
+    visitor.visitLiteralMap(this);
+  }
 }
 
 export class Binary extends AST {
@@ -198,10 +220,6 @@ export class Binary extends AST {
     this.operation = operation;
     this.left = left;
     this.right = right;
-  }
-
-  visit(visitor) {
-    visitor.visitBinary(this);
   }
 
   eval(context) {
@@ -234,6 +252,10 @@ export class Binary extends AST {
     }
     throw 'Internal error [$operation] not handled';
   }
+
+  visit(visitor) {
+    visitor.visitBinary(this);
+  }
 }
 
 export class PrefixNot extends AST {
@@ -242,9 +264,13 @@ export class PrefixNot extends AST {
   constructor(expression:AST) {
     this.expression = expression;
   }
-  visit(visitor) { visitor.visitPrefixNot(this); }
+
   eval(context) {
     return !toBool(this.expression.eval(context));
+  }
+
+  visit(visitor) { 
+    visitor.visitPrefixNot(this); 
   }
 }
 
@@ -255,10 +281,13 @@ export class Assignment extends AST {
     this.target = target;
     this.value = value;
   }
-  visit(visitor) { visitor.visitAssignment(this); }
 
   eval(context) {
     return this.target.assign(context, this.value.eval(context));
+  }
+  
+  visit(visitor) {
+    visitor.visitAssignment(this); 
   }
 }
 
@@ -276,6 +305,10 @@ export class MethodCall extends AST {
     var obj = this.receiver.eval(context);
     return this.fn(obj, evalList(context, this.args));
   }
+
+  visit(visitor) {
+    visitor.visitMethodCall(this);
+  }
 }
 
 export class FunctionCall extends AST {
@@ -292,18 +325,28 @@ export class FunctionCall extends AST {
     var obj = this.target.eval(context);
     return FunctionWrapper.apply(obj, evalList(context, this.args));
   }
+
+  visit(visitor) {
+    visitor.visitFunctionCall(this);
+  }
 }
 
 //INTERFACE
 export class AstVisitor {
+  visitChain(ast:Chain){}
   visitImplicitReceiver(ast:ImplicitReceiver) {}
-  visitFieldRead(ast:FieldRead) {}
+  visitConditional(ast:Conditional) {}
+  visitAccessMember(ast:AccessMember) {}
+  visitKeyedAccess(ast:KeyedAccess) {}
   visitBinary(ast:Binary) {}
   visitPrefixNot(ast:PrefixNot) {}
   visitLiteralPrimitive(ast:LiteralPrimitive) {}
   visitFormatter(ast:Formatter) {}
   visitAssignment(ast:Assignment) {}
   visitLiteralArray(ast:LiteralArray) {}
+  visitLiteralMap(ast:LiteralMap) {}
+  visitMethodCall(ast:MethodCall) {}
+  visitFunctionCall(ast:FunctionCall) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

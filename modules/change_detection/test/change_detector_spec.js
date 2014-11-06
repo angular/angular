@@ -1,7 +1,7 @@
 import {describe, it, xit, expect} from 'test_lib/test_lib';
 
 import {List, ListWrapper} from 'facade/collection';
-import {ImplicitReceiver, FieldRead} from 'change_detection/parser/ast';
+import {ImplicitReceiver, AccessMember} from 'change_detection/parser/ast';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
@@ -19,7 +19,7 @@ export function main() {
     var parts = exp.split(".");
     var cm = new ClosureMap();
     return ListWrapper.reduce(parts, function (ast, fieldName) {
-      return new FieldRead(ast, fieldName, cm.getter(fieldName), cm.setter(fieldName));
+      return new AccessMember(ast, fieldName, cm.getter(fieldName), cm.setter(fieldName));
     }, new ImplicitReceiver());
   }
 

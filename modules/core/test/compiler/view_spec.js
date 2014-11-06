@@ -6,7 +6,7 @@ import {ProtoWatchGroup} from 'change_detection/watch_group';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
-import {ImplicitReceiver, FieldRead} from 'change_detection/parser/ast';
+import {ImplicitReceiver, AccessMember} from 'change_detection/parser/ast';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 import {ElementBinder} from 'core/compiler/element_binder';
 
@@ -20,7 +20,7 @@ class Directive {
 export function main() {
   var oneFieldAst = (fieldName) => {
     var cm = new ClosureMap();
-    return new FieldRead(new ImplicitReceiver(), fieldName,
+    return new AccessMember(new ImplicitReceiver(), fieldName,
       cm.getter(fieldName), cm.setter(fieldName));
   };
 

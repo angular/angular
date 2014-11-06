@@ -1,6 +1,6 @@
 import {ProtoRecord, Record} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent} from 'facade/lang';
-import {AST, FieldRead, ImplicitReceiver, AstVisitor} from './parser/ast';
+import {AST, AccessMember, ImplicitReceiver, AstVisitor} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
@@ -126,7 +126,7 @@ class ProtoRecordCreator {
     //do nothing
   }
 
-  visitFieldRead(ast:FieldRead) {
+  visitAccessMember(ast:AccessMember) {
     ast.receiver.visit(this);
     this.add(new ProtoRecord(this.protoWatchGroup, ast.name, null));
   }
