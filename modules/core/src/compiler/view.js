@@ -115,7 +115,7 @@ export class ProtoView {
 
   static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
     //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
-    return proto.hasBindings ? proto.instantiate({view:null, parentElementInjector:parent}) : null;
+    return proto.hasBindings ? proto.instantiate(parent, null) : null;
   }
 
   static _rootElementInjectors(injectors) {

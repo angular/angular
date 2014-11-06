@@ -3,6 +3,7 @@ import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {View} from './view';
 import {StaticKeys} from './static_keys';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -148,12 +149,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate({view, parentElementInjector}):ElementInjector {
-    return new ElementInjector({
-      proto: this,
-      parent: parentElementInjector,
-      view: view
-    });
+  instantiate(parent:ElementInjector, view):ElementInjector {
+    return new ElementInjector(this, parent, view);
   }
 
   _createBinding(bindingOrType) {
@@ -226,7 +223,7 @@ export class ElementInjector extends TreeNode {
   @FIELD('_obj8:Object')
   @FIELD('_obj9:Object')
   @FIELD('_view:View')
-  constructor({proto, parent, view}) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, view) {
     super(parent);
     this._proto = proto;
     this._view = view;

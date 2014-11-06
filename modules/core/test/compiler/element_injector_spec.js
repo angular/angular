@@ -68,10 +68,10 @@ export function main() {
 
   function injector(bindings, appInjector = null, props = null) {
     if (isBlank(appInjector)) appInjector = new Injector([]);
-    if (isBlank(props)) props = {};
+    if (isBlank(props)) props = {"view" : null};
 
     var proto = new ProtoElementInjector(null, 0, bindings);
-    var inj = proto.instantiate({view: props["view"], parentElementInjector:null});
+    var inj = proto.instantiate(null, props["view"]);
     inj.instantiateDirectives(appInjector);
     return inj;
   }
@@ -80,11 +80,11 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate({view: null, parentElementInjector: null});
+    var parent = protoParent.instantiate(null, null);
     parent.instantiateDirectives(inj);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
-    var child = protoChild.instantiate({view: null, parentElementInjector: parent});
+    var child = protoChild.instantiate(parent, null);
     child.instantiateDirectives(inj);
 
     return child;
@@ -97,9 +97,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate({view: null, parentElementInjector: null});
-        var c1 = protoChild1.instantiate({view: null, parentElementInjector: p});
-        var c2 = protoChild2.instantiate({view: null, parentElementInjector: p});
+        var p = protoParent.instantiate(null, null);
+        var c1 = protoChild1.instantiate(p, null);
+        var c2 = protoChild2.instantiate(p, null);
 
         expect(humanize(p, [
           [p, 'parent'],
