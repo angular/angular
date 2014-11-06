@@ -2,8 +2,6 @@ import {KeyMetadataError} from './exceptions';
 import {MapWrapper, Map} from 'facade/collection';
 import {FIELD, int, isPresent} from 'facade/lang';
 
-var _allKeys = MapWrapper.create();
-
 export class Key {
   @FIELD('final token')
   @FIELD('final id:int')
@@ -14,18 +12,6 @@ export class Key {
     this.metadata = null;
   }
 
-  static get(token):Key {
-    if (token instanceof Key) return token;
-
-    if (MapWrapper.contains(_allKeys, token)) {
-      return MapWrapper.get(_allKeys, token);
-    }
-
-    var newKey = new Key(token, Key.numberOfKeys);
-    MapWrapper.set(_allKeys, token, newKey);
-    return newKey;
-  }
-
   static setMetadata(key:Key, metadata):Key {
     if (isPresent(key.metadata) && key.metadata !== metadata) {
       throw new KeyMetadataError();
@@ -34,11 +20,36 @@ export class Key {
     return key;
   }
 
-  static clear() {
-    _allKeys = MapWrapper.create();
+  static get(token):Key {
+    return _globalKeyRegistry.get(token);
   }
 
   static get numberOfKeys():int {
-    return MapWrapper.size(_allKeys);
+    return _globalKeyRegistry.numberOfKeys;
   }
 }
+
+export class KeyRegistry {
+  @FIELD('final _allKeys:Map')
+  constructor() {
+    this._allKeys = MapWrapper.create();
+  }
+
+  get(token):Key {
+    if (token instanceof Key) return token;
+
+    if (MapWrapper.contains(this._allKeys, token)) {
+      return MapWrapper.get(this._allKeys, token);
+    }
+
+    var newKey = new Key(token, Key.numberOfKeys);
+    MapWrapper.set(this._allKeys, token, newKey);
+    return newKey;
+  }
+
+  get numberOfKeys():int {
+    return MapWrapper.size(this._allKeys);
+  }
+}
+
+var _globalKeyRegistry = new KeyRegistry();
