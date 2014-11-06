@@ -6,7 +6,7 @@ export var Set = window.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
-  static createFromPairs(pairs:List):Map { return new Map(pairs); }
+  static createFromPairs(pairs:List):Map {return new Map(pairs);}
   static get(m, k) { return m.get(k); }
   static set(m, k, v) { m.set(k,v); }
   static contains(m, k) { return  m.has(k); }

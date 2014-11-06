@@ -209,10 +209,11 @@ export function main() {
 
       it('should evaluate map', () => {
         expectEval("{}").toEqual(MapWrapper.create());
-        expectEval("{a:'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
-        expectEval("{'a':'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
-        expectEval("{\"a\":'b'}").toEqual(MapWrapper.createFromPairs([["a", "b"]]));
+        expectEval("{a:'b'}['a']").toEqual('b');
+        expectEval("{'a':'b'}['a']").toEqual('b');
+        expectEval("{\"a\":'b'}['a']").toEqual('b');
         expectEval("{\"a\":'b'}['a']").toEqual("b");
+        expectEval("{}['a']").not.toBeDefined();
         expectEval("{\"a\":'b'}['invalid']").not.toBeDefined();
       });
 

@@ -1,4 +1,4 @@
-import {FIELD, toBool, autoConvertAdd, isBlank, FunctionWrapper, BaseException} from "facade/lang";
+import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "facade/lang";
 import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
 import {ClosureMap} from "./closure_map";
 
@@ -29,6 +29,9 @@ export class ImplicitReceiver extends AST {
   }
 }
 
+/**
+ * Multiple expressions separated by a semicolon.
+ */
 export class Chain extends AST {
   @FIELD('final expressions:List')
   constructor(expressions:List) {
@@ -39,7 +42,7 @@ export class Chain extends AST {
     var result;
     for (var i = 0; i < this.expressions.length; i++) {
       var last = this.expressions[i].eval(context);
-      if (last != null) result = last;
+      if (isPresent(last)) result = last;
     }
     return result;
   }
@@ -118,7 +121,7 @@ export class KeyedAccess extends AST {
     } else if (obj instanceof List) {
       return ListWrapper.get(obj, key);
     } else {
-      throw new BaseException(`Cannot access ${key} on ${obj}`);
+      return obj[key];
     }
   }
 
@@ -135,7 +138,7 @@ export class KeyedAccess extends AST {
     } else if (obj instanceof List) {
       ListWrapper.set(obj, key, value);
     } else {
-      throw new BaseException(`Cannot access ${key} on ${obj}`);
+      obj[key] = value;
     }
     return value;
   }
@@ -225,14 +228,14 @@ export class Binary extends AST {
   eval(context) {
     var left = this.left.eval(context);
     switch (this.operation) {
-      case '&&': return toBool(left) && toBool(this.right.eval(context));
-      case '||': return toBool(left) || toBool(this.right.eval(context));
+      case '&&': return left && this.right.eval(context);
+      case '||': return left || this.right.eval(context);
     }
     var right = this.right.eval(context);
 
     // Null check for the operations.
-    if (left == null || right == null) {
-      throw new BaseException("One of the operands is null");
+    if (isBlank(left)|| isBlank(right)) {
+      throw new BaseException("One of the operands is not defined");
     }
 
     switch (this.operation) {
@@ -266,7 +269,7 @@ export class PrefixNot extends AST {
   }
 
   eval(context) {
-    return !toBool(this.expression.eval(context));
+    return !this.expression.eval(context);
   }
 
   visit(visitor) { 

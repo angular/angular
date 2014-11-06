@@ -10,6 +10,6 @@ export class ClosureMap {
   }
 
   fn(name:string) {
-    return new Function('o', 'pos', 'return o.' + name + '.apply(o, pos);');
+    return new Function('o', 'args', 'return o.' + name + '.apply(o, args);');
   }
 }
