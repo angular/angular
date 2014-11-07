@@ -48,6 +48,12 @@ export class NamedParamsTransformer extends ParseTreeTransformer {
     return tree;
   }
 
+  transformAnnotation(tree) {
+    tree = super.transformAnnotation(tree);
+    if (tree.args) this._handleNamedParams(tree);
+    return tree;
+  }
+
   _handleNamedParams(tree) {
     if (this._isLastArgAnNonEmptyObjectLiteral(tree) &&
       ! this._isLastArgObjectLiteralWithQuotedKeys(tree)) {
