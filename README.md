@@ -8,7 +8,7 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
 If you don't already have `npm`, get it by installing [node.js](http://nodejs.org/).
 
 1. `npm install`
-2. `npm install -g gulp karma karma-cli` (you might need to prefix this command with `sudo`)
+2. `npm install -g gulp` (you might need to prefix this command with `sudo`)
 3. `npm install -g protractor` (you might need to prefix this command with `sudo`)
 4. `webdriver-manager update`
 5. If you plan to use Dart:
@@ -41,8 +41,8 @@ If you don't already have `npm`, get it by installing [node.js](http://nodejs.or
 
 ### Unit tests
 
-1. `karma start karma-js.conf.js`: JS tests
-2. `karma start karma-dart.conf.js`: Dart tests
+1. `gulp test.js`: JS tests
+2. `gulp test.dart`: Dart tests
 
 Notes for transpiler tests:
 
@@ -94,7 +94,7 @@ Notes:
 If you need to debug the tests:
 
 - add a `debugger;` statement to the test you want to debug (oe the source code),
-- execute karma `node_modules/karma/bin/karma start karma-js.conf.js`,
+- execute karma `gulp test.js`,
 - press the top right "DEBUG" button,
 - open the dev tools and press F5,
 - the execution halt at the `debugger;` statement

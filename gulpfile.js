@@ -13,6 +13,8 @@ var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
+var karma = require('karma').server;
+var minimist = require('minimist');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
@@ -394,6 +396,31 @@ gulp.task('docs/serve', function() {
     .pipe(webserver({
       fallback: 'index.html'
     }));
+});
+
+// ------------------
+// tests
+function getBrowsersFromCLI() {
+  var args = minimist(process.argv.slice(2));
+  return [args.browsers?args.browsers:'DartiumWithWebPlatform']
+}
+gulp.task('test.js', function (done) {
+  karma.start({configFile: __dirname + '/karma-js.conf.js'}, done);
+});
+gulp.task('test.dart', function (done) {
+  karma.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
+});
+gulp.task('test.js/ci', function (done) {
+  karma.start({configFile: __dirname + '/karma-js.conf.js', singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+});
+gulp.task('test.dart/ci', function (done) {
+  karma.start({configFile: __dirname + '/karma-dart.conf.js', singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+});
+gulp.task('ci', function(done) {
+  runSequence(
+    'test.js/ci',
+    'test.dart/ci'
+  );
 });
 
 // -----------------
