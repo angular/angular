@@ -69,7 +69,8 @@ gulp.task('jsRuntime/build', function() {
 var sourceTypeConfigs = {
   dart: {
     transpileSrc: ['modules/**/*.js'],
-    htmlSrc: ['modules/*/src/**/*.html'],
+    // pub serve uses project_root/web for static serving.
+    htmlSrc: ['modules/*/src/**/*.html', 'modules/*/web/*.html'],
     copySrc: ['modules/**/*.dart'],
     outputDir: 'build/dart',
     outputExt: 'dart',
@@ -296,7 +297,7 @@ gulp.task('benchmarks/build.dart', function() {
 
 
 // ------------------
-// WEB SERVER
+// WEB SERVERS
 
 gulp.task('serve', function() {
   connect.server({
@@ -313,6 +314,11 @@ gulp.task('serve', function() {
       }];
     }
   })();
+});
+
+gulp.task('examples/pub.serve', function(done) {
+  spawn('pub', ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
+    .on('done', done);
 });
 
 
