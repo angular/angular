@@ -6,6 +6,8 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
 
+bool IS_DARTIUM = true;
+
 Expect expect(actual, [matcher]) {
   final expect = new Expect(actual);
   if (matcher != null) expect.to(matcher);

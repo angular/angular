@@ -49,6 +49,11 @@ class HasGetters {
   }
 }
 
+class WithFields {
+  name: string;
+  static id: number;
+}
+
 export function main() {
   describe('classes', function() {
     it('should work', function() {
@@ -87,6 +92,14 @@ export function main() {
 
       it("should call static getters", function () {
         expect(HasGetters.staticGetter).toEqual('getter');
+      });
+    });
+
+    describe('fields', function() {
+      it('should work', function() {
+        var obj = new WithFields();
+        obj.name = 'Vojta';
+        WithFields.id = 12;
       });
     });
   });

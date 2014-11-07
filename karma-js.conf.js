@@ -36,6 +36,7 @@ module.exports = function(config) {
         outputLanguage: 'es5',
         sourceMaps: true,
         script: false,
+        memberVariables: true,
         modules: 'instantiate',
         types: true,
         typeAssertions: true,

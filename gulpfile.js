@@ -25,6 +25,7 @@ var js2es5Options = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
+  memberVariables: true, // parse class fields
   modules: 'instantiate'
 };
 
@@ -42,6 +43,7 @@ var js2dartOptions = {
   annotations: true, // parse annotations
   types: true, // parse types
   script: false, // parse as a module
+  memberVariables: true, // parse class fields
   outputLanguage: 'dart'
 };
 

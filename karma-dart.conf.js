@@ -60,6 +60,7 @@ module.exports = function(config) {
         sourceMaps: true,
         script: false,
         modules: 'register',
+        memberVariables: true,
         types: true,
         // typeAssertions: true,
         // typeAssertionModule: 'assert',

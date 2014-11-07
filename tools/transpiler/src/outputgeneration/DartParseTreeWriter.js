@@ -32,6 +32,19 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.libName = moduleName.replace(/\//g, '.').replace(/[^\w.\/]/g, '_');
   }
 
+  // CLASS FIELDS
+  visitPropertyVariableDeclaration(tree) {
+    if (tree.isStatic) {
+      this.write_(STATIC);
+      this.writeSpace_();
+    }
+
+    this.writeType_(tree.typeAnnotation);
+    this.writeSpace_();
+    this.visitAny(tree.name);
+    this.write_(SEMI_COLON);
+  }
+
   // VARIABLES - types
   // ```
   // var foo:bool = true;

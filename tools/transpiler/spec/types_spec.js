@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect, IS_DARTIUM} from 'test_lib/test_lib';
 
 class A {}
 class B {}
@@ -48,6 +48,12 @@ class Foo {
   }
 }
 
+class WithFields {
+  name: string;
+  static id: number;
+}
+
+
 export function main() {
   describe('types', function() {
     it('should work', function() {
@@ -57,6 +63,38 @@ export function main() {
       assert(f instanceof Foo);
 
       f.typedVariables();
+    });
+
+    describe('class fields', function() {
+      it('should fail when setting wrong type value', function() {
+        var wf = new WithFields();
+
+        expect(function() {
+          wf.name = true;
+        }).toThrowError(IS_DARTIUM ?
+          // Dart
+          "type 'bool' is not a subtype of type 'String' of 'value'" :
+          // JavaScript
+          // TODO(vojta): Better error, it's not first argument, it's setting a field.
+          'Invalid arguments given!\n' +
+          '  - 1st argument has to be an instance of string, got true'
+        );
+      });
+    });
+
+    describe('static class fields', function() {
+      it('should fail when setting wrong type value', function() {
+        expect(function() {
+          WithFields.id = true;
+        }).toThrowError(IS_DARTIUM ?
+          // Dart
+          "type 'bool' is not a subtype of type 'num' of 'id'" :
+          // JavaScript
+          // TODO(vojta): Better error, it's not first argument, it's setting a field.
+          'Invalid arguments given!\n' +
+          '  - 1st argument has to be an instance of number, got true'
+        );
+      });
     });
   });
 }
