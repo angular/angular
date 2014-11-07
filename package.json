@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tobias Bosch <tbosch@google.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "es6-module-loader": "^0.9.2",
     "systemjs": "^0.9.1",
