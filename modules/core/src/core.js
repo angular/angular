@@ -5,6 +5,8 @@ export * from './annotations/directive';
 export * from './annotations/component';
 export * from './annotations/template_config';
 
+export * from './application';
+
 export * from 'change_detection/change_detector';
 export * from 'change_detection/watch_group';
 export * from 'change_detection/record';

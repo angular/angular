@@ -13,6 +13,9 @@ export class DOM {
   static query(selector) {
     return document.querySelector(selector);
   }
+  static querySelector(el, selector:string):Node {
+    return el.querySelector(selector);
+  }
   static querySelectorAll(el, selector:string):NodeList {
     return el.querySelectorAll(selector);
   }
@@ -47,6 +50,9 @@ export class DOM {
     var t = document.createElement('template');
     t.innerHTML = html;
     return t;
+  }
+  static createElement(tagName, doc=document) {
+    return doc.createElement(tagName);
   }
   static clone(node:Node) {
     return node.cloneNode(true);
@@ -83,5 +89,11 @@ export class DOM {
   }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;
+  }
+  static createHtmlDocument() {
+    return document.implementation.createHTMLDocument();
+  }
+  static defaultDoc() {
+    return document;
   }
 }

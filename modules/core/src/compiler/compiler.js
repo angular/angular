@@ -13,6 +13,7 @@ import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {AnnotatedType} from './annotated_type';
+import {Component} from '../annotations/component';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -28,7 +29,8 @@ export class Compiler {
   }
 
   createSteps(component:AnnotatedType):List<CompileStep> {
-    var directives = component.annotation.template.directives;
+    var annotation: Component = component.annotation;
+    var directives = annotation.template.directives;
     var annotatedDirectives = ListWrapper.create();
     for (var i=0; i<directives.length; i++) {
       ListWrapper.push(annotatedDirectives, this._reflector.annotatedType(directives[i]));
@@ -51,7 +53,8 @@ export class Compiler {
       // - templateRoot string
       // - precompiled template
       // - ProtoView
-      templateRoot = DOM.createTemplate(component.annotation.template.inline);
+      var annotation: Component = component.annotation;
+      templateRoot = DOM.createTemplate(annotation.template.inline);
     }
     var pipeline = new CompilePipeline(this.createSteps(component));
     var compileElements = pipeline.process(templateRoot);

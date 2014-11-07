@@ -17,6 +17,9 @@ class DOM {
   static query(selector) {
     return document.querySelector(selector);
   }
+  static Element querySelector(el, String selector) {
+    return el.querySelector(selector);
+  }
   static ElementList querySelectorAll(el, String selector) {
     return el.querySelectorAll(selector);
   }
@@ -52,6 +55,10 @@ class DOM {
     t.setInnerHtml(html, treeSanitizer:identitySanitizer);
     return t;
   }
+  static createElement(tagName, [doc=null]) {
+    if (doc == null) doc = document;
+    return doc.createElement(tagName);
+  }
   static clone(Node node) {
     return node.clone(true);
   }
@@ -81,5 +88,11 @@ class DOM {
   }
   static Node templateAwareRoot(Element el) {
     return el is TemplateElement ? el.content : el;
+  }
+  static HtmlDocument createHtmlDocument() {
+    return document.implementation.createHtmlDocument('fakeTitle');
+  }
+  static HtmlDocument defaultDoc() {
+    return document;
   }
 }

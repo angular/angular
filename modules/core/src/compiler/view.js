@@ -83,8 +83,9 @@ export class ProtoView {
     this.elementsWithBindingCount = 0;
   }
 
-  instantiate(context, lightDomAppInjector:Injector, hostElementInjector: ElementInjector):View {
-    var clone = DOM.clone(this.element);
+  instantiate(context, lightDomAppInjector:Injector,
+      hostElementInjector: ElementInjector, inPlace:boolean = false):View {
+    var clone = inPlace ? this.element : DOM.clone(this.element);
     var elements;
     if (clone instanceof TemplateElement) {
       elements = ListWrapper.clone(DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`));
@@ -259,6 +260,20 @@ export class ProtoView {
       }
     }
     return injectors;
+  }
+
+  // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
+  // and the component template is already compiled into protoView.
+  // Used for bootstrapping.
+  static createRootProtoView(protoView: ProtoView,
+      insertionElement, rootComponentAnnotatedType: AnnotatedType): ProtoView {
+    var rootProtoView = new ProtoView(insertionElement, new ProtoWatchGroup());
+    var binder = rootProtoView.bindElement(
+        new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
+    binder.componentDirective = rootComponentAnnotatedType;
+    binder.nestedProtoView = protoView;
+    DOM.addClass(insertionElement, 'ng-binding');
+    return rootProtoView;
   }
 }
 

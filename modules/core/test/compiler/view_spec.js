@@ -17,12 +17,14 @@ import {View} from 'core/compiler/view';
 
 export function main() {
   describe('view', function() {
-    var parser, closureMap;
+    var parser, closureMap, someComponentDirective;
 
-    beforeEach( () => {
+    beforeEach(() => {
       closureMap = new ClosureMap();
       parser = new Parser(new Lexer(), closureMap);
+      someComponentDirective = new Reflector().annotatedType(SomeComponent);
     });
+
 
     describe('ProtoView.instantiate', function() {
 
@@ -92,6 +94,22 @@ export function main() {
         });
       }
 
+      describe('inplace instantiation', () => {
+        it('should be supported.', () => {
+          var template = createElement('<div></div>')
+          var view = new ProtoView(template, new ProtoWatchGroup())
+              .instantiate(null, null, null, true);
+          expect(view.nodes[0]).toBe(template);
+        });
+
+        it('should be off by default.', () => {
+          var template = createElement('<div></div>')
+          var view = new ProtoView(template, new ProtoWatchGroup())
+              .instantiate(null, null, null);
+          expect(view.nodes[0]).not.toBe(template);
+        });
+      });
+
       describe('collect dom nodes with a regular element as root', () => {
         createCollectDomNodesTestCases(false);
       });
@@ -158,7 +176,7 @@ export function main() {
         function createComponentWithSubPV(subProtoView) {
           var pv = new ProtoView(createElement('<cmp class="ng-binding"></cmp>'), new ProtoWatchGroup());
           var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeComponent], true));
-          binder.componentDirective = new Reflector().annotatedType(SomeComponent);
+          binder.componentDirective = someComponentDirective; 
           binder.nestedProtoView = subProtoView;
           return pv;
         }
@@ -253,7 +271,26 @@ export function main() {
           expect(view.elementInjectors[0].get(SomeDirective).prop).toEqual('buz');
         });
       });
+    });
 
+    describe('protoView createRootProtoView', () => {
+      var el, pv;
+      beforeEach(() => {
+        el = DOM.createElement('div');
+        pv = new ProtoView(createElement('<div>hi</div>'), new ProtoWatchGroup());
+      });
+
+      it('should create the root component when instantiated', () => {
+        var rootProtoView = ProtoView.createRootProtoView(pv, el, someComponentDirective);
+        var view = rootProtoView.instantiate(null, new Injector([]), null, true);
+        expect(view.rootElementInjectors[0].get(SomeComponent)).not.toBe(null);
+      });
+
+      it('should inject the protoView into the shadowDom', () => {
+        var rootProtoView = ProtoView.createRootProtoView(pv, el, someComponentDirective);
+        var view = rootProtoView.instantiate(null, new Injector([]), null, true);
+        expect(el.shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hi');
+      });
     });
   });
 }
