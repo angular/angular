@@ -277,7 +277,7 @@ class UserList {
 }
 
 class UserController {
-	constructor(@InjectPRomise(UserList) ul){}
+	constructor(@InjectPromise(UserList) ul){}
 }
 
 var inj = new Injector([UserList, UserController]);
