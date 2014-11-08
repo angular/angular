@@ -68,7 +68,7 @@ export class StringJoiner {
   }
 }
 
-export class NumerParseError extends Error {
+export class NumberParseError extends Error {
   constructor(message) {
     this.message = message;
   }
@@ -83,7 +83,7 @@ export class NumberWrapper {
   static parseIntAutoRadix(text:string):int {
     var result:int = parseInt(text);
     if (isNaN(result)) {
-      throw new NumerParseError("Invalid integer literal when parsing " + text);
+      throw new NumberParseError("Invalid integer literal when parsing " + text);
     }
     return result;
   }
@@ -103,7 +103,7 @@ export class NumberWrapper {
         return result;
       }
     }
-    throw new NumerParseError("Invalid integer literal when parsing " + text + " in base " + radix);
+    throw new NumberParseError("Invalid integer literal when parsing " + text + " in base " + radix);
   }
 
   // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
