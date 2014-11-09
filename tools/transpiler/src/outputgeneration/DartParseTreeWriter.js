@@ -1,4 +1,8 @@
-import {CONSTRUCTOR, FROM} from 'traceur/src/syntax/PredefinedName';
+import {
+  CONSTRUCTOR,
+  GET,
+  FROM
+} from 'traceur/src/syntax/PredefinedName';
 import {
   AT,
   CLOSE_CURLY,
@@ -8,7 +12,9 @@ import {
   COMMA,
   EQUAL,
   EQUAL_EQUAL_EQUAL,
+  FOR,
   IMPORT,
+  IN,
   OPEN_CURLY,
   OPEN_PAREN,
   OBJECT_PATTERN,
@@ -18,9 +24,7 @@ import {
   STATIC
 } from 'traceur/src/syntax/TokenType';
 
-import {
-  GET
-} from 'traceur/src/syntax/PredefinedName';
+import {VARIABLE_DECLARATION_LIST} from 'traceur/src/syntax/trees/ParseTreeType';
 
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
@@ -463,6 +467,45 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 
   visitNamedParameterList(tree) {
     this.writeList_(tree.parameterNameAndValues, COMMA, false);
+  }
+
+  // FOR LOOPS
+  // Translate for..of to for..in and throw error on for..in (JS)
+  /**
+   * Transforms for..of into for..in.
+   * Unsupported:
+   *  - Destructuring iterators for map key, value
+   * @param {ForOfStatement} tree
+   */
+  visitForOfStatement(tree) {
+    if (this._isDestructuringInitializer(tree.initializer)) {
+      throw new Error('Destructuring for..of loops are not supported.')
+    }
+    this.write_(FOR);
+    this.writeSpace_();
+    this.write_(OPEN_PAREN);
+    this.visitAny(tree.initializer);
+    this.writeSpace_();
+    this.write_(IN);
+    this.writeSpace_();
+    this.visitAny(tree.collection);
+    this.write_(CLOSE_PAREN);
+    this.visitAnyBlockOrIndent_(tree.body);
+  }
+
+  /**
+   * @param {ForInStatement} tree
+   */
+  visitForInStatement(tree) {
+    throw new Error('for..in is not supported');
+  }
+
+  _isDestructuringInitializer(initializer) {
+    if (initializer.isPattern()) {
+      return true;
+    } else if (initializer.type == VARIABLE_DECLARATION_LIST) {
+      return initializer.declarations.some(declaration => declaration.lvalue.isPattern());
+    }
   }
 
   toString() {
