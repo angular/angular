@@ -23,6 +23,7 @@ export class MapWrapper {
   static size(m) {return m.size;}
   static delete(m, k) { m.delete(k); }
   static clear(m) { m.clear(); }
+  static iterable(m) { return m; }
 }
 
 // TODO: cannot export StringMap as a type as Dart does not support renaming types...
