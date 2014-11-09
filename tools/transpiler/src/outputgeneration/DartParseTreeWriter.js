@@ -75,12 +75,11 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 
   visitTemplateLiteralExpression(tree) {
     if (tree.operand) {
-      this.visitAny(tree.operand);
-      this.writeSpace_();
+      throw new Error('tagged template strings are not supported');
     }
-    this.writeRaw_('"');
+    this.writeRaw_("'''");
     this.visitList(tree.elements);
-    this.writeRaw_('"');
+    this.writeRaw_("'''");
   }
 
   visitTemplateLiteralPortion(tree) {
