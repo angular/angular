@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect, IS_DARTIUM} from 'test_lib/test_lib';
 
 import {Foo, Bar} from './foo';
 // TODO: Does not work, as dart does not support renaming imports
@@ -21,6 +21,18 @@ export function main() {
 
       expect(exportModule.Foo).toBe('FOO');
       expect(exportModule.Bar).toBe('BAR');
+      expect(exportModule.Bar1).toBe('BAR1');
+      expect(exportModule.Bar2).toBe('BAR2');
+
+      // Make sure Bar3 is not re-exported.
+      expect(function() {
+          exportModule.Bar3();
+        }).toThrowError(IS_DARTIUM ?
+          // Dart
+          "No top-level method 'exportModule.Bar3' declared.":
+          // JavaScript
+          'undefined is not a function'
+        );
 
       expect(Type).toBeTruthy();
     });
