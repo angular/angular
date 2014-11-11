@@ -25,7 +25,7 @@ import {
 import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} from 'traceur/src/outputgeneration/ParseTreeWriter';
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
-import {EXPORT_STAR} from 'traceur/src/syntax/trees/ParseTreeType';
+import {EXPORT_STAR, NAMED_EXPORT} from 'traceur/src/syntax/trees/ParseTreeType';
 
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -33,6 +33,8 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.libName = moduleName.replace(/\//g, '.').replace(/[^\w.\/]/g, '_');
     this.annotationContextCounter = 0;
   }
+
+  visitEmptyStatement() {}
 
   // CLASS FIELDS
   visitPropertyVariableDeclaration(tree) {
@@ -275,35 +277,43 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 
   // EXPORTS
   visitExportDeclaration(tree) {
-    if (tree.declaration.moduleSpecifier) {
-      if (tree.declaration.specifierSet.type === EXPORT_STAR) {
-        // export * from './foo'
-        // ===>
-        // export './foo';
-        this.write_('export');
-        this.writeSpace_();
-        this.visitModuleSpecifier(tree.declaration.moduleSpecifier);
-        this.write_(SEMI_COLON);
+    if (tree.declaration.type === NAMED_EXPORT) {
+      // export {...}
+      // export {...} from './foo'
+      // export * from './foo'
+
+      if (tree.declaration.moduleSpecifier) {
+        if (tree.declaration.specifierSet.type === EXPORT_STAR) {
+          // export * from './foo'
+          // ===>
+          // export './foo';
+          this.write_('export');
+          this.writeSpace_();
+          this.visitModuleSpecifier(tree.declaration.moduleSpecifier);
+          this.write_(SEMI_COLON);
+        } else {
+          // export {Foo, Bar} from './foo'
+          // ===>
+          // export './foo' show Foo, Bar;
+          this.write_('export');
+          this.writeSpace_();
+          this.visitModuleSpecifier(tree.declaration.moduleSpecifier);
+          this.writeSpace_();
+          this.write_('show');
+          this.writeSpace_();
+          this.writeList_(tree.declaration.specifierSet.specifiers, COMMA, false);
+          this.write_(SEMI_COLON);
+        }
       } else {
-        // export {Foo, Bar} from './foo'
-        // ===>
-        // export './foo' show Foo, Bar;
-        this.write_('export');
-        this.writeSpace_();
-        this.visitModuleSpecifier(tree.declaration.moduleSpecifier);
-        this.writeSpace_();
-        this.write_('show');
-        this.writeSpace_();
-        this.writeList_(tree.declaration.specifierSet.specifiers, COMMA, false);
-        this.write_(SEMI_COLON);
+        // export {...}
+        // This case is handled in `ExportTransformer`.
+        throw new Error('Should never happen!');
       }
     } else {
-      // Just remove the "export" keyword.
-      // export var x = true;
+      // export var x = true
       // export class Foo {}
-      // ===>
-      // var x = true;
-      // class Foo {}
+      // export function bar() {}
+      // Just remove "export" keyword.
       this.writeAnnotations_(tree.annotations);
       this.visitAny(tree.declaration);
     }

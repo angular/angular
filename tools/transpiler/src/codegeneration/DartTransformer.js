@@ -8,6 +8,7 @@ import {InstanceOfTransformer} from './InstanceOfTransformer';
 import {MultiVarTransformer} from './MultiVarTransformer';
 import {StrictEqualityTransformer} from './StrictEqualityTransformer';
 import {NamedParamsTransformer} from './NamedParamsTransformer';
+import {ExportTransformer} from './ExportTransformer';
 
 /**
  * Transforms ES6 + annotations to Dart code.
@@ -28,5 +29,6 @@ export class DartTransformer extends MultiTransformer {
     append(InstanceOfTransformer);
     append(StrictEqualityTransformer);
     append(ClassTransformer);
+    append(ExportTransformer);
   }
 }

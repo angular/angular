@@ -9,8 +9,14 @@ import * as exportModule from './export';
 
 import {Type} from 'facade/lang';
 
+import {Baz} from './reexport';
+
 export function main() {
   describe('imports', function() {
+    it('should re-export imported vars', function() {
+      expect(Baz).toBe('BAZ');
+    });
+
     it('should work', function() {
       expect(Foo).toBe('FOO');
       expect(Bar).toBe('BAR');
