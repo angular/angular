@@ -1,24 +1,18 @@
 var benchpress = require('angular-benchpress/lib/cli');
-var clean = require('gulp-rimraf');
-var connect = require('gulp-connect');
-var ejs = require('gulp-ejs');
 var es = require('event-stream');
 var file2moduleName = require('./file2modulename');
 var fs = require('fs');
 var glob = require('glob');
 var gulp = require('gulp');
+var $ = require('gulp-load-plugins')();
 var merge = require('merge');
 var mergeStreams = require('event-stream').merge;
 var path = require('path');
 var Q = require('q');
 var readline = require('readline');
-var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
-var shell = require('gulp-shell');
 var spawn = require('child_process').spawn;
 var through2 = require('through2');
-var watch = require('gulp-watch');
-var changed = require('gulp-changed');
 
 var js2es5Options = {
   sourceMaps: true,
@@ -88,7 +82,7 @@ var sourceTypeConfigs = {
 
 gulp.task('modules/clean', function() {
   return gulp.src('build', {read: false})
-      .pipe(clean());
+      .pipe($.rimraf());
 });
 
 gulp.task('modules/build.dart/src', function() {
@@ -99,7 +93,7 @@ gulp.task('modules/build.dart/pubspec', function() {
   var outputDir = sourceTypeConfigs.dart.outputDir;
   var files = [];
   var changedStream = gulp.src('modules/*/pubspec.yaml')
-    .pipe(changed(outputDir)) // Only forward files that changed.
+    .pipe($.changed(outputDir)) // Only forward files that changed.
     .pipe(through2.obj(function(file, enc, done) {
       files.push(path.resolve(process.cwd(), outputDir, file.relative));
       this.push(file);
@@ -160,19 +154,19 @@ function renameEs5ToJs(file) {
 
 function createModuleTask(sourceTypeConfig) {
   var transpile = gulp.src(sourceTypeConfig.transpileSrc)
-    .pipe(rename({extname: '.'+sourceTypeConfig.outputExt}))
-    .pipe(rename(renameSrcToLib))
+    .pipe($.rename({extname: '.'+sourceTypeConfig.outputExt}))
+    .pipe($.rename(renameSrcToLib))
     .pipe(gulpTraceur(sourceTypeConfig.compilerOptions, file2moduleName))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
   var copy = gulp.src(sourceTypeConfig.copySrc)
-    .pipe(rename(renameSrcToLib))
-    .pipe(rename(renameEs5ToJs))
+    .pipe($.rename(renameSrcToLib))
+    .pipe($.rename(renameEs5ToJs))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
   // TODO: provide the list of files to the template
   // automatically!
   var html = gulp.src(sourceTypeConfig.htmlSrc)
-    .pipe(rename(renameSrcToLib))
-    .pipe(ejs({
+    .pipe($.rename(renameSrcToLib))
+    .pipe($.ejs({
       type: sourceTypeConfig.outputExt
     }))
     .pipe(gulp.dest(sourceTypeConfig.outputDir));
@@ -275,7 +269,7 @@ gulp.task('benchmarks/build.js', function() {
 gulp.task('benchmarks/build.dart2js.dart', function () {
   return gulp.src([
     "build/dart/benchmarks/lib/**/benchmark.dart"
-  ]).pipe(shell(['dart2js --package-root="build/dart/benchmarks/packages" -o "<%= file.path %>.js" <%= file.path %>']));
+  ]).pipe($.shell(['dart2js --package-root="build/dart/benchmarks/packages" -o "<%= file.path %>.js" <%= file.path %>']));
 });
 
 gulp.task('benchmarks/create-bpconf.dart', function () {
@@ -313,7 +307,7 @@ gulp.task('benchmarks/build.dart', function() {
 // WEB SERVERS
 
 gulp.task('serve', function() {
-  connect.server({
+  $.connect.server({
     root: [__dirname+'/build'],
     port: 8000,
     livereload: false,
