@@ -16,7 +16,7 @@ export class ChangeDetector {
     var count:int = 0;
     for (record = this._rootWatchGroup.headRecord;
          record != null;
-         record = record.checkNext) {
+         record = record.next) {
       if (record.check()) {
         count++;
       }

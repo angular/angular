@@ -15,7 +15,7 @@ export class AST {
     throw new BaseException("Not supported");
   }
 
-  visit(visitor) {
+  visit(visitor, args) {
   }
 }
 
@@ -24,8 +24,8 @@ export class ImplicitReceiver extends AST {
     return context;
   }
 
-  visit(visitor) {
-    visitor.visitImplicitReceiver(this);
+  visit(visitor, args) {
+    visitor.visitImplicitReceiver(this, args);
   }
 }
 
@@ -47,8 +47,8 @@ export class Chain extends AST {
     return result;
   }
 
-  visit(visitor) {
-    visitor.visitChain(this);
+  visit(visitor, args) {
+    visitor.visitChain(this, args);
   }
 }
 
@@ -70,8 +70,8 @@ export class Conditional extends AST {
     }
   }
 
-  visit(visitor) {
-    visitor.visitConditional(this);
+  visit(visitor, args) {
+    visitor.visitConditional(this, args);
   }
 }
 
@@ -99,8 +99,8 @@ export class AccessMember extends AST {
     return this.setter(this.receiver.eval(context), value);
   }
 
-  visit(visitor) {
-    visitor.visitAccessMember(this);
+  visit(visitor, args) {
+    visitor.visitAccessMember(this, args);
   }
 }
 
@@ -143,8 +143,8 @@ export class KeyedAccess extends AST {
     return value;
   }
 
-  visit(visitor) {
-    visitor.visitKeyedAccess(this);
+  visit(visitor, args) {
+    visitor.visitKeyedAccess(this, args);
   }
 }
 
@@ -159,8 +159,8 @@ export class Formatter extends AST {
     this.allArgs = ListWrapper.concat([exp], args);
   }
 
-  visit(visitor) {
-    visitor.visitFormatter(this);
+  visit(visitor, args) {
+    visitor.visitFormatter(this, args);
   }
 }
 
@@ -174,8 +174,8 @@ export class LiteralPrimitive extends AST {
     return this.value;
   }
   
-  visit(visitor) {
-    visitor.visitLiteralPrimitive(this);
+  visit(visitor, args) {
+    visitor.visitLiteralPrimitive(this, args);
   }
 }
 
@@ -189,8 +189,8 @@ export class LiteralArray extends AST {
     return ListWrapper.map(this.expressions, (e) => e.eval(context));
   }
   
-  visit(visitor) {
-    visitor.visitLiteralArray(this);
+  visit(visitor, args) {
+    visitor.visitLiteralArray(this, args);
   }
 }
 
@@ -210,8 +210,8 @@ export class LiteralMap extends AST {
     return res;
   }
 
-  visit(visitor) {
-    visitor.visitLiteralMap(this);
+  visit(visitor, args) {
+    visitor.visitLiteralMap(this, args);
   }
 }
 
@@ -256,8 +256,8 @@ export class Binary extends AST {
     throw 'Internal error [$operation] not handled';
   }
 
-  visit(visitor) {
-    visitor.visitBinary(this);
+  visit(visitor, args) {
+    visitor.visitBinary(this, args);
   }
 }
 
@@ -272,8 +272,8 @@ export class PrefixNot extends AST {
     return !this.expression.eval(context);
   }
 
-  visit(visitor) { 
-    visitor.visitPrefixNot(this); 
+  visit(visitor, args) {
+    visitor.visitPrefixNot(this, args);
   }
 }
 
@@ -289,8 +289,8 @@ export class Assignment extends AST {
     return this.target.assign(context, this.value.eval(context));
   }
   
-  visit(visitor) {
-    visitor.visitAssignment(this); 
+  visit(visitor, args) {
+    visitor.visitAssignment(this, args);
   }
 }
 
@@ -309,8 +309,8 @@ export class MethodCall extends AST {
     return this.fn(obj, evalList(context, this.args));
   }
 
-  visit(visitor) {
-    visitor.visitMethodCall(this);
+  visit(visitor, args) {
+    visitor.visitMethodCall(this, args);
   }
 }
 
@@ -332,27 +332,27 @@ export class FunctionCall extends AST {
     return FunctionWrapper.apply(obj, evalList(context, this.args));
   }
 
-  visit(visitor) {
-    visitor.visitFunctionCall(this);
+  visit(visitor, args) {
+    visitor.visitFunctionCall(this, args);
   }
 }
 
 //INTERFACE
 export class AstVisitor {
-  visitChain(ast:Chain){}
-  visitImplicitReceiver(ast:ImplicitReceiver) {}
-  visitConditional(ast:Conditional) {}
-  visitAccessMember(ast:AccessMember) {}
-  visitKeyedAccess(ast:KeyedAccess) {}
-  visitBinary(ast:Binary) {}
-  visitPrefixNot(ast:PrefixNot) {}
-  visitLiteralPrimitive(ast:LiteralPrimitive) {}
-  visitFormatter(ast:Formatter) {}
-  visitAssignment(ast:Assignment) {}
-  visitLiteralArray(ast:LiteralArray) {}
-  visitLiteralMap(ast:LiteralMap) {}
-  visitMethodCall(ast:MethodCall) {}
-  visitFunctionCall(ast:FunctionCall) {}
+  visitChain(ast:Chain, args){}
+  visitImplicitReceiver(ast:ImplicitReceiver, args) {}
+  visitConditional(ast:Conditional, args) {}
+  visitAccessMember(ast:AccessMember, args) {}
+  visitKeyedAccess(ast:KeyedAccess, args) {}
+  visitBinary(ast:Binary, args) {}
+  visitPrefixNot(ast:PrefixNot, args) {}
+  visitLiteralPrimitive(ast:LiteralPrimitive, args) {}
+  visitFormatter(ast:Formatter, args) {}
+  visitAssignment(ast:Assignment, args) {}
+  visitLiteralArray(ast:LiteralArray, args) {}
+  visitLiteralMap(ast:LiteralMap, args) {}
+  visitMethodCall(ast:MethodCall, args) {}
+  visitFunctionCall(ast:FunctionCall, args) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

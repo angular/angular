@@ -1,5 +1,6 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
+import {Record, ProtoRecord} from 'change_detection/record';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {ProtoWatchGroup} from 'change_detection/watch_group';
 import {ChangeDetector} from 'change_detection/change_detector';
@@ -94,42 +95,31 @@ export function main() {
         createCollectDomNodesTestCases(true);
       });
 
-      describe('create ElementInjectors', () => {
-        it('should use the directives of the ProtoElementInjector', () => {
-          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'), new ProtoWatchGroup());
-          pv.bindElement(new ProtoElementInjector(null, 1, [Directive]));
-
-          var view = pv.instantiate(null, null);
-          expect(view.elementInjectors.length).toBe(1);
-          expect(view.elementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+      describe('react to watch group changes', function() {
+        var view;
+        beforeEach(() => {
+          var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
+          var pv = new ProtoView(template, templateElementBinders(),
+            new ProtoWatchGroup(), false);
+          view = pv.instantiate(null, null);
         });
 
-        it('should use the correct parent', () => {
-          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
-            new ProtoWatchGroup());
-          var protoParent = new ProtoElementInjector(null, 0, [Directive]);
-          pv.bindElement(protoParent);
-          pv.bindElement(new ProtoElementInjector(protoParent, 1, [AnotherDirective]));
-
-          var view = pv.instantiate(null, null);
-          expect(view.elementInjectors.length).toBe(2);
-          expect(view.elementInjectors[0].get(Directive) instanceof Directive).toBe(true);
-          expect(view.elementInjectors[1].parent).toBe(view.elementInjectors[0]);
+        it('should consume text node changes', () => {
+          var record = new Record(null, null);
+          record.currentValue = 'Hello World!';
+          view.onRecordChange(record , 0);
+          expect(view.textNodes[0].nodeValue).toEqual('Hello World!');
         });
       });
 
-      describe('collect root element injectors', () => {
-
-        it('should collect a single root element injector', () => {
-          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
-            new ProtoWatchGroup());
-          var protoParent = new ProtoElementInjector(null, 0, [Directive]);
-          pv.bindElement(protoParent);
-          pv.bindElement(new ProtoElementInjector(protoParent, 1, [AnotherDirective]));
-
-          var view = pv.instantiate(null, null);
-          expect(view.rootElementInjectors.length).toBe(1);
-          expect(view.rootElementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+        it('should consume element binding changes', () => {
+          var elementWithBinding = view.bindElements[0];
+          expect(elementWithBinding.id).toEqual('');
+          var record = new Record(null, null);
+          var memento = new ElementPropertyMemento(0, 'id');
+          record.currentValue = 'foo';
+          view.onRecordChange(record, memento);
+          expect(elementWithBinding.id).toEqual('foo');
         });
 
         it('should collect multiple root element injectors', () => {
@@ -138,10 +128,13 @@ export function main() {
           pv.bindElement(new ProtoElementInjector(null, 1, [Directive]));
           pv.bindElement(new ProtoElementInjector(null, 2, [AnotherDirective]));
 
-          var view = pv.instantiate(null, null);
-          expect(view.rootElementInjectors.length).toBe(2);
-          expect(view.rootElementInjectors[0].get(Directive) instanceof Directive).toBe(true);
-          expect(view.rootElementInjectors[1].get(AnotherDirective) instanceof AnotherDirective).toBe(true);
+          expect(elInj.get(Directive).prop).toEqual('foo');
+          var record = new Record(null, null);
+          var memento = new DirectivePropertyMemento(1, 0, 'prop',
+              (o, v) => o.prop = v);
+          record.currentValue = 'bar';
+          view.onRecordChange(record, memento);
+          expect(elInj.get(Directive).prop).toEqual('bar');
         });
 
       });

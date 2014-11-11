@@ -1,6 +1,13 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
-import {FIELD} from 'facade/lang';
+import {FIELD, isPresent, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
+import {ListWrapper} from 'facade/collection';
 import {ClosureMap} from 'change_detection/parser/closure_map';
+
+var _fresh = new Object();
+
+export const PROTO_RECORD_CONST = 'const';
+export const PROTO_RECORD_FUNC = 'func';
+export const PROTO_RECORD_PROPERTY = 'property';
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -8,21 +15,30 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
  */
 export class ProtoRecord {
   @FIELD('final watchGroup:wg.ProtoWatchGroup')
-  @FIELD('final fieldName:String')
-  /// order list of all records. Including head/tail markers
+  @FIELD('final context:Object')
+  @FIELD('final arity:int')
+  @FIELD('final dest')
+
   @FIELD('next:ProtoRecord')
   @FIELD('prev:ProtoRecord')
-  // Opaque data which will be the target of notification.
-  // If the object is instance of Record, than it it is directly processed
-  // Otherwise it is the context used by  WatchGroupDispatcher.
-  @FIELD('memento')
-  constructor(watchGroup:ProtoWatchGroup, fieldName:string, dispatchMemento) {
+  @FIELD('recordInConstruction:Record')
+  constructor(watchGroup:ProtoWatchGroup,
+              recordType:string,
+              funcOrValue,
+              arity:int,
+              dest) {
+
     this.watchGroup = watchGroup;
-    this.fieldName = fieldName;
-    this.dispatchMemento = dispatchMemento;
+    this.recordType = recordType;
+    this.funcOrValue = funcOrValue;
+    this.arity = arity;
+    this.dest = dest;
+
     this.next = null;
     this.prev = null;
- }
+
+    this.recordInConstruction = null;
+  }
 }
 
 
@@ -43,101 +59,114 @@ export class ProtoRecord {
 export class Record {
   @FIELD('final watchGroup:WatchGroup')
   @FIELD('final protoRecord:ProtoRecord')
-  /// order list of all records. Including head/tail markers
   @FIELD('next:Record')
   @FIELD('prev:Record')
-  /// next record to dirty check
-  @FIELD('checkNext:Record')
-  @FIELD('checkPrev:Record')
-  // next notifier
-  @FIELD('notifierNext:Record')
+  @FIELD('dest:Record')
+
+  @FIELD('previousValue')
+  @FIELD('currentValue')
 
   @FIELD('mode:int')
   @FIELD('context')
-  @FIELD('getter')
-  @FIELD('previousValue')
-  @FIELD('currentValue')
-  constructor(watchGroup/*:wg.WatchGroup*/, protoRecord:ProtoRecord) {
-    this.protoRecord = protoRecord;
+  @FIELD('funcOrValue')
+  @FIELD('args:List')
+
+  // Opaque data which will be the target of notification.
+  // If the object is instance of Record, then it it is directly processed
+  // Otherwise it is the context used by  WatchGroupDispatcher.
+  @FIELD('dest')
+
+  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord) {
     this.watchGroup = watchGroup;
+    this.protoRecord = protoRecord;
+
     this.next = null;
     this.prev = null;
-    this.checkNext = null;
-    this.checkPrev = null;
-    this.notifierNext = null;
+    this.dest = null;
 
-    this.mode = MODE_STATE_MARKER;
-    this.context = null;
-    this.getter = null;
-    this.arguments = null;
     this.previousValue = null;
-    // `this` means that the record is fresh
-    this.currentValue = this;
+    this.currentValue = _fresh;
+
+    this.mode = null;
+    this.context = null;
+    this.funcOrValue = null;
+    this.args = null;
+
+    if (protoRecord.recordType === PROTO_RECORD_CONST) {
+      this.mode = MODE_STATE_CONST;
+      this.funcOrValue = protoRecord.funcOrValue;
+
+    } else if (protoRecord.recordType === PROTO_RECORD_FUNC) {
+      this.mode = MODE_STATE_INVOKE_FUNCTION;
+      this.funcOrValue = protoRecord.funcOrValue;
+      this.args = ListWrapper.createFixedSize(protoRecord.arity);
+
+    } else if (protoRecord.recordType === PROTO_RECORD_PROPERTY) {
+      this.mode = MODE_STATE_PROPERTY;
+      this.funcOrValue = protoRecord.funcOrValue;
+    }
   }
 
   check():boolean {
-    var mode = this.mode;
-    var state = mode & MODE_MASK_STATE;
-    var notify = mode & MODE_MASK_NOTIFY;
-    var newValue;
-    switch (state) {
-      case MODE_STATE_MARKER:
-        return false;
-      case MODE_STATE_PROPERTY:
-        newValue = this.getter(this.context);
-        break;
-      case MODE_STATE_INVOKE_CLOSURE:
-        newValue = this.context(this.arguments);
-        break;
-      case MODE_STATE_INVOKE_METHOD:
-        newValue = this.getter(this.context, this.arguments);
-        break;
-      case MODE_STATE_MAP:
-        throw 'not implemented';
-      case MODE_STATE_LIST:
-        throw 'not implemented';
-      default:
-        throw 'not implemented';
-    }
+    this.previousValue = this.currentValue;
+    this.currentValue = this._calculateNewValue();
 
+    if (isSame(this.previousValue, this.currentValue)) return false;
 
-    var previousValue = this.currentValue;
-    if (previousValue === this) {
-      // When the record is checked for the first time we should always notify
-      this.currentValue = newValue;
-      this.previousValue = previousValue = null;
-    } else {
-      this.currentValue = newValue;
-      this.previousValue = previousValue;
-
-      if (isSame(previousValue, newValue)) return false;
-
-      // In Dart, we can have `str1 !== str2` but `str1 == str2`
-      if (previousValue instanceof String &&
-          newValue instanceof String &&
-          previousValue == newValue) {
-        return false
-      }
-    }
-
-    // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
-    if (this.protoRecord.dispatchMemento === null) {
-      this.next.setContext(this.currentValue);
-    } else {
-      // notify through dispatcher
-      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dispatchMemento);
-    }
+    this._updateDestination();
 
     return true;
   }
 
-  setContext(context) {
-    this.mode = MODE_STATE_PROPERTY;
-    this.context = context;
-    var closureMap = new ClosureMap();
-    this.getter = closureMap.getter(this.protoRecord.fieldName);
+  _updateDestination() {
+    // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
+    if (this.dest instanceof Record) {
+      if (isPresent(this.protoRecord.dest.position)) {
+        this.dest.updateArg(this.currentValue, this.protoRecord.dest.position);
+      } else {
+        this.dest.updateContext(this.currentValue);
+      }
+    } else {
+      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dest);
+    }
   }
 
+  _calculateNewValue() {
+    var state = this.mode;
+    switch (state) {
+      case MODE_STATE_PROPERTY:
+        return this.funcOrValue(this.context);
+
+      case MODE_STATE_INVOKE_FUNCTION:
+        return FunctionWrapper.apply(this.funcOrValue, this.args);
+
+      case MODE_STATE_CONST:
+        return this.funcOrValue;
+
+      case MODE_STATE_MARKER:
+        throw new BaseException('MODE_STATE_MARKER not implemented');
+
+      case MODE_STATE_INVOKE_METHOD:
+        throw new BaseException('MODE_STATE_INVOKE_METHOD not implemented');
+
+      case MODE_STATE_MAP:
+        throw new BaseException('MODE_STATE_MAP not implemented');
+
+      case MODE_STATE_LIST:
+        throw new BaseException('MODE_STATE_LIST not implemented');
+
+      default:
+        throw new BaseException('DEFAULT not implemented');
+    }
+  }
+
+  updateArg(value, position:int) {
+    this.args[position] = value;
+  }
+
+  updateContext(value) {
+    this.context = value;
+  }
 }
 
 // The mode is divided into two parts. Which notification mechanism
@@ -154,7 +183,7 @@ const MODE_STATE_MARKER = 0x0000;
 /// _context[_protoRecord.propname] => _getter(_context)
 const MODE_STATE_PROPERTY = 0x0001;
 /// _context(_arguments)
-const MODE_STATE_INVOKE_CLOSURE = 0x0002;
+const MODE_STATE_INVOKE_FUNCTION = 0x0002;
 /// _getter(_context, _arguments)
 const MODE_STATE_INVOKE_METHOD = 0x0003;
 
@@ -163,7 +192,11 @@ const MODE_STATE_MAP = 0x0004;
 /// _context is Array/List/Iterable => _previousValue = ListChangeRecord
 const MODE_STATE_LIST = 0x0005;
 
+/// _context is number/string
+const MODE_STATE_CONST = 0x0006;
+
 function isSame(a, b) {
+  if (a instanceof String && b instanceof String) return a == b;
   if (a === b) return true;
   if ((a !== a) && (b !== b)) return true;
   return false;
