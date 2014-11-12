@@ -21,12 +21,14 @@ import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 import {ChangeDetector} from 'change_detection/change_detector';
+import {Injector} from 'di/di';
 
 export function main() {
   describe('ElementBinderBuilder', () => {
     var evalContext, view, changeDetector;
 
-    function createPipeline({textNodeBindings, propertyBindings, directives, protoElementInjector}={}) {
+    function createPipeline({textNodeBindings, propertyBindings, directives, protoElementInjector
+    }={}) {
       var reflector = new Reflector();
       var closureMap = new ClosureMap();
       return new CompilePipeline([
@@ -69,7 +71,7 @@ export function main() {
 
     function instantiateView(protoView) {
       evalContext = new Context();
-      view = protoView.instantiate(evalContext, null);
+      view = protoView.instantiate(evalContext, new Injector([]), null);
       changeDetector = new ChangeDetector(view.watchGroup);
     }
 
@@ -174,7 +176,7 @@ export function main() {
         'boundprop3': 'prop3'
       });
       var directives = [SomeDecoratorDirectiveWithBinding, SomeTemplateDirectiveWithBinding, SomeComponentDirectiveWithBinding];
-      var protoElementInjector = new ProtoElementInjector(null, 0, directives);
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
       var pipeline = createPipeline({
         propertyBindings: propertyBindings,
         directives: directives,
@@ -182,6 +184,8 @@ export function main() {
       });
       var results = pipeline.process(createElement('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
+      results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
+          createElement('<div></div>'), new ProtoWatchGroup());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

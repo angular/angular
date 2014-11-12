@@ -129,6 +129,7 @@ export class ProtoElementInjector  {
   @FIELD('_key9:int')
   @FIELD('final parent:ProtoElementInjector')
   @FIELD('final index:int')
+  @FIELD('view:View')
   constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
     this.parent = parent;
     this.index = index;

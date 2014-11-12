@@ -30,6 +30,7 @@ export class View {
   /// to keep track of the nodes.
   @FIELD('final nodes:List<Node>')
   @FIELD('final onChangeDispatcher:OnChangeDispatcher')
+  @FIELD('childViews: List<View>')
   constructor(nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
       protoWatchGroup:ProtoWatchGroup, context) {
@@ -41,6 +42,9 @@ export class View {
     this.bindElements = bindElements;
     this.watchGroup = protoWatchGroup.instantiate(this, MapWrapper.create());
     this.watchGroup.setContext(context);
+    // TODO(rado): Since this is only used in tests for now, investigate whether
+    // we can remove it.
+    this.childViews = [];
   }
 
   onRecordChange(record:Record, target) {
@@ -58,6 +62,10 @@ export class View {
       DOM.setText(this.textNodes[textNodeIndex], record.currentValue);
     }
   }
+
+  addChild(childView: View) {
+    ListWrapper.push(this.childViews, childView);
+  }
 }
 
 export class ProtoView {
@@ -74,7 +82,7 @@ export class ProtoView {
     this.elementsWithBindingCount = 0;
   }
 
-  instantiate(context, appInjector:Injector):View {
+  instantiate(context, lightDomAppInjector:Injector, hostElementInjector: ElementInjector):View {
     var clone = DOM.clone(this.element);
     var elements;
     if (clone instanceof TemplateElement) {
@@ -89,14 +97,15 @@ export class ProtoView {
 
     /**
      * TODO: vsavkin: benchmark
-     * If this performs poorly, the five loops can be collapsed into one.
+     * If this performs poorly, the seven loops can be collapsed into one.
      */
-    var elementInjectors = ProtoView._createElementInjectors(elements, binders);
+    var elementInjectors = ProtoView._createElementInjectors(elements, binders, hostElementInjector);
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
     var textNodes = ProtoView._textNodes(elements, binders);
     var bindElements = ProtoView._bindElements(elements, binders);
-
+    var shadowAppInjectors = ProtoView._createShadowAppInjectors(binders, lightDomAppInjector);
     var viewNodes;
+
     if (clone instanceof TemplateElement) {
       viewNodes = ListWrapper.clone(clone.content.childNodes);
     } else {
@@ -105,7 +114,10 @@ export class ProtoView {
     var view = new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
         bindElements, this.protoWatchGroup, context);
 
-    ProtoView._instantiateDirectives(view, elements, elementInjectors, appInjector);
+    ProtoView._instantiateDirectives(
+        view, elements, elementInjectors, lightDomAppInjector, shadowAppInjectors);
+    ProtoView._instantiateChildComponentViews(
+        elements, binders, elementInjectors, shadowAppInjectors, view);
 
     return view;
   }
@@ -162,13 +174,13 @@ export class ProtoView {
     );
   }
 
-  static _createElementInjectors(elements, binders) {
+  static _createElementInjectors(elements, binders, hostElementInjector) {
     var injectors = ListWrapper.createFixedSize(binders.length);
     for (var i = 0; i < binders.length; ++i) {
       var proto = binders[i].protoElementInjector;
       if (isPresent(proto)) {
         var parentElementInjector = isPresent(proto.parent) ? injectors[proto.parent.index] : null;
-        injectors[i] = ProtoView._createElementInjector(elements[i], parentElementInjector, proto);
+        injectors[i] = proto.instantiate(parentElementInjector, hostElementInjector);
       } else {
         injectors[i] = null;
       }
@@ -177,15 +189,13 @@ export class ProtoView {
   }
 
   static _instantiateDirectives(
-      view: View, elements:List, injectors:List<ElementInjectors>, appInjector:Injector) {
+      view: View, elements:List, injectors:List<ElementInjectors>, lightDomAppInjector: Injector,
+      shadowDomAppInjectors:List<Injectors>) {
     for (var i = 0; i < injectors.length; ++i) {
       var preBuiltObjs = new PreBuiltObjects(view, new NgElement(elements[i]));
-      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector, null, preBuiltObjs);
+      if (injectors[i] != null) injectors[i].instantiateDirectives(
+          lightDomAppInjector, shadowDomAppInjectors[i], preBuiltObjs);
     }
-  }
-
-  static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
-    return proto.instantiate(parent, null);
   }
 
   static _rootElementInjectors(injectors) {
@@ -215,6 +225,39 @@ export class ProtoView {
     for (var i = 0; i < indices.length; ++i) {
       ListWrapper.push(allTextNodes, childNodes[indices[i]]);
     }
+  }
+
+  static _instantiateChildComponentViews(elements, binders, injectors,
+      shadowDomAppInjectors: List<Injector>, view: View) {
+    for (var i = 0; i < binders.length; ++i) {
+      var binder = binders[i];
+      if (isPresent(binder.componentDirective)) {
+        var injector = injectors[i];
+        var childView = binder.nestedProtoView.instantiate(
+            injector.getComponent(), shadowDomAppInjectors[i], injector);
+        view.addChild(childView);
+        var shadowRoot = elements[i].createShadowRoot();
+        // TODO(rado): reuse utility from ViewPort/View.
+        for (var j = 0; j < childView.nodes.length; ++j) {
+          DOM.appendChild(shadowRoot, childView.nodes[j]);
+        }
+      }
+    }
+  }
+
+  static _createShadowAppInjectors(binders: List<ElementBinders>, lightDomAppInjector: Injector): List<Injectors> {
+    var injectors = ListWrapper.createFixedSize(binders.length);
+    for (var i = 0; i < binders.length; ++i) {
+      var componentDirective = binders[i].componentDirective;
+      if (isPresent(componentDirective)) {
+        var services = componentDirective.annotation.componentServices;
+        injectors[i] = isPresent(services) ?
+            lightDomAppInjector.createChild(services) : lightDomAppInjector;
+      } else {
+        injectors[i] = null;
+      }
+    }
+    return injectors;
   }
 }
 

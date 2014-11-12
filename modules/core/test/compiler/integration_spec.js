@@ -2,6 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/te
 
 import {DOM} from 'facade/dom';
 
+import {Injector} from 'di/di';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -27,7 +28,7 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(ctx, null);
+        view = pv.instantiate(ctx, new Injector([]), null);
         cd = new ChangeDetector(view.watchGroup);
       }
 
@@ -66,6 +67,21 @@ export function main() {
           done();
         });
       });
+
+      it('should support nested components.', (done) => {
+        compiler.compile(MyComp, createElement('<child-cmp></child-cmp>')).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+
+          // TODO(rado): this should be removed once watchgroups addChild is implemented.
+          var childWatchGroup = view.childViews[0].watchGroup;
+          new ChangeDetector(childWatchGroup).detectChanges();
+
+          expect(view.nodes[0].shadowRoot.childNodes[0].nodeValue).toEqual('hello');
+          done();
+        });
+      });
     });
   });
 }
@@ -82,12 +98,32 @@ class MyDir {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir]
+    directives: [MyDir, ChildComp]
   })
 })
 class MyComp {
   constructor() {
     this.ctxProp = 'initial value';
+  }
+}
+
+@Component({
+  selector: 'child-cmp',
+  componentServices: [MyService],
+  template: new TemplateConfig({
+    directives: [MyDir],
+    inline: '{{ctxProp}}'
+  })
+})
+class ChildComp {
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
+  }
+}
+
+class MyService {
+  constructor() {
+    this.greeting = 'hello';
   }
 }
 

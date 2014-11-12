@@ -15,7 +15,7 @@ export class Directive {
       bind:Object,
       lightDomServices:List,
       implementsTypes:List
-    })
+    }={})
   {
     this.selector = selector;
     this.lightDomServices = lightDomServices;
