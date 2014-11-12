@@ -262,7 +262,6 @@ export class Binary extends AST {
 }
 
 export class PrefixNot extends AST {
-  @FIELD('final operation:string')
   @FIELD('final expression:AST')
   constructor(expression:AST) {
     this.expression = expression;

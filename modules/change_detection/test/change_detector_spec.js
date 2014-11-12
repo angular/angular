@@ -121,6 +121,11 @@ export function main() {
         expect(executeWatch('exp', 'false || false')).toEqual(['exp=false']);
       });
 
+      it("should support negate", () => {
+        expect(executeWatch('exp', '!true')).toEqual(['exp=false']);
+        expect(executeWatch('exp', '!!true')).toEqual(['exp=true']);
+      });
+
       it("should support formatters", () => {
         var formatters = {
           "uppercase" : (v) => v.toUpperCase(),
