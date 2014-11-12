@@ -1,6 +1,6 @@
 import {ProtoRecord, Record} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent} from 'facade/lang';
-import {AST, AccessMember, ImplicitReceiver, AstVisitor} from './parser/ast';
+import {AST, AccessMember, ImplicitReceiver, AstVisitor, Binary, LiteralPrimitive} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
@@ -124,6 +124,17 @@ class ProtoRecordCreator {
 
   visitImplicitReceiver(ast:ImplicitReceiver) {
     //do nothing
+  }
+
+  // TODO: add tests for this method!
+  visitLiteralPrimitive(ast:LiteralPrimitive) {
+    // do nothing
+  }
+
+  // TODO: add tests for this method!
+  visitBinary(ast:Binary) {
+    ast.left.visit(this);
+    ast.right.visit(this);
   }
 
   visitAccessMember(ast:AccessMember) {

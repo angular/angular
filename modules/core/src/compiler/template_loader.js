@@ -1,11 +1,11 @@
 import {Promise} from 'facade/async';
 //import {Document} from 'facade/dom';
 
+/**
+ * Strategy to load component templates.
+ */
 export class TemplateLoader {
-
-  constructor() {}
-
-  load(url:String):Promise/*<Document>*/ {
+  load(url:String):Promise<Document> {
     return null;
   }
 }

@@ -1,28 +1,71 @@
-import {Type} from 'facade/lang';
-import {Promise} from 'facade/async';
-import {Element} from 'facade/dom';
-//import {ProtoView} from './view';
+import {Type, FIELD, isBlank, isPresent} from 'facade/lang';
+import {Promise, PromiseWrapper} from 'facade/async';
+import {List, ListWrapper} from 'facade/collection';
+import {DOM, Element} from 'facade/dom';
+
+import {Parser} from 'change_detection/parser/parser';
+import {ClosureMap} from 'change_detection/parser/closure_map';
+
+import {Reflector} from './reflector';
+import {ProtoView} from './view';
+import {CompilePipeline} from './pipeline/compile_pipeline';
+import {CompileElement} from './pipeline/compile_element';
+import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
-import {FIELD} from 'facade/lang';
+import {AnnotatedType} from './annotated_type';
 
+/**
+ * The compiler loads and translates the html templates of components into
+ * nested ProtoViews. To decompose its functionality it uses
+ * the CompilePipeline and the CompileSteps.
+ */
 export class Compiler {
-
-  @FIELD('final _templateLoader:TemplateLoader')
-  constructor(templateLoader:TemplateLoader) {
+  constructor(templateLoader:TemplateLoader, reflector: Reflector, parser:Parser, closureMap:ClosureMap) {
     this._templateLoader = templateLoader;
+    this._reflector = reflector;
+    this._parser = parser;
+    this._closureMap = closureMap;
   }
 
-  /**
-   * # Why promise?
-   *   - compilation will load templates. Instantiating views before templates are loaded will
-   *     complicate the Directive code. BENEFIT: view instantiation become synchrnous.
-   * # Why result that is independent of injector?
-   *   - don't know about injector in deserialization
-   *   - compile does not need the injector, only the ViewFactory does
-   */
-  compile(component:Type, element:Element/* = null*/):Promise/*<ProtoView>*/ {
-    return null;
+  createSteps(component:AnnotatedType):List<CompileStep> {
+    var directives = component.annotation.template.directives;
+    var annotatedDirectives = ListWrapper.create();
+    for (var i=0; i<directives.length; i++) {
+      ListWrapper.push(annotatedDirectives, this._reflector.annotatedType(directives[i]));
+    }
+    return createDefaultSteps(this._parser, this._closureMap, annotatedDirectives);
   }
 
+  compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
+    // TODO load all components transitively from the cache first
+    var cache = null;
+    return PromiseWrapper.resolve(this._compileAllCached(
+      this._reflector.annotatedType(component),
+      cache,
+      templateRoot)
+    );
+  }
 
+  _compileAllCached(component:AnnotatedType, cache, templateRoot:Element = null):ProtoView {
+    if (isBlank(templateRoot)) {
+      // TODO: read out the cache if templateRoot = null. Could contain:
+      // - templateRoot string
+      // - precompiled template
+      // - ProtoView
+      templateRoot = DOM.createTemplate(component.annotation.template.inline);
+    }
+    var pipeline = new CompilePipeline(this.createSteps(component));
+    var compileElements = pipeline.process(templateRoot);
+    var rootProtoView = compileElements[0].inheritedProtoView;
+    // TODO: put the rootProtoView into the cache to support recursive templates!
+
+    for (var i=0; i<compileElements.length; i++) {
+      var ce = compileElements[i];
+      if (isPresent(ce.componentDirective)) {
+        ce.inheritedElementBinder.nestedProtoView = this._compileAllCached(ce.componentDirective, cache, null);
+      }
+    }
+
+    return rootProtoView;
+  }
 }

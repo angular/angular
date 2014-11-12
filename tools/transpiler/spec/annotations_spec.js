@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect, iit} from 'test_lib/test_lib';
 import {readFirstAnnotation} from './fixtures/annotations';
 import {CONST} from 'facade/lang';
 
@@ -35,6 +35,15 @@ class A {}
 @AnnotateMe({maybe: 'yes'})
 class B {}
 
+@AnnotateMe({maybe: {'a': 'b'}})
+class SomeClassWithMapInAnnotation {}
+
+@AnnotateMe({maybe: [23]})
+class SomeClassWithListInAnnotation {}
+
+@AnnotateMe({maybe: new Provide(0)})
+class SomeClassWithConstObject {}
+
 function annotatedParams(@Inject(Foo) f, @Inject(Bar) b) {}
 
 export function main() {
@@ -48,6 +57,18 @@ export function main() {
     it('should work with named arguments', function() {
       expect(readFirstAnnotation(A).maybe).toBe('default');
       expect(readFirstAnnotation(B).maybe).toBe('yes');
+    });
+
+    it('should work with maps in named arguments', () => {
+      expect(readFirstAnnotation(SomeClassWithMapInAnnotation).maybe).toEqual({'a': 'b'});
+    });
+
+    it('should work with lists in named arguments', () => {
+      expect(readFirstAnnotation(SomeClassWithListInAnnotation).maybe).toEqual([23]);
+    });
+
+    it('should work with new instances in named arguments', () => {
+      expect(readFirstAnnotation(SomeClassWithConstObject).maybe).toEqual(new Provide(0));
     });
   });
 }

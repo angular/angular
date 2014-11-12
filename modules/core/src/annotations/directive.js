@@ -8,10 +8,12 @@ export class Directive {
   @CONST()
   constructor({
       selector,
+      bind,
       lightDomServices,
       implementsTypes
     }:{
       selector:String,
+      bind:Object,
       lightDomServices:ElementServicesFunction,
       implementsTypes:Array<Type>
     })
@@ -19,5 +21,6 @@ export class Directive {
     this.selector = selector;
     this.lightDomServices = lightDomServices;
     this.implementsTypes = implementsTypes;
+    this.bind = bind;
   }
 }

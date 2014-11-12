@@ -1,3 +1,5 @@
+import {assert} from 'rtts_assert/rtts_assert';
+
 export var Type = Function;
 export var Math = window.Math;
 
@@ -51,6 +53,14 @@ export class StringWrapper {
 
   static charCodeAt(s:string, index:int) {
     return s.charCodeAt(index);
+  }
+
+  static split(s:string, regExp:RegExp) {
+    return s.split(regExp.multiple);
+  }
+
+  static equals(s:string, s2:string) {
+    return s === s2;
   }
 }
 
@@ -125,15 +135,26 @@ int.assert = function(value) {
   return value == null || typeof value == 'number' && value === Math.floor(value);
 }
 
-export var RegExp = window.RegExp;
+export var RegExp = assert.define('RegExp', function(obj) {
+  assert(obj).is(assert.structure({
+    single: window.RegExp,
+    multiple: window.RegExp
+  }));
+});
 
 export class RegExpWrapper {
   static create(regExpStr):RegExp {
-    return new RegExp(regExpStr, 'g');
+    return {
+      multiple: new window.RegExp(regExpStr, 'g'),
+      single: new window.RegExp(regExpStr)
+    };
+  }
+  static firstMatch(regExp, input) {
+    return input.match(regExp.single);
   }
   static matcher(regExp, input) {
     return {
-      re: regExp,
+      re: regExp.multiple,
       input: input
     };
   }

@@ -1,14 +1,197 @@
-import {describe, xit, it, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
-import {Record} from 'change_detection/record';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {ProtoWatchGroup} from 'change_detection/watch_group';
 import {ChangeDetector} from 'change_detection/change_detector';
+import {Parser} from 'change_detection/parser/parser';
+import {ClosureMap} from 'change_detection/parser/closure_map';
+import {Lexer} from 'change_detection/parser/lexer';
 import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
-import {ImplicitReceiver, AccessMember} from 'change_detection/parser/ast';
-import {ClosureMap} from 'change_detection/parser/closure_map';
-import {ElementBinder} from 'core/compiler/element_binder';
+
+export function main() {
+  describe('view', function() {
+    var parser, closureMap;
+
+    beforeEach( () => {
+      closureMap = new ClosureMap();
+      parser = new Parser(new Lexer(), closureMap);
+    });
+
+    describe('ProtoView.instantiate', function() {
+
+      describe('collect root nodes', () => {
+
+        it('should use the ProtoView element if it is no TemplateElement', () => {
+          var pv = new ProtoView(createElement('<div id="1"></div>'), new ProtoWatchGroup());
+          var view = pv.instantiate(null, null);
+          expect(view.nodes.length).toBe(1);
+          expect(view.nodes[0].getAttribute('id')).toEqual('1');
+        });
+
+        it('should use the ProtoView elements children if it is a TemplateElement', () => {
+          var pv = new ProtoView(createElement('<template><div id="1"></div></template>'),
+            new ProtoWatchGroup());
+          var view = pv.instantiate(null, null);
+          expect(view.nodes.length).toBe(1);
+          expect(view.nodes[0].getAttribute('id')).toEqual('1');
+        });
+
+      });
+
+      describe('collect elements with property bindings', () => {
+
+        it('should collect property bindings on the root element if it has the ng-binding class', () => {
+          var pv = new ProtoView(createElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindElementProperty('prop', parser.parseBinding('a'));
+
+          var view = pv.instantiate(null, null);
+          expect(view.bindElements.length).toEqual(1);
+          expect(view.bindElements[0]).toBe(view.nodes[0]);
+        });
+
+        it('should collect property bindings on child elements with ng-binding class', () => {
+          var pv = new ProtoView(createElement('<div><span></span><span class="ng-binding"></span></div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindElementProperty('a', parser.parseBinding('b'));
+
+          var view = pv.instantiate(null, null);
+          expect(view.bindElements.length).toEqual(1);
+          expect(view.bindElements[0]).toBe(view.nodes[0].childNodes[1]);
+        });
+
+      });
+
+      describe('collect text nodes with bindings', () => {
+
+        it('should collect text nodes under the root element', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindTextNode(0, parser.parseBinding('a'));
+          pv.bindTextNode(2, parser.parseBinding('b'));
+
+          var view = pv.instantiate(null, null);
+          expect(view.textNodes.length).toEqual(2);
+          expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[0]);
+          expect(view.textNodes[1]).toBe(view.nodes[0].childNodes[2]);
+        });
+
+        it('should collect text nodes with bindings on child elements with ng-binding class', () => {
+          var pv = new ProtoView(createElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindTextNode(0, parser.parseBinding('b'));
+
+          var view = pv.instantiate(null, null);
+          expect(view.textNodes.length).toEqual(1);
+          expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[1].childNodes[0]);
+        });
+
+      });
+
+      describe('create ElementInjectors', () => {
+        it('should use the directives of the ProtoElementInjector', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'), new ProtoWatchGroup());
+          pv.bindElement(new ProtoElementInjector(null, 1, [Directive]));
+
+          var view = pv.instantiate(null, null);
+          expect(view.elementInjectors.length).toBe(1);
+          expect(view.elementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+        });
+
+        it('should use the correct parent', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
+            new ProtoWatchGroup());
+          var protoParent = new ProtoElementInjector(null, 0, [Directive]);
+          pv.bindElement(protoParent);
+          pv.bindElement(new ProtoElementInjector(protoParent, 1, [AnotherDirective]));
+
+          var view = pv.instantiate(null, null);
+          expect(view.elementInjectors.length).toBe(2);
+          expect(view.elementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+          expect(view.elementInjectors[1].parent).toBe(view.elementInjectors[0]);
+        });
+      });
+
+      describe('collect root element injectors', () => {
+
+        it('should collect a single root element injector', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
+            new ProtoWatchGroup());
+          var protoParent = new ProtoElementInjector(null, 0, [Directive]);
+          pv.bindElement(protoParent);
+          pv.bindElement(new ProtoElementInjector(protoParent, 1, [AnotherDirective]));
+
+          var view = pv.instantiate(null, null);
+          expect(view.rootElementInjectors.length).toBe(1);
+          expect(view.rootElementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+        });
+
+        it('should collect multiple root element injectors', () => {
+          var pv = new ProtoView(createElement('<div><span class="ng-binding"></span><span class="ng-binding"></span></div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(new ProtoElementInjector(null, 1, [Directive]));
+          pv.bindElement(new ProtoElementInjector(null, 2, [AnotherDirective]));
+
+          var view = pv.instantiate(null, null);
+          expect(view.rootElementInjectors.length).toBe(2);
+          expect(view.rootElementInjectors[0].get(Directive) instanceof Directive).toBe(true);
+          expect(view.rootElementInjectors[1].get(AnotherDirective) instanceof AnotherDirective).toBe(true);
+        });
+
+      });
+
+      describe('react to watch group changes', () => {
+        var view, cd, ctx;
+
+        function createView(protoView) {
+          ctx = new MyEvaluationContext();
+          view = protoView.instantiate(ctx, null);
+          cd = new ChangeDetector(view.watchGroup);
+        }
+
+        it('should consume text node changes', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindTextNode(0, parser.parseBinding('foo'));
+          createView(pv);
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(view.textNodes[0].nodeValue).toEqual('buz');
+        });
+
+        it('should consume element binding changes', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(null);
+          pv.bindElementProperty('id', parser.parseBinding('foo'));
+          createView(pv);
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(view.bindElements[0].id).toEqual('buz');
+        });
+
+        it('should consume directive watch expression change.', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
+            new ProtoWatchGroup());
+          pv.bindElement(new ProtoElementInjector(null, 0, [Directive]));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('foo'), 'prop', closureMap.setter('prop'));
+          createView(pv);
+
+          ctx.foo = 'buz';
+          cd.detectChanges();
+          expect(view.elementInjectors[0].get(Directive).prop).toEqual('buz');
+        });
+      });
+
+    });
+  });
+}
 
 class Directive {
   @FIELD('prop')
@@ -17,167 +200,11 @@ class Directive {
   }
 }
 
-export function main() {
-  var oneFieldAst = (fieldName) => {
-    var cm = new ClosureMap();
-    return new AccessMember(new ImplicitReceiver(), fieldName,
-      cm.getter(fieldName), cm.setter(fieldName));
-  };
-
-  describe('view', function() {
-    var tempalteWithThreeTypesOfBindings =
-            '<section class="ng-binding">' +
-               'Hello {}!' +
-               '<div directive class="ng-binding">' +
-                 '<span class="ng-binding" [id]="exp">don\'t show me</span>' +
-               '</div>' +
-             '</section>';
-
-    function templateElementBinders() {
-        var sectionPI = new ElementBinder(new ProtoElementInjector(null, 0, []),
-            [0], false);
-
-        var divPI = new ElementBinder(new ProtoElementInjector(
-            sectionPI.protoElementInjector, 1, [Directive]), [], false);
-
-        var spanPI = new ElementBinder(new ProtoElementInjector(
-            divPI.protoElementInjector, 2, []), [], true);
-        return [sectionPI, divPI, spanPI];
-    }
-
-    describe('ProtoView', function() {
-      it('should create view instance and locate basic parts', function() {
-        var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
-
-        var hasSingleRoot = false;
-        var pv = new ProtoView(template, templateElementBinders(),
-            new ProtoWatchGroup(), hasSingleRoot);
-
-        var view = pv.instantiate(null, null);
-
-        var section = DOM.firstChild(template.content);
-
-        expect(DOM.getInnerHTML(DOM.firstChild(view.fragment))).toEqual(DOM.getInnerHTML(section)); // exclude top level <section>
-
-        expect(view.elementInjectors.length).toEqual(3);
-        expect(view.elementInjectors[0]).toBeNull();
-        expect(view.elementInjectors[1]).toBeAnInstanceOf(ElementInjector);
-        expect(view.elementInjectors[2]).toBeNull();
-
-        expect(view.textNodes.length).toEqual(1);
-        expect(view.bindElements.length).toEqual(1);
-        expect(view.textNodes[0].nodeValue).toEqual('Hello {}!');
-      });
-
-      it('should set root element injectors', function() {
-        var template = DOM.createTemplate(
-          '<section directive class="ng-binding">' +
-            '<div directive class="ng-binding"></div>' +
-          '</section>');
-
-        var sectionPI = new ElementBinder(new ProtoElementInjector(
-            null, 0, [Directive]), [], false);
-        var divPI = new ElementBinder(new ProtoElementInjector(
-            sectionPI.protoElementInjector, 1, [Directive]), [], false);
-
-        var pv = new ProtoView(template, [sectionPI, divPI],
-          new ProtoWatchGroup(), false);
-        var view = pv.instantiate(null, null);
-
-        expect(view.rootElementInjectors.length).toEqual(1);
-      });
-
-      describe('react to watch group changes', function() {
-        var view;
-        beforeEach(() => {
-          var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
-          var pv = new ProtoView(template, templateElementBinders(),
-            new ProtoWatchGroup(), false);
-          view = pv.instantiate(null, null);
-        });
-
-        it('should consume text node changes', () => {
-          var record = new Record(null, null);
-          record.currentValue = 'Hello World!';
-          view.onRecordChange(record , 0);
-          expect(view.textNodes[0].nodeValue).toEqual('Hello World!');
-        });
-
-        it('should consume element binding changes', () => {
-          var elementWithBinding = view.bindElements[0];
-          expect(elementWithBinding.id).toEqual('');
-          var record = new Record(null, null);
-          var memento = new ElementPropertyMemento(0, 'id');
-          record.currentValue = 'foo';
-          view.onRecordChange(record, memento);
-          expect(elementWithBinding.id).toEqual('foo');
-        });
-
-        it('should consume directive watch expression change.', () => {
-          var elInj = view.elementInjectors[1];
-
-          expect(elInj.get(Directive).prop).toEqual('foo');
-          var record = new Record(null, null);
-          var memento = new DirectivePropertyMemento(1, 0, 'prop',
-              (o, v) => o.prop = v);
-          record.currentValue = 'bar';
-          view.onRecordChange(record, memento);
-          expect(elInj.get(Directive).prop).toEqual('bar');
-        });
-      });
-
-      describe('integration view update with change detector', () => {
-        var view, cd, ctx;
-        function setUp(memento) {
-          var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
-
-          var protoWatchGroup = new ProtoWatchGroup();
-          protoWatchGroup.watch(oneFieldAst('foo'), memento);
-
-          var pv = new ProtoView(template, templateElementBinders(),
-              protoWatchGroup, false);
-
-          ctx = new MyEvaluationContext();
-          view = pv.instantiate(ctx, null);
-
-          cd = new ChangeDetector(view.watchGroup);
-        }
-
-        it('should consume text node changes', () => {
-          setUp(0);
-
-          ctx.foo = 'buz';
-          cd.detectChanges();
-          expect(view.textNodes[0].nodeValue).toEqual('buz');
-        });
-
-        it('should consume element binding changes', () => {
-          setUp(new ElementPropertyMemento(0, 'id'));
-
-          var elementWithBinding = view.bindElements[0];
-          expect(elementWithBinding.id).toEqual('');
-
-          ctx.foo = 'buz';
-          cd.detectChanges();
-          expect(elementWithBinding.id).toEqual('buz');
-        });
-
-        it('should consume directive watch expression change.', () => {
-          var memento = new DirectivePropertyMemento(1, 0, 'prop',
-              (o, v) => o.prop = v);
-          setUp(memento);
-
-          var elInj = view.elementInjectors[1];
-          expect(elInj.get(Directive).prop).toEqual('foo');
-
-          ctx.foo = 'buz';
-          cd.detectChanges();
-          expect(elInj.get(Directive).prop).toEqual('buz');
-        });
-
-      });
-    });
-  });
+class AnotherDirective {
+  @FIELD('prop')
+  constructor() {
+    this.prop = 'anotherFoo';
+  }
 }
 
 class MyEvaluationContext {
@@ -185,4 +212,8 @@ class MyEvaluationContext {
   constructor() {
     this.foo = 'bar';
   };
+}
+
+function createElement(html) {
+  return DOM.createTemplate(html).content.firstChild;
 }

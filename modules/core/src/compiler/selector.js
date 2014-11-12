@@ -1,30 +1,107 @@
-import {List, ListWrapper, StringMapWrapper} from 'facade/collection';
-import {RegExpWrapper, RegExpMatcherWrapper, CONST, isPresent, isBlank} from 'facade/lang';
+import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
+import {isPresent, isBlank, RegExpWrapper, RegExpMatcherWrapper, StringWrapper} from 'facade/lang';
 
 const _EMPTY_ATTR_VALUE = '';
 
+// TODO: Can't use `const` here as
+// in Dart this is not transpiled into `final` yet...
+var _SELECTOR_REGEXP =
+    RegExpWrapper.create('^([-\\w]+)|' +    // "tag"
+    '(?:\\.([-\\w]+))|' +                   // ".class"
+    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])'); // "[name]", "[name=value]" or "[name*=value]"
+
+/**
+ * A css selector contains an element name,
+ * css classes and attribute/value pairs with the purpose
+ * of selecting subsets out of them.
+ */
+export class CssSelector {
+  static parse(selector:string):CssSelector {
+    var cssSelector = new CssSelector();
+    var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
+    var match;
+    while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
+      if (isPresent(match[1])) {
+        cssSelector.setElement(match[1]);
+      }
+      if (isPresent(match[2])) {
+        cssSelector.addClassName(match[2]);
+      }
+      if (isPresent(match[3])) {
+        cssSelector.addAttribute(match[3], match[4]);
+      }
+    }
+    return cssSelector;
+  }
+
+  constructor() {
+    this.element = null;
+    this.classNames = ListWrapper.create();
+    this.attrs = ListWrapper.create();
+  }
+
+  setElement(element:string = null) {
+    if (isPresent(element)) {
+      element = element.toLowerCase();
+    }
+    this.element = element;
+  }
+
+  addAttribute(name:string, value:string = _EMPTY_ATTR_VALUE) {
+    ListWrapper.push(this.attrs, name.toLowerCase());
+    if (isPresent(value)) {
+      value = value.toLowerCase();
+    } else {
+      value = _EMPTY_ATTR_VALUE;
+    }
+    ListWrapper.push(this.attrs, value);
+  }
+
+  addClassName(name:string) {
+    ListWrapper.push(this.classNames, name.toLowerCase());
+  }
+
+  toString():string {
+    var res = '';
+    if (isPresent(this.element)) {
+      res += this.element;
+    }
+    if (isPresent(this.classNames)) {
+      for (var i=0; i<this.classNames.length; i++) {
+        res += '.' + this.classNames[i];
+      }
+    }
+    if (isPresent(this.attrs)) {
+      for (var i=0; i<this.attrs.length;) {
+        var attrName = this.attrs[i++];
+        var attrValue = this.attrs[i++]
+        res += '[' + attrName;
+        if (attrValue.length > 0) {
+          res += '=' + attrValue;
+        }
+        res += ']';
+      }
+    }
+    return res;
+  }
+}
+
+/**
+ * Reads a list of CssSelectors and allows to calculate which ones
+ * are contained in a given CssSelector.
+ */
 export class SelectorMatcher {
-  /* TODO: Add these fields when the transpiler supports fields
-  _elementMap:Map<String, List>;
-  _elementPartialMap:Map<String, Selector>;
-
-  _classMap:Map<String, List>;
-  _classPartialMap:Map<String, Selector>;
-
-  _attrValueMap:Map<String, Map<String, List>>;
-  _attrValuePartialMap:Map<String, Map<String, Selector>>;
-  */
   constructor() {
     this._selectables = ListWrapper.create();
 
-    this._elementMap = StringMapWrapper.create();
-    this._elementPartialMap = StringMapWrapper.create();
+    this._elementMap = MapWrapper.create();
+    this._elementPartialMap = MapWrapper.create();
 
-    this._classMap = StringMapWrapper.create();
-    this._classPartialMap = StringMapWrapper.create();
+    this._classMap = MapWrapper.create();
+    this._classPartialMap = MapWrapper.create();
 
-    this._attrValueMap = StringMapWrapper.create();
-    this._attrValuePartialMap = StringMapWrapper.create();
+    this._attrValueMap = MapWrapper.create();
+    this._attrValuePartialMap = MapWrapper.create();
   }
 
   /**
@@ -60,16 +137,15 @@ export class SelectorMatcher {
     }
 
     if (isPresent(attrs)) {
-      for (var index = 0; index<attrs.length; index++) {
-        var isTerminal = index === attrs.length - 1;
-        var attr = attrs[index];
-        var attrName = attr.name;
-        var attrValue = isPresent(attr.value) ? attr.value : _EMPTY_ATTR_VALUE;
+      for (var index = 0; index<attrs.length; ) {
+        var isTerminal = index === attrs.length - 2;
+        var attrName = attrs[index++];
+        var attrValue = attrs[index++];
         var map = isTerminal ? matcher._attrValueMap : matcher._attrValuePartialMap;
-        var valuesMap = StringMapWrapper.get(map, attrName)
+        var valuesMap = MapWrapper.get(map, attrName)
         if (isBlank(valuesMap)) {
-          valuesMap = StringMapWrapper.create();
-          StringMapWrapper.set(map, attrName, valuesMap);
+          valuesMap = MapWrapper.create();
+          MapWrapper.set(map, attrName, valuesMap);
         }
         if (isTerminal) {
           this._addTerminal(valuesMap, attrValue, selectable);
@@ -79,21 +155,21 @@ export class SelectorMatcher {
       }
     }
   }
-  // TODO: map:StringMap when we have a StringMap type...
-  _addTerminal(map, name:string, selectable) {
-    var terminalList = StringMapWrapper.get(map, name)
+
+  _addTerminal(map:Map<string,string>, name:string, selectable) {
+    var terminalList = MapWrapper.get(map, name)
     if (isBlank(terminalList)) {
       terminalList = ListWrapper.create();
-      StringMapWrapper.set(map, name, terminalList);
+      MapWrapper.set(map, name, terminalList);
     }
     ListWrapper.push(terminalList, selectable);
   }
-  // TODO: map:StringMap when we have a StringMap type...
-  _addPartial(map, name:string) {
-    var matcher = StringMapWrapper.get(map, name)
+
+  _addPartial(map:Map<string,string>, name:string) {
+    var matcher = MapWrapper.get(map, name)
     if (isBlank(matcher)) {
       matcher = new SelectorMatcher();
-      StringMapWrapper.set(map, name, matcher);
+      MapWrapper.set(map, name, matcher);
     }
     return matcher;
   }
@@ -121,25 +197,27 @@ export class SelectorMatcher {
     }
 
     if (isPresent(attrs)) {
-      for (var index = 0; index<attrs.length; index++) {
-        var attr = attrs[index];
-        var attrName = attr.name;
-        var attrValue = isPresent(attr.value) ? attr.value : _EMPTY_ATTR_VALUE;
+      for (var index = 0; index<attrs.length;) {
+        var attrName = attrs[index++];
+        var attrValue = attrs[index++];
 
-        var valuesMap = StringMapWrapper.get(this._attrValueMap, attrName)
+        var valuesMap = MapWrapper.get(this._attrValueMap, attrName);
+        if (!StringWrapper.equals(attrValue, _EMPTY_ATTR_VALUE)) {
+          this._matchTerminal(valuesMap, _EMPTY_ATTR_VALUE, matchedCallback);
+        }
         this._matchTerminal(valuesMap, attrValue, matchedCallback);
 
-        valuesMap = StringMapWrapper.get(this._attrValuePartialMap, attrName)
+        valuesMap = MapWrapper.get(this._attrValuePartialMap, attrName)
         this._matchPartial(valuesMap, attrValue, cssSelector, matchedCallback);
       }
     }
   }
-  // TODO: map:StringMap when we have a StringMap type...
-  _matchTerminal(map, name, matchedCallback) {
+
+  _matchTerminal(map:Map<string,string> = null, name, matchedCallback) {
     if (isBlank(map) || isBlank(name)) {
       return;
     }
-    var selectables = StringMapWrapper.get(map, name)
+    var selectables = MapWrapper.get(map, name)
     if (isBlank(selectables)) {
       return;
     }
@@ -147,12 +225,12 @@ export class SelectorMatcher {
       matchedCallback(selectables[index]);
     }
   }
-  // TODO: map:StringMap when we have a StringMap type...
-  _matchPartial(map, name, cssSelector, matchedCallback) {
+
+  _matchPartial(map:Map<string,string> = null, name, cssSelector, matchedCallback) {
     if (isBlank(map) || isBlank(name)) {
       return;
     }
-    var nestedSelector = StringMapWrapper.get(map, name)
+    var nestedSelector = MapWrapper.get(map, name)
     if (isBlank(nestedSelector)) {
       return;
     }
@@ -160,73 +238,5 @@ export class SelectorMatcher {
     // TODO(perf): don't pass the whole selector into the recursion,
     // but only the not processed parts
     nestedSelector.match(cssSelector, matchedCallback);
-  }
-}
-
-export class Attr {
-  @CONST()
-  constructor(name:string, value:string = null) {
-    this.name = name;
-    this.value = value;
-  }
-}
-
-// TODO: Can't use `const` here as
-// in Dart this is not transpiled into `final` yet...
-var _SELECTOR_REGEXP =
-    RegExpWrapper.create('^([-\\w]+)|' +    // "tag"
-    '(?:\\.([-\\w]+))|' +                   // ".class"
-    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])'); // "[name]", "[name=value]" or "[name*=value]"
-
-export class CssSelector {
-  static parse(selector:string):CssSelector {
-    var element = null;
-    var classNames = ListWrapper.create();
-    var attrs = ListWrapper.create();
-    selector = selector.toLowerCase();
-    var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
-    var match;
-    while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
-      if (isPresent(match[1])) {
-        element = match[1];
-      }
-      if (isPresent(match[2])) {
-        ListWrapper.push(classNames, match[2]);
-      }
-      if (isPresent(match[3])) {
-        ListWrapper.push(attrs, new Attr(match[3], match[4]));
-      }
-    }
-    return new CssSelector(element, classNames, attrs);
-  }
-  // TODO: do a toLowerCase() for all arguments
-  @CONST()
-  constructor(element:string, classNames:List<string>, attrs:List<Attr>) {
-    this.element = element;
-    this.classNames = classNames;
-    this.attrs = attrs;
-  }
-
-  toString():string {
-    var res = '';
-    if (isPresent(this.element)) {
-      res += this.element;
-    }
-    if (isPresent(this.classNames)) {
-      for (var i=0; i<this.classNames.length; i++) {
-        res += '.' + this.classNames[i];
-      }
-    }
-    if (isPresent(this.attrs)) {
-      for (var i=0; i<this.attrs.length; i++) {
-        var attr = this.attrs[i];
-        res += '[' + attr.name;
-        if (isPresent(attr.value)) {
-          res += '=' + attr.value;
-        }
-        res += ']';
-      }
-    }
-    return res;
   }
 }
