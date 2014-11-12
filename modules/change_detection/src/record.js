@@ -95,25 +95,26 @@ export class Record {
     this.funcOrValue = null;
     this.args = null;
 
-    if (protoRecord.recordType === PROTO_RECORD_CONST) {
+    var type = protoRecord.recordType;
+    if (type === PROTO_RECORD_CONST) {
       this.mode = MODE_STATE_CONST;
       this.funcOrValue = protoRecord.funcOrValue;
 
-    } else if (protoRecord.recordType === PROTO_RECORD_PURE_FUNCTION) {
+    } else if (type === PROTO_RECORD_PURE_FUNCTION) {
       this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
       this.funcOrValue = protoRecord.funcOrValue;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (protoRecord.recordType === PROTO_RECORD_METHOD) {
+    } else if (type === PROTO_RECORD_METHOD) {
       this.mode = MODE_STATE_INVOKE_METHOD;
       this.funcOrValue = protoRecord.funcOrValue;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (protoRecord.recordType === PROTO_RECORD_CLOSURE) {
+    } else if (type === PROTO_RECORD_CLOSURE) {
       this.mode = MODE_STATE_INVOKE_CLOSURE;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (protoRecord.recordType === PROTO_RECORD_PROPERTY) {
+    } else if (type === PROTO_RECORD_PROPERTY) {
       this.mode = MODE_STATE_PROPERTY;
       this.funcOrValue = protoRecord.funcOrValue;
     }
@@ -210,7 +211,6 @@ const MODE_STATE_LIST = 0x0006;
 const MODE_STATE_CONST = 0x0007;
 
 function isSame(a, b) {
-  if (a instanceof String && b instanceof String) return a == b;
   if (a === b) return true;
   if ((a !== a) && (b !== b)) return true;
   return false;
