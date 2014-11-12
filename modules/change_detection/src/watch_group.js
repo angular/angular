@@ -3,7 +3,7 @@ import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_PURE_FUNCTION,
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
-  Binary, Formatter, MethodCall, FunctionCall} from './parser/ast';
+  Binary, Formatter, MethodCall, FunctionCall, PrefixNot} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
@@ -170,10 +170,14 @@ class ProtoRecordCreator {
 
   visitBinary(ast:Binary, dest) {
     var record = this.construct(PROTO_RECORD_PURE_FUNCTION, _operationToFunction(ast.operation), 2, dest);
-
     ast.left.visit(this, new Destination(record, 0));
     ast.right.visit(this, new Destination(record, 1));
+    this.add(record);
+  }
 
+  visitPrefixNot(ast:PrefixNot, dest) {
+    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, _operation_negate, 1, dest);
+    ast.expression.visit(this, new Destination(record, 0));
     this.add(record);
   }
 
@@ -232,7 +236,6 @@ class ProtoRecordCreator {
 
 function _operationToFunction(operation:string):Function {
   switch(operation) {
-    case '!'  : return _operation_negate;
     case '+'  : return _operation_add;
     case '-'  : return _operation_subtract;
     case '*'  : return _operation_multiply;
