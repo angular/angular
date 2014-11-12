@@ -87,6 +87,17 @@ export function main() {
 
       it("should support literals", () => {
         expect(executeWatch('const', '10')).toEqual(['const=10']);
+        expect(executeWatch('const', '"str"')).toEqual(['const=str']);
+      });
+
+      it("should support literal array", () => {
+        var c = createChangeDetector('array', '[1,2]');
+        c["changeDetector"].detectChanges();
+        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+
+        c = createChangeDetector('array', '[1,a]', new TestData(2));
+        c["changeDetector"].detectChanges();
+        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
       });
 
       it("should support binary operations", () => {
@@ -179,14 +190,17 @@ class TestData {
 class LoggingDispatcher extends WatchGroupDispatcher {
   constructor() {
     this.log = null;
+    this.loggedValues = null;
     this.clear();
   }
 
   clear() {
     this.log = ListWrapper.create();
+    this.loggedValues = ListWrapper.create();
   }
 
   onRecordChange(record:Record, context) {
+    ListWrapper.push(this.loggedValues, record.currentValue);
     ListWrapper.push(this.log, context + '=' + record.currentValue.toString());
   }
 }

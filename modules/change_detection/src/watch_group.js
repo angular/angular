@@ -3,7 +3,8 @@ import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_PURE_FUNCTION,
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
-  Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional} from './parser/ast';
+  Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
+  LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
@@ -222,6 +223,23 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
+  visitKeyedAccess(ast:KeyedAccess, dest) {}
+
+  visitLiteralArray(ast:LiteralArray, dest) {
+    var length = ast.expressions.length;
+    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, _arrayFn(length), length, dest);
+    for (var i = 0; i < length; ++i) {
+      ast.expressions[i].visit(this, new Destination(record, i));
+    }
+    this.add(record);
+  }
+
+  visitLiteralMap(ast:LiteralMap, dest) {}
+
+  visitChain(ast:Chain, dest){this.unsupported();}
+
+  visitAssignment(ast:Assignment, dest) {this.unsupported();}
+
   createRecordsFromAST(ast:AST, memento){
     ast.visit(this, memento);
   }
@@ -238,6 +256,10 @@ class ProtoRecordCreator {
       protoRecord.prev = this.tailRecord;
       this.tailRecord = protoRecord;
     }
+  }
+
+  unsupported() {
+    throw new BaseException("Unsupported");
   }
 }
 
@@ -275,5 +297,19 @@ function _operation_less_or_equals_then(left, right)    {return left <= right;}
 function _operation_greater_or_equals_then(left, right) {return left >= right;}
 function _operation_logical_and(left, right)            {return left && right;}
 function _operation_logical_or(left, right)             {return left || right;}
-function _cond(cond, trueVal, falseVal)    {return cond ? trueVal : falseVal;}
-
+function _cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
+function _arrayFn(length) {
+  switch (length) {
+    case 0: return () => [];
+    case 1: return (a1) => [a1];
+    case 2: return (a1, a2) => [a1, a2];
+    case 3: return (a1, a2, a3) => [a1, a2, a3];
+    case 4: return (a1, a2, a3, a4) => [a1, a2, a3, a4];
+    case 5: return (a1, a2, a3, a4, a5) => [a1, a2, a3, a4, a5];
+    case 6: return (a1, a2, a3, a4, a5, a6) => [a1, a2, a3, a4, a5, a6];
+    case 7: return (a1, a2, a3, a4, a5, a6, a7) => [a1, a2, a3, a4, a5, a6, a7];
+    case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => [a1, a2, a3, a4, a5, a6, a7, a8];
+    case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => [a1, a2, a3, a4, a5, a6, a7, a8, a9];
+    default: throw new BaseException(`Does not support literal arrays with more than 9 elements`);
+  }
+}
