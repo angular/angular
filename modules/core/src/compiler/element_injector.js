@@ -1,4 +1,4 @@
-import {FIELD, isPresent, isBlank, Type, int} from 'facade/lang';
+import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'facade/lang';
 import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
@@ -106,6 +106,7 @@ export class ProtoElementInjector  {
   @FIELD('_binding7:Binding')
   @FIELD('_binding8:Binding')
   @FIELD('_binding9:Binding')
+  @FIELD('_binding0IsComponent:int')
   @FIELD('_key0:int')
   @FIELD('_key1:int')
   @FIELD('_key2:int')
@@ -118,10 +119,11 @@ export class ProtoElementInjector  {
   @FIELD('_key9:int')
   @FIELD('final parent:ProtoElementInjector')
   @FIELD('final index:int')
-  constructor(parent:ProtoElementInjector, index:int, bindings:List) {
+  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
     this.parent = parent;
     this.index = index;
 
+    this._binding0IsComponent = firstBindingIsComponent;
     this._binding0 = null; this._keyId0 = null;
     this._binding1 = null; this._keyId1 = null;
     this._binding2 = null; this._keyId2 = null;
@@ -150,8 +152,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, view):ElementInjector {
-    return new ElementInjector(this, parent, view);
+  instantiate(parent:ElementInjector, host:ElementInjector, view):ElementInjector {
+    return new ElementInjector(this, parent, host, view);
   }
 
   _createBinding(bindingOrType) {
@@ -212,7 +214,9 @@ export class ElementInjector extends TreeNode {
    */
 
   @FIELD('_proto:ProtoElementInjector')
-  @FIELD('_appInjector:Injector')
+  @FIELD('_lightDomAppInjector:Injector')
+  @FIELD('_shadowDomAppInjector:Injector')
+  @FIELD('_host:ElementInjector')
   @FIELD('_obj0:Object')
   @FIELD('_obj1:Object')
   @FIELD('_obj2:Object')
@@ -224,13 +228,24 @@ export class ElementInjector extends TreeNode {
   @FIELD('_obj8:Object')
   @FIELD('_obj9:Object')
   @FIELD('_view:View')
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, view) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, view) {
     super(parent);
+    if (isPresent(parent) && isPresent(host)) {
+      throw new BaseException('Only either parent or host is allowed');
+    }
+    this._host = null; // needed to satisfy Dart
+    if (isPresent(parent)) {
+      this._host = parent._host;
+    } else {
+      this._host = host;
+    }
+
     this._proto = proto;
     this._view = view;
 
     //we cannot call clearDirectives because fields won't be detected
-    this._appInjector = null;
+    this._lightDomAppInjector = null;
+    this._shadowDomAppInjector = null;
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -245,7 +260,9 @@ export class ElementInjector extends TreeNode {
   }
 
   clearDirectives() {
-    this._appInjector = null;
+    this._lightDomAppInjector = null;
+    this._shadowDomAppInjector = null;
+
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -259,24 +276,42 @@ export class ElementInjector extends TreeNode {
     this._constructionCounter = 0;
   }
 
-  instantiateDirectives(appInjector:Injector) {
-    this._appInjector = appInjector;
-
+  instantiateDirectives(lightDomAppInjector:Injector, shadowDomAppInjector:Injector) {
     var p = this._proto;
+    if (this._proto._binding0IsComponent && isBlank(shadowDomAppInjector)) {
+      throw new BaseException('A shadowDomAppInjector is required as this ElementInjector contains a component');
+    } else if (!this._proto._binding0IsComponent && isPresent(shadowDomAppInjector)) {
+      throw new BaseException('No shadowDomAppInjector allowed as there is not component stored in this ElementInjector');
+    }
+    this._lightDomAppInjector = lightDomAppInjector;
+    this._shadowDomAppInjector = shadowDomAppInjector;
+
     if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
     if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
-    if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);;
-    if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);;
-    if (isPresent(p._keyId4)) this._getDirectiveByKeyId(p._keyId4);;
-    if (isPresent(p._keyId5)) this._getDirectiveByKeyId(p._keyId5);;
-    if (isPresent(p._keyId6)) this._getDirectiveByKeyId(p._keyId6);;
-    if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);;
-    if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);;
-    if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);;
+    if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);
+    if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);
+    if (isPresent(p._keyId4)) this._getDirectiveByKeyId(p._keyId4);
+    if (isPresent(p._keyId5)) this._getDirectiveByKeyId(p._keyId5);
+    if (isPresent(p._keyId6)) this._getDirectiveByKeyId(p._keyId6);
+    if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);
+    if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);
+    if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
   }
 
   get(token) {
-    return this._getByKey(Key.get(token), 0);
+    return this._getByKey(Key.get(token), 0, null);
+  }
+
+  getComponent() {
+    if (this._proto._binding0IsComponent) {
+      return this._obj0;
+    } else {
+      throw new BaseException('There is not component stored in this ElementInjector');
+    }
+  }
+
+  _isComponentKey(key:Key) {
+    return this._proto._binding0IsComponent && key.id === this._proto._keyId0;
   }
 
   _new(binding:Binding) {
@@ -290,16 +325,16 @@ export class ElementInjector extends TreeNode {
 
     var d0,d1,d2,d3,d4,d5,d6,d7,d8,d9;
     try {
-      d0 = length > 0 ? this._getByDependency(deps[0]) : null;
-      d1 = length > 1 ? this._getByDependency(deps[1]) : null;
-      d2 = length > 2 ? this._getByDependency(deps[2]) : null;
-      d3 = length > 3 ? this._getByDependency(deps[3]) : null;
-      d4 = length > 4 ? this._getByDependency(deps[4]) : null;
-      d5 = length > 5 ? this._getByDependency(deps[5]) : null;
-      d6 = length > 6 ? this._getByDependency(deps[6]) : null;
-      d7 = length > 7 ? this._getByDependency(deps[7]) : null;
-      d8 = length > 8 ? this._getByDependency(deps[8]) : null;
-      d9 = length > 9 ? this._getByDependency(deps[9]) : null;
+      d0 = length > 0 ? this._getByDependency(deps[0], binding.key) : null;
+      d1 = length > 1 ? this._getByDependency(deps[1], binding.key) : null;
+      d2 = length > 2 ? this._getByDependency(deps[2], binding.key) : null;
+      d3 = length > 3 ? this._getByDependency(deps[3], binding.key) : null;
+      d4 = length > 4 ? this._getByDependency(deps[4], binding.key) : null;
+      d5 = length > 5 ? this._getByDependency(deps[5], binding.key) : null;
+      d6 = length > 6 ? this._getByDependency(deps[6], binding.key) : null;
+      d7 = length > 7 ? this._getByDependency(deps[7], binding.key) : null;
+      d8 = length > 8 ? this._getByDependency(deps[8], binding.key) : null;
+      d9 = length > 9 ? this._getByDependency(deps[9], binding.key) : null;
     } catch(e) {
       if (e instanceof ProviderError) e.addKey(binding.key);
       throw e;
@@ -324,8 +359,8 @@ export class ElementInjector extends TreeNode {
     return obj;
   }
 
-  _getByDependency(dep:DirectiveDependency) {
-    return this._getByKey(dep.key, dep.depth);
+  _getByDependency(dep:DirectiveDependency, requestor:Key) {
+    return this._getByKey(dep.key, dep.depth, requestor);
   }
 
   /*
@@ -340,7 +375,7 @@ export class ElementInjector extends TreeNode {
    *
    * Write benchmarks before doing this optimization.
    */
-  _getByKey(key:Key, depth:int) {
+  _getByKey(key:Key, depth:int, requestor:Key) {
     var ei = this;
     while (ei != null && depth >= 0) {
       var specObj = ei._getSpecialObjectByKeyId(key.id);
@@ -352,7 +387,17 @@ export class ElementInjector extends TreeNode {
       ei = ei._parent;
       depth -= 1;
     }
-    return this._appInjector.get(key);
+    if (isPresent(this._host) && this._host._isComponentKey(key)) {
+      return this._host.getComponent();
+    } else {
+      var appInjector;
+      if (isPresent(requestor) && this._isComponentKey(requestor)) {
+        appInjector = this._shadowDomAppInjector;
+      } else {
+        appInjector = this._lightDomAppInjector;
+      }
+      return appInjector.get(key);
+    }
   }
 
   _getSpecialObjectByKeyId(keyId:int) {
@@ -364,6 +409,7 @@ export class ElementInjector extends TreeNode {
 
   _getDirectiveByKeyId(keyId:int) {
     var p = this._proto;
+
     if (p._keyId0 === keyId) {if (isBlank(this._obj0)){this._obj0 = this._new(p._binding0);} return this._obj0;}
     if (p._keyId1 === keyId) {if (isBlank(this._obj1)){this._obj1 = this._new(p._binding1);} return this._obj1;}
     if (p._keyId2 === keyId) {if (isBlank(this._obj2)){this._obj2 = this._new(p._binding2);} return this._obj2;}

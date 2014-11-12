@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
-import {isBlank, FIELD, IMPLEMENTS} from 'facade/lang';
+import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, VIEW_KEY} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
@@ -10,6 +10,10 @@ import {View} from 'core/compiler/view';
 class DummyView {}
 
 class Directive {
+}
+
+
+class SomeOtherDirective {
 }
 
 class NeedsDirective {
@@ -66,13 +70,13 @@ export function main() {
     return [lookupName(tree), children];
   }
 
-  function injector(bindings, appInjector = null, props = null) {
-    if (isBlank(appInjector)) appInjector = new Injector([]);
-    if (isBlank(props)) props = {"view" : null};
+  function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, props = null) {
+    if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
+    if (isBlank(props)) props = {"view": null};
 
-    var proto = new ProtoElementInjector(null, 0, bindings);
-    var inj = proto.instantiate(null, props["view"]);
-    inj.instantiateDirectives(appInjector);
+    var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
+    var inj = proto.instantiate(null, null, props["view"]);
+    inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector);
     return inj;
   }
 
@@ -80,14 +84,29 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null);
-    parent.instantiateDirectives(inj);
+    var parent = protoParent.instantiate(null, null, null);
+    parent.instantiateDirectives(inj, null);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
-    var child = protoChild.instantiate(parent, null);
-    child.instantiateDirectives(inj);
+    var child = protoChild.instantiate(parent, null, null);
+    child.instantiateDirectives(inj, null);
 
     return child;
+  }
+
+  function hostShadowInjectors(hostBindings, shadowBindings) {
+    var inj = new Injector([]);
+    var shadowInj = inj.createChild([]);
+
+    var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
+    var host = protoParent.instantiate(null, null, null);
+    host.instantiateDirectives(inj, shadowInj);
+
+    var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false);
+    var shadow = protoChild.instantiate(null, host, null);
+    shadow.instantiateDirectives(shadowInj, null);
+
+    return shadow;
   }
 
   describe("ElementInjector", function () {
@@ -97,9 +116,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null);
-        var c1 = protoChild1.instantiate(p, null);
-        var c2 = protoChild2.instantiate(p, null);
+        var p = protoParent.instantiate(null, null, null);
+        var c1 = protoChild1.instantiate(p, null, null);
+        var c2 = protoChild2.instantiate(p, null, null);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -147,11 +166,45 @@ export function main() {
         expect(d.service).toEqual("service");
       });
 
-      it("should instantiate directives that depend on speical objects", function () {
+      it("should instantiate directives that depend on special objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, {"view" : view});
+        var inj = injector([NeedsView], null, null, {'view':view});
 
         expect(inj.get(NeedsView).view).toBe(view);
+      });
+
+      it("should instantiate directives that depend on the containing component", function () {
+        var shadow = hostShadowInjectors([Directive], [NeedsDirective]);
+
+        var d = shadow.get(NeedsDirective);
+        expect(d).toBeAnInstanceOf(NeedsDirective);
+        expect(d.dependency).toBeAnInstanceOf(Directive);
+      });
+
+      it("should not instantiate directives that depend on other directives in the containing component's ElementInjector", () => {
+        expect( () => {
+          hostShadowInjectors([SomeOtherDirective, Directive], [NeedsDirective]);
+        }).toThrowError('No provider for Directive! (NeedsDirective -> Directive)')
+      });
+
+      it("should instantiate component directives that depend on app services in the shadow app injector", () => {
+        var shadowAppInjector = new Injector([
+          bind("service").toValue("service")
+        ]);
+        var inj = injector([NeedsService], null, shadowAppInjector);
+
+        var d = inj.get(NeedsService);
+        expect(d).toBeAnInstanceOf(NeedsService);
+        expect(d.service).toEqual("service");
+      });
+
+      it("should not instantiate other directives that depend on app services in the shadow app injector", () => {
+        var shadowAppInjector = new Injector([
+          bind("service").toValue("service")
+        ]);
+        expect( () => {
+          injector([SomeOtherDirective, NeedsService], null, shadowAppInjector);
+        }).toThrowError('No provider for service! (NeedsService -> service)');
       });
 
       it("should return app services", function () {
@@ -204,7 +257,7 @@ export function main() {
     describe("special objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, {"view" : view});
+        var inj = injector([], null, null, {"view" : view});
 
         expect(inj.get(View)).toEqual(view);
       });

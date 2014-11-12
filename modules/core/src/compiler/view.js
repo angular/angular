@@ -167,13 +167,13 @@ export class ProtoView {
   static _instantiateDirectives(
       injectors:List<ElementInjectors>, appInjector:Injector) {
     for (var i = 0; i < injectors.length; ++i) {
-      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector);
+      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector, null);
     }
   }
 
   static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
     //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
-    return proto.instantiate(parent, null);
+    return proto.instantiate(parent, null, null);
   }
 
   static _rootElementInjectors(injectors) {

@@ -6,7 +6,7 @@ var count = 0;
 
 export function run () {
   var appInjector = new Injector([]);
-  
+
   var bindings = [
     new Binding(Key.get(A), () => new A(), [], false),
     new Binding(Key.get(B), () => new B(), [], false),
@@ -18,8 +18,8 @@ export function run () {
 
   var proto = new ProtoElementInjector(null, 0, bindings);
   for (var i = 0; i < ITERATIONS; ++i) {
-    var ei = proto.instantiate(null,null);
-    ei.instantiateDirectives(appInjector);
+    var ei = proto.instantiate(null,null,null);
+    ei.instantiateDirectives(appInjector, null);
   }
 }
 

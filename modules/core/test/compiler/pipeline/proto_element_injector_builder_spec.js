@@ -41,9 +41,8 @@ export function main() {
       }), protoElementInjectorBuilder]);
     }
 
-    function assertProtoElementInjector(protoElementInjector, parent, index, bindings) {
-      var args = protoElementInjectorBuilder.findArgsFor(protoElementInjector);
-      expect(args).toEqual([parent, index, bindings]);
+    function getCreationArgs(protoElementInjector) {
+      return protoElementInjectorBuilder.findArgsFor(protoElementInjector);
     }
 
     it('should not create a ProtoElementInjector for elements without directives', () => {
@@ -51,10 +50,19 @@ export function main() {
       expect(results[0].inheritedProtoElementInjector).toBe(null);
     });
 
-    it('should create a ProtoElementInjector for elements with directives', () => {
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+    it('should create a ProtoElementInjector for elements directives', () => {
+      var directives = [SomeComponentDirective, SomeTemplateDirective, SomeDecoratorDirective];
       var results = createPipeline(directives).process(createElement('<div directives></div>'));
-      assertProtoElementInjector(results[0].inheritedProtoElementInjector, null, 0, directives);
+      var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
+      expect(creationArgs['bindings']).toEqual(directives);
+    });
+
+    it('should mark ProtoElementInjector for elements with component directives and use the ComponentDirective as first binding', () => {
+      var directives = [SomeDecoratorDirective, SomeComponentDirective];
+      var results = createPipeline(directives).process(createElement('<div directives></div>'));
+      var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
+      expect(creationArgs['firstBindingIsComponent']).toBe(true);
+      expect(creationArgs['bindings']).toEqual([SomeComponentDirective, SomeDecoratorDirective]);
     });
 
     it('should use the next ElementBinder index as index of the ProtoElementInjector', () => {
@@ -63,37 +71,36 @@ export function main() {
       ListWrapper.push(protoView.elementBinders, null);
       var directives = [SomeDecoratorDirective];
       var results = createPipeline(directives).process(createElement('<div directives></div>'));
-      assertProtoElementInjector(
-        results[0].inheritedProtoElementInjector, null, protoView.elementBinders.length, directives);
+      var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
+      expect(creationArgs['index']).toBe(protoView.elementBinders.length);
     });
 
     it('should inherit the ProtoElementInjector down to children without directives', () => {
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+      var directives = [SomeDecoratorDirective];
       var results = createPipeline(directives).process(createElement('<div directives><span></span></div>'));
-      assertProtoElementInjector(results[0].inheritedProtoElementInjector, null, 0, directives);
-      assertProtoElementInjector(results[1].inheritedProtoElementInjector, null, 0, directives);
+      expect(results[1].inheritedProtoElementInjector).toBe(results[0].inheritedProtoElementInjector);
     });
 
     it('should use the ProtoElementInjector of the parent element as parent', () => {
       var el = createElement('<div directives><span><a directives></a></span></div>');
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+      var directives = [SomeDecoratorDirective];
       var results = createPipeline(directives).process(el);
-      assertProtoElementInjector(results[2].inheritedProtoElementInjector,
-        results[0].inheritedProtoElementInjector, 0, directives);
+      expect(results[2].inheritedProtoElementInjector.parent).toBe(
+        results[0].inheritedProtoElementInjector);
     });
 
     it('should use a null parent for viewRoots', () => {
       var el = createElement('<div directives><span viewroot directives></span></div>');
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+      var directives = [SomeDecoratorDirective];
       var results = createPipeline(directives).process(el);
-      assertProtoElementInjector(results[1].inheritedProtoElementInjector, null, 0, directives);
+      expect(results[1].inheritedProtoElementInjector.parent).toBe(null);
     });
 
     it('should use a null parent if there is an intermediate viewRoot', () => {
       var el = createElement('<div directives><span viewroot><a directives></a></span></div>');
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+      var directives = [SomeDecoratorDirective];
       var results = createPipeline(directives).process(el);
-      assertProtoElementInjector(results[2].inheritedProtoElementInjector, null, 0, directives);
+      expect(results[2].inheritedProtoElementInjector.parent).toBe(null);
     });
   });
 }
@@ -111,10 +118,10 @@ class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
     }
     return null;
   }
-  internalCreateProtoElementInjector(parent, index, directives) {
-    var result = new ProtoElementInjector(parent, index, directives);
+  internalCreateProtoElementInjector(parent, index, bindings, firstBindingIsComponent) {
+    var result = new ProtoElementInjector(parent, index, bindings, firstBindingIsComponent);
     ListWrapper.push(this.debugObjects, result);
-    ListWrapper.push(this.debugObjects, [parent, index, directives]);
+    ListWrapper.push(this.debugObjects, {'parent': parent, 'index': index, 'bindings': bindings, 'firstBindingIsComponent': firstBindingIsComponent});
     return result;
   }
 }
@@ -128,10 +135,14 @@ class MockStep extends CompileStep {
   }
 }
 
+class SomeComponentService {}
+
 @Template()
 class SomeTemplateDirective {}
 
-@Component()
+@Component({
+  componentServices: [SomeComponentService]
+})
 class SomeComponentDirective {}
 
 @Decorator()
