@@ -315,7 +315,7 @@ export class MethodCall extends AST {
 }
 
 export class FunctionCall extends AST {
-  @FIELD('final receiver:AST')
+  @FIELD('final target:AST')
   @FIELD('final closureMap:ClosureMap')
   @FIELD('final args:List')
   constructor(target:AST, closureMap:ClosureMap, args:List) {
