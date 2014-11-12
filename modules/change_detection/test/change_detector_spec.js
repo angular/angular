@@ -126,6 +126,11 @@ export function main() {
         expect(executeWatch('exp', '!!true')).toEqual(['exp=true']);
       });
 
+      it("should support conditionals", () => {
+        expect(executeWatch('m', '1 < 2 ? 1 : 2')).toEqual(['m=1']);
+        expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
+      });
+
       it("should support formatters", () => {
         var formatters = {
           "uppercase" : (v) => v.toUpperCase(),
