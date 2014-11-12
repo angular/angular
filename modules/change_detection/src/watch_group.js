@@ -9,7 +9,7 @@ import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
-  constructor(formatters) {
+  constructor(formatters=null) {
     this.formatters = formatters;
 
     this.headRecord = null;
@@ -152,17 +152,6 @@ class ProtoRecordCreator {
 
   visitImplicitReceiver(ast:ImplicitReceiver, args) {
     //do nothing
-  }
-
-  // TODO: add tests for this method!
-  visitLiteralPrimitive(ast:LiteralPrimitive) {
-    // do nothing
-  }
-
-  // TODO: add tests for this method!
-  visitBinary(ast:Binary) {
-    ast.left.visit(this);
-    ast.right.visit(this);
   }
 
   visitLiteralPrimitive(ast:LiteralPrimitive, dest) {
