@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
 
-import {List, ListWrapper} from 'facade/collection';
+import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -98,6 +98,16 @@ export function main() {
         c = createChangeDetector('array', '[1,a]', new TestData(2));
         c["changeDetector"].detectChanges();
         expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+      });
+
+      it("should support literal maps", () => {
+        var c = createChangeDetector('map', '{z:1}');
+        c["changeDetector"].detectChanges();
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
+
+        c = createChangeDetector('map', '{z:a}', new TestData(1));
+        c["changeDetector"].detectChanges();
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
       });
 
       it("should support binary operations", () => {
