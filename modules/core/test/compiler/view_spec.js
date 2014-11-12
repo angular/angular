@@ -100,7 +100,7 @@ export function main() {
         beforeEach(() => {
           var template = DOM.createTemplate(tempalteWithThreeTypesOfBindings);
           var pv = new ProtoView(template, templateElementBinders(),
-            new ProtoWatchGroup(), false);
+            new ProtoWatchGroup(null), false);
           view = pv.instantiate(null, null);
         });
 
@@ -142,7 +142,12 @@ export function main() {
       describe('react to watch group changes', () => {
         var view, cd, ctx;
 
-        function createView(protoView) {
+          var protoWatchGroup = new ProtoWatchGroup();
+          protoWatchGroup.watch(oneFieldAst('foo'), memento);
+
+          var pv = new ProtoView(template, templateElementBinders(),
+              protoWatchGroup, false);
+
           ctx = new MyEvaluationContext();
           view = protoView.instantiate(ctx, null);
           cd = new ChangeDetector(view.watchGroup);

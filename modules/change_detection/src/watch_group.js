@@ -1,12 +1,14 @@
 import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_FUNC, PROTO_RECORD_PROPERTY} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
-import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive, Binary} from './parser/ast';
+import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive, Binary, Formatter} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
-  constructor() {
+  constructor(formatters) {
+    this.formatters = formatters;
+
     this.headRecord = null;
     this.tailRecord = null;
   }
@@ -176,6 +178,15 @@ class ProtoRecordCreator {
   visitAccessMember(ast:AccessMember, dest) {
     var record = this.construct(PROTO_RECORD_PROPERTY, ast.getter, 0, dest);
     ast.receiver.visit(this, new Destination(record, null));
+    this.add(record);
+  }
+
+  visitFormatter(ast:Formatter, dest) {
+    var formatter = this.protoWatchGroup.formatters[ast.name];
+    var record = this.construct(PROTO_RECORD_FUNC, formatter, ast.allArgs.length, dest);
+    for (var i = 0; i < ast.allArgs.length; ++i) {
+      ast.allArgs[i].visit(this, new Destination(record, i));
+    }
     this.add(record);
   }
 

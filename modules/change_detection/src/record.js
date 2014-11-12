@@ -16,6 +16,7 @@ export const PROTO_RECORD_PROPERTY = 'property';
 export class ProtoRecord {
   @FIELD('final watchGroup:wg.ProtoWatchGroup')
   @FIELD('final context:Object')
+  @FIELD('final funcOrValue:Object')
   @FIELD('final arity:int')
   @FIELD('final dest')
 

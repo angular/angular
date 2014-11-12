@@ -21,8 +21,8 @@ export function main() {
     return parser.parseBinding(exp);
   }
 
-  function createChangeDetector(memo:string, exp:string, context = null) {
-    var pwg = new ProtoWatchGroup();
+  function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
+    var pwg = new ProtoWatchGroup(formatters);
     pwg.watch(ast(exp), memo, false);
 
     var dispatcher = new LoggingDispatcher();
@@ -34,8 +34,8 @@ export function main() {
     return {"changeDetector" : cd, "dispatcher" : dispatcher};
   }
 
-  function executeWatch(memo:string, exp:string, context = null) {
-    var res = createChangeDetector(memo, exp, context);
+  function executeWatch(memo:string, exp:string, context = null, formatters = null) {
+    var res = createChangeDetector(memo, exp, context, formatters);
     res["changeDetector"].detectChanges();
     return res["dispatcher"].log;
   }
@@ -61,7 +61,7 @@ export function main() {
         expect(dispatcher.log).toEqual(['name=Misko']);
       });
 
-      it('should watch chained properties', () => {
+      it('should support chained properties', () => {
         var address = new Address('Grenoble');
         var person = new Person('Victor', address);
 
@@ -69,11 +69,11 @@ export function main() {
               .toEqual(['address.city=Grenoble']);
       });
 
-      it("should watch literals", () => {
+      it("should support literals", () => {
         expect(executeWatch('const', '10')).toEqual(['const=10']);
       });
 
-      it("should watch binary operations", () => {
+      it("should support binary operations", () => {
         expect(executeWatch('exp', '10 + 2')).toEqual(['exp=12']);
         expect(executeWatch('exp', '10 - 2')).toEqual(['exp=8']);
 
@@ -103,6 +103,15 @@ export function main() {
 
         expect(executeWatch('exp', 'true || false')).toEqual(['exp=true']);
         expect(executeWatch('exp', 'false || false')).toEqual(['exp=false']);
+      });
+
+      it("should support formatters", () => {
+        var formatters = {
+          "uppercase" : (v) => v.toUpperCase(),
+          "wrap" : (v, before, after) => `${before}${v}${after}`
+        };
+        expect(executeWatch('str', '"aBc" | uppercase', null, formatters)).toEqual(['str=ABC']);
+        expect(executeWatch('str', '"b" | wrap:"a":"c"', null, formatters)).toEqual(['str=abc']);
       });
     });
   });
