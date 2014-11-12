@@ -1,7 +1,7 @@
 import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_PURE_FUNCTION,
   PROTO_RECORD_PROPERTY, PROTO_RECORD_METHOD, PROTO_RECORD_CLOSURE} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
   LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
@@ -234,7 +234,14 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
-  visitLiteralMap(ast:LiteralMap, dest) {}
+  visitLiteralMap(ast:LiteralMap, dest) {
+    var length = ast.values.length;
+    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, _mapFn(ast.keys, length), length, dest);
+    for (var i = 0; i < length; ++i) {
+      ast.values[i].visit(this, new Destination(record, i));
+    }
+    this.add(record);
+  }
 
   visitChain(ast:Chain, dest){this.unsupported();}
 
@@ -298,7 +305,7 @@ function _operation_greater_or_equals_then(left, right) {return left >= right;}
 function _operation_logical_and(left, right)            {return left && right;}
 function _operation_logical_or(left, right)             {return left || right;}
 function _cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
-function _arrayFn(length) {
+function _arrayFn(length:int) {
   switch (length) {
     case 0: return () => [];
     case 1: return (a1) => [a1];
@@ -311,5 +318,28 @@ function _arrayFn(length) {
     case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => [a1, a2, a3, a4, a5, a6, a7, a8];
     case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => [a1, a2, a3, a4, a5, a6, a7, a8, a9];
     default: throw new BaseException(`Does not support literal arrays with more than 9 elements`);
+  }
+}
+function _mapFn(keys:List, length:int) {
+  function buildMap(values) {
+    var res = MapWrapper.create();
+    for(var i = 0; i < keys.length; ++i) {
+      MapWrapper.set(res, keys[i], values[i]);
+    }
+    return res;
+  }
+
+  switch (length) {
+    case 0: return () => [];
+    case 1: return (a1) => buildMap([a1]);
+    case 2: return (a1, a2) => buildMap([a1, a2]);
+    case 3: return (a1, a2, a3) => buildMap([a1, a2, a3]);
+    case 4: return (a1, a2, a3, a4) => buildMap([a1, a2, a3, a4]);
+    case 5: return (a1, a2, a3, a4, a5) => buildMap([a1, a2, a3, a4, a5]);
+    case 6: return (a1, a2, a3, a4, a5, a6) => buildMap([a1, a2, a3, a4, a5, a6]);
+    case 7: return (a1, a2, a3, a4, a5, a6, a7) => buildMap([a1, a2, a3, a4, a5, a6, a7]);
+    case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => buildMap([a1, a2, a3, a4, a5, a6, a7, a8]);
+    case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => buildMap([a1, a2, a3, a4, a5, a6, a7, a8, a9]);
+    default: throw new BaseException(`Does not support literal maps with more than 9 elements`);
   }
 }
