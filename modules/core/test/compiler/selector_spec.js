@@ -1,7 +1,8 @@
-import {describe, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
-import {SelectorMatcher, CssSelector, Attr} from 'core/compiler/selector';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'test_lib/test_lib';
+import {SelectorMatcher} from 'core/compiler/selector';
+import {CssSelector} from 'core/compiler/selector';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {isPresent} from 'facade/lang';
+import {DOM} from 'facade/dom';
 
 export function main() {
   describe('SelectorMatcher', () => {
@@ -44,7 +45,7 @@ export function main() {
       expect(matched).toEqual([1,2]);
     });
 
-    it('should select by attr name case insensitive', () => {
+    it('should select by attr name case insensitive independent of the value', () => {
       matcher.addSelectable(CssSelector.parse('[someAttr]'), 1);
       matcher.addSelectable(CssSelector.parse('[someAttr][someAttr2]'), 2);
 
@@ -55,8 +56,23 @@ export function main() {
       expect(matched).toEqual([1]);
 
       reset();
+      matcher.match(CssSelector.parse('[SOMEATTR=someValue]'), selectableCollector);
+      expect(matched).toEqual([1]);
+
+      reset();
       matcher.match(CssSelector.parse('[someAttr][someAttr2]'), selectableCollector);
       expect(matched).toEqual([1,2]);
+    });
+
+    it('should select by attr name only once if the value is from the DOM', () => {
+      matcher.addSelectable(CssSelector.parse('[some-decor]'), 1);
+
+      var elementSelector = new CssSelector();
+      var el = createElement('<div attr></div>');
+      var empty = el.getAttribute('attr');
+      elementSelector.addAttribute('some-decor', empty);
+      matcher.match(elementSelector, selectableCollector);
+      expect(matched).toEqual([1]);
     });
 
     it('should select by attr name and value case insensitive', () => {
@@ -127,28 +143,28 @@ export function main() {
 
     it('should detect attr names', () => {
       var cssSelector = CssSelector.parse('[attrname]');
-      var attr = ListWrapper.get(cssSelector.attrs, 0);
-      expect(attr.name).toEqual('attrname');
-      expect(isPresent(attr.value)).toBe(false);
+      expect(cssSelector.attrs).toEqual(['attrname', '']);
+
+      expect(cssSelector.toString()).toEqual('[attrname]');
     });
 
     it('should detect attr values', () => {
       var cssSelector = CssSelector.parse('[attrname=attrvalue]');
-      var attr = ListWrapper.get(cssSelector.attrs, 0);
-      expect(attr.name).toEqual('attrname');
-      expect(attr.value).toEqual('attrvalue');
+      expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
     });
 
     it('should detect multiple parts', () => {
       var cssSelector = CssSelector.parse('sometag[attrname=attrvalue].someclass');
       expect(cssSelector.element).toEqual('sometag');
-      var attr = ListWrapper.get(cssSelector.attrs, 0);
-      expect(attr.name).toEqual('attrname');
-      expect(attr.value).toEqual('attrvalue');
+      expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(cssSelector.classNames).toEqual(['someclass']);
 
       expect(cssSelector.toString()).toEqual('sometag.someclass[attrname=attrvalue]');
     });
   });
+}
+
+function createElement(html) {
+  return DOM.createTemplate(html).content.firstChild;
 }

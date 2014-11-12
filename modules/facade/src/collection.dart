@@ -5,6 +5,7 @@ export 'dart:core' show Map, List, Set;
 
 class MapWrapper {
   static HashMap create() => new HashMap();
+  static HashMap createFromStringMap(m) => m;
   static HashMap createFromPairs(List pairs) {
     return pairs.fold({}, (m, p){
       m[p[0]] = p[1];
@@ -30,6 +31,12 @@ class StringMapWrapper {
   }
   static set(map, key, value) {
     map[key] = value;
+  }
+  static forEach(m, fn) {
+    m.forEach((k,v) => fn(v,k));
+  }
+  static isEmpty(m) {
+    return m.isEmpty;
   }
 }
 

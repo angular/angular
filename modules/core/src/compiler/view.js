@@ -2,22 +2,21 @@ import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facad
 import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
+import {AST} from 'change_detection/parser/ast';
 import {ProtoElementInjector, ElementInjector} from './element_injector';
-// Seems like we are stripping the generics part of List and dartanalyzer
-// complains about ElementBinder being unused. Comment back in once it makes it
-// into the generated code.
-// import {ElementBinder} from './element_binder';
+import {ElementBinder} from './element_binder';
 import {SetterFn} from 'change_detection/parser/closure_map';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
 import {Injector} from 'di/di';
+
+const NG_BINDING_CLASS = 'ng-binding';
 
 /***
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
 @IMPLEMENTS(WatchGroupDispatcher)
 export class View {
-  @FIELD('final fragment:DocumentFragment')
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   @FIELD('final rootElementInjectors:List<ElementInjector>')
   @FIELD('final elementInjectors:List<ElementInjector>')
@@ -28,12 +27,11 @@ export class View {
   /// to keep track of the nodes.
   @FIELD('final nodes:List<Node>')
   @FIELD('final onChangeDispatcher:OnChangeDispatcher')
-  constructor(fragment:DocumentFragment, elementInjector:List,
+  constructor(nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
       protoWatchGroup:ProtoWatchGroup, context) {
-    this.fragment = fragment;
-    this.nodes = ListWrapper.clone(fragment.childNodes);
-    this.elementInjectors = elementInjector;
+    this.nodes = nodes;
+    this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.onChangeDispatcher = null;
     this.textNodes = textNodes;
@@ -60,27 +58,26 @@ export class View {
 }
 
 export class ProtoView {
-  @FIELD('final _template:TemplateElement')
-  @FIELD('final _elementBinders:List<ElementBinder>')
-  @FIELD('final _protoWatchGroup:ProtoWatchGroup')
-  @FIELD('final _useRootElement:bool')
+  @FIELD('final element:Element')
+  @FIELD('final elementBinders:List<ElementBinder>')
+  @FIELD('final protoWatchGroup:ProtoWatchGroup')
   constructor(
-      template:TemplateElement,
-      elementBinders:List,
-      protoWatchGroup:ProtoWatchGroup,
-      useRootElement:boolean) {
-    this._template = template;
-    this._elementBinders = elementBinders;
-    this._protoWatchGroup = protoWatchGroup;
-
-    // not implemented
-    this._useRootElement = useRootElement;
+      template:Element,
+      protoWatchGroup:ProtoWatchGroup) {
+    this.element = template;
+    this.elementBinders = [];
+    this.protoWatchGroup = protoWatchGroup;
+    this.textNodesWithBindingCount = 0;
+    this.elementsWithBindingCount = 0;
   }
 
   instantiate(context, appInjector:Injector):View {
-    var fragment = DOM.clone(this._template.content);
-    var elements = DOM.querySelectorAll(fragment, ".ng-binding");
-    var binders = this._elementBinders;
+    var clone = DOM.clone(this.element);
+    var elements = ListWrapper.clone(DOM.getElementsByClassName(clone, NG_BINDING_CLASS));
+    if (DOM.hasClass(clone, NG_BINDING_CLASS)) {
+      ListWrapper.insert(elements, 0, clone);
+    }
+    var binders = this.elementBinders;
 
     /**
      * TODO: vsavkin: benchmark
@@ -92,16 +89,77 @@ export class ProtoView {
     var bindElements = ProtoView._bindElements(elements, binders);
     ProtoView._instantiateDirectives(elementInjectors, appInjector);
 
-    return new View(fragment, elementInjectors, rootElementInjectors, textNodes,
-        bindElements, this._protoWatchGroup, context);
+    var viewNodes;
+    if (clone instanceof TemplateElement) {
+      viewNodes = ListWrapper.clone(clone.content.childNodes);
+    } else {
+      viewNodes = [clone];
+    }
+    return new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
+        bindElements, this.protoWatchGroup, context);
+  }
+
+  bindElement(protoElementInjector:ProtoElementInjector):ElementBinder {
+    var elBinder = new ElementBinder(protoElementInjector);
+    ListWrapper.push(this.elementBinders, elBinder);
+    return elBinder;
+  }
+
+  /**
+   * Adds a text node binding for the last created ElementBinder via bindElement
+   */
+  bindTextNode(indexInParent:int, expression:AST) {
+    var elBinder = this.elementBinders[this.elementBinders.length-1];
+    ListWrapper.push(elBinder.textNodeIndices, indexInParent);
+    this.protoWatchGroup.watch(expression, this.textNodesWithBindingCount++);
+  }
+
+  /**
+   * Adds an element property binding for the last created ElementBinder via bindElement
+   */
+  bindElementProperty(propertyName:string, expression:AST) {
+    var elBinder = this.elementBinders[this.elementBinders.length-1];
+    if (!elBinder.hasElementPropertyBindings) {
+      elBinder.hasElementPropertyBindings = true;
+      this.elementsWithBindingCount++;
+    }
+    this.protoWatchGroup.watch(expression,
+      new ElementPropertyMemento(
+        this.elementsWithBindingCount-1,
+        propertyName
+      )
+    );
+  }
+
+  /**
+   * Adds a directive property binding for the last created ElementBinder via bindElement
+   */
+  bindDirectiveProperty(
+    directiveIndex:number,
+    expression:AST,
+    setterName:string,
+    setter:SetterFn) {
+    this.protoWatchGroup.watch(
+      expression,
+      new DirectivePropertyMemento(
+        this.elementBinders.length-1,
+        directiveIndex,
+        setterName,
+        setter
+      )
+    );
   }
 
   static _createElementInjectors(elements, binders) {
     var injectors = ListWrapper.createFixedSize(binders.length);
     for (var i = 0; i < binders.length; ++i) {
       var proto = binders[i].protoElementInjector;
-      var parentElementInjector = isPresent(proto.parent) ? injectors[proto.parent.index] : null;
-      injectors[i] = ProtoView._createElementInjector(elements[i], parentElementInjector, proto);
+      if (isPresent(proto)) {
+        var parentElementInjector = isPresent(proto.parent) ? injectors[proto.parent.index] : null;
+        injectors[i] = ProtoView._createElementInjector(elements[i], parentElementInjector, proto);
+      } else {
+        injectors[i] = null;
+      }
     }
     return injectors;
   }
@@ -115,7 +173,7 @@ export class ProtoView {
 
   static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
     //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
-    return proto.hasBindings ? proto.instantiate(parent, null) : null;
+    return proto.instantiate(parent, null);
   }
 
   static _rootElementInjectors(injectors) {
@@ -150,7 +208,7 @@ export class ProtoView {
 
 export class ElementPropertyMemento {
   @FIELD('final _elementIndex:int')
-  @FIELD('final _propertyIndex:string')
+  @FIELD('final _propertyName:string')
   constructor(elementIndex:int, propertyName:string) {
     this._elementIndex = elementIndex;
     this._propertyName = propertyName;

@@ -1,4 +1,5 @@
-import {SelectorMatcher, CssSelector} from "core/compiler/selector";
+import {SelectorMatcher} from "core/compiler/selector";
+import {CssSelector} from "core/compiler/selector";
 import {StringWrapper, Math} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
 

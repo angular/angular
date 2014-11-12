@@ -6,6 +6,13 @@ export var Set = window.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
+  static createFromStringMap(stringMap):Map {
+    var result = MapWrapper.create();
+    for (var prop in stringMap) {
+      MapWrapper.set(result, prop, stringMap[prop]);
+    }
+    return result;
+  }
   static createFromPairs(pairs:List):Map {return new Map(pairs);}
   static get(m, k) { return m.get(k); }
   static set(m, k, v) { m.set(k,v); }
@@ -29,6 +36,17 @@ export class StringMapWrapper {
   }
   static set(map, key, value) {
     map[key] = value;
+  }
+  static isEmpty(map) {
+    for (var prop in map) {
+      return false;
+    }
+    return true;
+  }
+  static forEach(map, callback) {
+    for (var prop in map) {
+      callback(map[prop], prop);
+    }
   }
 }
 
@@ -67,7 +85,7 @@ export class ListWrapper {
   }
   static reduce(list:List, fn:Function, init) {
     return list.reduce(fn, init);
-}
+  }
   static filter(array, pred:Function) {
     return array.filter(pred);
   }

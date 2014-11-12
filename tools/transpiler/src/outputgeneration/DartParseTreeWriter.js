@@ -30,6 +30,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
     super(outputPath);
     this.libName = moduleName.replace(/\//g, '.').replace(/[^\w.\/]/g, '_');
+    this.annotationContextCounter = 0;
   }
 
   // CLASS FIELDS
@@ -378,9 +379,11 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.visitAny(tree.name);
 
     if (tree.args !== null) {
+      this.annotationContextCounter++;
       this.write_(OPEN_PAREN);
       this.writeList_(tree.args.args, COMMA, false);
       this.write_(CLOSE_PAREN);
+      this.annotationContextCounter--;
     }
 
     this.writeSpace_()
@@ -399,6 +402,31 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.visitAny(tree.name);
     this.writeSpace_();
     this.visitAny(tree.body);
+  }
+
+  visitObjectLiteralExpression(tree) {
+    if (this.annotationContextCounter) {
+      this.write_('const');
+    }
+    super.visitObjectLiteralExpression(tree);
+  }
+
+  visitArrayLiteralExpression(tree) {
+    if (this.annotationContextCounter) {
+      this.write_('const');
+    }
+    super.visitArrayLiteralExpression(tree);
+  }
+
+  visitNewExpression(tree) {
+    if (this.annotationContextCounter) {
+      this.write_('const');
+      this.writeSpace_();
+      this.visitAny(tree.operand);
+      this.visitAny(tree.args);
+    } else {
+      super.visitNewExpression(tree);
+    }
   }
 
   visitNamedParameterList(tree) {

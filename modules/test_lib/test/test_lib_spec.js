@@ -17,6 +17,10 @@ export function main() {
         expect(actual).toEqual(expected);
         expect(falseActual).not.toEqual(expected);
       });
+
+      it('should work for arrays of maps', () => {
+        expect([{'a':'b'}]).toEqual([{'a':'b'}]);
+      });
     });
   });
 }

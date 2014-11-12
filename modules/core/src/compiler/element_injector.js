@@ -3,8 +3,9 @@ import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
-import {View} from './view';
 import {StaticKeys} from './static_keys';
+// Comment out as dartanalyzer does not look into @FIELD
+// import {View} from './view';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 

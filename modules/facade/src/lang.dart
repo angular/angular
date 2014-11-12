@@ -58,6 +58,24 @@ class StringWrapper {
   static charCodeAt(String s, int index) {
     return s.codeUnitAt(index);
   }
+
+  static split(String s, RegExp regExp) {
+    var parts = [];
+    var lastEnd = 0;
+    regExp.allMatches(s).forEach((match) {
+      parts.add(s.substring(lastEnd, match.start));
+      lastEnd = match.end;
+      for (var i=0; i<match.groupCount; i++) {
+        parts.add(match.group(i+1));
+      }
+    });
+    parts.add(s.substring(lastEnd));
+    return parts;
+  }
+
+  static equals(String s, String s2) {
+    return s == s2;
+  }
 }
 
 class StringJoiner {
@@ -92,6 +110,9 @@ class NumberWrapper {
 class RegExpWrapper {
   static RegExp create(regExpStr) {
     return new RegExp(regExpStr);
+  }
+  static firstMatch(regExp, input) {
+    return regExp.firstMatch(input);
   }
   static matcher(regExp, input) {
     return regExp.allMatches(input).iterator;
