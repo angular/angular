@@ -69,6 +69,22 @@ export function main() {
               .toEqual(['address.city=Grenoble']);
       });
 
+      it("should support method calls", () => {
+        var person = new Person('Victor');
+        expect(executeWatch('m', 'sayHi("Jim")', person)).toEqual(['m=Hi, Jim']);
+      });
+
+      it("should support function calls", () => {
+        var td = new TestData(() => (a) => a);
+        expect(executeWatch('value', 'a()(99)', td)).toEqual(['value=99']);
+      });
+
+      it("should support chained method calls", () => {
+        var person = new Person('Victor');
+        var td = new TestData(person);
+        expect(executeWatch('m', 'a.sayHi("Jim")', td)).toEqual(['m=Hi, Jim']);
+      });
+
       it("should support literals", () => {
         expect(executeWatch('const', '10')).toEqual(['const=10']);
       });
@@ -123,6 +139,10 @@ class Person {
     this.address = address;
   }
 
+  sayHi(m) {
+    return `Hi, ${m}`;
+  }
+
   toString():string {
     var address = this.address == null ? '' : ' address=' + this.address.toString();
 
@@ -137,6 +157,12 @@ class Address {
 
   toString():string {
     return this.city;
+  }
+}
+
+class TestData {
+  constructor(a) {
+    this.a = a;
   }
 }
 

@@ -6,7 +6,9 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
 var _fresh = new Object();
 
 export const PROTO_RECORD_CONST = 'const';
-export const PROTO_RECORD_FUNC = 'func';
+export const PROTO_RECORD_PURE_FUNCTION = 'func';
+export const PROTO_RECORD_CLOSURE = 'closure';
+export const PROTO_RECORD_METHOD = 'method';
 export const PROTO_RECORD_PROPERTY = 'property';
 
 /**
@@ -97,9 +99,18 @@ export class Record {
       this.mode = MODE_STATE_CONST;
       this.funcOrValue = protoRecord.funcOrValue;
 
-    } else if (protoRecord.recordType === PROTO_RECORD_FUNC) {
-      this.mode = MODE_STATE_INVOKE_FUNCTION;
+    } else if (protoRecord.recordType === PROTO_RECORD_PURE_FUNCTION) {
+      this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
       this.funcOrValue = protoRecord.funcOrValue;
+      this.args = ListWrapper.createFixedSize(protoRecord.arity);
+
+    } else if (protoRecord.recordType === PROTO_RECORD_METHOD) {
+      this.mode = MODE_STATE_INVOKE_METHOD;
+      this.funcOrValue = protoRecord.funcOrValue;
+      this.args = ListWrapper.createFixedSize(protoRecord.arity);
+
+    } else if (protoRecord.recordType === PROTO_RECORD_CLOSURE) {
+      this.mode = MODE_STATE_INVOKE_CLOSURE;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
     } else if (protoRecord.recordType === PROTO_RECORD_PROPERTY) {
@@ -138,7 +149,13 @@ export class Record {
       case MODE_STATE_PROPERTY:
         return this.funcOrValue(this.context);
 
-      case MODE_STATE_INVOKE_FUNCTION:
+      case MODE_STATE_INVOKE_METHOD:
+        return this.funcOrValue(this.context, this.args);
+
+      case MODE_STATE_INVOKE_CLOSURE:
+        return FunctionWrapper.apply(this.context, this.args);
+
+      case MODE_STATE_INVOKE_PURE_FUNCTION:
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
       case MODE_STATE_CONST:
@@ -146,9 +163,6 @@ export class Record {
 
       case MODE_STATE_MARKER:
         throw new BaseException('MODE_STATE_MARKER not implemented');
-
-      case MODE_STATE_INVOKE_METHOD:
-        throw new BaseException('MODE_STATE_INVOKE_METHOD not implemented');
 
       case MODE_STATE_MAP:
         throw new BaseException('MODE_STATE_MAP not implemented');
@@ -183,18 +197,17 @@ const MODE_STATE_MARKER = 0x0000;
 
 /// _context[_protoRecord.propname] => _getter(_context)
 const MODE_STATE_PROPERTY = 0x0001;
-/// _context(_arguments)
-const MODE_STATE_INVOKE_FUNCTION = 0x0002;
-/// _getter(_context, _arguments)
+const MODE_STATE_INVOKE_PURE_FUNCTION = 0x0002;
 const MODE_STATE_INVOKE_METHOD = 0x0003;
+const MODE_STATE_INVOKE_CLOSURE = 0x0004;
 
 /// _context is Map => _previousValue is MapChangeRecord
-const MODE_STATE_MAP = 0x0004;
+const MODE_STATE_MAP = 0x0005;
 /// _context is Array/List/Iterable => _previousValue = ListChangeRecord
-const MODE_STATE_LIST = 0x0005;
+const MODE_STATE_LIST = 0x0006;
 
 /// _context is number/string
-const MODE_STATE_CONST = 0x0006;
+const MODE_STATE_CONST = 0x0007;
 
 function isSame(a, b) {
   if (a instanceof String && b instanceof String) return a == b;

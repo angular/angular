@@ -1,7 +1,9 @@
-import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_FUNC, PROTO_RECORD_PROPERTY} from './record';
+import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_PURE_FUNCTION,
+  PROTO_RECORD_PROPERTY, PROTO_RECORD_METHOD, PROTO_RECORD_CLOSURE} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
-import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive, Binary, Formatter} from './parser/ast';
+import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
+  Binary, Formatter, MethodCall, FunctionCall} from './parser/ast';
 
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
@@ -167,7 +169,7 @@ class ProtoRecordCreator {
   }
 
   visitBinary(ast:Binary, dest) {
-    var record = this.construct(PROTO_RECORD_FUNC, _operationToFunction(ast.operation), 2, dest);
+    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, _operationToFunction(ast.operation), 2, dest);
 
     ast.left.visit(this, new Destination(record, 0));
     ast.right.visit(this, new Destination(record, 1));
@@ -183,9 +185,27 @@ class ProtoRecordCreator {
 
   visitFormatter(ast:Formatter, dest) {
     var formatter = this.protoWatchGroup.formatters[ast.name];
-    var record = this.construct(PROTO_RECORD_FUNC, formatter, ast.allArgs.length, dest);
+    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, formatter, ast.allArgs.length, dest);
     for (var i = 0; i < ast.allArgs.length; ++i) {
       ast.allArgs[i].visit(this, new Destination(record, i));
+    }
+    this.add(record);
+  }
+
+  visitMethodCall(ast:MethodCall, dest) {
+    var record = this.construct(PROTO_RECORD_METHOD, ast.fn, ast.args.length, dest);
+    ast.receiver.visit(this, new Destination(record, null));
+    for (var i = 0; i < ast.args.length; ++i) {
+      ast.args[i].visit(this, new Destination(record, i));
+    }
+    this.add(record);
+  }
+
+  visitFunctionCall(ast:FunctionCall, dest) {
+    var record = this.construct(PROTO_RECORD_CLOSURE, null, ast.args.length, dest);
+    ast.target.visit(this, new Destination(record, null));
+    for (var i = 0; i < ast.args.length; ++i) {
+      ast.args[i].visit(this, new Destination(record, i));
     }
     this.add(record);
   }
