@@ -17,7 +17,7 @@ export class Component extends Directive {
       template:TemplateConfig,
       lightDomServices:DomServicesFunction,
       shadowDomServices:DomServicesFunction,
-      componentServices:ComponentServicesFunction,
+      componentServices:Array,
       implementsTypes:Array<Type>
     }={})
   {

@@ -3,8 +3,10 @@ import {ListWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
+
 import {ProtoElementInjector, ElementInjector} from './element_injector';
 import {ElementBinder} from './element_binder';
+import {AnnotatedType} from './annotated_type';
 import {SetterFn} from 'change_detection/parser/closure_map';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
@@ -99,8 +101,9 @@ export class ProtoView {
         bindElements, this.protoWatchGroup, context);
   }
 
-  bindElement(protoElementInjector:ProtoElementInjector):ElementBinder {
-    var elBinder = new ElementBinder(protoElementInjector);
+  bindElement(protoElementInjector:ProtoElementInjector,
+      componentDirective:AnnotatedType = null, templateDirective:AnnotatedType = null):ElementBinder {
+    var elBinder = new ElementBinder(protoElementInjector, componentDirective, templateDirective);
     ListWrapper.push(this.elementBinders, elBinder);
     return elBinder;
   }

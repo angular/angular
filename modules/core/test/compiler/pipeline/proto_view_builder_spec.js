@@ -15,7 +15,7 @@ export function main() {
         if (isPresent(current.element.getAttribute('viewroot'))) {
           current.isViewRoot = true;
         }
-        current.inheritedElementBinder = new ElementBinder(null);
+        current.inheritedElementBinder = new ElementBinder(null, null, null);
       }), new ProtoViewBuilder()]);
     }
 

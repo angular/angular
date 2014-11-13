@@ -100,7 +100,7 @@ export function main() {
     });
 
     it('should store the current protoElementInjector', () => {
-      var directives = [SomeSimpleDirective];
+      var directives = [SomeDecoratorDirective];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
 
       var pipeline = createPipeline({protoElementInjector: protoElementInjector, directives: directives});
@@ -108,6 +108,24 @@ export function main() {
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].protoElementInjector).toBe(protoElementInjector);
+    });
+
+    it('should store the component directive', () => {
+      var directives = [SomeComponentDirective];
+      var pipeline = createPipeline({protoElementInjector: null, directives: directives});
+      var results = pipeline.process(createElement('<div viewroot directives></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].componentDirective.type).toBe(SomeComponentDirective);
+    });
+
+    it('should store the template directive', () => {
+      var directives = [SomeTemplateDirective];
+      var pipeline = createPipeline({protoElementInjector: null, directives: directives});
+      var results = pipeline.process(createElement('<div viewroot directives></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].templateDirective.type).toBe(SomeTemplateDirective);
     });
 
     it('should bind text nodes', () => {
@@ -155,7 +173,7 @@ export function main() {
         'boundprop2': 'prop2',
         'boundprop3': 'prop3'
       });
-      var directives = [SomeDecoratorDirective, SomeTemplateDirective, SomeComponentDirective];
+      var directives = [SomeDecoratorDirectiveWithBinding, SomeTemplateDirectiveWithBinding, SomeComponentDirectiveWithBinding];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
       var pipeline = createPipeline({
         propertyBindings: propertyBindings,
@@ -171,16 +189,16 @@ export function main() {
       evalContext.prop3 = 'c';
       changeDetector.detectChanges();
 
-      expect(view.elementInjectors[0].get(SomeDecoratorDirective).decorProp).toBe('a');
-      expect(view.elementInjectors[0].get(SomeTemplateDirective).templProp).toBe('b');
-      expect(view.elementInjectors[0].get(SomeComponentDirective).compProp).toBe('c');
+      expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWithBinding).decorProp).toBe('a');
+      expect(view.elementInjectors[0].get(SomeTemplateDirectiveWithBinding).templProp).toBe('b');
+      expect(view.elementInjectors[0].get(SomeComponentDirectiveWithBinding).compProp).toBe('c');
     });
 
     it('should bind directive properties for sibling elements', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
         'boundprop1': 'prop1'
       });
-      var directives = [SomeDecoratorDirective];
+      var directives = [SomeDecoratorDirectiveWithBinding];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
       var pipeline = createPipeline({
         propertyBindings: propertyBindings,
@@ -196,16 +214,16 @@ export function main() {
       evalContext.prop1 = 'a';
       changeDetector.detectChanges();
 
-      expect(view.elementInjectors[1].get(SomeDecoratorDirective).decorProp).toBe('a');
+      expect(view.elementInjectors[1].get(SomeDecoratorDirectiveWithBinding).decorProp).toBe('a');
     });
 
     describe('errors', () => {
 
       it('should throw if there is no element property bindings for a directive property binding', () => {
-        var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirective]});
+        var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirectiveWithBinding]});
         expect( () => {
           pipeline.process(createElement('<div viewroot prop-binding directives>'));
-        }).toThrowError('No element binding found for property boundprop1 which is required by directive SomeDecoratorDirective');
+        }).toThrowError('No element binding found for property boundprop1 which is required by directive SomeDecoratorDirectiveWithBinding');
       });
 
     });
@@ -215,31 +233,39 @@ export function main() {
 }
 
 @Decorator()
-class SomeSimpleDirective {
+class SomeDecoratorDirective {
 }
 
 @Decorator({
   bind: {'boundprop1': 'decorProp'}
 })
-class SomeDecoratorDirective {
+class SomeDecoratorDirectiveWithBinding {
   constructor() {
     this.decorProp = null;
   }
 }
 
+@Template()
+class SomeTemplateDirective {
+}
+
 @Template({
   bind: {'boundprop2': 'templProp'}
 })
-class SomeTemplateDirective {
+class SomeTemplateDirectiveWithBinding {
   constructor() {
     this.templProp = null;
   }
 }
 
+@Component()
+class SomeComponentDirective {
+}
+
 @Component({
   bind: {'boundprop3': 'compProp'}
 })
-class SomeComponentDirective {
+class SomeComponentDirectiveWithBinding {
   constructor() {
     this.compProp = null;
   }
