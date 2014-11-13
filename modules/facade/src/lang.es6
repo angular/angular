@@ -172,15 +172,8 @@ export class FunctionWrapper {
   }
 }
 
-export class BaseException extends Error {
-  constructor(message){
-    this.message = message;
-  }
-
-  toString():String {
-    return this.message;
-  }
-}
+// No subclass so that we preserve error stack.
+export var BaseException = Error;
 
 // JS has NaN !== NaN
 export function looseIdentical(a, b):boolean {
