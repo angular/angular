@@ -52,7 +52,8 @@ export class ElementBinderBuilder extends CompileStep {
     var elementBinder;
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
-      elementBinder = protoView.bindElement(current.inheritedProtoElementInjector);
+      elementBinder = protoView.bindElement(current.inheritedProtoElementInjector,
+        current.componentDirective, current.templateDirective);
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current.textNodeBindings);
