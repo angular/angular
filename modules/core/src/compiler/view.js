@@ -4,13 +4,14 @@ import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detectio
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
 
-import {ProtoElementInjector, ElementInjector} from './element_injector';
+import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
 import {AnnotatedType} from './annotated_type';
 import {SetterFn} from 'change_detection/parser/closure_map';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {List} from 'facade/collection';
 import {Injector} from 'di/di';
+import {NgElement} from 'core/dom/element';
 
 const NG_BINDING_CLASS = 'ng-binding';
 
@@ -94,7 +95,6 @@ export class ProtoView {
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
     var textNodes = ProtoView._textNodes(elements, binders);
     var bindElements = ProtoView._bindElements(elements, binders);
-    ProtoView._instantiateDirectives(elementInjectors, appInjector);
 
     var viewNodes;
     if (clone instanceof TemplateElement) {
@@ -102,8 +102,12 @@ export class ProtoView {
     } else {
       viewNodes = [clone];
     }
-    return new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
+    var view = new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
         bindElements, this.protoWatchGroup, context);
+
+    ProtoView._instantiateDirectives(view, elements, elementInjectors, appInjector);
+
+    return view;
   }
 
   bindElement(protoElementInjector:ProtoElementInjector,
@@ -173,15 +177,15 @@ export class ProtoView {
   }
 
   static _instantiateDirectives(
-      injectors:List<ElementInjectors>, appInjector:Injector) {
+      view: View, elements:List, injectors:List<ElementInjectors>, appInjector:Injector) {
     for (var i = 0; i < injectors.length; ++i) {
-      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector, null);
+      var preBuiltObjs = new PreBuiltObjects(view, new NgElement(elements[i]));
+      if (injectors[i] != null) injectors[i].instantiateDirectives(appInjector, null, preBuiltObjs);
     }
   }
 
   static _createElementInjector(element, parent:ElementInjector, proto:ProtoElementInjector) {
-    //TODO: vsavkin: pass element to `proto.instantiate()` once https://github.com/angular/angular/pull/98 is merged
-    return proto.instantiate(parent, null, null);
+    return proto.instantiate(parent, null);
   }
 
   static _rootElementInjectors(injectors) {

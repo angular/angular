@@ -1,10 +1,11 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {ProtoElementInjector, VIEW_KEY} from 'core/compiler/element_injector';
+import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
+import {NgElement} from 'core/dom/element';
 
 @IMPLEMENTS(View)
 class DummyView {}
@@ -60,6 +61,8 @@ class NeedsView {
 }
 
 export function main() {
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null);
+
   function humanize(tree, names:List) {
     var lookupName = (item) =>
       ListWrapper.last(
@@ -70,13 +73,14 @@ export function main() {
     return [lookupName(tree), children];
   }
 
-  function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, props = null) {
+  function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, preBuiltObjects = null) {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
-    if (isBlank(props)) props = {"view": null};
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
-    var inj = proto.instantiate(null, null, props["view"]);
-    inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector);
+    var inj = proto.instantiate(null, null);
+    var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
+
+    inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector, preBuilt);
     return inj;
   }
 
@@ -84,12 +88,12 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null, null);
-    parent.instantiateDirectives(inj, null);
+    var parent = protoParent.instantiate(null, null);
+    parent.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
-    var child = protoChild.instantiate(parent, null, null);
-    child.instantiateDirectives(inj, null);
+    var child = protoChild.instantiate(parent, null);
+    child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     return child;
   }
@@ -99,12 +103,12 @@ export function main() {
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
-    var host = protoParent.instantiate(null, null, null);
-    host.instantiateDirectives(inj, shadowInj);
+    var host = protoParent.instantiate(null, null);
+    host.instantiateDirectives(inj, shadowInj, null);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false);
-    var shadow = protoChild.instantiate(null, host, null);
-    shadow.instantiateDirectives(shadowInj, null);
+    var shadow = protoChild.instantiate(null, host);
+    shadow.instantiateDirectives(shadowInj, null, null);
 
     return shadow;
   }
@@ -116,9 +120,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null, null);
-        var c1 = protoChild1.instantiate(p, null, null);
-        var c2 = protoChild2.instantiate(p, null, null);
+        var p = protoParent.instantiate(null, null);
+        var c1 = protoChild1.instantiate(p, null);
+        var c2 = protoChild2.instantiate(p, null);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -166,9 +170,9 @@ export function main() {
         expect(d.service).toEqual("service");
       });
 
-      it("should instantiate directives that depend on special objects", function () {
+      it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, {'view':view});
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -258,15 +262,6 @@ export function main() {
         expect(() => inj.getAtIndex(10)).toThrowError(
           'Index 10 is out-of-bounds.');
       });
-    });
-
-    describe("special objects", function () {
-      it("should return view", function () {
-        var view = new DummyView();
-        var inj = injector([], null, null, {"view" : view});
-
-        expect(inj.get(View)).toEqual(view);
-      });
 
       it("should handle cyclic dependencies", function () {
         expect(() => {
@@ -275,7 +270,23 @@ export function main() {
             bind(B_Needs_A).toFactory((a) => new B_Needs_A(a), [A_Needs_B])
           ]);
         }).toThrowError('Cannot instantiate cyclic dependency! ' +
-            '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
+          '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
+      });
+    });
+
+    describe("pre built objects", function () {
+      it("should return view", function () {
+        var view = new DummyView();
+        var inj = injector([], null, null, new PreBuiltObjects(view, null));
+
+        expect(inj.get(View)).toEqual(view);
+      });
+
+      it("should return element", function () {
+        var element = new NgElement(null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, element));
+
+        expect(inj.get(NgElement)).toEqual(element);
       });
     });
   });

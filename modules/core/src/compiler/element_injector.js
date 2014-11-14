@@ -6,6 +6,7 @@ import {Parent, Ancestor} from 'core/annotations/visibility';
 import {StaticKeys} from './static_keys';
 // Comment out as dartanalyzer does not look into @FIELD
 // import {View} from './view';
+import {NgElement} from 'core/dom/element';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -72,6 +73,15 @@ class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
+  }
+}
+
+export class PreBuiltObjects {
+  @FIELD('final view:View')
+  @FIELD('final element:NgElement')
+  constructor(view, element:NgElement) {
+    this.view = view;
+    this.element = element;
   }
 }
 
@@ -152,8 +162,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, view):ElementInjector {
-    return new ElementInjector(this, parent, host, view);
+  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
+    return new ElementInjector(this, parent, host);
   }
 
   _createBinding(bindingOrType) {
@@ -170,49 +180,6 @@ export class ProtoElementInjector  {
 }
 
 export class ElementInjector extends TreeNode {
-  /*
-   _protoInjector:ProtoElementInjector;
-   injector:Injector;
-   _parent:ElementInjector;
-   _next:ElementInjector;
-   _prev:ElementInjector;
-   _head:ElementInjector;
-   _tail:ElementInjector;
-
-
-  // For performance reasons the Injector only supports 10 directives per element.
-  // NOTE: linear search over fields is faster than HashMap lookup.
-  _cObj; // Component only
-  _obj0;
-  _obj1;
-  _obj2;
-  _obj3;
-  _obj4;
-  _obj5;
-  _obj6;
-  _obj7;
-  _obj8;
-  _obj9;
-
-  element:Element;
-  ngElement:NgElement;
-  shadowRoot:ShadowRoot;
-  elementProbe:ElementProbe;
-  view:View;
-  viewPort:ViewPort;
-  viewFactory:ViewFactory;
-  animate:Animate;
-  destinationLightDom:DestinationLightDom;
-  sourceLightDom:SourceLightDom;
-
-
-  // For performance reasons the Injector only supports 2 [Query] per element.
-  // NOTE: linear search over fields is faster than HashMap lookup.
-  _query0:Query;
-  _query1:Query;
-
-   */
-
   @FIELD('_proto:ProtoElementInjector')
   @FIELD('_lightDomAppInjector:Injector')
   @FIELD('_shadowDomAppInjector:Injector')
@@ -228,7 +195,7 @@ export class ElementInjector extends TreeNode {
   @FIELD('_obj8:Object')
   @FIELD('_obj9:Object')
   @FIELD('_view:View')
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, view) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -241,9 +208,9 @@ export class ElementInjector extends TreeNode {
     }
 
     this._proto = proto;
-    this._view = view;
 
     //we cannot call clearDirectives because fields won't be detected
+    this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
     this._obj0 = null;
@@ -260,6 +227,7 @@ export class ElementInjector extends TreeNode {
   }
 
   clearDirectives() {
+    this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
 
@@ -276,16 +244,14 @@ export class ElementInjector extends TreeNode {
     this._constructionCounter = 0;
   }
 
-  instantiateDirectives(lightDomAppInjector:Injector, shadowDomAppInjector:Injector) {
-    var p = this._proto;
-    if (this._proto._binding0IsComponent && isBlank(shadowDomAppInjector)) {
-      throw new BaseException('A shadowDomAppInjector is required as this ElementInjector contains a component');
-    } else if (!this._proto._binding0IsComponent && isPresent(shadowDomAppInjector)) {
-      throw new BaseException('No shadowDomAppInjector allowed as there is not component stored in this ElementInjector');
-    }
+  instantiateDirectives(lightDomAppInjector:Injector, shadowDomAppInjector:Injector, preBuiltObjects:PreBuiltObjects) {
+    this._checkShadowDomAppInjector(shadowDomAppInjector);
+
+    this._preBuiltObjects = preBuiltObjects;
     this._lightDomAppInjector = lightDomAppInjector;
     this._shadowDomAppInjector = shadowDomAppInjector;
 
+    var p = this._proto;
     if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
     if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
     if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);
@@ -296,6 +262,14 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);
     if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);
     if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
+  }
+
+  _checkShadowDomAppInjector(shadowDomAppInjector:Injector) {
+    if (this._proto._binding0IsComponent && isBlank(shadowDomAppInjector)) {
+      throw new BaseException('A shadowDomAppInjector is required as this ElementInjector contains a component');
+    } else if (!this._proto._binding0IsComponent && isPresent(shadowDomAppInjector)) {
+      throw new BaseException('No shadowDomAppInjector allowed as there is not component stored in this ElementInjector');
+    }
   }
 
   get(token) {
@@ -370,7 +344,7 @@ export class ElementInjector extends TreeNode {
    * This would allows to do the lookup more efficiently.
    *
    * for example
-   * we would lookup special objects only when metadata = 'special'
+   * we would lookup pre built objects only when metadata = 'preBuilt'
    * we would lookup directives only when metadata = 'directive'
    *
    * Write benchmarks before doing this optimization.
@@ -384,8 +358,8 @@ export class ElementInjector extends TreeNode {
     }
 
     while (ei != null && depth >= 0) {
-      var specObj = ei._getSpecialObjectByKeyId(key.id);
-      if (specObj !== _undefined) return specObj;
+      var preBuiltObj = ei._getPreBuiltObjectByKeyId(key.id);
+      if (preBuiltObj !== _undefined) return preBuiltObj;
 
       var dir = ei._getDirectiveByKeyId(key.id);
       if (dir !== _undefined) return dir;
@@ -397,13 +371,15 @@ export class ElementInjector extends TreeNode {
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
     } else {
-      var appInjector;
-      if (isPresent(requestor) && this._isComponentKey(requestor)) {
-        appInjector = this._shadowDomAppInjector;
-      } else {
-        appInjector = this._lightDomAppInjector;
-      }
-      return appInjector.get(key);
+      return this._appInjector(requestor).get(key);
+    }
+  }
+
+  _appInjector(requestor:Key) {
+    if (isPresent(requestor) && this._isComponentKey(requestor)) {
+      return this._shadowDomAppInjector;
+    } else {
+      return this._lightDomAppInjector;
     }
   }
 
@@ -411,9 +387,10 @@ export class ElementInjector extends TreeNode {
     return depth === 0;
   }
 
-  _getSpecialObjectByKeyId(keyId:int) {
+  _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
-    if (keyId === staticKeys.viewId) return this._view;
+    if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
+    if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     //TODO add other objects as needed
     return _undefined;
   }
