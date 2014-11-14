@@ -78,5 +78,7 @@ export class DOM {
     }
     return res;
   }
-
+  static templateAwareRoot(el:Element):Node {
+    return el instanceof TemplateElement ? el.content : el;
+  }
 }

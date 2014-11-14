@@ -79,4 +79,7 @@ class DOM {
   static attributeMap(Element element) {
     return element.attributes;
   }
+  static Node templateAwareRoot(Element el) {
+    return el is TemplateElement ? el.content : el;
+  }
 }

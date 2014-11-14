@@ -20,75 +20,78 @@ export function main() {
 
     describe('ProtoView.instantiate', function() {
 
-      describe('collect root nodes', () => {
+      function createCollectDomNodesTestCases(useTemplateElement:boolean) {
 
-        it('should use the ProtoView element if it is no TemplateElement', () => {
-          var pv = new ProtoView(createElement('<div id="1"></div>'), new ProtoWatchGroup());
+        function templateAwareCreateElement(html) {
+          return createElement(useTemplateElement ? `<template>${html}</template>` : html);
+        }
+
+        it('should collect the root node in the ProtoView element', () => {
+          var pv = new ProtoView(templateAwareCreateElement('<div id="1"></div>'), new ProtoWatchGroup());
           var view = pv.instantiate(null, null);
           expect(view.nodes.length).toBe(1);
           expect(view.nodes[0].getAttribute('id')).toEqual('1');
         });
 
-        it('should use the ProtoView elements children if it is a TemplateElement', () => {
-          var pv = new ProtoView(createElement('<template><div id="1"></div></template>'),
-            new ProtoWatchGroup());
-          var view = pv.instantiate(null, null);
-          expect(view.nodes.length).toBe(1);
-          expect(view.nodes[0].getAttribute('id')).toEqual('1');
+        describe('collect elements with property bindings', () => {
+
+          it('should collect property bindings on the root element if it has the ng-binding class', () => {
+            var pv = new ProtoView(templateAwareCreateElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup());
+            pv.bindElement(null);
+            pv.bindElementProperty('prop', parser.parseBinding('a'));
+
+            var view = pv.instantiate(null, null);
+            expect(view.bindElements.length).toEqual(1);
+            expect(view.bindElements[0]).toBe(view.nodes[0]);
+          });
+
+          it('should collect property bindings on child elements with ng-binding class', () => {
+            var pv = new ProtoView(templateAwareCreateElement('<div><span></span><span class="ng-binding"></span></div>'),
+              new ProtoWatchGroup());
+            pv.bindElement(null);
+            pv.bindElementProperty('a', parser.parseBinding('b'));
+
+            var view = pv.instantiate(null, null);
+            expect(view.bindElements.length).toEqual(1);
+            expect(view.bindElements[0]).toBe(view.nodes[0].childNodes[1]);
+          });
+
         });
 
+        describe('collect text nodes with bindings', () => {
+
+          it('should collect text nodes under the root element', () => {
+            var pv = new ProtoView(templateAwareCreateElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup());
+            pv.bindElement(null);
+            pv.bindTextNode(0, parser.parseBinding('a'));
+            pv.bindTextNode(2, parser.parseBinding('b'));
+
+            var view = pv.instantiate(null, null);
+            expect(view.textNodes.length).toEqual(2);
+            expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[0]);
+            expect(view.textNodes[1]).toBe(view.nodes[0].childNodes[2]);
+          });
+
+          it('should collect text nodes with bindings on child elements with ng-binding class', () => {
+            var pv = new ProtoView(templateAwareCreateElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
+              new ProtoWatchGroup());
+            pv.bindElement(null);
+            pv.bindTextNode(0, parser.parseBinding('b'));
+
+            var view = pv.instantiate(null, null);
+            expect(view.textNodes.length).toEqual(1);
+            expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[1].childNodes[0]);
+          });
+
+        });
+      }
+
+      describe('collect dom nodes with a regular element as root', () => {
+        createCollectDomNodesTestCases(false);
       });
 
-      describe('collect elements with property bindings', () => {
-
-        it('should collect property bindings on the root element if it has the ng-binding class', () => {
-          var pv = new ProtoView(createElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup());
-          pv.bindElement(null);
-          pv.bindElementProperty('prop', parser.parseBinding('a'));
-
-          var view = pv.instantiate(null, null);
-          expect(view.bindElements.length).toEqual(1);
-          expect(view.bindElements[0]).toBe(view.nodes[0]);
-        });
-
-        it('should collect property bindings on child elements with ng-binding class', () => {
-          var pv = new ProtoView(createElement('<div><span></span><span class="ng-binding"></span></div>'),
-            new ProtoWatchGroup());
-          pv.bindElement(null);
-          pv.bindElementProperty('a', parser.parseBinding('b'));
-
-          var view = pv.instantiate(null, null);
-          expect(view.bindElements.length).toEqual(1);
-          expect(view.bindElements[0]).toBe(view.nodes[0].childNodes[1]);
-        });
-
-      });
-
-      describe('collect text nodes with bindings', () => {
-
-        it('should collect text nodes under the root element', () => {
-          var pv = new ProtoView(createElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup());
-          pv.bindElement(null);
-          pv.bindTextNode(0, parser.parseBinding('a'));
-          pv.bindTextNode(2, parser.parseBinding('b'));
-
-          var view = pv.instantiate(null, null);
-          expect(view.textNodes.length).toEqual(2);
-          expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[0]);
-          expect(view.textNodes[1]).toBe(view.nodes[0].childNodes[2]);
-        });
-
-        it('should collect text nodes with bindings on child elements with ng-binding class', () => {
-          var pv = new ProtoView(createElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
-            new ProtoWatchGroup());
-          pv.bindElement(null);
-          pv.bindTextNode(0, parser.parseBinding('b'));
-
-          var view = pv.instantiate(null, null);
-          expect(view.textNodes.length).toEqual(1);
-          expect(view.textNodes[0]).toBe(view.nodes[0].childNodes[1].childNodes[0]);
-        });
-
+      describe('collect dom nodes with a template element as root', () => {
+        createCollectDomNodesTestCases(true);
       });
 
       describe('create ElementInjectors', () => {

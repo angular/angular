@@ -1,5 +1,5 @@
 import {RegExpWrapper, StringWrapper} from 'facade/lang';
-import {TemplateElement, Node, DOM} from 'facade/dom';
+import {Node, DOM} from 'facade/dom';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -17,12 +17,7 @@ var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
 export class TextInterpolationParser extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var element = current.element;
-    var childNodes;
-    if (element instanceof TemplateElement) {
-      childNodes = element.content.childNodes;
-    } else {
-      childNodes = element.childNodes;
-    }
+    var childNodes = DOM.templateAwareRoot(element).childNodes;
     for (var i=0; i<childNodes.length; i++) {
       var node = childNodes[i];
       if (node.nodeType === Node.TEXT_NODE) {

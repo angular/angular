@@ -75,7 +75,12 @@ export class ProtoView {
 
   instantiate(context, appInjector:Injector):View {
     var clone = DOM.clone(this.element);
-    var elements = ListWrapper.clone(DOM.getElementsByClassName(clone, NG_BINDING_CLASS));
+    var elements;
+    if (clone instanceof TemplateElement) {
+      elements = ListWrapper.clone(DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`));
+    } else {
+      elements = ListWrapper.clone(DOM.getElementsByClassName(clone, NG_BINDING_CLASS));
+    }
     if (DOM.hasClass(clone, NG_BINDING_CLASS)) {
       ListWrapper.insert(elements, 0, clone);
     }
@@ -202,7 +207,7 @@ export class ProtoView {
   }
 
   static _collectTextNodes(allTextNodes, element, indices) {
-    var childNodes = DOM.childNodes(element);
+    var childNodes = DOM.templateAwareRoot(element).childNodes;
     for (var i = 0; i < indices.length; ++i) {
       ListWrapper.push(allTextNodes, childNodes[indices[i]]);
     }

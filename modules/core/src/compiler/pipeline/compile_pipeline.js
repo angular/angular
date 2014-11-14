@@ -1,5 +1,5 @@
 import {List, ListWrapper} from 'facade/collection';
-import {Element, TemplateElement, Node} from 'facade/dom';
+import {Element, Node, DOM} from 'facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
@@ -23,12 +23,7 @@ export class CompilePipeline {
   _process(results, parent:CompileElement, element:Element) {
     var current = new CompileElement(element);
     this._control.internalProcess(results, 0, parent, current);
-    var childNodes;
-    if (element instanceof TemplateElement) {
-      childNodes = element.content.childNodes;
-    } else {
-      childNodes = element.childNodes;
-    }
+    var childNodes = DOM.templateAwareRoot(element).childNodes;
     for (var i=0; i<childNodes.length; i++) {
       var node = childNodes[i];
       if (node.nodeType === Node.ELEMENT_NODE) {
