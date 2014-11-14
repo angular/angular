@@ -76,6 +76,10 @@ class StringWrapper {
   static equals(String s, String s2) {
     return s == s2;
   }
+
+  static String replaceAll(String s, RegExp from, String replace) {
+    return s.replaceAll(from, replace);
+  }
 }
 
 class StringJoiner {
