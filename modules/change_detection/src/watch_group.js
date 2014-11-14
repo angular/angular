@@ -56,21 +56,11 @@ export class ProtoWatchGroup {
   }
 
   _createRecords(watchGroup:WatchGroup, formatters:Map) {
-    var tail, prevRecord;
-    watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord, formatters);
-    this.headRecord.recordInConstruction = watchGroup.headRecord;
-
-    for (var proto = this.headRecord.next; proto != null; proto = proto.next) {
-      prevRecord = tail;
-
-      tail = new Record(watchGroup, proto, formatters);
-      proto.recordInConstruction = tail;
-
-      tail.prev = prevRecord;
-      prevRecord.next = tail;
+    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+      var record = new Record(watchGroup, proto, formatters);
+      proto.recordInConstruction = record;
+      watchGroup.addRecord(record);
     }
-
-    watchGroup.tailRecord = tail;
   }
 
   _setDestination() {
@@ -95,7 +85,68 @@ export class WatchGroup {
     this.dispatcher = dispatcher;
     this.headRecord = null;
     this.tailRecord = null;
+    this.headEnabledRecord = null;
+    this.tailEnabledRecord = null;
     this.context = null;
+  }
+
+  addRecord(record:Record) {
+    if (isPresent(this.tailRecord)) {
+      this.tailRecord.next = record;
+      this.tailRecord.nextEnabled = record;
+      record.prev = this.tailRecord;
+      record.prevEnabled = this.tailRecord;
+      this.tailRecord = this.tailEnabledRecord = record;
+
+    } else {
+      this.headRecord = this.tailRecord = record;
+      this.headEnabledRecord = this.tailEnabledRecord = record;
+    }
+  }
+
+  disableRecord(record:Record) {
+    var prev = record.prevEnabled;
+    var next = record.nextEnabled;
+
+    record.disabled = true;
+
+    if (isPresent(prev)) {
+      prev.nextEnabled = next;
+    } else {
+      this.headEnabledRecord = next;
+    }
+
+    if (isPresent(next)) {
+      next.prevEnabled = prev;
+    } else {
+      this.tailEnabledRecord = prev;
+    }
+  }
+
+  enableRecord(record:Record) {
+    if (!record.disabled) return;
+
+    var prev = record.prev;
+    while (prev != null && prev.disabled) prev = prev.prev;
+
+    var next = record.next;
+    while (next != null && next.disabled) next = next.next;
+
+    record.disabled = false;
+    record.prevEnabled = prev;
+    record.nextEnabled = next;
+
+    if (isPresent(prev)) {
+      prev.nextEnabled = record;
+    } else {
+      this.headEnabledRecord = record;
+    }
+
+    if (isPresent(next)) {
+      next.prevEnabled = record;
+    } else {
+      this.tailEnabledRecord = record;
+    }
   }
 
   insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {

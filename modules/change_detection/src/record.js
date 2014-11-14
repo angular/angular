@@ -65,6 +65,12 @@ export class Record {
   @FIELD('final protoRecord:ProtoRecord')
   @FIELD('next:Record')
   @FIELD('prev:Record')
+
+  /// This reference can change.
+  @FIELD('nextEnabled:Record')
+
+  /// This reference can change.
+  @FIELD('prevEnabled:Record')
   @FIELD('dest:Record')
 
   @FIELD('previousValue')
@@ -86,6 +92,9 @@ export class Record {
 
     this.next = null;
     this.prev = null;
+    this.nextEnabled = null;
+    this.prevEnabled = null;
+    this.disabled = false;
     this.dest = null;
 
     this.previousValue = null;
@@ -163,9 +172,11 @@ export class Record {
         return FunctionWrapper.apply(this.context, this.args);
 
       case MODE_STATE_INVOKE_PURE_FUNCTION:
+        this.watchGroup.disableRecord(this);
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
       case MODE_STATE_CONST:
+        this.watchGroup.disableRecord(this);
         return this.funcOrValue;
 
       case MODE_STATE_MARKER:
@@ -184,10 +195,12 @@ export class Record {
 
   updateArg(value, position:int) {
     this.args[position] = value;
+    this.watchGroup.enableRecord(this);
   }
 
   updateContext(value) {
     this.context = value;
+    this.watchGroup.enableRecord(this);
   }
 }
 

@@ -1,6 +1,6 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
 import {ProtoRecord, Record} from './record';
-import {FIELD, int} from 'facade/lang';
+import {FIELD, int, isPresent} from 'facade/lang';
 export * from './record';
 export * from './watch_group'
 
@@ -12,11 +12,10 @@ export class ChangeDetector {
   }
 
   detectChanges():int {
-    var record:Record = this._rootWatchGroup.headRecord;
     var count:int = 0;
-    for (record = this._rootWatchGroup.headRecord;
-         record != null;
-         record = record.next) {
+    for (var record = this._rootWatchGroup.headEnabledRecord;
+         isPresent(record);
+         record = record.nextEnabled) {
       if (record.check()) {
         count++;
       }
