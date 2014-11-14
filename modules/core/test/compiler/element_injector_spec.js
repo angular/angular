@@ -225,6 +225,12 @@ export function main() {
         expect(d.dependency).toBeAnInstanceOf(Directive);
       });
 
+      it("should not return parent's directives on self", function () {
+        expect(() => {
+          injector([Directive, NeedDirectiveFromParent]);
+        }).toThrowError();
+      });
+
       it("should get directives from ancestor", function () {
         var child = parentChildInjectors([Directive], [NeedDirectiveFromAncestor]);
 

@@ -377,6 +377,12 @@ export class ElementInjector extends TreeNode {
    */
   _getByKey(key:Key, depth:int, requestor:Key) {
     var ei = this;
+
+    if (! this._shouldIncludeSelf(depth)) {
+      depth -= 1;
+      ei = ei._parent;
+    }
+
     while (ei != null && depth >= 0) {
       var specObj = ei._getSpecialObjectByKeyId(key.id);
       if (specObj !== _undefined) return specObj;
@@ -387,6 +393,7 @@ export class ElementInjector extends TreeNode {
       ei = ei._parent;
       depth -= 1;
     }
+
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
     } else {
@@ -398,6 +405,10 @@ export class ElementInjector extends TreeNode {
       }
       return appInjector.get(key);
     }
+  }
+
+  _shouldIncludeSelf(depth:int) {
+    return depth === 0;
   }
 
   _getSpecialObjectByKeyId(keyId:int) {
