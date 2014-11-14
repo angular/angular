@@ -24,7 +24,7 @@ export function main() {
       describe('collect root nodes', () => {
 
         it('should use the ProtoView element if it is no TemplateElement', () => {
-          var pv = new ProtoView(createElement('<div id="1"></div>'), new ProtoWatchGroup(null));
+          var pv = new ProtoView(createElement('<div id="1"></div>'), new ProtoWatchGroup());
           var view = pv.instantiate(null, null);
           expect(view.nodes.length).toBe(1);
           expect(view.nodes[0].getAttribute('id')).toEqual('1');
@@ -43,7 +43,7 @@ export function main() {
       describe('collect elements with property bindings', () => {
 
         it('should collect property bindings on the root element if it has the ng-binding class', () => {
-          var pv = new ProtoView(createElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup(null));
+          var pv = new ProtoView(createElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindElementProperty('prop', parser.parseBinding('a'));
 
@@ -54,7 +54,7 @@ export function main() {
 
         it('should collect property bindings on child elements with ng-binding class', () => {
           var pv = new ProtoView(createElement('<div><span></span><span class="ng-binding"></span></div>'),
-            new ProtoWatchGroup(null));
+            new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindElementProperty('a', parser.parseBinding('b'));
 
@@ -68,7 +68,7 @@ export function main() {
       describe('collect text nodes with bindings', () => {
 
         it('should collect text nodes under the root element', () => {
-          var pv = new ProtoView(createElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup(null));
+          var pv = new ProtoView(createElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindTextNode(0, parser.parseBinding('a'));
           pv.bindTextNode(2, parser.parseBinding('b'));
@@ -81,7 +81,7 @@ export function main() {
 
         it('should collect text nodes with bindings on child elements with ng-binding class', () => {
           var pv = new ProtoView(createElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
-            new ProtoWatchGroup(null));
+            new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindTextNode(0, parser.parseBinding('b'));
 
@@ -149,7 +149,7 @@ export function main() {
 
         it('should consume text node changes', () => {
           var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
-            new ProtoWatchGroup(null));
+            new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindTextNode(0, parser.parseBinding('foo'));
           createView(pv);
@@ -161,7 +161,7 @@ export function main() {
 
         it('should consume element binding changes', () => {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
-            new ProtoWatchGroup(null));
+            new ProtoWatchGroup());
           pv.bindElement(null);
           pv.bindElementProperty('id', parser.parseBinding('foo'));
           createView(pv);
@@ -173,7 +173,7 @@ export function main() {
 
         it('should consume directive watch expression change.', () => {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
-            new ProtoWatchGroup(null));
+            new ProtoWatchGroup());
           pv.bindElement(new ProtoElementInjector(null, 0, [Directive]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('foo'), 'prop', closureMap.setter('prop'));
           createView(pv);

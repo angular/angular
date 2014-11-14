@@ -1,5 +1,5 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper} from 'facade/collection';
 import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
@@ -38,7 +38,7 @@ export class View {
     this.onChangeDispatcher = null;
     this.textNodes = textNodes;
     this.bindElements = bindElements;
-    this.watchGroup = protoWatchGroup.instantiate(this);
+    this.watchGroup = protoWatchGroup.instantiate(this, MapWrapper.create());
     this.watchGroup.setContext(context);
   }
 
