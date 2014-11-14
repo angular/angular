@@ -66,6 +66,10 @@ export class StringWrapper {
   static equals(s:string, s2:string) {
     return s === s2;
   }
+
+  static replaceAll(s:string, from:RegExp, replace:string) {
+    return s.replace(from.multiple, replace);
+  }
 }
 
 export class StringJoiner {
