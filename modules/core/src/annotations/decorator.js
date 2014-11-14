@@ -11,8 +11,8 @@ export class Decorator extends Directive {
     }:{
       selector:String,
       bind:Object,
-      lightDomServices:ElementServicesFunction,
-      implementsTypes:Array<Type>
+      lightDomServices:List,
+      implementsTypes:List
     }={})
   {
     super({

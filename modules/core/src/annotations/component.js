@@ -6,19 +6,19 @@ export class Component extends Directive {
   constructor({
       selector,
       bind,
-      lightDomServices,
-      implementsTypes,
       template,
-      elementServices,
-      componentServices
+      lightDomServices,
+      shadowDomServices,
+      componentServices,
+      implementsTypes
     }:{
       selector:String,
       bind:Object,
       template:TemplateConfig,
-      lightDomServices:DomServicesFunction,
-      shadowDomServices:DomServicesFunction,
-      componentServices:Array,
-      implementsTypes:Array<Type>
+      lightDomServices:List,
+      shadowDomServices:List,
+      componentServices:List,
+      implementsTypes:List
     }={})
   {
     super({
@@ -27,7 +27,8 @@ export class Component extends Directive {
         lightDomServices: lightDomServices,
         implementsTypes: implementsTypes});
     this.template = template;
-    this.elementServices = elementServices;
+    this.lightDomServices = lightDomServices;
+    this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;
   }
 }
@@ -45,18 +46,11 @@ import 'package:angular/core.dart' as core;
     directives: const [CompA],
     formatters: const [Stringify]
   ),
-  componentServices: Example.componentServices,
-  elementServices: Example.elementServices,
+  componentServices: [...],
+  shadowDomServices: [...]
   implementsTypes: const [App]
 )
-class Example implements App {
-  static componentServices(Module m) {
-    m.bind();
-  }
-  static elementServices(ElementModule m) {
-    m.bind();
-  }
-}
+class Example implements App {}
 
 class CompA {}
 

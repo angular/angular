@@ -1,6 +1,5 @@
-// import {Type} from 'facade/lang';
-// import {ElementServicesFunction} from './facade';
 import {ABSTRACT, CONST} from 'facade/lang';
+import {List} from 'facade/collection';
 
 
 @ABSTRACT()
@@ -14,8 +13,8 @@ export class Directive {
     }:{
       selector:String,
       bind:Object,
-      lightDomServices:ElementServicesFunction,
-      implementsTypes:Array<Type>
+      lightDomServices:List,
+      implementsTypes:List
     })
   {
     this.selector = selector;
