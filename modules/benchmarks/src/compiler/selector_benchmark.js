@@ -31,13 +31,11 @@ export function runParse() {
 }
 
 export function runAdd() {
-  // The sum is used to prevent Chrome from optimizing the loop away...
   var matcher = new SelectorMatcher();
-  var count = 0;
   for (var i=0; i<COUNT; i++) {
-    count += matcher.addSelectable(fixedSelectors[i], i);
+    matcher.addSelectable(fixedSelectors[i], i);
   }
-  return count;
+  return matcher;
 }
 
 export function runMatch() {
@@ -72,7 +70,7 @@ function randomStr(len){
 
 function randomChar(){
   var n = randomNum(62);
-  if(n<10) return n; //1-10
+  if(n<10) return n.toString(); //1-10
   if(n<36) return StringWrapper.fromCharCode(n+55); //A-Z
   return StringWrapper.fromCharCode(n+61); //a-z
 }

@@ -39,14 +39,13 @@ export class Compiler {
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
     // TODO load all components transitively from the cache first
     var cache = null;
-    return PromiseWrapper.resolve(this._compileAllCached(
-      this._reflector.annotatedType(component),
-      cache,
-      templateRoot)
+    return PromiseWrapper.resolve(this.compileWithCache(
+      cache, this._reflector.annotatedType(component), templateRoot)
     );
   }
 
-  _compileAllCached(component:AnnotatedType, cache, templateRoot:Element = null):ProtoView {
+  // public so that we can compile in sync in performance tests.
+  compileWithCache(cache, component:AnnotatedType, templateRoot:Element = null):ProtoView {
     if (isBlank(templateRoot)) {
       // TODO: read out the cache if templateRoot = null. Could contain:
       // - templateRoot string
@@ -62,7 +61,7 @@ export class Compiler {
     for (var i=0; i<compileElements.length; i++) {
       var ce = compileElements[i];
       if (isPresent(ce.componentDirective)) {
-        ce.inheritedElementBinder.nestedProtoView = this._compileAllCached(ce.componentDirective, cache, null);
+        ce.inheritedElementBinder.nestedProtoView = this.compileWithCache(cache, ce.componentDirective, null);
       }
     }
 

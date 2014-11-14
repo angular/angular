@@ -1,17 +1,35 @@
 System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
   bm.setup();
 
-  window.benchmarkSteps.push({name: 'CssSelector.parse', fn: bm.runParse});
+  window.benchmarkSteps.push({name: 'CssSelector.parse * 1000', fn: bm.runParse});
 }, console.log.bind(console));
 
 System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
   bm.setup();
 
-  window.benchmarkSteps.push({name: 'SelectorMatcher.addSelectable', fn: bm.runAdd});
+  window.benchmarkSteps.push({name: 'SelectorMatcher.addSelectable * 1000', fn: bm.runAdd});
 }, console.log.bind(console));
 
 System.import('benchmarks/compiler/selector_benchmark').then(function (bm) {
   bm.setup();
 
-  window.benchmarkSteps.push({name: 'SelectorMatcher.match', fn: bm.runMatch});
+  window.benchmarkSteps.push({name: 'SelectorMatcher.match * 1000', fn: bm.runMatch});
+}, console.log.bind(console));
+
+System.import('benchmarks/compiler/compiler_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'Compiler.compile empty template', fn: bm.compileEmptyTemplate});
+}, console.log.bind(console));
+
+System.import('benchmarks/compiler/compiler_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'Compiler.compile 25 element no bindings', fn: bm.compile25ElementsNoBindings});
+}, console.log.bind(console));
+
+System.import('benchmarks/compiler/compiler_benchmark').then(function (bm) {
+  bm.setup();
+
+  window.benchmarkSteps.push({name: 'Compiler.compile 25 element with bindings', fn: bm.compile25ElementsWithBindings});
 }, console.log.bind(console));

@@ -1,4 +1,4 @@
-library facade.di.reflector;
+library facade.compiler.reflector;
 
 import 'dart:mirrors';
 import '../annotations/directive.dart';
