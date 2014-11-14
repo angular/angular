@@ -3,6 +3,10 @@ import {assert} from 'rtts_assert/rtts_assert';
 export var Type = Function;
 export var Math = window.Math;
 
+// global assert support, as Dart has it...
+// TODO: `assert` calls need to be removed in production code!
+window.assert = assert;
+
 export class FIELD {
   constructor(definition) {
     this.definition = definition;
