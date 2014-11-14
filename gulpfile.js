@@ -214,7 +214,7 @@ gulp.task('analyze/dartanalyzer', function(done) {
     });
     var hintCount = 0;
     rl.on('line', function(line) {
-      if (line.match(/Unused import .*_analyzer\.dart/)) {
+      if (line.match(/Unused import/)) {
         return;
       }
       if (line.match(/\[hint\]/)) {
