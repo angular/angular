@@ -1,6 +1,6 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
 import {FIELD, isPresent, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper} from 'facade/collection';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
 var _fresh = new Object();
@@ -8,6 +8,7 @@ var _fresh = new Object();
 export const PROTO_RECORD_CONST = 'const';
 export const PROTO_RECORD_PURE_FUNCTION = 'func';
 export const PROTO_RECORD_CLOSURE = 'closure';
+export const PROTO_RECORD_FORMATTTER = 'formatter';
 export const PROTO_RECORD_METHOD = 'method';
 export const PROTO_RECORD_PROPERTY = 'property';
 
@@ -79,7 +80,7 @@ export class Record {
   // Otherwise it is the context used by  WatchGroupDispatcher.
   @FIELD('dest')
 
-  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord) {
+  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord, formatters:Map) {
     this.watchGroup = watchGroup;
     this.protoRecord = protoRecord;
 
@@ -103,6 +104,11 @@ export class Record {
     } else if (type === PROTO_RECORD_PURE_FUNCTION) {
       this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
       this.funcOrValue = protoRecord.funcOrValue;
+      this.args = ListWrapper.createFixedSize(protoRecord.arity);
+
+    } else if (type === PROTO_RECORD_FORMATTTER) {
+      this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
+      this.funcOrValue = MapWrapper.get(formatters, protoRecord.funcOrValue);
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
     } else if (type === PROTO_RECORD_METHOD) {

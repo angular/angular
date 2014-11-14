@@ -22,11 +22,11 @@ export function main() {
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
-    var pwg = new ProtoWatchGroup(formatters);
+    var pwg = new ProtoWatchGroup();
     pwg.watch(ast(exp), memo, false);
 
     var dispatcher = new LoggingDispatcher();
-    var wg = pwg.instantiate(dispatcher);
+    var wg = pwg.instantiate(dispatcher, formatters);
     wg.setContext(context);
 
     var cd = new ChangeDetector(wg);
@@ -153,10 +153,10 @@ export function main() {
       });
 
       it("should support formatters", () => {
-        var formatters = {
-          "uppercase" : (v) => v.toUpperCase(),
-          "wrap" : (v, before, after) => `${before}${v}${after}`
-        };
+        var formatters = MapWrapper.createFromPairs([
+          ["uppercase", (v) => v.toUpperCase()],
+          ["wrap", (v, before, after) => `${before}${v}${after}`]
+        ]);
         expect(executeWatch('str', '"aBc" | uppercase', null, formatters)).toEqual(['str=ABC']);
         expect(executeWatch('str', '"b" | wrap:"a":"c"', null, formatters)).toEqual(['str=abc']);
       });

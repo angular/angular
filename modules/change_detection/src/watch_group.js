@@ -1,5 +1,5 @@
 import {ProtoRecord, Record, PROTO_RECORD_CONST, PROTO_RECORD_PURE_FUNCTION,
-  PROTO_RECORD_PROPERTY, PROTO_RECORD_METHOD, PROTO_RECORD_CLOSURE} from './record';
+  PROTO_RECORD_PROPERTY, PROTO_RECORD_METHOD, PROTO_RECORD_CLOSURE, PROTO_RECORD_FORMATTTER} from './record';
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
@@ -9,9 +9,7 @@ import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
 export class ProtoWatchGroup {
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
-  constructor(formatters=null) {
-    this.formatters = formatters;
-
+  constructor() {
     this.headRecord = null;
     this.tailRecord = null;
   }
@@ -47,25 +45,25 @@ export class ProtoWatchGroup {
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
-  instantiate(dispatcher):WatchGroup {
+  instantiate(dispatcher, formatters:Map):WatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
     if (this.headRecord !== null) {
-      this._createRecords(watchGroup);
+      this._createRecords(watchGroup, formatters);
       this._setDestination();
 
     }
     return watchGroup;
   }
 
-  _createRecords(watchGroup:WatchGroup) {
+  _createRecords(watchGroup:WatchGroup, formatters:Map) {
     var tail, prevRecord;
-    watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord);
+    watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord, formatters);
     this.headRecord.recordInConstruction = watchGroup.headRecord;
 
     for (var proto = this.headRecord.next; proto != null; proto = proto.next) {
       prevRecord = tail;
 
-      tail = new Record(watchGroup, proto);
+      tail = new Record(watchGroup, proto, formatters);
       proto.recordInConstruction = tail;
 
       tail.prev = prevRecord;
@@ -178,8 +176,7 @@ class ProtoRecordCreator {
   }
 
   visitFormatter(ast:Formatter, dest) {
-    var formatter = this.protoWatchGroup.formatters[ast.name];
-    var record = this.construct(PROTO_RECORD_PURE_FUNCTION, formatter, ast.allArgs.length, dest);
+    var record = this.construct(PROTO_RECORD_FORMATTTER, ast.name, ast.allArgs.length, dest);
     for (var i = 0; i < ast.allArgs.length; ++i) {
       ast.allArgs[i].visit(this, new Destination(record, i));
     }
