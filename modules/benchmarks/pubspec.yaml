@@ -8,3 +8,5 @@ dependencies:
     path: ../di
   core:
     path: ../core
+  change_detection:
+    path: ../change_detection
