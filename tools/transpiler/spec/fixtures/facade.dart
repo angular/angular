@@ -21,3 +21,11 @@ class ArrayWrapper<E> extends ListBase<E> {
 
   void push(E value) => innerList.add(value);
 }
+
+class IterableList extends Object with IterableMixin {
+  List values;
+  IterableList(values) {
+    this.values = values;
+  }
+  Iterator get iterator => values.iterator;
+}

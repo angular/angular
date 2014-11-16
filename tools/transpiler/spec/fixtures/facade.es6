@@ -14,3 +14,15 @@ export class ArrayWrapper extends Array {
     return wrapper;
   }
 }
+
+export class IterableList {
+  constructor(values) {
+    this.values = values;
+  }
+
+  *[Symbol.iterator]() {
+    for (var value of this.values) {
+      yield value;
+    }
+  }
+}
