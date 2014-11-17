@@ -3,7 +3,7 @@ library angular.core.facade.dom;
 import 'dart:html';
 import 'dart:js' show JsObject;
 
-export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text;
+export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text, document, location;
 
 // TODO(tbosch): Is there a builtin one? Why is Dart
 // removing unknown elements by default?

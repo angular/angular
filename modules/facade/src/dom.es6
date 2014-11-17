@@ -4,6 +4,9 @@ export var NodeList = window.NodeList;
 export var Text = window.Text;
 export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
+export var document = window.document;
+export var location = window.location;
+
 import {List, MapWrapper} from 'facade/collection';
 
 export class DOM {
