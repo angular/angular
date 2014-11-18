@@ -3,9 +3,7 @@ import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
-import {StaticKeys} from './static_keys';
-// Comment out as dartanalyzer does not look into @FIELD
-// import {View} from './view';
+import {View} from 'core/compiler/view';
 import {NgElement} from 'core/dom/element';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -13,6 +11,21 @@ var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 var MAX_DEPTH = Math.pow(2, 30) - 1;
 
 var _undefined = new Object();
+
+var _staticKeys;
+
+class StaticKeys {
+  constructor() {
+    //TODO: vsavkin Key.annotate(Key.get(View), 'static')
+    this.viewId = Key.get(View).id;
+    this.ngElementId = Key.get(NgElement).id;
+  }
+
+  static instance() {
+    if (isBlank(_staticKeys)) _staticKeys = new StaticKeys();
+    return _staticKeys;
+  }
+}
 
 class TreeNode {
   @FIELD('_parent:TreeNode')
@@ -89,13 +102,13 @@ export class PreBuiltObjects {
 
 Difference between di.Injector and ElementInjector
 
-di.Injector (di.Module):
+di.Injector:
  - imperative based (can create child injectors imperativly)
  - Lazy loading of code
  - Component/App Level services which are usually not DOM Related.
 
 
-ElementInjector (ElementModule):
+ElementInjector:
   - ProtoBased (Injector structure fixed at compile time)
   - understands @Ancestor, @Parent, @Child, @Descendent
   - Fast
