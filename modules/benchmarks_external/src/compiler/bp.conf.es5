@@ -5,6 +5,7 @@ module.exports = function(config) {
       {src: '/js/es6-module-loader-sans-promises.src.js'},
       {src: '/js/extension-register.js'},
       {src: 'register_system.js'},
+      {src: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.js'},
       {src: 'benchmark.js'}
     ]
   });

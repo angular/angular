@@ -6,6 +6,8 @@ dependencies:
     path: ../facade
   di:
     path: ../di
+  reflection:
+    path: ../reflection
   core:
     path: ../core
   change_detection:

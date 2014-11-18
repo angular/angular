@@ -1,0 +1,5 @@
+name: benchmarks_external
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+  angular: ">=1.0.0 <2.0.0"

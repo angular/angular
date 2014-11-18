@@ -1,6 +1,5 @@
 Promise.all([
-  System.import('benchmarks/compiler/selector_benchmark'),
-  System.import('benchmarks/compiler/compiler_benchmark')
+  System.import('benchmarks_external/compiler/compiler_benchmark_ng13')
 ]).then(function (benchmarks) {
   benchmarks.forEach(function(bm) {
     bm.main();

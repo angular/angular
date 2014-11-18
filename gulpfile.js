@@ -248,17 +248,31 @@ gulp.task('analyze/dartanalyzer', function(done) {
 // ------------------
 // BENCHMARKS JS
 
-gulp.task('benchmarks/build.benchpress.js', function () {
+gulp.task('benchmarks/internal.benchpress.js', function () {
   benchpress.build({
     benchmarksPath: 'build/js/benchmarks/lib',
     buildPath: 'build/benchpress/js'
   })
 });
 
-gulp.task('benchmarks/build.js', function() {
+gulp.task('benchmarks/external.benchpress.js', function () {
+  benchpress.build({
+    benchmarksPath: 'build/js/benchmarks_external/lib',
+    buildPath: 'build/benchpress/js'
+  })
+});
+
+gulp.task('benchmarks/internal.js', function() {
   runSequence(
     ['jsRuntime/build', 'modules/build.prod.js'],
-    'benchmarks/build.benchpress.js'
+    'benchmarks/internal.benchpress.js'
+  );
+});
+
+gulp.task('benchmarks/external.js', function() {
+  runSequence(
+    ['jsRuntime/build', 'modules/build.prod.js'],
+    'benchmarks/external.benchpress.js'
   );
 });
 
@@ -266,40 +280,50 @@ gulp.task('benchmarks/build.js', function() {
 // ------------------
 // BENCHMARKS DART
 
-gulp.task('benchmarks/build.dart2js.dart', function () {
-  return gulp.src([
-    "build/dart/benchmarks/lib/**/benchmark.dart"
-  ]).pipe($.shell(['dart2js --package-root="build/dart/benchmarks/packages" -o "<%= file.path %>.js" <%= file.path %>']));
+function benchmarkDart2Js(buildPath, done) {
+
+  mergeStreams(dart2jsStream(), bpConfStream())
+    .on('end', function() {
+      runBenchpress();
+      done();
+    });
+
+  function dart2jsStream() {
+    return gulp.src([
+      buildPath+"/lib/**/benchmark.dart"
+    ]).pipe($.shell(['dart2js --package-root="'+buildPath+'/packages" -o "<%= file.path %>.js" <%= file.path %>']));
+  }
+
+  function bpConfStream() {
+    var bpConfContent = "module.exports = function(c) {c.set({scripts: [{src: 'benchmark.dart.js'}]});}";
+    var createBpConfJs = es.map(function(file, cb) {
+      var dir = path.dirname(file.path);
+      fs.writeFileSync(path.join(dir, "bp.conf.js"), bpConfContent);
+      cb();
+    });
+
+    return gulp.src([
+      buildPath+"/lib/**/benchmark.dart"
+    ]).pipe(createBpConfJs);
+  }
+
+  function runBenchpress() {
+    benchpress.build({
+        benchmarksPath: buildPath+'/lib',
+        buildPath: 'build/benchpress/dart'
+    });
+  }
+}
+
+gulp.task('benchmarks/internal.dart', ['modules/build.dart'], function(done) {
+  benchmarkDart2Js('build/dart/benchmarks', done);
 });
 
-gulp.task('benchmarks/create-bpconf.dart', function () {
-  var bpConfContent = "module.exports = function(c) {c.set({scripts: [{src: 'benchmark.dart.js'}]});}";
-  var createBpConfJs = es.map(function(file, cb) {
-    var dir = path.dirname(file.path);
-    fs.writeFileSync(path.join(dir, "bp.conf.js"), bpConfContent);
-    cb();
-  });
-
-  return gulp.src([
-    "build/dart/benchmarks/lib/**/benchmark.dart"
-  ]).pipe(createBpConfJs);
+gulp.task('benchmarks/external.dart', ['modules/build.dart'], function(done) {
+  benchmarkDart2Js('build/dart/benchmarks_external', done);
 });
 
-gulp.task('benchmarks/build.benchpress.dart', function () {
-  benchpress.build({
-    benchmarksPath: 'build/dart/benchmarks/lib',
-    buildPath: 'build/benchpress/dart'
-  })
-});
-
-gulp.task('benchmarks/build.dart', function() {
-  runSequence(
-    'modules/build.dart',
-    'benchmarks/build.dart2js.dart',
-    'benchmarks/create-bpconf.dart',
-    'benchmarks/build.benchpress.dart'
-  );
-});
+gulp.task('benchmarks/build.dart', ['benchmarks/internal.dart', 'benchmarks/external.dart']);
 
 
 
