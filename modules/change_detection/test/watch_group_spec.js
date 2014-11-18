@@ -137,6 +137,22 @@ export function main() {
         expect(parent.childHead).toBe(firstChild);
         expect(parent.childTail).toBe(secondChild);
       });
+
+      // todo: vsavkin: enable after refactoring addChild
+      xit("should update head and tail of the parent when disabling the only record" +
+        "of the child", () => {
+        var parent = new WatchGroup(null, null);
+
+        var child = new WatchGroup(null, null);
+        var record = createRecord(child);
+        child.addRecord(record);
+        parent.addChild(child);
+
+        child.disableRecord(record);
+
+        expect(parent.headRecord).toBeNull();
+        expect(parent.tailRecord).toBeNull();
+      });
     });
 
     describe("enabling/disabling records", () => {
