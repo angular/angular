@@ -65,6 +65,7 @@ export class View {
 
   addChild(childView: View) {
     ListWrapper.push(this.childViews, childView);
+    this.watchGroup.addChild(childView.watchGroup);
   }
 }
 

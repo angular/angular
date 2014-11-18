@@ -94,6 +94,7 @@ export class WatchGroup {
     this.prev = null;
   }
 
+  /// addRecord must be called before addChild
   addRecord(record:Record) {
     if (isPresent(this.tailRecord)) {
       this.tailRecord.next = record;
@@ -156,14 +157,12 @@ export class WatchGroup {
   addChild(child:WatchGroup) {
     if (isBlank(this.childTail)) {
       this.childHead = this.childTail = child;
-      this._attachRecordsFromWatchGroup(child);
-
     } else {
       this.childTail.next = child;
       child.prev = this.childTail;
       this.childTail = child;
-      this._attachRecordsFromWatchGroup(child);
     }
+    this._attachRecordsFromWatchGroup(child);
   }
 
   _attachRecordsFromWatchGroup(child:WatchGroup) {
@@ -198,14 +197,6 @@ export class WatchGroup {
 
       record.updateContext(context);
     }
-  }
-
-  get _tailRecordIncludingChildren():Record {
-    var lastGroup = this;
-    while (lastGroup.childTail !== null) {
-      lastGroup = lastGroup.childTail;
-    }
-    return lastGroup.tailRecord;
   }
 }
 

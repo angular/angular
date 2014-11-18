@@ -74,10 +74,6 @@ export function main() {
 
           cd.detectChanges();
 
-          // TODO(rado): this should be removed once watchgroups addChild is implemented.
-          var childWatchGroup = view.childViews[0].watchGroup;
-          new ChangeDetector(childWatchGroup).detectChanges();
-
           expect(view.nodes[0].shadowRoot.childNodes[0].nodeValue).toEqual('hello');
           done();
         });
