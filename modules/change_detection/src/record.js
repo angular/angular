@@ -22,9 +22,6 @@ export class ProtoRecord {
   @FIELD('final funcOrValue:Object')
   @FIELD('final arity:int')
   @FIELD('final dest')
-
-  @FIELD('next:ProtoRecord')
-  @FIELD('prev:ProtoRecord')
   @FIELD('recordInConstruction:Record')
   constructor(watchGroup:ProtoWatchGroup,
               recordType:string,
@@ -37,10 +34,6 @@ export class ProtoRecord {
     this.funcOrValue = funcOrValue;
     this.arity = arity;
     this.dest = dest;
-
-    this.next = null;
-    this.prev = null;
-
     this.recordInConstruction = null;
   }
 }
