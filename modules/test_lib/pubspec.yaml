@@ -2,5 +2,7 @@ name: test_lib
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  facade:
+    path: ../facade
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"

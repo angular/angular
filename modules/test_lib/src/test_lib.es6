@@ -20,6 +20,33 @@ window.print = function(msg) {
 
 window.beforeEach(function() {
   jasmine.addMatchers({
+    // Custom handler for Map to give nice error messages in JavaScript
+    toEqual: function(util, customEqualityTesters) {
+      return {
+        compare: function(actual, expected) {
+          var pass;
+          if (actual instanceof Map) {
+            pass = actual.size === expected.size;
+            if (pass) {
+              actual.forEach( (v,k) => {
+                pass = pass && util.equals(v, expected.get(k));
+              });
+            }
+            return {
+              pass: pass,
+              get message() {
+                return `Expected ${mapToString(actual)} ${(pass ? 'not' : '')} to equal to ${mapToString(expected)}`;
+              }
+            };
+          } else {
+            return {
+              pass: util.equals(actual, expected)
+            }
+          }
+        }
+      };
+    },
+
     toBePromise: function() {
       return {
         compare: function (actual, expectedClass) {
@@ -49,3 +76,15 @@ window.beforeEach(function() {
     }
   });
 });
+
+
+function mapToString(m) {
+  if (!m) {
+    return ''+m;
+  }
+  var res = [];
+  m.forEach( (v,k) => {
+    res.push(`${k}:${v}`);
+  });
+  return `{ ${res.join(',')} }`;
+}
