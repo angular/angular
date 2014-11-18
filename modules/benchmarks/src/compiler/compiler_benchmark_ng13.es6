@@ -2,8 +2,12 @@ import {benchmark, benchmarkStep} from '../benchpress';
 
 var COUNT = 30;
 var $compile;
+var $rootScope;
 
 export function main() {
+
+  var ngEl = document.createElement('div');
+  angular.bootstrap(ngEl, ['app']);
 
   benchmark(`Ng 1.3 Compiler.compile 5*${COUNT} element no bindings`, function() {
     var template = loadTemplate('templateNoBindings', COUNT);
@@ -25,8 +29,17 @@ export function main() {
     });
   });
 
-  var ngEl = document.createElement('div');
-  angular.bootstrap(ngEl, ['app']);
+  benchmark(`Ng 1.3 instantiate 5*${COUNT} element with bindings`, function() {
+    var template = loadTemplate('templateWithBindings', COUNT);
+    var linkFn = $compile(template);
+
+    benchmarkStep('run', function() {
+      var scope = $rootScope.$new();
+      linkFn(scope);
+      scope.$destroy();
+    });
+  });
+
 }
 
 function loadTemplate(templateId, repeatCount) {
@@ -48,6 +61,7 @@ function loadTemplate(templateId, repeatCount) {
 angular.module('app', [])
 .directive('dir0', function($parse) {
   return {
+    controller: angular.noop,
     compile: function($element, $attrs) {
       var expr = $parse($attrs.attr0);
       return function($scope) {
@@ -58,6 +72,8 @@ angular.module('app', [])
 })
 .directive('dir1', function($parse) {
   return {
+    controller: angular.noop,
+    require: '^dir0',
     compile: function($element, $attrs) {
       var expr = $parse($attrs.attr1);
       return function($scope) {
@@ -68,6 +84,8 @@ angular.module('app', [])
 })
 .directive('dir2', function($parse) {
   return {
+    controller: angular.noop,
+    require: '^dir1',
     compile: function($element, $attrs) {
       var expr = $parse($attrs.attr2);
       return function($scope) {
@@ -78,6 +96,8 @@ angular.module('app', [])
 })
 .directive('dir3', function($parse) {
   return {
+    controller: angular.noop,
+    require: '^dir2',
     compile: function($element, $attrs) {
       var expr = $parse($attrs.attr3);
       return function($scope) {
@@ -88,6 +108,8 @@ angular.module('app', [])
 })
 .directive('dir4', function($parse) {
   return {
+    controller: angular.noop,
+    require: '^dir3',
     compile: function($element, $attrs) {
       var expr = $parse($attrs.attr4);
       return function($scope) {
@@ -96,7 +118,11 @@ angular.module('app', [])
     }
   };
 })
-.run(function(_$compile_) {
+.config(function($compileProvider) {
+  $compileProvider.debugInfoEnabled(false);
+})
+.run(function(_$compile_, _$rootScope_) {
   $compile = _$compile_;
+  $rootScope = _$rootScope_;
 });
 

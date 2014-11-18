@@ -8,6 +8,7 @@ import {AnnotatedType} from 'core/compiler/annotated_type';
 import {Parser} from 'change_detection/parser/parser';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
+import {ProtoWatchGroup} from 'change_detection/watch_group';
 
 import {Compiler} from 'core/compiler/compiler';
 import {Reflector} from 'core/compiler/reflector';
@@ -48,6 +49,19 @@ export function main() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = DOM.clone(template);
       compiler.compileWithCache(null, annotatedComponent, cloned);
+    });
+  });
+
+  benchmark(`instantiate 5*${COUNT} element with bindings`, function() {
+    var template = loadTemplate('templateWithBindings', COUNT);
+    var protoView = compiler.compileWithCache(null, annotatedComponent, template);
+    var rootWatchGroup = new ProtoWatchGroup().instantiate(null, new Object());
+
+    benchmarkStep('run', function() {
+      var view = protoView.instantiate(null, null, null);
+      // also include adding / removing the WatchGroup from the parent in the benchmark.
+      rootWatchGroup.addChild(view.watchGroup);
+      view.watchGroup.remove();
     });
   });
 }
@@ -91,7 +105,9 @@ class Dir0 {}
     'attr1': 'prop'
   }
 })
-class Dir1 {}
+class Dir1 {
+  constructor(dir0:Dir0) {}
+}
 
 @Decorator({
   selector: '[dir2]',
@@ -99,7 +115,9 @@ class Dir1 {}
     'attr2': 'prop'
   }
 })
-class Dir2 {}
+class Dir2 {
+  constructor(dir1:Dir1) {}
+}
 
 @Decorator({
   selector: '[dir3]',
@@ -107,7 +125,9 @@ class Dir2 {}
     'attr3': 'prop'
   }
 })
-class Dir3 {}
+class Dir3 {
+  constructor(dir2:Dir2) {}
+}
 
 @Decorator({
   selector: '[dir4]',
@@ -115,7 +135,9 @@ class Dir3 {}
     'attr4': 'prop'
   }
 })
-class Dir4 {}
+class Dir4 {
+  constructor(dir3:Dir3) {}
+}
 
 @Component({
   template: new TemplateConfig({
