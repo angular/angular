@@ -15,7 +15,8 @@ import {
   OPEN_SQUARE,
   SEMI_COLON,
   STAR,
-  STATIC
+  STATIC,
+  VAR
 } from 'traceur/src/syntax/TokenType';
 
 import {
@@ -43,8 +44,13 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       this.writeSpace_();
     }
 
-    this.writeType_(tree.typeAnnotation);
+    if (tree.typeAnnotation === null) {
+      this.write_(VAR);
+    } else {
+      this.writeType_(tree.typeAnnotation);
+    }
     this.writeSpace_();
+
     this.visitAny(tree.name);
     this.write_(SEMI_COLON);
   }
@@ -249,7 +255,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       if (tree.typeAnnotation) {
         this.writeType_(tree.typeAnnotation);
       } else {
-        this.write_('var');
+        this.write_(VAR);
         this.writeSpace_();
       }
     }
