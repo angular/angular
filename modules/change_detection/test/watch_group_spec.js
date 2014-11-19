@@ -155,6 +155,54 @@ export function main() {
       });
     });
 
+    describe("removing children", () => {
+      it("should remove a single watch group", () => {
+        var parent = new WatchGroup(null, null);
+        var child = new WatchGroup(null, null);
+        parent.addChild(child);
+
+        child.remove();
+
+        expect(parent.childHead).toBe(null);
+        expect(parent.childTail).toBe(null);
+      });
+
+      it("should remove a watch group", () => {
+        var parent = new WatchGroup(null, null);
+        var child1 = new WatchGroup(null, null);
+        var child2 = new WatchGroup(null, null);
+        var child3 = new WatchGroup(null, null);
+        parent.addChild(child1);
+        parent.addChild(child2);
+        parent.addChild(child3);
+
+        child2.remove();
+
+        expect(child1.next).toBe(child3);
+        expect(child3.prev).toBe(child1);
+      });
+
+      it("should unlink all records", () => {
+        var parent = new WatchGroup(null, null);
+        var parentRecord = createRecord(parent);
+        parent.addRecord(parentRecord);
+
+        var child = new WatchGroup(null, null);
+        var childRecord = createRecord(child);
+        child.addRecord(childRecord);
+
+        parent.addChild(child);
+
+        child.remove();
+
+        expect(parent.headRecord).toBe(parentRecord);
+        expect(parent.tailRecord).toBe(parentRecord);
+
+        expect(parent.headEnabledRecord).toBe(parentRecord);
+        expect(parent.tailEnabledRecord).toBe(parentRecord);
+      });
+    });
+
     describe("enabling/disabling records", () => {
       it("should disable a single record", () => {
         var wg = new WatchGroup(null, null);

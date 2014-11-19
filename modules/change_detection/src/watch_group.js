@@ -88,6 +88,7 @@ export class WatchGroup {
     this.tailEnabledRecord = null;
     this.context = null;
 
+    this.parent = null;
     this.childHead = null;
     this.childTail = null;
     this.next = null;
@@ -155,6 +156,8 @@ export class WatchGroup {
   }
 
   addChild(child:WatchGroup) {
+    child.parent = this;
+
     if (isBlank(this.childTail)) {
       this.childHead = this.childTail = child;
     } else {
@@ -163,6 +166,52 @@ export class WatchGroup {
       this.childTail = child;
     }
     this._attachRecordsFromWatchGroup(child);
+  }
+
+  removeChild(child:WatchGroup) {
+    if (this.childHead === child) {
+      this.childHead = child.next;
+    }
+    if (this.childTail === child) {
+      this.childTail = child.prev;
+    }
+
+    if (isPresent(child.next)) {
+      child.next.prev = child.prev;
+    }
+    if (isPresent(child.prev)) {
+      child.prev.next = child.next;
+    }
+
+    if (isPresent(child.tailRecord)) {
+      var next = child.tailRecord.next;
+      var prev = child.headRecord.prev;
+
+      if (isPresent(next)) {
+        next.prev = prev;
+      }
+      if (isPresent(prev)) {
+        prev.next = next;
+      }
+
+      if(this.headRecord === child.headRecord) {
+        this.headRecord = child.headRecord.next;
+      }
+      if(this.tailRecord === child.tailRecord) {
+        this.tailRecord = child.tailRecord.prev;
+      }
+
+      if(this.headEnabledRecord === child.headEnabledRecord) {
+        this.headEnabledRecord = child.headEnabledRecord.next;
+      }
+      if(this.tailEnabledRecord === child.tailEnabledRecord) {
+        this.tailEnabledRecord = child.tailEnabledRecord.prev;
+      }
+    }
+  }
+
+  remove() {
+    this.parent.removeChild(this);
   }
 
   _attachRecordsFromWatchGroup(child:WatchGroup) {
