@@ -1,5 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
 
+import {isPresent} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';

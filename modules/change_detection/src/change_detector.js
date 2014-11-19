@@ -13,7 +13,7 @@ export class ChangeDetector {
 
   detectChanges():int {
     var count:int = 0;
-    for (var record = this._rootWatchGroup.headEnabledRecord;
+    for (var record = this._rootWatchGroup.findFirstEnabledRecord();
          isPresent(record);
          record = record.nextEnabled) {
       if (record.check()) {

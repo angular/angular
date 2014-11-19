@@ -1,5 +1,5 @@
 import {ProtoWatchGroup, WatchGroup} from './watch_group';
-import {FIELD, isPresent, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
+import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
@@ -105,6 +105,11 @@ export class Record {
     this.funcOrValue = null;
     this.args = null;
 
+    if (isBlank(protoRecord)) {
+      this.mode = MODE_STATE_MARKER;
+      return;
+    }
+
     var type = protoRecord.recordType;
     if (type === PROTO_RECORD_CONST) {
       this.mode = MODE_STATE_CONST;
@@ -133,6 +138,12 @@ export class Record {
       this.mode = MODE_STATE_PROPERTY;
       this.funcOrValue = protoRecord.funcOrValue;
     }
+  }
+
+  static createMarker(wg:WatchGroup) {
+    var r = new Record(wg, null, null);
+    r.disabled = true;
+    return r;
   }
 
   check():boolean {
@@ -200,7 +211,13 @@ export class Record {
 
   updateContext(value) {
     this.context = value;
-    this.watchGroup.enableRecord(this);
+    if (! this.isMarkerRecord) {
+      this.watchGroup.enableRecord(this);
+    }
+  }
+
+  get isMarkerRecord() {
+    return isBlank(this.protoRecord);
   }
 }
 

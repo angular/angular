@@ -77,110 +77,158 @@ export class WatchGroup {
   @FIELD('final dispatcher:WatchGroupDispatcher')
   @FIELD('final headRecord:Record')
   @FIELD('final tailRecord:Record')
+  @FIELD('final disabled:boolean')
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
   constructor(protoWatchGroup:ProtoWatchGroup, dispatcher) {
     this.protoWatchGroup = protoWatchGroup;
     this.dispatcher = dispatcher;
-    this.headRecord = null;
-    this.tailRecord = null;
-    this.headEnabledRecord = null;
-    this.tailEnabledRecord = null;
-    this.context = null;
 
-    this.childHead = null;
-    this.childTail = null;
-    this.next = null;
-    this.prev = null;
+    this.disabled = false;
+
+    this.headRecord = Record.createMarker(this);
+    this.tailRecord = Record.createMarker(this);
+
+    this.headRecord.next = this.tailRecord;
+    this.tailRecord.prev = this.headRecord;
   }
 
-  /// addRecord must be called before addChild
+  /// addRecord assumes that all records are enabled
   addRecord(record:Record) {
-    if (isPresent(this.tailRecord)) {
-      this.tailRecord.next = record;
-      this.tailRecord.nextEnabled = record;
-      record.prev = this.tailRecord;
-      record.prevEnabled = this.tailRecord;
-      this.tailRecord = this.tailEnabledRecord = record;
+    var lastRecord = this.tailRecord.prev;
 
-    } else {
-      this.headRecord = this.tailRecord = record;
-      this.headEnabledRecord = this.tailEnabledRecord = record;
+    lastRecord.next = record;
+    lastRecord.nextEnabled = record;
+
+    record.prev = lastRecord;
+    record.prevEnabled = lastRecord;
+
+    record.next = this.tailRecord;
+    this.tailRecord.prev = record;
+  }
+
+  addChild(child:WatchGroup) {
+    var lastRecord = this.tailRecord.prev;
+    var lastEnabledRecord = this.findLastEnabledRecord();
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+
+    lastRecord.next = child.headRecord;
+    child.headRecord.prev = lastRecord;
+
+    child.tailRecord.next = this.tailRecord;
+    this.tailRecord.prev = child.tailRecord;
+
+    if (isPresent(lastEnabledRecord) && isPresent(firstEnabledChildRecord)) {
+      lastEnabledRecord.nextEnabled = firstEnabledChildRecord;
+      firstEnabledChildRecord.prevEnabled = lastEnabledRecord;
     }
+  }
+
+  removeChild(child:WatchGroup) {
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    var next = child.tailRecord.next;
+    var prev = child.headRecord.prev;
+
+    next.prev = prev;
+    prev.next = next;
+
+    var nextEnabled = lastEnabledChildRecord.nextEnabled;
+    var prevEnabled = firstEnabledChildRecord.prevEnabled;
+
+    if (isPresent(nextEnabled)) nextEnabled.prev = prevEnabled;
+    if (isPresent(prevEnabled)) prevEnabled.next = nextEnabled;
+  }
+
+  findFirstEnabledRecord() {
+    return this._nextEnabled(this.headRecord);
+  }
+
+  findLastEnabledRecord() {
+    return this._prevEnabled(this.tailRecord);
   }
 
   disableRecord(record:Record) {
-    var prev = record.prevEnabled;
-    var next = record.nextEnabled;
+    var prevEnabled = record.prevEnabled;
+    var nextEnabled = record.nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
 
     record.disabled = true;
-
-    if (isPresent(prev)) {
-      prev.nextEnabled = next;
-    } else {
-      this.headEnabledRecord = next;
-    }
-
-    if (isPresent(next)) {
-      next.prevEnabled = prev;
-    } else {
-      this.tailEnabledRecord = prev;
-    }
   }
 
   enableRecord(record:Record) {
     if (!record.disabled) return;
 
-    var prev = record.prev;
-    while (prev != null && prev.disabled) prev = prev.prev;
+    var prevEnabled = this._prevEnabled(record);
+    var nextEnabled = this._nextEnabled(record);
 
-    var next = record.next;
-    while (next != null && next.disabled) next = next.next;
+    record.prevEnabled = prevEnabled;
+    record.nextEnabled = nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = record;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = record;
 
     record.disabled = false;
-    record.prevEnabled = prev;
-    record.nextEnabled = next;
-
-    if (isPresent(prev)) {
-      prev.nextEnabled = record;
-    } else {
-      this.headEnabledRecord = record;
-    }
-
-    if (isPresent(next)) {
-      next.prevEnabled = record;
-    } else {
-      this.tailEnabledRecord = record;
-    }
   }
 
-  addChild(child:WatchGroup) {
-    if (isBlank(this.childTail)) {
-      this.childHead = this.childTail = child;
-    } else {
-      this.childTail.next = child;
-      child.prev = this.childTail;
-      this.childTail = child;
-    }
-    this._attachRecordsFromWatchGroup(child);
+  disableGroup(child:WatchGroup) {
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    var nextEnabled = lastEnabledChildRecord.nextEnabled;
+    var prevEnabled = firstEnabledChildRecord.prevEnabled;
+
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+
+    child.disabled = true;
   }
 
-  _attachRecordsFromWatchGroup(child:WatchGroup) {
-    if (isPresent(this.tailRecord)) {
-      if (isPresent(child.headRecord)) {
-        this.tailRecord.next = child.headRecord;
-        this.tailRecord.nextEnabled = child.headRecord;
+  enableGroup(child:WatchGroup) {
+    var prevEnabledRecord = this._prevEnabled(child.headRecord);
+    var nextEnabledRecord = this._nextEnabled(child.tailRecord);
 
-        child.headRecord.prev = this.tailRecord;
-        child.headRecord.prevEnabled = this.tailRecord;
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    if (isPresent(firstEnabledChildRecord) && isPresent(prevEnabledRecord)){
+      firstEnabledChildRecord.prevEnabled = prevEnabledRecord;
+      prevEnabledRecord.nextEnabled = firstEnabledChildRecord;
+    }
+
+    if (isPresent(lastEnabledChildRecord) && isPresent(nextEnabledRecord)){
+      lastEnabledChildRecord.nextEnabled = nextEnabledRecord;
+      nextEnabledRecord.prevEnabled = lastEnabledChildRecord;
+    }
+
+    child.disabled = false;
+  }
+
+  _nextEnabled(record:Record) {
+    record = record.next;
+    while (isPresent(record) && record !== this.tailRecord && record.disabled) {
+      if (record.isMarkerRecord && record.watchGroup.disabled) {
+        record = record.watchGroup.tailRecord.next;
+      } else {
+        record = record.next;
       }
-    } else {
-      this.headRecord = child.headRecord;
-      this.headEnabledRecord = child.headEnabledRecord;
     }
+    return record === this.tailRecord ? null : record;
+  }
 
-    this.tailRecord = child.tailRecord;
-    this.tailEnabledRecord = child.tailEnabledRecord;
+  _prevEnabled(record:Record) {
+    record = record.prev;
+    while (isPresent(record) && record !== this.headRecord && record.disabled) {
+      if (record.isMarkerRecord && record.watchGroup.disabled) {
+        record = record.watchGroup.headRecord.prev;
+      } else {
+        record = record.prev;
+      }
+    }
+    return record === this.headRecord ? null : record;
   }
 
   /**

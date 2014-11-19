@@ -1,6 +1,7 @@
-import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/lang';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -11,180 +12,125 @@ import {
   WatchGroup,
   WatchGroupDispatcher,
   ProtoRecord
-} from 'change_detection/change_detector';
+  } from 'change_detection/change_detector';
 
 import {Record} from 'change_detection/record';
 
 export function main() {
+  function humanize(wg:WatchGroup, names:List) {
+    var lookupName = (item) =>
+      ListWrapper.last(
+        ListWrapper.find(names, (pair) => pair[0] === item));
+
+    var res = [];
+    var record = wg.findFirstEnabledRecord();
+    while (isPresent(record)) {
+      ListWrapper.push(res, lookupName(record));
+      record = record.nextEnabled;
+    }
+    return res;
+  }
+
   function createRecord(wg) {
     return new Record(wg, new ProtoRecord(null, null, null, null, null), null);
   }
 
   describe('watch group', () => {
-    describe("adding records", () => {
-      it("should add a record", () => {
-        var wg = new WatchGroup(null, null);
-        var record = createRecord(wg);
+    it("should add records", () => {
+      var wg = new WatchGroup(null, null);
+      var record1 = createRecord(wg);
+      var record2 = createRecord(wg);
 
-        wg.addRecord(record);
+      wg.addRecord(record1);
+      wg.addRecord(record2);
 
-        expect(wg.headRecord).toBe(record);
-        expect(wg.tailRecord).toBe(record);
-        expect(wg.headEnabledRecord).toBe(record);
-        expect(wg.tailEnabledRecord).toBe(record);
-      });
-
-      it("should add multiple records", () => {
-        var wg = new WatchGroup(null, null);
-        var record1 = createRecord(wg);
-        var record2 = createRecord(wg);
-
-        wg.addRecord(record1);
-        wg.addRecord(record2);
-
-        expect(wg.headRecord).toBe(record1);
-        expect(wg.tailRecord).toBe(record2);
-
-        expect(wg.headEnabledRecord).toBe(record1);
-        expect(wg.tailEnabledRecord).toBe(record2);
-
-        expect(record1.next).toBe(record2);
-        expect(record2.prev).toBe(record1);
-      });
+      expect(humanize(wg, [
+        [record1, 'record1'],
+        [record2, 'record2']
+      ])).toEqual(['record1', 'record2']);
     });
 
-    describe("adding children", () => {
-      it("should add child watch group", () => {
-        var parent = new WatchGroup(null, null);
-        var child1 = new WatchGroup(null, null);
-        var child2 = new WatchGroup(null, null);
+    describe("adding/removing child groups", () => {
+      var parent, child1, child2;
+      var childRecord1, childRecord2;
+      var recordNames;
+
+      beforeEach(() => {
+        parent = new WatchGroup(null, null);
+
+        child1 = new WatchGroup(null, null);
+        childRecord1 = createRecord(child1);
+        child1.addRecord(childRecord1);
+
+        child2 = new WatchGroup(null, null);
+        childRecord2 = createRecord(child2);
+        child2.addRecord(childRecord2);
+
+        recordNames = [
+          [childRecord1, 'record1'],
+          [childRecord2, 'record2'],
+        ];
+      });
+
+      it("should add child groups", () => {
         parent.addChild(child1);
         parent.addChild(child2);
 
-        expect(parent.childHead).toBe(child1);
-        expect(parent.childTail).toBe(child2);
-
-        expect(child1.next).toBe(child2);
-        expect(child2.prev).toBe(child1);
+        expect(humanize(parent, recordNames)).toEqual(['record1', 'record2']);
       });
 
-      it("should link all records", () => {
-        var parent = new WatchGroup(null, null);
-        var parentRecord = createRecord(parent);
-        parent.addRecord(parentRecord);
+      it("should remove children", () => {
+        parent.addChild(child1);
+        parent.addChild(child2);
 
-        var child = new WatchGroup(null, null);
-        var childRecord = createRecord(child);
-        child.addRecord(childRecord);
+        parent.removeChild(child1);
 
-        parent.addChild(child);
+        expect(humanize(parent, recordNames)).toEqual(['record2']);
 
-        expect(parent.headRecord).toBe(parentRecord);
-        expect(parent.tailRecord).toBe(childRecord);
+        parent.removeChild(child2);
 
-        expect(parent.headEnabledRecord).toBe(parentRecord);
-        expect(parent.tailEnabledRecord).toBe(childRecord);
-
-        expect(parentRecord.next).toBe(childRecord);
-        expect(childRecord.prev).toBe(parentRecord);
-      });
-
-      it("should work when parent has no records", () => {
-        var parent = new WatchGroup(null, null);
-
-        var child = new WatchGroup(null, null);
-        var childRecord = createRecord(child);
-        child.addRecord(childRecord);
-
-        parent.addChild(child);
-
-        expect(parent.headRecord).toBe(childRecord);
-        expect(parent.tailRecord).toBe(childRecord);
-
-        expect(parent.headEnabledRecord).toBe(childRecord);
-        expect(parent.tailEnabledRecord).toBe(childRecord);
-      });
-
-      it("should work when parent has no records and first child has no records", () => {
-        var parent = new WatchGroup(null, null);
-        var firstChild = new WatchGroup(null, null);
-        parent.addChild(firstChild);
-
-        var child = new WatchGroup(null, null);
-        var childRecord = createRecord(child);
-        child.addRecord(childRecord);
-
-        parent.addChild(child);
-
-        expect(parent.headRecord).toBe(childRecord);
-        expect(parent.tailRecord).toBe(childRecord);
-
-        expect(parent.headEnabledRecord).toBe(childRecord);
-        expect(parent.tailEnabledRecord).toBe(childRecord);
-      });
-
-      it("should work when second child has no records", () => {
-        var parent = new WatchGroup(null, null);
-
-        var firstChild = new WatchGroup(null, null);
-        var childRecord = createRecord(firstChild);
-        firstChild.addRecord(childRecord);
-        parent.addChild(firstChild);
-
-        var secondChild = new WatchGroup(null, null);
-        parent.addChild(secondChild);
-
-        expect(parent.childHead).toBe(firstChild);
-        expect(parent.childTail).toBe(secondChild);
-      });
-
-      // todo: vsavkin: enable after refactoring addChild
-      xit("should update head and tail of the parent when disabling the only record" +
-        "of the child", () => {
-        var parent = new WatchGroup(null, null);
-
-        var child = new WatchGroup(null, null);
-        var record = createRecord(child);
-        child.addRecord(record);
-        parent.addChild(child);
-
-        child.disableRecord(record);
-
-        expect(parent.headRecord).toBeNull();
-        expect(parent.tailRecord).toBeNull();
+        expect(humanize(parent, recordNames)).toEqual([]);
       });
     });
 
     describe("enabling/disabling records", () => {
+      var wg;
+      var record1, record2, record3, record4;
+      var recordNames;
+
+      beforeEach(() => {
+        wg = new WatchGroup(null, null);
+        record1 = createRecord(wg);
+        record2 = createRecord(wg);
+        record3 = createRecord(wg);
+        record4 = createRecord(wg);
+
+        recordNames = [
+          [record1, 'record1'],
+          [record2, 'record2'],
+          [record3, 'record3'],
+          [record4, 'record4']
+        ];
+      });
+
       it("should disable a single record", () => {
-        var wg = new WatchGroup(null, null);
-        var record = createRecord(wg);
-        wg.addRecord(record);
+        wg.addRecord(record1);
 
-        wg.disableRecord(record);
+        wg.disableRecord(record1);
 
-        expect(wg.headEnabledRecord).toBeNull();
-        expect(wg.tailEnabledRecord).toBeNull();
+        expect(humanize(wg, recordNames)).toEqual([]);
       });
 
       it("should enable a single record", () => {
-        var wg = new WatchGroup(null, null);
-        var record = createRecord(wg);
-        wg.addRecord(record);
-        wg.disableRecord(record);
+        wg.addRecord(record1);
+        wg.disableRecord(record1);
 
-        wg.enableRecord(record);
+        wg.enableRecord(record1);
 
-        expect(wg.headEnabledRecord).toBe(record);
-        expect(wg.tailEnabledRecord).toBe(record);
+        expect(humanize(wg, recordNames)).toEqual(['record1']);
       });
 
       it("should disable a record", () => {
-        var wg = new WatchGroup(null, null);
-        var record1 = createRecord(wg);
-        var record2 = createRecord(wg);
-        var record3 = createRecord(wg);
-        var record4 = createRecord(wg);
         wg.addRecord(record1);
         wg.addRecord(record2);
         wg.addRecord(record3);
@@ -194,20 +140,12 @@ export function main() {
         wg.disableRecord(record3);
 
         expect(record2.disabled).toBeTruthy();
+        expect(record3.disabled).toBeTruthy();
 
-        expect(wg.headEnabledRecord).toBe(record1);
-        expect(wg.tailEnabledRecord).toBe(record4);
-
-        expect(record1.nextEnabled).toBe(record4);
-        expect(record4.prevEnabled).toBe(record1);
+        expect(humanize(wg, recordNames)).toEqual(['record1', 'record4']);
       });
 
       it("should enable a record", () => {
-        var wg = new WatchGroup(null, null);
-        var record1 = createRecord(wg);
-        var record2 = createRecord(wg);
-        var record3 = createRecord(wg);
-        var record4 = createRecord(wg);
         wg.addRecord(record1);
         wg.addRecord(record2);
         wg.addRecord(record3);
@@ -218,11 +156,88 @@ export function main() {
         wg.enableRecord(record2);
         wg.enableRecord(record3);
 
-        expect(record1.nextEnabled).toBe(record2);
-        expect(record2.nextEnabled).toBe(record3);
-        expect(record3.nextEnabled).toBe(record4);
-        expect(record4.prevEnabled).toBe(record3);
+        expect(humanize(wg, recordNames)).toEqual(['record1', 'record2', 'record3', 'record4']);
       });
-    })
+    });
+
+    describe("enabling/disabling child groups", () => {
+      var child1, child2, child3, child4;
+      var record1, record2, record3, record4;
+      var recordNames;
+
+      beforeEach(() => {
+        child1 = new WatchGroup(null, null);
+        record1 = createRecord(child1);
+        child1.addRecord(record1);
+
+        child2 = new WatchGroup(null, null);
+        record2 = createRecord(child2);
+        child2.addRecord(record2);
+
+        child3 = new WatchGroup(null, null);
+        record3 = createRecord(child3);
+        child3.addRecord(record3);
+
+        child4 = new WatchGroup(null, null);
+        record4 = createRecord(child4);
+        child4.addRecord(record4);
+
+        recordNames = [
+          [record1, 'record1'],
+          [record2, 'record2'],
+          [record3, 'record3'],
+          [record4, 'record4']
+        ];
+      });
+
+      it("should disable a single watch group", () => {
+        var parent = new WatchGroup(null, null);
+        parent.addChild(child1);
+
+        parent.disableGroup(child1);
+
+        expect(humanize(parent, recordNames)).toEqual([]);
+      });
+
+      it("should enable a single watch group", () => {
+        var parent = new WatchGroup(null, null);
+        parent.addChild(child1);
+        parent.disableGroup(child1);
+
+        parent.enableGroup(child1);
+
+        expect(humanize(parent, recordNames)).toEqual(['record1']);
+      });
+
+      it("should disable a watch group", () => {
+        var parent = new WatchGroup(null, null);
+        parent.addChild(child1);
+        parent.addChild(child2);
+        parent.addChild(child3);
+        parent.addChild(child4);
+
+        parent.disableGroup(child2);
+        parent.disableGroup(child3);
+
+        expect(humanize(parent, recordNames)).toEqual(['record1', 'record4']);
+      });
+
+      it("should enable a watch group", () => {
+        var parent = new WatchGroup(null, null);
+        parent.addChild(child1);
+        parent.addChild(child2);
+        parent.addChild(child3);
+        parent.addChild(child4);
+        parent.disableGroup(child2);
+        parent.disableGroup(child3);
+
+        parent.enableGroup(child2);
+        parent.enableGroup(child3);
+
+        expect(humanize(parent, recordNames)).toEqual([
+          'record1', 'record2', 'record3', 'record4'
+        ]);
+      });
+    });
   });
 }
