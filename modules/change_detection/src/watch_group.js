@@ -7,11 +7,10 @@ import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 
 export class ProtoWatchGroup {
-  @FIELD('headRecord:ProtoRecord')
-  @FIELD('tailRecord:ProtoRecord')
   constructor() {
-    this.headRecord = null;
-    this.tailRecord = null;
+    this.protoRecords = ListWrapper.create();
+    // todo(vicb): we might optimize to re-use a single instance of ProtoRecordCreator
+    this.creator = new ProtoRecordCreator(this);
   }
 
   /**
@@ -26,28 +25,15 @@ export class ProtoWatchGroup {
         memento,
         shallow = false)
   {
-    var creator = new ProtoRecordCreator(this);
-    creator.createRecordsFromAST(ast, memento);
-    this._addRecords(creator.headRecord, creator.tailRecord);
-  }
-
-  // try to encapsulate this behavior in some class (e.g., LinkedList)
-  // so we can say: group.appendList(creator.list);
-  _addRecords(head:ProtoRecord, tail:ProtoRecord) {
-    if (isBlank(this.headRecord)) {
-      this.headRecord = head;
-    } else {
-      this.tailRecord.next = head;
-      head.prev = this.tailRecord;
-    }
-    this.tailRecord = tail;
+    this.creator.addRecordsFromAST(ast, memento);
   }
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
   instantiate(dispatcher, formatters:Map):WatchGroup {
     var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
-    if (this.headRecord !== null) {
+    // todo(vicb) iterate in reverse order so that we don't need to iterate twice
+    if (this.protoRecords.length > 0) {
       this._createRecords(watchGroup, formatters);
       this._setDestination();
     }
@@ -55,7 +41,8 @@ export class ProtoWatchGroup {
   }
 
   _createRecords(watchGroup:WatchGroup, formatters:Map) {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var i = 0; i < this.protoRecords.length; i++) {
+      var proto = this.protoRecords[i];
       var record = new Record(watchGroup, proto, formatters);
       proto.recordInConstruction = record;
       watchGroup.addRecord(record);
@@ -63,7 +50,9 @@ export class ProtoWatchGroup {
   }
 
   _setDestination() {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var i = 0; i < this.protoRecords.length; i++) {
+      var proto = this.protoRecords[i];
+      // todo(vicb) dest keeps a ref to the protoRecord which is no more needed
       if (proto.dest instanceof Destination) {
         proto.recordInConstruction.dest = proto.dest.record.recordInConstruction;
       }
@@ -221,8 +210,6 @@ class ProtoRecordCreator {
   @FIELD('tailRecord:ProtoRecord')
   constructor(protoWatchGroup) {
     this.protoWatchGroup = protoWatchGroup;
-    this.headRecord = null;
-    this.tailRecord = null;
   }
 
   visitImplicitReceiver(ast:ImplicitReceiver, args) {
@@ -310,7 +297,7 @@ class ProtoRecordCreator {
 
   visitAssignment(ast:Assignment, dest) {this.unsupported();}
 
-  createRecordsFromAST(ast:AST, memento){
+  addRecordsFromAST(ast:AST, memento){
     ast.visit(this, memento);
   }
 
@@ -319,13 +306,7 @@ class ProtoRecordCreator {
   }
 
   add(protoRecord:ProtoRecord) {
-    if (this.headRecord === null) {
-      this.headRecord = this.tailRecord = protoRecord;
-    } else {
-      this.tailRecord.next = protoRecord;
-      protoRecord.prev = this.tailRecord;
-      this.tailRecord = protoRecord;
-    }
+    ListWrapper.push(this.protoWatchGroup.protoRecords, protoRecord);
   }
 
   unsupported() {
