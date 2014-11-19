@@ -10,6 +10,7 @@
 4. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
 5. `gulp build`
 6. `pub get`
+7. Party!
 
 ### Folder structure
 
