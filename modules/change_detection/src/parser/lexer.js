@@ -130,6 +130,7 @@ export const $CR        = 13;
 export const $SPACE     = 32;
 export const $BANG      = 33;
 export const $DQ        = 34;
+export const $HASH      = 35;
 export const $$         = 36;
 export const $PERCENT   = 37;
 export const $AMPERSAND = 38;
@@ -246,6 +247,8 @@ class _Scanner {
       case $SQ:
       case $DQ:
         return this.scanString();
+      case $HASH:
+        return this.scanOperator(start, StringWrapper.fromCharCode(peek));
       case $PLUS:
       case $MINUS:
       case $STAR:
@@ -459,7 +462,8 @@ var OPERATORS = SetWrapper.createFromList([
   '&',
   '|',
   '!',
-  '?'
+  '?',
+  '#'
 ]);
 
 

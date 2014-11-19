@@ -6,6 +6,8 @@ import {Decorator} from '../../annotations/decorator';
 import {Component} from '../../annotations/component';
 import {Template} from '../../annotations/template';
 
+import {ASTWithSource} from 'change_detection/parser/ast';
+
 /**
  * Collects all data that is needed to process an element
  * in the compile process. Fields are filled
@@ -18,6 +20,7 @@ export class CompileElement {
     this._classList = null;
     this.textNodeBindings = null;
     this.propertyBindings = null;
+    this.variableBindings = null;
     this.decoratorDirectives = null;
     this.templateDirective = null;
     this.componentDirective = null;
@@ -60,18 +63,25 @@ export class CompileElement {
     return this._classList;
   }
 
-  addTextNodeBinding(indexInParent:int, expression:string) {
+  addTextNodeBinding(indexInParent:int, expression:ASTWithSource) {
     if (isBlank(this.textNodeBindings)) {
       this.textNodeBindings = MapWrapper.create();
     }
     MapWrapper.set(this.textNodeBindings, indexInParent, expression);
   }
 
-  addPropertyBinding(property:string, expression:string) {
+  addPropertyBinding(property:string, expression:ASTWithSource) {
     if (isBlank(this.propertyBindings)) {
       this.propertyBindings = MapWrapper.create();
     }
     MapWrapper.set(this.propertyBindings, property, expression);
+  }
+
+  addVariableBinding(contextName:string, templateName:string) {
+    if (isBlank(this.variableBindings)) {
+      this.variableBindings = MapWrapper.create();
+    }
+    MapWrapper.set(this.variableBindings, contextName, templateName);
   }
 
   addDirective(directive:AnnotatedType) {

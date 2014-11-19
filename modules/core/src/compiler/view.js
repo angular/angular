@@ -78,6 +78,7 @@ export class ProtoView {
       protoWatchGroup:ProtoWatchGroup) {
     this.element = template;
     this.elementBinders = [];
+    this.variableBindings = MapWrapper.create();
     this.protoWatchGroup = protoWatchGroup;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
@@ -122,6 +123,10 @@ export class ProtoView {
         elements, binders, elementInjectors, shadowAppInjectors, view);
 
     return view;
+  }
+
+  bindVariable(contextName:string, templateName:string) {
+    MapWrapper.set(this.variableBindings, contextName, templateName);
   }
 
   bindElement(protoElementInjector:ProtoElementInjector,

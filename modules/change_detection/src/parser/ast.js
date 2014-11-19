@@ -111,7 +111,7 @@ export class KeyedAccess extends AST {
     this.obj = obj;
     this.key = key;
   }
-  
+
   eval(context) {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);
@@ -169,11 +169,11 @@ export class LiteralPrimitive extends AST {
   constructor(value) {
     this.value = value;
   }
-  
+
   eval(context) {
     return this.value;
   }
-  
+
   visit(visitor, args) {
     visitor.visitLiteralPrimitive(this, args);
   }
@@ -184,11 +184,11 @@ export class LiteralArray extends AST {
   constructor(expressions:List) {
     this.expressions = expressions;
   }
-  
+
   eval(context) {
     return ListWrapper.map(this.expressions, (e) => e.eval(context));
   }
-  
+
   visit(visitor, args) {
     visitor.visitLiteralArray(this, args);
   }
@@ -287,7 +287,7 @@ export class Assignment extends AST {
   eval(context) {
     return this.target.assign(context, this.value.eval(context));
   }
-  
+
   visit(visitor, args) {
     visitor.visitAssignment(this, args);
   }
@@ -333,6 +333,22 @@ export class FunctionCall extends AST {
 
   visit(visitor, args) {
     visitor.visitFunctionCall(this, args);
+  }
+}
+
+export class ASTWithSource {
+  constructor(ast:AST, source:string) {
+    this.source = source;
+    this.ast = ast;
+  }
+}
+
+export class TemplateBinding {
+  constructor(key:string, name:string, expression:ASTWithSource) {
+    this.key = key;
+    // only either name or expression will be filled.
+    this.name = name;
+    this.expression = expression;
   }
 }
 

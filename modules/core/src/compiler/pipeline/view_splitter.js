@@ -1,6 +1,8 @@
 import {isBlank, isPresent} from 'facade/lang';
-import {DOM} from 'facade/dom';
+import {DOM, TemplateElement} from 'facade/dom';
 import {MapWrapper, StringMapWrapper} from 'facade/collection';
+
+import {Parser} from 'change_detection/parser/parser';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -13,50 +15,39 @@ import {CompileControl} from './compile_control';
  *
  * Fills:
  * - CompileElement#isViewRoot
- *
- * Updates:
- * - CompileElement#templateDirective
- * - CompileElement#propertyBindings
- *
- * Reads:
- * - CompileElement#templateDirective
+ * - CompileElement#variableBindings
  * - CompileElement#propertyBindings
  */
 export class ViewSplitter extends CompileStep {
+  constructor(parser:Parser) {
+    this._parser = parser;
+  }
+
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var element = current.element;
-    if (isPresent(current.templateDirective)) {
-      var templateElement = DOM.createTemplate('');
-      var templateBoundProperties = MapWrapper.create();
-      var nonTemplateBoundProperties = MapWrapper.create();
-      this._splitElementPropertyBindings(current, templateBoundProperties, nonTemplateBoundProperties);
-
-      var newParentElement = new CompileElement(templateElement);
-      newParentElement.propertyBindings = templateBoundProperties;
-      newParentElement.templateDirective = current.templateDirective;
-      control.addParent(newParentElement);
-
-      // disconnect child view from their parent view
-      element.remove();
-
-      current.templateDirective = null;
-      current.propertyBindings = nonTemplateBoundProperties;
+    if (isBlank(parent) || (current.element instanceof TemplateElement)) {
       current.isViewRoot = true;
-    } else if (isBlank(parent)) {
-      current.isViewRoot = true;
+    } else {
+      var templateBindings = MapWrapper.get(current.attrs(), 'template');
+      if (isPresent(templateBindings)) {
+        current.isViewRoot = true;
+        var templateElement = DOM.createTemplate('');
+        var newParentElement = new CompileElement(templateElement);
+        this._parseTemplateBindings(templateBindings, newParentElement);
+        control.addParent(newParentElement);
+      }
     }
   }
 
-  _splitElementPropertyBindings(compileElement, templateBoundProperties, nonTemplateBoundProperties) {
-    var dirBindings = compileElement.templateDirective.annotation.bind;
-    if (isPresent(dirBindings) && isPresent(compileElement.propertyBindings)) {
-      MapWrapper.forEach(compileElement.propertyBindings, (expr, elProp) => {
-        if (isPresent(StringMapWrapper.get(dirBindings, elProp))) {
-          MapWrapper.set(templateBoundProperties, elProp, expr);
-        } else {
-          MapWrapper.set(nonTemplateBoundProperties, elProp, expr);
-        }
-      });
+  _parseTemplateBindings(templateBindings:string, compileElement:CompileElement) {
+    var bindings = this._parser.parseTemplateBindings(templateBindings);
+    for (var i=0; i<bindings.length; i++) {
+      var binding = bindings[i];
+      if (isPresent(binding.name)) {
+        compileElement.addVariableBinding(binding.key, binding.name);
+      } else {
+        compileElement.addPropertyBinding(binding.key, binding.expression);
+      }
     }
   }
 }

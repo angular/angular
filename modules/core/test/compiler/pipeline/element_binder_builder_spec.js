@@ -31,6 +31,7 @@ export function main() {
     }={}) {
       var reflector = new Reflector();
       var closureMap = new ClosureMap();
+      var parser = new Parser(new Lexer(), closureMap);
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
             if (isPresent(current.element.getAttribute('viewroot'))) {
@@ -38,22 +39,24 @@ export function main() {
               current.inheritedProtoView = new ProtoView(current.element, new ProtoWatchGroup());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
-            } else {
-              current.inheritedProtoView = null;
             }
             var hasBinding = false;
             if (isPresent(current.element.getAttribute('text-binding'))) {
-              current.textNodeBindings = textNodeBindings;
+              MapWrapper.forEach(textNodeBindings, (v,k) => {
+                current.addTextNodeBinding(k, parser.parseBinding(v));
+              });
               hasBinding = true;
             }
             if (isPresent(current.element.getAttribute('prop-binding'))) {
-              current.propertyBindings = propertyBindings;
+              if (isPresent(propertyBindings)) {
+                MapWrapper.forEach(propertyBindings, (v,k) => {
+                  current.addPropertyBinding(k, parser.parseBinding(v));
+                });
+              }
               hasBinding = true;
             }
             if (isPresent(protoElementInjector)) {
               current.inheritedProtoElementInjector = protoElementInjector;
-            } else {
-              current.inheritedProtoElementInjector = null;
             }
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
@@ -65,7 +68,7 @@ export function main() {
               current.hasBindings = true;
               DOM.addClass(current.element, 'ng-binding');
             }
-          }), new ElementBinderBuilder(new Parser(new Lexer(), closureMap), closureMap)
+          }), new ElementBinderBuilder(closureMap)
       ]);
     }
 

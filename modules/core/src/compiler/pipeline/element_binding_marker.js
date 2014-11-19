@@ -18,6 +18,7 @@ const NG_BINDING_CLASS = 'ng-binding';
  * Reads:
  * - CompileElement#textNodeBindings
  * - CompileElement#propertyBindings
+ * - CompileElement#variableBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
  * - CompileElement#templateDirective
@@ -27,6 +28,7 @@ export class ElementBindingMarker extends CompileStep {
     var hasBindings =
       (isPresent(current.textNodeBindings) && MapWrapper.size(current.textNodeBindings)>0) ||
       (isPresent(current.propertyBindings) && MapWrapper.size(current.propertyBindings)>0) ||
+      (isPresent(current.variableBindings) && MapWrapper.size(current.variableBindings)>0) ||
       (isPresent(current.decoratorDirectives) && current.decoratorDirectives.length > 0) ||
       isPresent(current.templateDirective) ||
       isPresent(current.componentDirective);
