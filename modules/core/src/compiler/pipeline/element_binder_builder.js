@@ -4,7 +4,7 @@ import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection
 
 import {Parser} from 'change_detection/parser/parser';
 import {ClosureMap} from 'change_detection/parser/closure_map';
-import {ProtoWatchGroup} from 'change_detection/watch_group';
+import {ProtoRecordRange} from 'change_detection/record_range';
 
 import {Directive} from '../../annotations/directive';
 import {Component} from '../../annotations/component';
@@ -20,7 +20,7 @@ import {CompileControl} from './compile_control';
 
 /**
  * Creates the ElementBinders and adds watches to the
- * ProtoWatchGroup.
+ * ProtoRecordRange.
  *
  * Fills:
  * - CompileElement#inheritedElementBinder

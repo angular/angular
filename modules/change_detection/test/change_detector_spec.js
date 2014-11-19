@@ -8,8 +8,8 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,
-  ProtoWatchGroup,
-  WatchGroup,
+  ProtoRecordRange,
+  RecordRange,
   WatchGroupDispatcher,
   ProtoRecord
 } from 'change_detection/change_detector';
@@ -23,14 +23,14 @@ export function main() {
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
-    var pwg = new ProtoWatchGroup();
-    pwg.watch(ast(exp), memo, false);
+    var prr = new ProtoRecordRange();
+    prr.addRecordsFromAST(ast(exp), memo, false);
 
     var dispatcher = new LoggingDispatcher();
-    var wg = pwg.instantiate(dispatcher, formatters);
-    wg.setContext(context);
+    var rr = prr.instantiate(dispatcher, formatters);
+    rr.setContext(context);
 
-    var cd = new ChangeDetector(wg);
+    var cd = new ChangeDetector(rr);
 
     return {"changeDetector" : cd, "dispatcher" : dispatcher};
   }

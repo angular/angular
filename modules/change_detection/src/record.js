@@ -1,4 +1,4 @@
-import {ProtoWatchGroup, WatchGroup} from './watch_group';
+import {ProtoRecordRange, RecordRange} from './record_range';
 import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -17,7 +17,7 @@ export const PROTO_RECORD_PROPERTY = 'property';
  * real world numbers show that it does not provide significant benefits.
  */
 export class ProtoRecord {
-  @FIELD('final watchGroup:wg.ProtoWatchGroup')
+  @FIELD('final recordRange:ProtoRecordRange')
   @FIELD('final context:Object')
   @FIELD('final funcOrValue:Object')
   @FIELD('final arity:int')
@@ -26,13 +26,13 @@ export class ProtoRecord {
   @FIELD('next:ProtoRecord')
   @FIELD('prev:ProtoRecord')
   @FIELD('recordInConstruction:Record')
-  constructor(watchGroup:ProtoWatchGroup,
+  constructor(recordRange:ProtoRecordRange,
               recordType:string,
               funcOrValue,
               arity:int,
               dest) {
 
-    this.watchGroup = watchGroup;
+    this.recordRange = recordRange;
     this.recordType = recordType;
     this.funcOrValue = funcOrValue;
     this.arity = arity;
@@ -61,7 +61,7 @@ export class ProtoRecord {
  *  - Keep this object as lean as possible. (Lean in number of fields)
  */
 export class Record {
-  @FIELD('final watchGroup:WatchGroup')
+  @FIELD('final recordRange:RecordRange')
   @FIELD('final protoRecord:ProtoRecord')
   @FIELD('next:Record')
   @FIELD('prev:Record')
@@ -86,8 +86,8 @@ export class Record {
   // Otherwise it is the context used by  WatchGroupDispatcher.
   @FIELD('dest')
 
-  constructor(watchGroup:WatchGroup, protoRecord:ProtoRecord, formatters:Map) {
-    this.watchGroup = watchGroup;
+  constructor(recordRange:RecordRange, protoRecord:ProtoRecord, formatters:Map) {
+    this.recordRange = recordRange;
     this.protoRecord = protoRecord;
 
     this.next = null;
@@ -140,8 +140,8 @@ export class Record {
     }
   }
 
-  static createMarker(wg:WatchGroup) {
-    var r = new Record(wg, null, null);
+  static createMarker(rr:RecordRange) {
+    var r = new Record(rr, null, null);
     r.disabled = true;
     return r;
   }
@@ -166,7 +166,7 @@ export class Record {
         this.dest.updateContext(this.currentValue);
       }
     } else {
-      this.watchGroup.dispatcher.onRecordChange(this, this.protoRecord.dest);
+      this.recordRange.dispatcher.onRecordChange(this, this.protoRecord.dest);
     }
   }
 
@@ -183,11 +183,11 @@ export class Record {
         return FunctionWrapper.apply(this.context, this.args);
 
       case MODE_STATE_INVOKE_PURE_FUNCTION:
-        this.watchGroup.disableRecord(this);
+        this.recordRange.disableRecord(this);
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
       case MODE_STATE_CONST:
-        this.watchGroup.disableRecord(this);
+        this.recordRange.disableRecord(this);
         return this.funcOrValue;
 
       case MODE_STATE_MARKER:
@@ -206,18 +206,18 @@ export class Record {
 
   updateArg(value, position:int) {
     this.args[position] = value;
-    this.watchGroup.enableRecord(this);
+    this.recordRange.enableRecord(this);
   }
 
   updateContext(value) {
     this.context = value;
-    if (! this.isMarkerRecord) {
-      this.watchGroup.enableRecord(this);
+    if (!this.isMarkerRecord) {
+      this.recordRange.enableRecord(this);
     }
   }
 
   get isMarkerRecord() {
-    return isBlank(this.protoRecord);
+    return this.mode == MODE_STATE_MARKER;
   }
 }
 

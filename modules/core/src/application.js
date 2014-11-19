@@ -7,7 +7,7 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ChangeDetector} from 'change_detection/change_detector';
-import {WatchGroup} from 'change_detection/watch_group';
+import {RecordRange} from 'change_detection/record_range';
 import {TemplateLoader} from './compiler/template_loader';
 import {Reflector} from './compiler/reflector';
 import {AnnotatedType} from './compiler/annotated_type';
@@ -56,7 +56,7 @@ export function documentDependentBindings(appComponentType) {
         });
       }, [Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
 
-      bind(appWatchGroupToken).toFactory((rootView) => rootView.watchGroup,
+      bind(appWatchGroupToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
       bind(ChangeDetector).toFactory((appWatchGroup) =>
           new ChangeDetector(appWatchGroup), [appWatchGroupToken])

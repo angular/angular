@@ -16,7 +16,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 import {Reflector} from 'core/compiler/reflector';
 
-import {ProtoWatchGroup} from 'change_detection/watch_group';
+import {ProtoRecordRange} from 'change_detection/record_range';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -36,7 +36,7 @@ export function main() {
         new MockStep((parent, current, control) => {
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element, new ProtoWatchGroup());
+              current.inheritedProtoView = new ProtoView(current.element, new ProtoRecordRange());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -81,7 +81,7 @@ export function main() {
     function instantiateView(protoView) {
       evalContext = new Context();
       view = protoView.instantiate(evalContext, new Injector([]), null);
-      changeDetector = new ChangeDetector(view.watchGroup);
+      changeDetector = new ChangeDetector(view.recordRange);
     }
 
     it('should not create an ElementBinder for elements that have no bindings', () => {
@@ -206,7 +206,7 @@ export function main() {
       var results = pipeline.process(createElement('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          createElement('<div></div>'), new ProtoWatchGroup());
+          createElement('<div></div>'), new ProtoRecordRange());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

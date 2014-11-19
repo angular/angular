@@ -24,12 +24,12 @@ export function main() {
       compiler = new Compiler(null, new Reflector(), new Parser(new Lexer(), closureMap), closureMap);
     });
 
-    describe('react to watch group changes', function() {
+    describe('react to record changes', function() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
         view = pv.instantiate(ctx, new Injector([]), null);
-        cd = new ChangeDetector(view.watchGroup);
+        cd = new ChangeDetector(view.recordRange);
       }
 
       it('should consume text node changes', (done) => {

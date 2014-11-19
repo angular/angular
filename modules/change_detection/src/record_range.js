@@ -6,7 +6,8 @@ import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
   LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 
-export class ProtoWatchGroup {
+
+export class ProtoRecordRange {
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
   constructor() {
@@ -15,14 +16,14 @@ export class ProtoWatchGroup {
   }
 
   /**
-   * Parses [ast] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
+   * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
    * @param ast The expression to watch
    * @param memento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
    * @param shallow Should collections be shallow watched
    */
-  watch(ast:AST,
+  addRecordsFromAST(ast:AST,
         memento,
         shallow = false)
   {
@@ -45,20 +46,20 @@ export class ProtoWatchGroup {
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
-  instantiate(dispatcher, formatters:Map):WatchGroup {
-    var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
+  instantiate(dispatcher, formatters:Map):RecordRange {
+    var recordRange:RecordRange = new RecordRange(this, dispatcher);
     if (this.headRecord !== null) {
-      this._createRecords(watchGroup, formatters);
+      this._createRecords(recordRange, formatters);
       this._setDestination();
     }
-    return watchGroup;
+    return recordRange;
   }
 
-  _createRecords(watchGroup:WatchGroup, formatters:Map) {
+  _createRecords(recordRange:RecordRange, formatters:Map) {
     for (var proto = this.headRecord; proto != null; proto = proto.next) {
-      var record = new Record(watchGroup, proto, formatters);
+      var record = new Record(recordRange, proto, formatters);
       proto.recordInConstruction = record;
-      watchGroup.addRecord(record);
+      recordRange.addRecord(record);
     }
   }
 
@@ -72,16 +73,16 @@ export class ProtoWatchGroup {
   }
 }
 
-export class WatchGroup {
-  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+export class RecordRange {
+  @FIELD('final protoRecordRange:ProtoRecordRange')
   @FIELD('final dispatcher:WatchGroupDispatcher')
   @FIELD('final headRecord:Record')
   @FIELD('final tailRecord:Record')
   @FIELD('final disabled:boolean')
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
-  constructor(protoWatchGroup:ProtoWatchGroup, dispatcher) {
-    this.protoWatchGroup = protoWatchGroup;
+  constructor(protoRecordRange:ProtoRecordRange, dispatcher) {
+    this.protoRecordRange = protoRecordRange;
     this.dispatcher = dispatcher;
 
     this.disabled = false;
@@ -89,64 +90,53 @@ export class WatchGroup {
     this.headRecord = Record.createMarker(this);
     this.tailRecord = Record.createMarker(this);
 
-    this.headRecord.next = this.tailRecord;
-    this.tailRecord.prev = this.headRecord;
+    _glue(this.headRecord, this.tailRecord);
   }
 
-  /// addRecord assumes that all records are enabled
+  /// addRecord assumes that the record is newly created, so it is enabled.
   addRecord(record:Record) {
     var lastRecord = this.tailRecord.prev;
 
-    lastRecord.next = record;
-    lastRecord.nextEnabled = record;
-
-    record.prev = lastRecord;
-    record.prevEnabled = lastRecord;
-
-    record.next = this.tailRecord;
-    this.tailRecord.prev = record;
+    _glue(lastRecord, record);
+    _glueEnabled(lastRecord, record);
+    _glue(record, this.tailRecord);
   }
 
-  addChild(child:WatchGroup) {
+  addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
     var lastEnabledRecord = this.findLastEnabledRecord();
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
 
-    lastRecord.next = child.headRecord;
-    child.headRecord.prev = lastRecord;
-
-    child.tailRecord.next = this.tailRecord;
-    this.tailRecord.prev = child.tailRecord;
+    _glue(lastRecord, child.headRecord);
+    _glue(child.tailRecord, this.tailRecord);
 
     if (isPresent(lastEnabledRecord) && isPresent(firstEnabledChildRecord)) {
-      lastEnabledRecord.nextEnabled = firstEnabledChildRecord;
-      firstEnabledChildRecord.prevEnabled = lastEnabledRecord;
+      _glueEnabled(lastEnabledRecord, firstEnabledChildRecord);
     }
   }
 
-  removeChild(child:WatchGroup) {
+  removeRange(child:RecordRange) {
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
 
     var next = child.tailRecord.next;
     var prev = child.headRecord.prev;
 
-    next.prev = prev;
-    prev.next = next;
+    _glue(prev, next);
 
     var nextEnabled = lastEnabledChildRecord.nextEnabled;
     var prevEnabled = firstEnabledChildRecord.prevEnabled;
 
-    if (isPresent(nextEnabled)) nextEnabled.prev = prevEnabled;
-    if (isPresent(prevEnabled)) prevEnabled.next = nextEnabled;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
   }
 
   findFirstEnabledRecord() {
-    return this._nextEnabled(this.headRecord);
+    return this._nextEnabledInCurrentRange(this.headRecord);
   }
 
   findLastEnabledRecord() {
-    return this._prevEnabled(this.tailRecord);
+    return this._prevEnabledInCurrentRange(this.tailRecord);
   }
 
   disableRecord(record:Record) {
@@ -162,8 +152,8 @@ export class WatchGroup {
   enableRecord(record:Record) {
     if (!record.disabled) return;
 
-    var prevEnabled = this._prevEnabled(record);
-    var nextEnabled = this._nextEnabled(record);
+    var prevEnabled = this._prevEnabledInCurrentRange(record);
+    var nextEnabled = this._nextEnabledInCurrentRange(record);
 
     record.prevEnabled = prevEnabled;
     record.nextEnabled = nextEnabled;
@@ -174,7 +164,7 @@ export class WatchGroup {
     record.disabled = false;
   }
 
-  disableGroup(child:WatchGroup) {
+  disableRange(child:RecordRange) {
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
 
@@ -187,31 +177,32 @@ export class WatchGroup {
     child.disabled = true;
   }
 
-  enableGroup(child:WatchGroup) {
-    var prevEnabledRecord = this._prevEnabled(child.headRecord);
-    var nextEnabledRecord = this._nextEnabled(child.tailRecord);
+  enableRange(child:RecordRange) {
+    var prevEnabledRecord = this._prevEnabledInCurrentRange(child.headRecord);
+    var nextEnabledRecord = this._nextEnabledInCurrentRange(child.tailRecord);
 
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
 
     if (isPresent(firstEnabledChildRecord) && isPresent(prevEnabledRecord)){
-      firstEnabledChildRecord.prevEnabled = prevEnabledRecord;
-      prevEnabledRecord.nextEnabled = firstEnabledChildRecord;
+      _glueEnabled(prevEnabledRecord, firstEnabledChildRecord);
     }
 
     if (isPresent(lastEnabledChildRecord) && isPresent(nextEnabledRecord)){
-      lastEnabledChildRecord.nextEnabled = nextEnabledRecord;
-      nextEnabledRecord.prevEnabled = lastEnabledChildRecord;
+      _glueEnabled(lastEnabledChildRecord, nextEnabledRecord);
     }
 
     child.disabled = false;
   }
 
-  _nextEnabled(record:Record) {
+  /// Returns the next enabled record in the current range. If no such record, returns null.
+  _nextEnabledInCurrentRange(record:Record) {
+    if (record === this.tailRecord) return null;
+
     record = record.next;
     while (isPresent(record) && record !== this.tailRecord && record.disabled) {
-      if (record.isMarkerRecord && record.watchGroup.disabled) {
-        record = record.watchGroup.tailRecord.next;
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.tailRecord.next;
       } else {
         record = record.next;
       }
@@ -219,11 +210,14 @@ export class WatchGroup {
     return record === this.tailRecord ? null : record;
   }
 
-  _prevEnabled(record:Record) {
+  /// Returns the prev enabled record in the current range. If no such record, returns null.
+  _prevEnabledInCurrentRange(record:Record) {
+    if (record === this.headRecord) return null;
+
     record = record.prev;
     while (isPresent(record) && record !== this.headRecord && record.disabled) {
-      if (record.isMarkerRecord && record.watchGroup.disabled) {
-        record = record.watchGroup.headRecord.prev;
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.headRecord.prev;
       } else {
         record = record.prev;
       }
@@ -233,10 +227,10 @@ export class WatchGroup {
 
   /**
    * Sets the context (the object) on which the change detection expressions will
-   * dereference themselves on. Since the WatchGroup can be reused the context
-   * can be re-set many times during the lifetime of the WatchGroup.
+   * dereference themselves on. Since the RecordRange can be reused the context
+   * can be re-set many times during the lifetime of the RecordRange.
    *
-   * @param context the new context for change detection for the current WatchGroup
+   * @param context the new context for change detection for the current RecordRange
    */
   setContext(context) {
     for (var record:Record = this.headRecord;
@@ -246,6 +240,16 @@ export class WatchGroup {
       record.updateContext(context);
     }
   }
+}
+
+function _glue(a:Record, b:Record) {
+  a.next = b;
+  b.prev = a;
+}
+
+function _glueEnabled(a:Record, b:Record) {
+  a.nextEnabled = b;
+  b.prevEnabled = a;
 }
 
 export class WatchGroupDispatcher {
@@ -264,11 +268,11 @@ class Destination {
 
 @IMPLEMENTS(AstVisitor)
 class ProtoRecordCreator {
-  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+  @FIELD('final protoRecordRange:ProtoRecordRange')
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
-  constructor(protoWatchGroup) {
-    this.protoWatchGroup = protoWatchGroup;
+  constructor(protoRecordRange) {
+    this.protoRecordRange = protoRecordRange;
     this.headRecord = null;
     this.tailRecord = null;
   }
@@ -365,7 +369,7 @@ class ProtoRecordCreator {
   }
 
   construct(recordType, funcOrValue, arity, dest) {
-    return new ProtoRecord(this.protoWatchGroup, recordType, funcOrValue, arity, dest);
+    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, dest);
   }
 
   add(protoRecord:ProtoRecord) {
