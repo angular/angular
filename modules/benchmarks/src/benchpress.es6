@@ -12,7 +12,7 @@ function useBenchmark(index) {
     search = search.substring(1);
   }
   if (search.length > 0) {
-    return search == benchmarkId(index);
+    return search.indexOf(benchmarkId(index)) !== -1;
   } else {
     return true;
   }
