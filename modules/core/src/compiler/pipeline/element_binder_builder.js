@@ -33,6 +33,7 @@ import {CompileControl} from './compile_control';
  * - CompileElement#inheritedProtoElementInjector
  * - CompileElement#textNodeBindings
  * - CompileElement#propertyBindings
+ * - CompileElement#eventBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
  * - CompileElement#templateDirective
@@ -60,6 +61,9 @@ export class ElementBinderBuilder extends CompileStep {
       if (isPresent(current.propertyBindings)) {
         this._bindElementProperties(protoView, current);
       }
+      if (isPresent(current.eventBindings)) {
+        this._bindEvents(protoView, current);
+      }
       this._bindDirectiveProperties(this._collectDirectives(current), current);
     } else if (isPresent(parent)) {
       elementBinder = parent.inheritedElementBinder;
@@ -76,6 +80,12 @@ export class ElementBinderBuilder extends CompileStep {
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       protoView.bindElementProperty(property,  expression.ast);
+    });
+  }
+
+  _bindEvents(protoView, compileElement) {
+    MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
+      protoView.bindEvent(eventName,  expression.ast);
     });
   }
 

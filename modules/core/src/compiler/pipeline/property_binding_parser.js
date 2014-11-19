@@ -12,13 +12,15 @@ import {CompileControl} from './compile_control';
 import {interpolationToExpression} from './text_interpolation_parser';
 
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let))-(.+))|\\[([^\\]]+)\\]');
+var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\]]+)\\)');
 
 /**
  * Parses the property bindings on a single element.
  *
  * Fills:
  * - CompileElement#propertyBindings
+ * - CompileElement#eventBindings
+ * - CompileElement#variableBindings
  */
 export class PropertyBindingParser extends CompileStep {
   constructor(parser:Parser) {
@@ -32,7 +34,7 @@ export class PropertyBindingParser extends CompileStep {
       if (isPresent(bindParts)) {
         if (isPresent(bindParts[1])) {
           // match: bind-prop
-          current.addPropertyBinding(bindParts[3], this._parser.parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[4], this._parser.parseBinding(attrValue));
         } else if (isPresent(bindParts[2])) {
           // match: let-prop
           // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
@@ -40,10 +42,16 @@ export class PropertyBindingParser extends CompileStep {
           if (!(current.element instanceof TemplateElement)) {
             throw new BaseException('let-* is only allowed on <template> elements!');
           }
-          current.addVariableBinding(bindParts[3], attrValue);
-        } else if (isPresent(bindParts[4])) {
+          current.addVariableBinding(bindParts[4], attrValue);
+        } else if (isPresent(bindParts[3])) {
+          // match: on-prop
+          current.addEventBinding(bindParts[4], this._parser.parseAction(attrValue));
+        } else if (isPresent(bindParts[5])) {
           // match: [prop]
-          current.addPropertyBinding(bindParts[4], this._parser.parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[5], this._parser.parseBinding(attrValue));
+        } else if (isPresent(bindParts[6])) {
+          // match: (prop)
+          current.addEventBinding(bindParts[6], this._parser.parseBinding(attrValue));
         }
       } else {
         var expression = interpolationToExpression(attrValue);

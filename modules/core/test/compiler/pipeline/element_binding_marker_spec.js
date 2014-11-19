@@ -16,7 +16,7 @@ import {Component} from 'core/annotations/component';
 export function main() {
   describe('ElementBindingMarker', () => {
 
-    function createPipeline({textNodeBindings, propertyBindings, variableBindings, directives}={}) {
+    function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings, directives}={}) {
       var reflector = new Reflector();
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
@@ -28,6 +28,9 @@ export function main() {
             }
             if (isPresent(variableBindings)) {
               current.variableBindings = variableBindings;
+            }
+            if (isPresent(eventBindings)) {
+              current.eventBindings = eventBindings;
             }
             if (isPresent(directives)) {
               for (var i=0; i<directives.length; i++) {
@@ -59,6 +62,12 @@ export function main() {
     it('should mark elements with variable bindings', () => {
       var variableBindings = MapWrapper.createFromStringMap({'a': 'expr'});
       var results = createPipeline({variableBindings: variableBindings}).process(createElement('<div></div>'));
+      assertBinding(results[0], true);
+    });
+
+    it('should mark elements with event bindings', () => {
+      var eventBindings = MapWrapper.createFromStringMap({'click': 'expr'});
+      var results = createPipeline({eventBindings: eventBindings}).process(createElement('<div></div>'));
       assertBinding(results[0], true);
     });
 

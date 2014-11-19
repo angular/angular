@@ -41,6 +41,16 @@ export function main() {
         createPipeline().process(createElement('<div let-a="b"></div>'))
       }).toThrowError('let-* is only allowed on <template> elements!');
     });
+
+    it('should detect () syntax', () => {
+      var results = createPipeline().process(createElement('<div (click)="b()"></div>'));
+      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+    });
+
+    it('should detect on- syntax', () => {
+      var results = createPipeline().process(createElement('<div on-click="b()"></div>'));
+      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+    });
   });
 }
 

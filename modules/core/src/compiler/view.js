@@ -141,6 +141,9 @@ export class ProtoView {
    */
   bindTextNode(indexInParent:int, expression:AST) {
     var elBinder = this.elementBinders[this.elementBinders.length-1];
+    if (isBlank(elBinder.textNodeIndices)) {
+      elBinder.textNodeIndices = ListWrapper.create();
+    }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
     this.protoWatchGroup.watch(expression, this.textNodesWithBindingCount++);
   }
@@ -160,6 +163,17 @@ export class ProtoView {
         propertyName
       )
     );
+  }
+
+  /**
+   * Adds an event binding for the last created ElementBinder via bindElement
+   */
+  bindEvent(eventName:string, expression:AST) {
+    var elBinder = this.elementBinders[this.elementBinders.length-1];
+    if (isBlank(elBinder.events)) {
+      elBinder.events = MapWrapper.create();
+    }
+    MapWrapper.set(elBinder.events, eventName, expression);
   }
 
   /**
@@ -228,9 +242,11 @@ export class ProtoView {
   }
 
   static _collectTextNodes(allTextNodes, element, indices) {
-    var childNodes = DOM.templateAwareRoot(element).childNodes;
-    for (var i = 0; i < indices.length; ++i) {
-      ListWrapper.push(allTextNodes, childNodes[indices[i]]);
+    if (isPresent(indices)) {
+      var childNodes = DOM.templateAwareRoot(element).childNodes;
+      for (var i = 0; i < indices.length; ++i) {
+        ListWrapper.push(allTextNodes, childNodes[indices[i]]);
+      }
     }
   }
 

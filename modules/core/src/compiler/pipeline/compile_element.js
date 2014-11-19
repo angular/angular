@@ -20,6 +20,7 @@ export class CompileElement {
     this._classList = null;
     this.textNodeBindings = null;
     this.propertyBindings = null;
+    this.eventBindings = null;
     this.variableBindings = null;
     this.decoratorDirectives = null;
     this.templateDirective = null;
@@ -82,6 +83,13 @@ export class CompileElement {
       this.variableBindings = MapWrapper.create();
     }
     MapWrapper.set(this.variableBindings, contextName, templateName);
+  }
+
+  addEventBinding(eventName:string, expression:ASTWithSource) {
+    if (isBlank(this.eventBindings)) {
+      this.eventBindings = MapWrapper.create();
+    }
+    MapWrapper.set(this.eventBindings, eventName, expression);
   }
 
   addDirective(directive:AnnotatedType) {

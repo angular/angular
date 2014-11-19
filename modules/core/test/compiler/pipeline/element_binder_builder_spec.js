@@ -27,7 +27,7 @@ export function main() {
   describe('ElementBinderBuilder', () => {
     var evalContext, view, changeDetector;
 
-    function createPipeline({textNodeBindings, propertyBindings, directives, protoElementInjector
+    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
     }={}) {
       var reflector = new Reflector();
       var closureMap = new ClosureMap();
@@ -53,6 +53,12 @@ export function main() {
                   current.addPropertyBinding(k, parser.parseBinding(v));
                 });
               }
+              hasBinding = true;
+            }
+            if (isPresent(current.element.getAttribute('event-binding'))) {
+              MapWrapper.forEach(eventBindings, (v,k) => {
+                current.addEventBinding(k, parser.parseAction(v));
+              });
               hasBinding = true;
             }
             if (isPresent(protoElementInjector)) {
@@ -170,6 +176,18 @@ export function main() {
 
       expect(DOM.getProperty(view.nodes[0], 'elprop1')).toEqual('a');
       expect(DOM.getProperty(view.nodes[0], 'elprop2')).toEqual('b');
+    });
+
+    it('should bind events', () => {
+      var eventBindings = MapWrapper.createFromStringMap({
+        'event1': '1+1'
+      });
+      var pipeline = createPipeline({eventBindings: eventBindings});
+      var results = pipeline.process(createElement('<div viewroot event-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      var ast = MapWrapper.get(pv.elementBinders[0].events, 'event1');
+      expect(ast.eval(null)).toBe(2);
     });
 
     it('should bind directive properties', () => {
