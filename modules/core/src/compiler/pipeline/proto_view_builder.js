@@ -1,5 +1,5 @@
 import {isPresent, BaseException} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper} from 'facade/collection';
 
 import {ProtoView} from '../view';
 import {ProtoWatchGroup} from 'change_detection/watch_group';
@@ -27,6 +27,11 @@ export class ProtoViewBuilder extends CompileStep {
           throw new BaseException('Only one nested view per element is allowed');
         }
         parent.inheritedElementBinder.nestedProtoView = inheritedProtoView;
+        if (isPresent(parent.variableBindings)) {
+          MapWrapper.forEach(parent.variableBindings, (mappedName, varName) => {
+            inheritedProtoView.bindVariable(varName, mappedName);
+          });
+        }
       }
     } else if (isPresent(parent)) {
       inheritedProtoView = parent.inheritedProtoView;

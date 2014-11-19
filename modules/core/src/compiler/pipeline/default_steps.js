@@ -21,13 +21,13 @@ export function createDefaultSteps(
     directives: List<AnnotatedType>
   ) {
   return [
-    new PropertyBindingParser(),
-    new TextInterpolationParser(),
+    new ViewSplitter(parser),
+    new TextInterpolationParser(parser),
+    new PropertyBindingParser(parser),
     new DirectiveParser(directives),
-    new ViewSplitter(),
     new ElementBindingMarker(),
     new ProtoViewBuilder(),
     new ProtoElementInjectorBuilder(),
-    new ElementBinderBuilder(parser, closureMap)
+    new ElementBinderBuilder(closureMap)
   ];
 }

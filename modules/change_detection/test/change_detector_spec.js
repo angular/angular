@@ -18,7 +18,7 @@ import {Record} from 'change_detection/record';
 export function main() {
   function ast(exp:string) {
     var parser = new Parser(new Lexer(), new ClosureMap());
-    return parser.parseBinding(exp);
+    return parser.parseBinding(exp).ast;
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {

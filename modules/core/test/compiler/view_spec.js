@@ -46,7 +46,7 @@ export function main() {
           it('should collect property bindings on the root element if it has the ng-binding class', () => {
             var pv = new ProtoView(templateAwareCreateElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoWatchGroup());
             pv.bindElement(null);
-            pv.bindElementProperty('prop', parser.parseBinding('a'));
+            pv.bindElementProperty('prop', parser.parseBinding('a').ast);
 
             var view = pv.instantiate(null, null, null);
             expect(view.bindElements.length).toEqual(1);
@@ -57,7 +57,7 @@ export function main() {
             var pv = new ProtoView(templateAwareCreateElement('<div><span></span><span class="ng-binding"></span></div>'),
               new ProtoWatchGroup());
             pv.bindElement(null);
-            pv.bindElementProperty('a', parser.parseBinding('b'));
+            pv.bindElementProperty('a', parser.parseBinding('b').ast);
 
             var view = pv.instantiate(null, null, null);
             expect(view.bindElements.length).toEqual(1);
@@ -71,8 +71,8 @@ export function main() {
           it('should collect text nodes under the root element', () => {
             var pv = new ProtoView(templateAwareCreateElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoWatchGroup());
             pv.bindElement(null);
-            pv.bindTextNode(0, parser.parseBinding('a'));
-            pv.bindTextNode(2, parser.parseBinding('b'));
+            pv.bindTextNode(0, parser.parseBinding('a').ast);
+            pv.bindTextNode(2, parser.parseBinding('b').ast);
 
             var view = pv.instantiate(null, null, null);
             expect(view.textNodes.length).toEqual(2);
@@ -84,7 +84,7 @@ export function main() {
             var pv = new ProtoView(templateAwareCreateElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
               new ProtoWatchGroup());
             pv.bindElement(null);
-            pv.bindTextNode(0, parser.parseBinding('b'));
+            pv.bindTextNode(0, parser.parseBinding('b').ast);
 
             var view = pv.instantiate(null, null, null);
             expect(view.textNodes.length).toEqual(1);
@@ -176,7 +176,7 @@ export function main() {
         function createComponentWithSubPV(subProtoView) {
           var pv = new ProtoView(createElement('<cmp class="ng-binding"></cmp>'), new ProtoWatchGroup());
           var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeComponent], true));
-          binder.componentDirective = someComponentDirective; 
+          binder.componentDirective = someComponentDirective;
           binder.nestedProtoView = subProtoView;
           return pv;
         }
@@ -239,7 +239,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
             new ProtoWatchGroup());
           pv.bindElement(null);
-          pv.bindTextNode(0, parser.parseBinding('foo'));
+          pv.bindTextNode(0, parser.parseBinding('foo').ast);
           createView(pv);
 
           ctx.foo = 'buz';
@@ -251,7 +251,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoWatchGroup());
           pv.bindElement(null);
-          pv.bindElementProperty('id', parser.parseBinding('foo'));
+          pv.bindElementProperty('id', parser.parseBinding('foo').ast);
           createView(pv);
 
           ctx.foo = 'buz';
@@ -263,7 +263,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoWatchGroup());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('foo'), 'prop', closureMap.setter('prop'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('foo').ast, 'prop', closureMap.setter('prop'));
           createView(pv);
 
           ctx.foo = 'buz';

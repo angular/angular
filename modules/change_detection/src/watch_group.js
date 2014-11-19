@@ -310,6 +310,8 @@ class ProtoRecordCreator {
 
   visitAssignment(ast:Assignment, dest) {this.unsupported();}
 
+  visitTemplateBindings(ast, dest) {this.unsupported();}
+
   createRecordsFromAST(ast:AST, memento){
     ast.visit(this, memento);
   }
