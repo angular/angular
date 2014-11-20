@@ -19,7 +19,7 @@ _useBenchmark(index) {
     search = search.substring(1);
   }
   if (search.length > 0) {
-    return search.indexOf(_benchmarkId(index)) != -1;
+    return search == _benchmarkId(index);
   } else {
     return true;
   }

@@ -25,6 +25,17 @@ export function main() {
     });
   });
 
+  benchmark(`Ng 1.3 instantiate 5*${COUNT} element with bindings`, function() {
+    var template = loadTemplate('templateWithBindings', COUNT);
+    var linkFn = $compile(template);
+
+    benchmarkStep('run', function() {
+      var scope = $rootScope.$new();
+      linkFn(scope);
+      scope.$destroy();
+    });
+  });
+
   var ngEl = document.createElement('div');
   angular.bootstrap(ngEl, ['app']);
 }
