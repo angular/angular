@@ -11,26 +11,24 @@ import {Component} from 'core/annotations/annotations';
 import {Decorator} from 'core/annotations/annotations';
 import {Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
-import {Reflector} from 'core/compiler/reflector';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 export function main() {
   describe('DirectiveParser', () => {
-    var reflector, directives;
+    var reader, directives;
 
     beforeEach( () => {
-      reflector = new Reflector();
+      reader = new DirectiveMetadataReader();
       directives = [SomeDecorator, SomeTemplate, SomeTemplate2, SomeComponent, SomeComponent2];
     });
 
     function createPipeline({propertyBindings, variableBindings}={}) {
-      var closureMap = new ClosureMap();
-      var parser = new Parser(new Lexer(), closureMap);
+      var parser = new Parser(new Lexer());
       var annotatedDirectives = ListWrapper.create();
       for (var i=0; i<directives.length; i++) {
-        ListWrapper.push(annotatedDirectives, reflector.annotatedType(directives[i]));
+        ListWrapper.push(annotatedDirectives, reader.annotatedType(directives[i]));
       }
 
       return new CompilePipeline([new MockStep((parent, current, control) => {
@@ -55,7 +53,7 @@ export function main() {
     describe('component directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(createElement('<div some-comp></div>'));
-        expect(results[0].componentDirective).toEqual(reflector.annotatedType(SomeComponent));
+        expect(results[0].componentDirective).toEqual(reader.annotatedType(SomeComponent));
       });
 
       it('should detect them in property bindings', () => {
@@ -63,7 +61,7 @@ export function main() {
           'some-comp': 'someExpr'
         }});
         var results = pipeline.process(createElement('<div></div>'));
-        expect(results[0].componentDirective).toEqual(reflector.annotatedType(SomeComponent));
+        expect(results[0].componentDirective).toEqual(reader.annotatedType(SomeComponent));
       });
 
       it('should detect them in variable bindings', () => {
@@ -71,7 +69,7 @@ export function main() {
           'some-comp': 'someExpr'
         }});
         var results = pipeline.process(createElement('<div></div>'));
-        expect(results[0].componentDirective).toEqual(reflector.annotatedType(SomeComponent));
+        expect(results[0].componentDirective).toEqual(reader.annotatedType(SomeComponent));
       });
 
       it('should not allow multiple component directives on the same element', () => {
@@ -94,7 +92,7 @@ export function main() {
     describe('template directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(createElement('<template some-templ></template>'));
-        expect(results[0].templateDirective).toEqual(reflector.annotatedType(SomeTemplate));
+        expect(results[0].templateDirective).toEqual(reader.annotatedType(SomeTemplate));
       });
 
       it('should detect them in property bindings', () => {
@@ -102,7 +100,7 @@ export function main() {
           'some-templ': 'someExpr'
         }});
         var results = pipeline.process(createElement('<template></template>'));
-        expect(results[0].templateDirective).toEqual(reflector.annotatedType(SomeTemplate));
+        expect(results[0].templateDirective).toEqual(reader.annotatedType(SomeTemplate));
       });
 
       it('should detect them in variable bindings', () => {
@@ -110,7 +108,7 @@ export function main() {
           'some-templ': 'someExpr'
         }});
         var results = pipeline.process(createElement('<template></template>'));
-        expect(results[0].templateDirective).toEqual(reflector.annotatedType(SomeTemplate));
+        expect(results[0].templateDirective).toEqual(reader.annotatedType(SomeTemplate));
       });
 
       it('should not allow multiple template directives on the same element', () => {
@@ -133,7 +131,7 @@ export function main() {
     describe('decorator directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(createElement('<div some-decor></div>'));
-        expect(results[0].decoratorDirectives).toEqual([reflector.annotatedType(SomeDecorator)]);
+        expect(results[0].decoratorDirectives).toEqual([reader.annotatedType(SomeDecorator)]);
       });
 
       it('should detect them in property bindings', () => {
@@ -141,7 +139,7 @@ export function main() {
           'some-decor': 'someExpr'
         }});
         var results = pipeline.process(createElement('<div></div>'));
-        expect(results[0].decoratorDirectives).toEqual([reflector.annotatedType(SomeDecorator)]);
+        expect(results[0].decoratorDirectives).toEqual([reader.annotatedType(SomeDecorator)]);
       });
 
       it('should detect them in variable bindings', () => {
@@ -149,7 +147,7 @@ export function main() {
           'some-decor': 'someExpr'
         }});
         var results = pipeline.process(createElement('<div></div>'));
-        expect(results[0].decoratorDirectives).toEqual([reflector.annotatedType(SomeDecorator)]);
+        expect(results[0].decoratorDirectives).toEqual([reader.annotatedType(SomeDecorator)]);
       });
 
       it('should not allow decorator directives on <template> elements', () => {

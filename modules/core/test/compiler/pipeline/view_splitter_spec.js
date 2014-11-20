@@ -7,14 +7,13 @@ import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
 import {DOM, TemplateElement} from 'facade/dom';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 
 export function main() {
   describe('ViewSplitter', () => {
 
     function createPipeline() {
-      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer(), new ClosureMap()))]);
+      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()))]);
     }
 
     it('should mark root elements as viewRoot', () => {

@@ -1,6 +1,5 @@
 import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "facade/lang";
 import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
-import {ClosureMap} from "./closure_map";
 
 export class AST {
   eval(context) {
@@ -316,11 +315,9 @@ export class MethodCall extends AST {
 
 export class FunctionCall extends AST {
   target:AST;
-  closureMap:ClosureMap;
   args:List;
-  constructor(target:AST, closureMap:ClosureMap, args:List) {
+  constructor(target:AST, args:List) {
     this.target = target;
-    this.closureMap = closureMap;
     this.args = args;
   }
 

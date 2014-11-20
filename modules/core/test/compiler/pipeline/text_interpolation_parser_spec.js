@@ -5,13 +5,12 @@ import {DOM} from 'facade/dom';
 import {MapWrapper} from 'facade/collection';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 
 export function main() {
   describe('TextInterpolationParser', () => {
     function createPipeline() {
-      return new CompilePipeline([new TextInterpolationParser(new Parser(new Lexer(), new ClosureMap()))]);
+      return new CompilePipeline([new TextInterpolationParser(new Parser(new Lexer()))]);
     }
 
     it('should find text interpolation in normal elements', () => {

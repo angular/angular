@@ -4,7 +4,6 @@ import {isPresent} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,
@@ -18,7 +17,7 @@ import {Record} from 'change_detection/record';
 
 export function main() {
   function ast(exp:string) {
-    var parser = new Parser(new Lexer(), new ClosureMap());
+    var parser = new Parser(new Lexer());
     return parser.parseBinding(exp).ast;
   }
 

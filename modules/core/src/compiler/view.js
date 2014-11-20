@@ -7,7 +7,7 @@ import {AST} from 'change_detection/parser/ast';
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
 import {AnnotatedType} from './annotated_type';
-import {SetterFn} from 'change_detection/parser/closure_map';
+import {SetterFn} from 'reflection/types';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';

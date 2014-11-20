@@ -8,16 +8,14 @@ import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
 import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
-import {Reflector} from 'core/compiler/reflector';
-import {Template} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
-import {Component} from 'core/annotations/annotations';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Template, Decorator, Component} from 'core/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {
 
     function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings, directives}={}) {
-      var reflector = new Reflector();
+      var reader = new DirectiveMetadataReader();
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
             if (isPresent(textNodeBindings)) {
@@ -34,7 +32,7 @@ export function main() {
             }
             if (isPresent(directives)) {
               for (var i=0; i<directives.length; i++) {
-                current.addDirective(reflector.annotatedType(directives[i]));
+                current.addDirective(reader.annotatedType(directives[i]));
               }
             }
           }), new ElementBindingMarker()

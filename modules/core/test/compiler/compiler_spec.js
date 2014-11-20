@@ -4,7 +4,7 @@ import {List} from 'facade/collection';
 
 import {Compiler} from 'core/compiler/compiler';
 import {ProtoView} from 'core/compiler/view';
-import {Reflector} from 'core/compiler/reflector';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
 import {Component} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -14,20 +14,18 @@ import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 export function main() {
   describe('compiler', function() {
-    var compiler, reflector;
+    var compiler, reader;
 
     beforeEach( () => {
-      reflector = new Reflector();
+      reader = new DirectiveMetadataReader();
     });
 
     function createCompiler(processClosure) {
-      var closureMap = new ClosureMap();
       var steps = [new MockStep(processClosure)];
-      return new TestableCompiler(null, reflector, new Parser(new Lexer(), closureMap), closureMap, steps);
+      return new TestableCompiler(null, reader, new Parser(new Lexer()), steps);
     }
 
     it('should run the steps and return the ProtoView of the root element', (done) => {
@@ -68,7 +66,7 @@ export function main() {
         current.inheritedProtoView = new ProtoView(current.element, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
         if (current.element === mainEl) {
-          current.componentDirective = reflector.annotatedType(NestedComponent);
+          current.componentDirective = reader.annotatedType(NestedComponent);
         }
       });
       compiler.compile(MainComponent, mainEl).then( (protoView) => {
@@ -99,8 +97,8 @@ class NestedComponent {}
 
 class TestableCompiler extends Compiler {
   steps:List;
-  constructor(templateLoader:TemplateLoader, reflector:Reflector, parser, closureMap, steps:List<CompileStep>) {
-    super(templateLoader, reflector, parser, closureMap);
+  constructor(templateLoader:TemplateLoader, reader:DirectiveMetadataReader, parser, steps:List<CompileStep>) {
+    super(templateLoader, reader, parser);
     this.steps = steps;
   }
   createSteps(component):List<CompileStep> {

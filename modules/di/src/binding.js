@@ -1,7 +1,9 @@
-import {FIELD, Type, isBlank} from 'facade/lang';
+import {FIELD, Type, isBlank, isPresent} from 'facade/lang';
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
-import {reflector} from './reflector';
+import {reflector} from 'reflection/reflection';
 import {Key} from './key';
+import {Inject, InjectLazy, InjectPromise, DependencyAnnotation} from './annotations';
+import {NoAnnotationError} from './exceptions';
 
 export class Dependency {
   key:Key;
@@ -43,8 +45,8 @@ export class BindingBuilder {
   toClass(type:Type):Binding {
     return new Binding(
       Key.get(this.token),
-      reflector.factoryFor(type),
-      reflector.dependencies(type),
+      reflector.factory(type),
+      _dependenciesFor(type),
       false
     );
   }
@@ -78,7 +80,49 @@ export class BindingBuilder {
 
   _constructDependencies(factoryFunction:Function, dependencies:List) {
     return isBlank(dependencies) ?
-      reflector.dependencies(factoryFunction) :
+      _dependenciesFor(factoryFunction) :
       ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false, []));
   }
+}
+
+function _dependenciesFor(typeOrFunc):List {
+  var params = reflector.parameters(typeOrFunc);
+  if (isBlank(params)) return [];
+  if (ListWrapper.any(params, (p) => isBlank(p))) throw new NoAnnotationError(typeOrFunc);
+  return ListWrapper.map(params, (p) => _extractToken(typeOrFunc, p));
+}
+
+function _extractToken(typeOrFunc, annotations) {
+  var type;
+  var depProps = [];
+
+  for (var i = 0; i < annotations.length; ++i) {
+    var paramAnnotation = annotations[i];
+
+    if (paramAnnotation instanceof Type) {
+      type = paramAnnotation;
+
+    } else if (paramAnnotation instanceof Inject) {
+      return _createDependency(paramAnnotation.token, false, false, []);
+
+    } else if (paramAnnotation instanceof InjectPromise) {
+      return _createDependency(paramAnnotation.token, true, false, []);
+
+    } else if (paramAnnotation instanceof InjectLazy) {
+      return _createDependency(paramAnnotation.token, false, true, []);
+
+    } else if (paramAnnotation instanceof DependencyAnnotation) {
+      ListWrapper.push(depProps, paramAnnotation);
+    }
+  }
+
+  if (isPresent(type)) {
+    return _createDependency(type, false, false, depProps);
+  } else {
+    throw new NoAnnotationError(typeOrFunc);
+  }
+}
+
+function _createDependency(token, asPromise, lazy, depProps):Dependency {
+  return new Dependency(Key.get(token), asPromise, lazy, depProps);
 }

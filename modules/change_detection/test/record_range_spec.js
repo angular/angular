@@ -4,7 +4,6 @@ import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {isPresent} from 'facade/lang';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,

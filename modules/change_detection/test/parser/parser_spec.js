@@ -1,10 +1,10 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {BaseException, isBlank, isPresent} from 'facade/lang';
+import {reflector} from 'reflection/reflection';
 import {MapWrapper, ListWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 class TestData {
   a;
@@ -31,7 +31,7 @@ export function main() {
   }
 
   function createParser() {
-    return new Parser(new Lexer(), new ClosureMap());
+    return new Parser(new Lexer(), reflector);
   }
 
   function parseAction(text) {

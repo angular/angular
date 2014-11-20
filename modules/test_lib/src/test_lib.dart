@@ -5,6 +5,8 @@ export 'package:guinness/guinness_html.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
+import 'package:reflection/reflection.dart';
+import 'package:reflection/reflection_capabilities.dart';
 
 bool IS_DARTIUM = true;
 
@@ -32,11 +34,18 @@ class NotExpect extends gns.NotExpect {
 }
 
 it(name, fn) {
-  gns.it(name, _handleAsync(fn));
+  gns.it(name, _enableReflection(_handleAsync(fn)));
 }
 
 iit(name, fn) {
-  gns.iit(name, _handleAsync(fn));
+  gns.iit(name, _enableReflection(_handleAsync(fn)));
+}
+
+_enableReflection(fn) {
+  return () {
+    reflector.reflectionCapabilities = new ReflectionCapabilities();
+    return fn();
+  };
 }
 
 _handleAsync(fn) {

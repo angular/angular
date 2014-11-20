@@ -10,7 +10,6 @@ import {Component} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {Reflector} from '../reflector';
 
 /**
  * Parses the directives on a single element. Assumes ViewSplitter has already created

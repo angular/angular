@@ -1,8 +1,8 @@
-import {FIELD, int, isBlank,  BaseException, StringWrapper} from 'facade/lang';
+import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
 import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
   $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
-import {ClosureMap} from './closure_map';
+import {reflector, Reflector} from 'reflection/reflection';
 import {
   AST,
   ImplicitReceiver,
@@ -29,41 +29,41 @@ var _implicitReceiver = new ImplicitReceiver();
 
 export class Parser {
   _lexer:Lexer;
-  _closureMap:ClosureMap;
-  constructor(lexer:Lexer, closureMap:ClosureMap){
+  _reflector:Reflector;
+  constructor(lexer:Lexer, providedReflector:Reflector = null){
     this._lexer = lexer;
-    this._closureMap = closureMap;
+    this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
   parseAction(input:string):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, tokens, this._closureMap, true).parseChain();
+    var ast = new _ParseAST(input, tokens, this._reflector, true).parseChain();
     return new ASTWithSource(ast, input);
   }
 
   parseBinding(input:string):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, tokens, this._closureMap, false).parseChain();
+    var ast = new _ParseAST(input, tokens, this._reflector, false).parseChain();
     return new ASTWithSource(ast, input);
   }
 
   parseTemplateBindings(input:string):List<TemplateBinding> {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, tokens, this._closureMap, false).parseTemplateBindings();
+    return new _ParseAST(input, tokens, this._reflector, false).parseTemplateBindings();
   }
 }
 
 class _ParseAST {
   input:string;
   tokens:List<Token>;
-  closureMap:ClosureMap;
+  reflector:Reflector;
   parseAction:boolean;
   index:int;
-  constructor(input:string, tokens:List, closureMap:ClosureMap, parseAction:boolean) {
+  constructor(input:string, tokens:List, reflector:Reflector, parseAction:boolean) {
     this.input = input;
     this.tokens = tokens;
     this.index = 0;
-    this.closureMap = closureMap;
+    this.reflector = reflector;
     this.parseAction = parseAction;
   }
 
@@ -311,7 +311,7 @@ class _ParseAST {
       } else if (this.optionalCharacter($LPAREN)) {
         var args = this.parseCallArguments();
         this.expectCharacter($RPAREN);
-        result = new FunctionCall(result, this.closureMap, args);
+        result = new FunctionCall(result, args);
 
       } else {
         return result;
@@ -398,12 +398,12 @@ class _ParseAST {
     if (this.optionalCharacter($LPAREN)) {
       var args = this.parseCallArguments();
       this.expectCharacter($RPAREN);
-      var fn = this.closureMap.fn(id);
+      var fn = this.reflector.method(id);
       return new MethodCall(receiver, fn, args);
 
     } else {
-      var getter = this.closureMap.getter(id);
-      var setter = this.closureMap.setter(id);
+      var getter = this.reflector.getter(id);
+      var setter = this.reflector.setter(id);
       return new AccessMember(receiver, id, getter, setter);
     }
   }

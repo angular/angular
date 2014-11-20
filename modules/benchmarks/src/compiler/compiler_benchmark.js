@@ -6,11 +6,10 @@ import {MapWrapper} from 'facade/collection';
 import {AnnotatedType} from 'core/compiler/annotated_type';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 
 import {Compiler} from 'core/compiler/compiler';
-import {Reflector} from 'core/compiler/reflector';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
 import {Component} from 'core/annotations/annotations';
 import {Decorator} from 'core/annotations/annotations';
@@ -22,10 +21,9 @@ var compiler;
 var annotatedComponent;
 
 function setup() {
-  var closureMap = new ClosureMap();
-  var reflector = new CachingReflector();
-  compiler = new Compiler(null, reflector, new Parser(new Lexer(), closureMap), closureMap);
-  annotatedComponent = reflector.annotatedType(BenchmarkComponent);
+  var reader = new CachingDirectiveMetadataReader();
+  compiler = new Compiler(null, reader, new Parser(new Lexer()));
+  annotatedComponent = reader.annotatedType(BenchmarkComponent);
 }
 
 export function main() {
@@ -63,7 +61,7 @@ function loadTemplate(templateId, repeatCount) {
 }
 
 // Caching reflector as reflection in Dart using Mirrors
-class CachingReflector extends Reflector {
+class CachingDirectiveMetadataReader extends DirectiveMetadataReader {
   _cache: Map;
   constructor() {
     this._cache = MapWrapper.create();

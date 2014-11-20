@@ -1,7 +1,6 @@
 import {ProtoRecordRange, RecordRange} from './record_range';
 import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 var _fresh = new Object();
 

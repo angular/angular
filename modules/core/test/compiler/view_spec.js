@@ -1,28 +1,26 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {Reflector} from 'core/compiler/reflector';
-import {Component} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Component, Decorator} from 'core/annotations/annotations';
 import {ProtoRecordRange} from 'change_detection/record_range';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
 import {Injector} from 'di/di';
 import {View} from 'core/compiler/view';
+import {reflector} from 'reflection/reflection';
 
 export function main() {
   describe('view', function() {
-    var parser, closureMap, someComponentDirective;
+    var parser, someComponentDirective;
 
     beforeEach(() => {
-      closureMap = new ClosureMap();
-      parser = new Parser(new Lexer(), closureMap);
-      someComponentDirective = new Reflector().annotatedType(SomeComponent);
+      parser = new Parser(new Lexer());
+      someComponentDirective = new DirectiveMetadataReader().annotatedType(SomeComponent);
     });
 
 
@@ -263,7 +261,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('foo').ast, 'prop', closureMap.setter('prop'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('foo').ast, 'prop', reflector.setter('prop'));
           createView(pv);
 
           ctx.foo = 'buz';

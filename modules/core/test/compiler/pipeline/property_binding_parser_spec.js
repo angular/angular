@@ -5,13 +5,12 @@ import {DOM} from 'facade/dom';
 import {MapWrapper} from 'facade/collection';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 
 export function main() {
   describe('PropertyBindingParser', () => {
     function createPipeline() {
-      return new CompilePipeline([new PropertyBindingParser(new Parser(new Lexer(), new ClosureMap()))]);
+      return new CompilePipeline([new PropertyBindingParser(new Parser(new Lexer()))]);
     }
 
     it('should detect [] syntax', () => {

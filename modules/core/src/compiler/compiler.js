@@ -4,9 +4,8 @@ import {List, ListWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
-import {Reflector} from './reflector';
+import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {ProtoView} from './view';
 import {CompilePipeline} from './pipeline/compile_pipeline';
 import {CompileElement} from './pipeline/compile_element';
@@ -22,14 +21,12 @@ import {Component} from '../annotations/annotations';
  */
 export class Compiler {
   _templateLoader:TemplateLoader;
-  _reflector: Reflector;
+  _reader: DirectiveMetadataReader;
   _parser:Parser;
-  _closureMap:ClosureMap;
-  constructor(templateLoader:TemplateLoader, reflector: Reflector, parser:Parser, closureMap:ClosureMap) {
+  constructor(templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser) {
     this._templateLoader = templateLoader;
-    this._reflector = reflector;
+    this._reader = reader;
     this._parser = parser;
-    this._closureMap = closureMap;
   }
 
   createSteps(component:AnnotatedType):List<CompileStep> {
@@ -37,16 +34,16 @@ export class Compiler {
     var directives = annotation.template.directives;
     var annotatedDirectives = ListWrapper.create();
     for (var i=0; i<directives.length; i++) {
-      ListWrapper.push(annotatedDirectives, this._reflector.annotatedType(directives[i]));
+      ListWrapper.push(annotatedDirectives, this._reader.annotatedType(directives[i]));
     }
-    return createDefaultSteps(this._parser, this._closureMap, annotatedDirectives);
+    return createDefaultSteps(this._parser, annotatedDirectives);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
     // TODO load all components transitively from the cache first
     var cache = null;
     return PromiseWrapper.resolve(this.compileWithCache(
-      cache, this._reflector.annotatedType(component), templateRoot)
+      cache, this._reader.annotatedType(component), templateRoot)
     );
   }
 

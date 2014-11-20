@@ -1,10 +1,10 @@
-name: test_lib
+name: reflection
 environment:
   sdk: '>=1.4.0'
 dependencies:
   facade:
     path: ../facade
-  reflection:
-    path: ../reflection
 dev_dependencies:
+  test_lib:
+    path: ../test_lib
   guinness: ">=0.1.16 <0.2.0"
