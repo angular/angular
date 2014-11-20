@@ -330,7 +330,7 @@ gulp.task('serve', function() {
 });
 
 gulp.task('examples/pub.serve', function(done) {
-  spawn('pub', ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
+  spawn(PUB_CMD, ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
     .on('done', done);
 });
 
