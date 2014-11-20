@@ -95,19 +95,48 @@ gulp.task('modules/build.dart/src', function() {
   return createModuleTask(merge(sourceTypeConfigs.dart, {compilerOptions: js2dartOptions}));
 });
 
-gulp.task('modules/build.dart/pubspec', function(done) {
+gulp.task('modules/build.dart/pubspec', function() {
   var outputDir = sourceTypeConfigs.dart.outputDir;
-  return gulp.src('modules/*/pubspec.yaml')
+  var files = [];
+  var changedStream = gulp.src('modules/*/pubspec.yaml')
     .pipe(changed(outputDir)) // Only forward files that changed.
-    .pipe(gulpDestWithForward(outputDir))
     .pipe(through2.obj(function(file, enc, done) {
-      // After a `pubspec.yml` is copied, we run `pub install`.
-      spawn(PUB_CMD, ['get'], {
-        stdio: [process.stdin, process.stdout, process.stderr],
-        cwd: path.dirname(file.path)
-      }).on('close', done);
-    }));
+      files.push(path.resolve(process.cwd(), outputDir, file.relative));
+      this.push(file);
+      done();
+    }))
+    .pipe(gulp.dest(outputDir));
+  // We need to wait for all pubspecs to be present before executing
+  // `pub get` as it checks the folders of the dependencies!
+  return streamToPromise(changedStream)
+    .then(function() {
+      return Q.all(files.map(function(file) {
+        return processToPromise(spawn(PUB_CMD, ['get'], {
+          stdio: 'inherit',
+          cwd: path.dirname(file)
+        }));
+      }));
+    });
 });
+
+function processToPromise(process) {
+  var defer = Q.defer();
+  process.on('close', function(code) {
+    if (code) {
+      defer.reject(code);
+    } else {
+      defer.resolve();
+    }
+  });
+  return defer.promise;
+}
+
+function streamToPromise(stream) {
+  var defer = Q.defer();
+  stream.on('end', defer.resolve);
+  stream.on('error', defer.reject);
+  return defer.promise;
+}
 
 gulp.task('modules/build.dart', ['modules/build.dart/src', 'modules/build.dart/pubspec']);
 
@@ -151,22 +180,6 @@ function createModuleTask(sourceTypeConfig) {
   return mergeStreams(transpile, copy, html);
 }
 
-
-// Act as `gulp.dest()` but does forward the files to the next stream.
-// I believe this is how `gulp.dest` should work.
-function gulpDestWithForward(destDir) {
-  var stream = gulp.dest(destDir);
-  var originalTransform = stream._transform;
-
-  stream._transform = function(file, enc, done) {
-    return originalTransform.call(this, file, enc, function() {
-      stream.push(file);
-      done();
-    });
-  };
-
-  return stream;
-}
 
 // ------------------
 // ANALYZE
