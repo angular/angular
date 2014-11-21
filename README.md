@@ -52,6 +52,19 @@ Restriction for Dart tests (for now):
     `package:` dependencies (created e.g. for `import ... from 'di:di'`).
     So you need to execute `gulp build` before this.
 
+### Examples:
+
+To see the examples, first build the project as described above.
+
+#### Hello World Example
+This example consists of three basic pieces - a component, a decorator and a service.
+They are all constructed via injection. For more information see the comments in the
+source `modules/examples/src/hello_world/app.js`.
+
+You can build this example as either JS or Dart app:
+* (JS) `gulp serve` and open `localhost:8000/js/examples/lib/hello_world/` in Chrome.
+* (Dart) `gulp examples/pub.serve` and open `localhost:8080` in Chrome(for dart2js) or dartium(for dart vm).
+
 ## Debug the transpiler
 
 If you need to debug the transpiler:
