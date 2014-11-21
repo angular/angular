@@ -104,12 +104,17 @@ export class RecordRange {
 
   addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
+    // An alternative is that each of the head/tail markers point to the prev/next enabled records
+    // or a tail/head marker when the prev/next group contain no enabled records.
     var lastEnabledRecord = this.findLastEnabledRecord();
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
 
     _glue(lastRecord, child.headRecord);
     _glue(child.tailRecord, this.tailRecord);
 
+    // Q: what if the current group has no enabled records ?
+    // it seems that child records would never get checked
+    // it could happen when the group has no records
     if (isPresent(lastEnabledRecord) && isPresent(firstEnabledChildRecord)) {
       _glueEnabled(lastEnabledRecord, firstEnabledChildRecord);
     }
@@ -124,6 +129,7 @@ export class RecordRange {
 
     _glue(prev, next);
 
+    // Q: Couldn't firstEnabledChildRecord & lastEnabledChildRecord be null ?
     var nextEnabled = lastEnabledChildRecord.nextEnabled;
     var prevEnabled = firstEnabledChildRecord.prevEnabled;
 
@@ -152,6 +158,8 @@ export class RecordRange {
   enableRecord(record:Record) {
     if (!record.disabled) return;
 
+    // Q: Not sure if we should search only in the current range.
+    // If there is no previous record enabled in the current range, the list would be broken
     var prevEnabled = this._prevEnabledInCurrentRange(record);
     var nextEnabled = this._nextEnabledInCurrentRange(record);
 
@@ -200,6 +208,7 @@ export class RecordRange {
     if (record === this.tailRecord) return null;
 
     record = record.next;
+    // Q: is isPresent(record) needed here ? (We are iterating on the current range & stop at tail)
     while (isPresent(record) && record !== this.tailRecord && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {
         record = record.recordRange.tailRecord.next;
@@ -215,6 +224,7 @@ export class RecordRange {
     if (record === this.headRecord) return null;
 
     record = record.prev;
+    // Q: is isPresent(record) needed here ?
     while (isPresent(record) && record !== this.headRecord && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {
         record = record.recordRange.headRecord.prev;
@@ -242,6 +252,7 @@ export class RecordRange {
   }
 }
 
+// rename glue to link ?
 function _glue(a:Record, b:Record) {
   a.next = b;
   b.prev = a;
@@ -260,6 +271,8 @@ export class WatchGroupDispatcher {
 //todo: vsavkin: Create Array and Context destinations?
 class Destination {
   constructor(record:ProtoRecord, position:int) {
+    // Q: could we drop "record" from here ? It is used only at construction time but destination
+    // instances lifetime extends to the range lifetime.
     this.record = record;
     this.position = position;
   }
