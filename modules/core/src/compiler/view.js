@@ -11,10 +11,11 @@ import {SetterFn} from 'reflection/types';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
+import {ViewPort} from './viewport';
 
 const NG_BINDING_CLASS = 'ng-binding';
 
-/***
+/**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
 @IMPLEMENTS(WatchGroupDispatcher)
@@ -29,7 +30,8 @@ export class View {
   /// to keep track of the nodes.
   nodes:List<Node>;
   onChangeDispatcher:OnChangeDispatcher;
-  childViews: List<View>;
+  componentChildViews: List<View>;
+  viewPorts: List<ViewPort>;
   constructor(nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
       protoRecordRange:ProtoRecordRange, context) {
@@ -41,9 +43,8 @@ export class View {
     this.bindElements = bindElements;
     this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
     this.recordRange.setContext(context);
-    // TODO(rado): Since this is only used in tests for now, investigate whether
-    // we can remove it.
-    this.childViews = [];
+    this.componentChildViews = null;
+    this.viewPorts = null;
   }
 
   onRecordChange(record:Record, target) {
@@ -62,9 +63,23 @@ export class View {
     }
   }
 
-  addChild(childView: View) {
-    ListWrapper.push(this.childViews, childView);
+  addViewPort(viewPort: ViewPort) {
+    if (isBlank(this.viewPorts)) this.viewPorts = [];
+    ListWrapper.push(this.viewPorts, viewPort);
+  }
+
+  addComponentChildView(childView: View) {
+    if (isBlank(this.componentChildViews)) this.componentChildViews = [];
+    ListWrapper.push(this.componentChildViews, childView);
     this.recordRange.addRange(childView.recordRange);
+  }
+
+  addViewPortChildView(childView: View) {
+    this.recordRange.addRange(childView.recordRange);
+  }
+
+  removeViewPortChildView(childView: View) {
+    childView.recordRange.remove();
   }
 }
 
@@ -120,9 +135,10 @@ export class ProtoView {
         bindElements, this.protoRecordRange, context);
 
     ProtoView._instantiateDirectives(
-        view, elements, elementInjectors, lightDomAppInjector, shadowAppInjectors);
-    ProtoView._instantiateChildComponentViews(
-        elements, binders, elementInjectors, shadowAppInjectors, view);
+        view, elements, binders, elementInjectors, lightDomAppInjector,
+        shadowAppInjectors, hostElementInjector);
+    ProtoView._instantiateChildComponentViews(view, elements, binders,
+        elementInjectors, shadowAppInjectors);
 
     return view;
   }
@@ -212,12 +228,25 @@ export class ProtoView {
   }
 
   static _instantiateDirectives(
-      view: View, elements:List, injectors:List<ElementInjectors>, lightDomAppInjector: Injector,
-      shadowDomAppInjectors:List<Injectors>) {
+      view, elements:List, binders: List<ElementBinder>, injectors:List<ElementInjectors>,
+      lightDomAppInjector: Injector, shadowDomAppInjectors:List<Injectors>,
+      hostElementInjector: ElementInjector) {
     for (var i = 0; i < injectors.length; ++i) {
-      var preBuiltObjs = new PreBuiltObjects(view, new NgElement(elements[i]));
-      if (injectors[i] != null) injectors[i].instantiateDirectives(
+      var injector = injectors[i];
+      if (injector != null) {
+        var binder = binders[i];
+        var element = elements[i];
+        var ngElement = new NgElement(element);
+        var viewPort = null;
+        if (isPresent(binder.templateDirective)) {
+          viewPort = new ViewPort(view, element, binder.nestedProtoView, injector);
+          viewPort.attach(lightDomAppInjector, hostElementInjector);
+          view.addViewPort(viewPort);
+        }
+        var preBuiltObjs = new PreBuiltObjects(view, ngElement, viewPort);
+        injector.instantiateDirectives(
           lightDomAppInjector, shadowDomAppInjectors[i], preBuiltObjs);
+      }
     }
   }
 
@@ -252,20 +281,17 @@ export class ProtoView {
     }
   }
 
-  static _instantiateChildComponentViews(elements, binders, injectors,
-      shadowDomAppInjectors: List<Injector>, view: View) {
+  static _instantiateChildComponentViews(view: View, elements, binders,
+      injectors, shadowDomAppInjectors: List<Injector>) {
     for (var i = 0; i < binders.length; ++i) {
       var binder = binders[i];
       if (isPresent(binder.componentDirective)) {
         var injector = injectors[i];
         var childView = binder.nestedProtoView.instantiate(
             injector.getComponent(), shadowDomAppInjectors[i], injector);
-        view.addChild(childView);
+        view.addComponentChildView(childView);
         var shadowRoot = elements[i].createShadowRoot();
-        // TODO(rado): reuse utility from ViewPort/View.
-        for (var j = 0; j < childView.nodes.length; ++j) {
-          DOM.appendChild(shadowRoot, childView.nodes[j]);
-        }
+        ViewPort.moveViewNodesIntoParent(shadowRoot, childView);
       }
     }
   }

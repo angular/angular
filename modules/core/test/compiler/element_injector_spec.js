@@ -6,6 +6,7 @@ import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ProtoRecordRange} from 'change_detection/record_range';
+import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
 //TODO: vsavkin: use a spy object
@@ -66,7 +67,7 @@ class NeedsView {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -177,7 +178,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -282,16 +283,23 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
 
         expect(inj.get(NgElement)).toEqual(element);
+      });
+
+      it('should return viewPort', function () {
+        var viewPort = new ViewPort(null, null, null, null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort));
+
+        expect(inj.get(ViewPort)).toEqual(viewPort);
       });
     });
   });

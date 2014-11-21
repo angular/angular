@@ -4,6 +4,7 @@ import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {View} from 'core/compiler/view';
+import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -17,10 +18,12 @@ var _staticKeys;
 class StaticKeys {
   viewId:int;
   ngElementId:int;
+  viewPortId:int;
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
     this.viewId = Key.get(View).id;
     this.ngElementId = Key.get(NgElement).id;
+    this.viewPortId = Key.get(ViewPort).id;
   }
 
   static instance() {
@@ -61,6 +64,10 @@ class TreeNode {
     return this._parent;
   }
 
+  set parent(node:TreeNode) {
+    this._parent = node;
+  }
+
   get children() {
     var res = [];
     var child = this._head;
@@ -92,12 +99,16 @@ class DirectiveDependency extends Dependency {
   }
 }
 
+
+// TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
   view:View;
   element:NgElement;
-  constructor(view:View, element:NgElement) {
+  viewPort:ViewPort;
+  constructor(view, element:NgElement, viewPort: ViewPort) {
     this.view = view;
     this.element = element;
+    this.viewPort = viewPort;
   }
 }
 
@@ -410,6 +421,11 @@ export class ElementInjector extends TreeNode {
     var staticKeys = StaticKeys.instance();
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
+    if (keyId === staticKeys.viewPortId) {
+      if (isBlank(staticKeys.viewPortId)) throw new BaseException(
+          'ViewPort is constructed only for @Template directives');
+      return this._preBuiltObjects.viewPort;
+    }
     //TODO add other objects as needed
     return _undefined;
   }

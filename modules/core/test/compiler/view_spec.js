@@ -2,7 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/te
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {Component, Decorator} from 'core/annotations/annotations';
+import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {ProtoRecordRange} from 'change_detection/record_range';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -12,15 +12,17 @@ import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
 import {Injector} from 'di/di';
 import {View} from 'core/compiler/view';
+import {ViewPort} from 'core/compiler/viewport';
 import {reflector} from 'reflection/reflection';
 
 export function main() {
   describe('view', function() {
-    var parser, someComponentDirective;
+    var parser, someComponentDirective, someTemplateDirective;
 
     beforeEach(() => {
       parser = new Parser(new Lexer());
       someComponentDirective = new DirectiveMetadataReader().annotatedType(SomeComponent);
+      someTemplateDirective = new DirectiveMetadataReader().annotatedType(SomeTemplate);
     });
 
 
@@ -213,7 +215,7 @@ export function main() {
 
           var view = createNestedView(pv);
 
-          var subView = view.childViews[0];
+          var subView = view.componentChildViews[0];
           var subInj = subView.rootElementInjectors[0];
           var subDecorator = subInj.get(ServiceDependentDecorator);
           var comp = view.rootElementInjectors[0].get(SomeComponent);
@@ -221,6 +223,28 @@ export function main() {
           expect(subDecorator).toBeAnInstanceOf(ServiceDependentDecorator);
           expect(subDecorator.service).toBe(comp.service);
           expect(subDecorator.component).toBe(comp);
+        });
+      });
+
+      describe('recurse over child templateViews', () => {
+        var ctx, view, cd;
+        function createView(protoView) {
+          ctx = new MyEvaluationContext();
+          view = protoView.instantiate(ctx, null, null);
+        }
+
+        it('should create a viewPort for the template directive', () => {
+          var templateProtoView = new ProtoView(
+              createElement('<div id="1"></div>'), new ProtoRecordRange());
+          var pv = new ProtoView(createElement('<someTmpl class="ng-binding"></someTmpl>'), new ProtoRecordRange());
+          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeTemplate]));
+          binder.templateDirective = someTemplateDirective;
+          binder.nestedProtoView = templateProtoView;
+
+          createView(pv);
+
+          var tmplComp = view.rootElementInjectors[0].get(SomeTemplate);
+          expect(tmplComp.viewPort).not.toBe(null);
         });
       });
 
@@ -323,6 +347,17 @@ class ServiceDependentDecorator {
     this.service = service;
   }
 }
+
+@Template({
+  selector: 'someTmpl'
+})
+class SomeTemplate {
+  viewPort: ViewPort;
+  constructor(viewPort: ViewPort) {
+    this.viewPort = viewPort;
+  }
+}
+
 
 class AnotherDirective {
   prop:string;

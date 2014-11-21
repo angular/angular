@@ -47,6 +47,12 @@ class DOM {
   static appendChild(el, node) {
     el.append(node);
   }
+  static removeChild(el, node) {
+    node.remove();
+  }
+  static insertAfter(el, node) {
+    el.parentNode.insertBefore(node, el.nextNode);
+  }
   static setText(Text text, String value) {
     text.text = value;
   }

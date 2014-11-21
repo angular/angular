@@ -33,6 +33,10 @@ class NotExpect extends gns.NotExpect {
   void toEqual(expected) => toHaveSameProps(expected);
 }
 
+beforeEach(fn) {
+  gns.beforeEach(_enableReflection(fn));
+}
+
 it(name, fn) {
   gns.it(name, _enableReflection(_handleAsync(fn)));
 }

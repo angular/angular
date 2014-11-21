@@ -40,6 +40,12 @@ export class DOM {
   static appendChild(el, node) {
     el.appendChild(node);
   }
+  static removeChild(el, node) {
+    el.removeChild(node);
+  }
+  static insertAfter(el, node) {
+    el.parentNode.insertBefore(node, el.nextSibling);
+  }
   static setInnerHTML(el, value) {
     el.innerHTML = value;
   }
