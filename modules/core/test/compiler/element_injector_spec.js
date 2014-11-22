@@ -18,28 +18,28 @@ class SomeOtherDirective {
 }
 
 class NeedsDirective {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromParent {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Parent() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromAncestor {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Ancestor() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedsService {
-  @FIELD("service:Object")
+  service:Object;
   constructor(@Inject("service") service) {
     this.service = service;
   }
@@ -54,7 +54,7 @@ class B_Needs_A {
 }
 
 class NeedsView {
-  @FIELD("view:Object")
+  view:Object;
   constructor(@Inject(View) view) {
     this.view = view;
   }

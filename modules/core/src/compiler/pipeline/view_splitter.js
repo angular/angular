@@ -19,6 +19,7 @@ import {CompileControl} from './compile_control';
  * - CompileElement#propertyBindings
  */
 export class ViewSplitter extends CompileStep {
+  _parser:Parser;
   constructor(parser:Parser) {
     this._parser = parser;
   }

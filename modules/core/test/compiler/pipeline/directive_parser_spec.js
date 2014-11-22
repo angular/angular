@@ -165,6 +165,7 @@ export function main() {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

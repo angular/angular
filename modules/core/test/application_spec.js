@@ -16,6 +16,7 @@ import {TemplateConfig} from 'core/annotations/template_config';
   })
 })
 class HelloRootCmp {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }
@@ -29,6 +30,7 @@ class HelloRootCmp {
   })
 })
 class HelloRootCmp2 {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }

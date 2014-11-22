@@ -16,6 +16,9 @@ var _SELECTOR_REGEXP =
  * of selecting subsets out of them.
  */
 export class CssSelector {
+  element:string;
+  classNames:List;
+  attrs:List;
   static parse(selector:string):CssSelector {
     var cssSelector = new CssSelector();
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
@@ -91,6 +94,13 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
+  _selectables:List;
+  _elementMap:Map;
+  _elementPartialMap:Map;
+  _classMap:Map;
+  _classPartialMap:Map;
+  _attrValueMap:Map;
+  _attrValuePartialMap:Map;
   constructor() {
     this._selectables = ListWrapper.create();
 

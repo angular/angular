@@ -28,6 +28,9 @@ function constructResolvingPath(keys:List) {
 export class KeyMetadataError extends Error {}
 
 export class ProviderError extends Error {
+  keys:List;
+  constructResolvingMessage:Function;
+  message;
   constructor(key:Key, constructResolvingMessage:Function) {
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -82,6 +85,7 @@ export class InstantiationError extends ProviderError {
 }
 
 export class InvalidBindingError extends Error {
+  message:string;
   constructor(binding) {
     this.message = `Invalid binding ${binding}`;
   }
@@ -92,6 +96,7 @@ export class InvalidBindingError extends Error {
 }
 
 export class NoAnnotationError extends Error {
+  message:string;
   constructor(typeOrFunc) {
     this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}`;
   }

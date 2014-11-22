@@ -46,6 +46,7 @@ export function interpolationToExpression(value:string):string {
  * - CompileElement#textNodeBindings
  */
 export class TextInterpolationParser extends CompileStep {
+  _parser:Parser;
   constructor(parser:Parser) {
     this._parser = parser;
   }

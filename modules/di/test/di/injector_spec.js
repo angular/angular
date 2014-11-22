@@ -21,18 +21,22 @@ class TurboEngine extends Engine {
 }
 
 class Car {
+  engine:Engine;
   constructor(engine:Engine) {
     this.engine = engine;
   }
 }
 
 class CarWithLazyEngine {
+  engineFactory;
   constructor(@InjectLazy(Engine) engineFactory) {
     this.engineFactory = engineFactory;
   }
 }
 
 class CarWithDashboard {
+  engine:Engine;
+  dashboard:Dashboard;
   constructor(engine:Engine, dashboard:Dashboard) {
     this.engine = engine;
     this.dashboard = dashboard;
@@ -40,12 +44,14 @@ class CarWithDashboard {
 }
 
 class SportsCar extends Car {
+  engine:Engine;
   constructor(engine:Engine) {
     super(engine);
   }
 }
 
 class CarWithInject {
+  engine:Engine;
   constructor(@Inject(TurboEngine) engine:Engine) {
     this.engine = engine;
   }

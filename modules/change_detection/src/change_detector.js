@@ -7,7 +7,7 @@ export * from './record_range'
 
 export class ChangeDetector {
 
-  @FIELD('final _rootRecordRange:RecordRange')
+  _rootRecordRange:RecordRange;
   constructor(recordRange:RecordRange) {
     this._rootRecordRange = recordRange;
   }

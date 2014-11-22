@@ -98,6 +98,7 @@ class MainComponent {}
 class NestedComponent {}
 
 class TestableCompiler extends Compiler {
+  steps:List;
   constructor(templateLoader:TemplateLoader, reflector:Reflector, parser, closureMap, steps:List<CompileStep>) {
     super(templateLoader, reflector, parser, closureMap);
     this.steps = steps;
@@ -108,6 +109,7 @@ class TestableCompiler extends Compiler {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }
