@@ -5,8 +5,8 @@ import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
 import {AnnotatedType} from '../annotated_type';
-import {Template} from '../../annotations/template';
-import {Component} from '../../annotations/component';
+import {Template} from '../../annotations/annotations';
+import {Component} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
@@ -28,6 +28,7 @@ import {Reflector} from '../reflector';
  *   in the property bindings)
  */
 export class DirectiveParser extends CompileStep {
+  _selectorMatcher:SelectorMatcher;
   constructor(directives:List<AnnotatedType>) {
     this._selectorMatcher = new SelectorMatcher();
     for (var i=0; i<directives.length; i++) {

@@ -6,8 +6,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 import {ProtoRecordRange} from 'change_detection/record_range';
 
-import {Directive} from '../../annotations/directive';
-import {Component} from '../../annotations/component';
+import {Component, Directive} from '../../annotations/annotations';
 import {AnnotatedType} from '../annotated_type';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from '../view';
 import {ProtoElementInjector} from '../element_injector';
@@ -44,12 +43,13 @@ import {CompileControl} from './compile_control';
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
+  _closureMap:ClosureMap;
   constructor(closureMap:ClosureMap) {
     this._closureMap = closureMap;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    var elementBinder;
+    var elementBinder = null;
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
       elementBinder = protoView.bindElement(current.inheritedProtoElementInjector,

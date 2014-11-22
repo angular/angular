@@ -11,8 +11,8 @@ import {Lexer} from 'change_detection/parser/lexer';
 import {Compiler} from 'core/compiler/compiler';
 import {Reflector} from 'core/compiler/reflector';
 
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
+import {Component} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 
 export function main() {
@@ -87,6 +87,7 @@ export function main() {
   bind: {'elprop':'dirProp'}
 })
 class MyDir {
+  dirProp:string;
   constructor() {
     this.dirProp = '';
   }
@@ -98,6 +99,7 @@ class MyDir {
   })
 })
 class MyComp {
+  ctxProp:string;
   constructor() {
     this.ctxProp = 'initial value';
   }
@@ -112,12 +114,14 @@ class MyComp {
   })
 })
 class ChildComp {
+  ctxProp:string;
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
   }
 }
 
 class MyService {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }

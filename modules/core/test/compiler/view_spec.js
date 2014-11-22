@@ -2,8 +2,8 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/te
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {Reflector} from 'core/compiler/reflector';
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
+import {Component} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
 import {ProtoRecordRange} from 'change_detection/record_range';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -296,7 +296,7 @@ export function main() {
 }
 
 class SomeDirective {
-  @FIELD('prop')
+  prop;
   constructor() {
     this.prop = 'foo';
   }
@@ -308,6 +308,7 @@ class SomeService {}
   componentServices: [SomeService]
 })
 class SomeComponent {
+  service: SomeService;
   constructor(service: SomeService) {
     this.service = service;
   }
@@ -317,6 +318,8 @@ class SomeComponent {
   selector: '[dec]'
 })
 class ServiceDependentDecorator {
+  component: SomeComponent;
+  service: SomeService;
   constructor(component: SomeComponent, service: SomeService) {
     this.component = component;
     this.service = service;
@@ -324,14 +327,14 @@ class ServiceDependentDecorator {
 }
 
 class AnotherDirective {
-  @FIELD('prop')
+  prop:string;
   constructor() {
     this.prop = 'anotherFoo';
   }
 }
 
 class MyEvaluationContext {
-  @FIELD('foo')
+  foo:string;
   constructor() {
     this.foo = 'bar';
   };

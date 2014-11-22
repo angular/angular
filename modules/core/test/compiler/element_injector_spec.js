@@ -1,14 +1,19 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, FakeObject} from 'test_lib/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
+import {ProtoRecordRange} from 'change_detection/record_range';
 import {NgElement} from 'core/dom/element';
 
-@IMPLEMENTS(View)
-class DummyView {}
+//TODO: vsavkin: use a spy object
+class DummyView extends View {
+  constructor() {
+    super(null, null, null, null, null, new ProtoRecordRange(), null);
+  }
+}
 
 class Directive {
 }
@@ -18,28 +23,28 @@ class SomeOtherDirective {
 }
 
 class NeedsDirective {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromParent {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Parent() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromAncestor {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Ancestor() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedsService {
-  @FIELD("service:Object")
+  service:any;
   constructor(@Inject("service") service) {
     this.service = service;
   }
@@ -54,7 +59,7 @@ class B_Needs_A {
 }
 
 class NeedsView {
-  @FIELD("view:Object")
+  view:any;
   constructor(@Inject(View) view) {
     this.view = view;
   }

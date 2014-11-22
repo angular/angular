@@ -6,7 +6,7 @@ import {Compiler} from 'core/compiler/compiler';
 import {ProtoView} from 'core/compiler/view';
 import {Reflector} from 'core/compiler/reflector';
 import {TemplateLoader} from 'core/compiler/template_loader';
-import {Component} from 'core/annotations/component';
+import {Component} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
@@ -98,6 +98,7 @@ class MainComponent {}
 class NestedComponent {}
 
 class TestableCompiler extends Compiler {
+  steps:List;
   constructor(templateLoader:TemplateLoader, reflector:Reflector, parser, closureMap, steps:List<CompileStep>) {
     super(templateLoader, reflector, parser, closureMap);
     this.steps = steps;
@@ -108,6 +109,7 @@ class TestableCompiler extends Compiler {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

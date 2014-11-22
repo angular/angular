@@ -10,6 +10,7 @@ import {reflector} from './reflector';
 var _constructing = new Object();
 
 class _Waiting {
+  promise:Promise;
   constructor(promise:Promise) {
     this.promise = promise;
   }
@@ -20,6 +21,12 @@ function _isWaiting(obj):boolean {
 
 
 export class Injector {
+  _bindings:List;
+  _instances:List;
+  _parent:Injector;
+  _defaultBindings:boolean;
+  _asyncStrategy: _AsyncInjectorStrategy;
+  _syncStrategy:_SyncInjectorStrategy;
   constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
@@ -116,6 +123,7 @@ export class Injector {
 
 
 class _SyncInjectorStrategy {
+  injector:Injector;
   constructor(injector:Injector) {
     this.injector = injector;
   }
@@ -163,6 +171,7 @@ class _SyncInjectorStrategy {
 
 
 class _AsyncInjectorStrategy {
+  injector:Injector;
   constructor(injector:Injector) {
     this.injector = injector;
   }

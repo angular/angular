@@ -159,3 +159,6 @@ dynamic getMapKey(value) {
   return value.isNaN ? _NAN_KEY : value;
 }
 
+normalizeBlank(obj) {
+  return isBlank(obj) ? null : obj;
+}

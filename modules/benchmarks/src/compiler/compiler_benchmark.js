@@ -12,8 +12,8 @@ import {Lexer} from 'change_detection/parser/lexer';
 import {Compiler} from 'core/compiler/compiler';
 import {Reflector} from 'core/compiler/reflector';
 
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
+import {Component} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 
 var COUNT = 30;
@@ -64,6 +64,7 @@ function loadTemplate(templateId, repeatCount) {
 
 // Caching reflector as reflection in Dart using Mirrors
 class CachingReflector extends Reflector {
+  _cache: Map;
   constructor() {
     this._cache = MapWrapper.create();
   }

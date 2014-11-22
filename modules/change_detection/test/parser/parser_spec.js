@@ -7,6 +7,9 @@ import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
 class TestData {
+  a;
+  b;
+  fnReturnValue;
   constructor(a, b, fnReturnValue) {
     this.a = a;
     this.b = b;

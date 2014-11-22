@@ -9,6 +9,7 @@ export const TOKEN_TYPE_OPERATOR   = 5;
 export const TOKEN_TYPE_NUMBER     = 6;
 
 export class Lexer {
+  text:string;
   tokenize(text:string):List {
     var scanner = new _Scanner(text);
     var tokens = [];
@@ -22,10 +23,10 @@ export class Lexer {
 }
 
 export class Token {
-  @FIELD('final index:int')
-  @FIELD('final type:int')
-  @FIELD('final _numValue:int')
-  @FIELD('final _strValue:int')
+  index:int;
+  type:int;
+  _numValue:number;
+  _strValue:string;
   constructor(index:int, type:int, numValue:number, strValue:string) {
     /**
      * NOTE: To ensure that this constructor creates the same hidden class each time, ensure that
@@ -177,6 +178,7 @@ const $NBSP   = 160;
 
 
 export class ScannerError extends Error {
+  message:string;
   constructor(message) {
     this.message = message;
   }
@@ -187,10 +189,10 @@ export class ScannerError extends Error {
 }
 
 class _Scanner {
-  @FIELD('final input:String')
-  @FIELD('final length:int')
-  @FIELD('peek:int')
-  @FIELD('index:int')
+  input:string;
+  length:int;
+  peek:int;
+  index:int;
 
   constructor(input:string) {
     this.input = input;

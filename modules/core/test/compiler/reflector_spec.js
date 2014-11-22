@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
 import {Reflector} from 'core/compiler/reflector';
-import {Decorator} from 'core/annotations/decorator';
+import {Decorator} from 'core/annotations/annotations';
 import {AnnotatedType} from 'core/compiler/annotated_type';
 
 @Decorator({

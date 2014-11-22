@@ -1,7 +1,7 @@
 library facade.compiler.reflector;
 
 import 'dart:mirrors';
-import '../annotations/directive.dart';
+import '../annotations/annotations.dart';
 import './annotated_type.dart';
 import 'package:facade/lang.dart';
 

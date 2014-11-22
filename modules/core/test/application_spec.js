@@ -1,7 +1,7 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
 import {bootstrap, appDocumentToken, appElementToken, documentDependentBindings}
     from 'core/application';
-import {Component} from 'core/annotations/component';
+import {Component} from 'core/annotations/annotations';
 import {DOM} from 'facade/dom';
 import {ListWrapper} from 'facade/collection';
 import {PromiseWrapper} from 'facade/async';
@@ -16,6 +16,7 @@ import {TemplateConfig} from 'core/annotations/template_config';
   })
 })
 class HelloRootCmp {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }
@@ -29,6 +30,7 @@ class HelloRootCmp {
   })
 })
 class HelloRootCmp2 {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }

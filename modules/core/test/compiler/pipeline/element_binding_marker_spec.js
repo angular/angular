@@ -9,9 +9,9 @@ import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 import {Reflector} from 'core/compiler/reflector';
-import {Template} from 'core/annotations/template';
-import {Decorator} from 'core/annotations/decorator';
-import {Component} from 'core/annotations/component';
+import {Template} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
+import {Component} from 'core/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {
@@ -101,6 +101,7 @@ function assertBinding(pipelineElement, shouldBePresent) {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

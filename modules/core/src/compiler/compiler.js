@@ -13,7 +13,7 @@ import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {AnnotatedType} from './annotated_type';
-import {Component} from '../annotations/component';
+import {Component} from '../annotations/annotations';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -21,6 +21,10 @@ import {Component} from '../annotations/component';
  * the CompilePipeline and the CompileSteps.
  */
 export class Compiler {
+  _templateLoader:TemplateLoader;
+  _reflector: Reflector;
+  _parser:Parser;
+  _closureMap:ClosureMap;
   constructor(templateLoader:TemplateLoader, reflector: Reflector, parser:Parser, closureMap:ClosureMap) {
     this._templateLoader = templateLoader;
     this._reflector = reflector;
@@ -53,7 +57,7 @@ export class Compiler {
       // - templateRoot string
       // - precompiled template
       // - ProtoView
-      var annotation: Component = component.annotation;
+      var annotation:any = component.annotation;
       templateRoot = DOM.createTemplate(annotation.template.inline);
     }
     var pipeline = new CompilePipeline(this.createSteps(component));

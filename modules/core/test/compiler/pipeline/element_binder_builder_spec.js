@@ -9,9 +9,9 @@ import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
-import {Decorator} from 'core/annotations/decorator';
-import {Template} from 'core/annotations/template';
-import {Component} from 'core/annotations/component';
+import {Decorator} from 'core/annotations/annotations';
+import {Template} from 'core/annotations/annotations';
+import {Component} from 'core/annotations/annotations';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 import {Reflector} from 'core/compiler/reflector';
@@ -265,6 +265,7 @@ class SomeDecoratorDirective {
   bind: {'boundprop1': 'decorProp'}
 })
 class SomeDecoratorDirectiveWithBinding {
+  decorProp;
   constructor() {
     this.decorProp = null;
   }
@@ -278,6 +279,7 @@ class SomeTemplateDirective {
   bind: {'boundprop2': 'templProp'}
 })
 class SomeTemplateDirectiveWithBinding {
+  templProp;
   constructor() {
     this.templProp = null;
   }
@@ -291,12 +293,16 @@ class SomeComponentDirective {
   bind: {'boundprop3': 'compProp'}
 })
 class SomeComponentDirectiveWithBinding {
+  compProp;
   constructor() {
     this.compProp = null;
   }
 }
 
 class Context {
+  prop1;
+  prop2;
+  prop3;
   constructor() {
     this.prop1 = null;
     this.prop2 = null;
@@ -305,6 +311,7 @@ class Context {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

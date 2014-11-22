@@ -7,9 +7,9 @@ import {CompileStep} from 'core/compiler/pipeline/compile_step';
 import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 import {DOM} from 'facade/dom';
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
-import {Template} from 'core/annotations/template';
+import {Component} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
+import {Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {Reflector} from 'core/compiler/reflector';
 import {Parser} from 'change_detection/parser/parser';
@@ -165,6 +165,7 @@ export function main() {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

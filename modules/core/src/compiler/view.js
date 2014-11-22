@@ -1,5 +1,5 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoRecordRange, RecordRange, WatchGroupDispatcher} from 'change_detection/record_range';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
@@ -9,7 +9,6 @@ import {ElementBinder} from './element_binder';
 import {AnnotatedType} from './annotated_type';
 import {SetterFn} from 'change_detection/parser/closure_map';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
-import {List} from 'facade/collection';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 
@@ -21,16 +20,16 @@ const NG_BINDING_CLASS = 'ng-binding';
 @IMPLEMENTS(WatchGroupDispatcher)
 export class View {
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
-  @FIELD('final rootElementInjectors:List<ElementInjector>')
-  @FIELD('final elementInjectors:List<ElementInjector>')
-  @FIELD('final bindElements:List<Element>')
-  @FIELD('final textNodes:List<Text>')
-  @FIELD('final recordRange:RecordRange')
+  rootElementInjectors:List<ElementInjector>;
+  elementInjectors:List<ElementInjector>;
+  bindElements:List<Element>;
+  textNodes:List<Text>;
+  recordRange:RecordRange;
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
-  @FIELD('final nodes:List<Node>')
-  @FIELD('final onChangeDispatcher:OnChangeDispatcher')
-  @FIELD('childViews: List<View>')
+  nodes:List<Node>;
+  onChangeDispatcher:OnChangeDispatcher;
+  childViews: List<View>;
   constructor(nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
       protoRecordRange:ProtoRecordRange, context) {
@@ -70,9 +69,12 @@ export class View {
 }
 
 export class ProtoView {
-  @FIELD('final element:Element')
-  @FIELD('final elementBinders:List<ElementBinder>')
-  @FIELD('final protoRecordRange:ProtoRecordRange')
+  element:Element;
+  elementBinders:List<ElementBinder>;
+  protoRecordRange:ProtoRecordRange;
+  variableBindings: Map;
+  textNodesWithBindingCount:int;
+  elementsWithBindingCount:int;
   constructor(
       template:Element,
       protoRecordRange:ProtoRecordRange) {
@@ -299,8 +301,8 @@ export class ProtoView {
 }
 
 export class ElementPropertyMemento {
-  @FIELD('final _elementIndex:int')
-  @FIELD('final _propertyName:string')
+  _elementIndex:int;
+  _propertyName:string;
   constructor(elementIndex:int, propertyName:string) {
     this._elementIndex = elementIndex;
     this._propertyName = propertyName;
@@ -313,10 +315,10 @@ export class ElementPropertyMemento {
 }
 
 export class DirectivePropertyMemento {
-  @FIELD('final _elementInjectorIndex:int')
-  @FIELD('final _directiveIndex:int')
-  @FIELD('final _setterName:string')
-  @FIELD('final _setter:SetterFn')
+  _elementInjectorIndex:int;
+  _directiveIndex:int;
+  _setterName:string;
+  _setter:SetterFn;
   constructor(
       elementInjectorIndex:number,
       directiveIndex:number,
@@ -341,8 +343,8 @@ export class DirectivePropertyMemento {
 // notify is called by change detection, but done is called by our wrapper on detect changes.
 export class OnChangeDispatcher {
 
-  @FIELD('_lastView:View')
-  @FIELD('_lastTarget:DirectivePropertyMemento')
+  _lastView:View;
+  _lastTarget:DirectivePropertyMemento;
   constructor() {
     this._lastView = null;
     this._lastTarget = null;

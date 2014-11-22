@@ -4,9 +4,10 @@ import {reflector} from './reflector';
 import {Key} from './key';
 
 export class Dependency {
-  @FIELD('final key:Key')
-  @FIELD('final asPromise:bool')
-  @FIELD('final lazy:bool')
+  key:Key;
+  asPromise:boolean;
+  lazy:boolean;
+  properties:List;
   constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List) {
     this.key = key;
     this.asPromise = asPromise;
@@ -16,6 +17,11 @@ export class Dependency {
 }
 
 export class Binding {
+  key:Key;
+  factory:Function;
+  dependencies:List;
+  providedAsPromise:boolean;
+
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean) {
     this.key = key;
     this.factory = factory;
@@ -29,6 +35,7 @@ export function bind(token):BindingBuilder {
 }
 
 export class BindingBuilder {
+  token;
   constructor(token) {
     this.token = token;
   }

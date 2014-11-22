@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
 import {isPresent, isBlank} from 'facade/lang';
 import {DOM} from 'facade/dom';
-import {ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'core/compiler/pipeline/proto_element_injector_builder';
 import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
@@ -10,9 +10,9 @@ import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 import {ProtoView} from 'core/compiler/view';
 import {Reflector} from 'core/compiler/reflector';
-import {Template} from 'core/annotations/template';
-import {Decorator} from 'core/annotations/decorator';
-import {Component} from 'core/annotations/component';
+import {Template} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
+import {Component} from 'core/annotations/annotations';
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 
 export function main() {
@@ -107,6 +107,7 @@ export function main() {
 
 
 class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
+  debugObjects:List;
   constructor() {
     this.debugObjects = [];
   }
@@ -127,6 +128,7 @@ class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

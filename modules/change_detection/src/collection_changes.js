@@ -13,18 +13,19 @@ import {
 } from 'facade/lang';
 
 export class CollectionChanges {
-  // todo(vicb) Add fields when supported
-  /*
   _collection;
-  int _length;
-  DuplicateMap _linkedRecords;
-  DuplicateMap _unlinkedRecords;
-  CollectionChangeItem<V> _previousItHead;
-  CollectionChangeItem<V> _itHead, _itTail;
-  CollectionChangeItem<V> _additionsHead, _additionsTail;
-  CollectionChangeItem<V> _movesHead, _movesTail;
-  CollectionChangeItem<V> _removalsHead, _removalsTail;
-   */
+  _length:int;
+  _linkedRecords:_DuplicateMap;
+  _unlinkedRecords:_DuplicateMap;
+  _previousItHead:CollectionChangeRecord<V> ;
+  _itHead:CollectionChangeRecord<V>;
+  _itTail:CollectionChangeRecord<V> ;
+  _additionsHead:CollectionChangeRecord<V>;
+  _additionsTail:CollectionChangeRecord<V> ;
+  _movesHead:CollectionChangeRecord<V>;
+  _movesTail:CollectionChangeRecord<V> ;
+  _removalsHead:CollectionChangeRecord<V>;
+  _removalsTail:CollectionChangeRecord<V> ;
   constructor() {
     this._collection = null;
     this._length = null;
@@ -236,9 +237,9 @@ export class CollectionChanges {
   }
 
   /**
-   * Get rid of any excess [CollectionChangeItem]s from the previous collection
+   * Get rid of any excess [CollectionChangeRecord]s from the previous collection
    *
-   * - [record] The first excess [CollectionChangeItem].
+   * - [record] The first excess [CollectionChangeRecord].
    */
   _truncate(record:CollectionChangeRecord) {
     // Anything after that needs to be removed;
@@ -457,19 +458,16 @@ export class CollectionChanges {
 }
 
 export class CollectionChangeRecord  {
-  // todo(vicb) add fields when supported
-  /*
-  int currentIndex;
-  int previousIndex;
-  V item;
+  currentIndex:int;
+  previousIndex:int;
+  item;
 
-  CollectionChangeItem<V> _nextPrevious;
-  CollectionChangeItem<V> _prev, _next;
-  CollectionChangeItem<V> _prevDup, _nextDup;
-  CollectionChangeItem<V> _prevRemoved, _nextRemoved;
-  CollectionChangeItem<V> _nextAdded;
-  CollectionChangeItem<V> _nextMoved;
-  */
+  _nextPrevious:CollectionChangeRecord;
+  _prev:CollectionChangeRecord; _next:CollectionChangeRecord;
+  _prevDup:CollectionChangeRecord; _nextDup:CollectionChangeRecord;
+  _prevRemoved:CollectionChangeRecord; _nextRemoved:CollectionChangeRecord;
+  _nextAdded:CollectionChangeRecord;
+  _nextMoved:CollectionChangeRecord;
 
   constructor(item) {
     this.currentIndex = null;
@@ -497,10 +495,8 @@ export class CollectionChangeRecord  {
 
 // A linked list of CollectionChangeRecords with the same CollectionChangeRecord.item
 class _DuplicateItemRecordList {
-  /*
-  todo(vicb): add fields when supported
-  CollectionChangeRecord _head, _tail;
-  */
+  _head:CollectionChangeRecord;
+  _tail:CollectionChangeRecord;
 
   constructor() {
     this._head = null;
@@ -542,7 +538,7 @@ class _DuplicateItemRecordList {
   }
 
   /**
-   * Remove one [CollectionChangeItem] from the list of duplicates.
+   * Remove one [CollectionChangeRecord] from the list of duplicates.
    *
    * Returns whether the list of duplicates is empty.
    */
@@ -550,7 +546,7 @@ class _DuplicateItemRecordList {
     // todo(vicb)
     //assert(() {
     //  // verify that the record being removed is in the list.
-    //  for (CollectionChangeItem cursor = _head; cursor != null; cursor = cursor._nextDup) {
+    //  for (CollectionChangeRecord cursor = _head; cursor != null; cursor = cursor._nextDup) {
     //    if (identical(cursor, record)) return true;
     //  }
     //  return false;
@@ -573,7 +569,7 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  // todo(vicb): add fields when supported
+  map:Map;
   constructor() {
     this.map = MapWrapper.create();
   }
@@ -605,7 +601,7 @@ class _DuplicateMap {
   }
 
   /**
-   * Removes an [CollectionChangeItem] from the list of duplicates.
+   * Removes an [CollectionChangeRecord] from the list of duplicates.
    *
    * The list of duplicates also is removed from the map if it gets empty.
    */

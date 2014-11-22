@@ -1,5 +1,5 @@
 import {Type, isPresent, BaseException} from 'facade/lang';
-import {Directive} from '../annotations/directive';
+import {Directive} from '../annotations/annotations';
 import {AnnotatedType} from './annotated_type';
 
 /**

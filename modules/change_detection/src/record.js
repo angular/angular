@@ -1,6 +1,6 @@
 import {ProtoRecordRange, RecordRange} from './record_range';
 import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
 import {ClosureMap} from 'change_detection/parser/closure_map';
 
 var _fresh = new Object();
@@ -26,15 +26,16 @@ export const RECORD_FLAG_IMPLICIT_RECEIVER = 0x0200;
  * real world numbers show that it does not provide significant benefits.
  */
 export class ProtoRecord {
-  @FIELD('final recordRange:ProtoRecordRange')
-  @FIELD('final context:Object')
-  @FIELD('final funcOrValue:Object')
-  @FIELD('final arity:int')
-  @FIELD('final dest')
+  recordRange:ProtoRecordRange;
+  _mode:int;
+  context:any;
+  funcOrValue:any;
+  arity:int;
+  dest;
 
-  @FIELD('next:ProtoRecord')
-  @FIELD('prev:ProtoRecord')
-  @FIELD('recordInConstruction:Record')
+  next:ProtoRecord;
+  prev:ProtoRecord;
+  recordInConstruction:Record;
   constructor(recordRange:ProtoRecordRange,
               mode:int,
               funcOrValue,
@@ -74,30 +75,29 @@ export class ProtoRecord {
  *  - Keep this object as lean as possible. (Lean in number of fields)
  */
 export class Record {
-  @FIELD('final recordRange:RecordRange')
-  @FIELD('final protoRecord:ProtoRecord')
-  @FIELD('next:Record')
-  @FIELD('prev:Record')
+  recordRange:RecordRange;
+  protoRecord:ProtoRecord;
+  next:Record;
+  prev:Record;
 
   /// This reference can change.
-  @FIELD('nextEnabled:Record')
+  nextEnabled:Record;
 
   /// This reference can change.
-  @FIELD('prevEnabled:Record')
-  @FIELD('dest:Record')
+  prevEnabled:Record;
 
-  @FIELD('previousValue')
-  @FIELD('currentValue')
+  previousValue;
+  currentValue;
 
-  @FIELD('mode:int')
-  @FIELD('context')
-  @FIELD('funcOrValue')
-  @FIELD('args:List')
+  _mode:int;
+  context;
+  funcOrValue;
+  args:List;
 
   // Opaque data which will be the target of notification.
   // If the object is instance of Record, then it it is directly processed
   // Otherwise it is the context used by  WatchGroupDispatcher.
-  @FIELD('dest')
+  dest;
 
   constructor(recordRange:RecordRange, protoRecord:ProtoRecord, formatters:Map) {
     this.recordRange = recordRange;

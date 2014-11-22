@@ -1,9 +1,7 @@
 /**
  * Define public API for Angular here
  */
-export * from './annotations/directive';
-export * from './annotations/decorator';
-export * from './annotations/component';
+export * from './annotations/annotations';
 export * from './annotations/template_config';
 
 export * from './application';

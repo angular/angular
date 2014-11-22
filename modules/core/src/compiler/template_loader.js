@@ -5,7 +5,7 @@ import {Promise} from 'facade/async';
  * Strategy to load component templates.
  */
 export class TemplateLoader {
-  load(url:String):Promise<Document> {
+  load(url:string):Promise<Document> {
     return null;
   }
 }

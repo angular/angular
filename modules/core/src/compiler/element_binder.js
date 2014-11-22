@@ -2,16 +2,17 @@ import {ProtoElementInjector} from './element_injector';
 import {FIELD} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 import {AnnotatedType} from './annotated_type';
-// Comment out as dartanalyzer does not look into @FIELD
-// import {List} from 'facade/collection';
-// import {ProtoView} from './view';
+import {List, Map} from 'facade/collection';
+import {ProtoView} from './view';
 
 export class ElementBinder {
-  @FIELD('final protoElementInjector:ProtoElementInjector')
-  @FIELD('final componentDirective:AnnotatedType')
-  @FIELD('final templateDirective:AnnotatedType')
-  @FIELD('final textNodeIndices:List<int>')
-  @FIELD('hasElementPropertyBindings:bool')
+  protoElementInjector:ProtoElementInjector;
+  componentDirective:AnnotatedType;
+  templateDirective:AnnotatedType;
+  textNodeIndices:List<int>;
+  hasElementPropertyBindings:boolean;
+  nestedProtoView: ProtoView;
+  events:Map;
   constructor(
     protoElementInjector: ProtoElementInjector, componentDirective:AnnotatedType, templateDirective:AnnotatedType) {
     this.protoElementInjector = protoElementInjector;

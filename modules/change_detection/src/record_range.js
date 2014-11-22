@@ -11,15 +11,15 @@ import {
 } from './record';
 
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
   LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 
 
 export class ProtoRecordRange {
-  @FIELD('headRecord:ProtoRecord')
-  @FIELD('tailRecord:ProtoRecord')
+  headRecord:ProtoRecord;
+  tailRecord:ProtoRecord;
   constructor() {
     this.headRecord = null;
     this.tailRecord = null;
@@ -84,11 +84,11 @@ export class ProtoRecordRange {
 }
 
 export class RecordRange {
-  @FIELD('final protoRecordRange:ProtoRecordRange')
-  @FIELD('final dispatcher:WatchGroupDispatcher')
-  @FIELD('final headRecord:Record')
-  @FIELD('final tailRecord:Record')
-  @FIELD('final disabled:boolean')
+  protoRecordRange:ProtoRecordRange;
+  dispatcher:any; //WatchGroupDispatcher
+  headRecord:Record;
+  tailRecord:Record;
+  disabled:boolean;
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
   constructor(protoRecordRange:ProtoRecordRange, dispatcher) {
@@ -270,6 +270,8 @@ export class WatchGroupDispatcher {
 
 //todo: vsavkin: Create Array and Context destinations?
 class Destination {
+  record:ProtoRecord;
+  position:int;
   constructor(record:ProtoRecord, position:int) {
     this.record = record;
     this.position = position;
@@ -279,9 +281,9 @@ class Destination {
 
 @IMPLEMENTS(AstVisitor)
 class ProtoRecordCreator {
-  @FIELD('final protoRecordRange:ProtoRecordRange')
-  @FIELD('headRecord:ProtoRecord')
-  @FIELD('tailRecord:ProtoRecord')
+  protoRecordRange:ProtoRecordRange;
+  headRecord:ProtoRecord;
+  tailRecord:ProtoRecord;
   constructor(protoRecordRange) {
     this.protoRecordRange = protoRecordRange;
     this.headRecord = null;

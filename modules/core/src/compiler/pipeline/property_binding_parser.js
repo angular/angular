@@ -23,6 +23,7 @@ var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[
  * - CompileElement#variableBindings
  */
 export class PropertyBindingParser extends CompileStep {
+  _parser:Parser;
   constructor(parser:Parser) {
     this._parser = parser;
   }

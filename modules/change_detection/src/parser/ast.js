@@ -33,7 +33,7 @@ export class ImplicitReceiver extends AST {
  * Multiple expressions separated by a semicolon.
  */
 export class Chain extends AST {
-  @FIELD('final expressions:List')
+  expressions:List;
   constructor(expressions:List) {
     this.expressions = expressions;
   }
@@ -53,9 +53,9 @@ export class Chain extends AST {
 }
 
 export class Conditional extends AST {
-  @FIELD('final condition:AST')
-  @FIELD('final trueExp:AST')
-  @FIELD('final falseExp:AST')
+  condition:AST;
+  trueExp:AST;
+  falseExp:AST;
   constructor(condition:AST, trueExp:AST, falseExp:AST){
     this.condition = condition;
     this.trueExp = trueExp;
@@ -76,10 +76,10 @@ export class Conditional extends AST {
 }
 
 export class AccessMember extends AST {
-  @FIELD('final receiver:AST')
-  @FIELD('final name:string')
-  @FIELD('final getter:Function')
-  @FIELD('final setter:Function')
+  receiver:AST;
+  name:string;
+  getter:Function;
+  setter:Function;
   constructor(receiver:AST, name:string, getter:Function, setter:Function) {
     this.receiver = receiver;
     this.name = name;
@@ -105,8 +105,8 @@ export class AccessMember extends AST {
 }
 
 export class KeyedAccess extends AST {
-  @FIELD('final obj:AST')
-  @FIELD('final key:AST')
+  obj:AST;
+  key:AST;
   constructor(obj:AST, key:AST) {
     this.obj = obj;
     this.key = key;
@@ -149,9 +149,10 @@ export class KeyedAccess extends AST {
 }
 
 export class Formatter extends AST {
-  @FIELD('final exp:AST')
-  @FIELD('final name:string')
-  @FIELD('final args:List<AST>')
+  exp:AST;
+  name:string;
+  args:List<AST>;
+  allArgs:List<AST>;
   constructor(exp:AST, name:string, args:List) {
     this.exp = exp;
     this.name = name;
@@ -165,7 +166,7 @@ export class Formatter extends AST {
 }
 
 export class LiteralPrimitive extends AST {
-  @FIELD('final value')
+  value;
   constructor(value) {
     this.value = value;
   }
@@ -180,7 +181,7 @@ export class LiteralPrimitive extends AST {
 }
 
 export class LiteralArray extends AST {
-  @FIELD('final expressions:List')
+  expressions:List;
   constructor(expressions:List) {
     this.expressions = expressions;
   }
@@ -195,8 +196,8 @@ export class LiteralArray extends AST {
 }
 
 export class LiteralMap extends AST {
-  @FIELD('final keys:List')
-  @FIELD('final values:List')
+  keys:List;
+  values:List;
   constructor(keys:List, values:List) {
     this.keys = keys;
     this.values = values;
@@ -216,9 +217,9 @@ export class LiteralMap extends AST {
 }
 
 export class Binary extends AST {
-  @FIELD('final operation:string')
-  @FIELD('final left:AST')
-  @FIELD('final right:AST')
+  operation:string;
+  left:AST;
+  right:AST;
   constructor(operation:string, left:AST, right:AST) {
     this.operation = operation;
     this.left = left;
@@ -262,7 +263,7 @@ export class Binary extends AST {
 }
 
 export class PrefixNot extends AST {
-  @FIELD('final expression:AST')
+  expression:AST;
   constructor(expression:AST) {
     this.expression = expression;
   }
@@ -277,8 +278,8 @@ export class PrefixNot extends AST {
 }
 
 export class Assignment extends AST {
-  @FIELD('final target:AST')
-  @FIELD('final value:AST')
+  target:AST;
+  value:AST;
   constructor(target:AST, value:AST) {
     this.target = target;
     this.value = value;
@@ -294,9 +295,9 @@ export class Assignment extends AST {
 }
 
 export class MethodCall extends AST {
-  @FIELD('final receiver:AST')
-  @FIELD('final fn:Function')
-  @FIELD('final args:List')
+  receiver:AST;
+  fn:Function;
+  args:List;
   constructor(receiver:AST, fn:Function, args:List) {
     this.receiver = receiver;
     this.fn = fn;
@@ -314,9 +315,9 @@ export class MethodCall extends AST {
 }
 
 export class FunctionCall extends AST {
-  @FIELD('final target:AST')
-  @FIELD('final closureMap:ClosureMap')
-  @FIELD('final args:List')
+  target:AST;
+  closureMap:ClosureMap;
+  args:List;
   constructor(target:AST, closureMap:ClosureMap, args:List) {
     this.target = target;
     this.closureMap = closureMap;
@@ -337,6 +338,8 @@ export class FunctionCall extends AST {
 }
 
 export class ASTWithSource {
+  ast:AST;
+  source:string;
   constructor(ast:AST, source:string) {
     this.source = source;
     this.ast = ast;
@@ -344,6 +347,9 @@ export class ASTWithSource {
 }
 
 export class TemplateBinding {
+  key:string;
+  name:string;
+  expression:ASTWithSource;
   constructor(key:string, name:string, expression:ASTWithSource) {
     this.key = key;
     // only either name or expression will be filled.

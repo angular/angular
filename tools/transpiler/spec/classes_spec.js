@@ -1,9 +1,10 @@
 import {ddescribe, describe, it, expect} from 'test_lib/test_lib';
 import {CONST} from './fixtures/annotations';
 
-// Constructor
-// Define fields
 class Foo {
+  a;
+  b;
+
   constructor(a, b) {
     this.a = a;
     this.b = b;
@@ -15,6 +16,8 @@ class Foo {
 }
 
 class SubFoo extends Foo {
+  c;
+
   constructor(a, b) {
     this.c = 3;
     super(a, b);
@@ -25,6 +28,8 @@ class SubFoo extends Foo {
 class ConstClass {}
 
 class Const {
+  a;
+
   @CONST
   constructor(a:number) {
     this.a = a;
@@ -32,6 +37,8 @@ class Const {
 }
 
 class SubConst extends Const {
+  b;
+
   @CONST
   constructor(a:number, b:number) {
     super(a);

@@ -1,16 +1,18 @@
 import {FIELD} from 'facade/lang';
+import {OnChangeDispatcher} from '../compiler/view';
+import {ChangeDetector} from 'change_detection/change_detector';
 
 export class LifeCycle {
 
-  @FIELD('final _changeDetection:ChangeDetection')
-  @FIELD('final _onChangeDispatcher:OnChangeDispatcher')
+  _changeDetector:ChangeDetector;
+  _onChangeDispatcher:OnChangeDispatcher;
   constructor() {
-    this._changeDetection = null;
+    this._changeDetector = null;
     this._onChangeDispatcher = null;
   }
 
   digest() {
-    _changeDetection.detectChanges();
+    _changeDetector.detectChanges();
     _onChangeDispatcher.done();
   }
 }

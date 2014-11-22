@@ -28,8 +28,8 @@ import {
 var _implicitReceiver = new ImplicitReceiver();
 
 export class Parser {
-  @FIELD('final _lexer:Lexer')
-  @FIELD('final _closureMap:ClosureMap')
+  _lexer:Lexer;
+  _closureMap:ClosureMap;
   constructor(lexer:Lexer, closureMap:ClosureMap){
     this._lexer = lexer;
     this._closureMap = closureMap;
@@ -54,11 +54,11 @@ export class Parser {
 }
 
 class _ParseAST {
-  @FIELD('final input:string')
-  @FIELD('final tokens:List<Token>')
-  @FIELD('final closureMap:ClosureMap')
-  @FIELD('final parseAction:boolean')
-  @FIELD('index:int')
+  input:string;
+  tokens:List<Token>;
+  closureMap:ClosureMap;
+  parseAction:boolean;
+  index:int;
   constructor(input:string, tokens:List, closureMap:ClosureMap, parseAction:boolean) {
     this.input = input;
     this.tokens = tokens;

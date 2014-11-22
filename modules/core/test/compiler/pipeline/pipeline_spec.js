@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
-import {ListWrapper} from 'facade/collection';
+import {ListWrapper, List} from 'facade/collection';
 import {DOM} from 'facade/dom';
 import {isPresent, NumberWrapper} from 'facade/lang';
 
@@ -106,6 +106,7 @@ export function main() {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }
@@ -115,6 +116,7 @@ class MockStep extends CompileStep {
 }
 
 class LoggingStep extends CompileStep {
+  logs:List;
   constructor(logs) {
     this.logs = logs;
   }

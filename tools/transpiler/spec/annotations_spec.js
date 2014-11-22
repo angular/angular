@@ -6,6 +6,8 @@ class Inject {}
 class Bar {}
 
 class Provide {
+  token;
+
   @CONST()
   constructor(token) {
     this.token = token;
@@ -13,6 +15,8 @@ class Provide {
 }
 
 class AnnotateMe {
+  maybe;
+
   @CONST()
   constructor({maybe = 'default'} = {}) {
     this.maybe = maybe;
