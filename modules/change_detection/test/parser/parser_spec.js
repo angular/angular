@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {BaseException, isBlank} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
+import {BaseException, isBlank, isPresent} from 'facade/lang';
+import {MapWrapper, ListWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
@@ -32,11 +32,15 @@ export function main() {
   }
 
   function parseAction(text) {
-    return createParser().parseAction(text);
+    return createParser().parseAction(text).ast;
   }
 
   function parseBinding(text) {
-    return createParser().parseBinding(text);
+    return createParser().parseBinding(text).ast;
+  }
+
+  function parseTemplateBindings(text) {
+    return createParser().parseTemplateBindings(text);
   }
 
   function expectEval(text, passedInContext = null) {
@@ -46,6 +50,15 @@ export function main() {
 
   function expectEvalError(text) {
     return expect(() => parseAction(text).eval(td()));
+  }
+
+  function evalAsts(asts, passedInContext = null) {
+    var c = isBlank(passedInContext) ? td() : passedInContext;
+    var res = [];
+    for (var i=0; i<asts.length; i++) {
+      ListWrapper.push(res, asts[i].eval(c));
+    }
+    return res;
   }
 
   describe("parser", () => {
@@ -248,7 +261,7 @@ export function main() {
           expectEval('a["key"] = 200', context).toEqual(200);
           expect(MapWrapper.get(context.a, "key")).toEqual(200);
         });
-        
+
         it("should support array/map updates", () => {
           var context = td([MapWrapper.createFromPairs([["key", 100]])]);
           expectEval('a[0]["key"] = 200', context).toEqual(200);
@@ -287,7 +300,7 @@ export function main() {
 
       it('should pass exceptions', () => {
         expect(() => {
-          createParser().parseAction('a()').eval(td(() => {throw new BaseException("boo to you")}));
+          createParser().parseAction('a()').ast.eval(td(() => {throw new BaseException("boo to you")}));
         }).toThrowError('boo to you');
       });
 
@@ -296,6 +309,10 @@ export function main() {
           expectEval("a=1;b=3;a+b").toEqual(4);
           expectEval("1;;").toEqual(1);
         });
+      });
+
+      it('should store the source in the result', () => {
+        expect(createParser().parseAction('someExpr').source).toBe('someExpr');
       });
     });
 
@@ -319,6 +336,11 @@ export function main() {
           expect(() => parseBinding('"Foo"|1234')).toThrowError(new RegExp('identifier or keyword'));
           expect(() => parseBinding('"Foo"|"uppercase"')).toThrowError(new RegExp('identifier or keyword'));
         });
+
+      });
+
+      it('should store the source in the result', () => {
+        expect(createParser().parseBinding('someExpr').source).toBe('someExpr');
       });
 
       it('should throw on chain expressions', () => {
@@ -327,6 +349,90 @@ export function main() {
 
       it('should throw on assignmnt', () => {
         expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
+      });
+    });
+
+    describe('parseTemplateBindings', () => {
+
+      function keys(templateBindings) {
+        return ListWrapper.map(templateBindings, (binding) => binding.key );
+      }
+
+      function names(templateBindings) {
+        return ListWrapper.map(templateBindings, (binding) => binding.name );
+      }
+
+      function exprSources(templateBindings) {
+        return ListWrapper.map(templateBindings,
+          (binding) => isPresent(binding.expression) ? binding.expression.source : null );
+      }
+
+      function exprAsts(templateBindings) {
+        return ListWrapper.map(templateBindings,
+          (binding) => isPresent(binding.expression) ? binding.expression.ast : null );
+      }
+
+      it('should parse an empty string', () => {
+        var bindings = parseTemplateBindings("");
+        expect(bindings).toEqual([]);
+      });
+
+      it('should only allow identifier, string, or keyword as keys', () => {
+        var bindings = parseTemplateBindings("a:'b'");
+        expect(keys(bindings)).toEqual(['a']);
+
+        bindings = parseTemplateBindings("'a':'b'");
+        expect(keys(bindings)).toEqual(['a']);
+
+        bindings = parseTemplateBindings("\"a\":'b'");
+        expect(keys(bindings)).toEqual(['a']);
+
+        expect( () => {
+          parseTemplateBindings('(:0');
+        }).toThrowError(new RegExp('expected identifier, keyword, or string'));
+
+        expect( () => {
+          parseTemplateBindings('1234:0');
+        }).toThrowError(new RegExp('expected identifier, keyword, or string'));
+      });
+
+      it('should detect expressions as value', () => {
+        var bindings = parseTemplateBindings("a:b");
+        expect(exprSources(bindings)).toEqual(['b']);
+        expect(evalAsts(exprAsts(bindings), td(0, 23))).toEqual([23]);
+
+        bindings = parseTemplateBindings("a:1+1");
+        expect(exprSources(bindings)).toEqual(['1+1']);
+        expect(evalAsts(exprAsts(bindings))).toEqual([2]);
+      });
+
+      it('should detect names as value', () => {
+        var bindings = parseTemplateBindings("a:#b");
+        expect(names(bindings)).toEqual(['b']);
+        expect(exprSources(bindings)).toEqual([null]);
+        expect(exprAsts(bindings)).toEqual([null]);
+      });
+
+      it('should allow space and colon as separators', () => {
+        var bindings = parseTemplateBindings("a:b");
+        expect(keys(bindings)).toEqual(['a']);
+        expect(exprSources(bindings)).toEqual(['b']);
+
+        bindings = parseTemplateBindings("a b");
+        expect(keys(bindings)).toEqual(['a']);
+        expect(exprSources(bindings)).toEqual(['b']);
+      });
+
+      it('should allow multiple pairs', () => {
+        var bindings = parseTemplateBindings("a 1 b 2");
+        expect(keys(bindings)).toEqual(['a', 'b']);
+        expect(exprSources(bindings)).toEqual(['1 ', '2']);
+      });
+
+      it('should store the sources in the result', () => {
+        var bindings = parseTemplateBindings("a 1,b 2");
+        expect(bindings[0].expression.source).toEqual('1');
+        expect(bindings[1].expression.source).toEqual('2');
       });
     });
   });

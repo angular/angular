@@ -1,0 +1,22 @@
+register(System);
+
+System.baseURL = '../../../';
+
+// So that we can import packages like `core/foo`, instead of `core/lib/foo`.
+System.paths = {
+  'core/*': './core/lib/*.js',
+  'change_detection/*': './change_detection/lib/*.js',
+  'facade/*': './facade/lib/*.js',
+  'di/*': './di/lib/*.js',
+  'rtts_assert/*': './rtts_assert/lib/*.js',
+  'examples/*': './examples/lib/*.js'
+};
+
+
+
+// TODO(rado): templatize and make reusable for all examples
+System.import('examples/hello_world/app').then(function(m) {
+  m.main();
+}, function(e) {
+  console.error(e.stack || e);
+});

@@ -51,6 +51,8 @@ class Foo {
 class WithFields {
   name: string;
   static id: number;
+  untyped;
+  static staticUntyped;
 }
 
 

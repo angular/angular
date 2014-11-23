@@ -1,5 +1,7 @@
-import {RegExpWrapper, StringWrapper} from 'facade/lang';
+import {RegExpWrapper, StringWrapper, isPresent} from 'facade/lang';
 import {Node, DOM} from 'facade/dom';
+
+import {Parser} from 'change_detection/parser/parser';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -7,6 +9,35 @@ import {CompileControl} from './compile_control';
 
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
+var QUOTE_REGEXP = RegExpWrapper.create("'");
+
+export function interpolationToExpression(value:string):string {
+  // TODO: add stringify formatter when we support formatters
+  var parts = StringWrapper.split(value, INTERPOLATION_REGEXP);
+  if (parts.length <= 1) {
+    return null;
+  }
+  var expression = '';
+  for (var i=0; i<parts.length; i++) {
+    var expressionPart = null;
+    if (i%2 === 0) {
+      // fixed string
+      if (parts[i].length > 0) {
+        expressionPart = "'" + StringWrapper.replaceAll(parts[i], QUOTE_REGEXP, "\\'") + "'";
+      }
+    } else {
+      // expression
+      expressionPart = "(" + parts[i] + ")";
+    }
+    if (isPresent(expressionPart)) {
+      if (expression.length > 0) {
+        expression += '+';
+      }
+      expression += expressionPart;
+    }
+  }
+  return expression;
+}
 
 /**
  * Parses interpolations in direct text child nodes of the current element.
@@ -15,6 +46,10 @@ var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
  * - CompileElement#textNodeBindings
  */
 export class TextInterpolationParser extends CompileStep {
+  constructor(parser:Parser) {
+    this._parser = parser;
+  }
+
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var element = current.element;
     var childNodes = DOM.templateAwareRoot(element).childNodes;
@@ -27,23 +62,10 @@ export class TextInterpolationParser extends CompileStep {
   }
 
   _parseTextNode(pipelineElement, node, nodeIndex) {
-    // TODO: escape fixed string quotes
-    // TODO: add braces around the expression
-    // TODO: suppress empty strings
-    // TODO: add stringify formatter
-    var parts = StringWrapper.split(node.nodeValue, INTERPOLATION_REGEXP);
-    if (parts.length > 1) {
-      for (var i=0; i<parts.length; i++) {
-        if (i%2 === 0) {
-          // fixed string
-          parts[i] = "'" + parts[i] + "'";
-        } else {
-          // expression
-          parts[i] = "" + parts[i] + "";
-        }
-      }
+    var expression = interpolationToExpression(node.nodeValue);
+    if (isPresent(expression)) {
       DOM.setText(node, ' ');
-      pipelineElement.addTextNodeBinding(nodeIndex, parts.join('+'));
+      pipelineElement.addTextNodeBinding(nodeIndex, this._parser.parseBinding(expression));
     }
   }
 }

@@ -16,7 +16,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 import {Reflector} from 'core/compiler/reflector';
 
-import {ProtoWatchGroup} from 'change_detection/watch_group';
+import {ProtoRecordRange} from 'change_detection/record_range';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ClosureMap} from 'change_detection/parser/closure_map';
@@ -27,33 +27,42 @@ export function main() {
   describe('ElementBinderBuilder', () => {
     var evalContext, view, changeDetector;
 
-    function createPipeline({textNodeBindings, propertyBindings, directives, protoElementInjector
+    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
     }={}) {
       var reflector = new Reflector();
       var closureMap = new ClosureMap();
+      var parser = new Parser(new Lexer(), closureMap);
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element, new ProtoWatchGroup());
+              current.inheritedProtoView = new ProtoView(current.element, new ProtoRecordRange());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
-            } else {
-              current.inheritedProtoView = null;
             }
             var hasBinding = false;
             if (isPresent(current.element.getAttribute('text-binding'))) {
-              current.textNodeBindings = textNodeBindings;
+              MapWrapper.forEach(textNodeBindings, (v,k) => {
+                current.addTextNodeBinding(k, parser.parseBinding(v));
+              });
               hasBinding = true;
             }
             if (isPresent(current.element.getAttribute('prop-binding'))) {
-              current.propertyBindings = propertyBindings;
+              if (isPresent(propertyBindings)) {
+                MapWrapper.forEach(propertyBindings, (v,k) => {
+                  current.addPropertyBinding(k, parser.parseBinding(v));
+                });
+              }
+              hasBinding = true;
+            }
+            if (isPresent(current.element.getAttribute('event-binding'))) {
+              MapWrapper.forEach(eventBindings, (v,k) => {
+                current.addEventBinding(k, parser.parseAction(v));
+              });
               hasBinding = true;
             }
             if (isPresent(protoElementInjector)) {
               current.inheritedProtoElementInjector = protoElementInjector;
-            } else {
-              current.inheritedProtoElementInjector = null;
             }
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
@@ -65,14 +74,14 @@ export function main() {
               current.hasBindings = true;
               DOM.addClass(current.element, 'ng-binding');
             }
-          }), new ElementBinderBuilder(new Parser(new Lexer(), closureMap), closureMap)
+          }), new ElementBinderBuilder(closureMap)
       ]);
     }
 
     function instantiateView(protoView) {
       evalContext = new Context();
       view = protoView.instantiate(evalContext, new Injector([]), null);
-      changeDetector = new ChangeDetector(view.watchGroup);
+      changeDetector = new ChangeDetector(view.recordRange);
     }
 
     it('should not create an ElementBinder for elements that have no bindings', () => {
@@ -169,6 +178,18 @@ export function main() {
       expect(DOM.getProperty(view.nodes[0], 'elprop2')).toEqual('b');
     });
 
+    it('should bind events', () => {
+      var eventBindings = MapWrapper.createFromStringMap({
+        'event1': '1+1'
+      });
+      var pipeline = createPipeline({eventBindings: eventBindings});
+      var results = pipeline.process(createElement('<div viewroot event-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      var ast = MapWrapper.get(pv.elementBinders[0].events, 'event1');
+      expect(ast.eval(null)).toBe(2);
+    });
+
     it('should bind directive properties', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
         'boundprop1': 'prop1',
@@ -185,7 +206,7 @@ export function main() {
       var results = pipeline.process(createElement('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          createElement('<div></div>'), new ProtoWatchGroup());
+          createElement('<div></div>'), new ProtoRecordRange());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

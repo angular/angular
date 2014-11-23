@@ -1,3 +1,5 @@
+import {benchmark, benchmarkStep} from '../benchpress';
+
 import {SelectorMatcher} from "core/compiler/selector";
 import {CssSelector} from "core/compiler/selector";
 import {StringWrapper, Math} from 'facade/lang';
@@ -9,44 +11,53 @@ var fixedSelectors = [];
 
 var COUNT = 1000;
 
-export function setup() {
-  for (var i=0; i<COUNT; i++) {
+export function main() {
+  setup(COUNT);
+
+  benchmark(`cssSelector.parse * ${COUNT}`, function() {
+    benchmarkStep(`run`, function() {
+      var result = [];
+      for (var i=0; i<COUNT; i++) {
+        ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
+      }
+      return result;
+    });
+  });
+
+  benchmark(`cssSelector.addSelectable * ${COUNT}`, function() {
+    benchmarkStep(`run`, function() {
+      var matcher = new SelectorMatcher();
+      for (var i=0; i<COUNT; i++) {
+        matcher.addSelectable(fixedSelectors[i], i);
+      }
+      return matcher;
+    });
+  });
+
+  benchmark(`cssSelector.match * ${COUNT}`, function() {
+    benchmarkStep(`run`, function() {
+      var matchCount = 0;
+      for (var i=0; i<COUNT; i++) {
+        fixedMatcher.match(fixedSelectors[i], (selected) => {
+          matchCount += selected;
+        });
+      }
+      return matchCount;
+    });
+  });
+}
+
+function setup(count) {
+  for (var i=0; i<count; i++) {
     ListWrapper.push(fixedSelectorStrings, randomSelector());
   }
-  for (var i=0; i<COUNT; i++) {
+  for (var i=0; i<count; i++) {
     ListWrapper.push(fixedSelectors, CssSelector.parse(fixedSelectorStrings[i]));
   }
   fixedMatcher = new SelectorMatcher();
-  for (var i=0; i<COUNT; i++) {
+  for (var i=0; i<count; i++) {
     fixedMatcher.addSelectable(fixedSelectors[i], i);
   }
-}
-
-export function runParse() {
-  var result = [];
-  for (var i=0; i<COUNT; i++) {
-    ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
-  }
-  return result;
-}
-
-export function runAdd() {
-  var matcher = new SelectorMatcher();
-  for (var i=0; i<COUNT; i++) {
-    matcher.addSelectable(fixedSelectors[i], i);
-  }
-  return matcher;
-}
-
-export function runMatch() {
-  // The sum is used to prevent Chrome from optimizing the loop away...
-  var count = 0;
-  for (var i=0; i<COUNT; i++) {
-    fixedMatcher.match(fixedSelectors[i], (selected) => {
-      count += selected;
-    });
-  }
-  return count;
 }
 
 function randomSelector() {

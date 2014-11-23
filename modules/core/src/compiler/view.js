@@ -1,6 +1,6 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
 import {ListWrapper, MapWrapper} from 'facade/collection';
-import {ProtoWatchGroup, WatchGroup, WatchGroupDispatcher} from 'change_detection/watch_group';
+import {ProtoRecordRange, RecordRange, WatchGroupDispatcher} from 'change_detection/record_range';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
 
@@ -25,7 +25,7 @@ export class View {
   @FIELD('final elementInjectors:List<ElementInjector>')
   @FIELD('final bindElements:List<Element>')
   @FIELD('final textNodes:List<Text>')
-  @FIELD('final watchGroup:WatchGroup')
+  @FIELD('final recordRange:RecordRange')
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
   @FIELD('final nodes:List<Node>')
@@ -33,15 +33,15 @@ export class View {
   @FIELD('childViews: List<View>')
   constructor(nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
-      protoWatchGroup:ProtoWatchGroup, context) {
+      protoRecordRange:ProtoRecordRange, context) {
     this.nodes = nodes;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.onChangeDispatcher = null;
     this.textNodes = textNodes;
     this.bindElements = bindElements;
-    this.watchGroup = protoWatchGroup.instantiate(this, MapWrapper.create());
-    this.watchGroup.setContext(context);
+    this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
+    this.recordRange.setContext(context);
     // TODO(rado): Since this is only used in tests for now, investigate whether
     // we can remove it.
     this.childViews = [];
@@ -65,25 +65,28 @@ export class View {
 
   addChild(childView: View) {
     ListWrapper.push(this.childViews, childView);
+    this.recordRange.addRange(childView.recordRange);
   }
 }
 
 export class ProtoView {
   @FIELD('final element:Element')
   @FIELD('final elementBinders:List<ElementBinder>')
-  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+  @FIELD('final protoRecordRange:ProtoRecordRange')
   constructor(
       template:Element,
-      protoWatchGroup:ProtoWatchGroup) {
+      protoRecordRange:ProtoRecordRange) {
     this.element = template;
     this.elementBinders = [];
-    this.protoWatchGroup = protoWatchGroup;
+    this.variableBindings = MapWrapper.create();
+    this.protoRecordRange = protoRecordRange;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
   }
 
-  instantiate(context, lightDomAppInjector:Injector, hostElementInjector: ElementInjector):View {
-    var clone = DOM.clone(this.element);
+  instantiate(context, lightDomAppInjector:Injector,
+      hostElementInjector: ElementInjector, inPlace:boolean = false):View {
+    var clone = inPlace ? this.element : DOM.clone(this.element);
     var elements;
     if (clone instanceof TemplateElement) {
       elements = ListWrapper.clone(DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`));
@@ -112,7 +115,7 @@ export class ProtoView {
       viewNodes = [clone];
     }
     var view = new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
-        bindElements, this.protoWatchGroup, context);
+        bindElements, this.protoRecordRange, context);
 
     ProtoView._instantiateDirectives(
         view, elements, elementInjectors, lightDomAppInjector, shadowAppInjectors);
@@ -120,6 +123,10 @@ export class ProtoView {
         elements, binders, elementInjectors, shadowAppInjectors, view);
 
     return view;
+  }
+
+  bindVariable(contextName:string, templateName:string) {
+    MapWrapper.set(this.variableBindings, contextName, templateName);
   }
 
   bindElement(protoElementInjector:ProtoElementInjector,
@@ -134,8 +141,11 @@ export class ProtoView {
    */
   bindTextNode(indexInParent:int, expression:AST) {
     var elBinder = this.elementBinders[this.elementBinders.length-1];
+    if (isBlank(elBinder.textNodeIndices)) {
+      elBinder.textNodeIndices = ListWrapper.create();
+    }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
-    this.protoWatchGroup.watch(expression, this.textNodesWithBindingCount++);
+    this.protoRecordRange.addRecordsFromAST(expression, this.textNodesWithBindingCount++);
   }
 
   /**
@@ -147,12 +157,23 @@ export class ProtoView {
       elBinder.hasElementPropertyBindings = true;
       this.elementsWithBindingCount++;
     }
-    this.protoWatchGroup.watch(expression,
+    this.protoRecordRange.addRecordsFromAST(expression,
       new ElementPropertyMemento(
         this.elementsWithBindingCount-1,
         propertyName
       )
     );
+  }
+
+  /**
+   * Adds an event binding for the last created ElementBinder via bindElement
+   */
+  bindEvent(eventName:string, expression:AST) {
+    var elBinder = this.elementBinders[this.elementBinders.length-1];
+    if (isBlank(elBinder.events)) {
+      elBinder.events = MapWrapper.create();
+    }
+    MapWrapper.set(elBinder.events, eventName, expression);
   }
 
   /**
@@ -163,7 +184,7 @@ export class ProtoView {
     expression:AST,
     setterName:string,
     setter:SetterFn) {
-    this.protoWatchGroup.watch(
+    this.protoRecordRange.addRecordsFromAST(
       expression,
       new DirectivePropertyMemento(
         this.elementBinders.length-1,
@@ -221,9 +242,11 @@ export class ProtoView {
   }
 
   static _collectTextNodes(allTextNodes, element, indices) {
-    var childNodes = DOM.templateAwareRoot(element).childNodes;
-    for (var i = 0; i < indices.length; ++i) {
-      ListWrapper.push(allTextNodes, childNodes[indices[i]]);
+    if (isPresent(indices)) {
+      var childNodes = DOM.templateAwareRoot(element).childNodes;
+      for (var i = 0; i < indices.length; ++i) {
+        ListWrapper.push(allTextNodes, childNodes[indices[i]]);
+      }
     }
   }
 
@@ -258,6 +281,20 @@ export class ProtoView {
       }
     }
     return injectors;
+  }
+
+  // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
+  // and the component template is already compiled into protoView.
+  // Used for bootstrapping.
+  static createRootProtoView(protoView: ProtoView,
+      insertionElement, rootComponentAnnotatedType: AnnotatedType): ProtoView {
+    var rootProtoView = new ProtoView(insertionElement, new ProtoRecordRange());
+    var binder = rootProtoView.bindElement(
+        new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
+    binder.componentDirective = rootComponentAnnotatedType;
+    binder.nestedProtoView = protoView;
+    DOM.addClass(insertionElement, 'ng-binding');
+    return rootProtoView;
   }
 }
 

@@ -4,7 +4,7 @@ import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection
 
 import {Parser} from 'change_detection/parser/parser';
 import {ClosureMap} from 'change_detection/parser/closure_map';
-import {ProtoWatchGroup} from 'change_detection/watch_group';
+import {ProtoRecordRange} from 'change_detection/record_range';
 
 import {Directive} from '../../annotations/directive';
 import {Component} from '../../annotations/component';
@@ -20,7 +20,7 @@ import {CompileControl} from './compile_control';
 
 /**
  * Creates the ElementBinders and adds watches to the
- * ProtoWatchGroup.
+ * ProtoRecordRange.
  *
  * Fills:
  * - CompileElement#inheritedElementBinder
@@ -33,6 +33,7 @@ import {CompileControl} from './compile_control';
  * - CompileElement#inheritedProtoElementInjector
  * - CompileElement#textNodeBindings
  * - CompileElement#propertyBindings
+ * - CompileElement#eventBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
  * - CompileElement#templateDirective
@@ -43,8 +44,7 @@ import {CompileControl} from './compile_control';
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
-  constructor(parser:Parser, closureMap:ClosureMap) {
-    this._parser = parser;
+  constructor(closureMap:ClosureMap) {
     this._closureMap = closureMap;
   }
 
@@ -56,10 +56,13 @@ export class ElementBinderBuilder extends CompileStep {
         current.componentDirective, current.templateDirective);
 
       if (isPresent(current.textNodeBindings)) {
-        this._bindTextNodes(protoView, current.textNodeBindings);
+        this._bindTextNodes(protoView, current);
       }
       if (isPresent(current.propertyBindings)) {
-        this._bindElementProperties(protoView, current.propertyBindings);
+        this._bindElementProperties(protoView, current);
+      }
+      if (isPresent(current.eventBindings)) {
+        this._bindEvents(protoView, current);
       }
       this._bindDirectiveProperties(this._collectDirectives(current), current);
     } else if (isPresent(parent)) {
@@ -68,36 +71,42 @@ export class ElementBinderBuilder extends CompileStep {
     current.inheritedElementBinder = elementBinder;
   }
 
-  _bindTextNodes(protoView, textNodeBindings) {
-    MapWrapper.forEach(textNodeBindings, (expression, indexInParent) => {
-      protoView.bindTextNode(indexInParent, this._parser.parseBinding(expression));
+  _bindTextNodes(protoView, compileElement) {
+    MapWrapper.forEach(compileElement.textNodeBindings, (expression, indexInParent) => {
+      protoView.bindTextNode(indexInParent, expression.ast);
     });
   }
 
-  _bindElementProperties(protoView, propertyBindings) {
-    MapWrapper.forEach(propertyBindings, (expression, property) => {
-      protoView.bindElementProperty(property, this._parser.parseBinding(expression));
+  _bindElementProperties(protoView, compileElement) {
+    MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
+      protoView.bindElementProperty(property,  expression.ast);
     });
   }
 
-  _collectDirectives(pipelineElement) {
+  _bindEvents(protoView, compileElement) {
+    MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
+      protoView.bindEvent(eventName,  expression.ast);
+    });
+  }
+
+  _collectDirectives(compileElement) {
     var directives;
-    if (isPresent(pipelineElement.decoratorDirectives)) {
-      directives = ListWrapper.clone(pipelineElement.decoratorDirectives);
+    if (isPresent(compileElement.decoratorDirectives)) {
+      directives = ListWrapper.clone(compileElement.decoratorDirectives);
     } else {
       directives = [];
     }
-    if (isPresent(pipelineElement.templateDirective)) {
-      ListWrapper.push(directives, pipelineElement.templateDirective);
+    if (isPresent(compileElement.templateDirective)) {
+      ListWrapper.push(directives, compileElement.templateDirective);
     }
-    if (isPresent(pipelineElement.componentDirective)) {
-      ListWrapper.push(directives, pipelineElement.componentDirective);
+    if (isPresent(compileElement.componentDirective)) {
+      ListWrapper.push(directives, compileElement.componentDirective);
     }
     return directives;
   }
 
-  _bindDirectiveProperties(typesWithAnnotations, pipelineElement) {
-    var protoView = pipelineElement.inheritedProtoView;
+  _bindDirectiveProperties(typesWithAnnotations, compileElement) {
+    var protoView = compileElement.inheritedProtoView;
     var directiveIndex = 0;
     ListWrapper.forEach(typesWithAnnotations, (typeWithAnnotation) => {
       var annotation = typeWithAnnotation.annotation;
@@ -105,8 +114,8 @@ export class ElementBinderBuilder extends CompileStep {
         return;
       }
       StringMapWrapper.forEach(annotation.bind, (dirProp, elProp) => {
-        var expression = isPresent(pipelineElement.propertyBindings) ?
-          MapWrapper.get(pipelineElement.propertyBindings, elProp) :
+        var expression = isPresent(compileElement.propertyBindings) ?
+          MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
         if (isBlank(expression)) {
           throw new BaseException('No element binding found for property '+elProp
@@ -114,7 +123,7 @@ export class ElementBinderBuilder extends CompileStep {
         }
         protoView.bindDirectiveProperty(
           directiveIndex++,
-          this._parser.parseBinding(expression),
+          expression.ast,
           dirProp,
           this._closureMap.setter(dirProp)
         );

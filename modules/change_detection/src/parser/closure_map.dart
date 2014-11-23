@@ -1,3 +1,5 @@
+library change_detection.parser.closure_map;
+
 import 'dart:mirrors';
 
 typedef SetterFn(Object obj, value);

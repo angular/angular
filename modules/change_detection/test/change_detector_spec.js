@@ -1,5 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
 
+import {isPresent} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
@@ -7,8 +8,8 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,
-  ProtoWatchGroup,
-  WatchGroup,
+  ProtoRecordRange,
+  RecordRange,
   WatchGroupDispatcher,
   ProtoRecord
 } from 'change_detection/change_detector';
@@ -18,18 +19,18 @@ import {Record} from 'change_detection/record';
 export function main() {
   function ast(exp:string) {
     var parser = new Parser(new Lexer(), new ClosureMap());
-    return parser.parseBinding(exp);
+    return parser.parseBinding(exp).ast;
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
-    var pwg = new ProtoWatchGroup();
-    pwg.watch(ast(exp), memo, false);
+    var prr = new ProtoRecordRange();
+    prr.addRecordsFromAST(ast(exp), memo, false);
 
     var dispatcher = new LoggingDispatcher();
-    var wg = pwg.instantiate(dispatcher, formatters);
-    wg.setContext(context);
+    var rr = prr.instantiate(dispatcher, formatters);
+    rr.setContext(context);
 
-    var cd = new ChangeDetector(wg);
+    var cd = new ChangeDetector(rr);
 
     return {"changeDetector" : cd, "dispatcher" : dispatcher};
   }
@@ -152,13 +153,36 @@ export function main() {
         expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
       });
 
-      it("should support formatters", () => {
-        var formatters = MapWrapper.createFromPairs([
-          ["uppercase", (v) => v.toUpperCase()],
-          ["wrap", (v, before, after) => `${before}${v}${after}`]
-        ]);
-        expect(executeWatch('str', '"aBc" | uppercase', null, formatters)).toEqual(['str=ABC']);
-        expect(executeWatch('str', '"b" | wrap:"a":"c"', null, formatters)).toEqual(['str=abc']);
+      describe("formatters", () => {
+        it("should support formatters", () => {
+          var formatters = MapWrapper.createFromPairs([
+            ['uppercase', (v) => v.toUpperCase()],
+            ['wrap', (v, before, after) => `${before}${v}${after}`]]);
+          expect(executeWatch('str', '"aBc" | uppercase', null, formatters)).toEqual(['str=ABC']);
+          expect(executeWatch('str', '"b" | wrap:"a":"c"', null, formatters)).toEqual(['str=abc']);
+        });
+
+        it("should rerun formatters only when arguments change", () => {
+          var counter = 0;
+          var formatters = MapWrapper.createFromPairs([
+            ['formatter', (_) => {counter += 1; return 'value'}]
+          ]);
+
+          var person = new Person('Jim');
+
+          var c = createChangeDetector('formatter', 'name | formatter', person, formatters);
+          var cd = c['changeDetector'];
+
+          cd.detectChanges();
+          expect(counter).toEqual(1);
+
+          cd.detectChanges();
+          expect(counter).toEqual(1);
+
+          person.name = 'bob';
+          cd.detectChanges();
+          expect(counter).toEqual(2);
+        });
       });
     });
   });

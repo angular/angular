@@ -1,5 +1,6 @@
 import {isPresent, BaseException} from 'facade/lang';
 import {List, MapWrapper} from 'facade/collection';
+import {TemplateElement} from 'facade/dom';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
@@ -12,7 +13,8 @@ import {CompileControl} from './compile_control';
 import {Reflector} from '../reflector';
 
 /**
- * Parses the directives on a single element.
+ * Parses the directives on a single element. Assumes ViewSplitter has already created
+ * <template> elements for template directives.
  *
  * Fills:
  * - CompileElement#decoratorDirectives
@@ -21,6 +23,8 @@ import {Reflector} from '../reflector';
  *
  * Reads:
  * - CompileElement#propertyBindings (to find directives contained
+ *   in the property bindings)
+ * - CompileElement#variableBindings (to find directives contained
  *   in the property bindings)
  */
 export class DirectiveParser extends CompileStep {
@@ -47,17 +51,29 @@ export class DirectiveParser extends CompileStep {
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       cssSelector.addAttribute(attrName, attrValue);
     });
-    // Allow to find directives even though the attribute is bound
     if (isPresent(current.propertyBindings)) {
-      MapWrapper.forEach(current.propertyBindings, (expression, boundProp) => {
-        cssSelector.addAttribute(boundProp, expression);
+      MapWrapper.forEach(current.propertyBindings, (expression, prop) => {
+        cssSelector.addAttribute(prop, expression.source);
       });
     }
+    if (isPresent(current.variableBindings)) {
+      MapWrapper.forEach(current.variableBindings, (value, name) => {
+        cssSelector.addAttribute(name, value);
+      });
+    }
+    // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
+    // only be present on <template> elements any more!
+    var isTemplateElement = current.element instanceof TemplateElement;
     this._selectorMatcher.match(cssSelector, (directive) => {
-      if (isPresent(current.templateDirective) && (directive.annotation instanceof Template)) {
-        throw new BaseException('Only one template directive per element is allowed!');
-      }
-      if (isPresent(current.componentDirective) && (directive.annotation instanceof Component)) {
+      if (directive.annotation instanceof Template) {
+        if (!isTemplateElement) {
+          throw new BaseException('Template directives need to be placed on <template> elements or elements with template attribute!');
+        } else if (isPresent(current.templateDirective)) {
+          throw new BaseException('Only one template directive per element is allowed!');
+        }
+      } else if (isTemplateElement) {
+        throw new BaseException('Only template directives are allowed on <template> elements!');
+      } else if ((directive.annotation instanceof Component) && isPresent(current.componentDirective)) {
         throw new BaseException('Only one component directive per element is allowed!');
       }
       current.addDirective(directive);

@@ -1,22 +1,22 @@
-import {ProtoWatchGroup, WatchGroup} from './watch_group';
+import {ProtoRecordRange, RecordRange} from './record_range';
 import {ProtoRecord, Record} from './record';
-import {FIELD, int} from 'facade/lang';
+import {FIELD, int, isPresent} from 'facade/lang';
+
 export * from './record';
-export * from './watch_group'
+export * from './record_range'
 
 export class ChangeDetector {
 
-  @FIELD('final _rootWatchGroup:WatchGroup')
-  constructor(watchGroup:WatchGroup) {
-    this._rootWatchGroup = watchGroup;
+  @FIELD('final _rootRecordRange:RecordRange')
+  constructor(recordRange:RecordRange) {
+    this._rootRecordRange = recordRange;
   }
 
   detectChanges():int {
-    var record:Record = this._rootWatchGroup.headRecord;
     var count:int = 0;
-    for (record = this._rootWatchGroup.headRecord;
-         record != null;
-         record = record.next) {
+    for (var record = this._rootRecordRange.findFirstEnabledRecord();
+         isPresent(record);
+         record = record.nextEnabled) {
       if (record.check()) {
         count++;
       }

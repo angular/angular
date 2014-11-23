@@ -24,12 +24,12 @@ export function main() {
       compiler = new Compiler(null, new Reflector(), new Parser(new Lexer(), closureMap), closureMap);
     });
 
-    describe('react to watch group changes', function() {
+    describe('react to record changes', function() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
         view = pv.instantiate(ctx, new Injector([]), null);
-        cd = new ChangeDetector(view.watchGroup);
+        cd = new ChangeDetector(view.recordRange);
       }
 
       it('should consume text node changes', (done) => {
@@ -73,10 +73,6 @@ export function main() {
           createView(pv);
 
           cd.detectChanges();
-
-          // TODO(rado): this should be removed once watchgroups addChild is implemented.
-          var childWatchGroup = view.childViews[0].watchGroup;
-          new ChangeDetector(childWatchGroup).detectChanges();
 
           expect(view.nodes[0].shadowRoot.childNodes[0].nodeValue).toEqual('hello');
           done();

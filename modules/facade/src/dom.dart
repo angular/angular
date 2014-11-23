@@ -3,7 +3,7 @@ library angular.core.facade.dom;
 import 'dart:html';
 import 'dart:js' show JsObject;
 
-export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text;
+export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text, document, location;
 
 // TODO(tbosch): Is there a builtin one? Why is Dart
 // removing unknown elements by default?
@@ -16,6 +16,9 @@ final identitySanitizer = new IdentitySanitizer();
 class DOM {
   static query(selector) {
     return document.querySelector(selector);
+  }
+  static Element querySelector(el, String selector) {
+    return el.querySelector(selector);
   }
   static ElementList querySelectorAll(el, String selector) {
     return el.querySelectorAll(selector);
@@ -52,6 +55,10 @@ class DOM {
     t.setInnerHtml(html, treeSanitizer:identitySanitizer);
     return t;
   }
+  static createElement(tagName, [doc=null]) {
+    if (doc == null) doc = document;
+    return doc.createElement(tagName);
+  }
   static clone(Node node) {
     return node.clone(true);
   }
@@ -81,5 +88,11 @@ class DOM {
   }
   static Node templateAwareRoot(Element el) {
     return el is TemplateElement ? el.content : el;
+  }
+  static HtmlDocument createHtmlDocument() {
+    return document.implementation.createHtmlDocument('fakeTitle');
+  }
+  static HtmlDocument defaultDoc() {
+    return document;
   }
 }

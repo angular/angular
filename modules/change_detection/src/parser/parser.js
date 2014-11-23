@@ -19,7 +19,10 @@ import {
   LiteralArray,
   LiteralMap,
   MethodCall,
-  FunctionCall
+  FunctionCall,
+  TemplateBindings,
+  TemplateBinding,
+  ASTWithSource
   } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
@@ -32,14 +35,21 @@ export class Parser {
     this._closureMap = closureMap;
   }
 
-  parseAction(input:string):AST {
+  parseAction(input:string):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, tokens, this._closureMap, true).parseChain();
+    var ast = new _ParseAST(input, tokens, this._closureMap, true).parseChain();
+    return new ASTWithSource(ast, input);
   }
 
-  parseBinding(input:string):AST {
+  parseBinding(input:string):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, tokens, this._closureMap, false).parseChain();
+    var ast = new _ParseAST(input, tokens, this._closureMap, false).parseChain();
+    return new ASTWithSource(ast, input);
+  }
+
+  parseTemplateBindings(input:string):List<TemplateBinding> {
+    var tokens = this._lexer.tokenize(input);
+    return new _ParseAST(input, tokens, this._closureMap, false).parseTemplateBindings();
   }
 }
 
@@ -405,6 +415,29 @@ class _ParseAST {
       ListWrapper.push(positionals, this.parseExpression());
     } while (this.optionalCharacter($COMMA))
     return positionals;
+  }
+
+  parseTemplateBindings() {
+    var bindings = [];
+    while (this.index < this.tokens.length) {
+      var key = this.expectIdentifierOrKeywordOrString();
+      this.optionalCharacter($COLON);
+      var name = null;
+      var expression = null;
+      if (this.optionalOperator("#")) {
+        name = this.expectIdentifierOrKeyword();
+      } else {
+        var start = this.inputIndex;
+        var ast = this.parseExpression();
+        var source = this.input.substring(start, this.inputIndex);
+        expression = new ASTWithSource(ast, source);
+      }
+      ListWrapper.push(bindings, new TemplateBinding(key, name, expression));
+      if (!this.optionalCharacter($SEMICOLON)) {
+        this.optionalCharacter($COMMA);
+      };
+    }
+    return bindings;
   }
 
   error(message:string, index:int = null) {

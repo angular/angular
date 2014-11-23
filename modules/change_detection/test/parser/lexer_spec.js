@@ -237,6 +237,11 @@ export function main() {
         }).toThrowError("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']");
       });
 
+      it('should tokenize hash as operator', function() {
+        var tokens:List<Token> = lex("#");
+        expectOperatorToken(tokens[0], 0, '#');
+      });
+
     });
   });
 }

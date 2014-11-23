@@ -6,7 +6,8 @@ import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
   LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 
-export class ProtoWatchGroup {
+
+export class ProtoRecordRange {
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
   constructor() {
@@ -15,14 +16,14 @@ export class ProtoWatchGroup {
   }
 
   /**
-   * Parses [ast] into [ProtoRecord]s and adds them to [ProtoWatchGroup].
+   * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
    * @param ast The expression to watch
    * @param memento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
    * @param shallow Should collections be shallow watched
    */
-  watch(ast:AST,
+  addRecordsFromAST(ast:AST,
         memento,
         shallow = false)
   {
@@ -45,32 +46,21 @@ export class ProtoWatchGroup {
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
-  instantiate(dispatcher, formatters:Map):WatchGroup {
-    var watchGroup:WatchGroup = new WatchGroup(this, dispatcher);
+  instantiate(dispatcher, formatters:Map):RecordRange {
+    var recordRange:RecordRange = new RecordRange(this, dispatcher);
     if (this.headRecord !== null) {
-      this._createRecords(watchGroup, formatters);
+      this._createRecords(recordRange, formatters);
       this._setDestination();
-
     }
-    return watchGroup;
+    return recordRange;
   }
 
-  _createRecords(watchGroup:WatchGroup, formatters:Map) {
-    var tail, prevRecord;
-    watchGroup.headRecord = tail = new Record(watchGroup, this.headRecord, formatters);
-    this.headRecord.recordInConstruction = watchGroup.headRecord;
-
-    for (var proto = this.headRecord.next; proto != null; proto = proto.next) {
-      prevRecord = tail;
-
-      tail = new Record(watchGroup, proto, formatters);
-      proto.recordInConstruction = tail;
-
-      tail.prev = prevRecord;
-      prevRecord.next = tail;
+  _createRecords(recordRange:RecordRange, formatters:Map) {
+    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+      var record = new Record(recordRange, proto, formatters);
+      proto.recordInConstruction = record;
+      recordRange.addRecord(record);
     }
-
-    watchGroup.tailRecord = tail;
   }
 
   _setDestination() {
@@ -83,35 +73,164 @@ export class ProtoWatchGroup {
   }
 }
 
-export class WatchGroup {
-  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+export class RecordRange {
+  @FIELD('final protoRecordRange:ProtoRecordRange')
   @FIELD('final dispatcher:WatchGroupDispatcher')
   @FIELD('final headRecord:Record')
   @FIELD('final tailRecord:Record')
+  @FIELD('final disabled:boolean')
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
-  constructor(protoWatchGroup:ProtoWatchGroup, dispatcher) {
-    this.protoWatchGroup = protoWatchGroup;
+  constructor(protoRecordRange:ProtoRecordRange, dispatcher) {
+    this.protoRecordRange = protoRecordRange;
     this.dispatcher = dispatcher;
-    this.headRecord = null;
-    this.tailRecord = null;
-    this.context = null;
+
+    this.disabled = false;
+
+    this.headRecord = Record.createMarker(this);
+    this.tailRecord = Record.createMarker(this);
+
+    _glue(this.headRecord, this.tailRecord);
   }
 
-  insertChildGroup(newChild:WatchGroup, insertAfter:WatchGroup) {
-    throw 'not implemented';
+  /// addRecord assumes that the record is newly created, so it is enabled.
+  addRecord(record:Record) {
+    var lastRecord = this.tailRecord.prev;
+
+    _glue(lastRecord, record);
+    _glueEnabled(lastRecord, record);
+    _glue(record, this.tailRecord);
   }
 
-  remove() {
-    throw 'not implemented';
+  addRange(child:RecordRange) {
+    var lastRecord = this.tailRecord.prev;
+    var lastEnabledRecord = this.findLastEnabledRecord();
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+
+    _glue(lastRecord, child.headRecord);
+    _glue(child.tailRecord, this.tailRecord);
+
+    if (isPresent(lastEnabledRecord) && isPresent(firstEnabledChildRecord)) {
+      _glueEnabled(lastEnabledRecord, firstEnabledChildRecord);
+    }
+  }
+
+  removeRange(child:RecordRange) {
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    var next = child.tailRecord.next;
+    var prev = child.headRecord.prev;
+
+    _glue(prev, next);
+
+    var nextEnabled = lastEnabledChildRecord.nextEnabled;
+    var prevEnabled = firstEnabledChildRecord.prevEnabled;
+
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+  }
+
+  findFirstEnabledRecord() {
+    return this._nextEnabledInCurrentRange(this.headRecord);
+  }
+
+  findLastEnabledRecord() {
+    return this._prevEnabledInCurrentRange(this.tailRecord);
+  }
+
+  disableRecord(record:Record) {
+    var prevEnabled = record.prevEnabled;
+    var nextEnabled = record.nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+
+    record.disabled = true;
+  }
+
+  enableRecord(record:Record) {
+    if (!record.disabled) return;
+
+    var prevEnabled = this._prevEnabledInCurrentRange(record);
+    var nextEnabled = this._nextEnabledInCurrentRange(record);
+
+    record.prevEnabled = prevEnabled;
+    record.nextEnabled = nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = record;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = record;
+
+    record.disabled = false;
+  }
+
+  disableRange(child:RecordRange) {
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    var nextEnabled = lastEnabledChildRecord.nextEnabled;
+    var prevEnabled = firstEnabledChildRecord.prevEnabled;
+
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+
+    child.disabled = true;
+  }
+
+  enableRange(child:RecordRange) {
+    var prevEnabledRecord = this._prevEnabledInCurrentRange(child.headRecord);
+    var nextEnabledRecord = this._nextEnabledInCurrentRange(child.tailRecord);
+
+    var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
+
+    if (isPresent(firstEnabledChildRecord) && isPresent(prevEnabledRecord)){
+      _glueEnabled(prevEnabledRecord, firstEnabledChildRecord);
+    }
+
+    if (isPresent(lastEnabledChildRecord) && isPresent(nextEnabledRecord)){
+      _glueEnabled(lastEnabledChildRecord, nextEnabledRecord);
+    }
+
+    child.disabled = false;
+  }
+
+  /// Returns the next enabled record in the current range. If no such record, returns null.
+  _nextEnabledInCurrentRange(record:Record) {
+    if (record === this.tailRecord) return null;
+
+    record = record.next;
+    while (isPresent(record) && record !== this.tailRecord && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.tailRecord.next;
+      } else {
+        record = record.next;
+      }
+    }
+    return record === this.tailRecord ? null : record;
+  }
+
+  /// Returns the prev enabled record in the current range. If no such record, returns null.
+  _prevEnabledInCurrentRange(record:Record) {
+    if (record === this.headRecord) return null;
+
+    record = record.prev;
+    while (isPresent(record) && record !== this.headRecord && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.headRecord.prev;
+      } else {
+        record = record.prev;
+      }
+    }
+    return record === this.headRecord ? null : record;
   }
 
   /**
    * Sets the context (the object) on which the change detection expressions will
-   * dereference themselves on. Since the WatchGroup can be reused the context
-   * can be re-set many times during the lifetime of the WatchGroup.
+   * dereference themselves on. Since the RecordRange can be reused the context
+   * can be re-set many times during the lifetime of the RecordRange.
    *
-   * @param context the new context for change detection for the current WatchGroup
+   * @param context the new context for change detection for the current RecordRange
    */
   setContext(context) {
     for (var record:Record = this.headRecord;
@@ -121,6 +240,16 @@ export class WatchGroup {
       record.updateContext(context);
     }
   }
+}
+
+function _glue(a:Record, b:Record) {
+  a.next = b;
+  b.prev = a;
+}
+
+function _glueEnabled(a:Record, b:Record) {
+  a.nextEnabled = b;
+  b.prevEnabled = a;
 }
 
 export class WatchGroupDispatcher {
@@ -139,11 +268,11 @@ class Destination {
 
 @IMPLEMENTS(AstVisitor)
 class ProtoRecordCreator {
-  @FIELD('final protoWatchGroup:ProtoWatchGroup')
+  @FIELD('final protoRecordRange:ProtoRecordRange')
   @FIELD('headRecord:ProtoRecord')
   @FIELD('tailRecord:ProtoRecord')
-  constructor(protoWatchGroup) {
-    this.protoWatchGroup = protoWatchGroup;
+  constructor(protoRecordRange) {
+    this.protoRecordRange = protoRecordRange;
     this.headRecord = null;
     this.tailRecord = null;
   }
@@ -233,12 +362,14 @@ class ProtoRecordCreator {
 
   visitAssignment(ast:Assignment, dest) {this.unsupported();}
 
+  visitTemplateBindings(ast, dest) {this.unsupported();}
+
   createRecordsFromAST(ast:AST, memento){
     ast.visit(this, memento);
   }
 
   construct(recordType, funcOrValue, arity, dest) {
-    return new ProtoRecord(this.protoWatchGroup, recordType, funcOrValue, arity, dest);
+    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, dest);
   }
 
   add(protoRecord:ProtoRecord) {

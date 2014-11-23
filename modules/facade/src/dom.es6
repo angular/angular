@@ -4,11 +4,17 @@ export var NodeList = window.NodeList;
 export var Text = window.Text;
 export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
+export var document = window.document;
+export var location = window.location;
+
 import {List, MapWrapper} from 'facade/collection';
 
 export class DOM {
   static query(selector) {
     return document.querySelector(selector);
+  }
+  static querySelector(el, selector:string):Node {
+    return el.querySelector(selector);
   }
   static querySelectorAll(el, selector:string):NodeList {
     return el.querySelectorAll(selector);
@@ -45,6 +51,9 @@ export class DOM {
     t.innerHTML = html;
     return t;
   }
+  static createElement(tagName, doc=document) {
+    return doc.createElement(tagName);
+  }
   static clone(node:Node) {
     return node.cloneNode(true);
   }
@@ -80,5 +89,11 @@ export class DOM {
   }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;
+  }
+  static createHtmlDocument() {
+    return document.implementation.createHTMLDocument();
+  }
+  static defaultDoc() {
+    return document;
   }
 }
