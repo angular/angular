@@ -100,28 +100,37 @@ export class RecordRange {
     this.headRecord = Record.createMarker(this);
     this.tailRecord = Record.createMarker(this);
 
-    _glue(this.headRecord, this.tailRecord);
+    _link(this.headRecord, this.tailRecord);
   }
 
   /// addRecord assumes that the record is newly created, so it is enabled.
   addRecord(record:Record) {
     var lastRecord = this.tailRecord.prev;
 
-    _glue(lastRecord, record);
-    _glueEnabled(lastRecord, record);
-    _glue(record, this.tailRecord);
+    _link(lastRecord, record);
+    if (!lastRecord.disabled) {
+      _linkEnabled(lastRecord, record);
+    }
+    _link(record, this.tailRecord);
   }
 
   addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
-    var lastEnabledRecord = this.findLastEnabledRecord();
+    var prevEnabledRecord = this._prevEnabled(this.tailRecord);
+    var nextEnabledRerord = this._nextEnabled(this.tailRecord);
+
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
+    var lastEnabledChildRecord = child.findLastEnabledRecord();
 
-    _glue(lastRecord, child.headRecord);
-    _glue(child.tailRecord, this.tailRecord);
+    _link(lastRecord, child.headRecord);
+    _link(child.tailRecord, this.tailRecord);
 
-    if (isPresent(lastEnabledRecord) && isPresent(firstEnabledChildRecord)) {
-      _glueEnabled(lastEnabledRecord, firstEnabledChildRecord);
+    if (isPresent(prevEnabledRecord) && isPresent(firstEnabledChildRecord)) {
+      _linkEnabled(prevEnabledRecord, firstEnabledChildRecord);
+    }
+
+    if (isPresent(nextEnabledRerord) && isPresent(lastEnabledChildRecord)) {
+      _linkEnabled(lastEnabledChildRecord, nextEnabledRerord);
     }
   }
 
@@ -132,21 +141,14 @@ export class RecordRange {
     var next = child.tailRecord.next;
     var prev = child.headRecord.prev;
 
-    _glue(prev, next);
+    _link(prev, next);
 
-    var nextEnabled = lastEnabledChildRecord.nextEnabled;
-    var prevEnabled = firstEnabledChildRecord.prevEnabled;
-
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
-  }
-
-  findFirstEnabledRecord() {
-    return this._nextEnabledInCurrentRange(this.headRecord);
-  }
-
-  findLastEnabledRecord() {
-    return this._prevEnabledInCurrentRange(this.tailRecord);
+    if (isPresent(firstEnabledChildRecord)) {
+      var nextEnabled = lastEnabledChildRecord.nextEnabled;
+      var prevEnabled = firstEnabledChildRecord.prevEnabled;
+      if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+      if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    }
   }
 
   disableRecord(record:Record) {
@@ -162,8 +164,8 @@ export class RecordRange {
   enableRecord(record:Record) {
     if (!record.disabled) return;
 
-    var prevEnabled = this._prevEnabledInCurrentRange(record);
-    var nextEnabled = this._nextEnabledInCurrentRange(record);
+    var prevEnabled = this._prevEnabled(record);
+    var nextEnabled = this._nextEnabled(record);
 
     record.prevEnabled = prevEnabled;
     record.nextEnabled = nextEnabled;
@@ -188,29 +190,38 @@ export class RecordRange {
   }
 
   enableRange(child:RecordRange) {
-    var prevEnabledRecord = this._prevEnabledInCurrentRange(child.headRecord);
-    var nextEnabledRecord = this._nextEnabledInCurrentRange(child.tailRecord);
+    var prevEnabledRecord = this._prevEnabled(child.headRecord);
+    var nextEnabledRecord = this._nextEnabled(child.tailRecord);
 
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
 
     if (isPresent(firstEnabledChildRecord) && isPresent(prevEnabledRecord)){
-      _glueEnabled(prevEnabledRecord, firstEnabledChildRecord);
+      _linkEnabled(prevEnabledRecord, firstEnabledChildRecord);
     }
 
     if (isPresent(lastEnabledChildRecord) && isPresent(nextEnabledRecord)){
-      _glueEnabled(lastEnabledChildRecord, nextEnabledRecord);
+      _linkEnabled(lastEnabledChildRecord, nextEnabledRecord);
     }
 
     child.disabled = false;
   }
 
-  /// Returns the next enabled record in the current range. If no such record, returns null.
-  _nextEnabledInCurrentRange(record:Record) {
-    if (record === this.tailRecord) return null;
-
-    record = record.next;
-    while (isPresent(record) && record !== this.tailRecord && record.disabled) {
+  /**
+   * Returns the first enabled record in the current range.
+   *
+   * [H ER1 ER2 R3 T] returns ER1
+   * [H R1 ER2 R3 T] returns ER2
+   *
+   * If no enabled records, returns null.
+   *
+   * [H R1 R2 R3 T] returns null
+   *
+   * The function skips disabled sub ranges.
+   */
+  findFirstEnabledRecord() {
+    var record = this.headRecord.next;
+    while (record !== this.tailRecord && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {
         record = record.recordRange.tailRecord.next;
       } else {
@@ -220,12 +231,21 @@ export class RecordRange {
     return record === this.tailRecord ? null : record;
   }
 
-  /// Returns the prev enabled record in the current range. If no such record, returns null.
-  _prevEnabledInCurrentRange(record:Record) {
-    if (record === this.headRecord) return null;
-
-    record = record.prev;
-    while (isPresent(record) && record !== this.headRecord && record.disabled) {
+  /**
+   * Returns the last enabled record in the current range.
+   *
+   * [H ER1 ER2 R3 T] returns ER2
+   * [H R1 ER2 R3 T] returns ER2
+   *
+   * If no enabled records, returns null.
+   *
+   * [H R1 R2 R3 T] returns null
+   *
+   * The function skips disabled sub ranges.
+   */
+  findLastEnabledRecord() {
+    var record = this.tailRecord.prev;
+    while (record !== this.headRecord && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {
         record = record.recordRange.headRecord.prev;
       } else {
@@ -233,6 +253,44 @@ export class RecordRange {
       }
     }
     return record === this.headRecord ? null : record;
+  }
+
+  /**
+   * Returns the next enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
+   *
+   * The function skips disabled sub ranges.
+   */
+  _nextEnabled(record:Record) {
+    record = record.next;
+    while (isPresent(record) && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.tailRecord.next;
+      } else {
+        record = record.next;
+      }
+    }
+    return record;
+  }
+
+  /**
+   * Returns the prev enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
+   *
+   * The function skips disabled sub ranges.
+   */
+  _prevEnabled(record:Record) {
+    record = record.prev;
+    while (isPresent(record) && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.headRecord.prev;
+      } else {
+        record = record.prev;
+      }
+    }
+    return record;
   }
 
   /**
@@ -253,12 +311,12 @@ export class RecordRange {
   }
 }
 
-function _glue(a:Record, b:Record) {
+function _link(a:Record, b:Record) {
   a.next = b;
   b.prev = a;
 }
 
-function _glueEnabled(a:Record, b:Record) {
+function _linkEnabled(a:Record, b:Record) {
   a.nextEnabled = b;
   b.prevEnabled = a;
 }
