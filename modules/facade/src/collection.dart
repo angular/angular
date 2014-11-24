@@ -51,7 +51,7 @@ class ListWrapper {
   static filter(List list, fn) => list.where(fn).toList();
   static find(List list, fn) => list.firstWhere(fn, orElse:() => null);
   static any(List list, fn) => list.any(fn);
-  static forEach(list, fn) {
+  static forEach(list, Function fn) {
     list.forEach(fn);
   }
   static reduce(List list, Function fn, init) {
@@ -66,6 +66,15 @@ class ListWrapper {
   static void insert(List l, int index, value) { l.insert(index, value); }
   static void removeAt(List l, int index) { l.removeAt(index); }
   static void clear(List l) { l.clear(); }
+}
+
+bool isListLikeIterable(obj) => obj is Iterable;
+
+void iterateListLike(iter, Function fn) {
+  assert(iter is Iterable);
+  for (var item in iter) {
+    fn (item);
+  }
 }
 
 class SetWrapper {

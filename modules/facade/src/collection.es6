@@ -1,4 +1,4 @@
-import {int} from 'facade/lang';
+import {int, isJsObject} from 'facade/lang';
 
 export var List = window.Array;
 export var Map = window.Map;
@@ -25,12 +25,17 @@ export class MapWrapper {
   static clear(m) { m.clear(); }
 }
 
-// TODO: cannot export StringMap as a type as Dart does not support
-// renaming types...
+// TODO: cannot export StringMap as a type as Dart does not support renaming types...
+/**
+ * Wraps Javascript Objects
+ */
 export class StringMapWrapper {
-  // Note: We are not using Object.create(null) here due to
-  // performance!
-  static create():Object { return { }; }
+  static create():Object {
+    // Note: We are not using Object.create(null) here due to
+    // performance!
+    // http://jsperf.com/ng2-object-create-null
+    return { };
+  }
   static get(map, key) {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
@@ -45,7 +50,9 @@ export class StringMapWrapper {
   }
   static forEach(map, callback) {
     for (var prop in map) {
-      callback(map[prop], prop);
+      if (map.hasOwnProperty(prop)) {
+        callback(map[prop], prop);
+      }
     }
   }
 }
@@ -114,6 +121,19 @@ export class ListWrapper {
   }
   static clear(list) {
     list.splice(0, list.length);
+  }
+}
+
+export function isListLikeIterable(obj):boolean {
+  if (!isJsObject(obj)) return false;
+  return ListWrapper.isList(obj) ||
+         (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
+         Symbol.iterator in obj);   // JS Iterable have a Symbol.iterator prop
+}
+
+export function iterateListLike(obj, fn:Function) {
+  for (var item of obj) {
+    fn(item);
   }
 }
 

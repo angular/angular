@@ -1,4 +1,6 @@
 import {
+  isListLikeIterable,
+  iterateListLike,
   ListWrapper,
   MapWrapper
 } from 'facade/collection';
@@ -12,20 +14,21 @@ import {
   looseIdentical,
 } from 'facade/lang';
 
-export class CollectionChanges {
+export class ArrayChanges {
   _collection;
   _length:int;
   _linkedRecords:_DuplicateMap;
   _unlinkedRecords:_DuplicateMap;
-  _previousItHead:CollectionChangeRecord<V> ;
+  _previousItHead:CollectionChangeRecord<V>;
   _itHead:CollectionChangeRecord<V>;
-  _itTail:CollectionChangeRecord<V> ;
+  _itTail:CollectionChangeRecord<V>;
   _additionsHead:CollectionChangeRecord<V>;
-  _additionsTail:CollectionChangeRecord<V> ;
+  _additionsTail:CollectionChangeRecord<V>;
   _movesHead:CollectionChangeRecord<V>;
   _movesTail:CollectionChangeRecord<V> ;
   _removalsHead:CollectionChangeRecord<V>;
-  _removalsTail:CollectionChangeRecord<V> ;
+  _removalsTail:CollectionChangeRecord<V>;
+
   constructor() {
     this._collection = null;
     this._length = null;
@@ -43,6 +46,10 @@ export class CollectionChanges {
     this._movesTail = null;
     this._removalsHead = null;
     this._removalsTail = null;
+  }
+
+  static supports(obj):boolean {
+    return isListLikeIterable(obj);
   }
 
   get collection() {
@@ -112,8 +119,19 @@ export class CollectionChanges {
         record = record._next;
       }
     } else {
-      // todo(vicb) implement iterators
-      throw "NYI";
+      index = 0;
+      iterateListLike(collection, (item) => {
+        if (record === null || !looseIdentical(record.item, item)) {
+          record = this._mismatch(record, item, index);
+          mayBeDirty = true;
+        } else if (mayBeDirty) {
+          // TODO(misko): can we limit this to duplicates only?
+          record = this._verifyReinsertion(record, item, index);
+        }
+        record = record._next;
+        index++
+      });
+      this._length = index;
     }
 
     this._truncate(record);
