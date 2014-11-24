@@ -5,12 +5,21 @@ import {ClosureMap} from 'change_detection/parser/closure_map';
 
 var _fresh = new Object();
 
-export const PROTO_RECORD_CONST = 'const';
-export const PROTO_RECORD_PURE_FUNCTION = 'func';
-export const PROTO_RECORD_CLOSURE = 'closure';
-export const PROTO_RECORD_FORMATTTER = 'formatter';
-export const PROTO_RECORD_METHOD = 'method';
-export const PROTO_RECORD_PROPERTY = 'property';
+const RECORD_TYPE_MASK = 0x000f;
+export const RECORD_TYPE_CONST = 0x0000;
+export const RECORD_TYPE_INVOKE_CLOSURE = 0x0001;
+export const RECORD_TYPE_INVOKE_FORMATTER = 0x0002;
+export const RECORD_TYPE_INVOKE_METHOD = 0x0003;
+export const RECORD_TYPE_INVOKE_PURE_FUNCTION = 0x0004;
+export const RECORD_TYPE_LIST = 0x0005;
+export const RECORD_TYPE_MAP = 0x0006;
+export const RECORD_TYPE_MARKER = 0x0007;
+export const RECORD_TYPE_PROPERTY = 0x0008;
+
+const RECORD_FLAG_DISABLED = 0x0100;
+export const RECORD_FLAG_IMPLICIT_RECEIVER = 0x0200;
+
+
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -27,20 +36,20 @@ export class ProtoRecord {
   @FIELD('prev:ProtoRecord')
   @FIELD('recordInConstruction:Record')
   constructor(recordRange:ProtoRecordRange,
-              recordType:string,
+              mode:int,
               funcOrValue,
               arity:int,
               dest) {
 
     this.recordRange = recordRange;
-    this.recordType = recordType;
+    this.mode = mode;
     this.funcOrValue = funcOrValue;
     this.arity = arity;
     this.dest = dest;
 
     this.next = null;
     this.prev = null;
-
+    // The concrete Record instantiated from this ProtoRecord
     this.recordInConstruction = null;
   }
 }
@@ -94,56 +103,65 @@ export class Record {
     this.prev = null;
     this.nextEnabled = null;
     this.prevEnabled = null;
-    this.disabled = false;
     this.dest = null;
 
     this.previousValue = null;
     this.currentValue = _fresh;
 
-    this.mode = null;
     this.context = null;
     this.funcOrValue = null;
     this.args = null;
 
     if (isBlank(protoRecord)) {
-      this.mode = MODE_STATE_MARKER;
+      this._mode = RECORD_TYPE_MARKER | RECORD_FLAG_DISABLED;
       return;
     }
 
-    var type = protoRecord.recordType;
-    if (type === PROTO_RECORD_CONST) {
-      this.mode = MODE_STATE_CONST;
+    this._mode = protoRecord.mode;
+
+    var type = this.type;
+
+    if (type === RECORD_TYPE_CONST) {
       this.funcOrValue = protoRecord.funcOrValue;
 
-    } else if (type === PROTO_RECORD_PURE_FUNCTION) {
-      this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
+    } else if (type === RECORD_TYPE_INVOKE_PURE_FUNCTION) {
       this.funcOrValue = protoRecord.funcOrValue;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (type === PROTO_RECORD_FORMATTTER) {
-      this.mode = MODE_STATE_INVOKE_PURE_FUNCTION;
+    } else if (type === RECORD_TYPE_INVOKE_FORMATTER) {
       this.funcOrValue = MapWrapper.get(formatters, protoRecord.funcOrValue);
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (type === PROTO_RECORD_METHOD) {
-      this.mode = MODE_STATE_INVOKE_METHOD;
+    } else if (type === RECORD_TYPE_INVOKE_METHOD) {
       this.funcOrValue = protoRecord.funcOrValue;
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (type === PROTO_RECORD_CLOSURE) {
-      this.mode = MODE_STATE_INVOKE_CLOSURE;
+    } else if (type === RECORD_TYPE_INVOKE_CLOSURE) {
       this.args = ListWrapper.createFixedSize(protoRecord.arity);
 
-    } else if (type === PROTO_RECORD_PROPERTY) {
-      this.mode = MODE_STATE_PROPERTY;
+    } else if (type === RECORD_TYPE_PROPERTY) {
       this.funcOrValue = protoRecord.funcOrValue;
     }
   }
 
+  get type() {
+    return this._mode & RECORD_TYPE_MASK;
+  }
+
+  get disabled() {
+    return (this._mode & RECORD_FLAG_DISABLED) === RECORD_FLAG_DISABLED;
+  }
+
+  set disabled(value) {
+    if (value) {
+      this._mode |= RECORD_FLAG_DISABLED;
+    } else {
+      this._mode &= ~RECORD_FLAG_DISABLED;
+    }
+  }
+
   static createMarker(rr:RecordRange) {
-    var r = new Record(rr, null, null);
-    r.disabled = true;
-    return r;
+    return new Record(rr, null, null);
   }
 
   check():boolean {
@@ -171,36 +189,37 @@ export class Record {
   }
 
   _calculateNewValue() {
-    var state = this.mode;
-    switch (state) {
-      case MODE_STATE_PROPERTY:
+    var type = this.type;
+    switch (type) {
+      case RECORD_TYPE_PROPERTY:
         return this.funcOrValue(this.context);
 
-      case MODE_STATE_INVOKE_METHOD:
+      case RECORD_TYPE_INVOKE_METHOD:
         return this.funcOrValue(this.context, this.args);
 
-      case MODE_STATE_INVOKE_CLOSURE:
+      case RECORD_TYPE_INVOKE_CLOSURE:
         return FunctionWrapper.apply(this.context, this.args);
 
-      case MODE_STATE_INVOKE_PURE_FUNCTION:
+      case RECORD_TYPE_INVOKE_PURE_FUNCTION:
+      case RECORD_TYPE_INVOKE_FORMATTER:
         this.recordRange.disableRecord(this);
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
-      case MODE_STATE_CONST:
+      case RECORD_TYPE_CONST:
         this.recordRange.disableRecord(this);
         return this.funcOrValue;
 
-      case MODE_STATE_MARKER:
-        throw new BaseException('MODE_STATE_MARKER not implemented');
+      case RECORD_TYPE_MARKER:
+        throw new BaseException('Marker not implemented');
 
-      case MODE_STATE_MAP:
-        throw new BaseException('MODE_STATE_MAP not implemented');
+      case RECORD_TYPE_MAP:
+        throw new BaseException('Map not implemented');
 
-      case MODE_STATE_LIST:
-        throw new BaseException('MODE_STATE_LIST not implemented');
+      case RECORD_TYPE_LIST:
+        throw new BaseException('List not implemented');
 
       default:
-        throw new BaseException('DEFAULT not implemented');
+        throw new BaseException(`Unsupported record type ($type)`);
     }
   }
 
@@ -217,34 +236,9 @@ export class Record {
   }
 
   get isMarkerRecord() {
-    return this.mode == MODE_STATE_MARKER;
+    return this.type == RECORD_TYPE_MARKER;
   }
 }
-
-// The mode is divided into two parts. Which notification mechanism
-// to use and which dereference mode to execute.
-
-// We use dirty checking aka no notification
-const MODE_MASK_NOTIFY = 0xFF00;
-// Encodes the state of dereference
-const MODE_MASK_STATE = 0x00FF;
-
-const MODE_PLUGIN_DIRTY_CHECK = 0x0000;
-const MODE_STATE_MARKER = 0x0000;
-
-/// _context[_protoRecord.propname] => _getter(_context)
-const MODE_STATE_PROPERTY = 0x0001;
-const MODE_STATE_INVOKE_PURE_FUNCTION = 0x0002;
-const MODE_STATE_INVOKE_METHOD = 0x0003;
-const MODE_STATE_INVOKE_CLOSURE = 0x0004;
-
-/// _context is Map => _previousValue is MapChangeRecord
-const MODE_STATE_MAP = 0x0005;
-/// _context is Array/List/Iterable => _previousValue = ListChangeRecord
-const MODE_STATE_LIST = 0x0006;
-
-/// _context is number/string
-const MODE_STATE_CONST = 0x0007;
 
 function isSame(a, b) {
   if (a === b) return true;
