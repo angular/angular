@@ -106,6 +106,7 @@ export function main() {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }
@@ -115,6 +116,7 @@ class MockStep extends CompileStep {
 }
 
 class LoggingStep extends CompileStep {
+  logs:List;
   constructor(logs) {
     this.logs = logs;
   }

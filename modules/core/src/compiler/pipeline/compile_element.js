@@ -5,6 +5,9 @@ import {AnnotatedType} from '../annotated_type';
 import {Decorator} from '../../annotations/decorator';
 import {Component} from '../../annotations/component';
 import {Template} from '../../annotations/template';
+import {ElementBinder} from '../element_binder';
+import {ProtoElementInjector} from '../element_injector';
+import {ProtoView} from '../view';
 
 import {ASTWithSource} from 'change_detection/parser/ast';
 
@@ -14,6 +17,21 @@ import {ASTWithSource} from 'change_detection/parser/ast';
  * by the CompileSteps starting out with the pure HTMLElement.
  */
 export class CompileElement {
+  element:Element;
+  _attrs:Map;
+  _classList:List;
+  textNodeBindings:Map;
+  propertyBindings:Map;
+  eventBindings:Map;
+  variableBindings:Map;
+  decoratorDirectives:List<AnnotatedType>;
+  templateDirective:AnnotatedType;
+  componentDirective:AnnotatedType;
+  isViewRoot:bool;
+  hasBindings:bool;
+  inheritedProtoView:ProtoView;
+  inheritedProtoElementInjector:ProtoElementInjector;
+  inheritedElementBinder:ElementBinder;
   constructor(element:Element) {
     this.element = element;
     this._attrs = null;

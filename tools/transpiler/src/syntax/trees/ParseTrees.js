@@ -4,36 +4,6 @@ import {PropertyMethodAssignment} from 'traceur/src/syntax/trees/ParseTrees';
 
 import * as ParseTreeType from './ParseTreeType';
 
-// Class field declaration
-export class ClassFieldDeclaration extends ParseTree {
-  constructor(location, lvalue, typeAnnotation, isFinal) {
-    this.location = location;
-    this.lvalue = lvalue;
-    this.typeAnnotation = typeAnnotation;
-    this.isFinal = isFinal;
-  }
-
-  get type() {
-    return CLASS_FIELD_DECLARATION;
-  }
-
-  visit(visitor) {
-    if (visitor.visitClassFieldDeclaration) {
-      visitor.visitClassFieldDeclaration(this);
-    }
-  }
-
-  transform(transformer) {
-    if (transformer.transformClassFieldDeclaration) {
-      return transformer.transformClassFieldDeclaration(this);
-    }
-
-    return this;
-  }
-}
-
-var CLASS_FIELD_DECLARATION = ParseTreeType.CLASS_FIELD_DECLARATION;
-
 // Class constructor
 export class PropertyConstructorAssignment extends PropertyMethodAssignment {
   /**

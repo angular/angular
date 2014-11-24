@@ -189,6 +189,8 @@ export function main() {
 }
 
 class Person {
+  name:string;
+  address:Address;
   constructor(name:string, address:Address = null) {
     this.name = name;
     this.address = address;
@@ -206,6 +208,7 @@ class Person {
 }
 
 class Address {
+  city:string;
   constructor(city:string) {
     this.city = city;
   }
@@ -216,12 +219,15 @@ class Address {
 }
 
 class TestData {
+  a;
   constructor(a) {
     this.a = a;
   }
 }
 
 class LoggingDispatcher extends WatchGroupDispatcher {
+  log:List;
+  loggedValues:List;
   constructor() {
     this.log = null;
     this.loggedValues = null;

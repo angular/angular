@@ -21,6 +21,10 @@ import {Component} from '../annotations/component';
  * the CompilePipeline and the CompileSteps.
  */
 export class Compiler {
+  _templateLoader:TemplateLoader;
+  _reflector: Reflector;
+  _parser:Parser;
+  _closureMap:ClosureMap;
   constructor(templateLoader:TemplateLoader, reflector: Reflector, parser:Parser, closureMap:ClosureMap) {
     this._templateLoader = templateLoader;
     this._reflector = reflector;

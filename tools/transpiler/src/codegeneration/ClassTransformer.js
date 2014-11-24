@@ -25,7 +25,6 @@ import {
 } from 'traceur/src/syntax/trees/ParseTrees';
 
 import {
-  ClassFieldDeclaration,
   PropertyConstructorAssignment
 } from '../syntax/trees/ParseTrees';
 
@@ -72,30 +71,6 @@ export class ClassTransformer extends ParseTreeTransformer {
 
         // Rename "constructor" to the class name.
         elementTree.name.literalToken.value = className;
-
-        // Collect all fields, defined in the constructor.
-        elementTree.body.statements.forEach(function(statement) {
-          var exp = statement.expression;
-          if (exp &&
-              exp.type === BINARY_EXPRESSION &&
-              exp.operator.type === EQUAL &&
-              exp.left.type === MEMBER_EXPRESSION &&
-              exp.left.operand.type === THIS_EXPRESSION) {
-
-            var typeAnnotation;
-
-            if (exp.right.type === IDENTIFIER_EXPRESSION) {
-              // `this.field = variable;`
-              // we can infer the type of the field from the variable when it is a typed arg
-              var varName = exp.right.getStringValue();
-              typeAnnotation = argumentTypesMap[varName] || null;
-            }
-
-            var fieldName = exp.left.memberName.value;
-            var lvalue = new BindingIdentifier(tree.location, fieldName);
-            fields.push(new ClassFieldDeclaration(tree.location, lvalue, typeAnnotation, isConst));
-          }
-        });
 
         // Compute the initializer list
         var initializerList = [];
@@ -149,6 +124,11 @@ export class ClassTransformer extends ParseTreeTransformer {
 
     // Add the field definitions to the beginning of the class.
     tree.elements = fields.concat(tree.elements);
+    if (isConst) {
+      tree.elements.forEach(function(element) {
+        element.isFinal = true;
+      });
+    }
 
     return super.transformClassDeclaration(tree);
   }

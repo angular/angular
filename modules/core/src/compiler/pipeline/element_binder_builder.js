@@ -44,6 +44,7 @@ import {CompileControl} from './compile_control';
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
+  _closureMap:ClosureMap;
   constructor(closureMap:ClosureMap) {
     this._closureMap = closureMap;
   }

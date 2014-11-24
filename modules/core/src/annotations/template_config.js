@@ -2,6 +2,11 @@ import {ABSTRACT, CONST} from 'facade/lang';
 // import {Type, List} from 'facade/lang';
 
 export class TemplateConfig {
+  url: string;
+  inline: string;
+  directives: List<Type>;
+  formatters: List<Type>;
+  source: List<TemplateConfig>;
   @CONST()
   constructor({
       url,
@@ -10,8 +15,8 @@ export class TemplateConfig {
       formatters,
       source
     }: {
-      url: String,
-      inline: String,
+      url: string,
+      inline: string,
       directives: List<Type>,
       formatters: List<Type>,
       source: List<TemplateConfig>

@@ -64,6 +64,7 @@ function loadTemplate(templateId, repeatCount) {
 
 // Caching reflector as reflection in Dart using Mirrors
 class CachingReflector extends Reflector {
+  _cache: Map;
   constructor() {
     this._cache = MapWrapper.create();
   }

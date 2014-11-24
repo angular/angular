@@ -101,6 +101,7 @@ function assertBinding(pipelineElement, shouldBePresent) {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

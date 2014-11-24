@@ -2,6 +2,7 @@ import {describe, it, iit, ddescribe, expect} from 'test_lib/test_lib';
 import {MapWrapper} from 'facade/collection';
 
 class TestObj {
+  prop;
   constructor(prop) {
     this.prop = prop;
   }

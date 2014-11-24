@@ -107,6 +107,7 @@ export function main() {
 
 
 class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
+  debugObjects:List;
   constructor() {
     this.debugObjects = [];
   }
@@ -127,6 +128,7 @@ class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

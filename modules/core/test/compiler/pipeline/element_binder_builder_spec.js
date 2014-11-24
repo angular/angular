@@ -265,6 +265,7 @@ class SomeDecoratorDirective {
   bind: {'boundprop1': 'decorProp'}
 })
 class SomeDecoratorDirectiveWithBinding {
+  decorProp;
   constructor() {
     this.decorProp = null;
   }
@@ -278,6 +279,7 @@ class SomeTemplateDirective {
   bind: {'boundprop2': 'templProp'}
 })
 class SomeTemplateDirectiveWithBinding {
+  templProp;
   constructor() {
     this.templProp = null;
   }
@@ -291,12 +293,16 @@ class SomeComponentDirective {
   bind: {'boundprop3': 'compProp'}
 })
 class SomeComponentDirectiveWithBinding {
+  compProp;
   constructor() {
     this.compProp = null;
   }
 }
 
 class Context {
+  prop1;
+  prop2;
+  prop3;
   constructor() {
     this.prop1 = null;
     this.prop2 = null;
@@ -305,6 +311,7 @@ class Context {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

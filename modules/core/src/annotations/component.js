@@ -1,7 +1,12 @@
 import {Directive} from './directive';
 import {CONST} from 'facade/lang';
+import {TemplateConfig} from './template_config';
 
 export class Component extends Directive {
+  template:TemplateConfig;
+  lightDomServices:List;
+  shadowDomServices:List;
+  componentServices:List;
   @CONST()
   constructor({
       selector,

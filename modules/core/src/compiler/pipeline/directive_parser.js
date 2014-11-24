@@ -28,6 +28,7 @@ import {Reflector} from '../reflector';
  *   in the property bindings)
  */
 export class DirectiveParser extends CompileStep {
+  _selectorMatcher:SelectorMatcher;
   constructor(directives:List<AnnotatedType>) {
     this._selectorMatcher = new SelectorMatcher();
     for (var i=0; i<directives.length; i++) {

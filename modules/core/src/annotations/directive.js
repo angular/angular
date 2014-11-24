@@ -4,6 +4,10 @@ import {List} from 'facade/collection';
 
 @ABSTRACT()
 export class Directive {
+  selector: string;
+  bind: Object;
+  lightDomServices: List;
+  implementsTypes: List;
   @CONST()
   constructor({
       selector,
