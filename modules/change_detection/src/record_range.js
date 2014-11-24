@@ -1,6 +1,7 @@
 import {
   ProtoRecord,
   Record,
+  RECORD_FLAG_IMPLICIT_RECEIVER,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_INVOKE_FORMATTER,
@@ -245,8 +246,9 @@ export class RecordRange {
     for (var record:Record = this.headRecord;
          record != null;
          record = record.next) {
-
-      record.updateContext(context);
+      if (record.isImplicitReceiver) {
+        record.updateContext(context);
+      }
     }
   }
 }
@@ -287,7 +289,7 @@ class ProtoRecordCreator {
   }
 
   visitImplicitReceiver(ast:ImplicitReceiver, args) {
-    // do nothing
+    throw new BaseException('Should never visit an implicit receiver');
   }
 
   visitLiteralPrimitive(ast:LiteralPrimitive, dest) {
@@ -310,7 +312,11 @@ class ProtoRecordCreator {
 
   visitAccessMember(ast:AccessMember, dest) {
     var record = this.construct(RECORD_TYPE_PROPERTY, ast.getter, 0, dest);
-    ast.receiver.visit(this, new Destination(record, null));
+    if (ast.receiver instanceof ImplicitReceiver) {
+      record.setIsImplicitReceiver();
+    } else {
+      ast.receiver.visit(this, new Destination(record, null));
+    }
     this.add(record);
   }
 
@@ -324,9 +330,13 @@ class ProtoRecordCreator {
 
   visitMethodCall(ast:MethodCall, dest) {
     var record = this.construct(RECORD_TYPE_INVOKE_METHOD, ast.fn, ast.args.length, dest);
-    ast.receiver.visit(this, new Destination(record, null));
     for (var i = 0; i < ast.args.length; ++i) {
       ast.args[i].visit(this, new Destination(record, i));
+    }
+    if (ast.receiver instanceof ImplicitReceiver) {
+      record.setIsImplicitReceiver();
+    } else {
+      ast.receiver.visit(this, new Destination(record, null));
     }
     this.add(record);
   }

@@ -42,7 +42,7 @@ export class ProtoRecord {
               dest) {
 
     this.recordRange = recordRange;
-    this.mode = mode;
+    this._mode = mode;
     this.funcOrValue = funcOrValue;
     this.arity = arity;
     this.dest = dest;
@@ -51,6 +51,10 @@ export class ProtoRecord {
     this.prev = null;
     // The concrete Record instantiated from this ProtoRecord
     this.recordInConstruction = null;
+  }
+
+  setIsImplicitReceiver() {
+    this._mode |= RECORD_FLAG_IMPLICIT_RECEIVER;
   }
 }
 
@@ -117,7 +121,7 @@ export class Record {
       return;
     }
 
-    this._mode = protoRecord.mode;
+    this._mode = protoRecord._mode;
 
     var type = this.type;
 
@@ -158,6 +162,10 @@ export class Record {
     } else {
       this._mode &= ~RECORD_FLAG_DISABLED;
     }
+  }
+
+  get isImplicitReceiver() {
+    return (this._mode & RECORD_FLAG_IMPLICIT_RECEIVER) === RECORD_FLAG_IMPLICIT_RECEIVER;
   }
 
   static createMarker(rr:RecordRange) {
