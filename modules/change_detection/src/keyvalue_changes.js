@@ -1,19 +1,19 @@
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 
-import {stringify, looseIdentical} from 'facade/lang';
+import {stringify, looseIdentical, isJsObject} from 'facade/lang';
 
-export class MapChanges {
+export class KeyValueChanges {
   _records:Map;
-  _map:Map;
+  _map:any;
 
-  _mapHead:MapChangeRecord;
-  _previousMapHead:MapChangeRecord;
-  _changesHead:MapChangeRecord;
-  _changesTail:MapChangeRecord;
-  _additionsHead:MapChangeRecord;
-  _additionsTail:MapChangeRecord;
-  _removalsHead:MapChangeRecord;
-  _removalsTail:MapChangeRecord;
+  _mapHead:KVChangeRecord;
+  _previousMapHead:KVChangeRecord;
+  _changesHead:KVChangeRecord;
+  _changesTail:KVChangeRecord;
+  _additionsHead:KVChangeRecord;
+  _additionsTail:KVChangeRecord;
+  _removalsHead:KVChangeRecord;
+  _removalsTail:KVChangeRecord;
 
   constructor() {
     this._records = MapWrapper.create();
@@ -28,57 +28,61 @@ export class MapChanges {
     this._removalsTail = null;
   }
 
+  static supports(obj):boolean {
+    return obj instanceof Map || isJsObject(obj);
+  }
+
   get isDirty():boolean {
     return this._additionsHead !== null ||
            this._changesHead !== null ||
            this._removalsHead !== null;
   }
 
-    forEachItem(fn:Function) {
-      var record:MapChangeRecord;
-      for (record = this._mapHead; record !== null; record = record._next) {
-        fn(record);
-      }
+  forEachItem(fn:Function) {
+    var record:KVChangeRecord;
+    for (record = this._mapHead; record !== null; record = record._next) {
+      fn(record);
     }
+  }
 
-    forEachPreviousItem(fn:Function) {
-      var record:MapChangeRecord;
-      for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
-        fn(record);
-      }
+  forEachPreviousItem(fn:Function) {
+    var record:KVChangeRecord;
+    for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
+      fn(record);
     }
+  }
 
-    forEachChangedItem(fn:Function) {
-      var record:MapChangeRecord;
-      for (record = this._changesHead; record !== null; record = record._nextChanged) {
-        fn(record);
-      }
+  forEachChangedItem(fn:Function) {
+    var record:KVChangeRecord;
+    for (record = this._changesHead; record !== null; record = record._nextChanged) {
+      fn(record);
     }
+  }
 
-    forEachAddedItem(fn:Function){
-      var record:MapChangeRecord;
-      for (record = this._additionsHead; record !== null; record = record._nextAdded) {
-        fn(record);
-      }
+  forEachAddedItem(fn:Function){
+    var record:KVChangeRecord;
+    for (record = this._additionsHead; record !== null; record = record._nextAdded) {
+      fn(record);
     }
+  }
 
-    forEachRemovedItem(fn:Function){
-      var record:MapChangeRecord;
-      for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
-        fn(record);
-      }
+  forEachRemovedItem(fn:Function){
+    var record:KVChangeRecord;
+    for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
+      fn(record);
     }
+  }
 
   check(map):boolean {
     this._reset();
     this._map = map;
     var records = this._records;
-    var oldSeqRecord:MapChangeRecord = this._mapHead;
-    var lastOldSeqRecord:MapChangeRecord = null;
-    var lastNewSeqRecord:MapChangeRecord = null;
+    var oldSeqRecord:KVChangeRecord = this._mapHead;
+    var lastOldSeqRecord:KVChangeRecord = null;
+    var lastNewSeqRecord:KVChangeRecord = null;
     var seqChanged:boolean = false;
 
-    MapWrapper.forEach(map, (value, key) => {
+    this._forEach(map, (value, key) => {
       var newSeqRecord;
       if (oldSeqRecord !== null && key === oldSeqRecord.key) {
         newSeqRecord = oldSeqRecord;
@@ -97,7 +101,7 @@ export class MapChanges {
         if (MapWrapper.contains(records, key)) {
           newSeqRecord = MapWrapper.get(records, key);
         } else {
-          newSeqRecord = new MapChangeRecord(key);
+          newSeqRecord = new KVChangeRecord(key);
           MapWrapper.set(records, key, newSeqRecord);
           newSeqRecord._currentValue = value;
           this._addToAdditions(newSeqRecord);
@@ -124,7 +128,7 @@ export class MapChanges {
 
   _reset() {
     if (this.isDirty) {
-      var record:MapChangeRecord;
+      var record:KVChangeRecord;
       // Record the state of the mapping
       for (record = this._previousMapHead = this._mapHead;
            record !== null;
@@ -171,7 +175,7 @@ export class MapChanges {
     }
   }
 
-  _truncate(lastRecord:MapChangeRecord, record:MapChangeRecord) {
+  _truncate(lastRecord:KVChangeRecord, record:KVChangeRecord) {
     while (record !== null) {
       if (lastRecord === null) {
         this._mapHead = null;
@@ -189,20 +193,20 @@ export class MapChanges {
       record = nextRecord;
     }
 
-    for (var rec:MapChangeRecord = this._removalsHead; rec !== null; rec = rec._nextRemoved) {
+    for (var rec:KVChangeRecord = this._removalsHead; rec !== null; rec = rec._nextRemoved) {
       rec._previousValue = rec._currentValue;
       rec._currentValue = null;
       MapWrapper.delete(this._records, rec.key);
     }
   }
 
-  _isInRemovals(record:MapChangeRecord) {
+  _isInRemovals(record:KVChangeRecord) {
     return record === this._removalsHead ||
            record._nextRemoved !== null ||
            record._prevRemoved !== null;
   }
 
-  _addToRemovals(record:MapChangeRecord) {
+  _addToRemovals(record:KVChangeRecord) {
     // todo(vicb) assert
     //assert(record._next == null);
     //assert(record._nextAdded == null);
@@ -218,7 +222,7 @@ export class MapChanges {
     }
   }
 
-  _removeFromSeq(prev:MapChangeRecord, record:MapChangeRecord) {
+  _removeFromSeq(prev:KVChangeRecord, record:KVChangeRecord) {
     var next = record._next;
     if (prev === null) {
       this._mapHead = next;
@@ -232,7 +236,7 @@ export class MapChanges {
     //})());
   }
 
-  _removeFromRemovals(record:MapChangeRecord) {
+  _removeFromRemovals(record:KVChangeRecord) {
     // todo(vicb) assert
     //assert(record._next == null);
     //assert(record._nextAdded == null);
@@ -253,7 +257,7 @@ export class MapChanges {
     record._prevRemoved = record._nextRemoved = null;
   }
 
-  _addToAdditions(record:MapChangeRecord) {
+  _addToAdditions(record:KVChangeRecord) {
     // todo(vicb): assert
     //assert(record._next == null);
     //assert(record._nextAdded == null);
@@ -268,7 +272,7 @@ export class MapChanges {
     }
   }
 
-  _addToChanges(record:MapChangeRecord) {
+  _addToChanges(record:KVChangeRecord) {
     // todo(vicb) assert
     //assert(record._nextAdded == null);
     //assert(record._nextChanged == null);
@@ -288,7 +292,7 @@ export class MapChanges {
     var changes = [];
     var additions = [];
     var removals = [];
-    var record:MapChangeRecord;
+    var record:KVChangeRecord;
 
     for (record = this._mapHead; record !== null; record = record._next) {
       ListWrapper.push(items, stringify(record));
@@ -312,19 +316,29 @@ export class MapChanges {
            "changes: " + changes.join(', ') + "\n" +
            "removals: " + removals.join(', ') + "\n";
   }
+
+  _forEach(obj, fn:Function) {
+    if (obj instanceof Map) {
+      MapWrapper.forEach(obj, fn);
+    } else {
+      StringMapWrapper.forEach(obj, fn);
+    }
+  }
 }
 
-export class MapChangeRecord {
+
+
+export class KVChangeRecord {
   key;
   _previousValue;
   _currentValue;
 
-  _nextPrevious:MapChangeRecord;
-  _next:MapChangeRecord;
-  _nextAdded:MapChangeRecord;
-  _nextRemoved:MapChangeRecord;
-  _prevRemoved:MapChangeRecord;
-  _nextChanged:MapChangeRecord;
+  _nextPrevious:KVChangeRecord;
+  _next:KVChangeRecord;
+  _nextAdded:KVChangeRecord;
+  _nextRemoved:KVChangeRecord;
+  _prevRemoved:KVChangeRecord;
+  _nextChanged:KVChangeRecord;
 
   constructor(key) {
     this.key = key;
@@ -345,5 +359,4 @@ export class MapChangeRecord {
       (stringify(this.key) + '[' + stringify(this._previousValue) + '->' +
         stringify(this._currentValue) + ']');
   }
-
 }

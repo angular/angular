@@ -29,6 +29,21 @@ export class EmptyExpr extends AST {
   }
 }
 
+export class Collection extends AST {
+  value:AST;
+  constructor(value:AST) {
+    this.value = value;
+  }
+
+  eval(context) {
+    return value.eval(context);
+  }
+
+  visit(visitor, args) {
+    visitor.visitCollection(this, args);
+  }
+}
+
 export class ImplicitReceiver extends AST {
   eval(context) {
     return context;
@@ -386,20 +401,21 @@ export class TemplateBinding {
 
 //INTERFACE
 export class AstVisitor {
-  visitChain(ast:Chain, args){}
-  visitImplicitReceiver(ast:ImplicitReceiver, args) {}
-  visitConditional(ast:Conditional, args) {}
   visitAccessMember(ast:AccessMember, args) {}
-  visitKeyedAccess(ast:KeyedAccess, args) {}
-  visitBinary(ast:Binary, args) {}
-  visitPrefixNot(ast:PrefixNot, args) {}
-  visitLiteralPrimitive(ast:LiteralPrimitive, args) {}
-  visitFormatter(ast:Formatter, args) {}
   visitAssignment(ast:Assignment, args) {}
+  visitBinary(ast:Binary, args) {}
+  visitChain(ast:Chain, args){}
+  visitCollection(ast:Collection, args) {}
+  visitConditional(ast:Conditional, args) {}
+  visitFormatter(ast:Formatter, args) {}
+  visitFunctionCall(ast:FunctionCall, args) {}
+  visitImplicitReceiver(ast:ImplicitReceiver, args) {}
+  visitKeyedAccess(ast:KeyedAccess, args) {}
   visitLiteralArray(ast:LiteralArray, args) {}
   visitLiteralMap(ast:LiteralMap, args) {}
+  visitLiteralPrimitive(ast:LiteralPrimitive, args) {}
   visitMethodCall(ast:MethodCall, args) {}
-  visitFunctionCall(ast:FunctionCall, args) {}
+  visitPrefixNot(ast:PrefixNot, args) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

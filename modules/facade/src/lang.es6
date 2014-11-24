@@ -202,3 +202,7 @@ export function getMapKey(value) {
 export function normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
 }
+
+export function isJsObject(o):boolean {
+  return o !== null && (typeof o === "function" || typeof o === "object");
+}

@@ -1,6 +1,8 @@
 import {ProtoRecordRange, RecordRange} from './record_range';
 import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
+import {ArrayChanges} from './array_changes';
+import {KeyValueChanges} from './keyvalue_changes';
 
 var _fresh = new Object();
 
@@ -10,15 +12,15 @@ export const RECORD_TYPE_INVOKE_CLOSURE = 0x0001;
 export const RECORD_TYPE_INVOKE_FORMATTER = 0x0002;
 export const RECORD_TYPE_INVOKE_METHOD = 0x0003;
 export const RECORD_TYPE_INVOKE_PURE_FUNCTION = 0x0004;
-export const RECORD_TYPE_LIST = 0x0005;
-export const RECORD_TYPE_MAP = 0x0006;
-export const RECORD_TYPE_MARKER = 0x0007;
+const RECORD_TYPE_ARRAY = 0x0005;
+const RECORD_TYPE_KEY_VALUE = 0x0006;
+const RECORD_TYPE_MARKER = 0x0007;
 export const RECORD_TYPE_PROPERTY = 0x0008;
+const RECORD_TYPE_NULL= 0x0009;
 
 const RECORD_FLAG_DISABLED = 0x0100;
 export const RECORD_FLAG_IMPLICIT_RECEIVER = 0x0200;
-
-
+export const RECORD_FLAG_COLLECTION = 0x0400;
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -112,7 +114,6 @@ export class Record {
     this.dest = null;
 
     this.previousValue = null;
-    this.currentValue = _fresh;
 
     this.context = null;
     this.funcOrValue = null;
@@ -124,6 +125,11 @@ export class Record {
     }
 
     this._mode = protoRecord._mode;
+
+    // Return early for collections, further init delayed until updateContext()
+    if (this.isCollection) return;
+
+    this.currentValue = _fresh;
 
     var type = this.type;
 
@@ -150,15 +156,21 @@ export class Record {
     }
   }
 
-  get type() {
+  // todo(vicb): getter / setters are much slower than regular methods
+  // todo(vicb): update the whole code base
+  get type():int {
     return this._mode & RECORD_TYPE_MASK;
   }
 
-  get disabled() {
+  set type(value:int) {
+    this._mode = (this._mode & ~RECORD_TYPE_MASK) | value;
+  }
+
+  get disabled():boolean {
     return (this._mode & RECORD_FLAG_DISABLED) === RECORD_FLAG_DISABLED;
   }
 
-  set disabled(value) {
+  set disabled(value:boolean) {
     if (value) {
       this._mode |= RECORD_FLAG_DISABLED;
     } else {
@@ -166,23 +178,33 @@ export class Record {
     }
   }
 
-  get isImplicitReceiver() {
+  get isImplicitReceiver():boolean {
     return (this._mode & RECORD_FLAG_IMPLICIT_RECEIVER) === RECORD_FLAG_IMPLICIT_RECEIVER;
   }
 
-  static createMarker(rr:RecordRange) {
+  get isCollection():boolean {
+    return (this._mode & RECORD_FLAG_COLLECTION) === RECORD_FLAG_COLLECTION;
+  }
+
+  static createMarker(rr:RecordRange):Record {
     return new Record(rr, null, null);
   }
 
   check():boolean {
-    this.previousValue = this.currentValue;
-    this.currentValue = this._calculateNewValue();
-
-    if (isSame(this.previousValue, this.currentValue)) return false;
-
-    this._updateDestination();
-
-    return true;
+    if (this.isCollection) {
+      var changed = this._checkCollection();
+      if (changed) {
+        this._notifyDispatcher();
+        return true;
+      }
+      return false;
+    } else {
+      this.previousValue = this.currentValue;
+      this.currentValue = this._calculateNewValue();
+      if (isSame(this.previousValue, this.currentValue)) return false;
+      this._updateDestination();
+      return true;
+    }
   }
 
   _updateDestination() {
@@ -194,13 +216,38 @@ export class Record {
         this.dest.updateContext(this.currentValue);
       }
     } else {
-      this.recordRange.dispatcher.onRecordChange(this, this.protoRecord.dest);
+      this._notifyDispatcher();
+    }
+  }
+
+  _notifyDispatcher() {
+    this.recordRange.dispatcher.onRecordChange(this, this.protoRecord.dest);
+  }
+
+  // return whether the content has changed
+  _checkCollection():boolean {
+    switch(this.type) {
+      case RECORD_TYPE_KEY_VALUE:
+        var kvChangeDetector:KeyValueChanges = this.currentValue;
+        return kvChangeDetector.check(this.context);
+
+      case RECORD_TYPE_ARRAY:
+        var arrayChangeDetector:ArrayChanges = this.currentValue;
+        return arrayChangeDetector.check(this.context);
+
+      case RECORD_TYPE_NULL:
+        // no need to check the content again unless the context changes
+        this.recordRange.disableRecord(this);
+        this.currentValue = null;
+        return true;
+
+      default:
+        throw new BaseException(`Unsupported record type (${this.type})`);
     }
   }
 
   _calculateNewValue() {
-    var type = this.type;
-    switch (type) {
+    switch (this.type) {
       case RECORD_TYPE_PROPERTY:
         return this.funcOrValue(this.context);
 
@@ -219,17 +266,8 @@ export class Record {
         this.recordRange.disableRecord(this);
         return this.funcOrValue;
 
-      case RECORD_TYPE_MARKER:
-        throw new BaseException('Marker not implemented');
-
-      case RECORD_TYPE_MAP:
-        throw new BaseException('Map not implemented');
-
-      case RECORD_TYPE_LIST:
-        throw new BaseException('List not implemented');
-
       default:
-        throw new BaseException(`Unsupported record type ($type)`);
+        throw new BaseException(`Unsupported record type (${this.type})`);
     }
   }
 
@@ -241,6 +279,34 @@ export class Record {
   updateContext(value) {
     this.context = value;
     this.recordRange.enableRecord(this);
+
+    if (!this.isMarkerRecord) {
+      this.recordRange.enableRecord(this);
+    }
+
+    if (this.isCollection) {
+      if (ArrayChanges.supports(value)) {
+        if (this.type != RECORD_TYPE_ARRAY) {
+          this.type = RECORD_TYPE_ARRAY;
+          this.currentValue = new ArrayChanges();
+        }
+        return;
+      }
+
+      if (KeyValueChanges.supports(value)) {
+        if (this.type != RECORD_TYPE_KEY_VALUE) {
+          this.type = RECORD_TYPE_KEY_VALUE;
+          this.currentValue = new KeyValueChanges();
+        }
+        return;
+      }
+
+      if (isBlank(value)) {
+        this.type = RECORD_TYPE_NULL;
+      } else {
+        throw new BaseException("Collection records must be array like, map like or null");
+      }
+    }
   }
 
   get isMarkerRecord() {

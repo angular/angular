@@ -1,10 +1,11 @@
 import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
 
-import {isPresent} from 'facade/lang';
+import {isPresent, isBlank, isJsObject} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {
   ChangeDetector,
@@ -22,9 +23,10 @@ export function main() {
     return parser.parseBinding(exp).ast;
   }
 
-  function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
+  function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
+                                content = false) {
     var prr = new ProtoRecordRange();
-    prr.addRecordsFromAST(ast(exp), memo, false);
+    prr.addRecordsFromAST(ast(exp), memo, content);
 
     var dispatcher = new LoggingDispatcher();
     var rr = prr.instantiate(dispatcher, formatters);
@@ -35,8 +37,9 @@ export function main() {
     return {"changeDetector" : cd, "dispatcher" : dispatcher};
   }
 
-  function executeWatch(memo:string, exp:string, context = null, formatters = null) {
-    var res = createChangeDetector(memo, exp, context, formatters);
+  function executeWatch(memo:string, exp:string, context = null, formatters = null,
+                        content = false) {
+    var res = createChangeDetector(memo, exp, context, formatters, content);
     res["changeDetector"].detectChanges();
     return res["dispatcher"].log;
   }
@@ -194,10 +197,11 @@ export function main() {
         });
       });
 
+
       describe("ContextWithVariableBindings", () => {
         it('should read a field from ContextWithVariableBindings', () => {
           var locals = new ContextWithVariableBindings(null,
-              MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
 
           expect(executeWatch('key', 'key', locals))
             .toEqual(['key=value']);
@@ -205,7 +209,7 @@ export function main() {
 
         it('should handle nested ContextWithVariableBindings', () => {
           var nested = new ContextWithVariableBindings(null,
-              MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
           var locals = new ContextWithVariableBindings(nested, MapWrapper.create());
 
           expect(executeWatch('key', 'key', locals))
@@ -213,13 +217,131 @@ export function main() {
         });
 
         it("should fall back to a regular field read when ContextWithVariableBindings " +
-          "does not have the requested field", () => {
+           "does not have the requested field", () => {
           var locals = new ContextWithVariableBindings(new Person("Jim"),
-                MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
 
           expect(executeWatch('name', 'name', locals))
             .toEqual(['name=Jim']);
         });
+      });
+
+      describe("collections", () => {
+        it("should support null values", () => {
+          var context = new TestData(null);
+          var c = createChangeDetector('a', 'a', context, null, true);
+          var cd = c["changeDetector"];
+          var dsp = c["dispatcher"];
+
+          cd.detectChanges();
+          expect(dsp.log).toEqual(['a=null']);
+          dsp.clear();
+
+          cd.detectChanges();
+          expect(dsp.log).toEqual([]);
+
+          context.a = [0];
+          cd.detectChanges();
+          expect(dsp.log).toEqual(["a=" +
+            arrayChangesAsString({
+              collection: ['0[null->0]'],
+              additions: ['0[null->0]']
+            })
+          ]);
+          dsp.clear();
+
+          context.a = null;
+          cd.detectChanges();
+          expect(dsp.log).toEqual(['a=null']);
+        });
+
+        it("should throw if not collection / null", () => {
+          var context = new TestData("not collection / null");
+          var c = createChangeDetector('a', 'a', context, null, true);
+          expect(() => c["changeDetector"].detectChanges())
+            .toThrowError("Collection records must be array like, map like or null");
+        });
+
+        describe("list", () => {
+          it("should support list changes", () => {
+            var context = new TestData([1, 2]);
+            expect(executeWatch("a", "a", context, null, true))
+              .toEqual(["a=" +
+                        arrayChangesAsString({
+                          collection: ['1[null->0]', '2[null->1]'],
+                          additions: ['1[null->0]', '2[null->1]']
+                       })]);
+          });
+
+          it("should handle reference changes", () => {
+            var context = new TestData([1, 2]);
+            var objs = createChangeDetector("a", "a", context, null, true);
+            var cd = objs["changeDetector"];
+            var dispatcher = objs["dispatcher"];
+            cd.detectChanges();
+            dispatcher.clear();
+
+            context.a = [2, 1];
+            cd.detectChanges();
+            expect(dispatcher.log).toEqual(["a=" +
+              arrayChangesAsString({
+                collection: ['2[1->0]', '1[0->1]'],
+                previous: ['1[0->1]', '2[1->0]'],
+                moves: ['2[1->0]', '1[0->1]']
+              })]);
+          });
+        });
+
+        describe("map", () => {
+          it("should support map changes", () => {
+            var map = MapWrapper.create();
+            MapWrapper.set(map, "foo", "bar");
+            var context = new TestData(map);
+            expect(executeWatch("a", "a", context, null, true))
+              .toEqual(["a=" +
+                        kvChangesAsString({
+                          map: ['foo[null->bar]'],
+                          additions: ['foo[null->bar]']
+                       })]);
+          });
+
+          it("should handle reference changes", () => {
+            var map = MapWrapper.create();
+            MapWrapper.set(map, "foo", "bar");
+            var context = new TestData(map);
+            var objs = createChangeDetector("a", "a", context, null, true);
+            var cd = objs["changeDetector"];
+            var dispatcher = objs["dispatcher"];
+            cd.detectChanges();
+            dispatcher.clear();
+
+            context.a = MapWrapper.create();
+            MapWrapper.set(context.a, "bar", "foo");
+            cd.detectChanges();
+            expect(dispatcher.log).toEqual(["a=" +
+              kvChangesAsString({
+                map: ['bar[null->foo]'],
+                previous: ['foo[bar->null]'],
+                additions: ['bar[null->foo]'],
+                removals: ['foo[bar->null]']
+              })]);
+          });
+        });
+
+        if (isJsObject({})) {
+          describe("js objects", () => {
+            it("should support object changes", () => {
+              var map = {"foo": "bar"};
+              var context = new TestData(map);
+              expect(executeWatch("a", "a", context, null, true))
+                .toEqual(["a=" +
+                          kvChangesAsString({
+                            map: ['foo[null->bar]'],
+                            additions: ['foo[null->bar]']
+                         })]);
+            });
+          });
+        }
       });
     });
   });

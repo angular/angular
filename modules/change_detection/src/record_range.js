@@ -1,6 +1,7 @@
 import {
   ProtoRecord,
   Record,
+  RECORD_FLAG_COLLECTION,
   RECORD_FLAG_IMPLICIT_RECEIVER,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
@@ -13,10 +14,26 @@ import {
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException,
   NumberWrapper} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
-import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
-  Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
-  LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
+import {
+  AccessMember,
+  Assignment,
+  AST,
+  AstVisitor,
+  Binary,
+  Chain,
+  Collection,
+  Conditional,
+  Formatter,
+  FunctionCall,
+  ImplicitReceiver,
+  KeyedAccess,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  MethodCall,
+  PrefixNot
+} from './parser/ast';
 
 export class ProtoRecordRange {
   headRecord:ProtoRecord;
@@ -32,13 +49,16 @@ export class ProtoRecordRange {
    * @param ast The expression to watch
    * @param memento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
-   * @param shallow Should collections be shallow watched
+   * @param content Wether to watch collection content (true) or reference (false, default)
    */
   addRecordsFromAST(ast:AST,
         memento,
-        shallow = false)
+        content:boolean = false)
   {
     var creator = new ProtoRecordCreator(this);
+    if (content) {
+      ast = new Collection(ast);
+    }
     creator.createRecordsFromAST(ast, memento);
     this._addRecords(creator.headRecord, creator.tailRecord);
   }
@@ -433,6 +453,12 @@ class ProtoRecordCreator {
     for (var i = 0; i < ast.args.length; ++i) {
       ast.args[i].visit(this, new Destination(record, i));
     }
+    this.add(record);
+  }
+
+  visitCollection(ast: Collection, dest) {
+    var record = this.construct(RECORD_FLAG_COLLECTION, null, null, null, dest);
+    ast.value.visit(this, new Destination(record, null));
     this.add(record);
   }
 

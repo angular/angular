@@ -1,13 +1,11 @@
 import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'test_lib/test_lib';
-
-import {CollectionChanges} from 'change_detection/collection_changes';
-
-import {isBlank, NumberWrapper} from 'facade/lang';
-
-import {ListWrapper} from 'facade/collection';
+import {ArrayChanges} from 'change_detection/array_changes';
+import {NumberWrapper} from 'facade/lang';
+import {ListWrapper, MapWrapper} from 'facade/collection';
+import {TestIterable} from './iterable';
+import {arrayChangesAsString} from './util';
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
-// todo(vicb): Update the code & tests for object equality
 export function main() {
   describe('collection_changes', function() {
     describe('CollectionChanges', function() {
@@ -15,30 +13,62 @@ export function main() {
       var l;
 
       beforeEach(() => {
-        changes = new CollectionChanges();
+        changes = new ArrayChanges();
       });
 
       afterEach(() => {
         changes = null;
       });
 
+      it('should support list and iterables', () => {
+        expect(ArrayChanges.supports([])).toBeTruthy();
+        expect(ArrayChanges.supports(new TestIterable())).toBeTruthy();
+        expect(ArrayChanges.supports(MapWrapper.create())).toBeFalsy();
+        expect(ArrayChanges.supports(null)).toBeFalsy();
+      });
+
+      it('should support iterables', () => {
+        l = new TestIterable();
+
+        changes.check(l);
+        expect(changes.toString()).toEqual(arrayChangesAsString({
+          collection: []
+        }));
+
+        l.list = [1];
+        changes.check(l);
+        expect(changes.toString()).toEqual(arrayChangesAsString({
+          collection: ['1[null->0]'],
+          additions: ['1[null->0]']
+        }));
+
+        l.list = [2, 1];
+        changes.check(l);
+        expect(changes.toString()).toEqual(arrayChangesAsString({
+          collection: ['2[null->0]', '1[0->1]'],
+          previous: ['1[0->1]'],
+          additions: ['2[null->0]'],
+          moves: ['1[0->1]']
+        }));
+      });
+
       it('should detect additions', () => {
         l = [];
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: []
         }));
 
         ListWrapper.push(l, 'a');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a[null->0]'],
           additions: ['a[null->0]']
         }));
 
         ListWrapper.push(l, 'b');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'b[null->1]'],
           previous: ['a'],
           additions: ['b[null->1]']
@@ -51,7 +81,7 @@ export function main() {
 
         l = [1, 0];
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['1[null->0]', '0[0->1]'],
           previous: ['0[0->1]'],
           additions: ['1[null->0]'],
@@ -60,7 +90,7 @@ export function main() {
 
         l = [2, 1, 0];
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['2[null->0]', '1[0->1]', '0[1->2]'],
           previous: ['1[0->1]', '0[1->2]'],
           additions: ['2[null->0]'],
@@ -76,7 +106,7 @@ export function main() {
         ListWrapper.push(l, 2);
         ListWrapper.push(l, 1);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['2[1->0]', '1[0->1]'],
           previous: ['1[0->1]', '2[1->0]'],
           moves: ['2[1->0]', '1[0->1]']
@@ -90,7 +120,7 @@ export function main() {
         ListWrapper.removeAt(l, 1);
         ListWrapper.insert(l, 0, 'b');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
           previous: ['a[0->1]', 'b[1->0]', 'c'],
           moves: ['b[1->0]', 'a[0->1]']
@@ -99,7 +129,7 @@ export function main() {
         ListWrapper.removeAt(l, 1);
         ListWrapper.push(l, 'a');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['b', 'c[2->1]', 'a[1->2]'],
           previous: ['b', 'a[1->2]', 'c[2->1]'],
           moves: ['c[2->1]', 'a[1->2]']
@@ -112,14 +142,14 @@ export function main() {
 
         ListWrapper.push(l, 'a');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a[null->0]'],
           additions: ['a[null->0]']
         }));
 
         ListWrapper.push(l, 'b');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'b[null->1]'],
           previous: ['a'],
           additions: ['b[null->1]']
@@ -128,7 +158,7 @@ export function main() {
         ListWrapper.push(l, 'c');
         ListWrapper.push(l, 'd');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'b', 'c[null->2]', 'd[null->3]'],
           previous: ['a', 'b'],
           additions: ['c[null->2]', 'd[null->3]']
@@ -136,7 +166,7 @@ export function main() {
 
         ListWrapper.removeAt(l, 2);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'b', 'd[3->2]'],
           previous: ['a', 'b', 'c[2->null]', 'd[3->2]'],
           moves: ['d[3->2]'],
@@ -149,7 +179,7 @@ export function main() {
         ListWrapper.push(l, 'b');
         ListWrapper.push(l, 'a');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['d[2->0]', 'c[null->1]', 'b[1->2]', 'a[0->3]'],
           previous: ['a[0->3]', 'b[1->2]', 'd[2->0]'],
           additions: ['c[null->1]'],
@@ -165,7 +195,7 @@ export function main() {
         var oo = 'oo';
         ListWrapper.set(l, 1, b + oo);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'boo'],
           previous: ['a', 'boo']
         }));
@@ -175,7 +205,7 @@ export function main() {
         l = [NumberWrapper.NaN];
         changes.check(l);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: [NumberWrapper.NaN],
           previous: [NumberWrapper.NaN]
         }));
@@ -187,7 +217,7 @@ export function main() {
 
         ListWrapper.insert(l, 0, 'foo');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
             collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
             previous: ['NaN[0->1]', 'NaN[1->2]'],
             additions: ['foo[null->0]'],
@@ -201,7 +231,7 @@ export function main() {
 
         ListWrapper.removeAt(l, 1);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'c[2->1]'],
           previous: ['a', 'b[1->null]', 'c[2->1]'],
           moves: ['c[2->1]'],
@@ -210,7 +240,7 @@ export function main() {
 
         ListWrapper.insert(l, 1, 'b');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'b[null->1]', 'c[1->2]'],
           previous: ['a', 'c[1->2]'],
           additions: ['b[null->1]'],
@@ -224,7 +254,7 @@ export function main() {
 
         ListWrapper.removeAt(l, 0);
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
           previous: ['a', 'a', 'a[2->null]', 'b[3->2]', 'b[4->3]'],
           moves: ['b[3->2]', 'b[4->3]'],
@@ -238,7 +268,7 @@ export function main() {
 
         ListWrapper.insert(l, 0, 'b');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
           previous: ['a[0->1]', 'a[1->2]', 'b[2->0]', 'b'],
           additions: ['b[null->4]'],
@@ -255,7 +285,7 @@ export function main() {
         ListWrapper.push(l, 'a');
         ListWrapper.push(l, 'c');
         changes.check(l);
-        expect(changes.toString()).toEqual(changesAsString({
+        expect(changes.toString()).toEqual(arrayChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
           previous: ['a[0->1]', 'b[1->0]', 'c'],
           moves: ['b[1->0]', 'a[0->1]']
@@ -265,16 +295,3 @@ export function main() {
   });
 }
 
-function changesAsString({collection, previous, additions, moves, removals}) {
-  if (isBlank(collection)) collection = [];
-  if (isBlank(previous)) previous = [];
-  if (isBlank(additions)) additions = [];
-  if (isBlank(moves)) moves = [];
-  if (isBlank(removals)) removals = [];
-
-  return "collection: " + collection.join(', ') + "\n" +
-         "previous: " + previous.join(', ') + "\n" +
-         "additions: " + additions.join(', ') + "\n" +
-         "moves: " + moves.join(', ') + "\n" +
-         "removals: " + removals.join(', ') + "\n";
-}
