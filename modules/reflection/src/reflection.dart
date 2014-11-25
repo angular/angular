@@ -23,7 +23,7 @@ class NoReflectionCapabilities {
   }
 
   SetterFn setter(String name) {
-    throw "Cannot find getter ${name}";
+    throw "Cannot find setter ${name}";
   }
 
   MethodFn method(String name) {
