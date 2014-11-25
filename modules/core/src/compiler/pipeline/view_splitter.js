@@ -26,7 +26,7 @@ export class ViewSplitter extends CompileStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var element = current.element;
-    if (isBlank(parent) || (current.element instanceof TemplateElement)) {
+    if (isBlank(parent) || (parent.element instanceof TemplateElement)) {
       current.isViewRoot = true;
     } else {
       var templateBindings = MapWrapper.get(current.attrs(), 'template');

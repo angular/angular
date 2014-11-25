@@ -22,10 +22,10 @@ export function main() {
       expect(results[0].isViewRoot).toBe(true);
     });
 
-    it('should mark <template> elements as viewRoot', () => {
-      var rootElement = createElement('<div><template></template></div>');
+    it('should mark <template>s first child as viewRoot', () => {
+      var rootElement = createElement('<div><template><div></div></template></div>');
       var results = createPipeline().process(rootElement);
-      expect(results[1].isViewRoot).toBe(true);
+      expect(results[2].isViewRoot).toBe(true);
     });
 
     describe('elements with template attribute', () => {

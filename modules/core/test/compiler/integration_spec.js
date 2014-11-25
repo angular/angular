@@ -10,9 +10,10 @@ import {Lexer} from 'change_detection/parser/lexer';
 import {Compiler} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
-import {Component} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
+import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
+
+import {ViewPort} from 'core/compiler/viewport';
 
 export function main() {
   describe('integration tests', function() {
@@ -76,6 +77,21 @@ export function main() {
           done();
         });
       });
+
+      it('should support template directives.', (done) => {
+        compiler.compile(MyComp, createElement('<div><template some-tmpl><copy-me>hello</copy-me></template></div>')).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+
+          var childNodesOfWrapper = view.nodes[0].childNodes;
+          // 1 template + 2 copies.
+          expect(childNodesOfWrapper.length).toBe(3);
+          expect(childNodesOfWrapper[1].childNodes[0].nodeValue).toEqual('hello');
+          expect(childNodesOfWrapper[2].childNodes[0].nodeValue).toEqual('hello');
+          done();
+        });
+      });
     });
   });
 }
@@ -93,7 +109,7 @@ class MyDir {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp]
+    directives: [MyDir, ChildComp, SomeTemplate]
   })
 })
 class MyComp {
@@ -115,6 +131,16 @@ class ChildComp {
   ctxProp:string;
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
+  }
+}
+
+@Template({
+  selector: '[some-tmpl]'
+})
+class SomeTemplate {
+  constructor(viewPort: ViewPort) {
+    viewPort.create();
+    viewPort.create();
   }
 }
 
