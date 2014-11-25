@@ -5,6 +5,7 @@ System.paths = {
   'di/*': '/js/di/lib/*.js',
   'rtts_assert/*': '/js/rtts_assert/lib/*.js',
   'test_lib/*': '/js/test_lib/lib/*.js',
-  'benchmarks/*': '/js/benchmarks/lib/*.js'
+  'benchmarks/*': '/js/benchmarks/lib/*.js',
+  'reflection/*': '/js/reflection/lib/*.js'
 };
 register(System);
