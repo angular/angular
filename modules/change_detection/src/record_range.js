@@ -116,8 +116,8 @@ export class RecordRange {
 
   addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
-    var prevEnabledRecord = this._prevEnabled(this.tailRecord);
-    var nextEnabledRerord = this._nextEnabled(this.tailRecord);
+    var prevEnabledRecord = RecordRange._prevEnabled(this.tailRecord);
+    var nextEnabledRerord = RecordRange._nextEnabled(this.tailRecord);
 
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
@@ -134,12 +134,12 @@ export class RecordRange {
     }
   }
 
-  removeRange(child:RecordRange) {
-    var firstEnabledChildRecord = child.findFirstEnabledRecord();
-    var lastEnabledChildRecord = child.findLastEnabledRecord();
+  remove() {
+    var firstEnabledChildRecord = this.findFirstEnabledRecord();
+    var lastEnabledChildRecord = this.findLastEnabledRecord();
 
-    var next = child.tailRecord.next;
-    var prev = child.headRecord.prev;
+    var next = this.tailRecord.next;
+    var prev = this.headRecord.prev;
 
     _link(prev, next);
 
@@ -164,8 +164,8 @@ export class RecordRange {
   enableRecord(record:Record) {
     if (!record.disabled) return;
 
-    var prevEnabled = this._prevEnabled(record);
-    var nextEnabled = this._nextEnabled(record);
+    var prevEnabled = RecordRange._prevEnabled(record);
+    var nextEnabled = RecordRange._nextEnabled(record);
 
     record.prevEnabled = prevEnabled;
     record.nextEnabled = nextEnabled;
@@ -176,9 +176,9 @@ export class RecordRange {
     record.disabled = false;
   }
 
-  disableRange(child:RecordRange) {
-    var firstEnabledChildRecord = child.findFirstEnabledRecord();
-    var lastEnabledChildRecord = child.findLastEnabledRecord();
+  disable() {
+    var firstEnabledChildRecord = this.findFirstEnabledRecord();
+    var lastEnabledChildRecord = this.findLastEnabledRecord();
 
     var nextEnabled = lastEnabledChildRecord.nextEnabled;
     var prevEnabled = firstEnabledChildRecord.prevEnabled;
@@ -186,25 +186,25 @@ export class RecordRange {
     if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
     if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
 
-    child.disabled = true;
+    this.disabled = true;
   }
 
-  enableRange(child:RecordRange) {
-    var prevEnabledRecord = this._prevEnabled(child.headRecord);
-    var nextEnabledRecord = this._nextEnabled(child.tailRecord);
+  enable() {
+    var prevEnabledRecord = RecordRange._prevEnabled(this.headRecord);
+    var nextEnabledRecord = RecordRange._nextEnabled(this.tailRecord);
 
-    var firstEnabledChildRecord = child.findFirstEnabledRecord();
-    var lastEnabledChildRecord = child.findLastEnabledRecord();
+    var firstEnabledthisRecord = this.findFirstEnabledRecord();
+    var lastEnabledthisRecord = this.findLastEnabledRecord();
 
-    if (isPresent(firstEnabledChildRecord) && isPresent(prevEnabledRecord)){
-      _linkEnabled(prevEnabledRecord, firstEnabledChildRecord);
+    if (isPresent(firstEnabledthisRecord) && isPresent(prevEnabledRecord)){
+      _linkEnabled(prevEnabledRecord, firstEnabledthisRecord);
     }
 
-    if (isPresent(lastEnabledChildRecord) && isPresent(nextEnabledRecord)){
-      _linkEnabled(lastEnabledChildRecord, nextEnabledRecord);
+    if (isPresent(lastEnabledthisRecord) && isPresent(nextEnabledRecord)){
+      _linkEnabled(lastEnabledthisRecord, nextEnabledRecord);
     }
 
-    child.disabled = false;
+    this.disabled = false;
   }
 
   /**
@@ -262,7 +262,7 @@ export class RecordRange {
    *
    * The function skips disabled sub ranges.
    */
-  _nextEnabled(record:Record) {
+  static _nextEnabled(record:Record) {
     record = record.next;
     while (isPresent(record) && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {
@@ -281,7 +281,7 @@ export class RecordRange {
    *
    * The function skips disabled sub ranges.
    */
-  _prevEnabled(record:Record) {
+  static _prevEnabled(record:Record) {
     record = record.prev;
     while (isPresent(record) && record.disabled) {
       if (record.isMarkerRecord && record.recordRange.disabled) {

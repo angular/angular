@@ -128,11 +128,11 @@ export function main() {
         parent.addRange(child1);
         parent.addRange(child2);
 
-        parent.removeRange(child1);
+        child1.remove();
 
         expect(enabledRecords(parent, recordNames)).toEqual(['record2']);
 
-        parent.removeRange(child2);
+        child2.remove();
 
         expect(enabledRecords(parent, recordNames)).toEqual([]);
       });
@@ -143,7 +143,7 @@ export function main() {
         parent.addRange(emptyRange);
         parent.addRange(child2);
 
-        parent.removeRange(emptyRange);
+        emptyRange.remove();
 
         expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
       });
@@ -153,7 +153,7 @@ export function main() {
         parent.addRange(child2);
         parent.addRange(child3);
 
-        parent.removeRange(child2);
+        child2.remove();
 
         expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record3']);
       });
@@ -283,7 +283,7 @@ export function main() {
         var parent = new RecordRange(null, null);
         parent.addRange(child1);
 
-        parent.disableRange(child1);
+        child1.disable();
 
         expect(enabledRecords(parent, recordNames)).toEqual([]);
       });
@@ -291,9 +291,10 @@ export function main() {
       it('should enable a single record range', () => {
         var parent = new RecordRange(null, null);
         parent.addRange(child1);
-        parent.disableRange(child1);
 
-        parent.enableRange(child1);
+        child1.disable();
+
+        child1.enable();
 
         expect(enabledRecords(parent, recordNames)).toEqual(['record1']);
       });
@@ -305,8 +306,8 @@ export function main() {
         parent.addRange(child3);
         parent.addRange(child4);
 
-        parent.disableRange(child2);
-        parent.disableRange(child3);
+        child2.disable();
+        child3.disable();
 
         expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record4']);
       });
@@ -317,11 +318,12 @@ export function main() {
         parent.addRange(child2);
         parent.addRange(child3);
         parent.addRange(child4);
-        parent.disableRange(child2);
-        parent.disableRange(child3);
 
-        parent.enableRange(child2);
-        parent.enableRange(child3);
+        child2.disable();
+        child2.disable();
+
+        child2.enable();
+        child3.enable();
 
         expect(enabledRecords(parent, recordNames)).toEqual([
           'record1', 'record2', 'record3', 'record4'
