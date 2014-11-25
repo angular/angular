@@ -24,6 +24,7 @@ class Expect extends gns.Expect {
   void toEqual(expected) => toHaveSameProps(expected);
   void toThrowError([message=""]) => this.toThrowWith(message: message);
   void toBePromise() => _expect(actual is Future, equals(true));
+  void toImplement(expected) => toBeA(expected);
   Function get _expect => gns.guinness.matchers.expect;
 }
 

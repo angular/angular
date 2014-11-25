@@ -1,6 +1,7 @@
-import {describe, it, iit, ddescribe, expect, tick, async} from 'test_lib/test_lib';
+import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach} from 'test_lib/test_lib';
 import {MapWrapper, ListWrapper} from 'facade/collection';
 import {PromiseWrapper} from 'facade/async';
+import {IMPLEMENTS, proxy} from 'facade/lang';
 
 class TestObj {
   prop;
@@ -8,6 +9,10 @@ class TestObj {
     this.prop = prop;
   }
 }
+
+@proxy
+@IMPLEMENTS(TestObj)
+class SpyTestObj extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
 
 export function main() {
   describe('test_lib', () => {
@@ -46,6 +51,30 @@ export function main() {
 
       it('should detect additional entries', () => {
         expect(MapWrapper.createFromStringMap({'a': 1})).not.toEqual(MapWrapper.createFromStringMap({'a': 1, 'b': 1}));
+      });
+    });
+
+    describe("spy objects", () => {
+      var spyObj;
+
+      beforeEach(() => {
+        spyObj = new SpyTestObj();
+      });
+
+      it("should pass the runtime check", () => {
+        var t:TestObj = spyObj;
+        expect(t).toBeDefined();
+      });
+
+      it("should return a new spy func with no calls", () => {
+        expect(spyObj.spy("someFunc")).not.toHaveBeenCalled();
+      });
+
+      it("should record function calls", () => {
+        spyObj.spy("someFunc").andCallFake((a,b) => a + b);
+
+        expect(spyObj.someFunc(1,2)).toEqual(3);
+        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1,2);
       });
     });
   });

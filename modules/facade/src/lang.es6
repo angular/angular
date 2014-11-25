@@ -1,4 +1,5 @@
 import {assert} from 'rtts_assert/rtts_assert';
+export {proxy} from 'rtts_assert/rtts_assert';
 
 export var Type = Function;
 export var Math = window.Math;

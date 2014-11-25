@@ -73,9 +73,50 @@ window.beforeEach(function() {
           };
         }
       };
+    },
+
+    toImplement: function() {
+      return {
+        compare: function(actualObject, expectedInterface) {
+          var objProps = Object.keys(actualObject.constructor.prototype);
+          var intProps = Object.keys(expectedInterface.prototype);
+
+          var missedMethods = [];
+          intProps.forEach((k) => {
+            if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
+          });
+
+          return {
+            pass: missedMethods.length == 0,
+            get message() {
+              return 'Expected ' + actualObject + ' to have the following methods: ' + missedMethods.join(", ");
+            }
+          };
+        }
+      };
     }
   });
 });
+
+export class SpyObject {
+  spy(name){
+    if (! this[name]) {
+      this[name] = this._createGuinnessCompatibleSpy();
+    }
+    return this[name];
+  }
+
+  rttsAssert(value) {
+    return true;
+  }
+
+  _createGuinnessCompatibleSpy(){
+    var newSpy = jasmine.createSpy();
+    newSpy.andCallFake = newSpy.and.callFake;
+    return newSpy;
+  }
+}
+
 
 function mapToString(m) {
   if (!m) {

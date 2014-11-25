@@ -13,6 +13,9 @@ function argPositionName(i) {
 
 var primitives = $traceurRuntime.type;
 
+export function proxy(){
+}
+
 function assertArgumentTypes(...params) {
   var actual, type;
   var currentArgErrors;
@@ -78,9 +81,12 @@ function prettyPrint(value) {
 }
 
 function isType(value, T, errors) {
-
   if (T === primitives.void) {
     return typeof value === 'undefined';
+  }
+
+  if (_isProxy(value)) {
+    return true;
   }
 
   if (T === primitives.any || value === null) {
@@ -141,6 +147,11 @@ function isType(value, T, errors) {
   // currentStack = parentStack;
 
   // return res;
+}
+
+function _isProxy(obj) {
+  if (!obj || !obj.constructor || !obj.constructor.annotations) return false;
+  return obj.constructor.annotations.filter((a) => a instanceof proxy).length > 0;
 }
 
 function formatErrors(errors, indent = '  ') {

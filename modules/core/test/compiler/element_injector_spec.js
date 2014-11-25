@@ -1,5 +1,5 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, FakeObject} from 'test_lib/test_lib';
-import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'facade/lang';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'test_lib/test_lib';
+import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
@@ -9,12 +9,10 @@ import {ProtoRecordRange} from 'change_detection/record_range';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
-//TODO: vsavkin: use a spy object
-class DummyView extends View {
-  constructor() {
-    super(null, null, new ProtoRecordRange(), MapWrapper.create());
-  }
-}
+@proxy
+@IMPLEMENTS(View)
+class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
+
 
 class Directive {
 }
