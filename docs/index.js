@@ -44,4 +44,12 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
     '${ doc.docType }.template.html',
     'common.template.html'
   ];
+})
+
+
+.config(function(computePathsProcessor) {
+  computePathsProcessor.pathTemplates.push({
+    docTypes: ['atScriptDoc'],
+    outputPathTemplate: '${docType}-${startingLine}.html'
+  });
 });
