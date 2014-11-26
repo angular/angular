@@ -2,6 +2,7 @@ import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
 
 import {isPresent} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
+import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 
@@ -181,6 +182,34 @@ export function main() {
           person.name = 'bob';
           cd.detectChanges();
           expect(counter).toEqual(2);
+        });
+      });
+
+      describe("ContextWithVariableBindings", () => {
+        it('should read a field from ContextWithVariableBindings', () => {
+          var locals = new ContextWithVariableBindings(null,
+              MapWrapper.createFromPairs([["key", "value"]]));
+
+          expect(executeWatch('key', 'key', locals))
+            .toEqual(['key=value']);
+        });
+
+        it('should handle nested ContextWithVariableBindings', () => {
+          var nested = new ContextWithVariableBindings(null,
+              MapWrapper.createFromPairs([["key", "value"]]));
+          var locals = new ContextWithVariableBindings(nested, MapWrapper.create());
+
+          expect(executeWatch('key', 'key', locals))
+            .toEqual(['key=value']);
+        });
+
+        it("should fall back to a regular field read when ContextWithVariableBindings " +
+          "does not have the requested field", () => {
+          var locals = new ContextWithVariableBindings(new Person("Jim"),
+                MapWrapper.createFromPairs([["key", "value"]]));
+
+          expect(executeWatch('name', 'name', locals))
+            .toEqual(['name=Jim']);
         });
       });
     });

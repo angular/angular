@@ -1,5 +1,6 @@
 import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "facade/lang";
 import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
+import {ContextWithVariableBindings} from "./context_with_variable_bindings";
 
 export class AST {
   eval(context) {
@@ -97,7 +98,16 @@ export class AccessMember extends AST {
   }
 
   eval(context) {
-    return this.getter(this.receiver.eval(context));
+    var evaluatedContext = this.receiver.eval(context);
+
+    while (evaluatedContext instanceof ContextWithVariableBindings) {
+      if (evaluatedContext.hasBinding(this.name)) {
+        return evaluatedContext.get(this.name);
+      }
+      evaluatedContext = evaluatedContext.parent;
+    }
+
+    return this.getter(evaluatedContext);
   }
 
   get isAssignable() {
@@ -105,7 +115,16 @@ export class AccessMember extends AST {
   }
 
   assign(context, value) {
-    return this.setter(this.receiver.eval(context), value);
+    var evaluatedContext = this.receiver.eval(context);
+
+    while (evaluatedContext instanceof ContextWithVariableBindings) {
+      if (evaluatedContext.hasBinding(this.name)) {
+        throw new BaseException(`Cannot reassign a variable binding ${this.name}`)
+      }
+      evaluatedContext = evaluatedContext.parent;
+    }
+
+    return this.setter(evaluatedContext, value);
   }
 
   visit(visitor, args) {

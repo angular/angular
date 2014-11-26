@@ -4,6 +4,7 @@ import {reflector} from 'reflection/reflection';
 import {MapWrapper, ListWrapper} from 'facade/collection';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {Formatter, LiteralPrimitive} from 'change_detection/parser/ast';
 
 class TestData {
@@ -51,8 +52,9 @@ export function main() {
     return expect(parseAction(text).eval(c));
   }
 
-  function expectEvalError(text) {
-    return expect(() => parseAction(text).eval(td()));
+  function expectEvalError(text, passedInContext = null) {
+    var c = isBlank(passedInContext) ? td() : passedInContext;
+    return expect(() => parseAction(text).eval(c));
   }
 
   function evalAsts(asts, passedInContext = null) {
@@ -196,6 +198,25 @@ export function main() {
           expectEvalError('x. 1234').toThrowError(new RegExp('identifier or keyword'));
           expectEvalError('x."foo"').toThrowError(new RegExp('identifier or keyword'));
         });
+
+        it("should read a field from ContextWithVariableBindings", () => {
+          var locals = new ContextWithVariableBindings(null,
+              MapWrapper.createFromPairs([["key", "value"]]));
+          expectEval("key", locals).toEqual("value");
+        });
+
+        it("should handle nested ContextWithVariableBindings", () => {
+          var nested = new ContextWithVariableBindings(null,
+              MapWrapper.createFromPairs([["key", "value"]]));
+          var locals = new ContextWithVariableBindings(nested, MapWrapper.create());
+          expectEval("key", locals).toEqual("value");
+        });
+
+        it("should fall back to a regular field read when ContextWithVariableBindings "+
+          "does not have the requested field", () => {
+          var locals = new ContextWithVariableBindings(td(999), MapWrapper.create());
+          expectEval("a", locals).toEqual(999);
+        });
       });
 
       describe("method calls", () => {
@@ -283,6 +304,18 @@ export function main() {
 
         it('should throw on bad assignment', () => {
           expectEvalError("5=4").toThrowError(new RegExp("Expression 5 is not assignable"));
+        });
+
+        it('should reassign when no variable binding with the given name', () => {
+          var context = td();
+          var locals = new ContextWithVariableBindings(context, MapWrapper.create());
+          expectEval('a = 200', locals).toEqual(200);
+          expect(context.a).toEqual(200);
+        });
+
+        it('should throw when reassigning a variable binding', () => {
+          var locals = new ContextWithVariableBindings(null, MapWrapper.createFromPairs([["key", "value"]]));
+          expectEvalError('key = 200', locals).toThrowError(new RegExp("Cannot reassign a variable binding"));
         });
       });
 

@@ -30,6 +30,7 @@ export class ProtoRecord {
   context:any;
   funcOrValue:any;
   arity:int;
+  name:string;
   dest;
 
   next:ProtoRecord;
@@ -39,12 +40,14 @@ export class ProtoRecord {
               mode:int,
               funcOrValue,
               arity:int,
+              name:string,
               dest) {
 
     this.recordRange = recordRange;
     this._mode = mode;
     this.funcOrValue = funcOrValue;
     this.arity = arity;
+    this.name = name;
     this.dest = dest;
 
     this.next = null;
