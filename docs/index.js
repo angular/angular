@@ -7,15 +7,17 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 .factory(require('./readers/atScript'))
 
+.processor(require('./processors/generateDocsFromComments'))
+
 .config(function(log) {
-  log.level = 'info';
+  log.level = 'debug';
 })
 
 .config(function(readFilesProcessor, atScriptFileReader) {
   readFilesProcessor.fileReaders = [atScriptFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '..');
   readFilesProcessor.sourceFiles = [
-    { module: 'di', include: 'modules/di/src/**/*.js', basePath: 'modules/di/src' }
+    { module: 'di', include: 'modules/di/src/annotations.js', basePath: 'modules/di/src' }
   ];
 })
 

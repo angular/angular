@@ -1,5 +1,14 @@
 var _ = require('lodash');
-var traceur;
+var traceur = require('traceur/src/node/traceur.js');
+
+traceur.options.setFromObject({
+  annotations: true, // parse annotations
+  types: true, // parse types
+  script: false, // parse as a module
+  memberVariables: true, // parse class fields
+  modules: 'instantiate',
+  commentCallback: true
+});
 
 /**
  * @dgService atScriptFileReader
@@ -14,11 +23,12 @@ module.exports = function atScriptFileReader(log) {
     getDocs: function(fileInfo) {
 
       try {
-        fileInfo.ast = null; // TODO utilize Traceur here
+
+        parseFile(fileInfo);
+
       } catch(ex) {
-       ex.file = fileInfo.filePath;
-        throw new Error(
-          _.template('Syntax error in file "${file}"" [line ${lineNumber}, column ${column}]: "${description}"', ex));
+        log.error(ex.stack);
+        throw ex;
       }
 
       return [{
@@ -26,4 +36,45 @@ module.exports = function atScriptFileReader(log) {
       }];
     }
   };
+
+  function parseFile(fileInfo) {
+
+    var sourceFile = new traceur.syntax.SourceFile(fileInfo.relativePath, fileInfo.content);
+    var parser = new traceur.syntax.Parser(sourceFile);
+
+    parser.handleComment = function(range) {
+      fileInfo.comments.push({ range: range });
+    };
+
+    fileInfo.comments = [];
+    fileInfo.codeTree = parser.parseModule();
+    attachComments(fileInfo.codeTree, fileInfo.comments);
+  }
+
+  function attachComments(tree, comments) {
+
+    var ParseTreeVisitor = System.get("traceur@0.0.74/src/syntax/ParseTreeVisitor").ParseTreeVisitor;
+
+    var visitor = new ParseTreeVisitor();
+    var index = 0;
+    var currentComment = comments[index];
+
+    if (currentComment) log.silly('comment: ' + currentComment.range.start.line + ' - ' + currentComment.range.end.line);
+
+    visitor.visitAny = function(tree) {
+      if (tree && tree.location && currentComment) {
+        if (currentComment.range.end.offset < tree.location.start.offset) {
+          log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
+          tree.commentBefore = currentComment;
+          currentComment.treeAfter = tree;
+          index++;
+          currentComment = comments[index];
+          if (currentComment) log.silly('comment: ' + currentComment.range.start.line + ' - ' + currentComment.range.end.line);
+        }
+      }
+      return ParseTreeVisitor.prototype.visitAny.call(this, tree);
+    };
+    visitor.visitAny(tree);
+  }
+
 };
