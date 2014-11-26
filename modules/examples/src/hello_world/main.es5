@@ -8,6 +8,7 @@ System.paths = {
   'change_detection/*': './change_detection/lib/*.js',
   'facade/*': './facade/lib/*.js',
   'di/*': './di/lib/*.js',
+  'reflection/*': './reflection/lib/*.js',
   'rtts_assert/*': './rtts_assert/lib/*.js',
   'examples/*': './examples/lib/*.js'
 };
