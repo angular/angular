@@ -5,6 +5,7 @@ import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
 import {reflector, Reflector} from 'reflection/reflection';
 import {
   AST,
+  EmptyExpr,
   ImplicitReceiver,
   AccessMember,
   LiteralPrimitive,
@@ -146,7 +147,9 @@ class _ParseAST {
         this.error(`Unexpected token '${this.next}'`);
       }
     }
-    return exprs.length == 1 ? exprs[0] : new Chain(exprs);
+    if (exprs.length == 0) return new EmptyExpr();
+    if (exprs.length == 1) return exprs[0];
+    return new Chain(exprs);
   }
 
   parseFormatter() {

@@ -150,6 +150,10 @@ export function main() {
           expectEvalError("null + null").toThrowError();
           expectEvalError("null - null").toThrowError();
         });
+
+        it('should parse an empty string', () => {
+          expectEval('').toBeNull();
+        });
       });
 
       describe("literals", () => {
@@ -376,7 +380,7 @@ export function main() {
       }
 
       it('should parse an empty string', () => {
-        var bindings = parseTemplateBindings("");
+        var bindings = parseTemplateBindings('');
         expect(bindings).toEqual([]);
       });
 

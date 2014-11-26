@@ -18,6 +18,16 @@ export class AST {
   }
 }
 
+export class EmptyExpr extends AST {
+  eval(context) {
+    return null;
+  }
+
+  visit(visitor, args) {
+    //do nothing
+  }
+}
+
 export class ImplicitReceiver extends AST {
   eval(context) {
     return context;
