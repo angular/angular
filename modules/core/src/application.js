@@ -1,4 +1,4 @@
-import {Injector, bind} from 'di/di';
+import {Injector, bind, OpaqueToken} from 'di/di';
 import {Type, FIELD, isBlank, isPresent, BaseException} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
 import {Compiler} from './compiler/compiler';
@@ -21,11 +21,11 @@ var _rootBindings = [
   bind(Reflector).toValue(reflector), Compiler, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
 ];
 
-export var appViewToken = new Object();
-export var appWatchGroupToken = new Object();
-export var appElementToken = new Object();
-export var appComponentAnnotatedTypeToken = new Object();
-export var appDocumentToken = new Object();
+export var appViewToken = new OpaqueToken('AppView');
+export var appRecordRangeToken = new OpaqueToken('AppRecordRange');
+export var appElementToken = new OpaqueToken('AppElement');
+export var appComponentAnnotatedTypeToken = new OpaqueToken('AppComponentAnnotatedType');
+export var appDocumentToken = new OpaqueToken('AppDocument');
 
 // Exported only for tests that need to overwrite default document binding.
 export function documentDependentBindings(appComponentType) {
@@ -59,10 +59,10 @@ export function documentDependentBindings(appComponentType) {
         });
       }, [Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
 
-      bind(appWatchGroupToken).toFactory((rootView) => rootView.recordRange,
+      bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
-      bind(ChangeDetector).toFactory((appWatchGroup) =>
-          new ChangeDetector(appWatchGroup), [appWatchGroupToken])
+      bind(ChangeDetector).toFactory((appRecordRange) =>
+          new ChangeDetector(appRecordRange), [appRecordRangeToken])
   ];
 }
 
