@@ -1,5 +1,4 @@
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {List} from 'facade/collection';
 
 import {PropertyBindingParser} from './property_binding_parser';
@@ -16,10 +15,7 @@ import {ElementBinderBuilder} from './element_binder_builder';
  * Takes in an HTMLElement and produces the ProtoViews,
  * ProtoElementInjectors and ElementBinders in the end.
  */
-export function createDefaultSteps(
-    parser:Parser, closureMap:ClosureMap,
-    directives: List<AnnotatedType>
-  ) {
+export function createDefaultSteps(parser:Parser, directives: List<AnnotatedType>) {
   return [
     new ViewSplitter(parser),
     new TextInterpolationParser(parser),
@@ -28,6 +24,6 @@ export function createDefaultSteps(
     new ElementBindingMarker(),
     new ProtoViewBuilder(),
     new ProtoElementInjectorBuilder(),
-    new ElementBinderBuilder(closureMap)
+    new ElementBinderBuilder()
   ];
 }

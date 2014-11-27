@@ -4,7 +4,6 @@ import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {isPresent} from 'facade/lang';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
 import {
   ChangeDetector,
@@ -17,22 +16,37 @@ import {
 import {Record} from 'change_detection/record';
 
 export function main() {
-  function humanize(rr:RecordRange, names:List) {
-    var lookupName = (item) =>
-      ListWrapper.last(
-        ListWrapper.find(names, (pair) => pair[0] === item));
+  var lookupName = (names, item) =>
+    ListWrapper.last(
+      ListWrapper.find(names, (pair) => pair[0] === item));
 
+  function enabledRecordsInReverseOrder(rr:RecordRange, names:List) {
+    var reversed = [];
+    var record = rr.findLastEnabledRecord();
+    while (isPresent(record)) {
+      ListWrapper.push(reversed, lookupName(names, record));
+      record = record.prevEnabled;
+    }
+    return reversed;
+  }
+
+  function enabledRecords(rr:RecordRange, names:List) {
     var res = [];
     var record = rr.findFirstEnabledRecord();
     while (isPresent(record)) {
-      ListWrapper.push(res, lookupName(record));
+      ListWrapper.push(res, lookupName(names, record));
       record = record.nextEnabled;
     }
+
+    // check that all links are set properly in both directions
+    var reversed = enabledRecordsInReverseOrder(rr, names);
+    expect(res).toEqual(ListWrapper.reversed(reversed));
+
     return res;
   }
 
   function createRecord(rr) {
-    return new Record(rr, new ProtoRecord(null, null, null, null, null), null);
+    return new Record(rr, new ProtoRecord(null, 0, null, null, null, null), null);
   }
 
   describe('record range', () => {
@@ -44,7 +58,7 @@ export function main() {
       rr.addRecord(record1);
       rr.addRecord(record2);
 
-      expect(humanize(rr, [
+      expect(enabledRecords(rr, [
         [record1, 'record1'],
         [record2, 'record2']
       ])).toEqual(['record1', 'record2']);
@@ -81,27 +95,57 @@ export function main() {
         parent.addRange(child1);
         parent.addRange(child2);
 
-        expect(humanize(parent, recordNames)).toEqual(['record1', 'record2']);
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
+      });
+
+      it('should handle adding an empty range', () => {
+        var emptyRange = new RecordRange(null, null);
+        parent.addRange(child1);
+        parent.addRange(child2);
+        child1.addRange(emptyRange);
+
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
+      });
+
+      it('should handle adding a range into an empty range', () => {
+        var emptyRange = new RecordRange(null, null);
+        parent.addRange(emptyRange);
+        parent.addRange(child2);
+
+        emptyRange.addRange(child1);
+
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
       });
 
       it('should add nested record ranges', () => {
         parent.addRange(child1);
         child1.addRange(child2);
 
-        expect(humanize(parent, recordNames)).toEqual(['record1', 'record2']);
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
       });
 
       it('should remove record ranges', () => {
         parent.addRange(child1);
         parent.addRange(child2);
 
-        parent.removeRange(child1);
+        child1.remove();
 
-        expect(humanize(parent, recordNames)).toEqual(['record2']);
+        expect(enabledRecords(parent, recordNames)).toEqual(['record2']);
 
-        parent.removeRange(child2);
+        child2.remove();
 
-        expect(humanize(parent, recordNames)).toEqual([]);
+        expect(enabledRecords(parent, recordNames)).toEqual([]);
+      });
+
+      it('should remove an empty record range', () => {
+        var emptyRange = new RecordRange(null, null);
+        parent.addRange(child1);
+        parent.addRange(emptyRange);
+        parent.addRange(child2);
+
+        emptyRange.remove();
+
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
       });
 
       it('should remove a record range surrounded by other ranges', () => {
@@ -109,9 +153,9 @@ export function main() {
         parent.addRange(child2);
         parent.addRange(child3);
 
-        parent.removeRange(child2);
+        child2.remove();
 
-        expect(humanize(parent, recordNames)).toEqual(['record1', 'record3']);
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record3']);
       });
     });
 
@@ -140,7 +184,7 @@ export function main() {
 
         rr.disableRecord(record1);
 
-        expect(humanize(rr, recordNames)).toEqual([]);
+        expect(enabledRecords(rr, recordNames)).toEqual([]);
       });
 
       it('should enable a single record', () => {
@@ -149,7 +193,7 @@ export function main() {
 
         rr.enableRecord(record1);
 
-        expect(humanize(rr, recordNames)).toEqual(['record1']);
+        expect(enabledRecords(rr, recordNames)).toEqual(['record1']);
       });
 
       it('should disable a record', () => {
@@ -164,7 +208,7 @@ export function main() {
         expect(record2.disabled).toBeTruthy();
         expect(record3.disabled).toBeTruthy();
 
-        expect(humanize(rr, recordNames)).toEqual(['record1', 'record4']);
+        expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record4']);
       });
 
       it('should enable a record', () => {
@@ -178,7 +222,30 @@ export function main() {
         rr.enableRecord(record2);
         rr.enableRecord(record3);
 
-        expect(humanize(rr, recordNames)).toEqual(['record1', 'record2', 'record3', 'record4']);
+        expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record2', 'record3', 'record4']);
+      });
+
+      it('should disable a single record in a range', () => {
+        var rr1 = new RecordRange(null, null);
+        rr1.addRecord(record1);
+
+        var rr2 = new RecordRange(null, null);
+        rr2.addRecord(record2);
+
+        var rr3 = new RecordRange(null, null);
+        rr3.addRecord(record3);
+
+        rr.addRange(rr1);
+        rr.addRange(rr2);
+        rr.addRange(rr3);
+
+        rr2.disableRecord(record2);
+
+        expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record3']);
+
+        rr2.enableRecord(record2);
+
+        expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record2', 'record3']);
       });
     });
 
@@ -216,19 +283,20 @@ export function main() {
         var parent = new RecordRange(null, null);
         parent.addRange(child1);
 
-        parent.disableRange(child1);
+        child1.disable();
 
-        expect(humanize(parent, recordNames)).toEqual([]);
+        expect(enabledRecords(parent, recordNames)).toEqual([]);
       });
 
       it('should enable a single record range', () => {
         var parent = new RecordRange(null, null);
         parent.addRange(child1);
-        parent.disableRange(child1);
 
-        parent.enableRange(child1);
+        child1.disable();
 
-        expect(humanize(parent, recordNames)).toEqual(['record1']);
+        child1.enable();
+
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1']);
       });
 
       it('should disable a record range', () => {
@@ -238,10 +306,10 @@ export function main() {
         parent.addRange(child3);
         parent.addRange(child4);
 
-        parent.disableRange(child2);
-        parent.disableRange(child3);
+        child2.disable();
+        child3.disable();
 
-        expect(humanize(parent, recordNames)).toEqual(['record1', 'record4']);
+        expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record4']);
       });
 
       it('should enable a record range', () => {
@@ -250,13 +318,14 @@ export function main() {
         parent.addRange(child2);
         parent.addRange(child3);
         parent.addRange(child4);
-        parent.disableRange(child2);
-        parent.disableRange(child3);
 
-        parent.enableRange(child2);
-        parent.enableRange(child3);
+        child2.disable();
+        child2.disable();
 
-        expect(humanize(parent, recordNames)).toEqual([
+        child2.enable();
+        child3.enable();
+
+        expect(enabledRecords(parent, recordNames)).toEqual([
           'record1', 'record2', 'record3', 'record4'
         ]);
       });

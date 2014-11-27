@@ -194,3 +194,7 @@ export function looseIdentical(a, b):boolean {
 export function getMapKey(value) {
   return value;
 }
+
+export function normalizeBlank(obj) {
+  return isBlank(obj) ? null : obj;
+}

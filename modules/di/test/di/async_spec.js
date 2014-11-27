@@ -13,12 +13,14 @@ class SynchronousUserList {
 }
 
 class UserController {
+  list:UserList;
   constructor(list:UserList) {
     this.list = list;
   }
 }
 
 class AsyncUserController {
+  userList;
   constructor(@InjectPromise(UserList) userList) {
     this.userList = userList;
   }

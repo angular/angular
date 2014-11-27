@@ -2,17 +2,16 @@ import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/la
 import {Element} from 'facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection';
 
+import {reflector} from 'reflection/reflection';
+
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {ProtoRecordRange} from 'change_detection/record_range';
 
-import {Directive} from '../../annotations/directive';
-import {Component} from '../../annotations/component';
+import {Component, Directive} from '../../annotations/annotations';
 import {AnnotatedType} from '../annotated_type';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from '../view';
 import {ProtoElementInjector} from '../element_injector';
 import {ElementBinder} from '../element_binder';
-import {Reflector} from '../reflector';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -44,12 +43,8 @@ import {CompileControl} from './compile_control';
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
-  constructor(closureMap:ClosureMap) {
-    this._closureMap = closureMap;
-  }
-
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    var elementBinder;
+    var elementBinder = null;
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
       elementBinder = protoView.bindElement(current.inheritedProtoElementInjector,
@@ -125,7 +120,7 @@ export class ElementBinderBuilder extends CompileStep {
           directiveIndex++,
           expression.ast,
           dirProp,
-          this._closureMap.setter(dirProp)
+          reflector.setter(dirProp)
         );
       });
     });

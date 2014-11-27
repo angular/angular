@@ -3,19 +3,17 @@ import {ListWrapper, MapWrapper} from 'facade/collection';
 import {stringify, looseIdentical} from 'facade/lang';
 
 export class MapChanges {
-  // todo(vicb) add as fields when supported
-  /*
-  final _records = new HashMap<dynamic, MapKeyValue>();
-  Map _map;
+  _records:Map;
+  _map:Map;
 
-  Map get map => _map;
-
-  MapKeyValue<K, V> _mapHead;
-  MapKeyValue<K, V> _previousMapHead;
-  MapKeyValue<K, V> _changesHead, _changesTail;
-  MapKeyValue<K, V> _additionsHead, _additionsTail;
-  MapKeyValue<K, V> _removalsHead, _removalsTail;
-  */
+  _mapHead:MapChangeRecord;
+  _previousMapHead:MapChangeRecord;
+  _changesHead:MapChangeRecord;
+  _changesTail:MapChangeRecord;
+  _additionsHead:MapChangeRecord;
+  _additionsTail:MapChangeRecord;
+  _removalsHead:MapChangeRecord;
+  _removalsTail:MapChangeRecord;
 
   constructor() {
     this._records = MapWrapper.create();
@@ -317,18 +315,16 @@ export class MapChanges {
 }
 
 export class MapChangeRecord {
-  // todo(vicb) add as fields
-  //final K key;
-  //V _previousValue, _currentValue;
-  //
-  //V get previousValue => _previousValue;
-  //V get currentValue => _currentValue;
-  //
-  //MapKeyValue<K, V> _nextPrevious;
-  //MapKeyValue<K, V> _next;
-  //MapKeyValue<K, V> _nextAdded;
-  //MapKeyValue<K, V> _nextRemoved, _prevRemoved;
-  //MapKeyValue<K, V> _nextChanged;
+  key;
+  _previousValue;
+  _currentValue;
+
+  _nextPrevious:MapChangeRecord;
+  _next:MapChangeRecord;
+  _nextAdded:MapChangeRecord;
+  _nextRemoved:MapChangeRecord;
+  _prevRemoved:MapChangeRecord;
+  _nextChanged:MapChangeRecord;
 
   constructor(key) {
     this.key = key;

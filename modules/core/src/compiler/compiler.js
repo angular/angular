@@ -4,16 +4,15 @@ import {List, ListWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 
-import {Reflector} from './reflector';
+import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {ProtoView} from './view';
 import {CompilePipeline} from './pipeline/compile_pipeline';
 import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {AnnotatedType} from './annotated_type';
-import {Component} from '../annotations/component';
+import {Component} from '../annotations/annotations';
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -21,11 +20,13 @@ import {Component} from '../annotations/component';
  * the CompilePipeline and the CompileSteps.
  */
 export class Compiler {
-  constructor(templateLoader:TemplateLoader, reflector: Reflector, parser:Parser, closureMap:ClosureMap) {
+  _templateLoader:TemplateLoader;
+  _reader: DirectiveMetadataReader;
+  _parser:Parser;
+  constructor(templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser) {
     this._templateLoader = templateLoader;
-    this._reflector = reflector;
+    this._reader = reader;
     this._parser = parser;
-    this._closureMap = closureMap;
   }
 
   createSteps(component:AnnotatedType):List<CompileStep> {
@@ -33,16 +34,16 @@ export class Compiler {
     var directives = annotation.template.directives;
     var annotatedDirectives = ListWrapper.create();
     for (var i=0; i<directives.length; i++) {
-      ListWrapper.push(annotatedDirectives, this._reflector.annotatedType(directives[i]));
+      ListWrapper.push(annotatedDirectives, this._reader.annotatedType(directives[i]));
     }
-    return createDefaultSteps(this._parser, this._closureMap, annotatedDirectives);
+    return createDefaultSteps(this._parser, annotatedDirectives);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
     // TODO load all components transitively from the cache first
     var cache = null;
     return PromiseWrapper.resolve(this.compileWithCache(
-      cache, this._reflector.annotatedType(component), templateRoot)
+      cache, this._reader.annotatedType(component), templateRoot)
     );
   }
 
@@ -53,7 +54,7 @@ export class Compiler {
       // - templateRoot string
       // - precompiled template
       // - ProtoView
-      var annotation: Component = component.annotation;
+      var annotation:any = component.annotation;
       templateRoot = DOM.createTemplate(annotation.template.inline);
     }
     var pipeline = new CompilePipeline(this.createSteps(component));

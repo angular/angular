@@ -29,6 +29,7 @@ import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'core/c
   })
 })
 class HelloCmp {
+  greeting: string;
   constructor(service: GreetingService) {
     this.greeting = service.greeting;
   }
@@ -49,6 +50,7 @@ class RedDec {
 
 // A service used by the HelloCmp component.
 class GreetingService {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }

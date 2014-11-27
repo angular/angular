@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
 import {isPresent, isBlank} from 'facade/lang';
 import {DOM} from 'facade/dom';
-import {ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'core/compiler/pipeline/proto_element_injector_builder';
 import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
@@ -9,10 +9,8 @@ import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 import {ProtoView} from 'core/compiler/view';
-import {Reflector} from 'core/compiler/reflector';
-import {Template} from 'core/annotations/template';
-import {Decorator} from 'core/annotations/decorator';
-import {Component} from 'core/annotations/component';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Template, Decorator, Component} from 'core/annotations/annotations';
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 
 export function main() {
@@ -27,14 +25,14 @@ export function main() {
       if (isBlank(directives)) {
         directives = [];
       }
-      var reflector = new Reflector();
+      var reader = new DirectiveMetadataReader();
       return new CompilePipeline([new MockStep((parent, current, control) => {
         if (isPresent(current.element.getAttribute('viewroot'))) {
           current.isViewRoot = true;
         }
         if (isPresent(current.element.getAttribute('directives'))) {
           for (var i=0; i<directives.length; i++) {
-            current.addDirective(reflector.annotatedType(directives[i]));
+            current.addDirective(reader.annotatedType(directives[i]));
           }
         }
         current.inheritedProtoView = protoView;
@@ -107,6 +105,7 @@ export function main() {
 
 
 class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
+  debugObjects:List;
   constructor() {
     this.debugObjects = [];
   }
@@ -127,6 +126,7 @@ class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
 }
 
 class MockStep extends CompileStep {
+  processClosure:Function;
   constructor(process) {
     this.processClosure = process;
   }

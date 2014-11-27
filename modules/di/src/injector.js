@@ -2,14 +2,14 @@ import {Map, List, MapWrapper, ListWrapper} from 'facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
 import {ProviderError, NoProviderError, InvalidBindingError,
   AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
-import {Type, isPresent, isBlank} from 'facade/lang';
+import {FunctionWrapper, Type, isPresent, isBlank} from 'facade/lang';
 import {Promise, PromiseWrapper} from 'facade/async';
 import {Key} from './key';
-import {reflector} from './reflector';
 
 var _constructing = new Object();
 
 class _Waiting {
+  promise:Promise;
   constructor(promise:Promise) {
     this.promise = promise;
   }
@@ -20,6 +20,12 @@ function _isWaiting(obj):boolean {
 
 
 export class Injector {
+  _bindings:List;
+  _instances:List;
+  _parent:Injector;
+  _defaultBindings:boolean;
+  _asyncStrategy: _AsyncInjectorStrategy;
+  _syncStrategy:_SyncInjectorStrategy;
   constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
@@ -116,6 +122,7 @@ export class Injector {
 
 
 class _SyncInjectorStrategy {
+  injector:Injector;
   constructor(injector:Injector) {
     this.injector = injector;
   }
@@ -151,7 +158,7 @@ class _SyncInjectorStrategy {
 
   _createInstance(key:Key, binding:Binding, deps:List) {
     try {
-      var instance = reflector.invoke(binding.factory, deps);
+      var instance = FunctionWrapper.apply(binding.factory, deps);
       this.injector._setInstance(key, instance);
       return instance;
     } catch (e) {
@@ -163,6 +170,7 @@ class _SyncInjectorStrategy {
 
 
 class _AsyncInjectorStrategy {
+  injector:Injector;
   constructor(injector:Injector) {
     this.injector = injector;
   }
@@ -212,7 +220,7 @@ class _AsyncInjectorStrategy {
     try {
       var instance = this.injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
-      return reflector.invoke(binding.factory, deps);
+      return FunctionWrapper.apply(binding.factory, deps);
     } catch (e) {
       this.injector._clear(key);
       throw new InstantiationError(e, key);

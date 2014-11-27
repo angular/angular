@@ -24,6 +24,9 @@ System.paths = {
   'di/*': './di/src/*.js',
   'di/test/*': './di/test/*.js',
 
+  'reflection/*': './reflection/src/*.js',
+  'reflection/test/*': './reflection/test/*.js',
+
   'rtts_assert/*': './rtts_assert/src/*.js',
   'rtts_assert/test/*': './rtts_assert/test/*.js',
 

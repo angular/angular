@@ -1,12 +1,18 @@
-import {ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/collection';
 import {DOM} from 'facade/dom';
 import {CompileElement} from './compile_element';
+import {CompileStep} from './compile_step';
 
 /**
  * Controls the processing order of elements.
  * Right now it only allows to add a parent element.
  */
 export class CompileControl {
+  _steps:List<CompileStep>;
+  _currentStepIndex:number;
+  _parent:CompileElement;
+  _current:CompileElement;
+  _results;
   constructor(steps) {
     this._steps = steps;
     this._currentStepIndex = 0;

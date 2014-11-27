@@ -9,6 +9,7 @@ import {CONST} from "facade/lang";
  *
  */
 export class Inject {
+  token;
   @CONST()
   constructor(token) {
     this.token = token;
@@ -26,6 +27,7 @@ export class Inject {
  *
  */
 export class InjectPromise {
+  token;
   @CONST()
   constructor(token) {
     this.token = token;
@@ -43,6 +45,7 @@ export class InjectPromise {
  *
  */
 export class InjectLazy {
+  token;
   @CONST()
   constructor(token) {
     this.token = token;

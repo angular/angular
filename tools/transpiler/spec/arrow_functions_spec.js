@@ -13,6 +13,8 @@ var max = (a, b) => {
 };
 
 class LexicalThis {
+  zero;
+
   constructor() {
     this.zero = 0;
   }

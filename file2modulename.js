@@ -1,5 +1,5 @@
 function file2moduleName(filePath) {
-  return filePath
+  return filePath.replace(/\\/g, '/')
     // module name should be relative to `modules` and `tools` folder
     .replace(/.*\/modules\//, '')
     .replace(/.*\/tools\//, '')

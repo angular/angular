@@ -3,9 +3,9 @@ import {MapWrapper, Map} from 'facade/collection';
 import {FIELD, int, isPresent} from 'facade/lang';
 
 export class Key {
-  @FIELD('final token')
-  @FIELD('final id:int')
-  @FIELD('metadata:Object')
+  token;
+  id:int;
+  metadata:any;
   constructor(token, id:int) {
     this.token = token;
     this.id = id;
@@ -30,7 +30,7 @@ export class Key {
 }
 
 export class KeyRegistry {
-  @FIELD('final _allKeys:Map')
+  _allKeys:Map;
   constructor() {
     this._allKeys = MapWrapper.create();
   }

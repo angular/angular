@@ -4,6 +4,7 @@ import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {View} from 'core/compiler/view';
+import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -15,10 +16,14 @@ var _undefined = new Object();
 var _staticKeys;
 
 class StaticKeys {
+  viewId:int;
+  ngElementId:int;
+  viewPortId:int;
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
     this.viewId = Key.get(View).id;
     this.ngElementId = Key.get(NgElement).id;
+    this.viewPortId = Key.get(ViewPort).id;
   }
 
   static instance() {
@@ -28,11 +33,11 @@ class StaticKeys {
 }
 
 class TreeNode {
-  @FIELD('_parent:TreeNode')
-  @FIELD('_head:TreeNode')
-  @FIELD('_tail:TreeNode')
-  @FIELD('_next:TreeNode')
-  @FIELD('_prev:TreeNode')
+  _parent:TreeNode;
+  _head:TreeNode;
+  _tail:TreeNode;
+  _next:TreeNode;
+  _prev:TreeNode;
   constructor(parent:TreeNode) {
     this._parent = parent;
     this._head = null;
@@ -59,6 +64,10 @@ class TreeNode {
     return this._parent;
   }
 
+  set parent(node:TreeNode) {
+    this._parent = node;
+  }
+
   get children() {
     var res = [];
     var child = this._head;
@@ -71,6 +80,7 @@ class TreeNode {
 }
 
 class DirectiveDependency extends Dependency {
+  depth:int;
   constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int) {
     super(key, asPromise, lazy, properties);
     this.depth = depth;
@@ -89,12 +99,16 @@ class DirectiveDependency extends Dependency {
   }
 }
 
+
+// TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
-  @FIELD('final view:View')
-  @FIELD('final element:NgElement')
-  constructor(view, element:NgElement) {
+  view:View;
+  element:NgElement;
+  viewPort:ViewPort;
+  constructor(view, element:NgElement, viewPort: ViewPort) {
     this.view = view;
     this.element = element;
+    this.viewPort = viewPort;
   }
 }
 
@@ -119,30 +133,30 @@ ElementInjector:
  */
 
 export class ProtoElementInjector  {
-  @FIELD('_binding0:Binding')
-  @FIELD('_binding1:Binding')
-  @FIELD('_binding2:Binding')
-  @FIELD('_binding3:Binding')
-  @FIELD('_binding4:Binding')
-  @FIELD('_binding5:Binding')
-  @FIELD('_binding6:Binding')
-  @FIELD('_binding7:Binding')
-  @FIELD('_binding8:Binding')
-  @FIELD('_binding9:Binding')
-  @FIELD('_binding0IsComponent:int')
-  @FIELD('_key0:int')
-  @FIELD('_key1:int')
-  @FIELD('_key2:int')
-  @FIELD('_key3:int')
-  @FIELD('_key4:int')
-  @FIELD('_key5:int')
-  @FIELD('_key6:int')
-  @FIELD('_key7:int')
-  @FIELD('_key8:int')
-  @FIELD('_key9:int')
-  @FIELD('final parent:ProtoElementInjector')
-  @FIELD('final index:int')
-  @FIELD('view:View')
+  _binding0:Binding;
+  _binding1:Binding;
+  _binding2:Binding;
+  _binding3:Binding;
+  _binding4:Binding;
+  _binding5:Binding;
+  _binding6:Binding;
+  _binding7:Binding;
+  _binding8:Binding;
+  _binding9:Binding;
+  _binding0IsComponent:boolean;
+  _keyId0:int;
+  _keyId1:int;
+  _keyId2:int;
+  _keyId3:int;
+  _keyId4:int;
+  _keyId5:int;
+  _keyId6:int;
+  _keyId7:int;
+  _keyId8:int;
+  _keyId9:int;
+  parent:ProtoElementInjector;
+  index:int;
+  view:View;
   constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
     this.parent = parent;
     this.index = index;
@@ -194,21 +208,23 @@ export class ProtoElementInjector  {
 }
 
 export class ElementInjector extends TreeNode {
-  @FIELD('_proto:ProtoElementInjector')
-  @FIELD('_lightDomAppInjector:Injector')
-  @FIELD('_shadowDomAppInjector:Injector')
-  @FIELD('_host:ElementInjector')
-  @FIELD('_obj0:Object')
-  @FIELD('_obj1:Object')
-  @FIELD('_obj2:Object')
-  @FIELD('_obj3:Object')
-  @FIELD('_obj4:Object')
-  @FIELD('_obj5:Object')
-  @FIELD('_obj6:Object')
-  @FIELD('_obj7:Object')
-  @FIELD('_obj8:Object')
-  @FIELD('_obj9:Object')
-  @FIELD('_view:View')
+  _proto:ProtoElementInjector;
+  _lightDomAppInjector:Injector;
+  _shadowDomAppInjector:Injector;
+  _host:ElementInjector;
+  _obj0:any;
+  _obj1:any;
+  _obj2:any;
+  _obj3:any;
+  _obj4:any;
+  _obj5:any;
+  _obj6:any;
+  _obj7:any;
+  _obj8:any;
+  _obj9:any;
+  _view:View;
+  _preBuiltObjects;
+  _constructionCounter;
   constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
@@ -405,6 +421,11 @@ export class ElementInjector extends TreeNode {
     var staticKeys = StaticKeys.instance();
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
+    if (keyId === staticKeys.viewPortId) {
+      if (isBlank(staticKeys.viewPortId)) throw new BaseException(
+          'ViewPort is constructed only for @Template directives');
+      return this._preBuiltObjects.viewPort;
+    }
     //TODO add other objects as needed
     return _undefined;
   }
@@ -441,6 +462,7 @@ export class ElementInjector extends TreeNode {
 }
 
 class OutOfBoundsAccess extends Error {
+  message:string;
   constructor(index) {
     this.message = `Index ${index} is out-of-bounds.`;
   }

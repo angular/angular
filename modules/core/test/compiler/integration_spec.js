@@ -5,14 +5,13 @@ import {DOM} from 'facade/dom';
 import {Injector} from 'di/di';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 
 import {Compiler} from 'core/compiler/compiler';
-import {Reflector} from 'core/compiler/reflector';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
+import {Component} from 'core/annotations/annotations';
+import {Decorator} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 
 export function main() {
@@ -20,8 +19,7 @@ export function main() {
     var compiler;
 
     beforeEach( () => {
-      var closureMap = new ClosureMap();
-      compiler = new Compiler(null, new Reflector(), new Parser(new Lexer(), closureMap), closureMap);
+      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()));
     });
 
     describe('react to record changes', function() {
@@ -87,6 +85,7 @@ export function main() {
   bind: {'elprop':'dirProp'}
 })
 class MyDir {
+  dirProp:string;
   constructor() {
     this.dirProp = '';
   }
@@ -98,6 +97,7 @@ class MyDir {
   })
 })
 class MyComp {
+  ctxProp:string;
   constructor() {
     this.ctxProp = 'initial value';
   }
@@ -112,12 +112,14 @@ class MyComp {
   })
 })
 class ChildComp {
+  ctxProp:string;
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
   }
 }
 
 class MyService {
+  greeting:string;
   constructor() {
     this.greeting = 'hello';
   }

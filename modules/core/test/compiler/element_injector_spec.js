@@ -1,14 +1,20 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, FakeObject} from 'test_lib/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
+import {ProtoRecordRange} from 'change_detection/record_range';
+import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
-@IMPLEMENTS(View)
-class DummyView {}
+//TODO: vsavkin: use a spy object
+class DummyView extends View {
+  constructor() {
+    super(null, null, null, null, null, new ProtoRecordRange(), null);
+  }
+}
 
 class Directive {
 }
@@ -18,28 +24,28 @@ class SomeOtherDirective {
 }
 
 class NeedsDirective {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromParent {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Parent() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromAncestor {
-  @FIELD("dependency:Directive")
+  dependency:Directive;
   constructor(@Ancestor() dependency:Directive){
     this.dependency = dependency;
   }
 }
 
 class NeedsService {
-  @FIELD("service:Object")
+  service:any;
   constructor(@Inject("service") service) {
     this.service = service;
   }
@@ -54,14 +60,14 @@ class B_Needs_A {
 }
 
 class NeedsView {
-  @FIELD("view:Object")
+  view:any;
   constructor(@Inject(View) view) {
     this.view = view;
   }
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -172,7 +178,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -277,16 +283,23 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
 
         expect(inj.get(NgElement)).toEqual(element);
+      });
+
+      it('should return viewPort', function () {
+        var viewPort = new ViewPort(null, null, null, null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort));
+
+        expect(inj.get(ViewPort)).toEqual(viewPort);
       });
     });
   });

@@ -5,6 +5,8 @@ function sum(a, b) {
 }
 
 class ConstructorWithNamedParams {
+  sum;
+
   constructor(a, {b=1, c=2}) {
     this.sum = a + b + c;
   }

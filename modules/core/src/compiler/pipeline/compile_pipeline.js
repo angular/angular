@@ -10,6 +10,7 @@ import {AnnotatedType} from '../annotated_type';
  * all elements in a template.
  */
 export class CompilePipeline {
+  _control:CompileControl;
   constructor(steps:List<CompileStep>) {
     this._control = new CompileControl(steps);
   }

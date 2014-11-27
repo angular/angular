@@ -2,6 +2,7 @@ import {benchmark, benchmarkStep} from '../benchpress';
 
 var COUNT = 30;
 var $compile;
+var $rootScope;
 
 export function main() {
 
@@ -22,6 +23,21 @@ export function main() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = template.cloneNode(true);
       $compile(cloned);
+    });
+  });
+
+  benchmark(`Ng 1.3 instantiate 5*${COUNT} element with bindings`, function() {
+    var linkFn;
+
+    setTimeout(function() {
+      var template = loadTemplate('templateWithBindings', COUNT);
+      linkFn = $compile(template);
+    });
+
+    benchmarkStep('run', function() {
+      var scope = $rootScope.$new();
+      linkFn(scope);
+      scope.$destroy();
     });
   });
 
@@ -96,7 +112,8 @@ angular.module('app', [])
     }
   };
 })
-.run(function(_$compile_) {
+.run(function(_$compile_, _$rootScope_) {
   $compile = _$compile_;
+  $rootScope = _$rootScope_;
 });
 

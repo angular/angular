@@ -1,28 +1,28 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {Reflector} from 'core/compiler/reflector';
-import {Component} from 'core/annotations/component';
-import {Decorator} from 'core/annotations/decorator';
+import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {ProtoRecordRange} from 'change_detection/record_range';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {Parser} from 'change_detection/parser/parser';
-import {ClosureMap} from 'change_detection/parser/closure_map';
 import {Lexer} from 'change_detection/parser/lexer';
 import {DOM, Element} from 'facade/dom';
 import {FIELD} from 'facade/lang';
 import {Injector} from 'di/di';
 import {View} from 'core/compiler/view';
+import {ViewPort} from 'core/compiler/viewport';
+import {reflector} from 'reflection/reflection';
 
 export function main() {
   describe('view', function() {
-    var parser, closureMap, someComponentDirective;
+    var parser, someComponentDirective, someTemplateDirective;
 
     beforeEach(() => {
-      closureMap = new ClosureMap();
-      parser = new Parser(new Lexer(), closureMap);
-      someComponentDirective = new Reflector().annotatedType(SomeComponent);
+      parser = new Parser(new Lexer());
+      someComponentDirective = new DirectiveMetadataReader().annotatedType(SomeComponent);
+      someTemplateDirective = new DirectiveMetadataReader().annotatedType(SomeTemplate);
     });
 
 
@@ -215,7 +215,7 @@ export function main() {
 
           var view = createNestedView(pv);
 
-          var subView = view.childViews[0];
+          var subView = view.componentChildViews[0];
           var subInj = subView.rootElementInjectors[0];
           var subDecorator = subInj.get(ServiceDependentDecorator);
           var comp = view.rootElementInjectors[0].get(SomeComponent);
@@ -223,6 +223,28 @@ export function main() {
           expect(subDecorator).toBeAnInstanceOf(ServiceDependentDecorator);
           expect(subDecorator.service).toBe(comp.service);
           expect(subDecorator.component).toBe(comp);
+        });
+      });
+
+      describe('recurse over child templateViews', () => {
+        var ctx, view, cd;
+        function createView(protoView) {
+          ctx = new MyEvaluationContext();
+          view = protoView.instantiate(ctx, null, null);
+        }
+
+        it('should create a viewPort for the template directive', () => {
+          var templateProtoView = new ProtoView(
+              createElement('<div id="1"></div>'), new ProtoRecordRange());
+          var pv = new ProtoView(createElement('<someTmpl class="ng-binding"></someTmpl>'), new ProtoRecordRange());
+          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeTemplate]));
+          binder.templateDirective = someTemplateDirective;
+          binder.nestedProtoView = templateProtoView;
+
+          createView(pv);
+
+          var tmplComp = view.rootElementInjectors[0].get(SomeTemplate);
+          expect(tmplComp.viewPort).not.toBe(null);
         });
       });
 
@@ -263,7 +285,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('foo').ast, 'prop', closureMap.setter('prop'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('foo').ast, 'prop', reflector.setter('prop'));
           createView(pv);
 
           ctx.foo = 'buz';
@@ -296,7 +318,7 @@ export function main() {
 }
 
 class SomeDirective {
-  @FIELD('prop')
+  prop;
   constructor() {
     this.prop = 'foo';
   }
@@ -308,6 +330,7 @@ class SomeService {}
   componentServices: [SomeService]
 })
 class SomeComponent {
+  service: SomeService;
   constructor(service: SomeService) {
     this.service = service;
   }
@@ -317,21 +340,34 @@ class SomeComponent {
   selector: '[dec]'
 })
 class ServiceDependentDecorator {
+  component: SomeComponent;
+  service: SomeService;
   constructor(component: SomeComponent, service: SomeService) {
     this.component = component;
     this.service = service;
   }
 }
 
+@Template({
+  selector: 'someTmpl'
+})
+class SomeTemplate {
+  viewPort: ViewPort;
+  constructor(viewPort: ViewPort) {
+    this.viewPort = viewPort;
+  }
+}
+
+
 class AnotherDirective {
-  @FIELD('prop')
+  prop:string;
   constructor() {
     this.prop = 'anotherFoo';
   }
 }
 
 class MyEvaluationContext {
-  @FIELD('foo')
+  foo:string;
   constructor() {
     this.foo = 'bar';
   };

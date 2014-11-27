@@ -1,7 +1,8 @@
-import {describe, it, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, iit, it, expect, beforeEach} from 'test_lib/test_lib';
 import {Key, KeyRegistry} from 'di/di';
 
 export function main() {
+
   describe("key", function () {
     var registry;
 

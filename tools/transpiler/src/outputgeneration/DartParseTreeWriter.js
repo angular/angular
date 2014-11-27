@@ -49,8 +49,11 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     if (tree.typeAnnotation === null) {
-      this.write_(VAR);
+      this.write_(tree.isFinal ? 'final' : VAR);
     } else {
+      if (tree.isFinal) {
+        this.write_('final');
+      }
       this.writeType_(tree.typeAnnotation);
     }
     this.writeSpace_();
@@ -215,6 +218,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       case 'number': return 'num';
       case 'boolean': return 'bool';
       case 'string': return 'String';
+      case 'any': return 'dynamic';
       case 'Promise': return 'Future';
       default: return typeName;
     }
@@ -248,25 +252,6 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
   }
 
-  visitClassFieldDeclaration(tree) {
-    if (tree.isFinal) {
-      // `final <type> name;` or `final name;` for untyped variable
-      this.write_('final');
-      this.writeSpace_();
-      this.writeType_(tree.typeAnnotation);
-    } else {
-      // `<type> name;` or `var name;`
-      if (tree.typeAnnotation) {
-        this.writeType_(tree.typeAnnotation);
-      } else {
-        this.write_(VAR);
-        this.writeSpace_();
-      }
-    }
-
-    this.write_(tree.lvalue.getStringValue());
-    this.write_(SEMI_COLON);
-  }
 
   writeType_(typeAnnotation) {
     if (!typeAnnotation) {

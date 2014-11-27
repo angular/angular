@@ -4,5 +4,7 @@ environment:
 dependencies:
   facade:
     path: ../facade
+  reflection:
+    path: ../reflection
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"
