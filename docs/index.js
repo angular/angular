@@ -65,11 +65,25 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
   computeIdsProcessor.idTemplates.push({
     docTypes: ['module'],
-    idTemplate: '${moduleName}'
+    idTemplate: '${moduleTree.moduleName}',
+    getAliases: function(doc) {
+      // This creates aliases by pulling off each path segment in turn:
+      // "a/b/c" will have aliases ["a/b/c", "b/c", "c"]
+      // @rado - IS THIS WHAT WE WANT OR ARE MODULE NAMES NOT RELATIVE LIKE THIS?
+      var aliases = [];
+      var parts = doc.id.split('/');
+      while(parts.length) {
+        aliases.push(parts.join('/'));
+        parts.shift();
+      }
+      return aliases;
+    }
+
   });
 
   computePathsProcessor.pathTemplates.push({
-    docTypes: ['atScriptDoc'],
-    outputPathTemplate: '${docType}-${startingLine}.html'
+    docTypes: ['module'],
+    pathTemplate: '${id}',
+    outputPathTemplate: '${id}.html'
   });
 });
