@@ -1,7 +1,32 @@
 library facade.collection;
 
-import 'dart:collection' show HashMap;
+import 'dart:collection' show HashMap, IterableMixin, Iterator;
 export 'dart:core' show Map, List, Set;
+
+class MapIterator extends Iterator<List> {
+  Iterator _iterator;
+  Map _map;
+
+  MapIterator(Map map) {
+    this._map = map;
+    this._iterator = map.keys.iterator;
+  }
+  bool moveNext() {
+    return this._iterator.moveNext();
+  }
+  List get current {
+    return [this._iterator.current, this._map[this._iterator.current]];
+  }
+}
+
+class IterableMap extends Object with IterableMixin<List> {
+  Map _map;
+
+  IterableMap(Map map) {
+    this._map = map;
+  }
+  Iterator<List> get iterator => new MapIterator(this._map);
+}
 
 class MapWrapper {
   static HashMap create() => new HashMap();
@@ -21,6 +46,7 @@ class MapWrapper {
   static int size(m) {return m.length;}
   static void delete(m, k) { m.remove(k); }
   static void clear(m) { m.clear(); }
+  static Iterable iterable(m) { return new IterableMap(m); }
 }
 
 // TODO: how to export StringMap=Map as a type?
