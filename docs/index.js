@@ -98,8 +98,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   });
 
   computePathsProcessor.pathTemplates.push({
+    docTypes: ['module'],
+    pathTemplate: '${id}',
+    outputPathTemplate: '${id}/index.html'
+  });
+
+  computePathsProcessor.pathTemplates.push({
     docTypes: [
-      'module',
       'class',
       'function',
       'NAMED_EXPORT',
