@@ -1,0 +1,10 @@
+<h1>{$ doc.id $} <span class="type">class</span></h1>
+<p class="module">exported from <a href="/{$ doc.module.id $}">{$ doc.module.id $}</a></p>
+<p>{$ doc.description | marked $}</p>
+
+<h2>Members</h2>
+<ul>
+{% for member in doc.elements %}
+  <li>{$ member.name.literalToken.value $}</li>
+{% endfor %}
+</ul>
