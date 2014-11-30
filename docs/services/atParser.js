@@ -36,6 +36,7 @@ module.exports = function atParser(log) {
     var sourceFile = new traceur.syntax.SourceFile(moduleName, fileInfo.content);
     var parser = new traceur.syntax.Parser(sourceFile);
     var comments = [];
+    var moduleTree;
 
     // Configure the parser
     parser.handleComment = function(range) {
@@ -43,10 +44,18 @@ module.exports = function atParser(log) {
     };
     traceur.options.setFromObject(service.traceurOptions);
 
-    // Parse the file as a module, attaching the comments
-    var moduleTree = parser.parseModule();
+    try {
+      // Parse the file as a module, attaching the comments
+      moduleTree = parser.parseModule();
+      attachComments(moduleTree, comments);
+    } catch(ex) {
+      // HACK: sometime traceur crashes for various reasons including
+      // Not Yet Implemented (NYI)!
+      log.error(ex.stack);
+      moduleTree = {};
+    }
+    console.log(moduleName);
     moduleTree.moduleName = moduleName;
-    attachComments(moduleTree, comments);
 
     // We return the module AST but also a collection of all the comments
     // since it can be helpful to iterate through them without having to
@@ -69,7 +78,7 @@ module.exports = function atParser(log) {
     // Really we ought to subclass ParseTreeVisitor but this is fiddly in ES5 so
     // it is easier to simply override the prototype's method on the instance
     visitor.visitAny = function(tree) {
-      if (tree && tree.location && currentComment) {
+      if (tree && tree.location && tree.location.start && currentComment) {
         if (currentComment.range.end.offset < tree.location.start.offset) {
           log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
           tree.commentBefore = currentComment;
@@ -83,6 +92,6 @@ module.exports = function atParser(log) {
     };
 
     // Visit every node of the tree using our custom method
-    visitor.visitAny(tree);
+    visitor.visit(tree);
   }
 };
