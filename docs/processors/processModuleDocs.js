@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function processModuleDocs(log, ExportVisitor, getJSDocComment) {
+module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComment) {
 
   return {
     $runAfter: ['files-read'],
@@ -16,7 +16,7 @@ module.exports = function processModuleDocs(log, ExportVisitor, getJSDocComment)
           doc.exports = [];
 
           if ( doc.moduleTree.visit ) {
-            var visitor = new ExportVisitor();
+            var visitor = new ExportTreeVisitor();
             visitor.visit(doc.moduleTree);
 
             _.forEach(visitor.exports, function(exportDoc) {
@@ -34,7 +34,6 @@ module.exports = function processModuleDocs(log, ExportVisitor, getJSDocComment)
                 }
 
                 _.assign(exportDoc, getJSDocComment(exportDoc.comment));
-                console.log(exportDoc.content);
               }
 
             });

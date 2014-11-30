@@ -1,12 +1,12 @@
 var traceur = require('traceur/src/node/traceur.js');
 var ParseTreeVisitor = System.get("traceur@0.0.74/src/syntax/ParseTreeVisitor").ParseTreeVisitor;
 
-module.exports = function ExportVisitor(log) {
+module.exports = function ExportTreeVisitor(log) {
 
-  function ExportVisitorImpl() {
+  function ExportTreeVisitorImpl() {
     ParseTreeVisitor.call(this);
   }
-  ExportVisitorImpl.prototype = {
+  ExportTreeVisitorImpl.prototype = {
 
     __proto__: ParseTreeVisitor.prototype,
 
@@ -104,5 +104,5 @@ module.exports = function ExportVisitor(log) {
     }
   };
 
-  return ExportVisitorImpl;
+  return ExportTreeVisitorImpl;
 };

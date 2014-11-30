@@ -9,7 +9,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Register the services and file readers
 .factory(require('./services/atParser'))
 .factory(require('./services/getJSDocComment'))
-.factory(require('./services/ExportVisitor'))
+.factory(require('./services/ExportTreeVisitor'))
 .factory(require('./readers/atScript'))
 
 
