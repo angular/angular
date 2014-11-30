@@ -59,7 +59,8 @@ module.exports = function ExportTreeVisitor(log) {
         this.currentExport.name = tree.name.identifierToken.value;
         this.currentExport.superClass = tree.superClass;
         this.currentExport.annotations = tree.annotations;
-        this.currentExport.docType = 'class'
+        this.currentExport.elements = tree.elements;
+        this.currentExport.docType = 'class';
       }
     },
     visitAsyncFunctionDeclaration: function(tree) {
