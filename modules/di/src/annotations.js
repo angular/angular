@@ -3,9 +3,11 @@ import {CONST} from "facade/lang";
 /**
  * A parameter annotation that creates a synchronous eager dependency.
  *
- *    class AComponent {
- *      constructor(@Inject('aServiceToken') aService) {}
- *    }
+ * ```
+ * class AComponent {
+ *   constructor(@Inject('aServiceToken') aService) {}
+ * }
+ * ```
  *
  */
 export class Inject {
@@ -19,11 +21,13 @@ export class Inject {
 /**
  * A parameter annotation that creates an asynchronous eager dependency.
  *
- *    class AComponent {
- *      constructor(@InjectPromise('aServiceToken') aServicePromise) {
- *        aServicePromise.then(aService => ...);
- *      }
- *    }
+ * ```
+ * class AComponent {
+ *   constructor(@InjectPromise('aServiceToken') aServicePromise) {
+ *     aServicePromise.then(aService => ...);
+ *   }
+ * }
+ * ```
  *
  */
 export class InjectPromise {
@@ -37,11 +41,13 @@ export class InjectPromise {
 /**
  * A parameter annotation that creates a synchronous lazy dependency.
  *
- *    class AComponent {
- *      constructor(@InjectLazy('aServiceToken') aServiceFn) {
- *        aService = aServiceFn();
- *      }
- *    }
+ * ```
+ * class AComponent {
+ *   constructor(@InjectLazy('aServiceToken') aServiceFn) {
+ *     aService = aServiceFn();
+ *   }
+ * }
+ * ```
  *
  */
 export class InjectLazy {
@@ -60,16 +66,20 @@ export class InjectLazy {
  *
  * For example:
  *
- *    class Parent extends DependencyAnnotation {}
- *    class NotDependencyProperty {}
+ * ```
+ * class Parent extends DependencyAnnotation {}
+ * class NotDependencyProperty {}
  *
- *    class AComponent {
- *      constructor(@Parent @NotDependencyProperty aService:AService) {}
- *    }
+ * class AComponent {
+ *   constructor(@Parent @NotDependencyProperty aService:AService) {}
+ * }
+ * ```
  *
  * will create the following dependency:
  *
- *    new Dependency(Key.get(AService), [new Parent()])
+ * ```
+ * new Dependency(Key.get(AService), [new Parent()])
+ * ```
  *
  * The framework can use `new Parent()` to handle the `aService` dependency
  * in a specific way.
