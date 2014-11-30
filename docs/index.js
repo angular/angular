@@ -9,16 +9,18 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Register the services and file readers
 .factory(require('./services/atParser'))
 .factory(require('./services/getJSDocComment'))
+.factory(require('./services/ExportVisitor'))
 .factory(require('./readers/atScript'))
 
 
 // Register the processors
 .processor(require('./processors/generateDocsFromComments'))
+.processor(require('./processors/processModuleDocs'))
 
 
 // Configure the log service
 .config(function(log) {
-  log.level = 'debug';
+  log.level = 'info';
 })
 
 
@@ -27,7 +29,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   readFilesProcessor.fileReaders = [atScriptFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '..');
   readFilesProcessor.sourceFiles = [
-    { module: 'di', include: 'modules/di/src/annotations.js', basePath: 'modules' }
+    { include: 'modules/*/src/**/*.js', basePath: 'modules' }
   ];
 })
 
@@ -63,26 +65,46 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor) {
 
+  // This creates aliases by pulling off each path segment in turn:
+  // "a/b/c" will have aliases ["a/b/c", "b/c", "c"]
+  // @rado - IS THIS WHAT WE WANT OR ARE MODULE NAMES NOT RELATIVE LIKE THIS?
+  function getAliases(doc) {
+    var aliases = [];
+
+    if ( !doc.id ) return [];
+
+    var parts = doc.id.split('/');
+    while(parts.length) {
+      aliases.push(parts.join('/'));
+      parts.shift();
+    }
+    return aliases;
+  }
+
   computeIdsProcessor.idTemplates.push({
     docTypes: ['module'],
-    idTemplate: '${moduleTree.moduleName}',
-    getAliases: function(doc) {
-      // This creates aliases by pulling off each path segment in turn:
-      // "a/b/c" will have aliases ["a/b/c", "b/c", "c"]
-      // @rado - IS THIS WHAT WE WANT OR ARE MODULE NAMES NOT RELATIVE LIKE THIS?
-      var aliases = [];
-      var parts = doc.id.split('/');
-      while(parts.length) {
-        aliases.push(parts.join('/'));
-        parts.shift();
-      }
-      return aliases;
-    }
+    getAliases: getAliases
+  });
 
+  computeIdsProcessor.idTemplates.push({
+    docTypes: [
+      'class',
+      'function',
+      'NAMED_EXPORT',
+      'VARIABLE_STATEMENT'
+    ],
+    idTemplate: '${module.id}/${name}',
+    getAliases: getAliases
   });
 
   computePathsProcessor.pathTemplates.push({
-    docTypes: ['module'],
+    docTypes: [
+      'module',
+      'class',
+      'function',
+      'NAMED_EXPORT',
+      'VARIABLE_STATEMENT'
+    ],
     pathTemplate: '${id}',
     outputPathTemplate: '${id}.html'
   });
