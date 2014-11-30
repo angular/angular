@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function generateDocsFromCommentsProcessor(log) {
+module.exports = function generateDocsFromComments(log) {
   return {
     $runAfter: ['files-read'],
     $runBefore: ['parsing-tags'],
