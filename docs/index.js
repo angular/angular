@@ -16,6 +16,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Register the processors
 .processor(require('./processors/generateDocsFromComments'))
 .processor(require('./processors/processModuleDocs'))
+.processor(require('./processors/processClassDocs'))
 
 
 // Configure the log service
@@ -93,7 +94,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
       'NAMED_EXPORT',
       'VARIABLE_STATEMENT'
     ],
-    idTemplate: '${module.id}/${name}',
+    idTemplate: '${moduleDoc.id}.${name}',
+    getAliases: getAliases
+  });
+
+  computeIdsProcessor.idTemplates.push({
+    docTypes: ['member'],
+    idTemplate: '${classDoc.id}.${name}',
     getAliases: getAliases
   });
 
@@ -110,7 +117,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
       'NAMED_EXPORT',
       'VARIABLE_STATEMENT'
     ],
-    pathTemplate: '${id}',
-    outputPathTemplate: '${id}.html'
+    pathTemplate: '${moduleDoc.path}/${name}',
+    outputPathTemplate: '${path}/index.html'
+  });
+
+  computePathsProcessor.pathTemplates.push({
+    docTypes: ['member'],
+    pathTemplate: '${classDoc.path}/${name}',
+    getOutputPath: function() {} // These docs are not written to their own file, instead they are part of their class doc
   });
 });

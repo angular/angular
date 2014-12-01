@@ -1,10 +1,14 @@
+{% extends 'layout/base.template.html' %}
+
+{% block body %}
 <h1>{$ doc.id $} <span class="type">class</span></h1>
-<p class="module">exported from <a href="/{$ doc.module.id $}">{$ doc.module.id $}</a></p>
+<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></p>
 <p>{$ doc.description | marked $}</p>
 
 <h2>Members</h2>
-<ul>
-{% for member in doc.elements %}
-  <li>{$ member.name.literalToken.value $}</li>
+{% for member in doc.members %}
+  <h3>{$ member.name $}</h3>
+  <p>{$ member.description $}</p>
 {% endfor %}
-</ul>
+
+{% endblock %}

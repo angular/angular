@@ -23,7 +23,7 @@ module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComm
 
               doc.exports.push(exportDoc);
               exportDocs.push(exportDoc);
-              exportDoc.module = doc;
+              exportDoc.moduleDoc = doc;
 
               if (exportDoc.comment) {
                 // If this export has a comment, remove it from the list of
