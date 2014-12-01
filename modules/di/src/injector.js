@@ -203,9 +203,10 @@ class _AsyncInjectorStrategy {
     var deps = this.injector._resolveDependencies(key, binding, true);
     var depsPromise = PromiseWrapper.all(deps);
 
-    var promise = PromiseWrapper.then(depsPromise, null, (e) => this._errorHandler(key, e)).
-      then(deps => this._findOrCreate(key, binding, deps)).
-      then(instance => this._cacheInstance(key, instance));
+    var promise = PromiseWrapper
+      .then(depsPromise, null, (e) => this._errorHandler(key, e))
+      .then(deps => this._findOrCreate(key, binding, deps))
+      .then(instance => this._cacheInstance(key, instance));
 
     this.injector._setInstance(key, new _Waiting(promise));
     return promise;
