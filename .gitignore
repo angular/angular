@@ -19,3 +19,6 @@ packages
 pubspec.lock
 .c9
 .idea/
+
+
+docs/bower_components/
