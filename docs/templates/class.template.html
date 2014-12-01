@@ -8,7 +8,7 @@
 <h2>Members</h2>
 {% for member in doc.members %}
   <h3>{$ member.name $}</h3>
-  <p>{$ member.description $}</p>
+  <p>{$ member.description | marked $}</p>
 {% endfor %}
 
 {% endblock %}
