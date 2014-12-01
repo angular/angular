@@ -22,21 +22,35 @@ export function main() {
       expect(results[0].isViewRoot).toBe(true);
     });
 
-    it('should mark <template> elements as viewRoot', () => {
-      var rootElement = createElement('<div><template></template></div>');
-      var results = createPipeline().process(rootElement);
-      expect(results[1].isViewRoot).toBe(true);
+    describe('<template> elements', () => {
+
+      it('should move the content into a new <template> element and mark that as viewRoot', () => {
+        var rootElement = createElement('<div><template if="true">a</template></div>');
+        var results = createPipeline().process(rootElement);
+        expect(DOM.getOuterHTML(results[1].element)).toEqual('<template if="true"></template>');
+        expect(results[1].isViewRoot).toBe(false);
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<template>a</template>');
+        expect(results[2].isViewRoot).toBe(true);
+      });
+
+      it('should not wrap a root <template> element', () => {
+        var rootElement = createElement('<div></div>');
+        var results = createPipeline().process(rootElement);
+        expect(results.length).toBe(1);
+        expect(DOM.getOuterHTML(rootElement)).toEqual('<div></div>');
+      });
+
     });
 
     describe('elements with template attribute', () => {
 
-      it('should insert an empty <template> element', () => {
-        var rootElement = createElement('<div><div template></div></div>');
+      it('should replace the element with an empty <template> element', () => {
+        var rootElement = createElement('<div><span template=""></span></div>');
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
-        expect(results[1].element instanceof TemplateElement).toBe(true);
-        expect(DOM.getInnerHTML(results[1].element)).toEqual('');
+        expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template></template></div>');
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span template=""></span>')
         expect(results[2].element).toBe(originalChild);
       });
 

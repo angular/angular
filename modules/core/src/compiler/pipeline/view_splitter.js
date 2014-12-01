@@ -1,6 +1,6 @@
 import {isBlank, isPresent} from 'facade/lang';
 import {DOM, TemplateElement} from 'facade/dom';
-import {MapWrapper, StringMapWrapper} from 'facade/collection';
+import {MapWrapper, ListWrapper} from 'facade/collection';
 
 import {Parser} from 'change_detection/parser/parser';
 
@@ -9,9 +9,20 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 /**
- * Splits views at template directives:
- * Replaces the element with an empty <template> element that contains the
- * template directive and all property bindings needed for the template directive.
+ * Splits views at `<template>` elements or elements with `template` attribute:
+ * For `<template>` elements:
+ * - moves the content into a new and disconnected `<template>` element
+ *   that is marked as view root.
+ *
+ * For elements with a `template` attribute:
+ * - replaces the element with an empty `<template>` element,
+ *   parses the content of the `template` attribute and adds the information to that
+ *   `<template>` element. Marks the elements as view root.
+ *
+ * Note: In both cases the root of the nested view is disconnected from its parent element.
+ * This is needed for browsers that don't support the `<template>` element
+ * as we want to do locate elements with bindings using `getElementsByClassName` later on,
+ * which should not descend into the nested view.
  *
  * Fills:
  * - CompileElement#isViewRoot
@@ -26,18 +37,40 @@ export class ViewSplitter extends CompileStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var element = current.element;
-    if (isBlank(parent) || (current.element instanceof TemplateElement)) {
+    if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
-      var templateBindings = MapWrapper.get(current.attrs(), 'template');
-      if (isPresent(templateBindings)) {
-        current.isViewRoot = true;
-        var templateElement = DOM.createTemplate('');
-        var newParentElement = new CompileElement(templateElement);
-        this._parseTemplateBindings(templateBindings, newParentElement);
-        control.addParent(newParentElement);
+      if (current.element instanceof TemplateElement) {
+        if (!current.isViewRoot) {
+          var viewRoot = new CompileElement(DOM.createTemplate(''));
+          this._moveChildNodes(current.element.content, viewRoot.element.content);
+          viewRoot.isViewRoot = true;
+          control.addChild(viewRoot);
+        }
+      } else {
+        var templateBindings = MapWrapper.get(current.attrs(), 'template');
+        if (isPresent(templateBindings)) {
+          var newParent = new CompileElement(DOM.createTemplate(''));
+          current.isViewRoot = true;
+          this._parseTemplateBindings(templateBindings, newParent);
+          this._addParentElement(current.element, newParent.element);
+
+          control.addParent(newParent);
+          current.element.remove();
+        }
       }
     }
+  }
+
+  _moveChildNodes(source, target) {
+    while (isPresent(source.firstChild)) {
+      DOM.appendChild(target, source.firstChild);
+    }
+  }
+
+  _addParentElement(currentElement, newParentElement) {
+    DOM.parentElement(currentElement).insertBefore(newParentElement, currentElement);
+    DOM.appendChild(newParentElement, currentElement);
   }
 
   _parseTemplateBindings(templateBindings:string, compileElement:CompileElement) {

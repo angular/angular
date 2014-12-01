@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
 import {ListWrapper, List} from 'facade/collection';
 import {DOM} from 'facade/dom';
-import {isPresent, NumberWrapper} from 'facade/lang';
+import {isPresent, NumberWrapper, StringWrapper} from 'facade/lang';
 
 import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
 import {CompileElement} from 'core/compiler/pipeline/compile_element';
@@ -21,16 +21,6 @@ export function main() {
     });
 
     describe('control.addParent', () => {
-      it('should wrap the underlying DOM element', () => {
-        var element = createElement('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
-        var pipeline = new CompilePipeline([
-          createWrapperStep('wrap0', [])
-        ]);
-        pipeline.process(element);
-
-        expect(DOM.getOuterHTML(element)).toEqual('<div id="1"><a id="wrap0#0"><span wrap0="1" id="2"><b id="3"></b></span></a></div>');
-      });
-
       it('should report the new parent to the following processor and the result', () => {
         var element = createElement('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
@@ -93,6 +83,26 @@ export function main() {
         expect(resultIdLog(result)).toEqual(['1', 'wrap0#0', 'wrap0#1', '2', '3']);
       });
 
+    });
+
+    describe('control.addChild', () => {
+      it('should report the new child to all processors and the result', () => {
+        var element = createElement('<div id="1"><div id="2"></div></div>');
+        var resultLog = [];
+        var newChild = new CompileElement(createElement('<div id="3"></div>'));
+        var pipeline = new CompilePipeline([
+          new MockStep((parent, current, control) => {
+            if (StringWrapper.equals(current.element.id, '1')) {
+              control.addChild(newChild);
+            }
+          }),
+          createLoggerStep(resultLog)
+        ]);
+        var result = pipeline.process(element);
+        expect(result[2]).toBe(newChild);
+        expect(resultLog).toEqual(['1', '1<2', '1<3']);
+        expect(resultIdLog(result)).toEqual(['1', '2', '3']);
+      });
     });
 
   });
