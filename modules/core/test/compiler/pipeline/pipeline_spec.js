@@ -10,13 +10,6 @@ import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
 export function main() {
   describe('compile_pipeline', () => {
-    var logs, pipeline, loggingStep;
-
-    beforeEach( () => {
-      logs = [];
-      loggingStep = new LoggingStep(logs);
-    });
-
     it('should walk the tree in depth first order including template contents', () => {
       var element = createElement('<div id="1"><template id="2"><span id="3"></span></template></div>');
 

@@ -171,7 +171,7 @@ export function main() {
       });
 
       describe('recurse over child component views', () => {
-        var view, ctx;
+        var ctx;
 
         function createComponentWithSubPV(subProtoView) {
           var pv = new ProtoView(createElement('<cmp class="ng-binding"></cmp>'), new ProtoRecordRange());
@@ -209,7 +209,7 @@ export function main() {
             () => {
           var subpv = new ProtoView(
               createElement('<div dec class="ng-binding">hello shadow dom</div>'), new ProtoRecordRange());
-          var subBinder = subpv.bindElement(
+          subpv.bindElement(
               new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
           var pv = createComponentWithSubPV(subpv);
 
@@ -227,7 +227,7 @@ export function main() {
       });
 
       describe('recurse over child templateViews', () => {
-        var ctx, view, cd;
+        var ctx, view;
         function createView(protoView) {
           ctx = new MyEvaluationContext();
           view = protoView.instantiate(ctx, null, null);
@@ -310,7 +310,7 @@ export function main() {
 
       it('should inject the protoView into the shadowDom', () => {
         var rootProtoView = ProtoView.createRootProtoView(pv, el, someComponentDirective);
-        var view = rootProtoView.instantiate(null, new Injector([]), null, true);
+        rootProtoView.instantiate(null, new Injector([]), null, true);
         expect(el.shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hi');
       });
     });

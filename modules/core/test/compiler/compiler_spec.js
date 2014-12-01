@@ -17,7 +17,7 @@ import {Lexer} from 'change_detection/parser/lexer';
 
 export function main() {
   describe('compiler', function() {
-    var compiler, reader;
+    var reader;
 
     beforeEach( () => {
       reader = new DirectiveMetadataReader();
