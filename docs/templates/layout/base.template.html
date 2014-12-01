@@ -2,9 +2,29 @@
 <html>
 <head>
   <title>Angular Docs</title>
+
+  <link rel="stylesheet" type="text/css" href="/lib/angular-material/angular-material.css">
+  <style type="text/css">
+    body > [layout] {
+      max-width: 864px;
+      margin: auto;
+    }
+</style>
+
+  <script src="/lib/hammerjs/hammer.js"></script>
+  <script src="/lib/angular/angular.js"></script>
+  <script src="/lib/angular-animate/angular-animate.js"></script>
+  <script src="/lib/angular-aria/angular-aria.js"></script>
+  <script src="/lib/angular-material/angular-material.js"></script>
+  <script type="text/javascript">
+    angular.module('app', ['ngMaterial']);
+  </script>
 </head>
-<body>
-{% block body %}
-{% endblock %}
+<body ng-app="app">
+<div layout class="content">
+  <div>
+  {% block body %}{% endblock %}
+  </div>
+</div>
 </body>
 </html>

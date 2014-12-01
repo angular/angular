@@ -414,3 +414,21 @@ gulp.task('dgeni', function() {
   }
 });
 
+var bower = require('bower');
+gulp.task('docs-bower', function() {
+  var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
+  bowerTask.on('log', function (result) {
+    console.log('bower:', result.id, result.data.endpoint.name);
+  });
+  bowerTask.on('error', function(error) {
+    console.log(error);
+  });
+  return bowerTask;
+});
+
+gulp.task('docs-assets', ['docs-bower'], function() {
+  return gulp.src('docs/bower_components/**/*')
+    .pipe(gulp.dest('build/docs/lib'));
+});
+
+gulp.task('docs', ['docs-assets', 'dgeni']);
