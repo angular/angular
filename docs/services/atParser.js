@@ -54,7 +54,7 @@ module.exports = function atParser(log) {
       log.error(ex.stack);
       moduleTree = {};
     }
-    console.log(moduleName);
+    log.debug(moduleName);
     moduleTree.moduleName = moduleName;
 
     // We return the module AST but also a collection of all the comments
