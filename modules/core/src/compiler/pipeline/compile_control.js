@@ -1,5 +1,6 @@
+import {isBlank} from 'facade/lang';
 import {List, ListWrapper} from 'facade/collection';
-import {DOM} from 'facade/dom';
+import {DOM, Element} from 'facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileStep} from './compile_step';
 
@@ -13,12 +14,14 @@ export class CompileControl {
   _parent:CompileElement;
   _current:CompileElement;
   _results;
+  _additionalChildren;
   constructor(steps) {
     this._steps = steps;
     this._currentStepIndex = 0;
     this._parent = null;
     this._current = null;
     this._results = null;
+    this._additionalChildren = null;
   }
 
   // only public so that it can be used by compile_pipeline
@@ -39,15 +42,21 @@ export class CompileControl {
 
     this._currentStepIndex = previousStepIndex;
     this._parent = previousParent;
+
+    var localAdditionalChildren = this._additionalChildren;
+    this._additionalChildren = null;
+    return localAdditionalChildren;
   }
 
   addParent(newElement:CompileElement) {
-    var currEl = this._current.element;
-    var newEl = newElement.element;
-    DOM.parentElement(currEl).insertBefore(newEl, currEl);
-    DOM.appendChild(newEl, currEl);
-
     this.internalProcess(this._results, this._currentStepIndex+1, this._parent, newElement);
     this._parent = newElement;
+  }
+
+  addChild(element:CompileElement) {
+    if (isBlank(this._additionalChildren)) {
+      this._additionalChildren = ListWrapper.create();
+    }
+    ListWrapper.push(this._additionalChildren, element);
   }
 }
