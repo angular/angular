@@ -4,7 +4,10 @@ class MapWrapper {
 
 }
 
-class IterableList extends Object with IterableMixin {
+/**
+ * Generic iterable class to test for-of.  Provides iteration of the given list.
+ */
+class IterableList extends IterableBase {
   List values;
   IterableList(values) {
     this.values = values;

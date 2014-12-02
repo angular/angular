@@ -1,6 +1,6 @@
 library facade.collection;
 
-import 'dart:collection' show HashMap, IterableMixin, Iterator;
+import 'dart:collection' show HashMap, IterableBase, Iterator;
 export 'dart:core' show Map, List, Set;
 
 class MapIterator extends Iterator<List> {
@@ -15,11 +15,13 @@ class MapIterator extends Iterator<List> {
     return this._iterator.moveNext();
   }
   List get current {
-    return [this._iterator.current, this._map[this._iterator.current]];
+    return this._iterator.current != null ?
+      [this._iterator.current, this._map[this._iterator.current]] :
+      null;
   }
 }
 
-class IterableMap extends Object with IterableMixin<List> {
+class IterableMap extends IterableBase<List> {
   Map _map;
 
   IterableMap(Map map) {
