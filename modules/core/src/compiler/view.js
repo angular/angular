@@ -8,11 +8,12 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_
 import {ElementBinder} from './element_binder';
 import {AnnotatedType} from './annotated_type';
 import {SetterFn} from 'reflection/types';
-import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
+import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
+import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 
 const NG_BINDING_CLASS = 'ng-binding';
 
@@ -33,9 +34,14 @@ export class View {
   onChangeDispatcher:OnChangeDispatcher;
   componentChildViews: List<View>;
   viewPorts: List<ViewPort>;
-  constructor(nodes:List<Node>, elementInjectors:List,
+  preBuiltObjects: List<PreBuiltObjects>;
+  proto: ProtoView;
+  context: Object;
+  _localBindings: Map;
+  constructor(proto:ProtoView, nodes:List<Node>, elementInjectors:List,
       rootElementInjectors:List, textNodes:List, bindElements:List,
-      protoRecordRange:ProtoRecordRange, context) {
+      protoRecordRange:ProtoRecordRange) {
+    this.proto = proto;
     this.nodes = nodes;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
@@ -43,9 +49,120 @@ export class View {
     this.textNodes = textNodes;
     this.bindElements = bindElements;
     this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
-    this.recordRange.setContext(context);
     this.componentChildViews = null;
     this.viewPorts = null;
+    this.preBuiltObjects = null;
+    this.context = null;
+
+    // used to persist the locals part of context inbetween hydrations.
+    this._localBindings = null;
+    if (isPresent(this.proto) && MapWrapper.size(this.proto.variableBindings) > 0) {
+      this._createLocalContext();
+    }
+  }
+
+  _createLocalContext() {
+    this._localBindings = MapWrapper.create();
+    for (var [ctxName, tmplName] of MapWrapper.iterable(this.proto.variableBindings)) {
+      MapWrapper.set(this._localBindings, tmplName, null);
+    }
+  }
+
+  setLocal(contextName: string, value) {
+    if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
+    if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
+      throw new BaseException(
+          `Local binding ${contextName} not defined in the view template.`);
+    }
+    var templateName = MapWrapper.get(this.proto.variableBindings, contextName);
+    this.context.set(templateName, value);
+  }
+
+  hydrated() {
+    return isPresent(this.context);
+  }
+
+  _hydrateContext(newContext) {
+    if (isPresent(this._localBindings)) {
+      newContext = new ContextWithVariableBindings(newContext, this._localBindings);
+    }
+    this.recordRange.setContext(newContext);
+    this.context = newContext;
+  }
+
+  _dehydrateContext() {
+    if (isPresent(this._localBindings)) {
+      this.context.clearValues();
+    }
+    this.context = null;
+  }
+
+  /**
+   * A dehydrated view is a state of the view that allows it to be moved around
+   * the view tree, without incurring the cost of recreating the underlying
+   * injectors and watch records.
+   *
+   * A dehydrated view has the following properties:
+   *
+   * - all element injectors are empty.
+   * - all appInjectors are released.
+   * - all viewports are empty.
+   * - all context locals are set to null.
+   * - the view context is null.
+   *
+   * A call to hydrate/dehydrate does not attach/detach the view from the view
+   * tree.
+   */
+  hydrate(appInjector: Injector, hostElementInjector: ElementInjector,
+      context: Object) {
+    if (isBlank(this.preBuiltObjects)) {
+      throw new BaseException('Cannot hydrate a view without pre-built objects.');
+    }
+    this._hydrateContext(context);
+
+    var shadowDomAppInjectors = View._createShadowDomInjectors(
+        this.proto, appInjector);
+
+    this._hydrateViewPorts(appInjector, hostElementInjector);
+    this._instantiateDirectives(appInjector, shadowDomAppInjectors);
+    this._hydrateChildComponentViews(appInjector, shadowDomAppInjectors);
+  }
+
+  dehydrate() {
+    // preserve the opposite order of the hydration process.
+    if (isPresent(this.componentChildViews)) {
+      for (var i = 0; i < this.componentChildViews.length; i++) {
+        this.componentChildViews[i].dehydrate();
+      }
+    }
+    for (var i = 0; i < this.elementInjectors.length; i++) {
+      this.elementInjectors[i].clearDirectives();
+    }
+    if (isPresent(this.viewPorts)) {
+      for (var i = 0; i < this.viewPorts.length; i++) {
+        this.viewPorts[i].dehydrate();
+      }
+    }
+    this._dehydrateContext();
+  }
+
+  static _createShadowDomInjectors(protoView, defaultInjector) {
+    var binders = protoView.elementBinders;
+    var shadowDomAppInjectors = ListWrapper.createFixedSize(binders.length);
+    for (var i = 0; i < binders.length; ++i) {
+      var componentDirective = binders[i].componentDirective;
+      if (isPresent(componentDirective)) {
+        var services = componentDirective.annotation.componentServices;
+        if (isPresent(services))
+          shadowDomAppInjectors[i] = defaultInjector.createChild(services);
+        else {
+          shadowDomAppInjectors[i] = defaultInjector;
+        }
+      } else {
+        shadowDomAppInjectors[i] = null;
+      }
+    }
+    return shadowDomAppInjectors;
   }
 
   onRecordChange(groupMemento, records:List<Record>) {
@@ -108,12 +225,35 @@ export class View {
     this.recordRange.addRange(childView.recordRange);
   }
 
-  addViewPortChildView(childView: View) {
-    this.recordRange.addRange(childView.recordRange);
+  _instantiateDirectives(
+      lightDomAppInjector: Injector, shadowDomAppInjectors) {
+    for (var i = 0; i < this.elementInjectors.length; ++i) {
+      var injector = this.elementInjectors[i];
+      if (injector != null) {
+        injector.instantiateDirectives(
+          lightDomAppInjector, shadowDomAppInjectors[i], this.preBuiltObjects[i]);
+      }
+    }
   }
 
-  removeViewPortChildView(childView: View) {
-    childView.recordRange.remove();
+  _hydrateViewPorts(appInjector, hostElementInjector) {
+    if (isBlank(this.viewPorts)) return;
+    for (var i = 0; i < this.viewPorts.length; i++) {
+      this.viewPorts[i].hydrate(appInjector, hostElementInjector);
+    }
+  }
+
+  _hydrateChildComponentViews(appInjector, shadowDomAppInjectors) {
+    var count = 0;
+    for (var i = 0; i < shadowDomAppInjectors.length; i++) {
+      var shadowDomInjector = shadowDomAppInjectors[i];
+      var injector = this.elementInjectors[i];
+      // replace with protoView.binder.
+      if (isPresent(shadowDomAppInjectors[i])) {
+        this.componentChildViews[count++].hydrate(shadowDomInjector,
+            injector, injector.getComponent());
+      }
+    }
   }
 }
 
@@ -135,8 +275,10 @@ export class ProtoView {
     this.elementsWithBindingCount = 0;
   }
 
-  instantiate(context, lightDomAppInjector:Injector,
-      hostElementInjector: ElementInjector, inPlace:boolean = false):View {
+  // TODO(rado): hostElementInjector should be moved to hydrate phase.
+  // TODO(rado): inPlace is only used for bootstrapping, invastigate whether we can bootstrap without
+  // rootProtoView.
+  instantiate(hostElementInjector: ElementInjector, inPlace:boolean = false):View {
     var clone = inPlace ? this.element : DOM.clone(this.element);
     var elements;
     if (clone instanceof TemplateElement) {
@@ -157,7 +299,7 @@ export class ProtoView {
     var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
     var textNodes = ProtoView._textNodes(elements, binders);
     var bindElements = ProtoView._bindElements(elements, binders);
-    var shadowAppInjectors = ProtoView._createShadowAppInjectors(binders, lightDomAppInjector);
+
     var viewNodes;
 
     if (clone instanceof TemplateElement) {
@@ -165,14 +307,13 @@ export class ProtoView {
     } else {
       viewNodes = [clone];
     }
-    var view = new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
-        bindElements, this.protoRecordRange, context);
+    var view = new View(this, viewNodes, elementInjectors, rootElementInjectors, textNodes,
+        bindElements, this.protoRecordRange);
 
-    ProtoView._instantiateDirectives(
-        view, elements, binders, elementInjectors, lightDomAppInjector,
-        shadowAppInjectors, hostElementInjector);
+    view.preBuiltObjects = ProtoView._createPreBuiltObjects(view, elementInjectors, elements, binders);
+
     ProtoView._instantiateChildComponentViews(view, elements, binders,
-        elementInjectors, shadowAppInjectors);
+        elementInjectors);
 
     return view;
   }
@@ -258,10 +399,8 @@ export class ProtoView {
     return injectors;
   }
 
-  static _instantiateDirectives(
-      view, elements:List, binders: List<ElementBinder>, injectors:List<ElementInjectors>,
-      lightDomAppInjector: Injector, shadowDomAppInjectors:List<Injectors>,
-      hostElementInjector: ElementInjector) {
+  static _createPreBuiltObjects(view, injectors, elements, binders) {
+    var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
     for (var i = 0; i < injectors.length; ++i) {
       var injector = injectors[i];
       if (injector != null) {
@@ -271,15 +410,16 @@ export class ProtoView {
         var viewPort = null;
         if (isPresent(binder.templateDirective)) {
           viewPort = new ViewPort(view, element, binder.nestedProtoView, injector);
-          viewPort.attach(lightDomAppInjector, hostElementInjector);
           view.addViewPort(viewPort);
         }
-        var preBuiltObjs = new PreBuiltObjects(view, ngElement, viewPort);
-        injector.instantiateDirectives(
-          lightDomAppInjector, shadowDomAppInjectors[i], preBuiltObjs);
+        preBuiltObjects[i] = new PreBuiltObjects(view, ngElement, viewPort);
+      } else {
+        preBuiltObjects[i] = null;
       }
     }
+    return preBuiltObjects;
   }
+
 
   static _rootElementInjectors(injectors) {
     return ListWrapper.filter(injectors, inj => isPresent(inj) && isBlank(inj.parent));
@@ -313,33 +453,17 @@ export class ProtoView {
   }
 
   static _instantiateChildComponentViews(view: View, elements, binders,
-      injectors, shadowDomAppInjectors: List<Injector>) {
+      injectors) {
     for (var i = 0; i < binders.length; ++i) {
       var binder = binders[i];
       if (isPresent(binder.componentDirective)) {
         var injector = injectors[i];
-        var childView = binder.nestedProtoView.instantiate(
-            injector.getComponent(), shadowDomAppInjectors[i], injector);
+        var childView = binder.nestedProtoView.instantiate(injectors[i]);
         view.addComponentChildView(childView);
         var shadowRoot = elements[i].createShadowRoot();
         ViewPort.moveViewNodesIntoParent(shadowRoot, childView);
       }
     }
-  }
-
-  static _createShadowAppInjectors(binders: List<ElementBinders>, lightDomAppInjector: Injector): List<Injectors> {
-    var injectors = ListWrapper.createFixedSize(binders.length);
-    for (var i = 0; i < binders.length; ++i) {
-      var componentDirective = binders[i].componentDirective;
-      if (isPresent(componentDirective)) {
-        var services = componentDirective.annotation.componentServices;
-        injectors[i] = isPresent(services) ?
-            lightDomAppInjector.createChild(services) : lightDomAppInjector;
-      } else {
-        injectors[i] = null;
-      }
-    }
-    return injectors;
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,

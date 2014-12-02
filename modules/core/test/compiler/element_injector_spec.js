@@ -12,7 +12,7 @@ import {NgElement} from 'core/dom/element';
 //TODO: vsavkin: use a spy object
 class DummyView extends View {
   constructor() {
-    super(null, null, null, null, null, new ProtoRecordRange(), null);
+    super(null, null, null, null, null, null, new ProtoRecordRange());
   }
 }
 
@@ -147,6 +147,16 @@ export function main() {
       it("should be false otherwise", function () {
         var p = new ProtoElementInjector(null, 0, []);
         expect(p.hasBindings).toBeFalsy();
+      });
+    });
+
+    describe("hasInstances", function () {
+      it("should be false when no directives are instantiated", function () {
+        expect(injector([]).hasInstances()).toBe(false);
+      });
+
+      it("should be true when directives are instantiated", function () {
+        expect(injector([Directive]).hasInstances()).toBe(true);
       });
     });
 

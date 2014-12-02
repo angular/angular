@@ -14,13 +14,13 @@ function createElement(html) {
 }
 
 function createView(nodes) {
-  return new View(nodes, [], [], [], [], new ProtoRecordRange(), null);
+  return new View(null, nodes, [], [], [], [], new ProtoRecordRange());
 }
 
 export function main() {
   describe('viewport', () => {
     var viewPort, parentView, protoView, dom, customViewWithOneNode,
-    customViewWithTwoNodes, elementInjector;
+        customViewWithTwoNodes, elementInjector;
 
     beforeEach(() => {
       dom = createElement(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
@@ -33,13 +33,13 @@ export function main() {
       customViewWithTwoNodes = createView([createElement('<div>one</div>'), createElement('<div>two</div>')]);
     });
 
-    describe('when detached', () => {
+    describe('when dehydrated', () => {
       it('should throw if create is called', () => {
         expect(() => viewPort.create()).toThrowError();
       });
     });
 
-    describe('when attached', () => {
+    describe('when hydrated', () => {
       function textInViewPort() {
         var out = '';
         // skipping starting filler, insert-me and final filler.
@@ -51,7 +51,7 @@ export function main() {
       }
 
       beforeEach(() => {
-        viewPort.attach(new Injector([]), null);
+        viewPort.hydrate(new Injector([]), null);
         var fillerView = createView([createElement('<filler>filler</filler>')]);
         viewPort.insert(fillerView);
       });
@@ -118,28 +118,29 @@ export function main() {
       var fancyView;
       beforeEach(() => {
         var parser = new Parser(new Lexer());
-        viewPort.attach(new Injector([]), null);
+        viewPort.hydrate(new Injector([]), null);
 
         var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
           new ProtoRecordRange());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo').ast);
-        fancyView = pv.instantiate(new Object(), null, null);
+        fancyView = pv.instantiate(null);
       });
 
-      it('attaching should update rootElementInjectors and parent RR', () => {
+      it('hydrating should update rootElementInjectors and parent RR', () => {
         viewPort.insert(fancyView);
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(elementInjector));
         expect(parentView.recordRange.findFirstEnabledRecord()).not.toBe(null);
       });
 
-      it('detaching should update rootElementInjectors and parent RR', () => {
+      it('dehydrating should update rootElementInjectors and parent RR', () => {
         viewPort.insert(fancyView);
         viewPort.remove();
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(null));
         expect(parentView.recordRange.findFirstEnabledRecord()).toBe(null);
+        expect(viewPort.length).toBe(0);
       });
     });
   });

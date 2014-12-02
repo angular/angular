@@ -459,6 +459,10 @@ export class ElementInjector extends TreeNode {
     if (index == 9) return this._obj9;
     throw new OutOfBoundsAccess(index);
   }
+
+  hasInstances() {
+    return this._constructionCounter > 0;
+  }
 }
 
 class OutOfBoundsAccess extends Error {
