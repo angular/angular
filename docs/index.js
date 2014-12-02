@@ -17,6 +17,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .processor(require('./processors/generateDocsFromComments'))
 .processor(require('./processors/processModuleDocs'))
 .processor(require('./processors/processClassDocs'))
+.processor(require('./processors/generateNavigationDoc'))
 
 
 // Configure the log service

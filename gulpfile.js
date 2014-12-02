@@ -431,4 +431,9 @@ gulp.task('docs-assets', ['docs-bower'], function() {
     .pipe(gulp.dest('build/docs/lib'));
 });
 
-gulp.task('docs', ['docs-assets', 'dgeni']);
+gulp.task('docs-app', function() {
+  return gulp.src('docs/app/**/*')
+    .pipe(gulp.dest('build/docs'));
+});
+
+gulp.task('docs', ['docs-assets', 'docs-app', 'dgeni']);
