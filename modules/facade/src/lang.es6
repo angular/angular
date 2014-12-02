@@ -136,6 +136,10 @@ export class NumberWrapper {
   static get NaN():number {
     return NaN;
   }
+
+  static isInteger(value):boolean {
+    return Number.isInteger(value);
+  }
 }
 
 export function int() {};

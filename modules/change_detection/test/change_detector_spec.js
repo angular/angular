@@ -153,6 +153,15 @@ export function main() {
         expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
       });
 
+      describe("keyed access", () => {
+        it("should support accessing a list item", () => {
+          expect(executeWatch('array[0]', '["foo", "bar"][0]')).toEqual(['array[0]=foo']);
+        });
+        it("should support accessing a map item", () => {
+          expect(executeWatch('map[foo]', '{"foo": "bar"}["foo"]')).toEqual(['map[foo]=bar']);
+        });
+      });
+
       describe("formatters", () => {
         it("should support formatters", () => {
           var formatters = MapWrapper.createFromPairs([
@@ -269,6 +278,10 @@ class LoggingDispatcher extends WatchGroupDispatcher {
 
   onRecordChange(record:Record, context) {
     ListWrapper.push(this.loggedValues, record.currentValue);
-    ListWrapper.push(this.log, context + '=' + record.currentValue.toString());
+    ListWrapper.push(this.log, context + '=' + this._asString(record.currentValue));
+  }
+
+  _asString(value) {
+    return (value === null ? 'null' : value.toString());
   }
 }

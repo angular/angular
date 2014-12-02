@@ -109,6 +109,8 @@ class NumberWrapper {
   static get NaN => double.NAN;
 
   static bool isNaN(num value) => value.isNaN;
+
+  static bool isInteger(value) => value is int;
 }
 
 class RegExpWrapper {

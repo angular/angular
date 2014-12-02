@@ -10,7 +10,8 @@ import {
   RECORD_TYPE_PROPERTY
 } from './record';
 
-import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
+import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException,
+  NumberWrapper} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
 import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
   Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
@@ -443,7 +444,12 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
-  visitKeyedAccess(ast:KeyedAccess, dest) {}
+  visitKeyedAccess(ast:KeyedAccess, dest) {
+    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, _keyedAccess, 1, null, dest);
+    ast.obj.visit(this, new Destination(record, null));
+    ast.key.visit(this, new Destination(record, 0));
+    this.add(record);
+  }
 
   visitLiteralArray(ast:LiteralArray, dest) {
     var length = ast.expressions.length;
@@ -527,6 +533,7 @@ function _operation_greater_or_equals_then(left, right) {return left >= right;}
 function _operation_logical_and(left, right)            {return left && right;}
 function _operation_logical_or(left, right)             {return left || right;}
 function _cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
+
 function _arrayFn(length:int) {
   switch (length) {
     case 0: return () => [];
@@ -542,6 +549,7 @@ function _arrayFn(length:int) {
     default: throw new BaseException(`Does not support literal arrays with more than 9 elements`);
   }
 }
+
 function _mapFn(keys:List, length:int) {
   function buildMap(values) {
     var res = MapWrapper.create();
@@ -571,4 +579,9 @@ function _mapGetter(key) {
   return function(map) {
     return MapWrapper.get(map, key);
   }
+}
+
+function _keyedAccess(obj, args) {
+  var key = args[0];
+  return obj instanceof Map ? MapWrapper.get(obj, key):obj[key];
 }
