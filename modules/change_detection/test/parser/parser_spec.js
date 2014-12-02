@@ -417,7 +417,12 @@ export function main() {
         expect(bindings).toEqual([]);
       });
 
-      it('should only allow identifier, string, or keyword as keys', () => {
+      it('should parse a string without a value', () => {
+        var bindings = parseTemplateBindings('a');
+        expect(keys(bindings)).toEqual(['a']);
+      });
+
+      it('should only allow identifier, string, or keyword including dashes as keys', () => {
         var bindings = parseTemplateBindings("a:'b'");
         expect(keys(bindings)).toEqual(['a']);
 
@@ -426,6 +431,9 @@ export function main() {
 
         bindings = parseTemplateBindings("\"a\":'b'");
         expect(keys(bindings)).toEqual(['a']);
+
+        bindings = parseTemplateBindings("a-b:'c'");
+        expect(keys(bindings)).toEqual(['a-b']);
 
         expect( () => {
           parseTemplateBindings('(:0');
