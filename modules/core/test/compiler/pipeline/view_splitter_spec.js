@@ -72,6 +72,14 @@ export function main() {
         expect(results[1].variableBindings).toEqual(MapWrapper.createFromStringMap({'varName': 'mapName'}));
       });
 
+      it('should add entries without value as attribute to the element', () => {
+        var rootElement = createElement('<div><div template="varname"></div></div>');
+        var results = createPipeline().process(rootElement);
+        expect(results[1].attrs()).toEqual(MapWrapper.createFromStringMap({'varname': ''}));
+        expect(results[1].propertyBindings).toBe(null);
+        expect(results[1].variableBindings).toBe(null);
+      });
+
     });
 
   });
