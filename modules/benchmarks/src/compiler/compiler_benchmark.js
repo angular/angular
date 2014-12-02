@@ -9,7 +9,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ProtoRecordRange} from 'change_detection/record_range';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
 import {Component} from 'core/annotations/annotations';
@@ -81,7 +81,7 @@ function setup() {
   });
 
   var reader = new CachingDirectiveMetadataReader();
-  compiler = new Compiler(null, reader, new Parser(new Lexer()));
+  compiler = new Compiler(null, reader, new Parser(new Lexer()), new CompilerCache());
   annotatedComponent = reader.annotatedType(BenchmarkComponent);
 }
 
@@ -94,7 +94,7 @@ export function main() {
     benchmarkStep('run', function() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = DOM.clone(template);
-      compiler.compileWithCache(null, annotatedComponent, cloned);
+      compiler.compileAllLoaded(null, annotatedComponent, cloned);
     });
   });
 
@@ -104,7 +104,7 @@ export function main() {
     benchmarkStep('run', function() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = DOM.clone(template);
-      compiler.compileWithCache(null, annotatedComponent, cloned);
+      compiler.compileAllLoaded(null, annotatedComponent, cloned);
     });
   });
 

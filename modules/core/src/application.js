@@ -1,7 +1,7 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
 import {Type, FIELD, isBlank, isPresent, BaseException} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
-import {Compiler} from './compiler/compiler';
+import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
 import {Parser} from 'change_detection/parser/parser';
@@ -17,7 +17,7 @@ var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector), Compiler, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
+  bind(Reflector).toValue(reflector), Compiler, CompilerCache, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
 ];
 
 export var appViewToken = new OpaqueToken('AppView');

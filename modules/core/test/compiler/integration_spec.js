@@ -7,7 +7,7 @@ import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
 import {Decorator, Component, Template} from 'core/annotations/annotations';
@@ -21,7 +21,7 @@ export function main() {
     var compiler;
 
     beforeEach( () => {
-      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()));
+      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
     describe('react to record changes', function() {

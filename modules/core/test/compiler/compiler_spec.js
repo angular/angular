@@ -2,7 +2,7 @@ import {describe, beforeEach, it, expect, ddescribe, iit} from 'test_lib/test_li
 import {DOM} from 'facade/dom';
 import {List} from 'facade/collection';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {ProtoView} from 'core/compiler/view';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
@@ -25,7 +25,7 @@ export function main() {
 
     function createCompiler(processClosure) {
       var steps = [new MockStep(processClosure)];
-      return new TestableCompiler(null, reader, new Parser(new Lexer()), steps);
+      return new TestableCompiler(reader, steps);
     }
 
     it('should run the steps and return the ProtoView of the root element', (done) => {
@@ -77,6 +77,35 @@ export function main() {
 
     });
 
+    it('should cache components', (done) => {
+      var el = createElement('<div></div>');
+      var compiler = createCompiler( (parent, current, control) => {
+        current.inheritedProtoView = new ProtoView(current.element, null);
+      });
+      var firstProtoView;
+      compiler.compile(MainComponent, el).then( (protoView) => {
+        firstProtoView = protoView;
+        return compiler.compile(MainComponent, el);
+      }).then( (protoView) => {
+        expect(firstProtoView).toBe(protoView);
+        done();
+      });
+
+    });
+
+    it('should allow recursive components', (done) => {
+      var compiler = createCompiler( (parent, current, control) => {
+        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+        current.componentDirective = reader.annotatedType(RecursiveComponent);
+      });
+      compiler.compile(RecursiveComponent, null).then( (protoView) => {
+        expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
+        done();
+      });
+
+    });
+
   });
 
 }
@@ -95,10 +124,18 @@ class MainComponent {}
 })
 class NestedComponent {}
 
+@Component({
+  template: new TemplateConfig({
+    inline: '<div rec-comp></div>'
+  }),
+  selector: 'rec-comp'
+})
+class RecursiveComponent {}
+
 class TestableCompiler extends Compiler {
   steps:List;
-  constructor(templateLoader:TemplateLoader, reader:DirectiveMetadataReader, parser, steps:List<CompileStep>) {
-    super(templateLoader, reader, parser);
+  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
+    super(null, reader, new Parser(new Lexer()), new CompilerCache());
     this.steps = steps;
   }
   createSteps(component):List<CompileStep> {

@@ -4,7 +4,7 @@ import {Component, Decorator, TemplateConfig, NgElement} from 'core/core';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
 
@@ -36,8 +36,14 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (templateLoader, reader, parser) => new Compiler(templateLoader, reader, parser),
-    "parameters": [[TemplateLoader], [DirectiveMetadataReader], [Parser]],
+    "factory": (templateLoader, reader, parser, compilerCache) => new Compiler(templateLoader, reader, parser, compilerCache),
+    "parameters": [[TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    "annotations": []
+  });
+
+  reflector.registerType(CompilerCache, {
+    "factory": () => new CompilerCache(),
+    "parameters": [],
     "annotations": []
   });
 
