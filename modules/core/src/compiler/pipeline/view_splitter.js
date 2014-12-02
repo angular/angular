@@ -79,8 +79,10 @@ export class ViewSplitter extends CompileStep {
       var binding = bindings[i];
       if (isPresent(binding.name)) {
         compileElement.addVariableBinding(binding.key, binding.name);
-      } else {
+      } else if (isPresent(binding.expression)) {
         compileElement.addPropertyBinding(binding.key, binding.expression);
+      } else {
+        compileElement.element.setAttribute(binding.key, '');
       }
     }
   }

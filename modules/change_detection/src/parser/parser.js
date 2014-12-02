@@ -420,20 +420,39 @@ class _ParseAST {
     return positionals;
   }
 
+  /**
+   * An identifier, a keyword, a string with an optional `-` inbetween.
+   */
+  expectTemplateBindingKey() {
+    var result = '';
+    var operatorFound = false;
+    do {
+      result += this.expectIdentifierOrKeywordOrString();
+      operatorFound = this.optionalOperator('-');
+      if (operatorFound) {
+        result += '-';
+      }
+    } while (operatorFound);
+
+    return result.toString();
+  }
+
   parseTemplateBindings() {
     var bindings = [];
     while (this.index < this.tokens.length) {
-      var key = this.expectIdentifierOrKeywordOrString();
+      var key = this.expectTemplateBindingKey();
       this.optionalCharacter($COLON);
       var name = null;
       var expression = null;
-      if (this.optionalOperator("#")) {
-        name = this.expectIdentifierOrKeyword();
-      } else {
-        var start = this.inputIndex;
-        var ast = this.parseExpression();
-        var source = this.input.substring(start, this.inputIndex);
-        expression = new ASTWithSource(ast, source);
+      if (this.next !== EOF) {
+        if (this.optionalOperator("#")) {
+          name = this.expectIdentifierOrKeyword();
+        } else {
+          var start = this.inputIndex;
+          var ast = this.parseExpression();
+          var source = this.input.substring(start, this.inputIndex);
+          expression = new ASTWithSource(ast, source);
+        }
       }
       ListWrapper.push(bindings, new TemplateBinding(key, name, expression));
       if (!this.optionalCharacter($SEMICOLON)) {
