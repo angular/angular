@@ -33,10 +33,9 @@ export class ProtoRecord {
   funcOrValue:any;
   arity:int;
   name:string;
-  dest;
-
+  dest:any;
   next:ProtoRecord;
-  prev:ProtoRecord;
+
   recordInConstruction:Record;
   constructor(recordRange:ProtoRecordRange,
               mode:int,
@@ -53,7 +52,6 @@ export class ProtoRecord {
     this.dest = dest;
 
     this.next = null;
-    this.prev = null;
     // The concrete Record instantiated from this ProtoRecord
     this.recordInConstruction = null;
   }

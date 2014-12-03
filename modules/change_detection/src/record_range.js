@@ -70,7 +70,6 @@ export class ProtoRecordRange {
       this.headRecord = head;
     } else {
       this.tailRecord.next = head;
-      head.prev = this.tailRecord;
     }
     this.tailRecord = tail;
   }
@@ -514,7 +513,6 @@ class ProtoRecordCreator {
       this.headRecord = this.tailRecord = protoRecord;
     } else {
       this.tailRecord.next = protoRecord;
-      protoRecord.prev = this.tailRecord;
       this.tailRecord = protoRecord;
     }
   }
