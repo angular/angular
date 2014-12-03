@@ -4,7 +4,6 @@ import {DOM, Element} from 'facade/dom';
 import {Compiler} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
-import {ReflectionCapabilities} from 'reflection/reflection_capabilities';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ChangeDetector} from 'change_detection/change_detector';
@@ -74,8 +73,6 @@ function _injectorBindings(appComponentType) {
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
 export function bootstrap(appComponentType: Type, bindings=null) {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-
   // TODO(rado): prepopulate template cache, so applications with only
   // index.html and main.js are possible.
   if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
