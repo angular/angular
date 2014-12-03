@@ -240,9 +240,7 @@ export class Record {
 
   updateContext(value) {
     this.context = value;
-    if (!this.isMarkerRecord) {
-      this.recordRange.enableRecord(this);
-    }
+    this.recordRange.enableRecord(this);
   }
 
   get isMarkerRecord() {
