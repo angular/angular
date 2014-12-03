@@ -13,6 +13,7 @@ var readline = require('readline');
 var runSequence = require('run-sequence');
 var spawn = require('child_process').spawn;
 var through2 = require('through2');
+var which = require('which');
 
 var js2es5Options = {
   sourceMaps: true,
@@ -41,7 +42,35 @@ var js2dartOptions = {
   outputLanguage: 'dart'
 };
 
-var PUB_CMD = process.platform === 'win32' ? 'pub.bat' : 'pub';
+var DART_SDK = false;
+
+try {
+  which.sync('dart');
+  console.log('Dart SDK detected');
+  if (process.platform === 'win32') {
+    DART_SDK = {
+      PUB: 'pub.bat',
+      ANALYZER: 'dartanalyzer.bat'
+    };
+  } else {
+    DART_SDK = {
+      PUB: 'pub',
+      ANALYZER: 'dartanalyzer'
+    };
+  }
+} catch (e) {
+  console.log('Dart SDK is not available, Dart tasks will be skipped.');
+  var gulpTaskFn = gulp.task.bind(gulp);
+  gulp.task = function (name, deps, fn) {
+    if (name.indexOf('.dart') === -1) {
+      return gulpTaskFn(name, deps, fn);
+    } else {
+      return gulpTaskFn(name, function() {
+        console.log('Dart SDK is not available. Skipping task: ' + name);
+      });
+    }
+  };
+}
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
@@ -105,7 +134,7 @@ gulp.task('modules/build.dart/pubspec', function() {
   return streamToPromise(changedStream)
     .then(function() {
       return Q.all(files.map(function(file) {
-        return processToPromise(spawn(PUB_CMD, ['get'], {
+        return processToPromise(spawn(DART_SDK.PUB, ['get'], {
           stdio: 'inherit',
           cwd: path.dirname(file)
         }));
@@ -178,7 +207,7 @@ function createModuleTask(sourceTypeConfig) {
 // ------------------
 // ANALYZE
 
-gulp.task('analyze/dartanalyzer', function(done) {
+gulp.task('analyze/analyzer.dart', function(done) {
   var pubSpecs = [].slice.call(glob.sync('build/dart/*/pubspec.yaml', {
     cwd: __dirname
   }));
@@ -205,8 +234,7 @@ gulp.task('analyze/dartanalyzer', function(done) {
   }));
 
   function analyze(dirName, done) {
-    var dartanalyzerCmd = (process.platform === "win32" ? "dartanalyzer.bat" : "dartanalyzer");
-    var stream = spawn(dartanalyzerCmd, ['--fatal-warnings', tempFile], {
+    var stream = spawn(DART_SDK.ANALYZER, ['--fatal-warnings', tempFile], {
       // inherit stdin and stderr, but filter stdout
       stdio: [process.stdin, 'pipe', process.stderr],
       cwd: dirName
@@ -348,7 +376,7 @@ gulp.task('serve', function() {
 });
 
 gulp.task('examples/pub.serve', function(done) {
-  spawn(PUB_CMD, ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
+  spawn(DART_SDK.PUB, ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
     .on('done', done);
 });
 
@@ -364,10 +392,10 @@ gulp.task('build', function(done) {
     // parallel
     ['jsRuntime/build', 'modules/build.dart', 'modules/build.dev.js'],
     // sequential
-    'analyze/dartanalyzer'
+    'analyze/analyzer.dart'
   );
 });
 
 gulp.task('analyze', function(done) {
-  runSequence('analyze/dartanalyzer');
+  runSequence('analyze/analyzer.dart');
 });
