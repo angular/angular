@@ -3,6 +3,10 @@ var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
 var path = require('canonical-path');
 
+var PARTIAL_PATH = 'partials';
+var MODULES_DOCS_PATH = PARTIAL_PATH + '/modules';
+var GUIDES_PATH = PARTIAL_PATH + '/guides';
+
 // Define the dgeni package for generating the docs
 module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
@@ -90,14 +94,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   computeIdsProcessor.idTemplates.push({
     docTypes: ['guide'],
     getId: function(doc) {
-      var cleanedPath = doc.fileInfo.relativePath
+      return doc.fileInfo.relativePath
                     // path should be relative to `modules` folder
                     .replace(/.*\/?modules\//, '')
                     // path should not include `/docs/`
                     .replace(/\/docs\//, '/')
                     // path should not have a suffix
                     .replace(/\.\w*$/, '');
-      return cleanedPath;
     },
     getAliases: function(doc) { return [doc.id]; }
   });
@@ -106,7 +109,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
     pathTemplate: '${id}',
-    outputPathTemplate: '${id}/index.html'
+    outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
   });
 
   computePathsProcessor.pathTemplates.push({
@@ -117,7 +120,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
       'VARIABLE_STATEMENT'
     ],
     pathTemplate: '${moduleDoc.path}/${name}',
-    outputPathTemplate: '${path}/index.html'
+    outputPathTemplate: MODULES_DOCS_PATH + '/${path}/index.html'
   });
 
   computePathsProcessor.pathTemplates.push({
@@ -130,6 +133,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   computePathsProcessor.pathTemplates.push({
     docTypes: ['guide'],
     pathTemplate: '${id}',
-    outputPathTemplate: 'guides/${id}.html'
+    outputPathTemplate: GUIDES_PATH + '/${id}.html'
   });
 });

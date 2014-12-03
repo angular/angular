@@ -18,6 +18,7 @@ module.exports = function generateNavigationDoc() {
         if ( doc.docType === 'module' ) {
           var moduleNavItem = {
             path: doc.path,
+            partial: doc.outputPath,
             name: doc.id,
             type: 'module',
             pages: []
@@ -28,6 +29,7 @@ module.exports = function generateNavigationDoc() {
           _.forEach(doc.exports, function(exportDoc) {
             var exportNavItem = {
               path: exportDoc.path,
+              partial: exportDoc.outputPath,
               name: exportDoc.name,
               type: exportDoc.docType
             };
