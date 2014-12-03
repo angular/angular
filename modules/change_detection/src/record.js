@@ -34,15 +34,19 @@ export class ProtoRecord {
   arity:int;
   name:string;
   dest:any;
+  groupMemento:any;
+
   next:ProtoRecord;
 
   recordInConstruction:Record;
+
   constructor(recordRange:ProtoRecordRange,
               mode:int,
               funcOrValue,
               arity:int,
               name:string,
-              dest) {
+              dest,
+              groupMemento) {
 
     this.recordRange = recordRange;
     this._mode = mode;
@@ -50,6 +54,7 @@ export class ProtoRecord {
     this.arity = arity;
     this.name = name;
     this.dest = dest;
+    this.groupMemento = groupMemento;
 
     this.next = null;
     // The concrete Record instantiated from this ProtoRecord
@@ -190,19 +195,18 @@ export class Record {
 
   check():boolean {
     if (this.isCollection) {
-      var changed = this._checkCollection();
-      if (changed) {
-        this._notifyDispatcher();
-        return true;
-      }
-      return false;
+      return this._checkCollection();
     } else {
-      this.previousValue = this.currentValue;
-      this.currentValue = this._calculateNewValue();
-      if (isSame(this.previousValue, this.currentValue)) return false;
-      this._updateDestination();
-      return true;
+      return this._checkSingleRecord();
     }
+  }
+
+  _checkSingleRecord():boolean {
+    this.previousValue = this.currentValue;
+    this.currentValue = this._calculateNewValue();
+    if (isSame(this.previousValue, this.currentValue)) return false;
+    this._updateDestination();
+    return true;
   }
 
   _updateDestination() {
@@ -213,13 +217,7 @@ export class Record {
       } else {
         this.dest.updateContext(this.currentValue);
       }
-    } else {
-      this._notifyDispatcher();
     }
-  }
-
-  _notifyDispatcher() {
-    this.recordRange.dispatcher.onRecordChange(this, this.protoRecord.dest);
   }
 
   // return whether the content has changed
@@ -307,8 +305,20 @@ export class Record {
     }
   }
 
+  terminatesExpression():boolean {
+    return !(this.dest instanceof Record);
+  }
+
   get isMarkerRecord() {
     return this.type == RECORD_TYPE_MARKER;
+  }
+
+  expressionMemento() {
+    return this.protoRecord.dest;
+  }
+
+  groupMemento() {
+    return isPresent(this.protoRecord) ? this.protoRecord.groupMemento : null;
   }
 }
 

@@ -3,6 +3,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {Component, Decorator, Template} from 'core/annotations/annotations';
+import {OnChange} from 'core/core';
 import {ProtoRecordRange} from 'change_detection/record_range';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -281,7 +282,7 @@ export function main() {
           expect(view.bindElements[0].id).toEqual('buz');
         });
 
-        it('should consume directive watch expression change.', () => {
+        it('should consume directive watch expression change', () => {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
@@ -291,6 +292,43 @@ export function main() {
           ctx.foo = 'buz';
           cd.detectChanges();
           expect(view.elementInjectors[0].get(SomeDirective).prop).toEqual('buz');
+        });
+
+        it('should notify a directive about changes after all its properties have been set', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
+            new ProtoRecordRange());
+
+          pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'));
+          createView(pv);
+
+          ctx.a = 100;
+          ctx.b = 200;
+          cd.detectChanges();
+
+          var directive = view.elementInjectors[0].get(DirectiveImplementingOnChange);
+          expect(directive.c).toEqual(300);
+        });
+
+        it('should provide a map of updated properties', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
+            new ProtoRecordRange());
+
+          pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'));
+          createView(pv);
+          ctx.a = 0;
+          ctx.b = 0;
+          cd.detectChanges();
+
+          ctx.a = 100;
+          cd.detectChanges();
+
+          var directive = view.elementInjectors[0].get(DirectiveImplementingOnChange);
+          expect(directive.changes["a"].currentValue).toEqual(100);
+          expect(directive.changes["b"]).not.toBeDefined();
         });
       });
     });
@@ -321,6 +359,18 @@ class SomeDirective {
   prop;
   constructor() {
     this.prop = 'foo';
+  }
+}
+
+class DirectiveImplementingOnChange extends OnChange {
+  a;
+  b;
+  c;
+  changes;
+
+  onChange(changes) {
+    this.c = this.a + this.b;
+    this.changes = changes;
   }
 }
 
@@ -368,6 +418,8 @@ class AnotherDirective {
 
 class MyEvaluationContext {
   foo:string;
+  a;
+  b;
   constructor() {
     this.foo = 'bar';
   };

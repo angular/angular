@@ -1,5 +1,5 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper, MapWrapper, List} from 'facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
 import {ProtoRecordRange, RecordRange, WatchGroupDispatcher} from 'change_detection/record_range';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
@@ -12,6 +12,7 @@ import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
+import {OnChange} from './interfaces';
 
 const NG_BINDING_CLASS = 'ng-binding';
 
@@ -47,20 +48,53 @@ export class View {
     this.viewPorts = null;
   }
 
-  onRecordChange(record:Record, target) {
+  onRecordChange(groupMemento, records:List<Record>) {
+    this._invokeMementoForRecords(records);
+    if (groupMemento instanceof DirectivePropertyGroupMemento) {
+      this._notifyDirectiveAboutChanges(groupMemento, records);
+    }
+  }
+
+  _invokeMementoForRecords(records:List<Record>) {
+    for(var i = 0; i < records.length; ++i) {
+      this._invokeMementoFor(records[i]);
+    }
+  }
+
+  _notifyDirectiveAboutChanges(groupMemento, records:List<Record>) {
+    var dir = groupMemento.directive(this.elementInjectors);
+    if (dir instanceof OnChange) {
+      dir.onChange(this._collectChanges(records));
+    }
+  }
+
     // dispatch to element injector or text nodes based on context
-    if (target instanceof DirectivePropertyMemento) {
+  _invokeMementoFor(record:Record) {
+    var memento = record.expressionMemento();
+    if (memento instanceof DirectivePropertyMemento) {
       // we know that it is DirectivePropertyMemento
-      var directiveMemento:DirectivePropertyMemento = target;
+      var directiveMemento:DirectivePropertyMemento = memento;
       directiveMemento.invoke(record, this.elementInjectors);
-    } else if (target instanceof ElementPropertyMemento) {
-      var elementMemento:ElementPropertyMemento = target;
+
+    } else if (memento instanceof ElementPropertyMemento) {
+      var elementMemento:ElementPropertyMemento = memento;
       elementMemento.invoke(record, this.bindElements);
+
     } else {
       // we know it refers to _textNodes.
-      var textNodeIndex:number = target;
+      var textNodeIndex:number = memento;
       DOM.setText(this.textNodes[textNodeIndex], record.currentValue);
     }
+  }
+
+  _collectChanges(records:List) {
+    var changes = StringMapWrapper.create();
+    for(var i = 0; i < records.length; ++i) {
+      var record = records[i];
+      var propertyUpdate = new PropertyUpdate(record.currentValue, record.previousValue);
+      StringMapWrapper.set(changes, record.expressionMemento()._setterName, propertyUpdate);
+    }
+    return changes;
   }
 
   addViewPort(viewPort: ViewPort) {
@@ -163,7 +197,8 @@ export class ProtoView {
       elBinder.textNodeIndices = ListWrapper.create();
     }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
-    this.protoRecordRange.addRecordsFromAST(expression, this.textNodesWithBindingCount++);
+    var memento = this.textNodesWithBindingCount++;
+    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
   }
 
   /**
@@ -175,12 +210,8 @@ export class ProtoView {
       elBinder.hasElementPropertyBindings = true;
       this.elementsWithBindingCount++;
     }
-    this.protoRecordRange.addRecordsFromAST(expression,
-      new ElementPropertyMemento(
-        this.elementsWithBindingCount-1,
-        propertyName
-      )
-    );
+    var memento = new ElementPropertyMemento(this.elementsWithBindingCount-1, propertyName);
+    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
   }
 
   /**
@@ -202,15 +233,15 @@ export class ProtoView {
     expression:AST,
     setterName:string,
     setter:SetterFn) {
-    this.protoRecordRange.addRecordsFromAST(
-      expression,
-      new DirectivePropertyMemento(
-        this.elementBinders.length-1,
-        directiveIndex,
-        setterName,
-        setter
-      )
+
+    var expMemento = new DirectivePropertyMemento(
+      this.elementBinders.length-1,
+      directiveIndex,
+      setterName,
+      setter
     );
+    var groupMemento = DirectivePropertyGroupMemento.get(expMemento);
+    this.protoRecordRange.addRecordsFromAST(expression, expMemento, groupMemento, false);
   }
 
   static _createElementInjectors(elements, binders, hostElementInjector) {
@@ -363,6 +394,43 @@ export class DirectivePropertyMemento {
   }
 }
 
+var _groups = MapWrapper.create();
+
+class DirectivePropertyGroupMemento {
+  _elementInjectorIndex:number;
+  _directiveIndex:number;
+
+  constructor(elementInjectorIndex:number, directiveIndex:number) {
+    this._elementInjectorIndex = elementInjectorIndex;
+    this._directiveIndex = directiveIndex;
+  }
+
+  static get(memento:DirectivePropertyMemento) {
+    var elementInjectorIndex = memento._elementInjectorIndex;
+    var directiveIndex = memento._directiveIndex;
+    var id = elementInjectorIndex * 100 + directiveIndex;
+
+    if (! MapWrapper.contains(_groups, id)) {
+      return MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
+    }
+    return MapWrapper.get(_groups, id);
+  }
+
+  directive(elementInjectors:List<ElementInjector>) {
+    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
+    return elementInjector.getAtIndex(this._directiveIndex);
+  }
+}
+
+class PropertyUpdate {
+  currentValue;
+  previousValue;
+
+  constructor(currentValue, previousValue) {
+    this.currentValue = currentValue;
+    this.previousValue = previousValue;
+  }
+}
 
 
 //TODO(tbosch): I don't like to have done be called from a different place than notify

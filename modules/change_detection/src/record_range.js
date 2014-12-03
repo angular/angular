@@ -45,21 +45,24 @@ export class ProtoRecordRange {
    * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
    * @param ast The expression to watch
-   * @param memento an opaque object which will be passed to WatchGroupDispatcher on
+   * @param expressionMemento an opaque object which will be passed to WatchGroupDispatcher on
    *        detecting a change.
    * @param content Wether to watch collection content (true) or reference (false, default)
    */
   addRecordsFromAST(ast:AST,
-        memento,
+        expressionMemento,
+        groupMemento,
         content:boolean = false)
   {
     if (this.recordCreator === null) {
       this.recordCreator = new ProtoRecordCreator(this);
     }
+    
     if (content) {
       ast = new Collection(ast);
     }
-    this.recordCreator.createRecordsFromAST(ast, memento);
+    
+    this.recordCreator.createRecordsFromAST(ast, expressionMemento, groupMemento);
   }
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
@@ -85,6 +88,8 @@ export class ProtoRecordRange {
     for (var proto = this.recordCreator.headRecord; proto != null; proto = proto.next) {
       if (proto.dest instanceof Destination) {
         proto.recordInConstruction.dest = proto.dest.record.recordInConstruction;
+      } else {
+        proto.recordInConstruction.dest = proto.dest;
       }
       proto.recordInConstruction = null;
     }
@@ -378,6 +383,8 @@ class ProtoRecordCreator {
   protoRecordRange:ProtoRecordRange;
   headRecord:ProtoRecord;
   tailRecord:ProtoRecord;
+  groupMemento:any;
+
   constructor(protoRecordRange) {
     this.protoRecordRange = protoRecordRange;
     this.headRecord = null;
@@ -491,12 +498,13 @@ class ProtoRecordCreator {
 
   visitTemplateBindings(ast, dest) {this._unsupported();}
 
-  createRecordsFromAST(ast:AST, memento){
-    ast.visit(this, memento);
+  createRecordsFromAST(ast:AST, expressionMemento:any, groupMemento:any){
+    this.groupMemento = groupMemento;
+    ast.visit(this, expressionMemento);
   }
 
   construct(recordType, funcOrValue, arity, name, dest) {
-    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, name, dest);
+    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, name, dest, this.groupMemento);
   }
 
   add(protoRecord:ProtoRecord) {

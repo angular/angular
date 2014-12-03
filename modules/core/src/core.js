@@ -2,6 +2,7 @@
  * Define public API for Angular here
  */
 export * from './annotations/annotations';
+export * from './compiler/interfaces';
 export * from './annotations/template_config';
 
 export * from './application';

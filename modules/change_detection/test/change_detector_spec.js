@@ -26,7 +26,7 @@ export function main() {
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
                                 content = false) {
     var prr = new ProtoRecordRange();
-    prr.addRecordsFromAST(ast(exp), memo, content);
+    prr.addRecordsFromAST(ast(exp), memo, memo, content);
 
     var dispatcher = new LoggingDispatcher();
     var rr = prr.instantiate(dispatcher, formatters);
@@ -97,21 +97,21 @@ export function main() {
       it("should support literal array", () => {
         var c = createChangeDetector('array', '[1,2]');
         c["changeDetector"].detectChanges();
-        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+        expect(c["dispatcher"].loggedValues).toEqual([[[1,2]]]);
 
         c = createChangeDetector('array', '[1,a]', new TestData(2));
         c["changeDetector"].detectChanges();
-        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+        expect(c["dispatcher"].loggedValues).toEqual([[[1,2]]]);
       });
 
       it("should support literal maps", () => {
         var c = createChangeDetector('map', '{z:1}');
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
 
         c = createChangeDetector('map', '{z:a}', new TestData(1));
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
       });
 
       it("should support binary operations", () => {
@@ -242,6 +242,7 @@ export function main() {
 
           context.a = [0];
           cd.detectChanges();
+
           expect(dsp.log).toEqual(["a=" +
             arrayChangesAsString({
               collection: ['0[null->0]'],
@@ -343,8 +344,67 @@ export function main() {
           });
         }
       });
+
+      describe("onGroupChange", () => {
+        it("should notify the dispatcher when a group of records changes", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("1 + 2"), "memo", 1);
+          prr.addRecordsFromAST(ast("10 + 20"), "memo", 1);
+          prr.addRecordsFromAST(ast("100 + 200"), "memo2", 2);
+
+          var dispatcher = new LoggingDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+
+          var cd = new ChangeDetector(rr);
+          cd.detectChanges();
+
+          expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
+        });
+
+        it("should update every instance of a group individually", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("1 + 2"), "memo", "memo");
+
+          var dispatcher = new LoggingDispatcher();
+          var rr = new RecordRange(null, dispatcher);
+          rr.addRange(prr.instantiate(dispatcher, null));
+          rr.addRange(prr.instantiate(dispatcher, null));
+
+          var cd = new ChangeDetector(rr);
+          cd.detectChanges();
+
+          expect(dispatcher.loggedValues).toEqual([[3], [3]]);
+        });
+
+        it("should notify the dispatcher before switching to the next group", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("a()"), "a", 1);
+          prr.addRecordsFromAST(ast("b()"), "b", 2);
+          prr.addRecordsFromAST(ast("c()"), "b", 2);
+
+          var dispatcher = new LoggingDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+
+          var tr = new TestRecord();
+          tr.a = () => {dispatcher.logValue('InvokeA'); return 'a'};
+          tr.b = () => {dispatcher.logValue('InvokeB'); return 'b'};
+          tr.c = () => {dispatcher.logValue('InvokeC'); return 'c'};
+          rr.setContext(tr);
+
+          var cd = new ChangeDetector(rr);
+          cd.detectChanges();
+
+          expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
+        });
+      });
     });
   });
+}
+
+class TestRecord {
+  a;
+  b;
+  c;
 }
 
 class Person {
@@ -387,6 +447,7 @@ class TestData {
 class LoggingDispatcher extends WatchGroupDispatcher {
   log:List;
   loggedValues:List;
+
   constructor() {
     this.log = null;
     this.loggedValues = null;
@@ -397,10 +458,18 @@ class LoggingDispatcher extends WatchGroupDispatcher {
     this.log = ListWrapper.create();
     this.loggedValues = ListWrapper.create();
   }
+  
+  logValue(value) {
+    ListWrapper.push(this.loggedValues, value);
+  }
 
-  onRecordChange(record:Record, context) {
-    ListWrapper.push(this.loggedValues, record.currentValue);
-    ListWrapper.push(this.log, context + '=' + this._asString(record.currentValue));
+  onRecordChange(group, records:List) {
+    var value = records[0].currentValue;
+    var dest = records[0].protoRecord.dest;
+    ListWrapper.push(this.log, dest + '=' + this._asString(value));
+
+    var values = ListWrapper.map(records, (r) => r.currentValue);
+    ListWrapper.push(this.loggedValues, values);
   }
 
   _asString(value) {
