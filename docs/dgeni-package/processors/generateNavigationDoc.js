@@ -6,12 +6,12 @@ module.exports = function generateNavigationDoc() {
     $runAfter: ['docs-processed'],
     $runBefore: ['rendering-docs'],
     $process: function(docs) {
-      var navigationDoc = {
+      var modulesDoc = {
         value: { sections: [] },
-        moduleName: 'navigation-data',
-        serviceName: 'NAVIGATION',
+        moduleName: 'navigation-modules',
+        serviceName: 'MODULES',
         template: 'data-module.template.js',
-        outputPath: 'js/navigation.js'
+        outputPath: 'js/navigation-modules.js'
       };
 
       _.forEach(docs, function(doc) {
@@ -24,7 +24,7 @@ module.exports = function generateNavigationDoc() {
             pages: []
           };
 
-          navigationDoc.value.sections.push(moduleNavItem);
+          modulesDoc.value.sections.push(moduleNavItem);
 
           _.forEach(doc.exports, function(exportDoc) {
             var exportNavItem = {
@@ -38,7 +38,29 @@ module.exports = function generateNavigationDoc() {
         }
       });
 
-      docs.push(navigationDoc);
+      docs.push(modulesDoc);
+
+
+      var guidesDoc = {
+        value: { pages: [] },
+        moduleName: 'navigation-guides',
+        serviceName: 'GUIDES',
+        template: 'data-module.template.js',
+        outputPath: 'js/navigation-guides.js'
+      };
+
+      _.forEach(docs, function(doc) {
+        if ( doc.docType === 'guide' ) {
+          var guideDoc = {
+            path: doc.path,
+            partial: doc.outputPath,
+            name: doc.id,
+            type: 'guide'
+          };
+          guidesDoc.value.pages.push(guideDoc)
+        }
+      });
+      docs.push(guidesDoc);
     }
   };
 };
