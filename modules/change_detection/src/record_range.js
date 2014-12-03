@@ -36,11 +36,9 @@ import {
 } from './parser/ast';
 
 export class ProtoRecordRange {
-  headRecord:ProtoRecord;
-  tailRecord:ProtoRecord;
+  recordCreator: ProtoRecordCreator;
   constructor() {
-    this.headRecord = null;
-    this.tailRecord = null;
+    this.recordCreator = null;
   }
 
   /**
@@ -55,30 +53,20 @@ export class ProtoRecordRange {
         memento,
         content:boolean = false)
   {
-    var creator = new ProtoRecordCreator(this);
+    if (this.recordCreator === null) {
+      this.recordCreator = new ProtoRecordCreator(this);
+    }
     if (content) {
       ast = new Collection(ast);
     }
-    creator.createRecordsFromAST(ast, memento);
-    this._addRecords(creator.headRecord, creator.tailRecord);
-  }
-
-  // try to encapsulate this behavior in some class (e.g., LinkedList)
-  // so we can say: group.appendList(creator.list);
-  _addRecords(head:ProtoRecord, tail:ProtoRecord) {
-    if (isBlank(this.headRecord)) {
-      this.headRecord = head;
-    } else {
-      this.tailRecord.next = head;
-    }
-    this.tailRecord = tail;
+    this.recordCreator.createRecordsFromAST(ast, memento);
   }
 
   // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
   // but @Implements is not ready yet.
   instantiate(dispatcher, formatters:Map):RecordRange {
     var recordRange:RecordRange = new RecordRange(this, dispatcher);
-    if (this.headRecord !== null) {
+    if (this.recordCreator !== null) {
       this._createRecords(recordRange, formatters);
       this._setDestination();
     }
@@ -86,7 +74,7 @@ export class ProtoRecordRange {
   }
 
   _createRecords(recordRange:RecordRange, formatters:Map) {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var proto = this.recordCreator.headRecord; proto != null; proto = proto.next) {
       var record = new Record(recordRange, proto, formatters);
       proto.recordInConstruction = record;
       recordRange.addRecord(record);
@@ -94,7 +82,7 @@ export class ProtoRecordRange {
   }
 
   _setDestination() {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var proto = this.recordCreator.headRecord; proto != null; proto = proto.next) {
       if (proto.dest instanceof Destination) {
         proto.recordInConstruction.dest = proto.dest.record.recordInConstruction;
       }
