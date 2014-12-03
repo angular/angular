@@ -107,6 +107,14 @@ export function main() {
         expect(enabledRecords(parent, recordNames)).toEqual(['record1', 'record2']);
       });
 
+      it('should handle enabling/disabling an empty range', () => {
+        var emptyRange = new RecordRange(null, null);
+        emptyRange.disable();
+        emptyRange.enable();
+
+        expect(enabledRecords(emptyRange, recordNames)).toEqual([]);
+      });
+
       it('should handle adding a range into an empty range', () => {
         var emptyRange = new RecordRange(null, null);
         parent.addRange(emptyRange);

@@ -188,8 +188,11 @@ export class RecordRange {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
     var lastEnabledChildRecord = this.findLastEnabledRecord();
 
-    var nextEnabled = lastEnabledChildRecord.nextEnabled;
-    var prevEnabled = firstEnabledChildRecord.prevEnabled;
+    var nextEnabled = isPresent(lastEnabledChildRecord) ?
+        lastEnabledChildRecord.nextEnabled : null;
+
+    var prevEnabled = isPresent(firstEnabledChildRecord) ?
+        firstEnabledChildRecord.prevEnabled : null;
 
     if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
     if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
