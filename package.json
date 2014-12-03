@@ -38,6 +38,7 @@
     "gulp-load-plugins": "^0.7.1",
     "gulp-rename": "^1.2.0",
     "gulp-shell": "^0.2.10",
+    "gulp-webserver": "^0.8.7",
     "lodash": "^2.4.1"
   }
 }

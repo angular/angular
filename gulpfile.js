@@ -437,3 +437,14 @@ gulp.task('docs-app', function() {
 });
 
 gulp.task('docs', ['docs-assets', 'docs-app', 'dgeni']);
+gulp.task('docs-watch', function() {
+  return gulp.watch('docs/app/**/*', ['docs-app']);
+});
+
+var webserver = require('gulp-webserver');
+gulp.task('docs-serve', function() {
+  gulp.src('build/docs/')
+    .pipe(webserver({
+      fallback: 'index.html'
+    }));
+});
