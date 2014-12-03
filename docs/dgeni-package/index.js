@@ -30,7 +30,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Configure file reading
 .config(function(readFilesProcessor, atScriptFileReader, ngdocFileReader) {
   readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
-  readFilesProcessor.basePath = path.resolve(__dirname, '..');
+  readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
     { include: 'modules/*/src/**/*.js', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },

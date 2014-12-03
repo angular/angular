@@ -406,7 +406,7 @@ gulp.task('analyze', function(done) {
 var Dgeni = require('dgeni');
 gulp.task('dgeni', function() {
   try {
-    var dgeni = new Dgeni([require('./docs')]);
+    var dgeni = new Dgeni([require('./docs/dgeni-package')]);
     return dgeni.generate();
   } catch(x) {
     console.log(x.stack);
