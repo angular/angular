@@ -12,7 +12,6 @@ module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComm
 
           log.debug('processing', doc.moduleTree.moduleName);
 
-          doc.id = doc.moduleTree.moduleName;
           doc.exports = [];
 
           if ( doc.moduleTree.visit ) {

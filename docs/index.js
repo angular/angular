@@ -69,27 +69,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor) {
 
-  // This creates aliases by pulling off each path segment in turn:
-  // "a/b/c" will have aliases ["a/b/c", "b/c", "c"]
-  // @rado - IS THIS WHAT WE WANT OR ARE MODULE NAMES NOT RELATIVE LIKE THIS?
-  function getAliases(doc) {
-    var aliases = [];
-
-    if ( !doc.id ) return [];
-
-    var parts = doc.id.split('/');
-    while(parts.length) {
-      aliases.push(parts.join('/'));
-      parts.shift();
-    }
-    return aliases;
-  }
-
-  computeIdsProcessor.idTemplates.push({
-    docTypes: ['module'],
-    getAliases: getAliases
-  });
-
   computeIdsProcessor.idTemplates.push({
     docTypes: [
       'class',
@@ -98,13 +77,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
       'VARIABLE_STATEMENT'
     ],
     idTemplate: '${moduleDoc.id}.${name}',
-    getAliases: getAliases
+    getAliases: function(doc) { return [doc.id]; }
   });
 
   computeIdsProcessor.idTemplates.push({
     docTypes: ['member'],
     idTemplate: '${classDoc.id}.${name}',
-    getAliases: getAliases
+    getAliases: function(doc) { return [doc.id]; }
   });
 
   computeIdsProcessor.idTemplates.push({
