@@ -22,10 +22,6 @@ export class ChangeDetector {
       var currentRange = record.recordRange;
       var currentGroup = record.groupMemento();
 
-      var nextEnabled = record.nextEnabled;
-      var nextRange = isPresent(nextEnabled) ? nextEnabled.recordRange : null;
-      var nextGroup = isPresent(nextEnabled) ? nextEnabled.groupMemento() : null;
-
       if (record.check()) {
         count ++;
         if (record.terminatesExpression()) {
@@ -33,23 +29,21 @@ export class ChangeDetector {
         }
       }
 
-      if (this._shouldNotifyDispatcher(currentRange, nextRange, currentGroup, nextGroup, updatedRecords)) {
-        currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
-        updatedRecords = null;
+      if (isPresent(updatedRecords)) {
+        var nextEnabled = record.nextEnabled;
+        var nextRange = isPresent(nextEnabled) ? nextEnabled.recordRange : null;
+        var nextGroup = isPresent(nextEnabled) ? nextEnabled.groupMemento() : null;
+
+        if (currentRange != nextRange || currentGroup != nextGroup) {
+          currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
+          updatedRecords = null;
+        }
       }
 
       record = record.nextEnabled;
     }
 
     return count;
-  }
-
-  _groupChanged(currentRange, nextRange, currentGroup, nextGroup) {
-    return currentRange != nextRange || currentGroup != nextGroup;
-  }
-
-  _shouldNotifyDispatcher(currentRange, nextRange, currentGroup, nextGroup, updatedRecords) {
-    return this._groupChanged(currentRange, nextRange, currentGroup, nextGroup) && isPresent(updatedRecords);
   }
 
   _addRecord(updatedRecords:List, record:Record) {
