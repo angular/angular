@@ -33,7 +33,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   readFilesProcessor.basePath = path.resolve(__dirname, '..');
   readFilesProcessor.sourceFiles = [
     { include: 'modules/*/src/**/*.js', basePath: 'modules' },
-    { include: 'modules/*/docs/**/*.md', basePath: 'modules' }
+    { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
+    { include: 'docs/content/**/*.md', basePath: 'doc/content' }
   ];
 })
 
