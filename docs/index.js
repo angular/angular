@@ -11,6 +11,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .factory(require('./services/getJSDocComment'))
 .factory(require('./services/ExportTreeVisitor'))
 .factory(require('./readers/atScript'))
+.factory(require('./readers/ngdoc'))
 
 
 // Register the processors
@@ -27,11 +28,12 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 
 // Configure file reading
-.config(function(readFilesProcessor, atScriptFileReader) {
-  readFilesProcessor.fileReaders = [atScriptFileReader];
+.config(function(readFilesProcessor, atScriptFileReader, ngdocFileReader) {
+  readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '..');
   readFilesProcessor.sourceFiles = [
-    { include: 'modules/*/src/**/*.js', basePath: 'modules' }
+    { include: 'modules/*/src/**/*.js', basePath: 'modules' },
+    { include: 'modules/*/docs/**/*.md', basePath: 'modules' }
   ];
 })
 
@@ -105,6 +107,22 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
     getAliases: getAliases
   });
 
+  computeIdsProcessor.idTemplates.push({
+    docTypes: ['guide'],
+    getId: function(doc) {
+      var cleanedPath = doc.fileInfo.relativePath
+                    // path should be relative to `modules` folder
+                    .replace(/.*\/?modules\//, '')
+                    // path should not include `/docs/`
+                    .replace(/\/docs\//, '/')
+                    // path should not have a suffix
+                    .replace(/\.\w*$/, '');
+      return cleanedPath;
+    },
+    getAliases: function(doc) { return [doc.id]; }
+  });
+
+
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
     pathTemplate: '${id}',
@@ -126,5 +144,12 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
     docTypes: ['member'],
     pathTemplate: '${classDoc.path}/${name}',
     getOutputPath: function() {} // These docs are not written to their own file, instead they are part of their class doc
+  });
+
+
+  computePathsProcessor.pathTemplates.push({
+    docTypes: ['guide'],
+    pathTemplate: '${id}',
+    outputPathTemplate: 'guides/${id}.html'
   });
 });
