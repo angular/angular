@@ -129,17 +129,24 @@ gulp.task('modules/build.dart/pubspec', function() {
       done();
     }))
     .pipe(gulp.dest(outputDir));
-  // We need to wait for all pubspecs to be present before executing
+  // 1. We need to wait for all pubspecs to be present before executing
   // `pub get` as it checks the folders of the dependencies!
-  return streamToPromise(changedStream)
-    .then(function() {
-      return Q.all(files.map(function(file) {
-        return processToPromise(spawn(DART_SDK.PUB, ['get'], {
-          stdio: 'inherit',
-          cwd: path.dirname(file)
-        }));
-      }));
-    });
+  // 2. We execute `pub get` commands sequentially to avoid race condition with pub cache
+  var promise = streamToPromise(changedStream).then(function() {
+    for (var i = 0; i < files.length; i++) {
+      (function (file) {
+        promise = promise.then(function() {
+          return processToPromise(spawn(DART_SDK.PUB, ['get'], {
+                    stdio: 'inherit',
+                    cwd: path.dirname(file)
+                  }));
+        });
+      })(files[i]);
+    }
+  });
+
+  return promise;
+
 });
 
 function processToPromise(process) {
