@@ -40,7 +40,7 @@ export class ChangeDetector {
         }
       }
 
-      record = record.nextEnabled;
+      record = record.findNextEnabled();
     }
 
     return count;

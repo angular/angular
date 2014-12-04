@@ -173,6 +173,10 @@ export class Record {
     return (this._mode & RECORD_FLAG_DISABLED) === RECORD_FLAG_DISABLED;
   }
 
+  isEnabled():boolean {
+    return ! this.disabled;
+  }
+
   set disabled(value:boolean) {
     if (value) {
       this._mode |= RECORD_FLAG_DISABLED;
@@ -315,6 +319,49 @@ export class Record {
 
   groupMemento() {
     return isPresent(this.protoRecord) ? this.protoRecord.groupMemento : null;
+  }
+
+
+  /**
+   * Returns the next enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
+   *
+   * The function skips disabled sub ranges.
+   */
+  findNextEnabled() {
+    if (this.isEnabled()) return this.nextEnabled;
+
+    var record = this.next;
+    while (isPresent(record) && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.tailRecord.next;
+      } else {
+        record = record.next;
+      }
+    }
+    return record;
+  }
+
+  /**
+   * Returns the prev enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
+   *
+   * The function skips disabled sub ranges.
+   */
+  findPrevEnabled() {
+    if (this.isEnabled()) return this.prevEnabled;
+
+    var record = this.prev;
+    while (isPresent(record) && record.disabled) {
+      if (record.isMarkerRecord && record.recordRange.disabled) {
+        record = record.recordRange.headRecord.prev;
+      } else {
+        record = record.prev;
+      }
+    }
+    return record;
   }
 }
 

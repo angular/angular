@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 
 import {isPresent, isBlank, isJsObject} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
@@ -28,7 +28,7 @@ export function main() {
     var prr = new ProtoRecordRange();
     prr.addRecordsFromAST(ast(exp), memo, memo, content);
 
-    var dispatcher = new LoggingDispatcher();
+    var dispatcher = new TestDispatcher();
     var rr = prr.instantiate(dispatcher, formatters);
     rr.setContext(context);
 
@@ -46,6 +46,17 @@ export function main() {
 
   describe('change_detection', () => {
     describe('ChangeDetection', () => {
+      function createRange(dispatcher, ast, group) {
+        var prr = new ProtoRecordRange();
+        prr.addRecordsFromAST(ast, "memo", group);
+        return prr.instantiate(dispatcher, null);
+      }
+
+      function detectChangesInRange(recordRange) {
+        var cd = new ChangeDetector(recordRange);
+        cd.detectChanges();
+      }
+
       it('should do simple watching', () => {
         var person = new Person("misko");
 
@@ -345,18 +356,45 @@ export function main() {
         }
       });
 
-      describe("onGroupChange", () => {
+      describe("adding new ranges", () => {
+        var dispatcher;
+
+        beforeEach(() => {
+          dispatcher = new TestDispatcher();
+        });
+
+        /**
+         * Tests that we can add a new range after the current
+         * record has been disabled. The new range must be processed
+         * during the same change detection run.
+         */
+        it("should work when disabling the last enabled record", () => {
+          var rr = createRange(dispatcher, ast("1"), 1);
+
+          dispatcher.onChange = (group, _) => {
+            if (group === 1) { // to prevent infinite loop
+              var rangeToAppend = createRange(dispatcher, ast("2"), 2);
+              rr.addRange(rangeToAppend);
+            }
+          };
+
+          detectChangesInRange(rr);
+
+          expect(dispatcher.loggedValues).toEqual([[1], [2]]);
+        });
+      });
+
+      describe("group changes", () => {
         it("should notify the dispatcher when a group of records changes", () => {
           var prr = new ProtoRecordRange();
           prr.addRecordsFromAST(ast("1 + 2"), "memo", 1);
           prr.addRecordsFromAST(ast("10 + 20"), "memo", 1);
           prr.addRecordsFromAST(ast("100 + 200"), "memo2", 2);
 
-          var dispatcher = new LoggingDispatcher();
+          var dispatcher = new TestDispatcher();
           var rr = prr.instantiate(dispatcher, null);
 
-          var cd = new ChangeDetector(rr);
-          cd.detectChanges();
+          detectChangesInRange(rr);
 
           expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
         });
@@ -365,13 +403,12 @@ export function main() {
           var prr = new ProtoRecordRange();
           prr.addRecordsFromAST(ast("1 + 2"), "memo", "memo");
 
-          var dispatcher = new LoggingDispatcher();
+          var dispatcher = new TestDispatcher();
           var rr = new RecordRange(null, dispatcher);
           rr.addRange(prr.instantiate(dispatcher, null));
           rr.addRange(prr.instantiate(dispatcher, null));
 
-          var cd = new ChangeDetector(rr);
-          cd.detectChanges();
+          detectChangesInRange(rr);
 
           expect(dispatcher.loggedValues).toEqual([[3], [3]]);
         });
@@ -382,7 +419,7 @@ export function main() {
           prr.addRecordsFromAST(ast("b()"), "b", 2);
           prr.addRecordsFromAST(ast("c()"), "b", 2);
 
-          var dispatcher = new LoggingDispatcher();
+          var dispatcher = new TestDispatcher();
           var rr = prr.instantiate(dispatcher, null);
 
           var tr = new TestRecord();
@@ -391,8 +428,7 @@ export function main() {
           tr.c = () => {dispatcher.logValue('InvokeC'); return 'c'};
           rr.setContext(tr);
 
-          var cd = new ChangeDetector(rr);
-          cd.detectChanges();
+          detectChangesInRange(rr);
 
           expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
         });
@@ -444,13 +480,15 @@ class TestData {
   }
 }
 
-class LoggingDispatcher extends WatchGroupDispatcher {
+class TestDispatcher extends WatchGroupDispatcher {
   log:List;
   loggedValues:List;
+  onChange:Function;
 
   constructor() {
     this.log = null;
     this.loggedValues = null;
+    this.onChange = (_, __) => {};
     this.clear();
   }
 
@@ -458,7 +496,7 @@ class LoggingDispatcher extends WatchGroupDispatcher {
     this.log = ListWrapper.create();
     this.loggedValues = ListWrapper.create();
   }
-  
+
   logValue(value) {
     ListWrapper.push(this.loggedValues, value);
   }
@@ -470,6 +508,8 @@ class LoggingDispatcher extends WatchGroupDispatcher {
 
     var values = ListWrapper.map(records, (r) => r.currentValue);
     ListWrapper.push(this.loggedValues, values);
+
+    this.onChange(group, records);
   }
 
   _asString(value) {

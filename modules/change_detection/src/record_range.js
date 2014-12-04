@@ -129,8 +129,8 @@ export class RecordRange {
 
   addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
-    var prevEnabledRecord = RecordRange._prevEnabled(this.tailRecord);
-    var nextEnabledRerord = RecordRange._nextEnabled(this.tailRecord);
+    var prevEnabledRecord = this.tailRecord.findPrevEnabled();
+    var nextEnabledRerord = this.tailRecord.findNextEnabled();
 
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
@@ -174,10 +174,10 @@ export class RecordRange {
   }
 
   enableRecord(record:Record) {
-    if (!record.disabled) return;
+    if (record.isEnabled()) return;
 
-    var prevEnabled = RecordRange._prevEnabled(record);
-    var nextEnabled = RecordRange._nextEnabled(record);
+    var prevEnabled = record.findPrevEnabled();
+    var nextEnabled = record.findNextEnabled();
 
     record.prevEnabled = prevEnabled;
     record.nextEnabled = nextEnabled;
@@ -203,8 +203,8 @@ export class RecordRange {
   }
 
   enable() {
-    var prevEnabledRecord = RecordRange._prevEnabled(this.headRecord);
-    var nextEnabledRecord = RecordRange._nextEnabled(this.tailRecord);
+    var prevEnabledRecord = this.headRecord.findPrevEnabled();
+    var nextEnabledRecord = this.tailRecord.findNextEnabled();
 
     var firstEnabledthisRecord = this.findFirstEnabledRecord();
     var lastEnabledthisRecord = this.findLastEnabledRecord();
@@ -266,44 +266,6 @@ export class RecordRange {
       }
     }
     return record === this.headRecord ? null : record;
-  }
-
-  /**
-   * Returns the next enabled record. This search is not limited to the current range.
-   *
-   * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
-   *
-   * The function skips disabled sub ranges.
-   */
-  static _nextEnabled(record:Record) {
-    record = record.next;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
-        record = record.recordRange.tailRecord.next;
-      } else {
-        record = record.next;
-      }
-    }
-    return record;
-  }
-
-  /**
-   * Returns the prev enabled record. This search is not limited to the current range.
-   *
-   * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
-   *
-   * The function skips disabled sub ranges.
-   */
-  static _prevEnabled(record:Record) {
-    record = record.prev;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
-        record = record.recordRange.headRecord.prev;
-      } else {
-        record = record.prev;
-      }
-    }
-    return record;
   }
 
   /**
