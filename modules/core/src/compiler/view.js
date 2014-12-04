@@ -202,7 +202,7 @@ export class View {
     }
   }
 
-  _collectChanges(records:List) {
+  _collectChanges(records:List<Record>) {
     var changes = StringMapWrapper.create();
     for(var i = 0; i < records.length; ++i) {
       var record = records[i];

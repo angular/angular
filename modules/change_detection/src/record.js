@@ -239,7 +239,6 @@ export class Record {
   }
 
   _updateDestination() {
-    // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
     if (this.dest instanceof Record) {
       if (isPresent(this.protoRecord.dest.position)) {
         this.dest.updateArg(this.currentValue, this.protoRecord.dest.position);

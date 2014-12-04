@@ -417,7 +417,7 @@ export function main() {
           var prr = new ProtoRecordRange();
           prr.addRecordsFromAST(ast("a()"), "a", 1);
           prr.addRecordsFromAST(ast("b()"), "b", 2);
-          prr.addRecordsFromAST(ast("c()"), "b", 2);
+          prr.addRecordsFromAST(ast("c()"), "c", 2);
 
           var dispatcher = new TestDispatcher();
           var rr = prr.instantiate(dispatcher, null);
