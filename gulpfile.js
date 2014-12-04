@@ -1,4 +1,5 @@
 var benchpress = require('angular-benchpress/lib/cli');
+var del = require('del');
 var es = require('event-stream');
 var file2moduleName = require('./file2modulename');
 var fs = require('fs');
@@ -109,9 +110,8 @@ var sourceTypeConfigs = {
 };
 
 
-gulp.task('modules/clean', function() {
-  return gulp.src('build', {read: false})
-      .pipe($.rimraf());
+gulp.task('modules/clean', function(cb) {
+  del('build', cb);
 });
 
 gulp.task('modules/build.dart/src', function() {
