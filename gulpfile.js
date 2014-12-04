@@ -404,7 +404,7 @@ gulp.task('analyze', function(done) {
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
-gulp.task('dgeni', function() {
+gulp.task('docs/dgeni', function() {
   try {
     var dgeni = new Dgeni([require('./docs/dgeni-package')]);
     return dgeni.generate();
@@ -415,7 +415,7 @@ gulp.task('dgeni', function() {
 });
 
 var bower = require('bower');
-gulp.task('docs-bower', function() {
+gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
     console.log('bower:', result.id, result.data.endpoint.name);
@@ -426,23 +426,23 @@ gulp.task('docs-bower', function() {
   return bowerTask;
 });
 
-gulp.task('docs-assets', ['docs-bower'], function() {
+gulp.task('docs/assets', ['docs/bower'], function() {
   return gulp.src('docs/bower_components/**/*')
     .pipe(gulp.dest('build/docs/lib'));
 });
 
-gulp.task('docs-app', function() {
+gulp.task('docs/app', function() {
   return gulp.src('docs/app/**/*')
     .pipe(gulp.dest('build/docs'));
 });
 
-gulp.task('docs', ['docs-assets', 'docs-app', 'dgeni']);
+gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 gulp.task('docs-watch', function() {
   return gulp.watch('docs/app/**/*', ['docs-app']);
 });
 
 var webserver = require('gulp-webserver');
-gulp.task('docs-serve', function() {
+gulp.task('docs/serve', function() {
   gulp.src('build/docs/')
     .pipe(webserver({
       fallback: 'index.html'
