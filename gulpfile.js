@@ -441,6 +441,12 @@ gulp.task('docs-watch', function() {
   return gulp.watch('docs/app/**/*', ['docs-app']);
 });
 
+var jasmine = require('gulp-jasmine');
+gulp.task('docs/test', function () {
+  return gulp.src('docs/**/*.spec.js')
+      .pipe(jasmine());
+});
+
 var webserver = require('gulp-webserver');
 gulp.task('docs/serve', function() {
   gulp.src('build/docs/')
