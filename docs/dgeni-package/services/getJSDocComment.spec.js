@@ -1,7 +1,7 @@
 var mockPackage = require('../mocks/mockPackage');
 var Dgeni = require('dgeni');
 
-describe("getJSDocComment service", function() {
+describe('getJSDocComment service', function() {
 
   var dgeni, injector, getJSDocComment;
 
@@ -22,7 +22,7 @@ describe("getJSDocComment service", function() {
     getJSDocComment = injector.get('getJSDocComment');
   });
 
-  it("should only return an object if the comment starts with /** and ends with */", function() {
+  it('should only return an object if the comment starts with /** and ends with */', function() {
     var result = getJSDocComment(createComment('/** this is a jsdoc comment */'));
     expect(result).toBeDefined();
 
@@ -43,7 +43,7 @@ describe("getJSDocComment service", function() {
   });
 
 
-  it("should return a result that contains info about the comment", function() {
+  it('should return a result that contains info about the comment', function() {
     var codeTree = {};
     var result = getJSDocComment(createComment('/** this is a comment */', 10, 20, codeTree));
     expect(result.startingLine).toEqual(10);
@@ -51,7 +51,7 @@ describe("getJSDocComment service", function() {
     expect(result.codeTree).toBe(codeTree);
   });
 
-  it("should strip off leading stars from each line", function() {
+  it('should strip off leading stars from each line', function() {
     var result = getJSDocComment(createComment(
       '/** this is a jsdoc comment */\n' +
       ' *\n' +

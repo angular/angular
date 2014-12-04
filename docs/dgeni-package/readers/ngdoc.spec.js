@@ -1,7 +1,7 @@
 var ngdocFileReaderFactory = require('./ngdoc');
 var path = require('canonical-path');
 
-describe("ngdocFileReader", function() {
+describe('ngdocFileReader', function() {
 
   var fileReader;
 
@@ -23,15 +23,15 @@ describe("ngdocFileReader", function() {
   });
 
 
-  describe("defaultPattern", function() {
-    it("should match .md files", function() {
+  describe('defaultPattern', function() {
+    it('should match .md files', function() {
       expect(fileReader.defaultPattern.test('abc.md')).toBeTruthy();
       expect(fileReader.defaultPattern.test('abc.js')).toBeFalsy();
     });
   });
 
 
-  describe("getDocs", function() {
+  describe('getDocs', function() {
     it('should return an object containing info about the file and its contents', function() {
       var fileInfo = createFileInfo('project/path/modules/someModule/foo/docs/subfolder/bar.ngdoc', 'A load of content', 'project/path');
       expect(fileReader.getDocs(fileInfo)).toEqual([{

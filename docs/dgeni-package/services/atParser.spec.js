@@ -1,7 +1,7 @@
 var mockPackage = require('../mocks/mockPackage');
 var Dgeni = require('dgeni');
 
-describe("atParser service", function() {
+describe('atParser service', function() {
 
   var dgeni, injector, parser;
 
@@ -30,7 +30,7 @@ describe("atParser service", function() {
     parser = injector.get('atParser');
   });
 
-  it("should extract the comments from the file", function() {
+  it('should extract the comments from the file', function() {
     var result = parser.parseModule({
       content: fileContent,
       relativePath: 'di/src/annotations.js'
@@ -48,7 +48,7 @@ describe("atParser service", function() {
     );
   });
 
-  it("should extract a module AST from the file", function() {
+  it('should extract a module AST from the file', function() {
     var result = parser.parseModule({
       content: fileContent,
       relativePath: 'di/src/annotations.js'
@@ -60,7 +60,7 @@ describe("atParser service", function() {
     expect(result.moduleTree.scriptItemList[1].type).toEqual('EXPORT_DECLARATION');
   });
 
-  it("should attach comments to their following AST", function() {
+  it('should attach comments to their following AST', function() {
     var result = parser.parseModule({
       content: fileContent,
       relativePath: 'di/src/annotations.js'

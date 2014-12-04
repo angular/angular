@@ -1,7 +1,7 @@
 var mockPackage = require('../mocks/mockPackage');
 var Dgeni = require('dgeni');
 
-describe("atScript file reader", function() {
+describe('atScript file reader', function() {
 
   var dgeni, injector, reader;
 
@@ -32,12 +32,12 @@ describe("atScript file reader", function() {
   });
 
 
-  it("should provide a default pattern", function() {
+  it('should provide a default pattern', function() {
     expect(reader.defaultPattern).toEqual(/\.js$/);
   });
 
 
-  it("should parse the file using the atParser and return a single doc", function() {
+  it('should parse the file using the atParser and return a single doc', function() {
 
     var atParser = injector.get('atParser');
     spyOn(atParser, 'parseModule').and.callThrough();
