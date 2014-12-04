@@ -163,31 +163,6 @@ export class RecordRange {
     }
   }
 
-  disableRecord(record:Record) {
-    var prevEnabled = record.prevEnabled;
-    var nextEnabled = record.nextEnabled;
-
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
-
-    record.disabled = true;
-  }
-
-  enableRecord(record:Record) {
-    if (record.isEnabled()) return;
-
-    var prevEnabled = record.findPrevEnabled();
-    var nextEnabled = record.findNextEnabled();
-
-    record.prevEnabled = prevEnabled;
-    record.nextEnabled = nextEnabled;
-
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = record;
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = record;
-
-    record.disabled = false;
-  }
-
   disable() {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
     if (isPresent(firstEnabledChildRecord)) {

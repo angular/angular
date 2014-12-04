@@ -177,12 +177,37 @@ export class Record {
     return ! this.disabled;
   }
 
-  set disabled(value:boolean) {
+  _setDisabled(value:boolean) {
     if (value) {
       this._mode |= RECORD_FLAG_DISABLED;
     } else {
       this._mode &= ~RECORD_FLAG_DISABLED;
     }
+  }
+
+  enable() {
+    if (this.isEnabled()) return;
+
+    var prevEnabled = this.findPrevEnabled();
+    var nextEnabled = this.findNextEnabled();
+
+    this.prevEnabled = prevEnabled;
+    this.nextEnabled = nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = this;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = this;
+
+    this._setDisabled(false);
+  }
+
+  disable() {
+    var prevEnabled = this.prevEnabled;
+    var nextEnabled = this.nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+
+    this._setDisabled(true);
   }
 
   get isImplicitReceiver():boolean {
@@ -237,7 +262,7 @@ export class Record {
 
       case RECORD_TYPE_NULL:
         // no need to check the content again unless the context changes
-        this.recordRange.disableRecord(this);
+        this.disable();
         this.currentValue = null;
         return true;
 
@@ -259,11 +284,11 @@ export class Record {
 
       case RECORD_TYPE_INVOKE_PURE_FUNCTION:
       case RECORD_TYPE_INVOKE_FORMATTER:
-        this.recordRange.disableRecord(this);
+        this.disable();
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
       case RECORD_TYPE_CONST:
-        this.recordRange.disableRecord(this);
+        this.disable();
         return this.funcOrValue;
 
       default:
@@ -273,12 +298,12 @@ export class Record {
 
   updateArg(value, position:int) {
     this.args[position] = value;
-    this.recordRange.enableRecord(this);
+    this.enable();
   }
 
   updateContext(value) {
     this.context = value;
-    this.recordRange.enableRecord(this);
+    this.enable();
 
     if (this.isCollection) {
       if (ArrayChanges.supports(value)) {
@@ -327,7 +352,7 @@ export class Record {
    *
    * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
    *
-   * The function skips disabled sub ranges.
+   * The function skips disabled ranges.
    */
   findNextEnabled() {
     if (this.isEnabled()) return this.nextEnabled;
@@ -348,7 +373,7 @@ export class Record {
    *
    * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
    *
-   * The function skips disabled sub ranges.
+   * The function skips disabled ranges.
    */
   findPrevEnabled() {
     if (this.isEnabled()) return this.prevEnabled;

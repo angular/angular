@@ -190,16 +190,16 @@ export function main() {
       it('should disable a single record', () => {
         rr.addRecord(record1);
 
-        rr.disableRecord(record1);
+        record1.disable();
 
         expect(enabledRecords(rr, recordNames)).toEqual([]);
       });
 
       it('should enable a single record', () => {
         rr.addRecord(record1);
-        rr.disableRecord(record1);
+        record1.disable();
 
-        rr.enableRecord(record1);
+        record1.enable();
 
         expect(enabledRecords(rr, recordNames)).toEqual(['record1']);
       });
@@ -210,8 +210,8 @@ export function main() {
         rr.addRecord(record3);
         rr.addRecord(record4);
 
-        rr.disableRecord(record2);
-        rr.disableRecord(record3);
+        record2.disable();
+        record3.disable();
 
         expect(record2.disabled).toBeTruthy();
         expect(record3.disabled).toBeTruthy();
@@ -224,11 +224,11 @@ export function main() {
         rr.addRecord(record2);
         rr.addRecord(record3);
         rr.addRecord(record4);
-        rr.disableRecord(record2);
-        rr.disableRecord(record3);
+        record2.disable();
+        record3.disable();
 
-        rr.enableRecord(record2);
-        rr.enableRecord(record3);
+        record2.enable();
+        record3.enable();
 
         expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record2', 'record3', 'record4']);
       });
@@ -247,11 +247,11 @@ export function main() {
         rr.addRange(rr2);
         rr.addRange(rr3);
 
-        rr2.disableRecord(record2);
+        record2.disable();
 
         expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record3']);
 
-        rr2.enableRecord(record2);
+        record2.enable();
 
         expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record2', 'record3']);
       });
