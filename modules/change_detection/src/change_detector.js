@@ -23,7 +23,7 @@ export class ChangeDetector {
       var currentGroup = record.groupMemento();
 
       if (record.check()) {
-        count ++;
+        count++;
         if (record.terminatesExpression()) {
           updatedRecords = this._addRecord(updatedRecords, record);
         }

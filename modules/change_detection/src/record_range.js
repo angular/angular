@@ -57,11 +57,11 @@ export class ProtoRecordRange {
     if (this.recordCreator === null) {
       this.recordCreator = new ProtoRecordCreator(this);
     }
-    
+
     if (content) {
       ast = new Collection(ast);
     }
-    
+
     this.recordCreator.createRecordsFromAST(ast, expressionMemento, groupMemento);
   }
 
@@ -149,14 +149,13 @@ export class RecordRange {
 
   remove() {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
-    var lastEnabledChildRecord = this.findLastEnabledRecord();
-
     var next = this.tailRecord.next;
     var prev = this.headRecord.prev;
 
     _link(prev, next);
 
     if (isPresent(firstEnabledChildRecord)) {
+      var lastEnabledChildRecord = this.findLastEnabledRecord();
       var nextEnabled = lastEnabledChildRecord.nextEnabled;
       var prevEnabled = firstEnabledChildRecord.prevEnabled;
       if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
@@ -191,16 +190,14 @@ export class RecordRange {
 
   disable() {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
-    var lastEnabledChildRecord = this.findLastEnabledRecord();
-
-    var nextEnabled = isPresent(lastEnabledChildRecord) ?
-        lastEnabledChildRecord.nextEnabled : null;
-
-    var prevEnabled = isPresent(firstEnabledChildRecord) ?
-        firstEnabledChildRecord.prevEnabled : null;
-
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(firstEnabledChildRecord)) {
+      // There could be a last enabled record only if first enabled exists
+      var lastEnabledChildRecord = this.findLastEnabledRecord();
+      var nextEnabled = lastEnabledChildRecord.nextEnabled;
+      var prevEnabled = firstEnabledChildRecord.prevEnabled;
+      if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+      if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    }
 
     this.disabled = true;
   }
