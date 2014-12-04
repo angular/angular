@@ -276,10 +276,6 @@ export class Record {
     this.context = value;
     this.recordRange.enableRecord(this);
 
-    if (!this.isMarkerRecord) {
-      this.recordRange.enableRecord(this);
-    }
-
     if (this.isCollection) {
       if (ArrayChanges.supports(value)) {
         if (this.type != RECORD_TYPE_ARRAY) {
