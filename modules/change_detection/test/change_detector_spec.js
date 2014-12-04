@@ -11,7 +11,7 @@ import {
   ChangeDetector,
   ProtoRecordRange,
   RecordRange,
-  WatchGroupDispatcher,
+  ChangeDispatcher,
   ProtoRecord
 } from 'change_detection/change_detector';
 
@@ -480,7 +480,7 @@ class TestData {
   }
 }
 
-class TestDispatcher extends WatchGroupDispatcher {
+class TestDispatcher extends ChangeDispatcher {
   log:List;
   loggedValues:List;
   onChange:Function;

@@ -103,7 +103,7 @@ export class Record {
 
   // Opaque data which will be the target of notification.
   // If the object is instance of Record, then it it is directly processed
-  // Otherwise it is the context used by  WatchGroupDispatcher.
+  // Otherwise it is the context used by ChangeDispatcher.
   dest;
 
   constructor(recordRange:RecordRange, protoRecord:ProtoRecord, formatters:Map) {

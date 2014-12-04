@@ -45,9 +45,10 @@ export class ProtoRecordRange {
    * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
    * @param ast The expression to watch
-   * @param expressionMemento an opaque object which will be passed to WatchGroupDispatcher on
+   * @param expressionMemento an opaque object which will be passed to ChangeDispatcher on
    *        detecting a change.
-   * @param content Wether to watch collection content (true) or reference (false, default)
+   * @param groupMemento
+   * @param content Whether to watch collection content (true) or reference (false, default)
    */
   addRecordsFromAST(ast:AST,
         expressionMemento,
@@ -65,7 +66,7 @@ export class ProtoRecordRange {
     this.recordCreator.createRecordsFromAST(ast, expressionMemento, groupMemento);
   }
 
-  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // TODO(rado): the type annotation should be dispatcher:ChangeDispatcher.
   // but @Implements is not ready yet.
   instantiate(dispatcher, formatters:Map):RecordRange {
     var recordRange:RecordRange = new RecordRange(this, dispatcher);
@@ -98,11 +99,11 @@ export class ProtoRecordRange {
 
 export class RecordRange {
   protoRecordRange:ProtoRecordRange;
-  dispatcher:any; //WatchGroupDispatcher
+  dispatcher:any; //ChangeDispatcher
   headRecord:Record;
   tailRecord:Record;
   disabled:boolean;
-  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // TODO(rado): the type annotation should be dispatcher:ChangeDispatcher.
   // but @Implements is not ready yet.
   constructor(protoRecordRange:ProtoRecordRange, dispatcher) {
     this.protoRecordRange = protoRecordRange;
@@ -296,8 +297,7 @@ function _linkEnabled(a:Record, b:Record) {
   b.prevEnabled = a;
 }
 
-export class WatchGroupDispatcher {
-  // The record holds the previous value at the time of the call
+export class ChangeDispatcher {
   onRecordChange(record:Record, context) {}
 }
 

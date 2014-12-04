@@ -8,7 +8,7 @@ import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 import {
   ChangeDetector,
   ProtoRecordRange,
-  WatchGroupDispatcher,
+  ChangeDispatcher,
 } from 'change_detection/change_detector';
 
 
@@ -180,7 +180,7 @@ export function main () {
 }
 
 
-class DummyDispatcher extends WatchGroupDispatcher {
+class DummyDispatcher extends ChangeDispatcher {
   onRecordChange(record, context) {
   }
 }

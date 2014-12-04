@@ -9,7 +9,6 @@ import {
   ChangeDetector,
   ProtoRecordRange,
   RecordRange,
-  WatchGroupDispatcher,
   ProtoRecord
   } from 'change_detection/change_detector';
 

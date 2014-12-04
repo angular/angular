@@ -1,6 +1,6 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
-import {ProtoRecordRange, RecordRange, WatchGroupDispatcher} from 'change_detection/record_range';
+import {ProtoRecordRange, RecordRange, ChangeDispatcher} from 'change_detection/record_range';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
 
@@ -20,7 +20,7 @@ const NG_BINDING_CLASS = 'ng-binding';
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
-@IMPLEMENTS(WatchGroupDispatcher)
+@IMPLEMENTS(ChangeDispatcher)
 export class View {
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
