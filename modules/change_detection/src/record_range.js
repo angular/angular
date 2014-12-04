@@ -122,7 +122,7 @@ export class RecordRange {
     var lastRecord = this.tailRecord.prev;
 
     _link(lastRecord, record);
-    if (!lastRecord.disabled) {
+    if (!lastRecord.isDisabled()) {
       _linkEnabled(lastRecord, record);
     }
     _link(record, this.tailRecord);
@@ -210,8 +210,8 @@ export class RecordRange {
    */
   findFirstEnabledRecord() {
     var record = this.headRecord.next;
-    while (record !== this.tailRecord && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (record !== this.tailRecord && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.tailRecord.next;
       } else {
         record = record.next;
@@ -234,8 +234,8 @@ export class RecordRange {
    */
   findLastEnabledRecord() {
     var record = this.tailRecord.prev;
-    while (record !== this.headRecord && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (record !== this.headRecord && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.headRecord.prev;
       } else {
         record = record.prev;
@@ -256,7 +256,7 @@ export class RecordRange {
          record != null;
          record = record.next) {
 
-      if (record.isImplicitReceiver) {
+      if (record.isImplicitReceiver()) {
         this._setContextForRecord(context, record);
       }
     }

@@ -212,8 +212,8 @@ export function main() {
         record2.disable();
         record3.disable();
 
-        expect(record2.disabled).toBeTruthy();
-        expect(record3.disabled).toBeTruthy();
+        expect(record2.isDisabled()).toBeTruthy();
+        expect(record3.isDisabled()).toBeTruthy();
 
         expect(enabledRecords(rr, recordNames)).toEqual(['record1', 'record4']);
       });

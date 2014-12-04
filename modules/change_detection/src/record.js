@@ -130,11 +130,11 @@ export class Record {
     this._mode = protoRecord._mode;
 
     // Return early for collections, further init delayed until updateContext()
-    if (this.isCollection) return;
+    if (this.isCollection()) return;
 
     this.currentValue = _fresh;
 
-    var type = this.type;
+    var type = this.getType();
 
     if (type === RECORD_TYPE_CONST) {
       this.funcOrValue = protoRecord.funcOrValue;
@@ -159,22 +159,22 @@ export class Record {
     }
   }
 
-  // todo(vicb): getter / setters are much slower than regular methods
-  // todo(vicb): update the whole code base
-  get type():int {
+  // getters & setters perform much worse on some browsers
+  // see http://jsperf.com/vicb-getter-vs-function
+  getType():int {
     return this._mode & RECORD_TYPE_MASK;
   }
 
-  set type(value:int) {
+  setType(value:int) {
     this._mode = (this._mode & ~RECORD_TYPE_MASK) | value;
   }
 
-  get disabled():boolean {
+  isDisabled():boolean {
     return (this._mode & RECORD_FLAG_DISABLED) === RECORD_FLAG_DISABLED;
   }
 
   isEnabled():boolean {
-    return ! this.disabled;
+    return !this.isDisabled();
   }
 
   _setDisabled(value:boolean) {
@@ -210,11 +210,11 @@ export class Record {
     this._setDisabled(true);
   }
 
-  get isImplicitReceiver():boolean {
+  isImplicitReceiver():boolean {
     return (this._mode & RECORD_FLAG_IMPLICIT_RECEIVER) === RECORD_FLAG_IMPLICIT_RECEIVER;
   }
 
-  get isCollection():boolean {
+  isCollection():boolean {
     return (this._mode & RECORD_FLAG_COLLECTION) === RECORD_FLAG_COLLECTION;
   }
 
@@ -223,7 +223,7 @@ export class Record {
   }
 
   check():boolean {
-    if (this.isCollection) {
+    if (this.isCollection()) {
       return this._checkCollection();
     } else {
       return this._checkSingleRecord();
@@ -250,7 +250,7 @@ export class Record {
 
   // return whether the content has changed
   _checkCollection():boolean {
-    switch(this.type) {
+    switch(this.getType()) {
       case RECORD_TYPE_KEY_VALUE:
         var kvChangeDetector:KeyValueChanges = this.currentValue;
         return kvChangeDetector.check(this.context);
@@ -266,12 +266,12 @@ export class Record {
         return true;
 
       default:
-        throw new BaseException(`Unsupported record type (${this.type})`);
+        throw new BaseException(`Unsupported record type (${this.getType()})`);
     }
   }
 
   _calculateNewValue() {
-    switch (this.type) {
+    switch (this.getType()) {
       case RECORD_TYPE_PROPERTY:
         return this.funcOrValue(this.context);
 
@@ -291,7 +291,7 @@ export class Record {
         return this.funcOrValue;
 
       default:
-        throw new BaseException(`Unsupported record type (${this.type})`);
+        throw new BaseException(`Unsupported record type (${this.getType()})`);
     }
   }
 
@@ -304,25 +304,25 @@ export class Record {
     this.context = value;
     this.enable();
 
-    if (this.isCollection) {
+    if (this.isCollection()) {
       if (ArrayChanges.supports(value)) {
-        if (this.type != RECORD_TYPE_ARRAY) {
-          this.type = RECORD_TYPE_ARRAY;
+        if (this.getType() != RECORD_TYPE_ARRAY) {
+          this.setType(RECORD_TYPE_ARRAY);
           this.currentValue = new ArrayChanges();
         }
         return;
       }
 
       if (KeyValueChanges.supports(value)) {
-        if (this.type != RECORD_TYPE_KEY_VALUE) {
-          this.type = RECORD_TYPE_KEY_VALUE;
+        if (this.getType() != RECORD_TYPE_KEY_VALUE) {
+          this.setType(RECORD_TYPE_KEY_VALUE);
           this.currentValue = new KeyValueChanges();
         }
         return;
       }
 
       if (isBlank(value)) {
-        this.type = RECORD_TYPE_NULL;
+        this.setType(RECORD_TYPE_NULL);
       } else {
         throw new BaseException("Collection records must be array like, map like or null");
       }
@@ -333,8 +333,8 @@ export class Record {
     return !(this.dest instanceof Record);
   }
 
-  get isMarkerRecord() {
-    return this.type == RECORD_TYPE_MARKER;
+  isMarkerRecord():boolean {
+    return this.getType() == RECORD_TYPE_MARKER;
   }
 
   expressionMemento() {
@@ -357,8 +357,8 @@ export class Record {
     if (this.isEnabled()) return this.nextEnabled;
 
     var record = this.next;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (isPresent(record) && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.tailRecord.next;
       } else {
         record = record.next;
@@ -378,8 +378,8 @@ export class Record {
     if (this.isEnabled()) return this.prevEnabled;
 
     var record = this.prev;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (isPresent(record) && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.headRecord.prev;
       } else {
         record = record.prev;
