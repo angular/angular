@@ -105,7 +105,7 @@ export function main() {
           it('should collect property bindings on the root element if it has the ng-binding class', () => {
             var pv = new ProtoView(templateAwareCreateElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindElementProperty('prop', parser.parseBinding('a').ast);
+            pv.bindElementProperty('prop', parser.parseBinding('a'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -117,7 +117,7 @@ export function main() {
             var pv = new ProtoView(templateAwareCreateElement('<div><span></span><span class="ng-binding"></span></div>'),
               new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindElementProperty('a', parser.parseBinding('b').ast);
+            pv.bindElementProperty('a', parser.parseBinding('b'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -132,8 +132,8 @@ export function main() {
           it('should collect text nodes under the root element', () => {
             var pv = new ProtoView(templateAwareCreateElement('<div class="ng-binding">{{}}<span></span>{{}}</div>'), new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindTextNode(0, parser.parseBinding('a').ast);
-            pv.bindTextNode(2, parser.parseBinding('b').ast);
+            pv.bindTextNode(0, parser.parseBinding('a'));
+            pv.bindTextNode(2, parser.parseBinding('b'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -146,7 +146,7 @@ export function main() {
             var pv = new ProtoView(templateAwareCreateElement('<div><span> </span><span class="ng-binding">{{}}</span></div>'),
               new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindTextNode(0, parser.parseBinding('b').ast);
+            pv.bindTextNode(0, parser.parseBinding('b'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -357,7 +357,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
             new ProtoRecordRange());
           pv.bindElement(null);
-          pv.bindTextNode(0, parser.parseBinding('foo').ast);
+          pv.bindTextNode(0, parser.parseBinding('foo'));
           createViewAndChangeDetector(pv);
 
           ctx.foo = 'buz';
@@ -369,7 +369,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(null);
-          pv.bindElementProperty('id', parser.parseBinding('foo').ast);
+          pv.bindElementProperty('id', parser.parseBinding('foo'));
           createViewAndChangeDetector(pv);
 
           ctx.foo = 'buz';
@@ -381,7 +381,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
-          pv.bindDirectiveProperty(0, parser.parseBinding('foo').ast, 'prop', reflector.setter('prop'));
+          pv.bindDirectiveProperty(0, parser.parseBinding('foo'), 'prop', reflector.setter('prop'));
           createViewAndChangeDetector(pv);
 
           ctx.foo = 'buz';
@@ -394,8 +394,8 @@ export function main() {
             new ProtoRecordRange());
 
           pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('a'), 'a', reflector.setter('a'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('b'), 'b', reflector.setter('b'));
           createViewAndChangeDetector(pv);
 
           ctx.a = 100;
@@ -413,8 +413,7 @@ export function main() {
           pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'));
           pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'));
-          createViewAndChangeDetector(pv);
-
+          createView(pv);
           ctx.a = 0;
           ctx.b = 0;
           cd.detectChanges();

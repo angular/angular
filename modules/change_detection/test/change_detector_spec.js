@@ -20,7 +20,7 @@ import {Record} from 'change_detection/record';
 export function main() {
   function ast(exp:string) {
     var parser = new Parser(new Lexer());
-    return parser.parseBinding(exp).ast;
+    return parser.parseBinding(exp);
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
@@ -433,6 +433,27 @@ export function main() {
           expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
         });
       });
+
+      describe("enforce no new changes", () => {
+        it("should throw when a record gets changed after it has been checked", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("a"), "a", 1);
+          prr.addRecordsFromAST(ast("b()"), "b", 2);
+
+          var tr = new TestRecord();
+          tr.a = "a";
+          tr.b = () => {tr.a = "newA";};
+
+          var dispatcher = new TestDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+          rr.setContext(tr);
+
+          expect(() => {
+            var cd = new ChangeDetector(rr, true);
+            cd.detectChanges();
+          }).toThrowError(new RegExp("Expression 'a' has changed after it was checked"));
+        });
+      });
     });
   });
 }
@@ -513,6 +534,6 @@ class TestDispatcher extends ChangeDispatcher {
   }
 
   _asString(value) {
-    return (value === null ? 'null' : value.toString());
+    return (isBlank(value) ? 'null' : value.toString());
   }
 }

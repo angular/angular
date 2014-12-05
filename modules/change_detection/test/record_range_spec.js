@@ -45,7 +45,7 @@ export function main() {
   }
 
   function createRecord(rr) {
-    return new Record(rr, new ProtoRecord(null, 0, null, null, null, null, null), null);
+    return new Record(rr, new ProtoRecord(null, 0, null, null, null, null, null, null), null);
   }
 
   describe('record range', () => {

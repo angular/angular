@@ -6,14 +6,37 @@ import {ListWrapper, List} from 'facade/collection';
 export * from './record';
 export * from './record_range'
 
+class ExpressionChangedAfterItHasBeenChecked extends Error {
+  message:string;
+
+  constructor(record:Record) {
+    this.message = `Expression '${record.expressionAsString()}' has changed after it was checked. ` +
+      `Previous value: '${record.previousValue}'. Current value: '${record.currentValue}'`;
+  }
+
+  toString():string {
+    return this.message;
+  }
+}
+
 export class ChangeDetector {
   _rootRecordRange:RecordRange;
+  _enforceNoNewChanges:boolean;
 
-  constructor(recordRange:RecordRange) {
+  constructor(recordRange:RecordRange, enforceNoNewChanges:boolean = false) {
     this._rootRecordRange = recordRange;
+    this._enforceNoNewChanges = enforceNoNewChanges;
   }
 
   detectChanges():int {
+    var count = this._detectChanges(false);
+    if (this._enforceNoNewChanges) {
+      this._detectChanges(true)
+    }
+    return count;
+  }
+
+  _detectChanges(throwOnChange:boolean):int {
     var count = 0;
     var updatedRecords = null;
     var record = this._rootRecordRange.findFirstEnabledRecord();
@@ -23,6 +46,7 @@ export class ChangeDetector {
       if (record.check()) {
         count++;
         if (record.terminatesExpression()) {
+          if (throwOnChange) throw new ExpressionChangedAfterItHasBeenChecked(record);
           currentRange = record.recordRange;
           currentGroup = record.groupMemento();
           updatedRecords = this._addRecord(updatedRecords, record);

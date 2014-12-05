@@ -169,3 +169,12 @@ bool isJsObject(o) {
   return false;
 }
 
+
+assertionsEnabled() {
+  try {
+    assert(false);
+    return false;
+  } catch (e) {
+    return true;
+  }
+}

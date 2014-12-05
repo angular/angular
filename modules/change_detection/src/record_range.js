@@ -44,7 +44,7 @@ export class ProtoRecordRange {
   /**
    * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
-   * @param ast The expression to watch
+   * @param astWithSource The expression to watch
    * @param expressionMemento an opaque object which will be passed to ChangeDispatcher on
    *        detecting a change.
    * @param groupMemento
@@ -62,7 +62,6 @@ export class ProtoRecordRange {
     if (content) {
       ast = new Collection(ast);
     }
-
     this.recordCreator.createRecordsFromAST(ast, expressionMemento, groupMemento);
   }
 
@@ -318,11 +317,13 @@ class ProtoRecordCreator {
   headRecord:ProtoRecord;
   tailRecord:ProtoRecord;
   groupMemento:any;
+  expressionAsString:string;
 
   constructor(protoRecordRange) {
     this.protoRecordRange = protoRecordRange;
     this.headRecord = null;
     this.tailRecord = null;
+    this.expressionAsString = null;
   }
 
   visitImplicitReceiver(ast:ImplicitReceiver, args) {
@@ -434,11 +435,13 @@ class ProtoRecordCreator {
 
   createRecordsFromAST(ast:AST, expressionMemento:any, groupMemento:any){
     this.groupMemento = groupMemento;
+    this.expressionAsString = ast.toString();
     ast.visit(this, expressionMemento);
   }
 
   construct(recordType, funcOrValue, arity, name, dest) {
-    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, name, dest, this.groupMemento);
+    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity,
+        name, dest, this.groupMemento, this.expressionAsString);
   }
 
   add(protoRecord:ProtoRecord) {

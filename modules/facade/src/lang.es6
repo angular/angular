@@ -206,3 +206,12 @@ export function normalizeBlank(obj) {
 export function isJsObject(o):boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
 }
+
+export function assertionsEnabled() {
+  try {
+    var x:int = "string";
+    return false;
+  } catch (e) {
+    return true;
+  }
+}

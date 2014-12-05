@@ -35,6 +35,7 @@ export class ProtoRecord {
   name:string;
   dest:any;
   groupMemento:any;
+  expressionAsString:string;
 
   next:ProtoRecord;
 
@@ -46,7 +47,8 @@ export class ProtoRecord {
               arity:int,
               name:string,
               dest,
-              groupMemento) {
+              groupMemento,
+              expressionAsString:string) {
 
     this.recordRange = recordRange;
     this._mode = mode;
@@ -55,6 +57,7 @@ export class ProtoRecord {
     this.name = name;
     this.dest = dest;
     this.groupMemento = groupMemento;
+    this.expressionAsString = expressionAsString;
 
     this.next = null;
     // The concrete Record instantiated from this ProtoRecord
@@ -339,6 +342,10 @@ export class Record {
 
   expressionMemento() {
     return this.protoRecord.dest;
+  }
+
+  expressionAsString() {
+    return this.protoRecord.expressionAsString;
   }
 
   groupMemento() {

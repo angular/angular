@@ -17,6 +17,10 @@ export class AST {
 
   visit(visitor, args) {
   }
+
+  toString():string {
+    return "AST";
+  }
 }
 
 export class EmptyExpr extends AST {
@@ -378,12 +382,32 @@ export class FunctionCall extends AST {
   }
 }
 
-export class ASTWithSource {
+export class ASTWithSource extends AST {
   ast:AST;
   source:string;
   constructor(ast:AST, source:string) {
     this.source = source;
     this.ast = ast;
+  }
+
+  eval(context) {
+    return this.ast.eval(context);
+  }
+
+  get isAssignable() {
+    return this.ast.isAssignable;
+  }
+
+  assign(context, value) {
+    return this.ast.assign(context, value);
+  }
+
+  visit(visitor, args) {
+    return this.ast.visit(visitor, args);
+  }
+
+  toString():string {
+    return this.source;
   }
 }
 

@@ -1,5 +1,5 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
-import {Type, FIELD, isBlank, isPresent, BaseException} from 'facade/lang';
+import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
@@ -63,7 +63,7 @@ export function documentDependentBindings(appComponentType) {
       bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
       bind(ChangeDetector).toFactory((appRecordRange) =>
-          new ChangeDetector(appRecordRange), [appRecordRangeToken]),
+          new ChangeDetector(appRecordRange, assertionsEnabled()), [appRecordRangeToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken])
   ];

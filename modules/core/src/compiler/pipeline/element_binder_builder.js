@@ -68,19 +68,19 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindTextNodes(protoView, compileElement) {
     MapWrapper.forEach(compileElement.textNodeBindings, (expression, indexInParent) => {
-      protoView.bindTextNode(indexInParent, expression.ast);
+      protoView.bindTextNode(indexInParent, expression);
     });
   }
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      protoView.bindElementProperty(property,  expression.ast);
+      protoView.bindElementProperty(property,  expression);
     });
   }
 
   _bindEvents(protoView, compileElement) {
     MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
-      protoView.bindEvent(eventName,  expression.ast);
+      protoView.bindEvent(eventName,  expression);
     });
   }
 
@@ -118,7 +118,7 @@ export class ElementBinderBuilder extends CompileStep {
         }
         protoView.bindDirectiveProperty(
           directiveIndex++,
-          expression.ast,
+          expression,
           dirProp,
           reflector.setter(dirProp)
         );
