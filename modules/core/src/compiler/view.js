@@ -535,7 +535,7 @@ class DirectivePropertyGroupMemento {
     var id = elementInjectorIndex * 100 + directiveIndex;
 
     if (! MapWrapper.contains(_groups, id)) {
-      return MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
+      MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
     }
     return MapWrapper.get(_groups, id);
   }
