@@ -20,4 +20,17 @@ class PromiseWrapper {
     if (success == null) return promise.catchError(onError);
     return promise.then(success, onError: onError);
   }
+
+  static completer(){
+    return new _Completer(new Completer());
+  }
+}
+
+class _Completer {
+  Completer c;
+  _Completer(this.c);
+
+  get promise => c.future;
+  get complete => c.complete;
+
 }

@@ -17,4 +17,20 @@ export class PromiseWrapper {
   static then(promise:Promise, success:Function, rejection:Function):Promise {
     return promise.then(success, rejection);
   }
+
+  static completer() {
+    var resolve;
+    var reject;
+
+    var p = new Promise(function(res, rej) {
+      resolve = res;
+      reject = rej;
+    });
+
+    return {
+      promise: p,
+      complete: resolve,
+      reject: reject
+    };
+  }
 }

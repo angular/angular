@@ -83,6 +83,7 @@ export function bootstrap(appComponentType: Type, bindings=null) {
   var appInjector = _rootInjector.createChild(_injectorBindings(
       appComponentType));
   if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
+
   return appInjector.asyncGet(ChangeDetector).then((cd) => {
     // TODO(rado): replace with zone.
     cd.detectChanges();
