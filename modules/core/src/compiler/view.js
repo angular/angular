@@ -31,7 +31,6 @@ export class View {
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
   nodes:List<Node>;
-  onChangeDispatcher:OnChangeDispatcher;
   componentChildViews: List<View>;
   viewPorts: List<ViewPort>;
   preBuiltObjects: List<PreBuiltObjects>;
@@ -45,7 +44,6 @@ export class View {
     this.nodes = nodes;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
-    this.onChangeDispatcher = null;
     this.textNodes = textNodes;
     this.bindElements = bindElements;
     this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
@@ -553,26 +551,5 @@ class PropertyUpdate {
   constructor(currentValue, previousValue) {
     this.currentValue = currentValue;
     this.previousValue = previousValue;
-  }
-}
-
-
-//TODO(tbosch): I don't like to have done be called from a different place than notify
-// notify is called by change detection, but done is called by our wrapper on detect changes.
-export class OnChangeDispatcher {
-
-  _lastView:View;
-  _lastTarget:DirectivePropertyMemento;
-  constructor() {
-    this._lastView = null;
-    this._lastTarget = null;
-  }
-
-  notify(view:View, eTarget:DirectivePropertyMemento) {
-
-  }
-
-  done() {
-
   }
 }
