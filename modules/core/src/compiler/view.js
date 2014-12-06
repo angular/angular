@@ -417,7 +417,8 @@ export class ProtoView {
     directiveIndex:number,
     expression:AST,
     setterName:string,
-    setter:SetterFn) {
+    setter:SetterFn,
+    isContentWatch: boolean) {
 
     var expMemento = new DirectivePropertyMemento(
       this.elementBinders.length-1,
@@ -426,7 +427,7 @@ export class ProtoView {
       setter
     );
     var groupMemento = DirectivePropertyGroupMemento.get(expMemento);
-    this.protoRecordRange.addRecordsFromAST(expression, expMemento, groupMemento, false);
+    this.protoRecordRange.addRecordsFromAST(expression, expMemento, groupMemento, isContentWatch);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
@@ -500,7 +501,7 @@ class DirectivePropertyGroupMemento {
     var directiveIndex = memento._directiveIndex;
     var id = elementInjectorIndex * 100 + directiveIndex;
 
-    if (! MapWrapper.contains(_groups, id)) {
+    if (!MapWrapper.contains(_groups, id)) {
       MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
     }
     return MapWrapper.get(_groups, id);

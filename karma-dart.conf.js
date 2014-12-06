@@ -46,6 +46,7 @@ module.exports = function(config) {
       '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection/src',
       '/packages/reflection': 'http://localhost:9877/base/modules/reflection/src',
       '/packages/di': 'http://localhost:9877/base/modules/di/src',
+      '/packages/directives': 'http://localhost:9877/base/modules/directives/src',
       '/packages/facade': 'http://localhost:9877/base/modules/facade/src',
       '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib/src',
     },

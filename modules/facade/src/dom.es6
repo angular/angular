@@ -49,6 +49,9 @@ export class DOM {
   static setInnerHTML(el, value) {
     el.innerHTML = value;
   }
+  static getText(el: Element) {
+    return el.textContent;
+  }
   static setText(text:Text, value:string) {
     text.nodeValue = value;
   }

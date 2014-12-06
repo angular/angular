@@ -3,6 +3,7 @@ System.paths = {
   'change_detection/*': '/change_detection/lib/*.js',
   'facade/*': '/facade/lib/*.js',
   'di/*': '/di/lib/*.js',
+  'directives/*': '/directives/lib/*.js',
   'rtts_assert/*': '/rtts_assert/lib/*.js',
   'test_lib/*': '/test_lib/lib/*.js',
   'reflection/*': '/reflection/lib/*.js',

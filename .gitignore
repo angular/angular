@@ -17,6 +17,7 @@ node_modules
 pubspec.lock
 .c9
 .idea/
+*.swo
 
 
 /docs/bower_components/

@@ -382,7 +382,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
-          pv.bindDirectiveProperty(0, parser.parseBinding('foo'), 'prop', reflector.setter('prop'));
+          pv.bindDirectiveProperty(0, parser.parseBinding('foo'), 'prop', reflector.setter('prop'), false);
           createViewAndChangeDetector(pv);
 
           ctx.foo = 'buz';
@@ -395,8 +395,8 @@ export function main() {
             new ProtoRecordRange());
 
           pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('a'), 'a', reflector.setter('a'));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('b'), 'b', reflector.setter('b'));
+          pv.bindDirectiveProperty( 0, parser.parseBinding('a'), 'a', reflector.setter('a'), false);
+          pv.bindDirectiveProperty( 0, parser.parseBinding('b'), 'b', reflector.setter('b'), false);
           createViewAndChangeDetector(pv);
 
           ctx.a = 100;
@@ -412,9 +412,10 @@ export function main() {
             new ProtoRecordRange());
 
           pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'));
-          pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'));
-          createView(pv);
+          pv.bindDirectiveProperty( 0, parser.parseBinding('a').ast, 'a', reflector.setter('a'), false);
+          pv.bindDirectiveProperty( 0, parser.parseBinding('b').ast, 'b', reflector.setter('b'), false);
+          createViewAndChangeDetector(pv);
+
           ctx.a = 0;
           ctx.b = 0;
           cd.detectChanges();

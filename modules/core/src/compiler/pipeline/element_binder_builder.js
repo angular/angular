@@ -118,11 +118,16 @@ export class ElementBinderBuilder extends CompileStep {
           throw new BaseException('No element binding found for property '+elProp
             +' which is required by directive '+stringify(typeWithAnnotation.type));
         }
+        var len = dirProp.length;
+        var dirBindingName = dirProp;
+        var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
+        if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
         protoView.bindDirectiveProperty(
           directiveIndex++,
           expression,
-          dirProp,
-          reflector.setter(dirProp)
+          dirBindingName,
+          reflector.setter(dirBindingName),
+          isContentWatch
         );
       });
     });

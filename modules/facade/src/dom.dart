@@ -53,6 +53,9 @@ class DOM {
   static insertAfter(el, node) {
     el.parentNode.insertBefore(node, el.nextNode);
   }
+  static getText(Element el) {
+    return el.text;
+  }
   static setText(Text text, String value) {
     text.text = value;
   }

@@ -37,7 +37,11 @@ export class ViewPort {
   dehydrate() {
     this.appInjector = null;
     this.hostElementInjector = null;
-    for (var i = 0; i < this._views.length; i++) {
+    this.clear();
+  }
+
+  clear() {
+    for (var i = this._views.length - 1; i >= 0; i--) {
       this.remove(i);
     }
   }
