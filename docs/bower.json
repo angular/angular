@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-material": "~0.6.0"
+    "angular-material": "~0.6.0",
+    "google-code-prettify": "~1.0.3"
   }
 }

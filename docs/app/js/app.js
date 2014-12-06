@@ -1,4 +1,4 @@
-angular.module('app', ['ngMaterial', 'navigation-modules', 'navigation-guides'])
+angular.module('app', ['ngMaterial', 'navigation-modules', 'navigation-guides', 'code'])
 
 .config(function($locationProvider) {
   $locationProvider.html5Mode(true);

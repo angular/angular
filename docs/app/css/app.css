@@ -39,45 +39,6 @@ pre {
   word-wrap: break-word;
 }
 
-pre > code.highlight {
-  padding: 10px;
-  font-weight: 400;
-  -webkit-user-select: initial;
-  -moz-user-select: initial;
-  -ms-user-select: initial;
-  user-select: initial;
-}
-
-pre, code {
-
-  margin: 0;
-  padding: 0;
-  overflow-wrap: break-word;
-  font-family: monospace, serif;
-}
-
-
-pre > code.highlight {
-  padding: 10px;
-  font-weight: 400;
-}
-
-code {
-  font-size: 14px;
-  background: #f6f6f6;
-}
-
-code.highlight {
-  display: block;
-  overflow-wrap: break-word;
-}
-
-code:not(.highlight) {
-  color: #4285f4;
-  margin-left: 1px;
-  margin-right: 1px;
-}
-
 .md-sidenav-inner {
   background: #fff;
 }
