@@ -313,14 +313,16 @@ gulp.task('docs/app', function() {
 });
 
 gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
-gulp.task('docs-watch', function() {
-  return gulp.watch('docs/app/**/*', ['docs-app']);
+gulp.task('docs/watch', function() {
+  return gulp.watch('docs/app/**/*', ['docs/app']);
 });
 
 var jasmine = require('gulp-jasmine');
 gulp.task('docs/test', function () {
   return gulp.src('docs/**/*.spec.js')
-      .pipe(jasmine());
+      .pipe(jasmine({
+        includeStackTrace: true
+      }));
 });
 
 var webserver = require('gulp-webserver');
