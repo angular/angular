@@ -1,5 +1,6 @@
-import {describe, it, iit, ddescribe, expect} from 'test_lib/test_lib';
-import {MapWrapper} from 'facade/collection';
+import {describe, it, iit, ddescribe, expect, tick, async} from 'test_lib/test_lib';
+import {MapWrapper, ListWrapper} from 'facade/collection';
+import {PromiseWrapper} from 'facade/async';
 
 class TestObj {
   prop;

@@ -77,7 +77,6 @@ window.beforeEach(function() {
   });
 });
 
-
 function mapToString(m) {
   if (!m) {
     return ''+m;

@@ -119,10 +119,15 @@ export class ListWrapper {
     list.splice(index, 0, value);
   }
   static removeAt(list, index:int) {
+    var res = list[index];
     list.splice(index, 1);
+    return res;
   }
   static clear(list) {
     list.splice(0, list.length);
+  }
+  static join(list, s) {
+    return list.join(s);
   }
 }
 
