@@ -1,8 +1,0 @@
-Promise.all([
-  System.import('benchmarks/compiler/selector_benchmark'),
-  System.import('benchmarks/compiler/compiler_benchmark')
-]).then(function (benchmarks) {
-  benchmarks.forEach(function(bm) {
-    bm.main();
-  });
-}, console.log.bind(console));

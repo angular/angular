@@ -1,4 +1,4 @@
-import *  as app from './app';
+import *  as app from './index';
 
 import {Component, Decorator, TemplateConfig, NgElement} from 'core/core';
 import {Parser} from 'change_detection/parser/parser';

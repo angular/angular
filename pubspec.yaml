@@ -2,18 +2,6 @@ name: angular
 environment:
   sdk: '>=1.4.0'
 dependencies:
-  examples:
-    path: build/dart/examples
-  test_lib:
-    path: build/dart/test_lib
-  facade:
-    path: build/dart/facade
-  core:
-    path: build/dart/core
-  di:
-    path: build/dart/di
-  change_detection:
-    path: build/dart/change_detection
 
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"

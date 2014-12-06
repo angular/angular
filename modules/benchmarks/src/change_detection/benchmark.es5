@@ -1,3 +1,0 @@
-System.import('benchmarks/change_detection/change_detection_benchmark').then(function (bm) {
-  bm.run();
-}, console.log.bind(console));

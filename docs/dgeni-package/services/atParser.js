@@ -1,6 +1,6 @@
 var traceur = require('traceur/src/node/traceur.js');
 var ParseTreeVisitor = System.get(System.map.traceur + '/src/syntax/ParseTreeVisitor').ParseTreeVisitor;
-var file2modulename = require('../../../file2modulename');
+var file2modulename = require('../../../tools/build/file2modulename');
 /**
  * Wrapper around traceur that can parse the contents of a file
  */

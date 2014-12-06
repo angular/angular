@@ -3,7 +3,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {reflector} from 'reflection/reflection';
 import {isPresent} from 'facade/lang';
-import {benchmark, benchmarkStep} from '../benchpress';
+import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 
 import {
   ChangeDetector,
@@ -153,7 +153,7 @@ function setUpChangeDetection() {
   return new ChangeDetector(parentRange);
 }
 
-export function run () {
+export function main () {
   setUpReflector();
 
   benchmark(`Baseline`, function () {
