@@ -5,6 +5,8 @@ function file2moduleName(filePath) {
     .replace(/.*\/tools\//, '')
     // module name should not include `src`, `test`, `lib`
     .replace(/\/src\//, '/')
+    .replace(/\/web\//, '/')
+    .replace(/\/perf_tmp\//, '/')
     .replace(/\/lib\//, '/')
     // module name should not have a suffix
     .replace(/\.\w*$/, '');

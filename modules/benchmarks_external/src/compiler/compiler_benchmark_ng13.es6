@@ -1,4 +1,4 @@
-import {benchmark, benchmarkStep} from '../benchpress';
+import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 
 var COUNT = 30;
 var $compile;

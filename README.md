@@ -25,13 +25,13 @@
 
 ### Build:
 
-1. `gulp build` -> result is in `build` folder
+1. `gulp build` -> result is in `dist` folder
 
   * will also run `pub get` for the subfolders in `modules`
     and run `dartanalyzer` for every file that matches
     `<module>/src/<module>.dart`, e.g. `di/src/di.dart`
 
-2. `gulp clean` -> cleans the `build` folder
+2. `gulp clean` -> cleans the `dist` folder
 
 ### Tests:
 
@@ -45,13 +45,6 @@ the transpiler is reloaded. With that it is possible to make changes
 to the preprocessor and run the tests without exiting karma
 (just touch a test file that you would like to run).
 
-Restriction for Dart tests (for now):
-
-  * Due to a bug `karma-dart` plugin,
-    this will use the files in the `build` folder for resolving
-    `package:` dependencies (created e.g. for `import ... from 'di:di'`).
-    So you need to execute `gulp build` before this.
-
 ### Examples:
 
 To see the examples, first build the project as described above.
@@ -59,11 +52,11 @@ To see the examples, first build the project as described above.
 #### Hello World Example
 This example consists of three basic pieces - a component, a decorator and a service.
 They are all constructed via injection. For more information see the comments in the
-source `modules/examples/src/hello_world/app.js`.
+source `modules/examples/src/hello_world/index.js`.
 
 You can build this example as either JS or Dart app:
-* (JS) `gulp serve` and open `localhost:8000/js/examples/lib/hello_world/` in Chrome.
-* (Dart) `gulp examples/pub.serve` and open `localhost:8080` in Chrome(for dart2js) or dartium(for dart vm).
+* (JS) `gulp serve.js.dev` and open `localhost:8000/examples/web/hello_world/` in Chrome.
+* (Dart) `gulp serve/examples.dart` and open `localhost:8080` in Chrome(for dart2js) or dartium(for dart vm).
 
 ## Debug the transpiler
 

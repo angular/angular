@@ -45,7 +45,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Configure file writing
 .config(function(writeFilesProcessor) {
-  writeFilesProcessor.outputFolder  = 'build/docs';
+  writeFilesProcessor.outputFolder  = 'dist/docs';
 })
 
 

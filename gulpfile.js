@@ -1,22 +1,23 @@
-var benchpress = require('angular-benchpress/lib/cli');
-var del = require('del');
-var es = require('event-stream');
-var file2moduleName = require('./file2modulename');
-var fs = require('fs');
-var glob = require('glob');
 var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
-var merge = require('merge');
-var mergeStreams = require('event-stream').merge;
-var path = require('path');
-var Q = require('q');
-var readline = require('readline');
+var gulpPlugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
-var spawn = require('child_process').spawn;
-var through2 = require('through2');
-var which = require('which');
+var merge = require('merge');
+var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
-var js2es5Options = {
+var clean = require('./tools/build/clean');
+var deps = require('./tools/build/deps');
+var transpile = require('./tools/build/transpile');
+var html = require('./tools/build/html');
+var benchpress = require('./tools/build/benchpress');
+var pubspec = require('./tools/build/pubspec');
+var dartanalyzer = require('./tools/build/dartanalyzer');
+var jsserve = require('./tools/build/jsserve');
+var pubserve = require('./tools/build/pubserve');
+var DART_SDK = require('./tools/build/dartdetect')(gulp);
+// -----------------------
+// configuration
+
+var _COMPILER_CONFIG_JS_DEFAULT = {
   sourceMaps: true,
   annotations: true, // parse annotations
   types: true, // parse types
@@ -25,388 +26,256 @@ var js2es5Options = {
   modules: 'instantiate'
 };
 
-var js2es5OptionsProd = merge(true, js2es5Options, {
-  typeAssertions: false
-});
-
-var js2es5OptionsDev = merge(true, js2es5Options, {
-  typeAssertionModule: 'rtts_assert/rtts_assert',
-  typeAssertions: true
-});
-
-var js2dartOptions = {
-  sourceMaps: true,
-  annotations: true, // parse annotations
-  types: true, // parse types
-  script: false, // parse as a module
-  memberVariables: true, // parse class fields
-  outputLanguage: 'dart'
-};
-
-var DART_SDK = false;
-
-try {
-  which.sync('dart');
-  console.log('Dart SDK detected');
-  if (process.platform === 'win32') {
-    DART_SDK = {
-      PUB: 'pub.bat',
-      ANALYZER: 'dartanalyzer.bat'
-    };
-  } else {
-    DART_SDK = {
-      PUB: 'pub',
-      ANALYZER: 'dartanalyzer'
-    };
+var _HTLM_DEFAULT_SCRIPTS_JS = [
+  {src: '/deps/traceur-runtime.js', mimeType: 'text/javascript'},
+  {src: '/rtts_assert/lib/rtts_assert.js', mimeType: 'text/javascript'},
+  {src: '/deps/es6-module-loader-sans-promises.src.js', mimeType: 'text/javascript'},
+  {src: '/deps/system.src.js', mimeType: 'text/javascript'},
+  {src: '/deps/extension-register.js', mimeType: 'text/javascript'},
+  {src: '/deps/runtime_paths.js', mimeType: 'text/javascript'},
+  {
+    inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.log.bind(console))',
+    mimeType: 'text/javascript'
   }
-} catch (e) {
-  console.log('Dart SDK is not available, Dart tasks will be skipped.');
-  var gulpTaskFn = gulp.task.bind(gulp);
-  gulp.task = function (name, deps, fn) {
-    if (name.indexOf('.dart') === -1) {
-      return gulpTaskFn(name, deps, fn);
-    } else {
-      return gulpTaskFn(name, function() {
-        console.log('Dart SDK is not available. Skipping task: ' + name);
-      });
-    }
-  };
-}
+];
 
-var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
-// ---------
-// traceur runtime
-
-gulp.task('jsRuntime/build', function() {
-  var traceurRuntime = gulp.src([
-    gulpTraceur.RUNTIME_PATH,
-    "node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js",
-    "node_modules/systemjs/dist/system.src.js",
-    "node_modules/systemjs/lib/extension-register.js"
-  ]).pipe(gulp.dest('build/js'));
-  return traceurRuntime;
-});
-
-// -----------------------
-// modules
-var sourceTypeConfigs = {
-  dart: {
-    transpileSrc: ['modules/**/*.js'],
-    // pub serve uses project_root/web for static serving.
-    htmlSrc: ['modules/*/src/**/*.html', 'modules/*/web/*.html'],
-    copySrc: ['modules/**/*.dart'],
-    outputDir: 'build/dart',
-    outputExt: 'dart',
-    mimeType: 'application/dart'
+var CONFIG = {
+  commands: {
+    pub: process.platform === 'win32' ? 'pub.bat' : 'pub',
+    dartanalyzer: process.platform === "win32" ? "dartanalyzer.bat" : "dartanalyzer"
   },
-  js: {
-    transpileSrc: ['modules/**/*.js', 'modules/**/*.es6'],
-    htmlSrc: ['modules/*/src/**/*.html'],
-    copySrc: ['modules/**/*.es5'],
-    outputDir: 'build/js',
-    outputExt: 'js'
+  dest: {
+    js: {
+      all: 'dist/js',
+      dev: 'dist/js/dev',
+      prod: 'dist/js/prod'
+    },
+    dart: 'dist/dart'
+  },
+  srcFolderMapping: {
+    'default': 'lib',
+    // need a tmp folder as benchpress does not support
+    // inplace generation of the benchmarks...
+    'benchmark*/**': 'perf_tmp',
+    'example*/**': 'web'
+  },
+  deps: {
+    js: [
+      gulpTraceur.RUNTIME_PATH,
+      "node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js",
+      "node_modules/systemjs/dist/system.src.js",
+      "node_modules/systemjs/lib/extension-register.js",
+      "tools/build/runtime_paths.js",
+      "node_modules/angular/angular.js"
+    ]
+  },
+  transpile: {
+    src: {
+      js: ['modules/**/*.js', 'modules/**/*.es6'],
+      dart: ['modules/**/*.js']
+    },
+    copy: {
+      js: ['modules/**/*.es5'],
+      dart: ['modules/**/*.dart']
+    },
+    options: {
+      js: {
+        dev: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
+          typeAssertionModule: 'rtts_assert/rtts_assert',
+          typeAssertions: true
+        }),
+        prod: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
+          typeAssertions: false
+        })
+      },
+      dart: {
+        sourceMaps: true,
+        annotations: true, // parse annotations
+        types: true, // parse types
+        script: false, // parse as a module
+        memberVariables: true, // parse class fields
+        outputLanguage: 'dart'
+      }
+    }
+  },
+  html: {
+    src: {
+      js: ['modules/*/src/**/*.html'],
+      dart: ['modules/*/src/**/*.html']
+    },
+    scriptsPerFolder: {
+      js: {
+        default: _HTLM_DEFAULT_SCRIPTS_JS,
+        'benchmarks_external/**':
+          [{ src: '/deps/angular.js', mimeType: 'text/javascript' }].concat(_HTLM_DEFAULT_SCRIPTS_JS)
+      },
+      dart: {
+        default: [
+          {src: '$MODULENAME_WITHOUT_PATH$.dart', mimeType: 'application/dart'},
+          {src: 'packages/browser/dart.js', mimeType: 'text/javascript'}
+        ]
+      }
+    }
+  },
+  benchpress: {
+    configFile: {
+      content: 'module.exports=function(){};\n',
+      name: 'bp.conf.js'
+    },
+    mainHtmls: '*/perf_tmp/**/main.html',
+    outputFolderName: 'web'
+  },
+  pubspec: {
+    src: 'modules/*/pubspec.yaml'
   }
 };
 
+// ------------
+// clean
 
-gulp.task('modules/clean', function(cb) {
-  del('build', cb);
-});
+gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
+  path: CONFIG.dest.js.all
+}));
 
-gulp.task('modules/build.dart/src', function() {
-  return createModuleTask(merge(sourceTypeConfigs.dart, {compilerOptions: js2dartOptions}));
-});
+gulp.task('build/clean.dart', clean(gulp, gulpPlugins, {
+  path: CONFIG.dest.dart
+}));
 
-gulp.task('modules/build.dart/pubspec', function() {
-  var outputDir = sourceTypeConfigs.dart.outputDir;
-  var files = [];
-  var changedStream = gulp.src('modules/*/pubspec.yaml')
-    .pipe($.changed(outputDir)) // Only forward files that changed.
-    .pipe(through2.obj(function(file, enc, done) {
-      files.push(path.resolve(process.cwd(), outputDir, file.relative));
-      this.push(file);
-      done();
-    }))
-    .pipe(gulp.dest(outputDir));
-  // 1. We need to wait for all pubspecs to be present before executing
-  // `pub get` as it checks the folders of the dependencies!
-  // 2. We execute `pub get` commands sequentially to avoid race condition with pub cache
-  var promise = streamToPromise(changedStream).then(function() {
-    for (var i = 0; i < files.length; i++) {
-      (function (file) {
-        promise = promise.then(function() {
-          return processToPromise(spawn(DART_SDK.PUB, ['get'], {
-                    stdio: 'inherit',
-                    cwd: path.dirname(file)
-                  }));
-        });
-      })(files[i]);
-    }
-  });
+// ------------
+// deps
 
-  return promise;
+gulp.task('build/deps.js.dev', deps(gulp, gulpPlugins, {
+  src: CONFIG.deps.js,
+  dest: CONFIG.dest.js.dev
+}));
 
-});
+gulp.task('build/deps.js.prod', deps(gulp, gulpPlugins, {
+  src: CONFIG.deps.js,
+  dest: CONFIG.dest.js.prod
+}));
 
-function processToPromise(process) {
-  var defer = Q.defer();
-  process.on('close', function(code) {
-    if (code) {
-      defer.reject(code);
-    } else {
-      defer.resolve();
-    }
-  });
-  return defer.promise;
-}
+// ------------
+// transpile
 
-function streamToPromise(stream) {
-  var defer = Q.defer();
-  stream.on('end', defer.resolve);
-  stream.on('error', defer.reject);
-  return defer.promise;
-}
+gulp.task('build/transpile.js.dev', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.js,
+  copy: CONFIG.transpile.copy.js,
+  dest: CONFIG.dest.js.dev,
+  outputExt: 'js',
+  options: CONFIG.transpile.options.js.dev,
+  srcFolderMapping: CONFIG.srcFolderMapping
+}));
 
-gulp.task('modules/build.dart', ['modules/build.dart/src', 'modules/build.dart/pubspec']);
+gulp.task('build/transpile.js.prod', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.js,
+  copy: CONFIG.transpile.copy.js,
+  dest: CONFIG.dest.js.prod,
+  outputExt: 'js',
+  options: CONFIG.transpile.options.js.prod,
+  srcFolderMapping: CONFIG.srcFolderMapping
+}));
 
-gulp.task('modules/build.dev.js', function() {
-  return createModuleTask(merge(true, sourceTypeConfigs.js, {compilerOptions: js2es5OptionsDev}));
-});
+gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.dart,
+  copy: CONFIG.transpile.copy.dart,
+  dest: CONFIG.dest.dart,
+  outputExt: 'dart',
+  options: CONFIG.transpile.options.dart,
+  srcFolderMapping: CONFIG.srcFolderMapping
+}));
 
-gulp.task('modules/build.prod.js', function() {
-  return createModuleTask(merge(true, sourceTypeConfigs.js, {compilerOptions: js2es5OptionsProd}));
-});
+// ------------
+// html
 
-function renameSrcToLib(file) {
-  file.dirname = file.dirname.replace(/\bsrc\b/, 'lib');
-}
+gulp.task('build/html.js.dev', html(gulp, gulpPlugins, {
+  src: CONFIG.html.src.js,
+  dest: CONFIG.dest.js.dev,
+  srcFolderMapping: CONFIG.srcFolderMapping,
+  scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
+}));
 
-function renameEs5ToJs(file) {
-  if (file.extname == '.es5') {
-    file.extname = '.js';
-  }
-}
+gulp.task('build/html.js.prod', html(gulp, gulpPlugins, {
+  src: CONFIG.html.src.js,
+  dest: CONFIG.dest.js.prod,
+  srcFolderMapping: CONFIG.srcFolderMapping,
+  scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
+}));
 
-function createModuleTask(sourceTypeConfig) {
-  var transpile = gulp.src(sourceTypeConfig.transpileSrc)
-    .pipe($.rename({extname: '.'+sourceTypeConfig.outputExt}))
-    .pipe($.rename(renameSrcToLib))
-    .pipe(gulpTraceur(sourceTypeConfig.compilerOptions, file2moduleName))
-    .pipe(gulp.dest(sourceTypeConfig.outputDir));
-  var copy = gulp.src(sourceTypeConfig.copySrc)
-    .pipe($.rename(renameSrcToLib))
-    .pipe($.rename(renameEs5ToJs))
-    .pipe(gulp.dest(sourceTypeConfig.outputDir));
-  // TODO: provide the list of files to the template
-  // automatically!
-  var html = gulp.src(sourceTypeConfig.htmlSrc)
-    .pipe($.rename(renameSrcToLib))
-    .pipe($.ejs({
-      type: sourceTypeConfig.outputExt
-    }))
-    .pipe(gulp.dest(sourceTypeConfig.outputDir));
+gulp.task('build/html.dart', html(gulp, gulpPlugins, {
+  src: CONFIG.html.src.dart,
+  dest: CONFIG.dest.dart,
+  srcFolderMapping: CONFIG.srcFolderMapping,
+  scriptsPerFolder: CONFIG.html.scriptsPerFolder.dart
+}));
 
-  return mergeStreams(transpile, copy, html);
-}
+// ------------
+// benchpress
 
+gulp.task('build/benchpress.js.dev', benchpress(gulp, gulpPlugins, {
+  mainHtmls: CONFIG.benchpress.mainHtmls,
+  configFile: CONFIG.benchpress.configFile,
+  buildDir: CONFIG.dest.js.dev,
+  outputFolderName: CONFIG.benchpress.outputFolderName
+}));
 
-// ------------------
-// ANALYZE
+gulp.task('build/benchpress.js.prod', benchpress(gulp, gulpPlugins, {
+  mainHtmls: CONFIG.benchpress.mainHtmls,
+  configFile: CONFIG.benchpress.configFile,
+  buildDir: CONFIG.dest.js.prod,
+  outputFolderName: CONFIG.benchpress.outputFolderName
+}));
 
-gulp.task('analyze/analyzer.dart', function(done) {
-  var pubSpecs = [].slice.call(glob.sync('build/dart/*/pubspec.yaml', {
-    cwd: __dirname
-  }));
-  var tempFile = '_analyzer.dart';
-  // analyze in parallel!
-  return Q.all(pubSpecs.map(function(pubSpecFile) {
-    var dir = path.dirname(pubSpecFile);
-    var srcFiles = [].slice.call(glob.sync('lib/**/*.dart', {
-      cwd: dir
-    }));
-    var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
-      cwd: dir
-    }));
-    var analyzeFile = ['library _analyzer;'];
-    srcFiles.concat(testFiles).forEach(function(fileName, index) {
-      if (fileName !== tempFile) {
-        analyzeFile.push('import "./'+fileName+'" as mod'+index+';');
-      }
-    });
-    fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
-    var defer = Q.defer();
-    analyze(dir, defer.makeNodeResolver());
-    return defer.promise;
-  }));
-
-  function analyze(dirName, done) {
-    var stream = spawn(DART_SDK.ANALYZER, ['--fatal-warnings', tempFile], {
-      // inherit stdin and stderr, but filter stdout
-      stdio: [process.stdin, 'pipe', process.stderr],
-      cwd: dirName
-    });
-    // Filter out unused imports from our generated file.
-    // We don't reexports from the generated file
-    // as this could lead to name clashes when two files
-    // export the same thing.
-    var rl = readline.createInterface({
-      input: stream.stdout,
-      output: process.stdout,
-      terminal: false
-    });
-    var hintCount = 0;
-    rl.on('line', function(line) {
-      if (line.match(/Unused import/)) {
-        return;
-      }
-      if (line.match(/\[hint\]/)) {
-        hintCount++;
-      }
-      console.log(dirName + ':' + line);
-    });
-    stream.on('close', function(code) {
-      var error;
-      if (code !== 0) {
-        error = new Error('Dartanalyzer failed with exit code ' + code);
-      }
-      if (hintCount > 0) {
-        error = new Error('Dartanalyzer showed hints');
-      }
-      done(error);
-    });
-  }
-});
+gulp.task('build/benchpress.dart', benchpress(gulp, gulpPlugins, {
+  mainHtmls: CONFIG.benchpress.mainHtmls,
+  configFile: CONFIG.benchpress.configFile,
+  buildDir: CONFIG.dest.dart,
+  outputFolderName: CONFIG.benchpress.outputFolderName
+}));
 
 
+// ------------
+// pubspec
+
+gulp.task('build/pubspec.dart', pubspec(gulp, gulpPlugins, {
+  src: CONFIG.pubspec.src,
+  dest: CONFIG.dest.dart,
+  command: DART_SDK.PUB
+}));
+
+// ------------
+// pubspec
+
+gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
+  dest: CONFIG.dest.dart,
+  command: DART_SDK.ANALYZER,
+  srcFolderMapping: CONFIG.srcFolderMapping
+}));
 
 // ------------------
-// BENCHMARKS JS
+// web servers
+gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
+  path: CONFIG.dest.js.dev
+}));
 
-gulp.task('benchmarks/internal.benchpress.js', function () {
-  benchpress.build({
-    benchmarksPath: 'build/js/benchmarks/lib',
-    buildPath: 'build/benchpress/js'
-  })
-});
+gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
+  path: CONFIG.dest.js.prod
+}));
 
-gulp.task('benchmarks/external.benchpress.js', function () {
-  benchpress.build({
-    benchmarksPath: 'build/js/benchmarks_external/lib',
-    buildPath: 'build/benchpress/js'
-  })
-});
+gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  path: CONFIG.dest.dart + '/examples'
+}));
 
-gulp.task('benchmarks/internal.js', function() {
-  runSequence(
-    ['jsRuntime/build', 'modules/build.prod.js'],
-    'benchmarks/internal.benchpress.js'
-  );
-});
+gulp.task('serve/benchmarks.dart', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  path: CONFIG.dest.dart + '/benchmarks'
+}));
 
-gulp.task('benchmarks/external.js', function() {
-  runSequence(
-    ['jsRuntime/build', 'modules/build.prod.js'],
-    'benchmarks/external.benchpress.js'
-  );
-});
-
-
-// ------------------
-// BENCHMARKS DART
-
-function benchmarkDart2Js(buildPath, done) {
-
-  mergeStreams(dart2jsStream(), bpConfStream())
-    .on('end', function() {
-      runBenchpress();
-      done();
-    });
-
-  function dart2jsStream() {
-    return gulp.src([
-      buildPath+"/lib/**/benchmark.dart"
-    ]).pipe($.shell(['dart2js --package-root="'+buildPath+'/packages" -o "<%= file.path %>.js" <%= file.path %>']));
-  }
-
-  function bpConfStream() {
-    var bpConfContent = "module.exports = function(c) {c.set({scripts: [{src: 'benchmark.dart.js'}]});}";
-    var createBpConfJs = es.map(function(file, cb) {
-      var dir = path.dirname(file.path);
-      fs.writeFileSync(path.join(dir, "bp.conf.js"), bpConfContent);
-      cb();
-    });
-
-    return gulp.src([
-      buildPath+"/lib/**/benchmark.dart"
-    ]).pipe(createBpConfJs);
-  }
-
-  function runBenchpress() {
-    benchpress.build({
-        benchmarksPath: buildPath+'/lib',
-        buildPath: 'build/benchpress/dart'
-    });
-  }
-}
-
-gulp.task('benchmarks/internal.dart', ['modules/build.dart'], function(done) {
-  benchmarkDart2Js('build/dart/benchmarks', done);
-});
-
-gulp.task('benchmarks/external.dart', ['modules/build.dart'], function(done) {
-  benchmarkDart2Js('build/dart/benchmarks_external', done);
-});
-
-gulp.task('benchmarks/build.dart', ['benchmarks/internal.dart', 'benchmarks/external.dart']);
-
-
-
-// ------------------
-// WEB SERVERS
-
-gulp.task('serve', function() {
-  $.connect.server({
-    root: [__dirname+'/build'],
-    port: 8000,
-    livereload: false,
-    open: false,
-    middleware: function() {
-      return [function(req, resp, next){
-        if (req.url.match(/\.dart$/)) {
-          resp.setHeader("Content-Type", "application/dart");
-        }
-        next();
-      }];
-    }
-  })();
-});
-
-gulp.task('examples/pub.serve', function(done) {
-  spawn(DART_SDK.PUB, ['serve'], {cwd: 'build/dart/examples', stdio: 'inherit'})
-    .on('done', done);
-});
-
-
-
-// --------------
-// general targets
-
-gulp.task('clean', ['modules/clean']);
-
-gulp.task('build', function(done) {
-  runSequence(
-    // parallel
-    ['jsRuntime/build', 'modules/build.dart', 'modules/build.dev.js'],
-    // sequential
-    'analyze/analyzer.dart'
-  );
-});
-
-gulp.task('analyze', function(done) {
-  runSequence('analyze/analyzer.dart');
-});
-
+gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  path: CONFIG.dest.dart + '/benchmarks_external'
+}));
 
 // --------------
 // doc generation
@@ -435,12 +304,12 @@ gulp.task('docs/bower', function() {
 
 gulp.task('docs/assets', ['docs/bower'], function() {
   return gulp.src('docs/bower_components/**/*')
-    .pipe(gulp.dest('build/docs/lib'));
+    .pipe(gulp.dest('dist/docs/lib'));
 });
 
 gulp.task('docs/app', function() {
   return gulp.src('docs/app/**/*')
-    .pipe(gulp.dest('build/docs'));
+    .pipe(gulp.dest('dist/docs'));
 });
 
 gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
@@ -456,8 +325,38 @@ gulp.task('docs/test', function () {
 
 var webserver = require('gulp-webserver');
 gulp.task('docs/serve', function() {
-  gulp.src('build/docs/')
+  gulp.src('dist/docs/')
     .pipe(webserver({
       fallback: 'index.html'
     }));
 });
+
+// -----------------
+// orchestrated targets
+gulp.task('build.dart', function() {
+  return runSequence(
+    ['build/transpile.dart', 'build/html.dart', 'build/pubspec.dart'],
+    'build/benchpress.dart',
+    'build/analyze.dart'
+  );
+});
+
+gulp.task('build.js.dev', function() {
+  return runSequence(
+    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev'],
+    'build/benchpress.js.dev'
+  );
+});
+
+gulp.task('build.js.prod', function() {
+  return runSequence(
+    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
+    'build/benchpress.js.dev'
+  );
+});
+
+gulp.task('build.js', ['build.js.dev', 'build.js.prod']);
+
+gulp.task('clean', ['build/clean.js', 'build/clean.dart']);
+
+gulp.task('build', ['build.js', 'build.dart']);

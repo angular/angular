@@ -1,6 +1,6 @@
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory_static.dart';
-import '../benchpress.dart';
+import 'package:benchpress/benchpress.dart';
 import 'dart:html';
 
 var COUNT = 30;

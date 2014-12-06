@@ -1,7 +1,7 @@
-import {benchmark, benchmarkStep} from '../benchpress';
+import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 
 import {DOM, document} from 'facade/dom';
-import {isBlank} from 'facade/lang';
+import {isBlank, Type} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 import {AnnotatedType} from 'core/compiler/annotated_type';
 
@@ -61,7 +61,7 @@ function setup() {
   });
 
   reflector.registerGetters({
-    "inter0": (a) => a.inter0, "inter1": (a) => a.inter1, 
+    "inter0": (a) => a.inter0, "inter1": (a) => a.inter1,
     "inter2": (a) => a.inter2, "inter3": (a) => a.inter3, "inter4": (a) => a.inter4,
 
     "value0": (a) => a.value0, "value1": (a) => a.value1,
@@ -111,7 +111,7 @@ export function main() {
   benchmark(`instantiate 5*${COUNT} element with bindings`, function() {
     var template = loadTemplate('templateWithBindings', COUNT);
     var protoView = compiler.compileWithCache(null, annotatedComponent, template);
-    var rootRecordRange = new ProtoRecordRange().instantiate(null, new Object());
+    var rootRecordRange = new ProtoRecordRange().instantiate(null, null);
 
     benchmarkStep('run', function() {
       var view = protoView.instantiate(null, null, null);

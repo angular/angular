@@ -40,6 +40,8 @@
     "gulp-rename": "^1.2.0",
     "gulp-shell": "^0.2.10",
     "gulp-webserver": "^0.8.7",
+    "angular": "1.3.5",
+    "minimatch": "^2.0.1",
     "lodash": "^2.4.1"
   }
 }
