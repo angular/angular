@@ -13,7 +13,13 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 // Register the services and file readers
 .factory(require('./services/atParser'))
 .factory(require('./services/getJSDocComment'))
+.factory(require('./services/SourceFile'))
+.factory(require('./services/TraceurParser'))
+.factory(require('./services/traceurOptions'))
+.factory(require('./services/ParseTreeVisitor'))
+.factory(require('./services/AttachCommentTreeVisitor'))
 .factory(require('./services/ExportTreeVisitor'))
+
 .factory(require('./readers/atScript'))
 .factory(require('./readers/ngdoc'))
 

@@ -1,7 +1,4 @@
-var traceur = require('traceur/src/node/traceur.js');
-var ParseTreeVisitor = System.get("traceur@0.0.74/src/syntax/ParseTreeVisitor").ParseTreeVisitor;
-
-module.exports = function ExportTreeVisitor(log) {
+module.exports = function ExportTreeVisitor(ParseTreeVisitor, log) {
 
   function ExportTreeVisitorImpl() {
     ParseTreeVisitor.call(this);

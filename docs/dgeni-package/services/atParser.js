@@ -1,10 +1,8 @@
-var traceur = require('traceur/src/node/traceur.js');
-var ParseTreeVisitor = System.get(System.map.traceur + '/src/syntax/ParseTreeVisitor').ParseTreeVisitor;
 var file2modulename = require('../../../tools/build/file2modulename');
 /**
  * Wrapper around traceur that can parse the contents of a file
  */
-module.exports = function atParser(log) {
+module.exports = function atParser(AttachCommentTreeVisitor, SourceFile, TraceurParser, traceurOptions, log) {
 
   var service = {
     /**
@@ -33,16 +31,16 @@ module.exports = function atParser(log) {
   function parseModule(fileInfo) {
 
     var moduleName = file2modulename(fileInfo.relativePath);
-    var sourceFile = new traceur.syntax.SourceFile(moduleName, fileInfo.content);
-    var parser = new traceur.syntax.Parser(sourceFile);
+    var sourceFile = new SourceFile(moduleName, fileInfo.content);
     var comments = [];
     var moduleTree;
+    var parser = new TraceurParser(sourceFile);
 
     // Configure the parser
     parser.handleComment = function(range) {
       comments.push({ range: range });
     };
-    traceur.options.setFromObject(service.traceurOptions);
+    traceurOptions.setFromObject(service.traceurOptions);
 
     try {
       // Parse the file as a module, attaching the comments
@@ -69,29 +67,8 @@ module.exports = function atParser(log) {
   // attach the comments to their nearest code tree
   function attachComments(tree, comments) {
 
-    var visitor = new ParseTreeVisitor();
-    var index = 0;
-    var currentComment = comments[index];
-
-    if (currentComment) log.silly('comment: ' + currentComment.range.start.line + ' - ' + currentComment.range.end.line);
-
-    // Really we ought to subclass ParseTreeVisitor but this is fiddly in ES5 so
-    // it is easier to simply override the prototype's method on the instance
-    visitor.visitAny = function(tree) {
-      if (tree && tree.location && tree.location.start && currentComment) {
-        if (currentComment.range.end.offset < tree.location.start.offset) {
-          log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
-          tree.commentBefore = currentComment;
-          currentComment.treeAfter = tree;
-          index++;
-          currentComment = comments[index];
-          if (currentComment) log.silly('comment: ' + currentComment.range.start.line + ' - ' + currentComment.range.end.line);
-        }
-      }
-      return ParseTreeVisitor.prototype.visitAny.call(this, tree);
-    };
-
+    var visitor = new AttachCommentTreeVisitor();
     // Visit every node of the tree using our custom method
-    visitor.visit(tree);
+    visitor.visit(tree, comments);
   }
 };
