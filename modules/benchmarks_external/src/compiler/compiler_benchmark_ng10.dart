@@ -1,42 +1,13 @@
+library compiler_benchmark_ng10;
+
 import 'package:angular/angular.dart';
-import 'package:angular/application_factory_static.dart';
+import 'package:angular/application_factory.dart';
 import 'package:benchpress/benchpress.dart';
 import 'dart:html';
 
 var COUNT = 30;
 
 main() {
-
-  final typeAnnotations = {
-      Dir0: const [const Decorator(selector: '[dir0]', map: const {'attr0': '=>prop'})],
-      Dir1: const [const Decorator(selector: '[dir1]', map: const {'attr1': '=>prop'})],
-      Dir2: const [const Decorator(selector: '[dir2]', map: const {'attr2': '=>prop'})],
-      Dir3: const [const Decorator(selector: '[dir3]', map: const {'attr3': '=>prop'})],
-      Dir4: const [const Decorator(selector: '[dir4]', map: const {'attr4': '=>prop'})]
-  };
-
-  final fieldGetters = {
-      "inter0": (a) => a.inter0, "inter1": (a) => a.inter1,
-      "inter2": (a) => a.inter2, "inter3": (a) => a.inter3, "inter4": (a) => a.inter4,
-
-      "value0": (a) => a.value0, "value1": (a) => a.value1,
-      "value2": (a) => a.value2, "value3": (a) => a.value3, "value4": (a) => a.value4,
-
-      "prop" : (a) => a.prop
-  };
-
-  final fieldSetters = {
-      "inter0": (a,v) => a.inter0 = v, "inter1": (a,v) => a.inter1 = v,
-      "inter2": (a,v) => a.inter2 = v, "inter3": (a,v) => a.inter3 = v, "inter4": (a,v) => a.inter4 = v,
-
-      "value0": (a,v) => a.value0 = v, "value1": (a,v) => a.value1 = v,
-      "value2": (a,v) => a.value2 = v, "value3": (a,v) => a.value3 = v, "value4": (a,v) => a.value4 = v,
-
-      "prop": (a,v) => a.prop = v
-  };
-
-  final symbols = {
-  };
 
   var m = new Module()
     ..bind(Dir0)
@@ -48,12 +19,7 @@ main() {
   benchmark("AngularDart 1.0 Compiler.compile 5*${COUNT} element with bindings", () {
     var template = loadTemplate('templateWithBindings', COUNT);
 
-    final injector = staticApplicationFactory(
-        typeAnnotations,
-        fieldGetters,
-        fieldSetters,
-        symbols
-    ).addModule(m).run();
+    final injector = applicationFactory().addModule(m).run();
 
     final compiler = injector.get(Compiler);
     final directiveMap = injector.get(DirectiveMap);
@@ -72,12 +38,7 @@ main() {
   benchmark("AngularDart 1.0 instantiate 5*${COUNT} element with bindings", () {
     var template = loadTemplate('templateWithBindings', COUNT);
 
-    final injector = staticApplicationFactory(
-        typeAnnotations,
-        fieldGetters,
-        fieldSetters,
-        symbols
-    ).addModule(m).run();
+    final injector = applicationFactory().addModule(m).run();
 
     final compiler = injector.get(Compiler);
     final directiveMap = injector.get(DirectiveMap);
