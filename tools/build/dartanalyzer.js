@@ -12,7 +12,7 @@ module.exports = function(gulp, plugins, config) {
     var tempFile = '_analyzer.dart';
     // analyze in parallel!
     return Q.all(dartModuleFolders.map(function(dir) {
-      var srcFiles = [].slice.call(glob.sync(util.filterByFile(config.srcFolderMapping, dir) + '/**/*.dart', {
+      var srcFiles = [].slice.call(glob.sync(util.filterByFile(config.srcFolderMapping, dir + '/pubspec.yaml') + '/**/*.dart', {
         cwd: dir
       }));
       var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {

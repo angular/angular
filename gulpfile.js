@@ -57,8 +57,8 @@ var CONFIG = {
     'default': 'lib',
     // need a tmp folder as benchpress does not support
     // inplace generation of the benchmarks...
-    'benchmark*/**': 'perf_tmp',
-    'example*/**': 'web'
+    '**/benchmark*/**': 'perf_tmp',
+    '**/example*/**': 'web'
   },
   deps: {
     js: [
