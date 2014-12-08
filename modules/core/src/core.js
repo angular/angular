@@ -14,5 +14,6 @@ export * from 'change_detection/record';
 export * from './compiler/compiler';
 export * from './compiler/template_loader';
 export * from './compiler/view';
+export * from './compiler/viewport';
 
 export * from 'core/dom/element';
