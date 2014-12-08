@@ -63,7 +63,9 @@ export function documentDependentBindings(appComponentType) {
       bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
       bind(ChangeDetector).toFactory((appRecordRange) =>
-          new ChangeDetector(appRecordRange), [appRecordRangeToken])
+          new ChangeDetector(appRecordRange), [appRecordRangeToken]),
+      bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
+          [appViewToken])
   ];
 }
 
