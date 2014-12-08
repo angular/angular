@@ -353,7 +353,7 @@ gulp.task('build.js.dev', function() {
 gulp.task('build.js.prod', function() {
   return runSequence(
     ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
-    'build/benchpress.js.dev'
+    'build/benchpress.js.prod'
   );
 });
 
