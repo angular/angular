@@ -11,6 +11,8 @@ import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
 
 import {reflector} from 'reflection/reflection';
+import {DOM, document, Element} from 'facade/dom';
+import {isPresent} from 'facade/lang';
 
 var MAX_DEPTH = 9;
 
@@ -146,6 +148,28 @@ export function main() {
     });
 
   });
+
+  benchmark(`baseline tree benchmark`, function() {
+    var baselineAppElement = DOM.querySelectorAll(document, 'baseline')[0];
+    var rootTreeComponent = new BaseLineTreeComponent();
+    DOM.appendChild(baselineAppElement, rootTreeComponent.element);
+
+    var count = 0;
+
+    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
+      rootTreeComponent.update(new TreeNode('', null, null));
+    });
+
+    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
+      var maxDepth = 9;
+      var values = count++ % 2 == 0 ?
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+
+      rootTreeComponent.update(buildTree(maxDepth, values, 0));
+    });
+
+  });
 }
 
 class TreeNode {
@@ -165,6 +189,78 @@ function buildTree(maxDepth, values, curDepth) {
       values[curDepth],
       buildTree(maxDepth, values, curDepth+1),
       buildTree(maxDepth, values, curDepth+1));
+}
+
+var BASELINE_TEMPLATE = DOM.createTemplate(`
+    <span> {{}}
+       <template class="ng-binding"></template>
+       <template class="ng-binding"></template>
+    </span>`);
+
+
+class BaseLineTreeComponent {
+  element:Element;
+  value:BaseLineInterpolation;
+  left:BaseLineIf;
+  right:BaseLineIf;
+  constructor() {
+    this.element = DOM.createElement('span');
+    var clone = DOM.clone(BASELINE_TEMPLATE.content.children[0]);
+    var shadowRoot = this.element.createShadowRoot();
+    DOM.appendChild(shadowRoot, clone);
+
+    this.value = new BaseLineInterpolation(clone.childNodes[0]);
+    this.left = new BaseLineIf(clone.children[0]);
+    this.right = new BaseLineIf(clone.children[1]);
+  }
+  update(value:TreeNode) {
+    this.value.update(value.value);
+    this.left.update(value.left);
+    this.right.update(value.right);
+  }
+}
+
+class BaseLineInterpolation {
+  value:string;
+  textNode;
+  constructor(textNode) {
+    this.value = null;
+    this.textNode = textNode;
+  }
+  update(value:string) {
+    if (this.value !== value) {
+      this.value = value;
+      DOM.setText(this.textNode, value + ' ');
+    }
+  }
+}
+
+class BaseLineIf {
+  condition:boolean;
+  component:BaseLineTreeComponent;
+  anchor:Element;
+  constructor(anchor) {
+    this.anchor = anchor;
+    this.condition = false;
+    this.component = null;
+  }
+  update(value:TreeNode) {
+    var newCondition = isPresent(value);
+    if (this.condition !== newCondition) {
+      this.condition = newCondition;
+      if (isPresent(this.component)) {
+        this.component.element.remove();
+        this.component = null;
+      }
+      if (this.condition) {
+        this.component = new BaseLineTreeComponent();
+        this.anchor.parentNode.insertBefore(this.component.element, this.anchor);
+      }
+    }
+    if (isPresent(this.component)) {
+      this.component.update(value);
+    }
+  }
 }
 
 class AppComponent {
