@@ -68,11 +68,8 @@ class DOM {
   static clone(Node node) {
     return node.clone(true);
   }
-  static setProperty(Element element, String name, value) {
-    new JsObject.fromBrowserObject(element)[name] = value;
-  }
-  static getProperty(Element element, String name) {
-    return new JsObject.fromBrowserObject(element)[name];
+  static hasProperty(Element element, String name) {
+    return new JsObject.fromBrowserObject(element).hasProperty(name);
   }
   static getElementsByClassName(Element element, String name) {
     return element.getElementsByClassName(name);

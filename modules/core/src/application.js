@@ -54,7 +54,7 @@ export function documentDependentBindings(appComponentType) {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null, true);
+          var view = appProtoView.instantiate(null);
           view.hydrate(injector, null, new Object());
           return view;
         });

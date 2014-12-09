@@ -14,7 +14,9 @@ function createElement(html) {
 }
 
 function createView(nodes) {
-  return new View(null, nodes, [], [], [], [], new ProtoRecordRange());
+  var view = new View(null, nodes, new ProtoRecordRange());
+  view.init([], [], [], [], [], [], []);
+  return view;
 }
 
 export function main() {
