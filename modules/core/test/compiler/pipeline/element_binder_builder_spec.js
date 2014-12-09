@@ -32,12 +32,6 @@ export function main() {
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
-            if (isPresent(current.element.getAttribute('viewroot'))) {
-              current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element, new ProtoRecordRange());
-            } else if (isPresent(parent)) {
-              current.inheritedProtoView = parent.inheritedProtoView;
-            }
             var hasBinding = false;
             if (isPresent(current.element.getAttribute('text-binding'))) {
               MapWrapper.forEach(textNodeBindings, (v,k) => {
@@ -71,6 +65,12 @@ export function main() {
             if (hasBinding) {
               current.hasBindings = true;
               DOM.addClass(current.element, 'ng-binding');
+            }
+            if (isPresent(current.element.getAttribute('viewroot'))) {
+              current.isViewRoot = true;
+              current.inheritedProtoView = new ProtoView(current.element, new ProtoRecordRange());
+            } else if (isPresent(parent)) {
+              current.inheritedProtoView = parent.inheritedProtoView;
             }
           }), new ElementBinderBuilder()
       ]);
@@ -159,22 +159,22 @@ export function main() {
 
     it('should bind element properties', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'elprop1': 'prop1',
-        'elprop2': 'prop2'
+        'value': 'prop1',
+        'hidden': 'prop2'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
-      var results = pipeline.process(createElement('<div viewroot prop-binding></div>'));
+      var results = pipeline.process(createElement('<input viewroot prop-binding>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
-      evalContext.prop2 = 'b';
+      evalContext.prop2 = false;
       changeDetector.detectChanges();
 
-      expect(DOM.getProperty(view.nodes[0], 'elprop1')).toEqual('a');
-      expect(DOM.getProperty(view.nodes[0], 'elprop2')).toEqual('b');
+      expect(view.nodes[0].value).toEqual('a');
+      expect(view.nodes[0].hidden).toEqual(false);
     });
 
     it('should bind events', () => {

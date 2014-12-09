@@ -12,7 +12,7 @@ import {NgElement} from 'core/dom/element';
 //TODO: vsavkin: use a spy object
 class DummyView extends View {
   constructor() {
-    super(null, null, null, null, null, null, new ProtoRecordRange());
+    super(null, null, new ProtoRecordRange(), MapWrapper.create());
   }
 }
 

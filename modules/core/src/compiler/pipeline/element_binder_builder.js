@@ -1,5 +1,5 @@
 import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/lang';
-import {Element} from 'facade/dom';
+import {Element, DOM} from 'facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection';
 
 import {reflector} from 'reflection/reflection';
@@ -74,7 +74,9 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      protoView.bindElementProperty(property,  expression);
+      if (DOM.hasProperty(compileElement.element, property)) {
+        protoView.bindElementProperty(expression.ast, property, reflector.setter(property));
+      }
     });
   }
 

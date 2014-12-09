@@ -6,6 +6,7 @@ export var Set = window.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
+  static clone(m:Map):Map { return new Map(m); }
   static createFromStringMap(stringMap):Map {
     var result = MapWrapper.create();
     for (var prop in stringMap) {
@@ -63,8 +64,8 @@ export class ListWrapper {
   static createFixedSize(size):List { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
-  static clone(array) {
-    return Array.prototype.slice.call(array, 0);
+  static clone(array:List) {
+    return array.slice(0);
   }
   static map(array, fn) {
     return array.map(fn);

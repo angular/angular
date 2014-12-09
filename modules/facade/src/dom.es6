@@ -63,11 +63,8 @@ export class DOM {
   static clone(node:Node) {
     return node.cloneNode(true);
   }
-  static setProperty(element:Element, name:string, value) {
-    element[name] = value;
-  }
-  static getProperty(element:Element, name:string) {
-    return element[name];
+  static hasProperty(element:Element, name:string) {
+    return name in element;
   }
   static getElementsByClassName(element:Element, name:string) {
     return element.getElementsByClassName(name);
