@@ -16,6 +16,7 @@ import {OnChange} from './interfaces';
 import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 
 const NG_BINDING_CLASS = 'ng-binding';
+const NO_FORMATTERS = MapWrapper.create();
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
@@ -46,7 +47,7 @@ export class View {
     this.rootElementInjectors = rootElementInjectors;
     this.textNodes = textNodes;
     this.bindElements = bindElements;
-    this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
+    this.recordRange = protoRecordRange.instantiate(this, NO_FORMATTERS);
     this.componentChildViews = null;
     this.viewPorts = null;
     this.preBuiltObjects = null;
@@ -262,6 +263,8 @@ export class ProtoView {
   variableBindings: Map;
   textNodesWithBindingCount:int;
   elementsWithBindingCount:int;
+  isTemplateElement:bool;
+  rootBindingOffset:int;
   constructor(
       template:Element,
       protoRecordRange:ProtoRecordRange) {
@@ -271,21 +274,27 @@ export class ProtoView {
     this.protoRecordRange = protoRecordRange;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
+    this.isTemplateElement = template instanceof TemplateElement;
+    this.rootBindingOffset = true || DOM.hasClass(template, NG_BINDING_CLASS) ? 1 : 0;
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
   // TODO(rado): inPlace is only used for bootstrapping, invastigate whether we can bootstrap without
   // rootProtoView.
-  instantiate(hostElementInjector: ElementInjector, inPlace:boolean = false):View {
+  instantiate(hostElementInjector: ElementInjector, inPlace):View {
     var clone = inPlace ? this.element : DOM.clone(this.element);
-    var elements;
-    if (clone instanceof TemplateElement) {
-      elements = ListWrapper.clone(DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`));
+    var domElements;
+    if (this.isTemplateElement) {
+      domElements = DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`);
     } else {
-      elements = ListWrapper.clone(DOM.getElementsByClassName(clone, NG_BINDING_CLASS));
+      domElements = DOM.getElementsByClassName(clone, NG_BINDING_CLASS);
     }
-    if (DOM.hasClass(clone, NG_BINDING_CLASS)) {
-      ListWrapper.insert(elements, 0, clone);
+    var rootBindingOffset = this.rootBindingOffset;
+    var domLength = domElements.length;
+    var elements = ListWrapper.createFixedSize(domLength + rootBindingOffset);
+    if (rootBindingOffset === 1) elements[0] = clone;
+    for(var i=0; i < domLength; i++) {
+      elements[i + rootBindingOffset] = domElements[i];
     }
     var binders = this.elementBinders;
 
@@ -300,8 +309,13 @@ export class ProtoView {
 
     var viewNodes;
 
-    if (clone instanceof TemplateElement) {
-      viewNodes = ListWrapper.clone(clone.content.childNodes);
+    if (this.isTemplateElement) {
+      var childNodes = clone.content.childNodes;
+      var childLength = childNodes.length;
+      viewNodes = ListWrapper.createFixedSize(childLength);
+      for(var j=0; j<childLength; j++) {
+        viewNodes[j] = childNodes[j];
+      }
     } else {
       viewNodes = [clone];
     }
@@ -344,6 +358,7 @@ export class ProtoView {
    * Adds an element property binding for the last created ElementBinder via bindElement
    */
   bindElementProperty(propertyName:string, expression:AST) {
+    /*
     var elBinder = this.elementBinders[this.elementBinders.length-1];
     if (!elBinder.hasElementPropertyBindings) {
       elBinder.hasElementPropertyBindings = true;
@@ -351,6 +366,7 @@ export class ProtoView {
     }
     var memento = new ElementPropertyMemento(this.elementsWithBindingCount-1, propertyName);
     this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
+    */
   }
 
   /**
@@ -420,7 +436,14 @@ export class ProtoView {
 
 
   static _rootElementInjectors(injectors) {
-    return ListWrapper.filter(injectors, inj => isPresent(inj) && isBlank(inj.parent));
+    var filteredInjectors = ListWrapper.create();
+    for(var i=0; i < injectors.length; i++) {
+      var inj = injectors[i];
+      if (isPresent(inj) && isBlank(inj.parent)) {
+        filteredInjectors.push(inj);
+      }
+    }
+    return filteredInjectors;
   }
 
   static _textNodes(elements, binders) {
