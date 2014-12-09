@@ -105,7 +105,7 @@ export function main() {
           it('should collect property bindings on the root element if it has the ng-binding class', () => {
             var pv = new ProtoView(templateAwareCreateElement('<div [prop]="a" class="ng-binding"></div>'), new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindElementProperty('prop', parser.parseBinding('a'));
+            pv.bindElementProperty(parser.parseBinding('a').ast, 'prop', reflector.setter('prop'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -117,7 +117,7 @@ export function main() {
             var pv = new ProtoView(templateAwareCreateElement('<div><span></span><span class="ng-binding"></span></div>'),
               new ProtoRecordRange());
             pv.bindElement(null);
-            pv.bindElementProperty('a', parser.parseBinding('b'));
+            pv.bindElementProperty(parser.parseBinding('b').ast, 'a', reflector.setter('a'));
 
             var view = pv.instantiate(null);
             view.hydrate(null, null, null);
@@ -159,9 +159,10 @@ export function main() {
 
       describe('inplace instantiation', () => {
         it('should be supported.', () => {
-          var template = createElement('<div></div>')
-          var view = new ProtoView(template, new ProtoRecordRange())
-              .instantiate(null, true);
+          var template = createElement('<div></div>');
+          var pv = new ProtoView(template, new ProtoRecordRange());
+          pv.instantiateInPlace = true;
+          var view = pv.instantiate(null);
           view.hydrate(null, null, null);
           expect(view.nodes[0]).toBe(template);
         });
@@ -369,7 +370,7 @@ export function main() {
           var pv = new ProtoView(createElement('<div class="ng-binding"></div>'),
             new ProtoRecordRange());
           pv.bindElement(null);
-          pv.bindElementProperty('id', parser.parseBinding('foo'));
+          pv.bindElementProperty(parser.parseBinding('foo').ast, 'id', reflector.setter('id'));
           createViewAndChangeDetector(pv);
 
           ctx.foo = 'buz';
@@ -437,14 +438,14 @@ export function main() {
 
       it('should create the root component when instantiated', () => {
         var rootProtoView = ProtoView.createRootProtoView(pv, el, someComponentDirective);
-        var view = rootProtoView.instantiate(null, true);
+        var view = rootProtoView.instantiate(null);
         view.hydrate(new Injector([]), null, null);
         expect(view.rootElementInjectors[0].get(SomeComponent)).not.toBe(null);
       });
 
       it('should inject the protoView into the shadowDom', () => {
         var rootProtoView = ProtoView.createRootProtoView(pv, el, someComponentDirective);
-        var view = rootProtoView.instantiate(null, true);
+        var view = rootProtoView.instantiate(null);
         view.hydrate(new Injector([]), null, null);
         expect(el.shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hi');
       });
