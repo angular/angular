@@ -8,6 +8,7 @@ elif [[ "$platform" == 'Darwin' ]]; then
       --enable-memory-info \
       --enable-precise-memory-info \
       --enable-memory-benchmarking \
-      --js-flags="--expose-gc" \
+      --js-flags="--expose-gc --allow-natives-syntax" \
+      --disable-web-security \
       --remote-debugging-port=9222`
 fi
