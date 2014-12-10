@@ -12,6 +12,8 @@ import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {AnnotatedType} from './compiler/annotated_type';
 import {ListWrapper} from 'facade/collection';
+import {VmTurnZone} from 'core/zone/vm_turn_zone';
+import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 var _rootInjector: Injector;
 
@@ -65,7 +67,8 @@ export function documentDependentBindings(appComponentType) {
       bind(ChangeDetector).toFactory((appRecordRange) =>
           new ChangeDetector(appRecordRange, assertionsEnabled()), [appRecordRangeToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
-          [appViewToken])
+          [appViewToken]),
+      bind(LifeCycle).toClass(LifeCycle)
   ];
 }
 
@@ -79,14 +82,16 @@ function _injectorBindings(appComponentType) {
 export function bootstrap(appComponentType: Type, bindings=null) {
   // TODO(rado): prepopulate template cache, so applications with only
   // index.html and main.js are possible.
-  if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
-  var appInjector = _rootInjector.createChild(_injectorBindings(
-      appComponentType));
-  if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
 
-  return appInjector.asyncGet(ChangeDetector).then((cd) => {
-    // TODO(rado): replace with zone.
-    cd.detectChanges();
-    return appInjector;
+  var zone = new VmTurnZone();
+  return zone.run(() => {
+    if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
+
+    var appInjector = _rootInjector.createChild(_injectorBindings(appComponentType));
+    if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
+
+    return appInjector.asyncGet(LifeCycle).
+        then((lc) => lc.registerWith(zone)).
+        then((_) => appInjector);
   });
 }
