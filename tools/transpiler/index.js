@@ -15,6 +15,7 @@ var SELF_COMPILE_OPTIONS = {
 };
 
 var needsReload = true;
+var oldSystemGet = System.get;
 
 exports.reloadSources = function() {
   needsReload = true;
@@ -63,6 +64,16 @@ function reloadCompiler() {
   glob.sync(__dirname + '/src/**/*.js').forEach(function(fileName) {
     loadModule(fileName, true);
   });
+
+  // Traceur modules are register with the ".js" extension but we don't want
+  // to add it to all the import statements.
+  System.get = function get(normalizedName) {
+    var m = oldSystemGet.call(this, normalizedName);
+    if (!m && normalizedName.indexOf('traceur') == 0) {
+      m = oldSystemGet.call(this, normalizedName + '.js');
+    }
+    return m;
+  };
 }
 
 function loadModule(filepath, transpile) {

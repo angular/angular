@@ -24,7 +24,7 @@
     "run-sequence": "^0.3.6",
     "systemjs": "^0.9.1",
     "through2": "^0.6.1",
-    "traceur": "0.0.74",
+    "traceur": "0.0.79",
     "which": "~1",
     "zone.js": "0.3.0"
   },
