@@ -50,6 +50,8 @@ class MapWrapper {
   static void delete(m, k) { m.remove(k); }
   static void clear(m) { m.clear(); }
   static Iterable iterable(m) { return new IterableMap(m); }
+  static Iterable keys(m) { return m.keys; }
+  static Iterable values(m) { return m.values; }
 }
 
 // TODO: how to export StringMap=Map as a type?

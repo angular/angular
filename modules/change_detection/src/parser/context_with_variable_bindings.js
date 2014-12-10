@@ -31,7 +31,7 @@ export class ContextWithVariableBindings {
   }
 
   clearValues() {
-    for (var [k, v] of MapWrapper.iterable(this.varBindings)) {
+    for (var k of MapWrapper.keys(this.varBindings)) {
       MapWrapper.set(this.varBindings, k, null);
     }
   }
