@@ -3,6 +3,7 @@ import {MapWrapper} from 'facade/collection';
 import {TemplateElement} from 'facade/dom';
 
 import {Parser} from 'change_detection/parser/parser';
+import {AST} from 'change_detection/parser/ast';
 import {ExpressionWithSource} from 'change_detection/parser/ast';
 
 import {CompileStep} from './compile_step';
@@ -24,8 +25,10 @@ var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[
  */
 export class PropertyBindingParser extends CompileStep {
   _parser:Parser;
-  constructor(parser:Parser) {
+  _compilationUnit:any;
+  constructor(parser:Parser, compilationUnit:any) {
     this._parser = parser;
+    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -35,7 +38,7 @@ export class PropertyBindingParser extends CompileStep {
       if (isPresent(bindParts)) {
         if (isPresent(bindParts[1])) {
           // match: bind-prop
-          current.addPropertyBinding(bindParts[4], this._parser.parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[4], this._parseBinding(attrValue));
         } else if (isPresent(bindParts[2])) {
           // match: let-prop
           // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
@@ -46,20 +49,28 @@ export class PropertyBindingParser extends CompileStep {
           current.addVariableBinding(bindParts[4], attrValue);
         } else if (isPresent(bindParts[3])) {
           // match: on-prop
-          current.addEventBinding(bindParts[4], this._parser.parseAction(attrValue));
+          current.addEventBinding(bindParts[4], this._parseAction(attrValue));
         } else if (isPresent(bindParts[5])) {
           // match: [prop]
-          current.addPropertyBinding(bindParts[5], this._parser.parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[5], this._parseBinding(attrValue));
         } else if (isPresent(bindParts[6])) {
           // match: (prop)
-          current.addEventBinding(bindParts[6], this._parser.parseBinding(attrValue));
+          current.addEventBinding(bindParts[6], this._parseBinding(attrValue));
         }
       } else {
         var expression = interpolationToExpression(attrValue);
         if (isPresent(expression)) {
-          current.addPropertyBinding(attrName, this._parser.parseBinding(expression));
+          current.addPropertyBinding(attrName, this._parseBinding(expression));
         }
       }
     });
+  }
+
+  _parseBinding(input:string):AST {
+    return this._parser.parseBinding(input, this._compilationUnit);
+  }
+
+  _parseAction(input:string):AST {
+    return this._parser.parseAction(input, this._compilationUnit);
   }
 }

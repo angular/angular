@@ -35,16 +35,16 @@ export function main() {
     return new Parser(new Lexer(), reflector);
   }
 
-  function parseAction(text) {
-    return createParser().parseAction(text).ast;
+  function parseAction(text, location = null) {
+    return createParser().parseAction(text, location);
   }
 
-  function parseBinding(text) {
-    return createParser().parseBinding(text).ast;
+  function parseBinding(text, location = null) {
+    return createParser().parseBinding(text, location);
   }
 
-  function parseTemplateBindings(text) {
-    return createParser().parseTemplateBindings(text);
+  function parseTemplateBindings(text, location = null) {
+    return createParser().parseTemplateBindings(text, location);
   }
 
   function expectEval(text, passedInContext = null) {
@@ -340,7 +340,7 @@ export function main() {
 
       it('should pass exceptions', () => {
         expect(() => {
-          createParser().parseAction('a()').ast.eval(td(() => {throw new BaseException("boo to you")}));
+          parseAction('a()').eval(td(() => {throw new BaseException("boo to you")}));
         }).toThrowError('boo to you');
       });
 
@@ -352,20 +352,24 @@ export function main() {
       });
 
       it('should store the source in the result', () => {
-        expect(createParser().parseAction('someExpr').source).toBe('someExpr');
+        expect(parseAction('someExpr').source).toBe('someExpr');
+      });
+
+      it('should store the passed-in location', () => {
+        expect(parseAction('someExpr', 'location').location).toBe('location');
       });
     });
 
     describe("parseBinding", () => {
       describe("formatters", () => {
         it("should parse formatters", () => {
-          var exp = parseBinding("'Foo'|uppercase");
+          var exp = parseBinding("'Foo'|uppercase").ast;
           expect(exp).toBeAnInstanceOf(Formatter);
           expect(exp.name).toEqual("uppercase");
         });
 
         it("should parse formatters with args", () => {
-          var exp = parseBinding("1|increment:2");
+          var exp = parseBinding("1|increment:2").ast;
           expect(exp).toBeAnInstanceOf(Formatter);
           expect(exp.name).toEqual("increment");
           expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
@@ -380,7 +384,11 @@ export function main() {
       });
 
       it('should store the source in the result', () => {
-        expect(createParser().parseBinding('someExpr').source).toBe('someExpr');
+        expect(parseBinding('someExpr').source).toBe('someExpr');
+      });
+
+      it('should store the passed-in location', () => {
+        expect(parseBinding('someExpr', 'location').location).toBe('location');
       });
 
       it('should throw on chain expressions', () => {
@@ -409,7 +417,7 @@ export function main() {
 
       function exprAsts(templateBindings) {
         return ListWrapper.map(templateBindings,
-          (binding) => isPresent(binding.expression) ? binding.expression.ast : null );
+          (binding) => isPresent(binding.expression) ? binding.expression : null );
       }
 
       it('should parse an empty string', () => {
@@ -481,6 +489,11 @@ export function main() {
         var bindings = parseTemplateBindings("a 1,b 2");
         expect(bindings[0].expression.source).toEqual('1');
         expect(bindings[1].expression.source).toEqual('2');
+      });
+
+      it('should store the passed-in location', () => {
+        var bindings = parseTemplateBindings("a 1,b 2", 'location');
+        expect(bindings[0].expression.location).toEqual('location');
       });
     });
   });

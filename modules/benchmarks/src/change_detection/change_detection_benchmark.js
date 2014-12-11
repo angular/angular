@@ -108,16 +108,16 @@ function setUpChangeDetection() {
   var parentRange = parentProto.instantiate(dispatcher, MapWrapper.create());
 
   var astWithSource = [
-    parser.parseBinding('field0'),
-    parser.parseBinding('field1'),
-    parser.parseBinding('field2'),
-    parser.parseBinding('field3'),
-    parser.parseBinding('field4'),
-    parser.parseBinding('field5'),
-    parser.parseBinding('field6'),
-    parser.parseBinding('field7'),
-    parser.parseBinding('field8'),
-    parser.parseBinding('field9')
+    parser.parseBinding('field0', null),
+    parser.parseBinding('field1', null),
+    parser.parseBinding('field2', null),
+    parser.parseBinding('field3', null),
+    parser.parseBinding('field4', null),
+    parser.parseBinding('field5', null),
+    parser.parseBinding('field6', null),
+    parser.parseBinding('field7', null),
+    parser.parseBinding('field8', null),
+    parser.parseBinding('field9', null)
   ];
 
   function proto(i) {

@@ -36,32 +36,34 @@ export class Parser {
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
-  parseAction(input:string):ASTWithSource {
+  parseAction(input:string, location:any):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, tokens, this._reflector, true).parseChain();
-    return new ASTWithSource(ast, input);
+    var ast = new _ParseAST(input, location, tokens, this._reflector, true).parseChain();
+    return new ASTWithSource(ast, input, location);
   }
 
-  parseBinding(input:string):ASTWithSource {
+  parseBinding(input:string, location:any):ASTWithSource {
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, tokens, this._reflector, false).parseChain();
-    return new ASTWithSource(ast, input);
+    var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+    return new ASTWithSource(ast, input, location);
   }
 
-  parseTemplateBindings(input:string):List<TemplateBinding> {
+  parseTemplateBindings(input:string, location:any):List<TemplateBinding> {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, tokens, this._reflector, false).parseTemplateBindings();
+    return new _ParseAST(input, location, tokens, this._reflector, false).parseTemplateBindings();
   }
 }
 
 class _ParseAST {
   input:string;
+  location:any;
   tokens:List<Token>;
   reflector:Reflector;
   parseAction:boolean;
   index:int;
-  constructor(input:string, tokens:List, reflector:Reflector, parseAction:boolean) {
+  constructor(input:string, location:any, tokens:List, reflector:Reflector, parseAction:boolean) {
     this.input = input;
+    this.location = location;
     this.tokens = tokens;
     this.index = 0;
     this.reflector = reflector;
@@ -451,7 +453,7 @@ class _ParseAST {
           var start = this.inputIndex;
           var ast = this.parseExpression();
           var source = this.input.substring(start, this.inputIndex);
-          expression = new ASTWithSource(ast, source);
+          expression = new ASTWithSource(ast, source, this.location);
         }
       }
       ListWrapper.push(bindings, new TemplateBinding(key, name, expression));
@@ -469,6 +471,6 @@ class _ParseAST {
       ? `at column ${this.tokens[index].index + 1} in`
       : `at the end of the expression`;
 
-    throw new BaseException(`Parser Error: ${message} ${location} [${this.input}]`);
+    throw new BaseException(`Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);
   }
 }

@@ -385,8 +385,10 @@ export class FunctionCall extends AST {
 export class ASTWithSource extends AST {
   ast:AST;
   source:string;
-  constructor(ast:AST, source:string) {
+  location:string;
+  constructor(ast:AST, source:string, location:string) {
     this.source = source;
+    this.location = location;
     this.ast = ast;
   }
 
@@ -407,7 +409,7 @@ export class ASTWithSource extends AST {
   }
 
   toString():string {
-    return this.source;
+    return `${this.source} in ${this.location}`;
   }
 }
 

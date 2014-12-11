@@ -20,7 +20,7 @@ import {Record} from 'change_detection/record';
 export function main() {
   function ast(exp:string) {
     var parser = new Parser(new Lexer());
-    return parser.parseBinding(exp);
+    return parser.parseBinding(exp, 'location');
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
@@ -451,7 +451,7 @@ export function main() {
           expect(() => {
             var cd = new ChangeDetector(rr, true);
             cd.detectChanges();
-          }).toThrowError(new RegExp("Expression 'a' has changed after it was checked"));
+          }).toThrowError(new RegExp("Expression 'a in location' has changed after it was checked"));
         });
       });
     });

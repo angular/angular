@@ -125,7 +125,7 @@ export function main() {
         var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
           new ProtoRecordRange());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
-        pv.bindTextNode(0, parser.parseBinding('foo').ast);
+        pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null);
       });
 

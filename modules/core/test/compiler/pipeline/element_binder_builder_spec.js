@@ -35,21 +35,21 @@ export function main() {
             var hasBinding = false;
             if (isPresent(current.element.getAttribute('text-binding'))) {
               MapWrapper.forEach(textNodeBindings, (v,k) => {
-                current.addTextNodeBinding(k, parser.parseBinding(v));
+                current.addTextNodeBinding(k, parser.parseBinding(v, null));
               });
               hasBinding = true;
             }
             if (isPresent(current.element.getAttribute('prop-binding'))) {
               if (isPresent(propertyBindings)) {
                 MapWrapper.forEach(propertyBindings, (v,k) => {
-                  current.addPropertyBinding(k, parser.parseBinding(v));
+                  current.addPropertyBinding(k, parser.parseBinding(v, null));
                 });
               }
               hasBinding = true;
             }
             if (isPresent(current.element.getAttribute('event-binding'))) {
               MapWrapper.forEach(eventBindings, (v,k) => {
-                current.addEventBinding(k, parser.parseAction(v));
+                current.addEventBinding(k, parser.parseAction(v, null));
               });
               hasBinding = true;
             }

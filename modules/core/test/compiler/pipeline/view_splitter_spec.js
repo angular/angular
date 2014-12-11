@@ -13,7 +13,7 @@ export function main() {
   describe('ViewSplitter', () => {
 
     function createPipeline() {
-      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()))]);
+      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()), null)]);
     }
 
     it('should mark root elements as viewRoot', () => {

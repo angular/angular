@@ -10,7 +10,7 @@ import {Lexer} from 'change_detection/parser/lexer';
 export function main() {
   describe('TextInterpolationParser', () => {
     function createPipeline() {
-      return new CompilePipeline([new TextInterpolationParser(new Parser(new Lexer()))]);
+      return new CompilePipeline([new TextInterpolationParser(new Parser(new Lexer()), null)]);
     }
 
     it('should find text interpolation in normal elements', () => {

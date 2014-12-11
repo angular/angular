@@ -62,7 +62,7 @@ export class Compiler {
     for (var i=0; i<directives.length; i++) {
       ListWrapper.push(annotatedDirectives, this._reader.annotatedType(directives[i]));
     }
-    return createDefaultSteps(this._parser, annotatedDirectives);
+    return createDefaultSteps(this._parser, component, annotatedDirectives);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {

@@ -31,8 +31,10 @@ import {CompileControl} from './compile_control';
  */
 export class ViewSplitter extends CompileStep {
   _parser:Parser;
-  constructor(parser:Parser) {
+  _compilationUnit:any;
+  constructor(parser:Parser, compilationUnit:any) {
     this._parser = parser;
+    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -74,7 +76,7 @@ export class ViewSplitter extends CompileStep {
   }
 
   _parseTemplateBindings(templateBindings:string, compileElement:CompileElement) {
-    var bindings = this._parser.parseTemplateBindings(templateBindings);
+    var bindings = this._parser.parseTemplateBindings(templateBindings, this._compilationUnit);
     for (var i=0; i<bindings.length; i++) {
       var binding = bindings[i];
       if (isPresent(binding.name)) {
