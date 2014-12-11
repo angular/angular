@@ -191,12 +191,9 @@ function buildTree(maxDepth, values, curDepth) {
       buildTree(maxDepth, values, curDepth+1));
 }
 
-var BASELINE_TEMPLATE = DOM.createTemplate(`
-    <span> {{}}
-       <template class="ng-binding"></template>
-       <template class="ng-binding"></template>
-    </span>`);
-
+var BASELINE_TEMPLATE = DOM.createTemplate(
+    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+// http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
   element:Element;
@@ -205,13 +202,16 @@ class BaseLineTreeComponent {
   right:BaseLineIf;
   constructor() {
     this.element = DOM.createElement('span');
-    var clone = DOM.clone(BASELINE_TEMPLATE.content.children[0]);
+    var clone = DOM.clone(BASELINE_TEMPLATE.content.firstChild);
     var shadowRoot = this.element.createShadowRoot();
     DOM.appendChild(shadowRoot, clone);
 
-    this.value = new BaseLineInterpolation(clone.childNodes[0]);
-    this.left = new BaseLineIf(clone.children[0]);
-    this.right = new BaseLineIf(clone.children[1]);
+    var child = clone.firstChild;
+    this.value = new BaseLineInterpolation(child);
+    child = DOM.nextSibling(child);
+    this.left = new BaseLineIf(child);
+    child = DOM.nextSibling(child);
+    this.right = new BaseLineIf(child);
   }
   update(value:TreeNode) {
     this.value.update(value.value);

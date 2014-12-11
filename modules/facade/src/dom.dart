@@ -38,6 +38,9 @@ class DOM {
   static Node firstChild(el) {
     return el.firstChild;
   }
+  static Node nextSibling(el) {
+    return el.nextNode;
+  }
   static Element parentElement(el) {
     return el.parent;
   }

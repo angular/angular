@@ -31,6 +31,9 @@ export class DOM {
   static firstChild(el):Node {
     return el.firstChild;
   }
+  static nextSibling(el):Node {
+    return el.nextSibling;
+  }
   static parentElement(el) {
     return el.parentElement;
   }
