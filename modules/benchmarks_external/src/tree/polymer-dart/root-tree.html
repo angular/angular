@@ -1,0 +1,12 @@
+<link rel="import" href="packages/polymer/polymer.html">
+<link rel="import" href="binary-tree.html">
+
+<polymer-element name="root-tree">
+  <template>
+    <button on-click="{{measure}}">measure</button>
+    <template if="{{show}}">
+      <binary-tree data='{{data}}'></binary-tree>
+    </template>
+  </template>
+  <script type="application/dart" src="root-tree.dart"></script>
+</polymer-element>
