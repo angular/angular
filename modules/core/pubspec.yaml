@@ -2,6 +2,7 @@ name: core
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  stack_trace: '1.1.1'
   change_detection:
     path: ../change_detection
   di:

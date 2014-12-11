@@ -1,5 +1,5 @@
-import {List, ListWrapper} from 'facade/collection';
-import {normalizeBlank} from 'facade/lang';
+import {List, ListWrapper, StringMapWrapper} from 'facade/collection';
+import {normalizeBlank, isPresent} from 'facade/lang';
 
 export class VmTurnZone {
   _outerZone;
@@ -7,24 +7,24 @@ export class VmTurnZone {
 
   _onTurnStart:Function;
   _onTurnDone:Function;
+  _onErrorHandler:Function;
 
   _nestedRunCounter:number;
 
-  constructor() {
+  constructor({enableLongStackTrace}) {
     this._nestedRunCounter = 0;
     this._onTurnStart = null;
     this._onTurnDone = null;
+    this._onErrorHandler = null;
 
     this._outerZone = window.zone;
-    this._innerZone = this._outerZone.fork({
-      beforeTask: () => this._beforeTask(),
-      afterTask: () => this._afterTask()
-    });
+    this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
   }
 
-  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask} = {}) {
+  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler} = {}) {
     this._onTurnStart = normalizeBlank(onTurnStart);
     this._onTurnDone = normalizeBlank(onTurnDone);
+    this._onErrorHandler = normalizeBlank(onErrorHandler);
   }
 
   run(fn) {
@@ -35,6 +35,29 @@ export class VmTurnZone {
     return this._outerZone.run(fn);
   }
 
+  _createInnerZone(zone, enableLongStackTrace) {
+    var vmTurnZone = this;
+    var errorHandling;
+
+    if (enableLongStackTrace) {
+      errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone, {
+        onError: function (e) {
+          vmTurnZone._onError(this, e)
+        }
+      });
+    } else {
+      errorHandling = {
+        onError: function (e) {
+          vmTurnZone._onError(this, e)
+        }
+      };
+    }
+
+    return zone.fork(errorHandling).fork({
+      beforeTask: () => {this._beforeTask()},
+      afterTask: () => {this._afterTask()}
+    });
+  }
 
   _beforeTask(){
     this._nestedRunCounter ++;
@@ -47,6 +70,20 @@ export class VmTurnZone {
     this._nestedRunCounter --;
     if(this._nestedRunCounter === 0 && this._onTurnDone) {
       this._onTurnDone();
+    }
+  }
+
+  _onError(zone, e) {
+    if (isPresent(this._onErrorHandler)) {
+      var trace = [normalizeBlank(e.stack)];
+
+      while (zone && zone.constructedAtException) {
+        trace.push(zone.constructedAtException.get());
+        zone = zone.parent;
+      }
+      this._onErrorHandler(e, trace);
+    } else {
+      throw e;
     }
   }
 }

@@ -1,5 +1,5 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
-import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled} from 'facade/lang';
+import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
@@ -11,7 +11,8 @@ import {RecordRange} from 'change_detection/record_range';
 import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {AnnotatedType} from './compiler/annotated_type';
-import {ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/collection';
+import {PromiseWrapper} from 'facade/async';
 import {VmTurnZone} from 'core/zone/vm_turn_zone';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 
@@ -77,24 +78,47 @@ function _injectorBindings(appComponentType) {
       documentDependentBindings(appComponentType));
 }
 
+function _createVmZone(givenReporter:Function){
+  var defaultErrorReporter = (exception, stackTrace) => {
+    var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
+    print(`${exception}\n\n${longStackTrace}`);
+    throw exception;
+  };
+
+  var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
+
+  var zone = new VmTurnZone({enableLongStackTrace: assertionsEnabled()});
+  zone.initCallbacks({onErrorHandler: reporter});
+  return zone;
+}
+
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
-export function bootstrap(appComponentType: Type, bindings=null) {
-  // TODO(rado): prepopulate template cache, so applications with only
-  // index.html and main.js are possible.
+export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapErrorReporter=null) {
+  var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = new VmTurnZone();
-  return zone.run(() => {
+  var zone = _createVmZone(givenBootstrapErrorReporter);
+  zone.run(() => {
+    // TODO(rado): prepopulate template cache, so applications with only
+    // index.html and main.js are possible.
+
     if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
 
     var appInjector = _rootInjector.createChild(_injectorBindings(appComponentType));
     if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
 
-    return appInjector.asyncGet(LifeCycle).
-        then((lc) => {
-          lc.registerWith(zone);
-          lc.tick();
-        }).
-        then((_) => appInjector);
+    PromiseWrapper.then(appInjector.asyncGet(LifeCycle),
+      (lc) => {
+        lc.registerWith(zone);
+        lc.tick(); //the first tick that will bootstrap the app
+
+        bootstrapProcess.complete(appInjector);
+      },
+
+      (err) => {
+        bootstrapProcess.reject(err)
+      });
   });
+
+  return bootstrapProcess.promise;
 }

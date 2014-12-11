@@ -54,7 +54,7 @@ export function main() {
 
   describe('bootstrap factory method', () => {
     it('should throw if no element is found', (done) => {
-      var injectorPromise = bootstrap(HelloRootCmp);
+      var injectorPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
       PromiseWrapper.then(injectorPromise, null, (reason) => {
         expect(reason.message).toContain(
             'The app selector "hello-app" did not match any elements');

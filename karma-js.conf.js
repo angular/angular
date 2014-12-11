@@ -20,6 +20,7 @@ module.exports = function(config) {
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/zone.js/zone.js',
+      'node_modules/zone.js/long-stack-trace-zone.js',
 
       'tools/build/file2modulename.js',
       'test-main.js'

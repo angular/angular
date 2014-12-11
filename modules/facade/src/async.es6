@@ -33,4 +33,8 @@ export class PromiseWrapper {
       reject: reject
     };
   }
+
+  static setTimeout(fn, millis) {
+    window.setTimeout(fn, millis);
+  }
 }

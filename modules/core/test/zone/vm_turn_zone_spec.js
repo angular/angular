@@ -10,7 +10,7 @@ export function main() {
 
     beforeEach(() => {
       log = new Log();
-      zone = new VmTurnZone();
+      zone = new VmTurnZone({enableLongStackTrace: true});
       zone.initCallbacks({
         onTurnStart: log.fn('onTurnStart'),
         onTurnDone: log.fn('onTurnDone')
@@ -73,12 +73,95 @@ export function main() {
     });
 
     describe("exceptions", () => {
-      it('should rethrow exceptions from the body', () => {
+      var trace, exception, saveStackTrace;
+      beforeEach(() => {
+        trace = null;
+        exception = null;
+        saveStackTrace = (e, t) => {
+          exception = e;
+          trace = t;
+        };
+      });
+
+      it('should call the on error callback when it is defined', () => {
+        zone.initCallbacks({onErrorHandler: saveStackTrace});
+
+        zone.run(() => {
+          throw new BaseException('aaa');
+        });
+
+        expect(exception).toBeDefined();
+      });
+
+      it('should rethrow exceptions from the body when no callback defined', () => {
         expect(() => {
           zone.run(() => {
-            throw new BaseException('hello');
+            throw new BaseException('bbb');
           });
-        }).toThrowError('hello');
+        }).toThrowError('bbb');
+      });
+
+      it('should produce long stack traces', (done) => {
+        zone.initCallbacks({onErrorHandler: saveStackTrace});
+
+        var c = PromiseWrapper.completer();
+
+        zone.run(function () {
+          PromiseWrapper.setTimeout(function () {
+            PromiseWrapper.setTimeout(function () {
+              c.complete(null);
+              throw new BaseException('ccc');
+            }, 0);
+          }, 0);
+        });
+
+        c.promise.then((_) => {
+          // then number of traces for JS and Dart is different
+          expect(trace.length).toBeGreaterThan(1);
+          done();
+        });
+      });
+
+      it('should produce long stack traces (when using promises)', (done) => {
+        zone.initCallbacks({onErrorHandler: saveStackTrace});
+
+        var c = PromiseWrapper.completer();
+
+        zone.run(function () {
+          PromiseWrapper.resolve(null).then((_) => {
+            return PromiseWrapper.resolve(null).then((__) => {
+              c.complete(null);
+              throw new BaseException("ddd");
+            });
+          });
+        });
+
+        c.promise.then((_) => {
+          // then number of traces for JS and Dart is different
+          expect(trace.length).toBeGreaterThan(1);
+          done();
+        });
+      });
+
+      it('should disable long stack traces', (done) => {
+        var zone = new VmTurnZone({enableLongStackTrace: false});
+        zone.initCallbacks({onErrorHandler: saveStackTrace});
+
+        var c = PromiseWrapper.completer();
+
+        zone.run(function () {
+          PromiseWrapper.setTimeout(function () {
+            PromiseWrapper.setTimeout(function () {
+              c.complete(null);
+              throw new BaseException('ccc');
+            }, 0);
+          }, 0);
+        });
+
+        c.promise.then((_) => {
+          expect(trace.length).toEqual(1);
+          done();
+        });
       });
     });
   });

@@ -59,6 +59,24 @@ export class StringMapWrapper {
       }
     }
   }
+
+  static merge(m1, m2) {
+    var m = {};
+
+    for (var attr in m1) {
+      if (m1.hasOwnProperty(attr)){
+        m[attr] = m1[attr];
+      }
+    }
+
+    for (var attr in m2) {
+      if (m2.hasOwnProperty(attr)){
+        m[attr] = m2[attr];
+      }
+    }
+
+    return m;
+  }
 }
 
 export class ListWrapper {

@@ -31,6 +31,7 @@ var _HTLM_DEFAULT_SCRIPTS_JS = [
   {src: '/rtts_assert/lib/rtts_assert.js', mimeType: 'text/javascript'},
   {src: '/deps/es6-module-loader-sans-promises.src.js', mimeType: 'text/javascript'},
   {src: '/deps/zone.js', mimeType: 'text/javascript'},
+  {src: '/deps/long-stack-trace-zone.js', mimeType: 'text/javascript'},
   {src: '/deps/system.src.js', mimeType: 'text/javascript'},
   {src: '/deps/extension-register.js', mimeType: 'text/javascript'},
   {src: '/deps/runtime_paths.js', mimeType: 'text/javascript'},
@@ -68,6 +69,7 @@ var CONFIG = {
       "node_modules/systemjs/dist/system.src.js",
       "node_modules/systemjs/lib/extension-register.js",
       "node_modules/zone.js/zone.js",
+      "node_modules/zone.js/long-stack-trace-zone.js",
       "tools/build/runtime_paths.js",
       "node_modules/angular/angular.js"
     ]

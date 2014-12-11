@@ -215,3 +215,7 @@ export function assertionsEnabled() {
     return true;
   }
 }
+
+export function print(obj) {
+  console.log(obj);
+}
