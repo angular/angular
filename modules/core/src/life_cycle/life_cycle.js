@@ -13,7 +13,6 @@ export class LifeCycle {
     zone.initCallbacks({
       onTurnDone: () => this.tick()
     });
-    this.tick();
   }
 
   tick() {

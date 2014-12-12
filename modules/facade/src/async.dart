@@ -32,5 +32,5 @@ class _Completer {
 
   get promise => c.future;
   get complete => c.complete;
-
+  get reject => c.completeError;
 }

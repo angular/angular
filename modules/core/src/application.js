@@ -91,7 +91,10 @@ export function bootstrap(appComponentType: Type, bindings=null) {
     if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
 
     return appInjector.asyncGet(LifeCycle).
-        then((lc) => lc.registerWith(zone)).
+        then((lc) => {
+          lc.registerWith(zone);
+          lc.tick();
+        }).
         then((_) => appInjector);
   });
 }
