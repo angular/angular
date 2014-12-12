@@ -275,11 +275,12 @@ export class ProtoView {
     }
     var viewNodes;
     if (this.isTemplateElement) {
-      var childNodes = rootElementClone.content.childNodes;
-      // Note: An explicit loop is the fastes way to convert a DOM array into a JS array!
-      viewNodes = ListWrapper.createFixedSize(childNodes.length);
-      for (var i=0; i<childNodes.length; i++) {
-        viewNodes[i] = childNodes[i];
+      var childNode = DOM.firstChild(rootElementClone.content);
+      viewNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in ProtoView
+      // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
+      while(childNode != null) {
+        ListWrapper.push(viewNodes, childNode);
+        childNode = DOM.nextSibling(childNode);
       }
     } else {
       viewNodes = [rootElementClone];
@@ -338,9 +339,12 @@ export class ProtoView {
       // textNodes
       var textNodeIndices = binder.textNodeIndices;
       if (isPresent(textNodeIndices)) {
-        var childNodes = DOM.templateAwareRoot(element).childNodes;
-        for (var j = 0; j < textNodeIndices.length; j++) {
-          ListWrapper.push(textNodes, childNodes[textNodeIndices[j]]);
+        var childNode = DOM.firstChild(DOM.templateAwareRoot(element));
+        for (var j = 0, k = 0; j < textNodeIndices.length; j++) {
+          for(var index = textNodeIndices[j]; k < index; k++) {
+            childNode = DOM.nextSibling(childNode);
+          }
+          ListWrapper.push(textNodes, childNode);
         }
       }
 
