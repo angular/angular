@@ -97,6 +97,7 @@ class ListWrapper {
   static void insert(List l, int index, value) { l.insert(index, value); }
   static void removeAt(List l, int index) { l.removeAt(index); }
   static void clear(List l) { l.clear(); }
+  static String join(List l, String s) => l.join(s);
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;

@@ -25,7 +25,8 @@
     "systemjs": "^0.9.1",
     "through2": "^0.6.1",
     "traceur": "0.0.74",
-    "which": "~1"
+    "which": "~1",
+    "zone.js": "0.3.0"
   },
   "devDependencies": {
     "bower": "^1.3.12",
