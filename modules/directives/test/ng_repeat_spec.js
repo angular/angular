@@ -173,25 +173,24 @@ export function main() {
       });
     });
 
-/*
-TODO(rado): enable after compiler is fixed.
   it('should repeat over nested arrays', (done) => {
     compileWithTemplate(
-        '<ul><li template="ng-repeat #item in items">{{item.toString()}}' +
-          '<li template="ng-repeat #subitem in item">' +
+        '<div><div template="ng-repeat #item in items">' +
+          '<div template="ng-repeat #subitem in item">' +
           '{{subitem}};' +
-        '</li>X</li></ul>'
+        '</div>|</div></div>'
     ).then((pv) => {
       createView(pv);
       component.items = [['a', 'b'], ['c','d']];
       cd.detectChanges();
       cd.detectChanges();
       cd.detectChanges();
-      expect(DOM.getText(view.nodes[0])).toEqual('');
+      expect(DOM.getText(view.nodes[0])).toEqual('a;b;|c;d;|');
       done();
     });
   });
 
+/*
 TODO(rado): enable after compiler is fixed.
   it('should display indices correctly', (done) => {
     var INDEX_TEMPLATE = '<div><copy-me template="ng-repeat #item in items index #i">{{index.toString()}};</copy-me></div>';
