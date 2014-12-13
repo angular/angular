@@ -20,7 +20,7 @@ module.exports = function(gulp, plugins, config) {
       }));
       var analyzeFile = ['library _analyzer;'];
       srcFiles.concat(testFiles).forEach(function(fileName, index) {
-        if (fileName !== tempFile) {
+        if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
           analyzeFile.push('import "./'+fileName+'" as mod'+index+';');
         }
       });
