@@ -339,7 +339,8 @@ gulp.task('docs/serve', function() {
 // orchestrated targets
 gulp.task('build.dart', function() {
   return runSequence(
-    ['build/transpile.dart', 'build/html.dart', 'build/pubspec.dart'],
+    ['build/transpile.dart', 'build/html.dart'],
+    'build/pubspec.dart',
     'build/benchpress.dart',
     'build/analyze.dart'
   );
