@@ -109,6 +109,8 @@ class NumberWrapper {
   static get NaN => double.NAN;
 
   static bool isNaN(num value) => value.isNaN;
+
+  static bool isInteger(value) => value is int;
 }
 
 class RegExpWrapper {
@@ -159,6 +161,20 @@ dynamic getMapKey(value) {
   return value.isNaN ? _NAN_KEY : value;
 }
 
-normalizeBlank(obj) {
+dynamic normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
+}
+
+bool isJsObject(o) {
+  return false;
+}
+
+
+assertionsEnabled() {
+  try {
+    assert(false);
+    return false;
+  } catch (e) {
+    return true;
+  }
 }

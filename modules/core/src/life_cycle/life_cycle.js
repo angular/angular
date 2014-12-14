@@ -1,18 +1,21 @@
 import {FIELD} from 'facade/lang';
-import {OnChangeDispatcher} from '../compiler/view';
 import {ChangeDetector} from 'change_detection/change_detector';
+import {VmTurnZone} from 'core/zone/vm_turn_zone';
 
 export class LifeCycle {
-
   _changeDetector:ChangeDetector;
-  _onChangeDispatcher:OnChangeDispatcher;
-  constructor() {
-    this._changeDetector = null;
-    this._onChangeDispatcher = null;
+
+  constructor(changeDetector:ChangeDetector) {
+    this._changeDetector = changeDetector;
   }
 
-  digest() {
-    _changeDetector.detectChanges();
-    _onChangeDispatcher.done();
+  registerWith(zone:VmTurnZone) {
+    zone.initCallbacks({
+      onTurnDone: () => this.tick()
+    });
+  }
+
+  tick() {
+    this._changeDetector.detectChanges();
   }
 }

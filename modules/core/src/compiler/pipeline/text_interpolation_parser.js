@@ -47,8 +47,10 @@ export function interpolationToExpression(value:string):string {
  */
 export class TextInterpolationParser extends CompileStep {
   _parser:Parser;
-  constructor(parser:Parser) {
+  _compilationUnit:any;
+  constructor(parser:Parser, compilationUnit:any) {
     this._parser = parser;
+    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -66,7 +68,7 @@ export class TextInterpolationParser extends CompileStep {
     var expression = interpolationToExpression(node.nodeValue);
     if (isPresent(expression)) {
       DOM.setText(node, ' ');
-      pipelineElement.addTextNodeBinding(nodeIndex, this._parser.parseBinding(expression));
+      pipelineElement.addTextNodeBinding(nodeIndex, this._parser.parseBinding(expression, this._compilationUnit));
     }
   }
 }

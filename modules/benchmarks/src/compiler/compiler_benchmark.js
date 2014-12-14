@@ -1,7 +1,7 @@
-import {benchmark, benchmarkStep} from '../benchpress';
+import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 
 import {DOM, document} from 'facade/dom';
-import {isBlank} from 'facade/lang';
+import {isBlank, Type} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 import {AnnotatedType} from 'core/compiler/annotated_type';
 
@@ -9,7 +9,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ProtoRecordRange} from 'change_detection/record_range';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
 import {Component} from 'core/annotations/annotations';
@@ -61,7 +61,7 @@ function setup() {
   });
 
   reflector.registerGetters({
-    "inter0": (a) => a.inter0, "inter1": (a) => a.inter1, 
+    "inter0": (a) => a.inter0, "inter1": (a) => a.inter1,
     "inter2": (a) => a.inter2, "inter3": (a) => a.inter3, "inter4": (a) => a.inter4,
 
     "value0": (a) => a.value0, "value1": (a) => a.value1,
@@ -81,7 +81,7 @@ function setup() {
   });
 
   var reader = new CachingDirectiveMetadataReader();
-  compiler = new Compiler(null, reader, new Parser(new Lexer()));
+  compiler = new Compiler(null, reader, new Parser(new Lexer()), new CompilerCache());
   annotatedComponent = reader.annotatedType(BenchmarkComponent);
 }
 
@@ -94,7 +94,7 @@ export function main() {
     benchmarkStep('run', function() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = DOM.clone(template);
-      compiler.compileWithCache(null, annotatedComponent, cloned);
+      compiler.compileAllLoaded(null, annotatedComponent, cloned);
     });
   });
 
@@ -104,14 +104,14 @@ export function main() {
     benchmarkStep('run', function() {
       // Need to clone every time as the compiler might modify the template!
       var cloned = DOM.clone(template);
-      compiler.compileWithCache(null, annotatedComponent, cloned);
+      compiler.compileAllLoaded(null, annotatedComponent, cloned);
     });
   });
 
   benchmark(`instantiate 5*${COUNT} element with bindings`, function() {
     var template = loadTemplate('templateWithBindings', COUNT);
     var protoView = compiler.compileWithCache(null, annotatedComponent, template);
-    var rootRecordRange = new ProtoRecordRange().instantiate(null, new Object());
+    var rootRecordRange = new ProtoRecordRange().instantiate(null, null);
 
     benchmarkStep('run', function() {
       var view = protoView.instantiate(null, null, null);

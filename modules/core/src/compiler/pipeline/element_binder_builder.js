@@ -1,5 +1,5 @@
 import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/lang';
-import {Element} from 'facade/dom';
+import {Element, DOM} from 'facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection';
 
 import {reflector} from 'reflection/reflection';
@@ -68,19 +68,21 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindTextNodes(protoView, compileElement) {
     MapWrapper.forEach(compileElement.textNodeBindings, (expression, indexInParent) => {
-      protoView.bindTextNode(indexInParent, expression.ast);
+      protoView.bindTextNode(indexInParent, expression);
     });
   }
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      protoView.bindElementProperty(property,  expression.ast);
+      if (DOM.hasProperty(compileElement.element, property)) {
+        protoView.bindElementProperty(expression.ast, property, reflector.setter(property));
+      }
     });
   }
 
   _bindEvents(protoView, compileElement) {
     MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
-      protoView.bindEvent(eventName,  expression.ast);
+      protoView.bindEvent(eventName,  expression);
     });
   }
 
@@ -116,11 +118,16 @@ export class ElementBinderBuilder extends CompileStep {
           throw new BaseException('No element binding found for property '+elProp
             +' which is required by directive '+stringify(typeWithAnnotation.type));
         }
+        var len = dirProp.length;
+        var dirBindingName = dirProp;
+        var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
+        if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
         protoView.bindDirectiveProperty(
           directiveIndex++,
-          expression.ast,
-          dirProp,
-          reflector.setter(dirProp)
+          expression,
+          dirBindingName,
+          reflector.setter(dirBindingName),
+          isContentWatch
         );
       });
     });

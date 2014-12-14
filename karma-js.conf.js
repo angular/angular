@@ -1,6 +1,6 @@
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
-var file2moduleName = require('./file2modulename');
+var file2moduleName = require('./tools/build/file2modulename');
 
 module.exports = function(config) {
   config.set({
@@ -19,8 +19,9 @@ module.exports = function(config) {
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
+      'node_modules/zone.js/zone.js',
 
-      'file2modulename.js',
+      'tools/build/file2modulename.js',
       'test-main.js'
     ],
 

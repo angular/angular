@@ -1,4 +1,4 @@
-import {benchmark, benchmarkStep} from '../benchpress';
+import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 
 import {SelectorMatcher} from "core/compiler/selector";
 import {CssSelector} from "core/compiler/selector";

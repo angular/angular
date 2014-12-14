@@ -385,7 +385,6 @@ class _Scanner {
 
     var last:string = input.substring(marker, this.index);
     this.advance();  // Skip terminating quote.
-    var str:string = input.substring(start, this.index);
 
     // Compute the unescaped string value.
     var unescaped:string = last;

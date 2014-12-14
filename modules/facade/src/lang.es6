@@ -136,6 +136,10 @@ export class NumberWrapper {
   static get NaN():number {
     return NaN;
   }
+
+  static isInteger(value):boolean {
+    return Number.isInteger(value);
+  }
 }
 
 export function int() {};
@@ -197,4 +201,17 @@ export function getMapKey(value) {
 
 export function normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
+}
+
+export function isJsObject(o):boolean {
+  return o !== null && (typeof o === "function" || typeof o === "object");
+}
+
+export function assertionsEnabled() {
+  try {
+    var x:int = "string";
+    return false;
+  } catch (e) {
+    return true;
+  }
 }

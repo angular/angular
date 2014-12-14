@@ -34,7 +34,7 @@ export function main() {
       return new CompilePipeline([new MockStep((parent, current, control) => {
           if (isPresent(propertyBindings)) {
             StringMapWrapper.forEach(propertyBindings, (v, k) => {
-              current.addPropertyBinding(k, parser.parseBinding(v));
+              current.addPropertyBinding(k, parser.parseBinding(v, null));
             });
           }
           if (isPresent(variableBindings)) {

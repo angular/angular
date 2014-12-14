@@ -1,10 +1,8 @@
 # Don’t commit the following directories created by pub.
-build/
-benchpress-build/
+/dist/
 packages/
 .buildlog
 node_modules
-packages
 .pub
 .DS_STORE
 
@@ -19,3 +17,7 @@ packages
 pubspec.lock
 .c9
 .idea/
+*.swo
+
+
+/docs/bower_components/

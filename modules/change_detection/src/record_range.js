@@ -1,6 +1,7 @@
 import {
   ProtoRecord,
   Record,
+  RECORD_FLAG_COLLECTION,
   RECORD_FLAG_IMPLICIT_RECEIVER,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
@@ -10,55 +11,65 @@ import {
   RECORD_TYPE_PROPERTY
 } from './record';
 
-import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException} from 'facade/lang';
+import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException,
+  NumberWrapper} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
-import {AST, AccessMember, ImplicitReceiver, AstVisitor, LiteralPrimitive,
-  Binary, Formatter, MethodCall, FunctionCall, PrefixNot, Conditional,
-  LiteralArray, LiteralMap, KeyedAccess, Chain, Assignment} from './parser/ast';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
+import {
+  AccessMember,
+  Assignment,
+  AST,
+  AstVisitor,
+  Binary,
+  Chain,
+  Collection,
+  Conditional,
+  Formatter,
+  FunctionCall,
+  ImplicitReceiver,
+  KeyedAccess,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  MethodCall,
+  PrefixNot
+} from './parser/ast';
 
 export class ProtoRecordRange {
-  headRecord:ProtoRecord;
-  tailRecord:ProtoRecord;
+  recordCreator: ProtoRecordCreator;
   constructor() {
-    this.headRecord = null;
-    this.tailRecord = null;
+    this.recordCreator = null;
   }
 
   /**
    * Parses [ast] into [ProtoRecord]s and adds them to [ProtoRecordRange].
    *
-   * @param ast The expression to watch
-   * @param memento an opaque object which will be passed to WatchGroupDispatcher on
+   * @param astWithSource The expression to watch
+   * @param expressionMemento an opaque object which will be passed to ChangeDispatcher on
    *        detecting a change.
-   * @param shallow Should collections be shallow watched
+   * @param groupMemento
+   * @param content Whether to watch collection content (true) or reference (false, default)
    */
   addRecordsFromAST(ast:AST,
-        memento,
-        shallow = false)
+        expressionMemento,
+        groupMemento,
+        content:boolean = false)
   {
-    var creator = new ProtoRecordCreator(this);
-    creator.createRecordsFromAST(ast, memento);
-    this._addRecords(creator.headRecord, creator.tailRecord);
-  }
-
-  // try to encapsulate this behavior in some class (e.g., LinkedList)
-  // so we can say: group.appendList(creator.list);
-  _addRecords(head:ProtoRecord, tail:ProtoRecord) {
-    if (isBlank(this.headRecord)) {
-      this.headRecord = head;
-    } else {
-      this.tailRecord.next = head;
-      head.prev = this.tailRecord;
+    if (this.recordCreator === null) {
+      this.recordCreator = new ProtoRecordCreator(this);
     }
-    this.tailRecord = tail;
+
+    if (content) {
+      ast = new Collection(ast);
+    }
+    this.recordCreator.createRecordsFromAST(ast, expressionMemento, groupMemento);
   }
 
-  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // TODO(rado): the type annotation should be dispatcher:ChangeDispatcher.
   // but @Implements is not ready yet.
   instantiate(dispatcher, formatters:Map):RecordRange {
     var recordRange:RecordRange = new RecordRange(this, dispatcher);
-    if (this.headRecord !== null) {
+    if (this.recordCreator !== null) {
       this._createRecords(recordRange, formatters);
       this._setDestination();
     }
@@ -66,7 +77,7 @@ export class ProtoRecordRange {
   }
 
   _createRecords(recordRange:RecordRange, formatters:Map) {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var proto = this.recordCreator.headRecord; proto != null; proto = proto.next) {
       var record = new Record(recordRange, proto, formatters);
       proto.recordInConstruction = record;
       recordRange.addRecord(record);
@@ -74,9 +85,11 @@ export class ProtoRecordRange {
   }
 
   _setDestination() {
-    for (var proto = this.headRecord; proto != null; proto = proto.next) {
+    for (var proto = this.recordCreator.headRecord; proto != null; proto = proto.next) {
       if (proto.dest instanceof Destination) {
         proto.recordInConstruction.dest = proto.dest.record.recordInConstruction;
+      } else {
+        proto.recordInConstruction.dest = proto.dest;
       }
       proto.recordInConstruction = null;
     }
@@ -85,11 +98,11 @@ export class ProtoRecordRange {
 
 export class RecordRange {
   protoRecordRange:ProtoRecordRange;
-  dispatcher:any; //WatchGroupDispatcher
+  dispatcher:any; //ChangeDispatcher
   headRecord:Record;
   tailRecord:Record;
   disabled:boolean;
-  // TODO(rado): the type annotation should be dispatcher:WatchGroupDispatcher.
+  // TODO(rado): the type annotation should be dispatcher:ChangeDispatcher.
   // but @Implements is not ready yet.
   constructor(protoRecordRange:ProtoRecordRange, dispatcher) {
     this.protoRecordRange = protoRecordRange;
@@ -108,7 +121,7 @@ export class RecordRange {
     var lastRecord = this.tailRecord.prev;
 
     _link(lastRecord, record);
-    if (!lastRecord.disabled) {
+    if (!lastRecord.isDisabled()) {
       _linkEnabled(lastRecord, record);
     }
     _link(record, this.tailRecord);
@@ -116,8 +129,8 @@ export class RecordRange {
 
   addRange(child:RecordRange) {
     var lastRecord = this.tailRecord.prev;
-    var prevEnabledRecord = RecordRange._prevEnabled(this.tailRecord);
-    var nextEnabledRerord = RecordRange._nextEnabled(this.tailRecord);
+    var prevEnabledRecord = this.tailRecord.findPrevEnabled();
+    var nextEnabledRerord = this.tailRecord.findNextEnabled();
 
     var firstEnabledChildRecord = child.findFirstEnabledRecord();
     var lastEnabledChildRecord = child.findLastEnabledRecord();
@@ -136,14 +149,13 @@ export class RecordRange {
 
   remove() {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
-    var lastEnabledChildRecord = this.findLastEnabledRecord();
-
     var next = this.tailRecord.next;
     var prev = this.headRecord.prev;
 
     _link(prev, next);
 
     if (isPresent(firstEnabledChildRecord)) {
+      var lastEnabledChildRecord = this.findLastEnabledRecord();
       var nextEnabled = lastEnabledChildRecord.nextEnabled;
       var prevEnabled = firstEnabledChildRecord.prevEnabled;
       if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
@@ -151,47 +163,23 @@ export class RecordRange {
     }
   }
 
-  disableRecord(record:Record) {
-    var prevEnabled = record.prevEnabled;
-    var nextEnabled = record.nextEnabled;
-
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
-
-    record.disabled = true;
-  }
-
-  enableRecord(record:Record) {
-    if (!record.disabled) return;
-
-    var prevEnabled = RecordRange._prevEnabled(record);
-    var nextEnabled = RecordRange._nextEnabled(record);
-
-    record.prevEnabled = prevEnabled;
-    record.nextEnabled = nextEnabled;
-
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = record;
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = record;
-
-    record.disabled = false;
-  }
-
   disable() {
     var firstEnabledChildRecord = this.findFirstEnabledRecord();
-    var lastEnabledChildRecord = this.findLastEnabledRecord();
-
-    var nextEnabled = lastEnabledChildRecord.nextEnabled;
-    var prevEnabled = firstEnabledChildRecord.prevEnabled;
-
-    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
-    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(firstEnabledChildRecord)) {
+      // There could be a last enabled record only if first enabled exists
+      var lastEnabledChildRecord = this.findLastEnabledRecord();
+      var nextEnabled = lastEnabledChildRecord.nextEnabled;
+      var prevEnabled = firstEnabledChildRecord.prevEnabled;
+      if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+      if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    }
 
     this.disabled = true;
   }
 
   enable() {
-    var prevEnabledRecord = RecordRange._prevEnabled(this.headRecord);
-    var nextEnabledRecord = RecordRange._nextEnabled(this.tailRecord);
+    var prevEnabledRecord = this.headRecord.findPrevEnabled();
+    var nextEnabledRecord = this.tailRecord.findNextEnabled();
 
     var firstEnabledthisRecord = this.findFirstEnabledRecord();
     var lastEnabledthisRecord = this.findLastEnabledRecord();
@@ -221,8 +209,8 @@ export class RecordRange {
    */
   findFirstEnabledRecord() {
     var record = this.headRecord.next;
-    while (record !== this.tailRecord && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (record !== this.tailRecord && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.tailRecord.next;
       } else {
         record = record.next;
@@ -245,52 +233,14 @@ export class RecordRange {
    */
   findLastEnabledRecord() {
     var record = this.tailRecord.prev;
-    while (record !== this.headRecord && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
+    while (record !== this.headRecord && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
         record = record.recordRange.headRecord.prev;
       } else {
         record = record.prev;
       }
     }
     return record === this.headRecord ? null : record;
-  }
-
-  /**
-   * Returns the next enabled record. This search is not limited to the current range.
-   *
-   * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
-   *
-   * The function skips disabled sub ranges.
-   */
-  static _nextEnabled(record:Record) {
-    record = record.next;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
-        record = record.recordRange.tailRecord.next;
-      } else {
-        record = record.next;
-      }
-    }
-    return record;
-  }
-
-  /**
-   * Returns the prev enabled record. This search is not limited to the current range.
-   *
-   * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
-   *
-   * The function skips disabled sub ranges.
-   */
-  static _prevEnabled(record:Record) {
-    record = record.prev;
-    while (isPresent(record) && record.disabled) {
-      if (record.isMarkerRecord && record.recordRange.disabled) {
-        record = record.recordRange.headRecord.prev;
-      } else {
-        record = record.prev;
-      }
-    }
-    return record;
   }
 
   /**
@@ -305,7 +255,7 @@ export class RecordRange {
          record != null;
          record = record.next) {
 
-      if (record.isImplicitReceiver) {
+      if (record.isImplicitReceiver()) {
         this._setContextForRecord(context, record);
       }
     }
@@ -346,8 +296,7 @@ function _linkEnabled(a:Record, b:Record) {
   b.prevEnabled = a;
 }
 
-export class WatchGroupDispatcher {
-  // The record holds the previous value at the time of the call
+export class ChangeDispatcher {
   onRecordChange(record:Record, context) {}
 }
 
@@ -367,10 +316,14 @@ class ProtoRecordCreator {
   protoRecordRange:ProtoRecordRange;
   headRecord:ProtoRecord;
   tailRecord:ProtoRecord;
+  groupMemento:any;
+  expressionAsString:string;
+
   constructor(protoRecordRange) {
     this.protoRecordRange = protoRecordRange;
     this.headRecord = null;
     this.tailRecord = null;
+    this.expressionAsString = null;
   }
 
   visitImplicitReceiver(ast:ImplicitReceiver, args) {
@@ -435,6 +388,12 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
+  visitCollection(ast: Collection, dest) {
+    var record = this.construct(RECORD_FLAG_COLLECTION, null, null, null, dest);
+    ast.value.visit(this, new Destination(record, null));
+    this.add(record);
+  }
+
   visitConditional(ast:Conditional, dest) {
     var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _cond, 3, null, dest);
     ast.condition.visit(this, new Destination(record, 0));
@@ -443,7 +402,12 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
-  visitKeyedAccess(ast:KeyedAccess, dest) {}
+  visitKeyedAccess(ast:KeyedAccess, dest) {
+    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, _keyedAccess, 1, null, dest);
+    ast.obj.visit(this, new Destination(record, null));
+    ast.key.visit(this, new Destination(record, 0));
+    this.add(record);
+  }
 
   visitLiteralArray(ast:LiteralArray, dest) {
     var length = ast.expressions.length;
@@ -469,12 +433,15 @@ class ProtoRecordCreator {
 
   visitTemplateBindings(ast, dest) {this._unsupported();}
 
-  createRecordsFromAST(ast:AST, memento){
-    ast.visit(this, memento);
+  createRecordsFromAST(ast:AST, expressionMemento:any, groupMemento:any){
+    this.groupMemento = groupMemento;
+    this.expressionAsString = ast.toString();
+    ast.visit(this, expressionMemento);
   }
 
   construct(recordType, funcOrValue, arity, name, dest) {
-    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity, name, dest);
+    return new ProtoRecord(this.protoRecordRange, recordType, funcOrValue, arity,
+        name, dest, this.groupMemento, this.expressionAsString);
   }
 
   add(protoRecord:ProtoRecord) {
@@ -482,7 +449,6 @@ class ProtoRecordCreator {
       this.headRecord = this.tailRecord = protoRecord;
     } else {
       this.tailRecord.next = protoRecord;
-      protoRecord.prev = this.tailRecord;
       this.tailRecord = protoRecord;
     }
   }
@@ -527,6 +493,7 @@ function _operation_greater_or_equals_then(left, right) {return left >= right;}
 function _operation_logical_and(left, right)            {return left && right;}
 function _operation_logical_or(left, right)             {return left || right;}
 function _cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
+
 function _arrayFn(length:int) {
   switch (length) {
     case 0: return () => [];
@@ -542,6 +509,7 @@ function _arrayFn(length:int) {
     default: throw new BaseException(`Does not support literal arrays with more than 9 elements`);
   }
 }
+
 function _mapFn(keys:List, length:int) {
   function buildMap(values) {
     var res = MapWrapper.create();
@@ -571,4 +539,9 @@ function _mapGetter(key) {
   return function(map) {
     return MapWrapper.get(map, key);
   }
+}
+
+function _keyedAccess(obj, args) {
+  var key = args[0];
+  return obj instanceof Map ? MapWrapper.get(obj, key):obj[key];
 }

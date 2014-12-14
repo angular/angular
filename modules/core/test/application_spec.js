@@ -75,6 +75,14 @@ export function main() {
       });
     });
 
+    it('should provide the application component in the injector', (done) => {
+      var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
+      injectorPromise.then((injector) => {
+        expect(injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
+        done();
+      });
+    });
+
     it('should display hello world', (done) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
       injectorPromise.then((injector) => {

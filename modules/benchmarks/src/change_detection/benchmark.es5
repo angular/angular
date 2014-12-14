@@ -1,3 +1,0 @@
-System.import('benchmarks/change_detection/change_detection_benchmark').then(function (bm) {
-  window.benchmarkSteps.push({name: 'ChangeDetection', fn: bm.run});
-}, console.log.bind(console));

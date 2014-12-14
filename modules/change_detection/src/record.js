@@ -1,6 +1,8 @@
 import {ProtoRecordRange, RecordRange} from './record_range';
 import {FIELD, isPresent, isBlank, int, StringWrapper, FunctionWrapper, BaseException} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
+import {ArrayChanges} from './array_changes';
+import {KeyValueChanges} from './keyvalue_changes';
 
 var _fresh = new Object();
 
@@ -10,15 +12,15 @@ export const RECORD_TYPE_INVOKE_CLOSURE = 0x0001;
 export const RECORD_TYPE_INVOKE_FORMATTER = 0x0002;
 export const RECORD_TYPE_INVOKE_METHOD = 0x0003;
 export const RECORD_TYPE_INVOKE_PURE_FUNCTION = 0x0004;
-export const RECORD_TYPE_LIST = 0x0005;
-export const RECORD_TYPE_MAP = 0x0006;
-export const RECORD_TYPE_MARKER = 0x0007;
+const RECORD_TYPE_ARRAY = 0x0005;
+const RECORD_TYPE_KEY_VALUE = 0x0006;
+const RECORD_TYPE_MARKER = 0x0007;
 export const RECORD_TYPE_PROPERTY = 0x0008;
+const RECORD_TYPE_NULL= 0x0009;
 
 const RECORD_FLAG_DISABLED = 0x0100;
 export const RECORD_FLAG_IMPLICIT_RECEIVER = 0x0200;
-
-
+export const RECORD_FLAG_COLLECTION = 0x0400;
 
 /**
  * For now we are dropping expression coalescence. We can always add it later, but
@@ -31,17 +33,22 @@ export class ProtoRecord {
   funcOrValue:any;
   arity:int;
   name:string;
-  dest;
+  dest:any;
+  groupMemento:any;
+  expressionAsString:string;
 
   next:ProtoRecord;
-  prev:ProtoRecord;
+
   recordInConstruction:Record;
+
   constructor(recordRange:ProtoRecordRange,
               mode:int,
               funcOrValue,
               arity:int,
               name:string,
-              dest) {
+              dest,
+              groupMemento,
+              expressionAsString:string) {
 
     this.recordRange = recordRange;
     this._mode = mode;
@@ -49,9 +56,10 @@ export class ProtoRecord {
     this.arity = arity;
     this.name = name;
     this.dest = dest;
+    this.groupMemento = groupMemento;
+    this.expressionAsString = expressionAsString;
 
     this.next = null;
-    this.prev = null;
     // The concrete Record instantiated from this ProtoRecord
     this.recordInConstruction = null;
   }
@@ -98,7 +106,7 @@ export class Record {
 
   // Opaque data which will be the target of notification.
   // If the object is instance of Record, then it it is directly processed
-  // Otherwise it is the context used by  WatchGroupDispatcher.
+  // Otherwise it is the context used by ChangeDispatcher.
   dest;
 
   constructor(recordRange:RecordRange, protoRecord:ProtoRecord, formatters:Map) {
@@ -112,7 +120,6 @@ export class Record {
     this.dest = null;
 
     this.previousValue = null;
-    this.currentValue = _fresh;
 
     this.context = null;
     this.funcOrValue = null;
@@ -125,7 +132,12 @@ export class Record {
 
     this._mode = protoRecord._mode;
 
-    var type = this.type;
+    // Return early for collections, further init delayed until updateContext()
+    if (this.isCollection()) return;
+
+    this.currentValue = _fresh;
+
+    var type = this.getType();
 
     if (type === RECORD_TYPE_CONST) {
       this.funcOrValue = protoRecord.funcOrValue;
@@ -150,15 +162,25 @@ export class Record {
     }
   }
 
-  get type() {
+  // getters & setters perform much worse on some browsers
+  // see http://jsperf.com/vicb-getter-vs-function
+  getType():int {
     return this._mode & RECORD_TYPE_MASK;
   }
 
-  get disabled() {
+  setType(value:int) {
+    this._mode = (this._mode & ~RECORD_TYPE_MASK) | value;
+  }
+
+  isDisabled():boolean {
     return (this._mode & RECORD_FLAG_DISABLED) === RECORD_FLAG_DISABLED;
   }
 
-  set disabled(value) {
+  isEnabled():boolean {
+    return !this.isDisabled();
+  }
+
+  _setDisabled(value:boolean) {
     if (value) {
       this._mode |= RECORD_FLAG_DISABLED;
     } else {
@@ -166,41 +188,93 @@ export class Record {
     }
   }
 
-  get isImplicitReceiver() {
+  enable() {
+    if (this.isEnabled()) return;
+
+    var prevEnabled = this.findPrevEnabled();
+    var nextEnabled = this.findNextEnabled();
+
+    this.prevEnabled = prevEnabled;
+    this.nextEnabled = nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = this;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = this;
+
+    this._setDisabled(false);
+  }
+
+  disable() {
+    var prevEnabled = this.prevEnabled;
+    var nextEnabled = this.nextEnabled;
+
+    if (isPresent(prevEnabled)) prevEnabled.nextEnabled = nextEnabled;
+    if (isPresent(nextEnabled)) nextEnabled.prevEnabled = prevEnabled;
+
+    this._setDisabled(true);
+  }
+
+  isImplicitReceiver():boolean {
     return (this._mode & RECORD_FLAG_IMPLICIT_RECEIVER) === RECORD_FLAG_IMPLICIT_RECEIVER;
   }
 
-  static createMarker(rr:RecordRange) {
+  isCollection():boolean {
+    return (this._mode & RECORD_FLAG_COLLECTION) === RECORD_FLAG_COLLECTION;
+  }
+
+  static createMarker(rr:RecordRange):Record {
     return new Record(rr, null, null);
   }
 
   check():boolean {
+    if (this.isCollection()) {
+      return this._checkCollection();
+    } else {
+      return this._checkSingleRecord();
+    }
+  }
+
+  _checkSingleRecord():boolean {
     this.previousValue = this.currentValue;
     this.currentValue = this._calculateNewValue();
-
     if (isSame(this.previousValue, this.currentValue)) return false;
-
     this._updateDestination();
-
     return true;
   }
 
   _updateDestination() {
-    // todo(vicb): compute this info only once in ctor ? (add a bit in mode not to grow the mem req)
     if (this.dest instanceof Record) {
       if (isPresent(this.protoRecord.dest.position)) {
         this.dest.updateArg(this.currentValue, this.protoRecord.dest.position);
       } else {
         this.dest.updateContext(this.currentValue);
       }
-    } else {
-      this.recordRange.dispatcher.onRecordChange(this, this.protoRecord.dest);
+    }
+  }
+
+  // return whether the content has changed
+  _checkCollection():boolean {
+    switch(this.getType()) {
+      case RECORD_TYPE_KEY_VALUE:
+        var kvChangeDetector:KeyValueChanges = this.currentValue;
+        return kvChangeDetector.check(this.context);
+
+      case RECORD_TYPE_ARRAY:
+        var arrayChangeDetector:ArrayChanges = this.currentValue;
+        return arrayChangeDetector.check(this.context);
+
+      case RECORD_TYPE_NULL:
+        // no need to check the content again unless the context changes
+        this.disable();
+        this.currentValue = null;
+        return true;
+
+      default:
+        throw new BaseException(`Unsupported record type (${this.getType()})`);
     }
   }
 
   _calculateNewValue() {
-    var type = this.type;
-    switch (type) {
+    switch (this.getType()) {
       case RECORD_TYPE_PROPERTY:
         return this.funcOrValue(this.context);
 
@@ -212,41 +286,113 @@ export class Record {
 
       case RECORD_TYPE_INVOKE_PURE_FUNCTION:
       case RECORD_TYPE_INVOKE_FORMATTER:
-        this.recordRange.disableRecord(this);
+        this.disable();
         return FunctionWrapper.apply(this.funcOrValue, this.args);
 
       case RECORD_TYPE_CONST:
-        this.recordRange.disableRecord(this);
+        this.disable();
         return this.funcOrValue;
 
-      case RECORD_TYPE_MARKER:
-        throw new BaseException('Marker not implemented');
-
-      case RECORD_TYPE_MAP:
-        throw new BaseException('Map not implemented');
-
-      case RECORD_TYPE_LIST:
-        throw new BaseException('List not implemented');
-
       default:
-        throw new BaseException(`Unsupported record type ($type)`);
+        throw new BaseException(`Unsupported record type (${this.getType()})`);
     }
   }
 
   updateArg(value, position:int) {
     this.args[position] = value;
-    this.recordRange.enableRecord(this);
+    this.enable();
   }
 
   updateContext(value) {
     this.context = value;
-    if (!this.isMarkerRecord) {
-      this.recordRange.enableRecord(this);
+    this.enable();
+
+    if (this.isCollection()) {
+      if (ArrayChanges.supports(value)) {
+        if (this.getType() != RECORD_TYPE_ARRAY) {
+          this.setType(RECORD_TYPE_ARRAY);
+          this.currentValue = new ArrayChanges();
+        }
+        return;
+      }
+
+      if (KeyValueChanges.supports(value)) {
+        if (this.getType() != RECORD_TYPE_KEY_VALUE) {
+          this.setType(RECORD_TYPE_KEY_VALUE);
+          this.currentValue = new KeyValueChanges();
+        }
+        return;
+      }
+
+      if (isBlank(value)) {
+        this.setType(RECORD_TYPE_NULL);
+      } else {
+        throw new BaseException("Collection records must be array like, map like or null");
+      }
     }
   }
 
-  get isMarkerRecord() {
-    return this.type == RECORD_TYPE_MARKER;
+  terminatesExpression():boolean {
+    return !(this.dest instanceof Record);
+  }
+
+  isMarkerRecord():boolean {
+    return this.getType() == RECORD_TYPE_MARKER;
+  }
+
+  expressionMemento() {
+    return this.protoRecord.dest;
+  }
+
+  expressionAsString() {
+    return this.protoRecord.expressionAsString;
+  }
+
+  groupMemento() {
+    return isPresent(this.protoRecord) ? this.protoRecord.groupMemento : null;
+  }
+
+
+  /**
+   * Returns the next enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER1) will return ER2
+   *
+   * The function skips disabled ranges.
+   */
+  findNextEnabled() {
+    if (this.isEnabled()) return this.nextEnabled;
+
+    var record = this.next;
+    while (isPresent(record) && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
+        record = record.recordRange.tailRecord.next;
+      } else {
+        record = record.next;
+      }
+    }
+    return record;
+  }
+
+  /**
+   * Returns the prev enabled record. This search is not limited to the current range.
+   *
+   * [H ER1 T] [H ER2 T] _nextEnable(ER2) will return ER1
+   *
+   * The function skips disabled ranges.
+   */
+  findPrevEnabled() {
+    if (this.isEnabled()) return this.prevEnabled;
+
+    var record = this.prev;
+    while (isPresent(record) && record.isDisabled()) {
+      if (record.isMarkerRecord() && record.recordRange.disabled) {
+        record = record.recordRange.headRecord.prev;
+      } else {
+        record = record.prev;
+      }
+    }
+    return record;
   }
 }
 

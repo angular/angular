@@ -1,16 +1,17 @@
-import {ddescribe, describe, it, iit, xit, expect} from 'test_lib/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 
-import {isPresent} from 'facade/lang';
+import {isPresent, isBlank, isJsObject} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {
   ChangeDetector,
   ProtoRecordRange,
   RecordRange,
-  WatchGroupDispatcher,
+  ChangeDispatcher,
   ProtoRecord
 } from 'change_detection/change_detector';
 
@@ -19,14 +20,15 @@ import {Record} from 'change_detection/record';
 export function main() {
   function ast(exp:string) {
     var parser = new Parser(new Lexer());
-    return parser.parseBinding(exp).ast;
+    return parser.parseBinding(exp, 'location');
   }
 
-  function createChangeDetector(memo:string, exp:string, context = null, formatters = null) {
+  function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
+                                content = false) {
     var prr = new ProtoRecordRange();
-    prr.addRecordsFromAST(ast(exp), memo, false);
+    prr.addRecordsFromAST(ast(exp), memo, memo, content);
 
-    var dispatcher = new LoggingDispatcher();
+    var dispatcher = new TestDispatcher();
     var rr = prr.instantiate(dispatcher, formatters);
     rr.setContext(context);
 
@@ -35,14 +37,26 @@ export function main() {
     return {"changeDetector" : cd, "dispatcher" : dispatcher};
   }
 
-  function executeWatch(memo:string, exp:string, context = null, formatters = null) {
-    var res = createChangeDetector(memo, exp, context, formatters);
+  function executeWatch(memo:string, exp:string, context = null, formatters = null,
+                        content = false) {
+    var res = createChangeDetector(memo, exp, context, formatters, content);
     res["changeDetector"].detectChanges();
     return res["dispatcher"].log;
   }
 
   describe('change_detection', () => {
     describe('ChangeDetection', () => {
+      function createRange(dispatcher, ast, group) {
+        var prr = new ProtoRecordRange();
+        prr.addRecordsFromAST(ast, "memo", group);
+        return prr.instantiate(dispatcher, null);
+      }
+
+      function detectChangesInRange(recordRange) {
+        var cd = new ChangeDetector(recordRange);
+        cd.detectChanges();
+      }
+
       it('should do simple watching', () => {
         var person = new Person("misko");
 
@@ -94,21 +108,21 @@ export function main() {
       it("should support literal array", () => {
         var c = createChangeDetector('array', '[1,2]');
         c["changeDetector"].detectChanges();
-        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+        expect(c["dispatcher"].loggedValues).toEqual([[[1,2]]]);
 
         c = createChangeDetector('array', '[1,a]', new TestData(2));
         c["changeDetector"].detectChanges();
-        expect(c["dispatcher"].loggedValues).toEqual([[1,2]]);
+        expect(c["dispatcher"].loggedValues).toEqual([[[1,2]]]);
       });
 
       it("should support literal maps", () => {
         var c = createChangeDetector('map', '{z:1}');
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
 
         c = createChangeDetector('map', '{z:a}', new TestData(1));
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0], 'z')).toEqual(1);
+        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
       });
 
       it("should support binary operations", () => {
@@ -153,6 +167,15 @@ export function main() {
         expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
       });
 
+      describe("keyed access", () => {
+        it("should support accessing a list item", () => {
+          expect(executeWatch('array[0]', '["foo", "bar"][0]')).toEqual(['array[0]=foo']);
+        });
+        it("should support accessing a map item", () => {
+          expect(executeWatch('map[foo]', '{"foo": "bar"}["foo"]')).toEqual(['map[foo]=bar']);
+        });
+      });
+
       describe("formatters", () => {
         it("should support formatters", () => {
           var formatters = MapWrapper.createFromPairs([
@@ -185,10 +208,11 @@ export function main() {
         });
       });
 
+
       describe("ContextWithVariableBindings", () => {
         it('should read a field from ContextWithVariableBindings', () => {
           var locals = new ContextWithVariableBindings(null,
-              MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
 
           expect(executeWatch('key', 'key', locals))
             .toEqual(['key=value']);
@@ -196,7 +220,7 @@ export function main() {
 
         it('should handle nested ContextWithVariableBindings', () => {
           var nested = new ContextWithVariableBindings(null,
-              MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
           var locals = new ContextWithVariableBindings(nested, MapWrapper.create());
 
           expect(executeWatch('key', 'key', locals))
@@ -204,16 +228,240 @@ export function main() {
         });
 
         it("should fall back to a regular field read when ContextWithVariableBindings " +
-          "does not have the requested field", () => {
+           "does not have the requested field", () => {
           var locals = new ContextWithVariableBindings(new Person("Jim"),
-                MapWrapper.createFromPairs([["key", "value"]]));
+            MapWrapper.createFromPairs([["key", "value"]]));
 
           expect(executeWatch('name', 'name', locals))
             .toEqual(['name=Jim']);
         });
       });
+
+      describe("collections", () => {
+        it("should support null values", () => {
+          var context = new TestData(null);
+          var c = createChangeDetector('a', 'a', context, null, true);
+          var cd = c["changeDetector"];
+          var dsp = c["dispatcher"];
+
+          cd.detectChanges();
+          expect(dsp.log).toEqual(['a=null']);
+          dsp.clear();
+
+          cd.detectChanges();
+          expect(dsp.log).toEqual([]);
+
+          context.a = [0];
+          cd.detectChanges();
+
+          expect(dsp.log).toEqual(["a=" +
+            arrayChangesAsString({
+              collection: ['0[null->0]'],
+              additions: ['0[null->0]']
+            })
+          ]);
+          dsp.clear();
+
+          context.a = null;
+          cd.detectChanges();
+          expect(dsp.log).toEqual(['a=null']);
+        });
+
+        it("should throw if not collection / null", () => {
+          var context = new TestData("not collection / null");
+          var c = createChangeDetector('a', 'a', context, null, true);
+          expect(() => c["changeDetector"].detectChanges())
+            .toThrowError("Collection records must be array like, map like or null");
+        });
+
+        describe("list", () => {
+          it("should support list changes", () => {
+            var context = new TestData([1, 2]);
+            expect(executeWatch("a", "a", context, null, true))
+              .toEqual(["a=" +
+                        arrayChangesAsString({
+                          collection: ['1[null->0]', '2[null->1]'],
+                          additions: ['1[null->0]', '2[null->1]']
+                       })]);
+          });
+
+          it("should handle reference changes", () => {
+            var context = new TestData([1, 2]);
+            var objs = createChangeDetector("a", "a", context, null, true);
+            var cd = objs["changeDetector"];
+            var dispatcher = objs["dispatcher"];
+            cd.detectChanges();
+            dispatcher.clear();
+
+            context.a = [2, 1];
+            cd.detectChanges();
+            expect(dispatcher.log).toEqual(["a=" +
+              arrayChangesAsString({
+                collection: ['2[1->0]', '1[0->1]'],
+                previous: ['1[0->1]', '2[1->0]'],
+                moves: ['2[1->0]', '1[0->1]']
+              })]);
+          });
+        });
+
+        describe("map", () => {
+          it("should support map changes", () => {
+            var map = MapWrapper.create();
+            MapWrapper.set(map, "foo", "bar");
+            var context = new TestData(map);
+            expect(executeWatch("a", "a", context, null, true))
+              .toEqual(["a=" +
+                        kvChangesAsString({
+                          map: ['foo[null->bar]'],
+                          additions: ['foo[null->bar]']
+                       })]);
+          });
+
+          it("should handle reference changes", () => {
+            var map = MapWrapper.create();
+            MapWrapper.set(map, "foo", "bar");
+            var context = new TestData(map);
+            var objs = createChangeDetector("a", "a", context, null, true);
+            var cd = objs["changeDetector"];
+            var dispatcher = objs["dispatcher"];
+            cd.detectChanges();
+            dispatcher.clear();
+
+            context.a = MapWrapper.create();
+            MapWrapper.set(context.a, "bar", "foo");
+            cd.detectChanges();
+            expect(dispatcher.log).toEqual(["a=" +
+              kvChangesAsString({
+                map: ['bar[null->foo]'],
+                previous: ['foo[bar->null]'],
+                additions: ['bar[null->foo]'],
+                removals: ['foo[bar->null]']
+              })]);
+          });
+        });
+
+        if (isJsObject({})) {
+          describe("js objects", () => {
+            it("should support object changes", () => {
+              var map = {"foo": "bar"};
+              var context = new TestData(map);
+              expect(executeWatch("a", "a", context, null, true))
+                .toEqual(["a=" +
+                          kvChangesAsString({
+                            map: ['foo[null->bar]'],
+                            additions: ['foo[null->bar]']
+                         })]);
+            });
+          });
+        }
+      });
+
+      describe("adding new ranges", () => {
+        var dispatcher;
+
+        beforeEach(() => {
+          dispatcher = new TestDispatcher();
+        });
+
+        /**
+         * Tests that we can add a new range after the current
+         * record has been disabled. The new range must be processed
+         * during the same change detection run.
+         */
+        it("should work when disabling the last enabled record", () => {
+          var rr = createRange(dispatcher, ast("1"), 1);
+
+          dispatcher.onChange = (group, _) => {
+            if (group === 1) { // to prevent infinite loop
+              var rangeToAppend = createRange(dispatcher, ast("2"), 2);
+              rr.addRange(rangeToAppend);
+            }
+          };
+
+          detectChangesInRange(rr);
+
+          expect(dispatcher.loggedValues).toEqual([[1], [2]]);
+        });
+      });
+
+      describe("group changes", () => {
+        it("should notify the dispatcher when a group of records changes", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("1 + 2"), "memo", 1);
+          prr.addRecordsFromAST(ast("10 + 20"), "memo", 1);
+          prr.addRecordsFromAST(ast("100 + 200"), "memo2", 2);
+
+          var dispatcher = new TestDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+
+          detectChangesInRange(rr);
+
+          expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
+        });
+
+        it("should update every instance of a group individually", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("1 + 2"), "memo", "memo");
+
+          var dispatcher = new TestDispatcher();
+          var rr = new RecordRange(null, dispatcher);
+          rr.addRange(prr.instantiate(dispatcher, null));
+          rr.addRange(prr.instantiate(dispatcher, null));
+
+          detectChangesInRange(rr);
+
+          expect(dispatcher.loggedValues).toEqual([[3], [3]]);
+        });
+
+        it("should notify the dispatcher before switching to the next group", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("a()"), "a", 1);
+          prr.addRecordsFromAST(ast("b()"), "b", 2);
+          prr.addRecordsFromAST(ast("c()"), "c", 2);
+
+          var dispatcher = new TestDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+
+          var tr = new TestRecord();
+          tr.a = () => {dispatcher.logValue('InvokeA'); return 'a'};
+          tr.b = () => {dispatcher.logValue('InvokeB'); return 'b'};
+          tr.c = () => {dispatcher.logValue('InvokeC'); return 'c'};
+          rr.setContext(tr);
+
+          detectChangesInRange(rr);
+
+          expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
+        });
+      });
+
+      describe("enforce no new changes", () => {
+        it("should throw when a record gets changed after it has been checked", () => {
+          var prr = new ProtoRecordRange();
+          prr.addRecordsFromAST(ast("a"), "a", 1);
+          prr.addRecordsFromAST(ast("b()"), "b", 2);
+
+          var tr = new TestRecord();
+          tr.a = "a";
+          tr.b = () => {tr.a = "newA";};
+
+          var dispatcher = new TestDispatcher();
+          var rr = prr.instantiate(dispatcher, null);
+          rr.setContext(tr);
+
+          expect(() => {
+            var cd = new ChangeDetector(rr, true);
+            cd.detectChanges();
+          }).toThrowError(new RegExp("Expression 'a in location' has changed after it was checked"));
+        });
+      });
     });
   });
+}
+
+class TestRecord {
+  a;
+  b;
+  c;
 }
 
 class Person {
@@ -253,12 +501,15 @@ class TestData {
   }
 }
 
-class LoggingDispatcher extends WatchGroupDispatcher {
+class TestDispatcher extends ChangeDispatcher {
   log:List;
   loggedValues:List;
+  onChange:Function;
+
   constructor() {
     this.log = null;
     this.loggedValues = null;
+    this.onChange = (_, __) => {};
     this.clear();
   }
 
@@ -267,8 +518,22 @@ class LoggingDispatcher extends WatchGroupDispatcher {
     this.loggedValues = ListWrapper.create();
   }
 
-  onRecordChange(record:Record, context) {
-    ListWrapper.push(this.loggedValues, record.currentValue);
-    ListWrapper.push(this.log, context + '=' + record.currentValue.toString());
+  logValue(value) {
+    ListWrapper.push(this.loggedValues, value);
+  }
+
+  onRecordChange(group, records:List) {
+    var value = records[0].currentValue;
+    var dest = records[0].protoRecord.dest;
+    ListWrapper.push(this.log, dest + '=' + this._asString(value));
+
+    var values = ListWrapper.map(records, (r) => r.currentValue);
+    ListWrapper.push(this.loggedValues, values);
+
+    this.onChange(group, records);
+  }
+
+  _asString(value) {
+    return (isBlank(value) ? 'null' : value.toString());
   }
 }

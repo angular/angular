@@ -10,7 +10,7 @@ import {Lexer} from 'change_detection/parser/lexer';
 export function main() {
   describe('PropertyBindingParser', () => {
     function createPipeline() {
-      return new CompilePipeline([new PropertyBindingParser(new Parser(new Lexer()))]);
+      return new CompilePipeline([new PropertyBindingParser(new Parser(new Lexer()), null)]);
     }
 
     it('should detect [] syntax', () => {

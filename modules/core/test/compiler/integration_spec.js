@@ -7,26 +7,29 @@ import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 
-import {Compiler} from 'core/compiler/compiler';
+import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
-import {Component} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
+import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
+
+import {ViewPort} from 'core/compiler/viewport';
+import {MapWrapper} from 'facade/collection';
 
 export function main() {
   describe('integration tests', function() {
     var compiler;
 
     beforeEach( () => {
-      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()));
+      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
     describe('react to record changes', function() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(ctx, new Injector([]), null);
+        view = pv.instantiate(null);
+        view.hydrate(new Injector([]), null, ctx);
         cd = new ChangeDetector(view.recordRange);
       }
 
@@ -76,6 +79,36 @@ export function main() {
           done();
         });
       });
+
+      it('should support template directives via `<template>` elements.', (done) => {
+        compiler.compile(MyComp, createElement('<div><template let-some-tmpl="greeting"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+
+          var childNodesOfWrapper = view.nodes[0].childNodes;
+          // 1 template + 2 copies.
+          expect(childNodesOfWrapper.length).toBe(3);
+          expect(childNodesOfWrapper[1].childNodes[0].nodeValue).toEqual('hello');
+          expect(childNodesOfWrapper[2].childNodes[0].nodeValue).toEqual('again');
+          done();
+        });
+      });
+
+      it('should support template directives via `template` attribute.', (done) => {
+        compiler.compile(MyComp, createElement('<div><copy-me template="some-tmpl #greeting">{{greeting}}</copy-me></div>')).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+
+          var childNodesOfWrapper = view.nodes[0].childNodes;
+          // 1 template + 2 copies.
+          expect(childNodesOfWrapper.length).toBe(3);
+          expect(childNodesOfWrapper[1].childNodes[0].nodeValue).toEqual('hello');
+          expect(childNodesOfWrapper[2].childNodes[0].nodeValue).toEqual('again');
+          done();
+        });
+      });
     });
   });
 }
@@ -93,7 +126,7 @@ class MyDir {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp]
+    directives: [MyDir, ChildComp, SomeTemplate]
   })
 })
 class MyComp {
@@ -115,6 +148,16 @@ class ChildComp {
   ctxProp:string;
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
+  }
+}
+
+@Template({
+  selector: '[some-tmpl]'
+})
+class SomeTemplate {
+  constructor(viewPort: ViewPort) {
+    viewPort.create().setLocal('some-tmpl', 'hello');
+    viewPort.create().setLocal('some-tmpl', 'again');
   }
 }
 

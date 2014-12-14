@@ -1,10 +1,9 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
-import {Type, FIELD, isBlank, isPresent, BaseException} from 'facade/lang';
+import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
-import {Compiler} from './compiler/compiler';
+import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
-import {ReflectionCapabilities} from 'reflection/reflection_capabilities';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {ChangeDetector} from 'change_detection/change_detector';
@@ -13,12 +12,14 @@ import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {AnnotatedType} from './compiler/annotated_type';
 import {ListWrapper} from 'facade/collection';
+import {VmTurnZone} from 'core/zone/vm_turn_zone';
+import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector), Compiler, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
+  bind(Reflector).toValue(reflector), Compiler, CompilerCache, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -55,14 +56,19 @@ export function documentDependentBindings(appComponentType) {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          return appProtoView.instantiate(new Object(), injector, null, true);
+          var view = appProtoView.instantiate(null);
+          view.hydrate(injector, null, new Object());
+          return view;
         });
       }, [Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
 
       bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
       bind(ChangeDetector).toFactory((appRecordRange) =>
-          new ChangeDetector(appRecordRange), [appRecordRangeToken])
+          new ChangeDetector(appRecordRange, assertionsEnabled()), [appRecordRangeToken]),
+      bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
+          [appViewToken]),
+      bind(LifeCycle).toClass(LifeCycle)
   ];
 }
 
@@ -74,17 +80,21 @@ function _injectorBindings(appComponentType) {
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
 export function bootstrap(appComponentType: Type, bindings=null) {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-
   // TODO(rado): prepopulate template cache, so applications with only
   // index.html and main.js are possible.
-  if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
-  var appInjector = _rootInjector.createChild(_injectorBindings(
-      appComponentType));
-  if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
-  return appInjector.asyncGet(ChangeDetector).then((cd) => {
-    // TODO(rado): replace with zone.
-    cd.detectChanges();
-    return appInjector;
+
+  var zone = new VmTurnZone();
+  return zone.run(() => {
+    if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
+
+    var appInjector = _rootInjector.createChild(_injectorBindings(appComponentType));
+    if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
+
+    return appInjector.asyncGet(LifeCycle).
+        then((lc) => {
+          lc.registerWith(zone);
+          lc.tick();
+        }).
+        then((_) => appInjector);
   });
 }

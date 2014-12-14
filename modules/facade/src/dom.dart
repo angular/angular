@@ -38,6 +38,9 @@ class DOM {
   static Node firstChild(el) {
     return el.firstChild;
   }
+  static Node nextSibling(el) {
+    return el.nextNode;
+  }
   static Element parentElement(el) {
     return el.parent;
   }
@@ -52,6 +55,9 @@ class DOM {
   }
   static insertAfter(el, node) {
     el.parentNode.insertBefore(node, el.nextNode);
+  }
+  static getText(Element el) {
+    return el.text;
   }
   static setText(Text text, String value) {
     text.text = value;
@@ -68,11 +74,8 @@ class DOM {
   static clone(Node node) {
     return node.clone(true);
   }
-  static setProperty(Element element, String name, value) {
-    new JsObject.fromBrowserObject(element)[name] = value;
-  }
-  static getProperty(Element element, String name) {
-    return new JsObject.fromBrowserObject(element)[name];
+  static hasProperty(Element element, String name) {
+    return new JsObject.fromBrowserObject(element).hasProperty(name);
   }
   static getElementsByClassName(Element element, String name) {
     return element.getElementsByClassName(name);

@@ -1,6 +1,6 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {ProtoRecordRange, RecordRange, WatchGroupDispatcher} from 'change_detection/record_range';
+import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
+import {ProtoRecordRange, RecordRange, ChangeDispatcher} from 'change_detection/record_range';
 import {Record} from 'change_detection/record';
 import {AST} from 'change_detection/parser/ast';
 
@@ -8,17 +8,22 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_
 import {ElementBinder} from './element_binder';
 import {AnnotatedType} from './annotated_type';
 import {SetterFn} from 'reflection/types';
-import {FIELD, IMPLEMENTS, int, isPresent, isBlank} from 'facade/lang';
+import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
+import {OnChange} from './interfaces';
+import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 
 const NG_BINDING_CLASS = 'ng-binding';
+const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
+// TODO(tbosch): Cannot use `const` because of Dart.
+var NO_FORMATTERS = MapWrapper.create();
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
-@IMPLEMENTS(WatchGroupDispatcher)
+@IMPLEMENTS(ChangeDispatcher)
 export class View {
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
@@ -29,57 +34,205 @@ export class View {
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
   nodes:List<Node>;
-  onChangeDispatcher:OnChangeDispatcher;
   componentChildViews: List<View>;
   viewPorts: List<ViewPort>;
-  constructor(nodes:List<Node>, elementInjectors:List,
-      rootElementInjectors:List, textNodes:List, bindElements:List,
-      protoRecordRange:ProtoRecordRange, context) {
+  preBuiltObjects: List<PreBuiltObjects>;
+  proto: ProtoView;
+  context: Object;
+  contextWithLocals:ContextWithVariableBindings;
+  constructor(proto:ProtoView, nodes:List<Node>, protoRecordRange:ProtoRecordRange, protoContextLocals:Map) {
+    this.proto = proto;
     this.nodes = nodes;
-    this.elementInjectors = elementInjectors;
-    this.rootElementInjectors = rootElementInjectors;
-    this.onChangeDispatcher = null;
-    this.textNodes = textNodes;
-    this.bindElements = bindElements;
-    this.recordRange = protoRecordRange.instantiate(this, MapWrapper.create());
-    this.recordRange.setContext(context);
+    this.recordRange = protoRecordRange.instantiate(this, NO_FORMATTERS);
+    this.elementInjectors = null;
+    this.rootElementInjectors = null;
+    this.textNodes = null;
+    this.bindElements = null;
     this.componentChildViews = null;
     this.viewPorts = null;
+    this.preBuiltObjects = null;
+    this.context = null;
+
+    // contextWithLocals
+    if (MapWrapper.size(protoContextLocals) > 0) {
+      this.contextWithLocals = new ContextWithVariableBindings(null, MapWrapper.clone(protoContextLocals));
+    } else {
+      this.contextWithLocals = null;
+    }
   }
 
-  onRecordChange(record:Record, target) {
+  init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List, viewPorts:List, preBuiltObjects:List, componentChildViews:List) {
+    this.elementInjectors = elementInjectors;
+    this.rootElementInjectors = rootElementInjectors;
+    this.textNodes = textNodes;
+    this.bindElements = bindElements;
+    this.viewPorts = viewPorts;
+    this.preBuiltObjects = preBuiltObjects;
+    this.componentChildViews = componentChildViews;
+  }
+
+  setLocal(contextName: string, value) {
+    if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
+    if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
+      throw new BaseException(
+          `Local binding ${contextName} not defined in the view template.`);
+    }
+    var templateName = MapWrapper.get(this.proto.variableBindings, contextName);
+    this.context.set(templateName, value);
+  }
+
+  hydrated() {
+    return isPresent(this.context);
+  }
+
+  _hydrateContext(newContext) {
+    if (isPresent(this.contextWithLocals)) {
+      this.contextWithLocals.parent = newContext;
+      this.context = this.contextWithLocals;
+    } else {
+      this.context = newContext;
+    }
+    // TODO(tbosch): if we have a contextWithLocals we actually only need to
+    // set the contextWithLocals once. Would it be faster to always use a contextWithLocals
+    // even if we don't have locals and not update the recordRange here?
+    this.recordRange.setContext(this.context);
+  }
+
+  _dehydrateContext() {
+    if (isPresent(this.contextWithLocals)) {
+      this.contextWithLocals.clearValues();
+    }
+    this.context = null;
+  }
+
+  /**
+   * A dehydrated view is a state of the view that allows it to be moved around
+   * the view tree, without incurring the cost of recreating the underlying
+   * injectors and watch records.
+   *
+   * A dehydrated view has the following properties:
+   *
+   * - all element injectors are empty.
+   * - all appInjectors are released.
+   * - all viewports are empty.
+   * - all context locals are set to null.
+   * - the view context is null.
+   *
+   * A call to hydrate/dehydrate does not attach/detach the view from the view
+   * tree.
+   */
+  hydrate(appInjector: Injector, hostElementInjector: ElementInjector,
+      context: Object) {
+    if (this.hydrated()) throw new BaseException('The view is already hydrated.');
+    this._hydrateContext(context);
+
+    // viewPorts
+    for (var i = 0; i < this.viewPorts.length; i++) {
+      this.viewPorts[i].hydrate(appInjector, hostElementInjector);
+    }
+
+    var binders = this.proto.elementBinders;
+    var componentChildViewIndex = 0;
+    for (var i = 0; i < binders.length; ++i) {
+      var componentDirective = binders[i].componentDirective;
+      var shadowDomAppInjector = null;
+
+      // shadowDomAppInjector
+      if (isPresent(componentDirective)) {
+        var services = componentDirective.annotation.componentServices;
+        if (isPresent(services))
+          shadowDomAppInjector = appInjector.createChild(services);
+        else {
+          shadowDomAppInjector = appInjector;
+        }
+      } else {
+        shadowDomAppInjector = null;
+      }
+
+      // elementInjectors
+      var elementInjector = this.elementInjectors[i];
+      if (isPresent(elementInjector)) {
+        elementInjector.instantiateDirectives(appInjector, shadowDomAppInjector, this.preBuiltObjects[i]);
+      }
+
+      // componentChildViews
+      if (isPresent(shadowDomAppInjector)) {
+        this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
+            elementInjector, elementInjector.getComponent());
+      }
+    }
+  }
+
+  dehydrate() {
+    // Note: preserve the opposite order of the hydration process.
+
+    // componentChildViews
+    for (var i = 0; i < this.componentChildViews.length; i++) {
+      this.componentChildViews[i].dehydrate();
+    }
+
+    // elementInjectors
+    for (var i = 0; i < this.elementInjectors.length; i++) {
+      this.elementInjectors[i].clearDirectives();
+    }
+
+    // viewPorts
+    if (isPresent(this.viewPorts)) {
+      for (var i = 0; i < this.viewPorts.length; i++) {
+        this.viewPorts[i].dehydrate();
+      }
+    }
+
+    this._dehydrateContext();
+  }
+
+  onRecordChange(groupMemento, records:List<Record>) {
+    this._invokeMementoForRecords(records);
+    if (groupMemento instanceof DirectivePropertyGroupMemento) {
+      this._notifyDirectiveAboutChanges(groupMemento, records);
+    }
+  }
+
+  _invokeMementoForRecords(records:List<Record>) {
+    for(var i = 0; i < records.length; ++i) {
+      this._invokeMementoFor(records[i]);
+    }
+  }
+
+  _notifyDirectiveAboutChanges(groupMemento, records:List<Record>) {
+    var dir = groupMemento.directive(this.elementInjectors);
+    if (dir instanceof OnChange) {
+      dir.onChange(this._collectChanges(records));
+    }
+  }
+
     // dispatch to element injector or text nodes based on context
-    if (target instanceof DirectivePropertyMemento) {
+  _invokeMementoFor(record:Record) {
+    var memento = record.expressionMemento();
+    if (memento instanceof DirectivePropertyMemento) {
       // we know that it is DirectivePropertyMemento
-      var directiveMemento:DirectivePropertyMemento = target;
+      var directiveMemento:DirectivePropertyMemento = memento;
       directiveMemento.invoke(record, this.elementInjectors);
-    } else if (target instanceof ElementPropertyMemento) {
-      var elementMemento:ElementPropertyMemento = target;
+
+    } else if (memento instanceof ElementPropertyMemento) {
+      var elementMemento:ElementPropertyMemento = memento;
       elementMemento.invoke(record, this.bindElements);
+
     } else {
       // we know it refers to _textNodes.
-      var textNodeIndex:number = target;
+      var textNodeIndex:number = memento;
       DOM.setText(this.textNodes[textNodeIndex], record.currentValue);
     }
   }
 
-  addViewPort(viewPort: ViewPort) {
-    if (isBlank(this.viewPorts)) this.viewPorts = [];
-    ListWrapper.push(this.viewPorts, viewPort);
-  }
-
-  addComponentChildView(childView: View) {
-    if (isBlank(this.componentChildViews)) this.componentChildViews = [];
-    ListWrapper.push(this.componentChildViews, childView);
-    this.recordRange.addRange(childView.recordRange);
-  }
-
-  addViewPortChildView(childView: View) {
-    this.recordRange.addRange(childView.recordRange);
-  }
-
-  removeViewPortChildView(childView: View) {
-    childView.recordRange.remove();
+  _collectChanges(records:List<Record>) {
+    var changes = StringMapWrapper.create();
+    for(var i = 0; i < records.length; ++i) {
+      var record = records[i];
+      var propertyUpdate = new PropertyUpdate(record.currentValue, record.previousValue);
+      StringMapWrapper.set(changes, record.expressionMemento()._setterName, propertyUpdate);
+    }
+    return changes;
   }
 }
 
@@ -88,63 +241,129 @@ export class ProtoView {
   elementBinders:List<ElementBinder>;
   protoRecordRange:ProtoRecordRange;
   variableBindings: Map;
+  protoContextLocals:Map;
   textNodesWithBindingCount:int;
   elementsWithBindingCount:int;
+  instantiateInPlace:boolean;
+  rootBindingOffset:int;
+  isTemplateElement:boolean;
   constructor(
       template:Element,
       protoRecordRange:ProtoRecordRange) {
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
+    this.protoContextLocals = MapWrapper.create();
     this.protoRecordRange = protoRecordRange;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
+    this.instantiateInPlace = false;
+    if (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) {
+      this.rootBindingOffset = 1;
+    } else {
+      this.rootBindingOffset = 0;
+    }
+    this.isTemplateElement = this.element instanceof TemplateElement;
   }
 
-  instantiate(context, lightDomAppInjector:Injector,
-      hostElementInjector: ElementInjector, inPlace:boolean = false):View {
-    var clone = inPlace ? this.element : DOM.clone(this.element);
-    var elements;
-    if (clone instanceof TemplateElement) {
-      elements = ListWrapper.clone(DOM.querySelectorAll(clone.content, `.${NG_BINDING_CLASS}`));
+  // TODO(rado): hostElementInjector should be moved to hydrate phase.
+  instantiate(hostElementInjector: ElementInjector):View {
+    var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
+    var elementsWithBindings;
+    if (this.isTemplateElement) {
+      elementsWithBindings = DOM.querySelectorAll(rootElementClone.content, NG_BINDING_CLASS_SELECTOR);
     } else {
-      elements = ListWrapper.clone(DOM.getElementsByClassName(clone, NG_BINDING_CLASS));
+      elementsWithBindings = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
     }
-    if (DOM.hasClass(clone, NG_BINDING_CLASS)) {
-      ListWrapper.insert(elements, 0, clone);
-    }
-    var binders = this.elementBinders;
-
-    /**
-     * TODO: vsavkin: benchmark
-     * If this performs poorly, the seven loops can be collapsed into one.
-     */
-    var elementInjectors = ProtoView._createElementInjectors(elements, binders, hostElementInjector);
-    var rootElementInjectors = ProtoView._rootElementInjectors(elementInjectors);
-    var textNodes = ProtoView._textNodes(elements, binders);
-    var bindElements = ProtoView._bindElements(elements, binders);
-    var shadowAppInjectors = ProtoView._createShadowAppInjectors(binders, lightDomAppInjector);
     var viewNodes;
-
-    if (clone instanceof TemplateElement) {
-      viewNodes = ListWrapper.clone(clone.content.childNodes);
+    if (this.isTemplateElement) {
+      var childNodes = rootElementClone.content.childNodes;
+      // Note: An explicit loop is the fastes way to convert a DOM array into a JS array!
+      viewNodes = ListWrapper.createFixedSize(childNodes.length);
+      for (var i=0; i<childNodes.length; i++) {
+        viewNodes[i] = childNodes[i];
+      }
     } else {
-      viewNodes = [clone];
+      viewNodes = [rootElementClone];
     }
-    var view = new View(viewNodes, elementInjectors, rootElementInjectors, textNodes,
-        bindElements, this.protoRecordRange, context);
+    var view = new View(this, viewNodes, this.protoRecordRange, this.protoContextLocals);
 
-    ProtoView._instantiateDirectives(
-        view, elements, binders, elementInjectors, lightDomAppInjector,
-        shadowAppInjectors, hostElementInjector);
-    ProtoView._instantiateChildComponentViews(view, elements, binders,
-        elementInjectors, shadowAppInjectors);
+    var binders = this.elementBinders;
+    var elementInjectors = ListWrapper.createFixedSize(binders.length);
+    var rootElementInjectors = [];
+    var textNodes = [];
+    var elementsWithPropertyBindings = [];
+    var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
+    var viewPorts = [];
+    var componentChildViews = [];
+
+    for (var i = 0; i < binders.length; i++) {
+      var binder = binders[i];
+      var element;
+      if (i === 0 && this.rootBindingOffset === 1) {
+        element = rootElementClone;
+      } else {
+        element = elementsWithBindings[i - this.rootBindingOffset];
+      }
+      var elementInjector = null;
+
+      // elementInjectors and rootElementInjectors
+      var protoElementInjector = binder.protoElementInjector;
+      if (isPresent(protoElementInjector)) {
+        var parentElementInjector = isPresent(protoElementInjector.parent) ? elementInjectors[protoElementInjector.parent.index] : null;
+        elementInjector = protoElementInjector.instantiate(parentElementInjector, hostElementInjector);
+        if (isBlank(parentElementInjector)) {
+          ListWrapper.push(rootElementInjectors, elementInjector);
+        }
+      }
+      elementInjectors[i] = elementInjector;
+
+      // viewPorts
+      var viewPort = null;
+      if (isPresent(binder.templateDirective)) {
+        viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector);
+        ListWrapper.push(viewPorts, viewPort);
+      }
+
+      // preBuiltObjects
+      var preBuiltObject = null;
+      if (isPresent(elementInjector)) {
+        preBuiltObject = new PreBuiltObjects(view, new NgElement(element), viewPort);
+      }
+      preBuiltObjects[i] = preBuiltObject;
+
+      // elementsWithPropertyBindings
+      if (binder.hasElementPropertyBindings) {
+        ListWrapper.push(elementsWithPropertyBindings, element);
+      }
+
+      // textNodes
+      var textNodeIndices = binder.textNodeIndices;
+      if (isPresent(textNodeIndices)) {
+        var childNodes = DOM.templateAwareRoot(element).childNodes;
+        for (var j = 0; j < textNodeIndices.length; j++) {
+          ListWrapper.push(textNodes, childNodes[textNodeIndices[j]]);
+        }
+      }
+
+      // componentChildViews
+      if (isPresent(binder.componentDirective)) {
+        var childView = binder.nestedProtoView.instantiate(elementInjector);
+        view.recordRange.addRange(childView.recordRange);
+        ViewPort.moveViewNodesIntoParent(element.createShadowRoot(), childView);
+        ListWrapper.push(componentChildViews, childView);
+      }
+    }
+
+    view.init(elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,
+      viewPorts, preBuiltObjects, componentChildViews);
 
     return view;
   }
 
   bindVariable(contextName:string, templateName:string) {
     MapWrapper.set(this.variableBindings, contextName, templateName);
+    MapWrapper.set(this.protoContextLocals, templateName, null);
   }
 
   bindElement(protoElementInjector:ProtoElementInjector,
@@ -163,24 +382,21 @@ export class ProtoView {
       elBinder.textNodeIndices = ListWrapper.create();
     }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
-    this.protoRecordRange.addRecordsFromAST(expression, this.textNodesWithBindingCount++);
+    var memento = this.textNodesWithBindingCount++;
+    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
   }
 
   /**
    * Adds an element property binding for the last created ElementBinder via bindElement
    */
-  bindElementProperty(propertyName:string, expression:AST) {
+  bindElementProperty(expression:AST, setterName:string, setter:SetterFn) {
     var elBinder = this.elementBinders[this.elementBinders.length-1];
     if (!elBinder.hasElementPropertyBindings) {
       elBinder.hasElementPropertyBindings = true;
       this.elementsWithBindingCount++;
     }
-    this.protoRecordRange.addRecordsFromAST(expression,
-      new ElementPropertyMemento(
-        this.elementsWithBindingCount-1,
-        propertyName
-      )
-    );
+    var memento = new ElementPropertyMemento(this.elementsWithBindingCount-1, setterName, setter);
+    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
   }
 
   /**
@@ -201,114 +417,17 @@ export class ProtoView {
     directiveIndex:number,
     expression:AST,
     setterName:string,
-    setter:SetterFn) {
-    this.protoRecordRange.addRecordsFromAST(
-      expression,
-      new DirectivePropertyMemento(
-        this.elementBinders.length-1,
-        directiveIndex,
-        setterName,
-        setter
-      )
+    setter:SetterFn,
+    isContentWatch: boolean) {
+
+    var expMemento = new DirectivePropertyMemento(
+      this.elementBinders.length-1,
+      directiveIndex,
+      setterName,
+      setter
     );
-  }
-
-  static _createElementInjectors(elements, binders, hostElementInjector) {
-    var injectors = ListWrapper.createFixedSize(binders.length);
-    for (var i = 0; i < binders.length; ++i) {
-      var proto = binders[i].protoElementInjector;
-      if (isPresent(proto)) {
-        var parentElementInjector = isPresent(proto.parent) ? injectors[proto.parent.index] : null;
-        injectors[i] = proto.instantiate(parentElementInjector, hostElementInjector);
-      } else {
-        injectors[i] = null;
-      }
-    }
-    return injectors;
-  }
-
-  static _instantiateDirectives(
-      view, elements:List, binders: List<ElementBinder>, injectors:List<ElementInjectors>,
-      lightDomAppInjector: Injector, shadowDomAppInjectors:List<Injectors>,
-      hostElementInjector: ElementInjector) {
-    for (var i = 0; i < injectors.length; ++i) {
-      var injector = injectors[i];
-      if (injector != null) {
-        var binder = binders[i];
-        var element = elements[i];
-        var ngElement = new NgElement(element);
-        var viewPort = null;
-        if (isPresent(binder.templateDirective)) {
-          viewPort = new ViewPort(view, element, binder.nestedProtoView, injector);
-          viewPort.attach(lightDomAppInjector, hostElementInjector);
-          view.addViewPort(viewPort);
-        }
-        var preBuiltObjs = new PreBuiltObjects(view, ngElement, viewPort);
-        injector.instantiateDirectives(
-          lightDomAppInjector, shadowDomAppInjectors[i], preBuiltObjs);
-      }
-    }
-  }
-
-  static _rootElementInjectors(injectors) {
-    return ListWrapper.filter(injectors, inj => isPresent(inj) && isBlank(inj.parent));
-  }
-
-  static _textNodes(elements, binders) {
-    var textNodes = [];
-    for (var i = 0; i < binders.length; ++i) {
-      ProtoView._collectTextNodes(textNodes, elements[i],
-          binders[i].textNodeIndices);
-    }
-    return textNodes;
-  }
-
-  static _bindElements(elements, binders):List<Element> {
-    var bindElements = [];
-    for (var i = 0; i < binders.length; ++i) {
-      if (binders[i].hasElementPropertyBindings) ListWrapper.push(
-          bindElements, elements[i]);
-    }
-    return bindElements;
-  }
-
-  static _collectTextNodes(allTextNodes, element, indices) {
-    if (isPresent(indices)) {
-      var childNodes = DOM.templateAwareRoot(element).childNodes;
-      for (var i = 0; i < indices.length; ++i) {
-        ListWrapper.push(allTextNodes, childNodes[indices[i]]);
-      }
-    }
-  }
-
-  static _instantiateChildComponentViews(view: View, elements, binders,
-      injectors, shadowDomAppInjectors: List<Injector>) {
-    for (var i = 0; i < binders.length; ++i) {
-      var binder = binders[i];
-      if (isPresent(binder.componentDirective)) {
-        var injector = injectors[i];
-        var childView = binder.nestedProtoView.instantiate(
-            injector.getComponent(), shadowDomAppInjectors[i], injector);
-        view.addComponentChildView(childView);
-        var shadowRoot = elements[i].createShadowRoot();
-        ViewPort.moveViewNodesIntoParent(shadowRoot, childView);
-      }
-    }
-  }
-
-  static _createShadowAppInjectors(binders: List<ElementBinders>, lightDomAppInjector: Injector): List<Injectors> {
-    var injectors = ListWrapper.createFixedSize(binders.length);
-    for (var i = 0; i < binders.length; ++i) {
-      var componentDirective = binders[i].componentDirective;
-      if (isPresent(componentDirective)) {
-        var services = componentDirective.annotation.componentServices;
-        injectors[i] = isPresent(services) ?
-            lightDomAppInjector.createChild(services) : lightDomAppInjector;
-      } else {
-        injectors[i] = null;
-      }
-    }
-    return injectors;
+    var groupMemento = DirectivePropertyGroupMemento.get(expMemento);
+    this.protoRecordRange.addRecordsFromAST(expression, expMemento, groupMemento, isContentWatch);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
@@ -316,27 +435,30 @@ export class ProtoView {
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
       insertionElement, rootComponentAnnotatedType: AnnotatedType): ProtoView {
+    DOM.addClass(insertionElement, 'ng-binding');
     var rootProtoView = new ProtoView(insertionElement, new ProtoRecordRange());
+    rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
         new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
     binder.componentDirective = rootComponentAnnotatedType;
     binder.nestedProtoView = protoView;
-    DOM.addClass(insertionElement, 'ng-binding');
     return rootProtoView;
   }
 }
 
 export class ElementPropertyMemento {
   _elementIndex:int;
-  _propertyName:string;
-  constructor(elementIndex:int, propertyName:string) {
+  _setterName:string;
+  _setter:SetterFn;
+  constructor(elementIndex:int, setterName:string, setter:SetterFn) {
     this._elementIndex = elementIndex;
-    this._propertyName = propertyName;
+    this._setterName = setterName;
+    this._setter = setter;
   }
 
   invoke(record:Record, bindElements:List<Element>) {
     var element:Element = bindElements[this._elementIndex];
-    DOM.setProperty(element, this._propertyName, record.currentValue);
+    this._setter(element, record.currentValue);
   }
 }
 
@@ -363,24 +485,40 @@ export class DirectivePropertyMemento {
   }
 }
 
+var _groups = MapWrapper.create();
 
+class DirectivePropertyGroupMemento {
+  _elementInjectorIndex:number;
+  _directiveIndex:number;
 
-//TODO(tbosch): I don't like to have done be called from a different place than notify
-// notify is called by change detection, but done is called by our wrapper on detect changes.
-export class OnChangeDispatcher {
-
-  _lastView:View;
-  _lastTarget:DirectivePropertyMemento;
-  constructor() {
-    this._lastView = null;
-    this._lastTarget = null;
+  constructor(elementInjectorIndex:number, directiveIndex:number) {
+    this._elementInjectorIndex = elementInjectorIndex;
+    this._directiveIndex = directiveIndex;
   }
 
-  notify(view:View, eTarget:DirectivePropertyMemento) {
+  static get(memento:DirectivePropertyMemento) {
+    var elementInjectorIndex = memento._elementInjectorIndex;
+    var directiveIndex = memento._directiveIndex;
+    var id = elementInjectorIndex * 100 + directiveIndex;
 
+    if (!MapWrapper.contains(_groups, id)) {
+      MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
+    }
+    return MapWrapper.get(_groups, id);
   }
 
-  done() {
+  directive(elementInjectors:List<ElementInjector>) {
+    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
+    return elementInjector.getAtIndex(this._directiveIndex);
+  }
+}
 
+class PropertyUpdate {
+  currentValue;
+  previousValue;
+
+  constructor(currentValue, previousValue) {
+    this.currentValue = currentValue;
+    this.previousValue = previousValue;
   }
 }

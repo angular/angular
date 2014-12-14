@@ -17,6 +17,10 @@ export class AST {
 
   visit(visitor, args) {
   }
+
+  toString():string {
+    return "AST";
+  }
 }
 
 export class EmptyExpr extends AST {
@@ -26,6 +30,21 @@ export class EmptyExpr extends AST {
 
   visit(visitor, args) {
     //do nothing
+  }
+}
+
+export class Collection extends AST {
+  value:AST;
+  constructor(value:AST) {
+    this.value = value;
+  }
+
+  eval(context) {
+    return value.eval(context);
+  }
+
+  visit(visitor, args) {
+    visitor.visitCollection(this, args);
   }
 }
 
@@ -363,12 +382,34 @@ export class FunctionCall extends AST {
   }
 }
 
-export class ASTWithSource {
+export class ASTWithSource extends AST {
   ast:AST;
   source:string;
-  constructor(ast:AST, source:string) {
+  location:string;
+  constructor(ast:AST, source:string, location:string) {
     this.source = source;
+    this.location = location;
     this.ast = ast;
+  }
+
+  eval(context) {
+    return this.ast.eval(context);
+  }
+
+  get isAssignable() {
+    return this.ast.isAssignable;
+  }
+
+  assign(context, value) {
+    return this.ast.assign(context, value);
+  }
+
+  visit(visitor, args) {
+    return this.ast.visit(visitor, args);
+  }
+
+  toString():string {
+    return `${this.source} in ${this.location}`;
   }
 }
 
@@ -386,20 +427,21 @@ export class TemplateBinding {
 
 //INTERFACE
 export class AstVisitor {
-  visitChain(ast:Chain, args){}
-  visitImplicitReceiver(ast:ImplicitReceiver, args) {}
-  visitConditional(ast:Conditional, args) {}
   visitAccessMember(ast:AccessMember, args) {}
-  visitKeyedAccess(ast:KeyedAccess, args) {}
-  visitBinary(ast:Binary, args) {}
-  visitPrefixNot(ast:PrefixNot, args) {}
-  visitLiteralPrimitive(ast:LiteralPrimitive, args) {}
-  visitFormatter(ast:Formatter, args) {}
   visitAssignment(ast:Assignment, args) {}
+  visitBinary(ast:Binary, args) {}
+  visitChain(ast:Chain, args){}
+  visitCollection(ast:Collection, args) {}
+  visitConditional(ast:Conditional, args) {}
+  visitFormatter(ast:Formatter, args) {}
+  visitFunctionCall(ast:FunctionCall, args) {}
+  visitImplicitReceiver(ast:ImplicitReceiver, args) {}
+  visitKeyedAccess(ast:KeyedAccess, args) {}
   visitLiteralArray(ast:LiteralArray, args) {}
   visitLiteralMap(ast:LiteralMap, args) {}
+  visitLiteralPrimitive(ast:LiteralPrimitive, args) {}
   visitMethodCall(ast:MethodCall, args) {}
-  visitFunctionCall(ast:FunctionCall, args) {}
+  visitPrefixNot(ast:PrefixNot, args) {}
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];

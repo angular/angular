@@ -1,0 +1,4 @@
+name: benchpress
+environment:
+  sdk: '>=1.4.0'
+dependencies:

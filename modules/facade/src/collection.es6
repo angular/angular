@@ -1,4 +1,4 @@
-import {int} from 'facade/lang';
+import {int, isJsObject} from 'facade/lang';
 
 export var List = window.Array;
 export var Map = window.Map;
@@ -6,6 +6,7 @@ export var Set = window.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
+  static clone(m:Map):Map { return new Map(m); }
   static createFromStringMap(stringMap):Map {
     var result = MapWrapper.create();
     for (var prop in stringMap) {
@@ -23,14 +24,22 @@ export class MapWrapper {
   static size(m) {return m.size;}
   static delete(m, k) { m.delete(k); }
   static clear(m) { m.clear(); }
+  static iterable(m) { return m; }
+  static keys(m) { return m.keys(); }
+  static values(m) { return m.values(); }
 }
 
-// TODO: cannot export StringMap as a type as Dart does not support
-// renaming types...
+// TODO: cannot export StringMap as a type as Dart does not support renaming types...
+/**
+ * Wraps Javascript Objects
+ */
 export class StringMapWrapper {
-  // Note: We are not using Object.create(null) here due to
-  // performance!
-  static create():Object { return { }; }
+  static create():Object {
+    // Note: We are not using Object.create(null) here due to
+    // performance!
+    // http://jsperf.com/ng2-object-create-null
+    return { };
+  }
   static get(map, key) {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
@@ -45,7 +54,9 @@ export class StringMapWrapper {
   }
   static forEach(map, callback) {
     for (var prop in map) {
-      callback(map[prop], prop);
+      if (map.hasOwnProperty(prop)) {
+        callback(map[prop], prop);
+      }
     }
   }
 }
@@ -55,8 +66,8 @@ export class ListWrapper {
   static createFixedSize(size):List { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
-  static clone(array) {
-    return Array.prototype.slice.call(array, 0);
+  static clone(array:List) {
+    return array.slice(0);
   }
   static map(array, fn) {
     return array.map(fn);
@@ -110,10 +121,28 @@ export class ListWrapper {
     list.splice(index, 0, value);
   }
   static removeAt(list, index:int) {
+    var res = list[index];
     list.splice(index, 1);
+    return res;
   }
   static clear(list) {
     list.splice(0, list.length);
+  }
+  static join(list, s) {
+    return list.join(s);
+  }
+}
+
+export function isListLikeIterable(obj):boolean {
+  if (!isJsObject(obj)) return false;
+  return ListWrapper.isList(obj) ||
+         (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
+         Symbol.iterator in obj);   // JS Iterable have a Symbol.iterator prop
+}
+
+export function iterateListLike(obj, fn:Function) {
+  for (var item of obj) {
+    fn(item);
   }
 }
 
