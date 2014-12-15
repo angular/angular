@@ -57,7 +57,7 @@ module.exports = function generateNavigationDoc() {
             name: doc.id,
             type: 'guide'
           };
-          guidesDoc.value.pages.push(guideDoc)
+          guidesDoc.value.pages.push(guideDoc);
         }
       });
       docs.push(guidesDoc);
