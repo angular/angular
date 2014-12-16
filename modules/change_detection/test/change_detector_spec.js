@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 
-import {isPresent, isBlank, isJsObject} from 'facade/lang';
+import {isPresent, isBlank, isJsObject, BaseException} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {Parser} from 'change_detection/parser/parser';
@@ -12,15 +12,16 @@ import {
   ProtoRecordRange,
   RecordRange,
   ChangeDispatcher,
-  ProtoRecord
+  ProtoRecord,
+  ChangeDetectionError
 } from 'change_detection/change_detector';
 
 import {Record} from 'change_detection/record';
 
 export function main() {
-  function ast(exp:string) {
+  function ast(exp:string, location:string = 'location') {
     var parser = new Parser(new Lexer());
-    return parser.parseBinding(exp, 'location');
+    return parser.parseBinding(exp, location);
   }
 
   function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
@@ -271,7 +272,7 @@ export function main() {
           var context = new TestData("not collection / null");
           var c = createChangeDetector('a', 'a', context, null, true);
           expect(() => c["changeDetector"].detectChanges())
-            .toThrowError("Collection records must be array like, map like or null");
+            .toThrowError(new RegExp("Collection records must be array like, map like or null"));
         });
 
         describe("list", () => {
@@ -452,6 +453,20 @@ export function main() {
             var cd = new ChangeDetector(rr, true);
             cd.detectChanges();
           }).toThrowError(new RegExp("Expression 'a in location' has changed after it was checked"));
+        });
+      });
+
+      describe("error handling", () => {
+        it("should wrap exceptions into ChangeDetectionError", () => {
+          try {
+            var rr = createRange(new TestDispatcher(), ast("invalidProp", "someComponent"), 1);
+            detectChangesInRange(rr);
+
+            throw new BaseException("fail");
+          } catch (e) {
+            expect(e).toBeAnInstanceOf(ChangeDetectionError);
+            expect(e.location).toEqual("invalidProp in someComponent");
+          }
         });
       });
     });

@@ -19,6 +19,22 @@ class ExpressionChangedAfterItHasBeenChecked extends Error {
   }
 }
 
+export class ChangeDetectionError extends Error {
+  message:string;
+  originalException:any;
+  location:string;
+
+  constructor(record:Record, originalException:any) {
+    this.originalException = originalException;
+    this.location = record.protoRecord.expressionAsString;
+    this.message = `${this.originalException} in [${this.location}]`;
+  }
+
+  toString():string {
+    return this.message;
+  }
+}
+
 export class ChangeDetector {
   _rootRecordRange:RecordRange;
   _enforceNoNewChanges:boolean;
@@ -42,28 +58,32 @@ export class ChangeDetector {
     var record = this._rootRecordRange.findFirstEnabledRecord();
     var currentRange, currentGroup;
 
-    while (isPresent(record)) {
-      if (record.check()) {
-        count++;
-        if (record.terminatesExpression()) {
-          if (throwOnChange) throw new ExpressionChangedAfterItHasBeenChecked(record);
-          currentRange = record.recordRange;
-          currentGroup = record.groupMemento();
-          updatedRecords = this._addRecord(updatedRecords, record);
+    try {
+      while (isPresent(record)) {
+        if (record.check()) {
+          count++;
+          if (record.terminatesExpression()) {
+            if (throwOnChange) throw new ExpressionChangedAfterItHasBeenChecked(record);
+            currentRange = record.recordRange;
+            currentGroup = record.groupMemento();
+            updatedRecords = this._addRecord(updatedRecords, record);
+          }
         }
-      }
 
-      if (isPresent(updatedRecords)) {
-        var nextEnabled = record.nextEnabled;
-        if (isBlank(nextEnabled) ||                       // we have reached the last enabled record
-            currentRange != nextEnabled.recordRange ||    // the next record is in a different range
-            currentGroup != nextEnabled.groupMemento()) { // the next record is in a different group
-          currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
-          updatedRecords = null;
+        if (isPresent(updatedRecords)) {
+          var nextEnabled = record.nextEnabled;
+          if (isBlank(nextEnabled) ||                       // we have reached the last enabled record
+              currentRange != nextEnabled.recordRange ||    // the next record is in a different range
+              currentGroup != nextEnabled.groupMemento()) { // the next record is in a different group
+            currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
+            updatedRecords = null;
+          }
         }
-      }
 
-      record = record.findNextEnabled();
+        record = record.findNextEnabled();
+      }
+    } catch(e) {
+      throw new ChangeDetectionError(record, e);
     }
 
     return count;
