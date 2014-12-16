@@ -30,10 +30,6 @@ export function toBool(obj) {
   return !!obj;
 }
 
-export function autoConvertAdd(a, b) {
-  return a + b;
-}
-
 export function stringify(token):string {
   if (typeof token === 'string') {
     return token;

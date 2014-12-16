@@ -33,21 +33,6 @@ bool toBool(x) {
   return false;
 }
 
-autoConvertAdd(a, b) {
-  if (a != null && b != null) {
-    if (a is String && b is! String) {
-      return a + b.toString();
-    }
-    if (a is! String && b is String) {
-      return a.toString() + b;
-    }
-    return a + b;
-  }
-  if (a != null) return a;
-  if (b != null) return b;
-  return 0;
-}
-
 String stringify(obj) => obj.toString();
 
 class StringWrapper {

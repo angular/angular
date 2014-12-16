@@ -134,25 +134,6 @@ export function main() {
           expectEval("(1+2)*3").toEqual((1+2)*3);
         });
 
-        it('should auto convert ints to strings', () => {
-          expectEval("'str ' + 4").toEqual("str 4");
-          expectEval("4 + ' str'").toEqual("4 str");
-          expectEval("4 + 4").toEqual(8);
-          expectEval("4 + 4 + ' str'").toEqual("8 str");
-          expectEval("'str ' + 4 + 4").toEqual("str 44");
-        });
-
-        it('should throw when one of the operands is null', () => {
-          expectEvalError("null < 0").toThrowError();
-          expectEvalError("null * 3").toThrowError();
-          expectEvalError("null + 6").toThrowError();
-          expectEvalError("5 + null").toThrowError();
-          expectEvalError("null - 4").toThrowError();
-          expectEvalError("3 - null").toThrowError();
-          expectEvalError("null + null").toThrowError();
-          expectEvalError("null - null").toThrowError();
-        });
-
         it('should parse an empty string', () => {
           expectEval('').toBeNull();
         });
@@ -168,7 +149,7 @@ export function main() {
         });
 
         it('should evaluate map', () => {
-          expectEval("{}").toEqual(MapWrapper.create());
+          expectEval("{}").toEqual({});
           expectEval("{a:'b'}['a']").toEqual('b');
           expectEval("{'a':'b'}['a']").toEqual('b');
           expectEval("{\"a\":'b'}['a']").toEqual('b');
@@ -285,15 +266,15 @@ export function main() {
         });
 
         it("should support map updates", () => {
-          var context = td(MapWrapper.createFromPairs([["key", 100]]));
+          var context = td({"key" : 100});
           expectEval('a["key"] = 200', context).toEqual(200);
-          expect(MapWrapper.get(context.a, "key")).toEqual(200);
+          expect(context.a["key"]).toEqual(200);
         });
 
         it("should support array/map updates", () => {
-          var context = td([MapWrapper.createFromPairs([["key", 100]])]);
+          var context = td([{"key" : 100}]);
           expectEval('a[0]["key"] = 200', context).toEqual(200);
-          expect(MapWrapper.get(context.a[0], "key")).toEqual(200);
+          expect(context.a[0]["key"]).toEqual(200);
         });
 
         it('should allow assignment after array dereference', () => {

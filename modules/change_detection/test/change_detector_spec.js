@@ -118,11 +118,11 @@ export function main() {
       it("should support literal maps", () => {
         var c = createChangeDetector('map', '{z:1}');
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
+        expect(c["dispatcher"].loggedValues[0][0]['z']).toEqual(1);
 
         c = createChangeDetector('map', '{z:a}', new TestData(1));
         c["changeDetector"].detectChanges();
-        expect(MapWrapper.get(c["dispatcher"].loggedValues[0][0], 'z')).toEqual(1);
+        expect(c["dispatcher"].loggedValues[0][0]['z']).toEqual(1);
       });
 
       it("should support binary operations", () => {

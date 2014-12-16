@@ -1,5 +1,5 @@
 import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "facade/lang";
-import {List, Map, ListWrapper, MapWrapper} from "facade/collection";
+import {List, Map, ListWrapper, StringMapWrapper} from "facade/collection";
 import {ContextWithVariableBindings} from "./context_with_variable_bindings";
 
 export class AST {
@@ -162,14 +162,7 @@ export class KeyedAccess extends AST {
   eval(context) {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);
-
-    if (obj instanceof Map) {
-      return MapWrapper.get(obj, key);
-    } else if (obj instanceof List) {
-      return ListWrapper.get(obj, key);
-    } else {
-      return obj[key];
-    }
+    return obj[key];
   }
 
   get isAssignable() {
@@ -179,14 +172,7 @@ export class KeyedAccess extends AST {
   assign(context, value) {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);
-
-    if (obj instanceof Map) {
-      MapWrapper.set(obj, key, value);
-    } else if (obj instanceof List) {
-      ListWrapper.set(obj, key, value);
-    } else {
-      obj[key] = value;
-    }
+    obj[key] = value;
     return value;
   }
 
@@ -251,9 +237,9 @@ export class LiteralMap extends AST {
   }
 
   eval(context) {
-    var res = MapWrapper.create();
+    var res = StringMapWrapper.create();
     for(var i = 0; i < this.keys.length; ++i) {
-      MapWrapper.set(res, this.keys[i], this.values[i].eval(context));
+      StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context));
     }
     return res;
   }
@@ -281,13 +267,8 @@ export class Binary extends AST {
     }
     var right = this.right.eval(context);
 
-    // Null check for the operations.
-    if (isBlank(left)|| isBlank(right)) {
-      throw new BaseException("One of the operands is not defined");
-    }
-
     switch (this.operation) {
-      case '+'  : return autoConvertAdd(left, right);
+      case '+'  : return left + right;
       case '-'  : return left - right;
       case '*'  : return left * right;
       case '/'  : return left / right;

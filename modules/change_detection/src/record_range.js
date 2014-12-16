@@ -13,7 +13,7 @@ import {
 
 import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException,
   NumberWrapper} from 'facade/lang';
-import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
+import {List, Map, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {
   AccessMember,
@@ -524,9 +524,9 @@ function _arrayFn(length:int) {
 
 function _mapFn(keys:List, length:int) {
   function buildMap(values) {
-    var res = MapWrapper.create();
+    var res = StringMapWrapper.create();
     for(var i = 0; i < keys.length; ++i) {
-      MapWrapper.set(res, keys[i], values[i]);
+      StringMapWrapper.set(res, keys[i], values[i]);
     }
     return res;
   }
@@ -554,6 +554,5 @@ function _mapGetter(key) {
 }
 
 function _keyedAccess(obj, args) {
-  var key = args[0];
-  return obj instanceof Map ? MapWrapper.get(obj, key):obj[key];
+  return obj[args[0]];
 }
