@@ -1,4 +1,4 @@
-import *  as app from './index';
+import *  as app from './index_common';
 
 import {Component, Decorator, TemplateConfig, NgElement} from 'core/core';
 import {Parser} from 'change_detection/parser/parser';
@@ -48,7 +48,6 @@ function setup() {
     "parameters": [],
     "annotations": []
   });
-
 
   reflector.registerType(Parser, {
     "factory": (lexer) => new Parser(lexer),
