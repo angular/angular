@@ -3,6 +3,8 @@ import *  as app from './index';
 import {Component, Decorator, TemplateConfig, NgElement} from 'core/core';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {LifeCycle} from 'core/life_cycle/life_cycle';
+import {ChangeDetector} from 'change_detection/change_detector';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
@@ -72,6 +74,11 @@ function setup() {
     "annotations": []
   });
 
+  reflector.registerType(LifeCycle, {
+    "factory": (cd) => new LifeCycle(cd),
+    "parameters": [[ChangeDetector]],
+    "annotations": []
+  });
 
   reflector.registerGetters({
     "greeting": (a) => a.greeting
