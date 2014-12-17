@@ -394,6 +394,82 @@ export class Record {
     }
     return record;
   }
+
+  inspect() {
+    return _inspect(this);
+  }
+
+  inspectRange() {
+    return this.recordRange.inspect();
+  }
+}
+
+function _inspect(record:Record) {
+  function mode() {
+    switch (record.getType()) {
+      case RECORD_TYPE_PROPERTY:
+        return "property";
+      case RECORD_TYPE_INVOKE_METHOD:
+        return "invoke_method";
+      case RECORD_TYPE_INVOKE_CLOSURE:
+        return "invoke_closure";
+      case RECORD_TYPE_INVOKE_PURE_FUNCTION:
+        return "pure_function";
+      case RECORD_TYPE_INVOKE_FORMATTER:
+        return "invoke_formatter";
+      case RECORD_TYPE_CONST:
+        return "const";
+      case RECORD_TYPE_KEY_VALUE:
+        return "key_value";
+      case RECORD_TYPE_ARRAY:
+        return "array";
+      case RECORD_TYPE_NULL:
+        return "null";
+      case RECORD_TYPE_MARKER:
+        return "marker";
+      default:
+        return "unexpected type!";
+    }
+  }
+
+  function disabled() {
+    return record.isDisabled() ? "disabled" : "enabled";
+  }
+
+  function description() {
+    var name = isPresent(record.protoRecord) ? record.protoRecord.name : "";
+    var exp = isPresent(record.protoRecord) ? record.protoRecord.expressionAsString : "";
+    var currValue = record.currentValue;
+    var context = record.context;
+
+    return `${mode()}, ${name}, ${disabled()} ` +
+      ` Current: ${currValue}, Context: ${context} in [${exp}]`;
+  }
+
+  if (isBlank(record)) return null;
+  if (!(record instanceof Record)) return record;
+
+  return new _RecordInspect(description(), record);
+}
+
+class _RecordInspect {
+  description:string;
+  record:Record;
+
+  constructor(description:string,record:Record) {
+    this.description = description;
+    this.record = record;
+  }
+
+  get next() {
+    return _inspect(this.record.next);
+  }
+  get nextEnabled() {
+    return _inspect(this.record.nextEnabled);
+  }
+  get dest() {
+    return _inspect(this.record.dest);
+  }
 }
 
 function isSame(a, b) {

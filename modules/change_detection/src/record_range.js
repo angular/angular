@@ -284,6 +284,18 @@ export class RecordRange {
     record.funcOrValue = proto.funcOrValue;
     record.updateContext(context);
   }
+
+  inspect() {
+    return _inspect(this);
+  }
+}
+
+function _inspect(recordRange:RecordRange) {
+  var res = [];
+  for(var r = recordRange.headRecord.next; r != recordRange.tailRecord; r = r.next){
+    ListWrapper.push(res, r.inspect().description);
+  }
+  return res;
 }
 
 function _link(a:Record, b:Record) {
@@ -336,14 +348,14 @@ class ProtoRecordCreator {
 
   visitBinary(ast:Binary, dest) {
     var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION,
-                                _operationToFunction(ast.operation), 2, null, dest);
+                                _operationToFunction(ast.operation), 2, ast.operation, dest);
     ast.left.visit(this, new Destination(record, 0));
     ast.right.visit(this, new Destination(record, 1));
     this.add(record);
   }
 
   visitPrefixNot(ast:PrefixNot, dest) {
-    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _operation_negate, 1, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _operation_negate, 1, "-", dest);
     ast.expression.visit(this, new Destination(record, 0));
     this.add(record);
   }
@@ -359,7 +371,7 @@ class ProtoRecordCreator {
   }
 
   visitFormatter(ast:Formatter, dest) {
-    var record = this.construct(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.allArgs.length, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.allArgs.length, ast.name, dest);
     for (var i = 0; i < ast.allArgs.length; ++i) {
       ast.allArgs[i].visit(this, new Destination(record, i));
     }
@@ -367,7 +379,7 @@ class ProtoRecordCreator {
   }
 
   visitMethodCall(ast:MethodCall, dest) {
-    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, ast.fn, ast.args.length, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, ast.fn, ast.args.length, ast.name, dest);
     for (var i = 0; i < ast.args.length; ++i) {
       ast.args[i].visit(this, new Destination(record, i));
     }
@@ -395,7 +407,7 @@ class ProtoRecordCreator {
   }
 
   visitConditional(ast:Conditional, dest) {
-    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _cond, 3, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _cond, 3, "?:", dest);
     ast.condition.visit(this, new Destination(record, 0));
     ast.trueExp.visit(this, new Destination(record, 1));
     ast.falseExp.visit(this, new Destination(record, 2));
@@ -403,7 +415,7 @@ class ProtoRecordCreator {
   }
 
   visitKeyedAccess(ast:KeyedAccess, dest) {
-    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, _keyedAccess, 1, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_METHOD, _keyedAccess, 1, "[]", dest);
     ast.obj.visit(this, new Destination(record, null));
     ast.key.visit(this, new Destination(record, 0));
     this.add(record);
@@ -411,7 +423,7 @@ class ProtoRecordCreator {
 
   visitLiteralArray(ast:LiteralArray, dest) {
     var length = ast.expressions.length;
-    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _arrayFn(length), length, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _arrayFn(length), length, "Array()", dest);
     for (var i = 0; i < length; ++i) {
       ast.expressions[i].visit(this, new Destination(record, i));
     }
@@ -420,7 +432,7 @@ class ProtoRecordCreator {
 
   visitLiteralMap(ast:LiteralMap, dest) {
     var length = ast.values.length;
-    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _mapFn(ast.keys, length), length, null, dest);
+    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION, _mapFn(ast.keys, length), length, "Map()", dest);
     for (var i = 0; i < length; ++i) {
       ast.values[i].visit(this, new Destination(record, i));
     }

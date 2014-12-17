@@ -404,7 +404,7 @@ class _ParseAST {
       var args = this.parseCallArguments();
       this.expectCharacter($RPAREN);
       var fn = this.reflector.method(id);
-      return new MethodCall(receiver, fn, args);
+      return new MethodCall(receiver, id, fn, args);
 
     } else {
       var getter = this.reflector.getter(id);

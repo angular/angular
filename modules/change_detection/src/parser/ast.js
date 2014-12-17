@@ -345,10 +345,12 @@ export class MethodCall extends AST {
   receiver:AST;
   fn:Function;
   args:List;
-  constructor(receiver:AST, fn:Function, args:List) {
+  name:string;
+  constructor(receiver:AST, name:string, fn:Function, args:List) {
     this.receiver = receiver;
     this.fn = fn;
     this.args = args;
+    this.name = name;
   }
 
   eval(context) {

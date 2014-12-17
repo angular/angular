@@ -9,7 +9,8 @@ import {
   ChangeDetector,
   ProtoRecordRange,
   RecordRange,
-  ProtoRecord
+  ProtoRecord,
+  RECORD_TYPE_CONST
   } from 'change_detection/change_detector';
 
 import {Record} from 'change_detection/record';
@@ -335,6 +336,27 @@ export function main() {
         expect(enabledRecords(parent, recordNames)).toEqual([
           'record1', 'record2', 'record3', 'record4'
         ]);
+      });
+    });
+
+    describe("inspect", () => {
+      it("should return the description of the record", () => {
+        var proto = new ProtoRecord(null, RECORD_TYPE_CONST, 1, 0, "name", null, "group", "expression");
+        var record = new Record(null, proto, null);
+
+        var i = record.inspect();
+        expect(i.description).toContain("const, name, enabled");
+      });
+
+      it("should return the description of the records in the range", () => {
+        var proto = new ProtoRecord(null, RECORD_TYPE_CONST, 1, 0, "name", null, "group", "expression");
+        var record = new Record(null, proto, null);
+        var range = new RecordRange(null, null);
+        range.addRecord(record);
+
+        var i = range.inspect();;
+        expect(i.length).toEqual(1);
+        expect(i[0]).toContain("const, name, enabled");
       });
     });
   });
