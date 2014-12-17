@@ -309,7 +309,7 @@ function _linkEnabled(a:Record, b:Record) {
 }
 
 export class ChangeDispatcher {
-  onRecordChange(record:Record, context) {}
+  onRecordChange(groupMemento, records:List<Record>) {}
 }
 
 //todo: vsavkin: Create Array and Context destinations?
