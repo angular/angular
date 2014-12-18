@@ -1,10 +1,6 @@
 var Chrome = require('./chrome/chrome');
 var Q = require('q');
 
-// TODO: log errors from window
-// and abort the test in this case!
-// -> look at chrome.Page....
-
 var chrome = new Chrome({
   port: 9222,
   host: 'localhost'
@@ -38,15 +34,17 @@ chrome.newTab().then(function(t) {
   return chrome.connectToTab(tab);
 }).then(function(tc) {
   tabConnection = tc;
+  enableRemoteLogger(tabConnection);
 }).then(function() {
   return navigateWithWait(tabConnection, benchmark.url, 2000);
 }).then(function() {
-  // warm up V8
+  // warm up the browser
   return multiClick(
     tabConnection,
     repeatArr(benchmark.clickPath, benchmark.warmupCount)
   );
 }).then(function() {
+  // measure
   return measure(function() {
     return multiClick(
       tabConnection,
@@ -54,6 +52,7 @@ chrome.newTab().then(function(t) {
     );
   });
 }).then(function(data) {
+  // report
   var records = data.events;
   var ngMetrics = data.ngMetrics;
   var stats = {
@@ -161,7 +160,6 @@ function navigateWithWait(tabConnection, url, timeout) {
   }
 }
 
-// TODO: use later...
 function click(tabConnection, cssSelector) {
   var _rect;
   return evaluate(tabConnection,
@@ -298,6 +296,15 @@ function sumStats(record, result) {
       record.type === 'CompositeLayers') {
     result.paint += diffTime;
   }
+}
+
+function enableRemoteLogger(tabConnection) {
+  tabConnection.Console.enable();
+  tabConnection.Console.messageAdded(function(message) {
+    // TODO: collect errors and make the test fail..
+    // TODO: don't report stacktrace for non errors...
+    console.log(message.message.text, message.message.stackTrace);
+  });
 }
 
 function repeatArr(arr, count) {
