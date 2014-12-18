@@ -21,6 +21,7 @@
     "karma-jasmine": "^0.2.2",
     "merge": "^1.2.0",
     "q": "^1.0.1",
+    "ws": "0.4.x",
     "run-sequence": "^0.3.6",
     "systemjs": "^0.9.1",
     "through2": "^0.6.1",
