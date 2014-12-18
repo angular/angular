@@ -20,7 +20,7 @@
 ### File endings
 
 * `*.js`: javascript files that get transpiled to Dart and EcmaScript 5
-* `*.es6`: javascript files that get transpiled only to EcmaScript 5
+* `*.es6`: javascript files that get transpiled only to EcmaScript 6
 * `*.es5`: javascript files that don't get transpiled
 * `*.dart`: dart files that don't get transpiled
 
