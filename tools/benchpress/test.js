@@ -108,10 +108,12 @@ function navigateWithWait(tabConnection, url, timeout) {
   var noRequestTimeoutId;
   var overallTimeoutId = setTimeout(pageLoadTimeout, timeout);
 
-  tabConnection.addListener('Page.loadEventFired', pageLoadEventListener);
-  tabConnection.addListener('Network.requestWillBeSent', requestWillBeSent);
-  tabConnection.addListener('Network.loadingFinished', loadingFinished);
-  tabConnection.addListener('Network.loadingFailed', loadingFinished);
+  var cancelListeners = [
+    tabConnection.Page.loadEventFired(pageLoadEventListener),
+    tabConnection.Network.requestWillBeSent(requestWillBeSent),
+    tabConnection.Network.loadingFinished(loadingFinished),
+    tabConnection.Network.loadingFailed(loadingFinished)
+  ];
   tabConnection.Network.enable();
   tabConnection.Page.enable();
   tabConnection.Page.navigate({'url': url}).catch(function(error) {
@@ -122,10 +124,9 @@ function navigateWithWait(tabConnection, url, timeout) {
   return defer.promise;
 
   function cleanup() {
-    tabConnection.removeListener('Page.loadEventFired', pageLoadEventListener);
-    tabConnection.removeListener('Network.requestWillBeSent', requestWillBeSent);
-    tabConnection.removeListener('Network.loadingFinished', loadingFinished);
-    tabConnection.removeListener('Network.loadingFailed', loadingFinished);
+    cancelListeners.forEach(function(cancel) {
+      cancel();
+    });
     if (overallTimeoutId) {
       clearTimeout(overallTimeoutId);
     }
@@ -170,7 +171,6 @@ function navigateWithWait(tabConnection, url, timeout) {
       }, 100);
     }
   }
-
 }
 
 // TODO: use later...
@@ -226,13 +226,13 @@ function measure(callback) {
     _results = results;
     return tabConnection.HeapProfiler.collectGarbage();
   }).then(function() {
-    tabConnection.addListener('Timeline.stopped', stoppedListener);
+    var remoteStopped = tabConnection.Timeline.stopped(stoppedListener);
     var defer = Q.defer();
     tabConnection.Timeline.stop();
     return defer.promise;
 
     function stoppedListener(message) {
-      tabConnection.removeListener('Timeline.stopped', stoppedListener);
+      remoteStopped();
       defer.resolve({
         events: message.events,
         result: _results

@@ -58,16 +58,12 @@ function TabConnection(ws, tabData) {
   this._data = tabData;
   this._deferreds = {};
   this._nextCommandId = 1;
-  this._domainState = {
-    started: {},
-    enabled: {}
-  };
   this._ws.on('message', this._onMessage.bind(this));
   this._addCommandShorthands(protocol);
+  this._events = new events.EventEmitter();
 };
 
-util.inherits(TabConnection, events.EventEmitter);
-merge({
+TabConnection.prototype = {
   disconnect: function () {
     this._ws.removeAllListeners();
     this._ws.close();
@@ -94,8 +90,7 @@ merge({
       delete this._deferreds[message.id];
     } else if (message.method) {
       // event
-      this.emit('event', message);
-      this.emit(message.method, message.params);
+      this._events.emit(message.method, message.params);
     }
   },
   _prepareHelp: function(type, object, fields) {
@@ -111,46 +106,20 @@ merge({
   },
   _addCommand: function(domainName, command) {
     var self = this;
-    var sendFn = function (params) {
+    self[domainName][command.name] = function (params) {
       return self._send(domainName + '.' + command.name, params);
     };
-    var domainFn = sendFn;
-    if (command.name === 'start') {
-      domainFn = this._wrapStartFn('started', sendFn);
-    } else if (command.name === 'enable') {
-      domainFn = this._wrapStartFn('enabled', sendFn);
-    } else if (command.name === 'stop') {
-      domainFn = this._wrapStopFn('started', sendFn);
-    } else if (command.name === 'disable') {
-      domainFn = this._wrapStopFn('enabled', sendFn);
-    }
-
-    self[domainName][command.name] = domainFn;
     var help = this._prepareHelp('command', command, ['description', 'parameters']);
     self[domainName][command.name].help = help;
-  },
-  _wrapStartFn: function(property, sendFn) {
-    var self = this;
-    return function(params) {
-      self._domainState[property] = 'pending';
-      return sendFn(params).then(function(message) {
-        self._domainState[property] = true;
-      }, function() {
-        self._domainState[property] = false;
-      });
-    }
-  },
-  _wrapStopFn: function(property, sendFn) {
-    var self = this;
-    return function(params) {
-      self._domainState[property] = false;
-      return sendFn(params);
-    };
   },
   _addEvent: function(domainName, event) {
     var self = this;
     self[domainName][event.name] = function (handler) {
-      self.on(domainName + '.' + event.name, handler);
+      var eventName = domainName + '.' + event.name;
+      self._events.addListener(eventName, handler);
+      return function() {
+        self._events.removeListener(eventName, handler);
+      };
     };
     var help = this._prepareHelp('event', event, ['parameters']);
     self[domainName][event.name].help = help;
@@ -183,13 +152,7 @@ merge({
       }
     });
   }
-}, TabConnection.prototype);
+};
 
-
-function merge(obj, target) {
-  for (var prop in obj) {
-    target[prop] = obj[prop];
-  }
-}
 
 module.exports = Chrome;
