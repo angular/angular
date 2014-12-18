@@ -192,7 +192,9 @@ export function main() {
         'boundprop2': 'prop2',
         'boundprop3': 'prop3'
       });
-      var directives = [SomeDecoratorDirectiveWithBinding, SomeTemplateDirectiveWithBinding, SomeComponentDirectiveWithBinding];
+      var directives = [SomeDecoratorDirectiveWith2Bindings,
+                        SomeTemplateDirectiveWithBinding,
+                        SomeComponentDirectiveWithBinding];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
       var pipeline = createPipeline({
         propertyBindings: propertyBindings,
@@ -210,7 +212,8 @@ export function main() {
       evalContext.prop3 = 'c';
       changeDetector.detectChanges();
 
-      expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWithBinding).decorProp).toBe('a');
+      expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp).toBe('a');
+      expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp2).toBe('b');
       expect(view.elementInjectors[0].get(SomeTemplateDirectiveWithBinding).templProp).toBe('b');
       expect(view.elementInjectors[0].get(SomeComponentDirectiveWithBinding).compProp).toBe('c');
     });
@@ -262,8 +265,25 @@ class SomeDecoratorDirective {
 })
 class SomeDecoratorDirectiveWithBinding {
   decorProp;
+  decorProp2;
   constructor() {
     this.decorProp = null;
+    this.decorProp2 = null;
+  }
+}
+
+@Decorator({
+  bind: {
+    'boundprop1': 'decorProp',
+    'boundprop2': 'decorProp2'
+  }
+})
+class SomeDecoratorDirectiveWith2Bindings {
+  decorProp;
+  decorProp2;
+  constructor() {
+    this.decorProp = null;
+    this.decorProp2 = null;
   }
 }
 

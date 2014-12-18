@@ -122,13 +122,14 @@ export class ElementBinderBuilder extends CompileStep {
         var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
         if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
         protoView.bindDirectiveProperty(
-          directiveIndex++,
+          directiveIndex,
           expression,
           dirBindingName,
           reflector.setter(dirBindingName),
           isContentWatch
         );
       });
+      directiveIndex++;
     });
   }
 }
