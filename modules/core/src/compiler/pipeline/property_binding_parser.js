@@ -11,7 +11,7 @@ import {CompileControl} from './compile_control';
 import {interpolationToExpression} from './text_interpolation_parser';
 
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\]]+)\\)');
+var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)');
 
 /**
  * Parses the property bindings on a single element.

@@ -43,6 +43,10 @@ export function main() {
     it('should detect () syntax', () => {
       var results = createPipeline().process(createElement('<div (click)="b()"></div>'));
       expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+      // "(click[])" is not an expected syntax and is only used to validate the regexp
+      results = createPipeline().process(createElement('<div (click[])="b()"></div>'));
+      expect(MapWrapper.get(results[0].eventBindings, 'click[]').source).toEqual('b()');
+
     });
 
     it('should detect on- syntax', () => {
