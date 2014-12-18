@@ -3,10 +3,12 @@ import {benchmark, benchmarkStep} from 'benchpress/benchpress';
 import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {Record, ProtoRecord} from 'change_detection/record';
 
 import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'core/core';
 
 import {CompilerCache} from 'core/compiler/compiler';
+import {View, DirectivePropertyMemento} from 'core/compiler/view';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
 
@@ -21,8 +23,8 @@ function setup() {
   // as they are needed in all benchmarks...
 
   reflector.registerType(AppComponent, {
-    'factory': () => new AppComponent(),
-    'parameters': [],
+    'factory': (view) => new AppComponent(view),
+    'parameters': [[View]],
     'annotations' : [new Component({
       selector: 'app',
       template: new TemplateConfig({
@@ -149,6 +151,69 @@ export function main() {
 
   });
 
+
+  benchmark(`tree benchmark no change detection`, function() {
+    var count = 0;
+
+    var dataMemento = new DirectivePropertyMemento(0, 0, 'data', (o, v) => o.data = v);
+    var leftMemento = new DirectivePropertyMemento(1, 0, 'ngIf', (o, v) => o.ngIf = v);
+    var rightMemento = new DirectivePropertyMemento(2, 0, 'ngIf', (o, v) => o.ngIf = v);
+    var textProto = new ProtoRecord(null, 0, null, 0, null, 0, 0, null);
+    var dataProto = new ProtoRecord(null, 0, null, 0, null, dataMemento, 0, null);
+    var leftProto = new ProtoRecord(null, 0, null, 0, null, leftMemento, 0, null);
+    var rightProto = new ProtoRecord(null, 0, null, 0, null, rightMemento, 0, null);
+    var textRecord = new Record(null, textProto, null);
+    var leftRecord = new Record(null, leftProto, null);
+    var rightRecord = new Record(null, rightProto, null);
+    var dataRecord = new Record(null, dataProto, null);
+
+    var texts = [textRecord];
+    var lefts = [leftRecord];
+    var rights = [rightRecord];
+    var datas = [dataRecord];
+
+    function bind(view:View, data:TreeNode) {
+      dataRecord.currentValue = data;
+      view.onRecordChange(0, datas);
+
+      var shadowView = view.componentChildViews[0];
+      textRecord.currentValue = data.value;
+      shadowView.onRecordChange(0, texts);
+
+      leftRecord.currentValue = data.left !== null;
+      shadowView.onRecordChange(0, lefts);
+      if (leftRecord.currentValue) {
+        bind(shadowView.viewPorts[0].get(0), data.left);
+      }
+
+      rightRecord.currentValue = data.right !== null
+      shadowView.onRecordChange(0, rights );
+      if (rightRecord.currentValue) {
+        bind(shadowView.viewPorts[1].get(0), data.right);
+      }
+    }
+
+    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
+      // TODO: We need an initial value as otherwise the getter for data.value will fail
+      // --> this should be already caught in change detection!
+      app.initData = new TreeNode('', null, null);
+      bind(app.view.componentChildViews[0], app.initData);
+    });
+
+    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
+      var maxDepth = 9;
+      var values = count++ % 2 == 0 ?
+          ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+          ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+
+      app.initData = buildTree(maxDepth, values, 0);
+      bind(app.view.componentChildViews[0], app.initData);
+    });
+
+
+  });
+
+
   benchmark(`baseline tree benchmark`, function() {
     var baselineAppElement = DOM.querySelectorAll(document, 'baseline')[0];
     var rootTreeComponent = new BaseLineTreeComponent();
@@ -265,10 +330,12 @@ class BaseLineIf {
 
 class AppComponent {
   initData:TreeNode;
-  constructor() {
+  view:View;
+  constructor(view:View) {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
+    this.view = view;
   }
 }
 
