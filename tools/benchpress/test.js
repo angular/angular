@@ -1,39 +1,34 @@
 var Chrome = require('./chrome/chrome');
 var Q = require('q');
 
-// TODO: instrument tree example to distinguish times for
-// - change detection
-// - di
-// - application
-
-// TODO: maybe automatically listen to tabs and connect to them
-// to measure their performance?
+// TODO: log errors from window
+// and abort the test in this case!
+// -> look at chrome.Page....
 
 var chrome = new Chrome({
   port: 9222,
   host: 'localhost'
 });
 
+// baseline benchmark
 // var benchmark = {
-//   url: 'http://localhost:8000/benchmarks/web/tree/index.html',
-//   expression: 'window.ng2Tree.steps[0].fn();window.ng2Tree.steps[1].fn();',
-//   warmupCount: 5,
+//   url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
+//   clickPath: [
+//     '#baselineDestroyDom',
+//     '#baselineCreateDom'
+//   ],
+//   warmupCount: 10,
 //   measureCount: 10
 // };
 
-function ng2TreeBenchmark() {
-  window.ngMetrics = {
-    changeDetection: 0,
-    changeDetectionReaction: 0
-  };
-  window.ng2Tree.steps[0].fn();window.ng2Tree.steps[1].fn();
-  return window.ngMetrics;
-}
-
+// Angular2 benchmark
 var benchmark = {
-  url: 'http://localhost:8000/benchmarks/web/tree/index.html',
-  expression: '('+ng2TreeBenchmark.toString()+')()',
-  warmupCount: 5,
+  url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
+  clickPath: [
+    '#ng2TreeDestroyDom',
+    '#ng2TreeCreateDom'
+  ],
+  warmupCount: 10,
   measureCount: 10
 };
 
@@ -47,44 +42,37 @@ chrome.newTab().then(function(t) {
   return navigateWithWait(tabConnection, benchmark.url, 2000);
 }).then(function() {
   // warm up V8
-  return multipleEval(
+  return multiClick(
     tabConnection,
-    benchmark.expression,
-    benchmark.warmupCount
+    repeatArr(benchmark.clickPath, benchmark.warmupCount)
   );
 }).then(function() {
   return measure(function() {
-    return multipleEval(
+    return multiClick(
       tabConnection,
-      benchmark.expression,
-      benchmark.measureCount
+      repeatArr(benchmark.clickPath, benchmark.measureCount)
     );
   });
 }).then(function(data) {
   var records = data.events;
-  var explicitMetrics = data.result;
+  var ngMetrics = data.ngMetrics;
   var stats = {
     script: 0,
-    changeDetection: 0,
-    changeDetectionReaction: 0,
     paint: 0,
     gc: {
       time: 0,
       amount: 0
-    }
+    },
+    ngMetrics: ngMetrics
   };
   records.forEach(function(record) {
     sumStats(record, stats);
-  });
-  explicitMetrics.forEach(function(metric) {
-    stats.changeDetection += metric.changeDetection;
-    stats.changeDetectionReaction += metric.changeDetectionReaction;
   });
   console.log(JSON.stringify(stats, null, '  '));
 }).then(function() {
   return chrome.closeTab(tab);
 }, function(error) {
-  console.log('Error', error.stack);
+  console.log('Error', error.stack || error);
   return chrome.closeTab(tab);
 });
 
@@ -175,14 +163,43 @@ function navigateWithWait(tabConnection, url, timeout) {
 
 // TODO: use later...
 function click(tabConnection, cssSelector) {
+  var _rect;
   return evaluate(tabConnection,
-      'document.querySelector("'+cssSelector+'").getClientBoundingRect()'
-    ).then(function(rect) {
+    'document.querySelector("'+cssSelector+'").getBoundingClientRect()'
+  ).then(function(rect) {
+    _rect = rect;
     return tabConnection.Input.dispatchMouseEvent({
-      x: rect.left+10,
-      y: rect.top+10
+      type: 'mousePressed',
+      clickCount: 1,
+      button: 'left',
+      x: _rect.left+10,
+      y: _rect.top+10,
     });
+  }).then(function() {
+    return tabConnection.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      clickCount: 1,
+      button: 'left',
+      x: _rect.left+10,
+      y: _rect.top+10
+    });
+  }).then(function() {
+    // TODO: synchronize with requestAnimationFrame!
+    var d = Q.defer();
+    setTimeout(d.resolve, 20);
+    return d.promise;
   });
+}
+
+function multiClick(tabConnection, selectors, startIndex) {
+  startIndex = startIndex || 0;
+  if (startIndex < selectors.length) {
+    return click(tabConnection, selectors[startIndex]).then(function() {
+      return multiClick(tabConnection, selectors, startIndex+1);
+    });
+  } else {
+    return Q.resolve();
+  }
 }
 
 function evaluate(tabConnection, expression) {
@@ -192,7 +209,7 @@ function evaluate(tabConnection, expression) {
   }).then(function(message) {
     var value = message.result.value;
     if (message.wasThrown) {
-      throw value;
+      throw new Error(JSON.stringify(message.exceptionDetails, null, '  '));
     } else {
       return value;
     }
@@ -213,7 +230,10 @@ function multipleEval(tabConnection, expression, count, results) {
 
 function measure(callback) {
   var _results;
-  return tabConnection.HeapProfiler.collectGarbage().then(function() {
+  var _events;
+  return evaluate(tabConnection, '('+initNgMetrics.toString()+')()').then(function() {
+    return tabConnection.HeapProfiler.collectGarbage();
+  }).then(function() {
     return tabConnection.Timeline.start({
       // buffer events so that we don't slow down the app under test!
       bufferEvents: true,
@@ -222,23 +242,35 @@ function measure(callback) {
     });
   }).then(function() {
     return callback();
-  }).then(function(results) {
-    _results = results;
+  }).then(function() {
     return tabConnection.HeapProfiler.collectGarbage();
   }).then(function() {
-    var remoteStopped = tabConnection.Timeline.stopped(stoppedListener);
+    var removeStopped = tabConnection.Timeline.stopped(stoppedListener);
     var defer = Q.defer();
     tabConnection.Timeline.stop();
     return defer.promise;
 
     function stoppedListener(message) {
-      remoteStopped();
-      defer.resolve({
-        events: message.events,
-        result: _results
-      });
+      removeStopped();
+      _events = message.events;
+      defer.resolve();
     }
+  }).then(function() {
+    return evaluate(tabConnection, 'window.ngMetrics');
+  }).then(function(ngMetrics) {
+    console.log(ngMetrics);
+    return {
+      events: _events,
+      ngMetrics: ngMetrics
+    };
   });
+
+  function initNgMetrics() {
+    window.ngMetrics = {
+      changeDetection: 0,
+      changeDetectionReaction: 0
+    };
+  }
 }
 
 function sumStats(record, result) {
@@ -252,8 +284,9 @@ function sumStats(record, result) {
     // Note: subtracting the GCEvent time is not enough.
     // somehow frames that contained GCEvents are still slower
     // than other frames!
-    // result.script = result.script + diffTime - childDiffs;
-    result.script = result.script + diffTime;
+    if (!record.data || record.data.scriptName !== 'InjectedScript') {
+      result.script = result.script + diffTime;
+    }
   } else if (record.type === 'GCEvent') {
     result.gc.time += diffTime;
     result.gc.amount += record.data.usedHeapSizeDelta;
@@ -267,4 +300,12 @@ function sumStats(record, result) {
   }
 }
 
-
+function repeatArr(arr, count) {
+  var result = [];
+  for (var i=0; i<count; i++) {
+    for (var j=0; j<arr.length; j++) {
+      result.push(arr[j]);
+    }
+  }
+  return result;
+}

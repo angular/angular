@@ -1,4 +1,4 @@
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
+import {benchmarkSuite, benchmarkStep} from 'benchpress/benchpress';
 
 import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
@@ -127,17 +127,17 @@ export function main() {
     app = injector.get(AppComponent);
   });
 
-  benchmark(`tree benchmark`, function() {
+  benchmarkSuite(`tree benchmark`, function() {
     var count = 0;
 
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
+    benchmarkStep('ng2TreeDestroyDom', `destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
       // TODO: We need an initial value as otherwise the getter for data.value will fail
       // --> this should be already caught in change detection!
       app.initData = new TreeNode('', null, null);
       changeDetector.detectChanges();
     });
 
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
+    benchmarkStep('ng2TreeCreateDom', `createDom binary tree of depth ${MAX_DEPTH}`, function() {
       var maxDepth = 9;
       var values = count++ % 2 == 0 ?
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
@@ -149,18 +149,18 @@ export function main() {
 
   });
 
-  benchmark(`baseline tree benchmark`, function() {
+  benchmarkSuite(`baseline tree benchmark`, function() {
     var baselineAppElement = DOM.querySelectorAll(document, 'baseline')[0];
     var rootTreeComponent = new BaseLineTreeComponent();
     DOM.appendChild(baselineAppElement, rootTreeComponent.element);
 
     var count = 0;
 
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
+    benchmarkStep('baselineDestroyDom', `destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
       rootTreeComponent.update(new TreeNode('', null, null));
     });
 
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
+    benchmarkStep('baselineCreateDom', `createDom binary tree of depth ${MAX_DEPTH}`, function() {
       var maxDepth = 9;
       var values = count++ % 2 == 0 ?
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :

@@ -29,9 +29,17 @@ export class ChangeDetector {
   }
 
   detectChanges():int {
+    var startTime;
+    if (window.ngMetrics) {
+      startTime = performance.now();
+    }
     var count = this._detectChanges(false);
     if (this._enforceNoNewChanges) {
       this._detectChanges(true)
+    }
+    // TODO: move this code into benchpress.es6?!
+    if (startTime) {
+      window.ngMetrics.changeDetection += (performance.now() - startTime);
     }
     return count;
   }
@@ -58,7 +66,14 @@ export class ChangeDetector {
         if (isBlank(nextEnabled) ||                       // we have reached the last enabled record
             currentRange != nextEnabled.recordRange ||    // the next record is in a different range
             currentGroup != nextEnabled.groupMemento()) { // the next record is in a different group
+          var startTime;
+          if (window.ngMetrics) {
+            startTime = performance.now();
+          }
           currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
+          if (startTime) {
+            window.ngMetrics.changeDetectionReaction += (performance.now() - startTime);
+          }
           updatedRecords = null;
         }
       }

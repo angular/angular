@@ -8,7 +8,6 @@ var clean = require('./tools/build/clean');
 var deps = require('./tools/build/deps');
 var transpile = require('./tools/build/transpile');
 var html = require('./tools/build/html');
-var benchpress = require('./tools/build/benchpress');
 var pubspec = require('./tools/build/pubspec');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
@@ -57,9 +56,7 @@ var CONFIG = {
   },
   srcFolderMapping: {
     'default': 'lib',
-    // need a tmp folder as benchpress does not support
-    // inplace generation of the benchmarks...
-    '**/benchmark*/**': 'perf_tmp',
+    '**/benchmark*/**': 'web',
     '**/example*/**': 'web'
   },
   deps: {
@@ -121,14 +118,6 @@ var CONFIG = {
         ]
       }
     }
-  },
-  benchpress: {
-    configFile: {
-      content: 'module.exports=function(){};\n',
-      name: 'bp.conf.js'
-    },
-    mainHtmls: '*/perf_tmp/**/main.html',
-    outputFolderName: 'web'
   },
   pubspec: {
     src: 'modules/*/pubspec.yaml'
@@ -211,30 +200,6 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
   srcFolderMapping: CONFIG.srcFolderMapping,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.dart
-}));
-
-// ------------
-// benchpress
-
-gulp.task('build/benchpress.js.dev', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.js.dev,
-  outputFolderName: CONFIG.benchpress.outputFolderName
-}));
-
-gulp.task('build/benchpress.js.prod', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.js.prod,
-  outputFolderName: CONFIG.benchpress.outputFolderName
-}));
-
-gulp.task('build/benchpress.dart', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.dart,
-  outputFolderName: CONFIG.benchpress.outputFolderName
 }));
 
 
@@ -343,22 +308,19 @@ gulp.task('build.dart', function() {
   return runSequence(
     ['build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
-    'build/benchpress.dart',
     'build/analyze.dart'
   );
 });
 
 gulp.task('build.js.dev', function() {
   return runSequence(
-    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev'],
-    'build/benchpress.js.dev'
+    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev']
   );
 });
 
 gulp.task('build.js.prod', function() {
   return runSequence(
-    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
-    'build/benchpress.js.prod'
+    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod']
   );
 });
 
