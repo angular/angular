@@ -3,32 +3,41 @@ var Q = require('q');
 
 function ChromeBrowser(options) {
   this._chrome = new Chrome(options);
+  this._options = options;
 }
 
 ChromeBrowser.prototype = {
-  newTab: function(tabOptions) {
+  newTab: function() {
     var _tab;
     var self = this;
     return this._chrome.newTab().then(function(tab) {
       _tab = tab;
       return self._chrome.connectToTab(tab);
     }).then(function(tc) {
-      if (tabOptions && tabOptions.captureConsole) {
+      if (self._options.captureConsole) {
         enableRemoteLogger(tc);
       }
-      return new ChromeTab(self._chrome, _tab, tc);
+      return new ChromeTab(self._chrome, _tab, tc, self._options);
+    });
+  },
+  checkOpen: function() {
+    var self = this;
+    return this._chrome.listTabs().then(function() {
+      return self;
     });
   }
 };
 
-function ChromeTab(chrome, tabData, tabConnection) {
+function ChromeTab(chrome, tabData, tabConnection, options) {
   this._tabConnection = tabConnection;
   this._tabData = tabData;
   this._chrome = chrome;
+  this._options = options;
 }
 
 ChromeTab.prototype = {
-  navigate: function(url, timeout) {
+  navigate: function(url) {
+    var timeout = this._options.pageLoadTimeout || 2000;
     return navigateWithWait(this._tabConnection, url, timeout);
   },
   click: function(cssSelector) {

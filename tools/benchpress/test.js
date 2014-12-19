@@ -1,85 +1,66 @@
-var Browser = require('./chrome/browser');
 var Q = require('q');
 
-var browser = new Browser({
-  port: 9222,
-  host: 'localhost'
-});
+module.exports = function(browser, options) {
+  // baseline benchmark
+  // var benchmark = {
+  //   url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
+  //   clickPath: [
+  //     '#baselineDestroyDom',
+  //     '#baselineCreateDom'
+  //   ],
+  //   warmupCount: 10,
+  //   measureCount: 10
+  // };
 
-// baseline benchmark
-// var benchmark = {
-//   url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
-//   clickPath: [
-//     '#baselineDestroyDom',
-//     '#baselineCreateDom'
-//   ],
-//   warmupCount: 10,
-//   measureCount: 10
-// };
-
-// Angular2 benchmark
-var benchmark = {
-  url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
-  clickPath: [
-    '#ng2TreeDestroyDom',
-    '#ng2TreeCreateDom'
-  ],
-  warmupCount: 10,
-  measureCount: 10
+  // Angular2 benchmark
+  var benchmark = {
+    url: 'http://localhost:8000/benchmarks/web/tree/tree_benchmark.html',
+    clickPath: [
+      '#ng2TreeDestroyDom',
+      '#ng2TreeCreateDom'
+    ],
+    warmupCount: 10,
+    measureCount: 10
+  };
+  return browser.newTab().then(function(tab) {
+    return tab.navigate(benchmark.url).then(function() {
+      // warm up the browser
+      return multiClick(
+        tab,
+        repeatArr(benchmark.clickPath, benchmark.warmupCount)
+      );
+    }).then(function() {
+      // measure
+      return tab.measure({
+        'gc': true,
+        'script': true,
+        'render': true,
+        'ngMetrics': {
+          changeDetection: true,
+          changeDetectionReaction: true
+        }
+      }, function() {
+        return multiClick(
+          tab,
+          repeatArr(benchmark.clickPath, benchmark.measureCount)
+        );
+      });
+    }).then(function(stats) {
+      // report
+      // TODO: save in file or compare against other benchmark!
+      console.log(JSON.stringify(stats, null, '  '));
+    }).then(function() {
+      return tab.close();
+    }, function(error) {
+      tab.close().then(function() {
+        return Q.reject(error);
+      });
+    });
+  }).then(null, function(error) {
+    console.log('Error', error.stack || error);
+  });
 };
 
-var _tab;
-browser.newTab({
-  captureConsole: true
-}).then(function(tab) {
-  _tab = tab;
-}).then(function() {
-  return _tab.navigate(benchmark.url, 2000);
-}).then(function() {
-  // warm up the browser
-  return multiClick(
-    _tab,
-    repeatArr(benchmark.clickPath, benchmark.warmupCount)
-  );
-}).then(function() {
-  // measure
-  return _tab.measure({
-    'gc': true,
-    'script': true,
-    'render': true,
-    'ngMetrics': {
-      changeDetection: true,
-      changeDetectionReaction: true
-    }
-  }, function() {
-    return multiClick(
-      _tab,
-      repeatArr(benchmark.clickPath, benchmark.measureCount)
-    );
-  });
-}).then(function(stats) {
-  // report
-  // TODO: save in file or compare against other benchmark!
-  console.log(JSON.stringify(stats, null, '  '));
-}).then(function() {
-  return _tab.close();
-}, function(error) {
-  console.log('Error', error.stack || error);
-  return _tab.close();
-});
-
-process.on( "SIGINT", function() {
-  console.log('CLOSING [SIGINT]');
-  if (_tab) {
-    _tab.close().then(function() {
-      process.exit();
-    }, function() {
-      process.exit();
-    });
-  } else {
-    process.exit();
-  }
-});
 
 function multiClick(tab, selectors, startIndex) {
   startIndex = startIndex || 0;
