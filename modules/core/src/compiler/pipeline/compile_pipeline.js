@@ -24,13 +24,12 @@ export class CompilePipeline {
 
   _process(results, parent:CompileElement, current:CompileElement) {
     var additionalChildren = this._control.internalProcess(results, 0, parent, current);
-
-    var childNodes = DOM.templateAwareRoot(current.element).childNodes;
-    for (var i=0; i<childNodes.length; i++) {
-      var node = childNodes[i];
-      if (node.nodeType === Node.ELEMENT_NODE) {
+    var node = DOM.templateAwareRoot(current.element).firstChild;
+    while (isPresent(node)){
+      if(node.nodeType === Node.ELEMENT_NODE) {
         this._process(results, current, new CompileElement(node));
       }
+      node = DOM.nextSibling(node);
     }
 
     if (isPresent(additionalChildren)) {
