@@ -1,6 +1,7 @@
 import {CONSTRUCTOR, FROM} from 'traceur/src/syntax/PredefinedName';
 import {
   AT,
+  CLASS,
   CLOSE_CURLY,
   CLOSE_PAREN,
   CLOSE_SQUARE,
@@ -8,6 +9,8 @@ import {
   COMMA,
   EQUAL,
   EQUAL_EQUAL_EQUAL,
+  EXTENDS,
+  IMPLEMENTS,
   IMPORT,
   OPEN_CURLY,
   OPEN_PAREN,
@@ -454,6 +457,32 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 
   visitNamedParameterList(tree) {
     this.writeList_(tree.parameterNameAndValues, COMMA, false);
+  }
+
+  visitClassDeclaration(tree) {
+    this.writeAnnotations_(tree.annotations);
+    this.write_(CLASS);
+    this.writeSpace_();
+    this.visitAny(tree.name);
+
+    if (tree.superClass) {
+      this.writeSpace_();
+      this.write_(EXTENDS);
+      this.writeSpace_();
+      this.visitAny(tree.superClass);
+    }
+
+    if (tree.implements) {
+      this.writeSpace_();
+      this.write_(IMPLEMENTS);
+      this.writeSpace_();
+      this.writeList_(tree.implements.interfaces, COMMA, false);
+    }
+
+    this.writeSpace_();
+    this.write_(OPEN_CURLY);
+    this.writelnList_(tree.elements);
+    this.write_(CLOSE_CURLY);
   }
 
   toString() {

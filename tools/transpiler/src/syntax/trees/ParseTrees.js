@@ -137,4 +137,41 @@ export class ObjectPatternBindingElement extends ParseTree {
     return OBJECT_PATTERN_BINDING_ELEMENT;
   }
 }
+
+export class ImplementsDeclaration extends ParseTree {
+  /**
+   * @param {SourceRange} location
+   * @param {Array.<ParseTree>} interfaces
+   */
+  constructor(location, interfaces) {
+    this.location = location;
+    this.interfaces = interfaces;
+  }
+
+  /**
+   * @param {ParseTreeTransformer} transformer
+   */
+  transform(transformer) {
+    if (transformer.transformImplementsDeclaration) {
+      return transformer.transformImplementsDeclaration(this);
+    }
+    return this;
+  }
+
+  /**
+   * @param {ParseTreeVisitor} visitor
+   */
+  visit(visitor) {
+    if (visitor.visitImplementsDeclaration) {
+      visitor.visitImplementsDeclaration(this);
+    }
+  }
+
+  /**
+   * @type {ParseTreeType}
+   */
+  get type() {
+    return ParseTreeType.IMPLEMENTS_DECLARATION;
+  }
+}
 var OBJECT_PATTERN_BINDING_ELEMENT = ParseTreeType.OBJECT_PATTERN_BINDING_ELEMENT;
