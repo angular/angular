@@ -10,7 +10,7 @@ import {ChangeDetector} from 'change_detection/change_detector';
 import {RecordRange} from 'change_detection/record_range';
 import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
-import {AnnotatedType} from './compiler/annotated_type';
+import {DirectiveMetadata} from './compiler/directive_metadata';
 import {List, ListWrapper} from 'facade/collection';
 import {PromiseWrapper} from 'facade/async';
 import {VmTurnZone} from 'core/zone/vm_turn_zone';
@@ -36,7 +36,7 @@ export function documentDependentBindings(appComponentType) {
         // TODO(rado): inspect annotation here and warn if there are bindings,
         // lightDomServices, and other component annotations that are skipped
         // for bootstrapping components.
-        return reader.annotatedType(appComponentType);
+        return reader.read(appComponentType);
       }, [DirectiveMetadataReader]),
 
       bind(appElementToken).toFactory((appComponentAnnotatedType, appDocument) => {

@@ -1,20 +1,20 @@
 import {ProtoElementInjector} from './element_injector';
 import {FIELD} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
-import {AnnotatedType} from './annotated_type';
+import {DirectiveMetadata} from './directive_metadata';
 import {List, Map} from 'facade/collection';
 import {ProtoView} from './view';
 
 export class ElementBinder {
   protoElementInjector:ProtoElementInjector;
-  componentDirective:AnnotatedType;
-  templateDirective:AnnotatedType;
+  componentDirective:DirectiveMetadata;
+  templateDirective:DirectiveMetadata;
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
   nestedProtoView: ProtoView;
   events:Map;
   constructor(
-    protoElementInjector: ProtoElementInjector, componentDirective:AnnotatedType, templateDirective:AnnotatedType) {
+    protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata, templateDirective:DirectiveMetadata) {
     this.protoElementInjector = protoElementInjector;
     this.componentDirective = componentDirective;
     this.templateDirective = templateDirective;

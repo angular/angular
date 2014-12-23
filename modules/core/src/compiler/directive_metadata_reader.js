@@ -1,27 +1,29 @@
 import {Type, isPresent, BaseException, stringify} from 'facade/lang';
-import {Directive} from '../annotations/annotations';
-import {AnnotatedType} from './annotated_type';
+import {Directive, Component} from '../annotations/annotations';
+import {DirectiveMetadata} from './directive_metadata';
 import {reflector} from 'reflection/reflection';
+import {ShadowDom, ShadowDomStrategy, ShadowDomNative} from './shadow_dom';
 
-/**
- * Interface representing a way of extracting [Directive] annotations from
- * [Type]. This interface has three native implementations:
- *
- * 1) JavaScript native implementation
- * 2) Dart reflective implementation
- * 3) Dart transformer generated implementation
- */
 export class DirectiveMetadataReader {
-  annotatedType(type:Type):AnnotatedType {
+  read(type:Type):DirectiveMetadata {
     var annotations = reflector.annotations(type);
     if (isPresent(annotations)) {
       for (var i=0; i<annotations.length; i++) {
         var annotation = annotations[i];
+
+        if (annotation instanceof Component) {
+          return new DirectiveMetadata(type, annotation, this.parseShadowDomStrategy(annotation));
+        }
+
         if (annotation instanceof Directive) {
-          return new AnnotatedType(type, annotation);
+          return new DirectiveMetadata(type, annotation, null);
         }
       }
     }
     throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
+  }
+
+  parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
+    return isPresent(annotation.shadowDom) ? annotation.shadowDom : ShadowDomNative;
   }
 }

@@ -1,7 +1,7 @@
 import {DOM, document} from 'facade/dom';
 import {isBlank, Type} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
-import {AnnotatedType} from 'core/compiler/annotated_type';
+import {DirectiveMetadata} from 'core/compiler/directive_metadata';
 
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
@@ -81,7 +81,7 @@ export function main() {
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
   var compiler = new Compiler(null, reader, new Parser(new Lexer()), cache);
-  var annotatedComponent = reader.annotatedType(BenchmarkComponent);
+  var annotatedComponent = reader.read(BenchmarkComponent);
 
   var templateNoBindings = loadTemplate('templateNoBindings', COUNT);
   var templateWithBindings = loadTemplate('templateWithBindings', COUNT);

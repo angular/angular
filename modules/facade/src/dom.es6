@@ -40,6 +40,9 @@ export class DOM {
   static childNodes(el):NodeList {
     return el.childNodes;
   }
+  static clearNodes(el) {
+    el.innerHTML = "";
+  }
   static appendChild(el, node) {
     el.appendChild(node);
   }

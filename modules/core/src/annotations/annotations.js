@@ -1,6 +1,7 @@
 import {ABSTRACT, CONST, normalizeBlank} from 'facade/lang';
 import {List} from 'facade/collection';
 import {TemplateConfig} from './template_config';
+import {ShadowDomStrategy} from '../compiler/shadow_dom';
 
 
 @ABSTRACT()
@@ -35,6 +36,7 @@ export class Component extends Directive {
   lightDomServices:any; //List;
   shadowDomServices:any; //List;
   componentServices:any; //List;
+  shadowDom:any; //ShadowDomStrategy;
 
   @CONST()
   constructor({
@@ -44,7 +46,8 @@ export class Component extends Directive {
     lightDomServices,
     shadowDomServices,
     componentServices,
-    implementsTypes
+    implementsTypes,
+    shadowDom
     }:{
     selector:String,
       bind:Object,
@@ -52,7 +55,8 @@ export class Component extends Directive {
       lightDomServices:List,
       shadowDomServices:List,
       componentServices:List,
-      implementsTypes:List
+      implementsTypes:List,
+      shadowDom:ShadowDomStrategy
   }={})
   {
     super({
@@ -65,6 +69,7 @@ export class Component extends Directive {
     this.lightDomServices = lightDomServices;
     this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;
+    this.shadowDom = shadowDom;
   }
 }
 

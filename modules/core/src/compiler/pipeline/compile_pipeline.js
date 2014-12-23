@@ -4,7 +4,7 @@ import {Element, Node, DOM} from 'facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
-import {AnnotatedType} from '../annotated_type';
+import {DirectiveMetadata} from '../directive_metadata';
 
 /**
  * CompilePipeline for executing CompileSteps recursively for

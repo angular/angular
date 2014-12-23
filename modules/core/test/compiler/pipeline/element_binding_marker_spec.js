@@ -32,7 +32,7 @@ export function main() {
             }
             if (isPresent(directives)) {
               for (var i=0; i<directives.length; i++) {
-                current.addDirective(reader.annotatedType(directives[i]));
+                current.addDirective(reader.read(directives[i]));
               }
             }
           }), new ElementBindingMarker()

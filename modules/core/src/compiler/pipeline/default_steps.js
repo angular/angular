@@ -9,7 +9,7 @@ import {ElementBindingMarker} from './element_binding_marker';
 import {ProtoViewBuilder} from './proto_view_builder';
 import {ProtoElementInjectorBuilder} from './proto_element_injector_builder';
 import {ElementBinderBuilder} from './element_binder_builder';
-import {AnnotatedType} from 'core/compiler/annotated_type';
+import {DirectiveMetadata} from 'core/compiler/directive_metadata';
 import {stringify} from 'facade/lang';
 
 /**
@@ -17,8 +17,8 @@ import {stringify} from 'facade/lang';
  * Takes in an HTMLElement and produces the ProtoViews,
  * ProtoElementInjectors and ElementBinders in the end.
  */
-export function createDefaultSteps(parser:Parser, compiledComponent: AnnotatedType,
-    directives: List<AnnotatedType>) {
+export function createDefaultSteps(parser:Parser, compiledComponent: DirectiveMetadata,
+    directives: List<DirectiveMetadata>) {
   var compilationUnit = stringify(compiledComponent.type);
 
   return [

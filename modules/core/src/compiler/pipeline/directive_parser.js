@@ -4,7 +4,7 @@ import {TemplateElement} from 'facade/dom';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
-import {AnnotatedType} from '../annotated_type';
+import {DirectiveMetadata} from '../directive_metadata';
 import {Template} from '../../annotations/annotations';
 import {Component} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
@@ -28,13 +28,13 @@ import {CompileControl} from './compile_control';
  */
 export class DirectiveParser extends CompileStep {
   _selectorMatcher:SelectorMatcher;
-  constructor(directives:List<AnnotatedType>) {
+  constructor(directives:List<DirectiveMetadata>) {
     this._selectorMatcher = new SelectorMatcher();
     for (var i=0; i<directives.length; i++) {
-      var annotatedType = directives[i];
+      var directiveMetadata = directives[i];
       this._selectorMatcher.addSelectable(
-        CssSelector.parse(annotatedType.annotation.selector),
-        annotatedType
+        CssSelector.parse(directiveMetadata.annotation.selector),
+        directiveMetadata
       );
     }
   }

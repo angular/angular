@@ -105,12 +105,6 @@ export class ViewPort {
     }
   }
 
-  static moveViewNodesIntoParent(parent, view) {
-    for (var i = 0; i < view.nodes.length; ++i) {
-      DOM.appendChild(parent, view.nodes[i]);
-    }
-  }
-
   static moveViewNodesAfterSibling(sibling, view) {
     for (var i = view.nodes.length - 1; i >= 0; --i) {
       DOM.insertAfter(sibling, view.nodes[i]);

@@ -59,7 +59,7 @@ export function main() {
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
-                current.addDirective(reflector.annotatedType(directives[i]));
+                current.addDirective(reflector.read(directives[i]));
               }
             }
             if (hasBinding) {

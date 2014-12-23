@@ -47,6 +47,9 @@ class DOM {
   static List<Node> childNodes(el) {
     return el.childNodes;
   }
+  static clearNodes(el) {
+    el.nodes = [];
+  }
   static appendChild(el, node) {
     el.append(node);
   }

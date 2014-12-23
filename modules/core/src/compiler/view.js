@@ -6,7 +6,7 @@ import {AST} from 'change_detection/parser/ast';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
-import {AnnotatedType} from './annotated_type';
+import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'reflection/types';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
 import {Injector} from 'di/di';
@@ -350,7 +350,8 @@ export class ProtoView {
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
         view.recordRange.addRange(childView.recordRange);
-        ViewPort.moveViewNodesIntoParent(element.createShadowRoot(), childView);
+
+        binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
         ListWrapper.push(componentChildViews, childView);
       }
     }
@@ -367,7 +368,7 @@ export class ProtoView {
   }
 
   bindElement(protoElementInjector:ProtoElementInjector,
-      componentDirective:AnnotatedType = null, templateDirective:AnnotatedType = null):ElementBinder {
+      componentDirective:DirectiveMetadata = null, templateDirective:DirectiveMetadata = null):ElementBinder {
     var elBinder = new ElementBinder(protoElementInjector, componentDirective, templateDirective);
     ListWrapper.push(this.elementBinders, elBinder);
     return elBinder;
@@ -434,7 +435,7 @@ export class ProtoView {
   // and the component template is already compiled into protoView.
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
-      insertionElement, rootComponentAnnotatedType: AnnotatedType): ProtoView {
+      insertionElement, rootComponentAnnotatedType: DirectiveMetadata): ProtoView {
     DOM.addClass(insertionElement, 'ng-binding');
     var rootProtoView = new ProtoView(insertionElement, new ProtoRecordRange());
     rootProtoView.instantiateInPlace = true;

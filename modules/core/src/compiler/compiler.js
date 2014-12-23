@@ -11,7 +11,7 @@ import {CompilePipeline} from './pipeline/compile_pipeline';
 import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
-import {AnnotatedType} from './annotated_type';
+import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
 
 /**
@@ -59,12 +59,12 @@ export class Compiler {
     this._compilerCache = cache;
   }
 
-  createSteps(component:AnnotatedType):List<CompileStep> {
+  createSteps(component:DirectiveMetadata):List<CompileStep> {
     var annotation: Component = component.annotation;
     var directives = annotation.template.directives;
     var annotatedDirectives = ListWrapper.create();
     for (var i=0; i<directives.length; i++) {
-      ListWrapper.push(annotatedDirectives, this._reader.annotatedType(directives[i]));
+      ListWrapper.push(annotatedDirectives, this._reader.read(directives[i]));
     }
     return createDefaultSteps(this._parser, component, annotatedDirectives);
   }
@@ -75,12 +75,12 @@ export class Compiler {
     // transitively via the _templateLoader and store them in templateCache
 
     return PromiseWrapper.resolve(this.compileAllLoaded(
-      templateCache, this._reader.annotatedType(component), templateRoot)
+      templateCache, this._reader.read(component), templateRoot)
     );
   }
 
   // public so that we can compile in sync in performance tests.
-  compileAllLoaded(templateCache, component:AnnotatedType, templateRoot:Element = null):ProtoView {
+  compileAllLoaded(templateCache, component:DirectiveMetadata, templateRoot:Element = null):ProtoView {
     var rootProtoView = this._compilerCache.get(component.type);
     if (isPresent(rootProtoView)) {
       return rootProtoView;

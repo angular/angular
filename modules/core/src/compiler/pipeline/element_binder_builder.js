@@ -8,7 +8,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {ProtoRecordRange} from 'change_detection/record_range';
 
 import {Component, Directive} from '../../annotations/annotations';
-import {AnnotatedType} from '../annotated_type';
+import {DirectiveMetadata} from '../directive_metadata';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from '../view';
 import {ProtoElementInjector} from '../element_injector';
 import {ElementBinder} from '../element_binder';

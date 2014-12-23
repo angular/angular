@@ -66,7 +66,7 @@ export function main() {
         current.inheritedProtoView = new ProtoView(current.element, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
         if (current.element === mainEl) {
-          current.componentDirective = reader.annotatedType(NestedComponent);
+          current.componentDirective = reader.read(NestedComponent);
         }
       });
       compiler.compile(MainComponent, mainEl).then( (protoView) => {
@@ -97,7 +97,7 @@ export function main() {
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = new ProtoView(current.element, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
-        current.componentDirective = reader.annotatedType(RecursiveComponent);
+        current.componentDirective = reader.read(RecursiveComponent);
       });
       compiler.compile(RecursiveComponent, null).then( (protoView) => {
         expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);

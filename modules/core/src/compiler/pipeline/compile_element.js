@@ -1,7 +1,7 @@
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
 import {Element, DOM} from 'facade/dom';
 import {int, isBlank, isPresent} from 'facade/lang';
-import {AnnotatedType} from '../annotated_type';
+import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator} from '../../annotations/annotations';
 import {Component} from '../../annotations/annotations';
 import {Template} from '../../annotations/annotations';
@@ -24,9 +24,9 @@ export class CompileElement {
   propertyBindings:Map;
   eventBindings:Map;
   variableBindings:Map;
-  decoratorDirectives:List<AnnotatedType>;
-  templateDirective:AnnotatedType;
-  componentDirective:AnnotatedType;
+  decoratorDirectives:List<DirectiveMetadata>;
+  templateDirective:DirectiveMetadata;
+  componentDirective:DirectiveMetadata;
   isViewRoot:boolean;
   hasBindings:boolean;
   inheritedProtoView:ProtoView;
@@ -110,7 +110,7 @@ export class CompileElement {
     MapWrapper.set(this.eventBindings, eventName, expression);
   }
 
-  addDirective(directive:AnnotatedType) {
+  addDirective(directive:DirectiveMetadata) {
     var annotation = directive.annotation;
     if (annotation instanceof Decorator) {
       if (isBlank(this.decoratorDirectives)) {

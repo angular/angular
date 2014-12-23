@@ -1,6 +1,7 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
+import {ShadowDomEmulated} from 'core/compiler/shadow_dom';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/core';
@@ -29,8 +30,8 @@ export function main() {
 
     beforeEach(() => {
       parser = new Parser(new Lexer());
-      someComponentDirective = new DirectiveMetadataReader().annotatedType(SomeComponent);
-      someTemplateDirective = new DirectiveMetadataReader().annotatedType(SomeTemplate);
+      someComponentDirective = new DirectiveMetadataReader().read(SomeComponent);
+      someTemplateDirective = new DirectiveMetadataReader().read(SomeTemplate);
     });
 
     describe('instatiated from protoView', () => {
@@ -258,15 +259,6 @@ export function main() {
           return view;
         }
 
-        it('should create shadow dom', () => {
-          var subpv = new ProtoView(createElement('<span>hello shadow dom</span>'), new ProtoRecordRange());
-          var pv = createComponentWithSubPV(subpv);
-
-          var view = createNestedView(pv);
-
-          expect(view.nodes[0].shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hello shadow dom');
-        });
-
         it('should expose component services to the component', () => {
           var subpv = new ProtoView(createElement('<span></span>'), new ProtoRecordRange());
           var pv = createComponentWithSubPV(subpv);
@@ -316,6 +308,28 @@ export function main() {
           view.componentChildViews.forEach(
               (view) => expectViewHasNoDirectiveInstances(view));
         });
+
+        it('should create shadow dom', () => {
+          var subpv = new ProtoView(createElement('<span>hello shadow dom</span>'), new ProtoRecordRange());
+          var pv = createComponentWithSubPV(subpv);
+
+          var view = createNestedView(pv);
+
+          expect(view.nodes[0].shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hello shadow dom');
+        });
+
+        it('should use the provided shadow DOM strategy', () => {
+          var subpv = new ProtoView(createElement('<span>hello shadow dom</span>'), new ProtoRecordRange());
+
+          var pv = new ProtoView(createElement('<cmp class="ng-binding"></cmp>'), new ProtoRecordRange());
+          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeComponentWithEmulatedShadowDom], true));
+          binder.componentDirective = new DirectiveMetadataReader().read(SomeComponentWithEmulatedShadowDom);
+          binder.nestedProtoView = subpv;
+
+          var view = createNestedView(pv);
+          expect(view.nodes[0].childNodes[0].childNodes[0].nodeValue).toEqual('hello shadow dom');
+        });
+
       });
 
       describe('with template views', () => {
@@ -483,6 +497,12 @@ class SomeComponent {
   constructor(service: SomeService) {
     this.service = service;
   }
+}
+
+@Component({
+  shadowDom: ShadowDomEmulated
+})
+class SomeComponentWithEmulatedShadowDom {
 }
 
 @Decorator({
