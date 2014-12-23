@@ -3,7 +3,7 @@ import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
 import {reflector} from 'reflection/reflection';
 import {isPresent} from 'facade/lang';
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
+import {document, DOM} from 'facade/dom';
 
 import {
   ChangeDetector,
@@ -12,7 +12,7 @@ import {
 } from 'change_detection/change_detector';
 
 
-var ITERATIONS = 200000;
+var ITERATIONS = 500000;
 
 class Obj {
   field0;
@@ -155,28 +155,25 @@ function setUpChangeDetection() {
 
 export function main () {
   setUpReflector();
+  var baselineHead = setUpBaseline();
+  var ng2ChangeDetector = setUpChangeDetection();
 
-  benchmark(`Baseline`, function () {
-    var head = setUpBaseline();
-
-    benchmarkStep('run', function () {
-      var current = head;
-      while (isPresent(current)) {
-        if (current.getter(current.obj) !== current.previousValue) {
-          throw "should not happen";
-        }
-        current = current.next;
+  function baselineDetectChanges(_) {
+    var current = baselineHead;
+    while (isPresent(current)) {
+      if (current.getter(current.obj) !== current.previousValue) {
+        throw "should not happen";
       }
-    });
-  });
+      current = current.next;
+    }
+  }
 
-  benchmark(`Change Detection`, function() {
-    var cd = setUpChangeDetection();
+  function ng2DetectChanges(_) {
+    ng2ChangeDetector.detectChanges();
+  }
 
-    benchmarkStep('run', function() {
-      cd.detectChanges();
-    });
-  });
+  DOM.on(DOM.querySelector(document, '#ng2DetectChanges'), 'click', ng2DetectChanges);
+  DOM.on(DOM.querySelector(document, '#baselineDetectChanges'), 'click', baselineDetectChanges);
 }
 
 

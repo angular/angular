@@ -36,6 +36,10 @@ export class CompilerCache {
     }
     return result;
   }
+
+  clear() {
+    this._cache = MapWrapper.create();
+  }
 }
 
 /**

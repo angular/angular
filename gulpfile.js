@@ -8,11 +8,12 @@ var clean = require('./tools/build/clean');
 var deps = require('./tools/build/deps');
 var transpile = require('./tools/build/transpile');
 var html = require('./tools/build/html');
-var benchpress = require('./tools/build/benchpress');
 var pubspec = require('./tools/build/pubspec');
+var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
+
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
 // configuration
@@ -43,23 +44,18 @@ var _HTLM_DEFAULT_SCRIPTS_JS = [
 
 
 var CONFIG = {
-  commands: {
-    pub: process.platform === 'win32' ? 'pub.bat' : 'pub',
-    dartanalyzer: process.platform === "win32" ? "dartanalyzer.bat" : "dartanalyzer"
-  },
   dest: {
     js: {
       all: 'dist/js',
       dev: 'dist/js/dev',
-      prod: 'dist/js/prod'
+      prod: 'dist/js/prod',
+      dart2js: 'dist/js/dart2js'
     },
     dart: 'dist/dart'
   },
   srcFolderMapping: {
     'default': 'lib',
-    // need a tmp folder as benchpress does not support
-    // inplace generation of the benchmarks...
-    '**/benchmark*/**': 'perf_tmp',
+    '**/benchmark*/**': 'web',
     '**/example*/**': 'web'
   },
   deps: {
@@ -76,12 +72,12 @@ var CONFIG = {
   },
   transpile: {
     src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6'],
-      dart: ['modules/**/*.js']
+      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/**/perf/**/*'],
+      dart: ['modules/**/*.js', '!modules/**/perf/**/*']
     },
     copy: {
-      js: ['modules/**/*.es5'],
-      dart: ['modules/**/*.dart']
+      js: ['modules/**/*.es5', '!modules/**/perf/**/*'],
+      dart: ['modules/**/*.dart', '!modules/**/perf/**/*']
     },
     options: {
       js: {
@@ -121,14 +117,6 @@ var CONFIG = {
         ]
       }
     }
-  },
-  benchpress: {
-    configFile: {
-      content: 'module.exports=function(){};\n',
-      name: 'bp.conf.js'
-    },
-    mainHtmls: '*/perf_tmp/**/main.html',
-    outputFolderName: 'web'
   },
   pubspec: {
     src: 'modules/*/pubspec.yaml'
@@ -214,31 +202,6 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
 }));
 
 // ------------
-// benchpress
-
-gulp.task('build/benchpress.js.dev', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.js.dev,
-  outputFolderName: CONFIG.benchpress.outputFolderName
-}));
-
-gulp.task('build/benchpress.js.prod', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.js.prod,
-  outputFolderName: CONFIG.benchpress.outputFolderName
-}));
-
-gulp.task('build/benchpress.dart', benchpress(gulp, gulpPlugins, {
-  mainHtmls: CONFIG.benchpress.mainHtmls,
-  configFile: CONFIG.benchpress.configFile,
-  buildDir: CONFIG.dest.dart,
-  outputFolderName: CONFIG.benchpress.outputFolderName
-}));
-
-
-// ------------
 // pubspec
 
 gulp.task('build/pubspec.dart', pubspec(gulp, gulpPlugins, {
@@ -248,7 +211,7 @@ gulp.task('build/pubspec.dart', pubspec(gulp, gulpPlugins, {
 }));
 
 // ------------
-// pubspec
+// dartanalyzer
 
 gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
@@ -256,14 +219,30 @@ gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
   srcFolderMapping: CONFIG.srcFolderMapping
 }));
 
+// ------------
+// pubbuild
+
+gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
+  src: CONFIG.dest.dart,
+  dest: CONFIG.dest.js.dart2js,
+  command: DART_SDK.PUB
+}));
+
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.dev
+  path: CONFIG.dest.js.dev,
+  port: 8000
 }));
 
 gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.prod
+  path: CONFIG.dest.js.prod,
+  port: 8001
+}));
+
+gulp.task('serve.js.dart2js', jsserve(gulp, gulpPlugins, {
+  path: CONFIG.dest.js.dart2js,
+  port: 8002
 }));
 
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
@@ -343,22 +322,20 @@ gulp.task('build.dart', function() {
   return runSequence(
     ['build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
-    'build/benchpress.dart',
+    'build/pubbuild.dart',
     'build/analyze.dart'
   );
 });
 
 gulp.task('build.js.dev', function() {
   return runSequence(
-    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev'],
-    'build/benchpress.js.dev'
+    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev']
   );
 });
 
 gulp.task('build.js.prod', function() {
   return runSequence(
-    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
-    'build/benchpress.js.prod'
+    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod']
   );
 });
 

@@ -1,5 +1,3 @@
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
-
 import {ChangeDetector} from 'change_detection/change_detector';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
@@ -9,6 +7,7 @@ import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from
 import {CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
+import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 import {reflector} from 'reflection/reflection';
 import {DOM, document, Element} from 'facade/dom';
@@ -16,7 +15,7 @@ import {isPresent} from 'facade/lang';
 
 var MAX_DEPTH = 9;
 
-function setup() {
+function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
   // as they are needed in all benchmarks...
 
@@ -98,6 +97,12 @@ function setup() {
     'annotations': []
   });
 
+  reflector.registerType(LifeCycle, {
+    "factory": (cd) => new LifeCycle(cd),
+    "parameters": [[ChangeDetector]],
+    "annotations": []
+  });
+
 
   reflector.registerGetters({
     'value': (a) => a.value,
@@ -115,61 +120,62 @@ function setup() {
     'data': (a,v) => a.data = v,
     'ngIf': (a,v) => a.ngIf = v
   });
-
-  return bootstrap(AppComponent);
 }
 
 export function main() {
+  setupReflector();
+
   var app;
   var changeDetector;
-  setup().then((injector) => {
-    changeDetector = injector.get(ChangeDetector);
-    app = injector.get(AppComponent);
-  });
+  var baselineRootTreeComponent;
+  var count = 0;
 
-  benchmark(`tree benchmark`, function() {
-    var count = 0;
+  function ng2DestroyDom(_) {
+    // TODO: We need an initial value as otherwise the getter for data.value will fail
+    // --> this should be already caught in change detection!
+    app.initData = new TreeNode('', null, null);
+    changeDetector.detectChanges();
+  }
 
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
-      // TODO: We need an initial value as otherwise the getter for data.value will fail
-      // --> this should be already caught in change detection!
-      app.initData = new TreeNode('', null, null);
-      changeDetector.detectChanges();
+  function ng2CreateDom(_) {
+    var values = count++ % 2 == 0 ?
+      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+
+    app.initData = buildTree(MAX_DEPTH, values, 0);
+    changeDetector.detectChanges();
+  }
+
+  function initNg2() {
+    bootstrap(AppComponent).then((injector) => {
+      changeDetector = injector.get(ChangeDetector);
+      app = injector.get(AppComponent);
+      DOM.on(DOM.querySelector(document, '#ng2DestroyDom'), 'click', ng2DestroyDom);
+      DOM.on(DOM.querySelector(document, '#ng2CreateDom'), 'click', ng2CreateDom);
     });
+  }
 
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
-      var maxDepth = 9;
-      var values = count++ % 2 == 0 ?
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+  function baselineDestroyDom(_) {
+    baselineRootTreeComponent.update(new TreeNode('', null, null));
+  }
 
-      app.initData = buildTree(maxDepth, values, 0);
-      changeDetector.detectChanges();
-    });
+  function baselineCreateDom(_) {
+    var values = count++ % 2 == 0 ?
+      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
-  });
+    baselineRootTreeComponent.update(buildTree(MAX_DEPTH, values, 0));
+  }
 
-  benchmark(`baseline tree benchmark`, function() {
-    var baselineAppElement = DOM.querySelectorAll(document, 'baseline')[0];
-    var rootTreeComponent = new BaseLineTreeComponent();
-    DOM.appendChild(baselineAppElement, rootTreeComponent.element);
+  function initBaseline() {
+    baselineRootTreeComponent = new BaseLineTreeComponent();
+    DOM.appendChild(DOM.querySelector(document, 'baseline'), baselineRootTreeComponent.element);
+    DOM.on(DOM.querySelector(document, '#baselineDestroyDom'), 'click', baselineDestroyDom);
+    DOM.on(DOM.querySelector(document, '#baselineCreateDom'), 'click', baselineCreateDom);
+  }
 
-    var count = 0;
-
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
-      rootTreeComponent.update(new TreeNode('', null, null));
-    });
-
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
-      var maxDepth = 9;
-      var values = count++ % 2 == 0 ?
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
-
-      rootTreeComponent.update(buildTree(maxDepth, values, 0));
-    });
-
-  });
+  initNg2();
+  initBaseline();
 }
 
 class TreeNode {

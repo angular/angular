@@ -12,6 +12,4 @@ dependencies:
     path: ../core
   change_detection:
     path: ../change_detection
-  benchpress:
-    path: ../benchpress
   browser: '>=0.10.0 <0.11.0'

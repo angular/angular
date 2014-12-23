@@ -1,5 +1,3 @@
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
-
 import {DOM, document} from 'facade/dom';
 import {isBlank, Type} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
@@ -20,10 +18,7 @@ import {reflector} from 'reflection/reflection';
 
 var COUNT = 30;
 
-var compiler;
-var annotatedComponent;
-
-function setup() {
+function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
     "factory": () => new BenchmarkComponent(),
     "parameters": [],
@@ -79,47 +74,34 @@ function setup() {
 
     "prop": (a,v) => a.prop = v
   });
-
-  var reader = new CachingDirectiveMetadataReader();
-  compiler = new Compiler(null, reader, new Parser(new Lexer()), new CompilerCache());
-  annotatedComponent = reader.annotatedType(BenchmarkComponent);
 }
 
 export function main() {
-  setup();
+  setupReflector();
+  var reader = new DirectiveMetadataReader();
+  var cache = new CompilerCache();
+  var compiler = new Compiler(null, reader, new Parser(new Lexer()), cache);
+  var annotatedComponent = reader.annotatedType(BenchmarkComponent);
 
-  benchmark(`Compiler.compile 5*${COUNT} element no bindings`, function() {
-    var template = loadTemplate('templateNoBindings', COUNT);
+  var templateNoBindings = loadTemplate('templateNoBindings', COUNT);
+  var templateWithBindings = loadTemplate('templateWithBindings', COUNT);
 
-    benchmarkStep('run', function() {
-      // Need to clone every time as the compiler might modify the template!
-      var cloned = DOM.clone(template);
-      compiler.compileAllLoaded(null, annotatedComponent, cloned);
-    });
-  });
+  function compileNoBindings(_) {
+    // Need to clone every time as the compiler might modify the template!
+    var cloned = DOM.clone(templateNoBindings);
+    cache.clear();
+    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+  }
 
-  benchmark(`Compiler.compile 5*${COUNT} element with bindings`, function() {
-    var template = loadTemplate('templateWithBindings', COUNT);
+  function compileWithBindings(_) {
+    // Need to clone every time as the compiler might modify the template!
+    var cloned = DOM.clone(templateWithBindings);
+    cache.clear();
+    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+  }
 
-    benchmarkStep('run', function() {
-      // Need to clone every time as the compiler might modify the template!
-      var cloned = DOM.clone(template);
-      compiler.compileAllLoaded(null, annotatedComponent, cloned);
-    });
-  });
-
-  benchmark(`instantiate 5*${COUNT} element with bindings`, function() {
-    var template = loadTemplate('templateWithBindings', COUNT);
-    var protoView = compiler.compileWithCache(null, annotatedComponent, template);
-    var rootRecordRange = new ProtoRecordRange().instantiate(null, null);
-
-    benchmarkStep('run', function() {
-      var view = protoView.instantiate(null, null, null);
-      // also include adding / removing the RecordRange from the parent in the benchmark.
-      rootRecordRange.addRange(view.recordRange);
-      view.recordRange.remove();
-    });
-  });
+  DOM.on(DOM.querySelector(document, '#compileNoBindings'), 'click', compileNoBindings);
+  DOM.on(DOM.querySelector(document, '#compileWithBindings'), 'click', compileWithBindings);
 }
 
 function loadTemplate(templateId, repeatCount) {
@@ -130,22 +112,6 @@ function loadTemplate(templateId, repeatCount) {
     result += content;
   }
   return DOM.createTemplate(result);
-}
-
-// Caching reflector as reflection in Dart using Mirrors
-class CachingDirectiveMetadataReader extends DirectiveMetadataReader {
-  _cache: Map;
-  constructor() {
-    this._cache = MapWrapper.create();
-  }
-  annotatedType(type:Type):AnnotatedType {
-    var result = MapWrapper.get(this._cache, type);
-    if (isBlank(result)) {
-      result = super.annotatedType(type);
-      MapWrapper.set(this._cache, type, result);
-    }
-    return result;
-  }
 }
 
 @Decorator({

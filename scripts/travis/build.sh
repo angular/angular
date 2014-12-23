@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 echo =============================================================================
@@ -18,3 +17,17 @@ pub install
 ./node_modules/karma/bin/karma start karma-dart.conf \
         --reporters=dots \
         --browsers=$BROWSERS --single-run
+
+./node_modules/.bin/webdriver-manager update
+
+function killServer () {
+  kill $serverPid
+}
+
+./node_modules/.bin/gulp serve.js.prod serve.js.dart2js&
+serverPid=$!
+
+trap killServer EXIT
+
+./node_modules/.bin/protractor protractor-perf-js.conf.js
+./node_modules/.bin/protractor protractor-perf-dart2js.conf.js

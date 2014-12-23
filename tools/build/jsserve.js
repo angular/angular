@@ -2,7 +2,7 @@ module.exports = function(gulp, plugins, config) {
   return function() {
     plugins.connect.server({
       root: [__dirname+'/../../'+config.path],
-      port: 8000,
+      port: config.port,
       livereload: false,
       open: false
     })();
