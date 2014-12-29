@@ -3,12 +3,13 @@ var config = exports.config = {
   specs: ['modules/*/test/**/*_perf.js'],
 
   params: {
-    // number test iterations to warm up the browser
-    warmupCount: 10,
-    // number test iterations to measure
-    measureCount: 10,
-    // TODO(tbosch): remove this and provide a proper protractor integration
-    sleepInterval: process.env.TRAVIS ? 5000 : 1000,
+    // size of the sample to take
+    sampleSize: 10,
+    // error to be used for early exit
+    exitOnErrorLowerThan: 4,
+    // maxium number times the benchmark gets repeated before we output the stats
+    // of the best sample
+    maxRepeatCount: 30
   },
 
   // Disable waiting for Angular as we don't have an integration layer yet...
@@ -16,6 +17,12 @@ var config = exports.config = {
   // and the sleeps in all tests.
   onPrepare: function() {
     browser.ignoreSynchronization = true;
+    var _get = browser.get;
+    var sleepInterval = process.env.TRAVIS ? 5000 : 1000;
+    browser.get = function() {
+      browser.sleep(sleepInterval);
+      return _get.apply(this, arguments);
+    }
   },
 
   jasmineNodeOpts: {

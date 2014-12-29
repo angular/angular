@@ -2,11 +2,91 @@ var webdriver = require('protractor/node_modules/selenium-webdriver');
 
 module.exports = {
   perfLogs: perfLogs,
-  sumTimelineStats: sumTimelineStats,
+  sumTimelineRecords: sumTimelineRecords,
   runSimpleBenchmark: runSimpleBenchmark,
   verifyNoErrors: verifyNoErrors,
   printObjectAsMarkdown: printObjectAsMarkdown
 };
+
+// TODO: rename into runSimpleBenchmark
+function runSimpleBenchmark(config) {
+  // TODO: move this into the tests!
+  browser.get(config.url);
+
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  var globalParams = browser.params;
+
+  // empty perflogs queue and gc
+  gc();
+  perfLogs();
+  var sampleQueue = [];
+  var bestSampleStats = null;
+
+  loop(globalParams.maxRepeatCount).then(function(stats) {
+    printObjectAsMarkdown(config.name, stats);
+  });
+
+  function loop(count) {
+    if (!count) {
+      return bestSampleStats;
+    }
+    return webdriver.promise.all(buttons.map(function(button) {
+      // Note: even though we remove the gc time from the script time,
+      // we still get a high standard devication if we don't gc after every click...
+      return button.click().then(gc);
+    })).then(function() {
+      return perfLogs();
+    }).then(function(logs) {
+      var stats = calculateStatsBasedOnLogs(logs);
+      if (stats) {
+        if (stats.script.error < globalParams.exitOnErrorLowerThan) {
+          return stats;
+        }
+        if (!bestSampleStats || stats.script.error < bestSampleStats.script.error) {
+          bestSampleStats = stats;
+        }
+      }
+      return loop(count-1);
+    });
+  }
+
+  function calculateStatsBasedOnLogs(logs) {
+    sampleQueue.push(sumTimelineRecords(logs['Timeline.eventRecorded']));
+    if (sampleQueue.length >= globalParams.sampleSize) {
+      sampleQueue.splice(0, sampleQueue.length - globalParams.sampleSize);
+      // TODO: gc numbers don't have much meaning right now,
+      // as a benchmark run destroys everything.
+      // We need to measure the heap size after gc as well!
+      return calculateObjectSampleStats(sampleQueue, ['script', 'render', 'gcTime', 'gcAmount']);
+    }
+    return null;
+  }
+}
+
+function gc() {
+  // TODO(tbosch): this only works on chrome, and we actually should
+  // extend chromedriver to use the Debugger.CollectGarbage call of the
+  // remote debugger protocol.
+  // See http://src.chromium.org/viewvc/blink/trunk/Source/devtools/protocol.json
+  // For iOS Safari we need an extension to appium that uses
+  // the webkit remote debug protocol. See
+  // https://github.com/WebKit/webkit/blob/master/Source/WebInspectorUI/Versions/Inspector-iOS-8.0.json
+  return browser.executeScript('window.gc()');
+}
+
+function verifyNoErrors() {
+  browser.manage().logs().get('browser').then(function(browserLog) {
+    var filteredLog = browserLog.filter(function(logEntry) {
+      return logEntry.level.value > webdriver.logging.Level.WARNING.value;
+    });
+    expect(filteredLog.length).toEqual(0);
+    if (filteredLog.length) {
+      console.log('browser console errors: ' + require('util').inspect(filteredLog));
+    }
+  });
+}
 
 function perfLogs() {
   return plainLogs('performance').then(function(entries) {
@@ -34,115 +114,56 @@ function plainLogs(type) {
 };
 
 
-function sumTimelineStats(messages) {
+function sumTimelineRecords(messages) {
   var recordStats = {
     script: 0,
-    gc: {
-      time: 0,
-      amount: 0
-    },
+    gcTime: 0,
+    gcAmount: 0,
     render: 0
   };
   messages.forEach(function(message) {
-    sumTimelineRecordStats(message.record, recordStats);
+    processRecord(message.record, recordStats);
   });
   return recordStats;
-}
 
-function sumTimelineRecordStats(record, result) {
-  var summedChildrenDuration = 0;
-  if (record.children) {
-    record.children.forEach(function(child) {
-      summedChildrenDuration += sumTimelineRecordStats(child, result);
-    });
-  }
-  // in case a script forced a gc or a reflow
-  // we need to substract the gc time / reflow time
-  // from the script time!
-  var recordDuration = (record.endTime ? record.endTime - record.startTime : 0)
-    - summedChildrenDuration;
-
-  var recordSummed = true;
-  if (record.type === 'FunctionCall') {
-    result.script += recordDuration;
-  } else if (record.type === 'GCEvent') {
-    result.gc.time += recordDuration;
-    result.gc.amount += record.data.usedHeapSizeDelta;
-  } else if (record.type === 'RecalculateStyles' ||
-      record.type === 'Layout' ||
-      record.type === 'UpdateLayerTree' ||
-      record.type === 'Paint' ||
-      record.type === 'Rasterize' ||
-      record.type === 'CompositeLayers') {
-    result.render += recordDuration;
-  } else {
-    recordSummed = false;
-  }
-  if (recordSummed) {
-    return recordDuration;
-  } else {
-    return summedChildrenDuration;
-  }
-}
-
-function runSimpleBenchmark(config) {
-  var url = config.url;
-  var buttonSelectors = config.buttons;
-  // TODO: Don't use a fixed number of warmup / measure iterations,
-  // but make this dependent on the variance of the test results!
-  var warmupCount = browser.params.warmupCount;
-  var measureCount = browser.params.measureCount;
-  var name = config.name;
-
-  browser.get(url);
-  // TODO(tbosch): replace this with a proper protractor/ng2.0 integration
-  // and remove this function as well as all method calls.
-  browser.sleep(browser.params.sleepInterval)
-
-  var btns = buttonSelectors.map(function(selector) {
-    return $(selector);
-  });
-
-  multiClick(btns, warmupCount);
-  gc();
-  // empty perflogs queue
-  perfLogs();
-
-  multiClick(btns, measureCount);
-  gc();
-  return perfLogs().then(function(logs) {
-    var stats = sumTimelineStats(logs['Timeline.eventRecorded']);
-    printObjectAsMarkdown(name, stats);
-    return stats;
-  });
-}
-
-function gc() {
-  // TODO(tbosch): this only works on chrome.
-  // For iOS Safari we need an extension to appium...
-  browser.executeScript('window.gc()');
-}
-
-function multiClick(buttons, count) {
-  var actions = browser.actions();
-  for (var i=0; i<count; i++) {
-    buttons.forEach(function(button) {
-      actions.click(button);
-    });
-  }
-  actions.perform();
-}
-
-function verifyNoErrors() {
-  browser.manage().logs().get('browser').then(function(browserLog) {
-    var filteredLog = browserLog.filter(function(logEntry) {
-      return logEntry.level.value > webdriver.logging.Level.WARNING.value;
-    });
-    expect(filteredLog.length).toEqual(0);
-    if (filteredLog.length) {
-      console.log('browser console errors: ' + require('util').inspect(filteredLog));
+  function processRecord(record, recordStats) {
+    var summedChildrenDuration = 0;
+    if (record.children) {
+      record.children.forEach(function(child) {
+        summedChildrenDuration += processRecord(child, recordStats);
+      });
     }
-  });
+
+    var recordDuration;
+    var recordUsed = false;
+    if (recordStats) {
+      // we need to substract the time of child records
+      // that have been added to the stats from this record.
+      // E.g. for a script record that triggered a gc or reflow while executing.
+      recordDuration = (record.endTime ? record.endTime - record.startTime : 0)
+        - summedChildrenDuration;
+      if (record.type === 'FunctionCall') {
+        if (!record.data || record.data.scriptName !== 'InjectedScript') {
+          // ignore scripts that were injected by Webdriver (e.g. calculation of element positions, ...)
+          recordStats.script += recordDuration;
+          recordUsed = true;
+        }
+      } else if (record.type === 'GCEvent') {
+        recordStats.gcTime += recordDuration;
+        recordStats.gcAmount += record.data.usedHeapSizeDelta;
+        recordUsed = true;
+      } else if (record.type === 'RecalculateStyles' ||
+          record.type === 'Layout' ||
+          record.type === 'UpdateLayerTree' ||
+          record.type === 'Paint' ||
+          record.type === 'Rasterize' ||
+          record.type === 'CompositeLayers') {
+        recordStats.render += recordDuration;
+        recordUsed = true;
+      }
+    }
+    return recordUsed ? recordDuration : summedChildrenDuration;
+  }
 }
 
 function printObjectAsMarkdown(name, obj) {
@@ -177,3 +198,39 @@ function printObjectAsMarkdown(name, obj) {
     }
   }
 }
+
+function calculateObjectSampleStats(objectSamples, properties) {
+  var result = {};
+  properties.forEach(function(prop) {
+    var samples = objectSamples.map(function(objectSample) {
+      return objectSample[prop];
+    });
+    var mean = calculateMean(samples);
+    var error = calculateCoefficientOfVariation(samples, mean);
+    result[prop] = {
+      mean: mean,
+      error: error
+    };
+  });
+  return result;
+}
+
+function calculateCoefficientOfVariation(sample, mean) {
+  return calculateStandardDeviation(sample, mean) / mean * 100;
+}
+
+function calculateMean(sample) {
+  var total = 0;
+  sample.forEach(function(x) { total += x; });
+  return total / sample.length;
+}
+
+function calculateStandardDeviation(sample, mean) {
+  var deviation = 0;
+  sample.forEach(function(x) {
+    deviation += Math.pow(x - mean, 2);
+  });
+  deviation = deviation / (sample.length -1);
+  deviation = Math.sqrt(deviation);
+  return deviation;
+};
