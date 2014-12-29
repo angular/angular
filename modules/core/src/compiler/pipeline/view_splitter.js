@@ -45,7 +45,9 @@ export class ViewSplitter extends CompileStep {
       if (current.element instanceof TemplateElement) {
         if (!current.isViewRoot) {
           var viewRoot = new CompileElement(DOM.createTemplate(''));
-          this._moveChildNodes(current.element.content, viewRoot.element.content);
+          var currentElement:TemplateElement = current.element;
+          var viewRootElement:TemplateElement = viewRoot.element;
+          this._moveChildNodes(currentElement.content, viewRootElement.content);
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
         }

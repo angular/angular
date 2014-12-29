@@ -38,7 +38,7 @@ export class View {
   viewPorts: List<ViewPort>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: ProtoView;
-  context: Object;
+  context: any;
   contextWithLocals:ContextWithVariableBindings;
   constructor(proto:ProtoView, nodes:List<Node>, protoRecordRange:ProtoRecordRange, protoContextLocals:Map) {
     this.proto = proto;
