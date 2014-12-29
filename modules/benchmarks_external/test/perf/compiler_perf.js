@@ -1,25 +1,44 @@
 "use strict";
-var util = require('../../../../tools/perf/util.js');
+var benchpress = require('../../../../tools/benchpress/benchpress.js');
 
 describe('ng1.x compiler benchmark', function () {
 
   var URL = 'benchmarks_external/web/compiler/compiler_benchmark.html';
 
-  afterEach(util.verifyNoErrors);
+  afterEach(benchpress.verifyNoBrowserErrors);
 
   it('should log withBinding stats', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#compileWithBindings'],
-      name: browser.params.lang+'.ng1.compile.withBindings'
+      logId: 'ng1.compile.withBindings'
     });
   });
 
   it('should log noBindings stats', function() {
-    util.runClickBenchmark({
+    browser.get(URL);
+    runClickTimeBenchmark({
       buttons: ['#compileNoBindings'],
-      name: browser.params.lang+'.ng1.compile.noBindings'
+      logId: 'ng1.compile.noBindings'
     });
   });
 
 });
+
+function runClickTimeBenchmark(config) {
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  var timeParams = browser.params.timeBenchmark;
+  benchpress.runTimeBenchmark({
+    sampleSize: timeParams.sampleSize,
+    targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
+    timeout: timeParams.timeout,
+    metrics: timeParams.metrics,
+    logId: browser.params.lang+'.'+config.logId
+  }, function() {
+    buttons.forEach(function(button) {
+      button.click();
+    });
+  });
+}

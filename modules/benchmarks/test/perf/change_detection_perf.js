@@ -1,26 +1,44 @@
 "use strict";
-var util = require('../../../../tools/perf/util.js');
+var benchpress = require('../../../../tools/benchpress/benchpress.js');
 
 describe('ng2 change detection benchmark', function () {
 
   var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
 
-  afterEach(util.verifyNoErrors);
+  afterEach(benchpress.verifyNoBrowserErrors);
 
   it('should log ng stats', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#ng2DetectChanges'],
-      name: browser.params.lang+'.ng2.changeDetection'
+      logId: 'ng2.changeDetection'
     });
   });
 
   it('should log baseline stats', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#baselineDetectChanges'],
-      name: browser.params.lang+'.baseline.changeDetection'
+      logId: 'baseline.changeDetection'
     });
   });
 
 });
+
+function runClickTimeBenchmark(config) {
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  var timeParams = browser.params.timeBenchmark;
+  benchpress.runTimeBenchmark({
+    sampleSize: timeParams.sampleSize,
+    targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
+    timeout: timeParams.timeout,
+    metrics: timeParams.metrics,
+    logId: browser.params.lang+'.'+config.logId
+  }, function() {
+    buttons.forEach(function(button) {
+      button.click();
+    });
+  });
+}
