@@ -2,9 +2,7 @@ import {isPresent, isBlank, RegExpWrapper, BaseException} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 import {TemplateElement} from 'facade/dom';
 
-import {Parser} from 'change_detection/parser/parser';
-import {AST} from 'change_detection/parser/ast';
-import {ExpressionWithSource} from 'change_detection/parser/ast';
+import {Parser, AST, ExpressionWithSource} from 'change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

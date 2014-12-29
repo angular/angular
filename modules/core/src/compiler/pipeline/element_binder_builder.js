@@ -4,8 +4,7 @@ import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection
 
 import {reflector} from 'reflection/reflection';
 
-import {Parser} from 'change_detection/parser/parser';
-import {ProtoRecordRange} from 'change_detection/record_range';
+import {Parser, ProtoRecordRange} from 'change_detection/change_detection';
 
 import {Component, Directive} from '../../annotations/annotations';
 import {DirectiveMetadata} from '../directive_metadata';

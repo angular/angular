@@ -16,10 +16,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
-import {ProtoRecordRange} from 'change_detection/record_range';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
-import {ChangeDetector} from 'change_detection/change_detector';
+import {ChangeDetector, Lexer, Parser, ProtoRecordRange} from 'change_detection/change_detection';
 import {Injector} from 'di/di';
 
 export function main() {

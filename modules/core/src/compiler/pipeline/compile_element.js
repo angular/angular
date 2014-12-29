@@ -9,7 +9,7 @@ import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
 
-import {ASTWithSource} from 'change_detection/parser/ast';
+import {ASTWithSource} from 'change_detection/change_detection';
 
 /**
  * Collects all data that is needed to process an element

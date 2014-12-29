@@ -7,9 +7,7 @@ export * from './annotations/template_config';
 
 export * from './application';
 
-export * from 'change_detection/change_detector';
-export * from 'change_detection/record_range';
-export * from 'change_detection/record';
+export * from 'change_detection/change_detection';
 
 export * from './compiler/compiler';
 export * from './compiler/template_loader';

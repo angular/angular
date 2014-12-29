@@ -1,9 +1,10 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 
-import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {isPresent} from 'facade/lang';
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+
+import {List, ListWrapper, MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/lang';
 
 import {
   ChangeDetector,

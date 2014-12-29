@@ -1,15 +1,15 @@
 import {ListWrapper, MapWrapper} from 'facade/collection';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
 import {reflector} from 'reflection/reflection';
 import {isPresent} from 'facade/lang';
 import {document, DOM} from 'facade/dom';
 
 import {
+  Lexer,
+  Parser,
   ChangeDetector,
   ProtoRecordRange,
   ChangeDispatcher,
-} from 'change_detection/change_detector';
+} from 'change_detection/change_detection';
 
 
 var ITERATIONS = 500000;

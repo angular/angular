@@ -1,5 +1,7 @@
 import {describe, it, expect} from 'test_lib/test_lib';
+
 import {Lexer, Token} from 'change_detection/parser/lexer';
+
 import {List, ListWrapper} from "facade/collection";
 import {StringWrapper, int} from "facade/lang";
 

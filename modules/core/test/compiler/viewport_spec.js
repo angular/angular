@@ -5,9 +5,7 @@ import {DOM} from 'facade/dom';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {Injector} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {ProtoRecordRange} from 'change_detection/record_range';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {ProtoRecordRange, Lexer, Parser} from 'change_detection/change_detection';
 
 function createElement(html) {
   return DOM.createTemplate(html).content.firstChild;

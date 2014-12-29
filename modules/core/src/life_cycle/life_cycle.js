@@ -1,5 +1,5 @@
 import {FIELD, print} from 'facade/lang';
-import {ChangeDetector} from 'change_detection/change_detector';
+import {ChangeDetector} from 'change_detection/change_detection';
 import {VmTurnZone} from 'core/zone/vm_turn_zone';
 import {ListWrapper} from 'facade/collection';
 

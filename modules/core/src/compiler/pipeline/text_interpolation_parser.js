@@ -1,7 +1,7 @@
 import {RegExpWrapper, StringWrapper, isPresent} from 'facade/lang';
 import {Node, DOM} from 'facade/dom';
 
-import {Parser} from 'change_detection/parser/parser';
+import {Parser} from 'change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

@@ -12,8 +12,7 @@ import {Decorator} from 'core/annotations/annotations';
 import {Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Lexer, Parser} from 'change_detection/change_detection';
 
 export function main() {
   describe('DirectiveParser', () => {

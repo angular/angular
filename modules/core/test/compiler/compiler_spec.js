@@ -12,8 +12,7 @@ import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Lexer, Parser} from 'change_detection/change_detection';
 
 export function main() {
   describe('compiler', function() {

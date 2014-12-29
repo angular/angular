@@ -1,8 +1,7 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
-import {ProtoRecordRange, RecordRange, ChangeDispatcher} from 'change_detection/record_range';
-import {Record} from 'change_detection/record';
-import {AST} from 'change_detection/parser/ast';
+import {ProtoRecordRange, RecordRange, Record,
+  ChangeDispatcher, AST, ContextWithVariableBindings} from 'change_detection/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
@@ -13,7 +12,6 @@ import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
-import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';

@@ -2,9 +2,10 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/te
 
 import {isPresent, isBlank, isJsObject, BaseException} from 'facade/lang';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
+
 import {Parser} from 'change_detection/parser/parser';
 import {Lexer} from 'change_detection/parser/lexer';
+import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
 import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {

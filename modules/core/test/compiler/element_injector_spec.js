@@ -5,7 +5,7 @@ import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injec
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
-import {ProtoRecordRange} from 'change_detection/record_range';
+import {ProtoRecordRange} from 'change_detection/change_detection';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 

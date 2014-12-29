@@ -4,8 +4,7 @@ import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
 import {DOM} from 'facade/dom';
 import {MapWrapper} from 'facade/collection';
 
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Lexer, Parser} from 'change_detection/change_detection';
 
 export function main() {
   describe('TextInterpolationParser', () => {

@@ -1,6 +1,4 @@
-import {ChangeDetector} from 'change_detection/change_detector';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Parser, Lexer, ChangeDetector} from 'change_detection/change_detection';
 
 import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'core/core';
 

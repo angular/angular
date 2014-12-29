@@ -2,7 +2,7 @@ import {isBlank, isPresent} from 'facade/lang';
 import {DOM, TemplateElement} from 'facade/dom';
 import {MapWrapper, ListWrapper} from 'facade/collection';
 
-import {Parser} from 'change_detection/parser/parser';
+import {Parser} from 'change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

@@ -3,7 +3,7 @@ import {Promise, PromiseWrapper} from 'facade/async';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 
-import {Parser} from 'change_detection/parser/parser';
+import {Parser} from 'change_detection/change_detection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {ProtoView} from './view';

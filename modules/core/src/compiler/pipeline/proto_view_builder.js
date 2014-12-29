@@ -2,7 +2,7 @@ import {isPresent, BaseException} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 
 import {ProtoView} from '../view';
-import {ProtoRecordRange} from 'change_detection/record_range';
+import {ProtoRecordRange} from 'change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

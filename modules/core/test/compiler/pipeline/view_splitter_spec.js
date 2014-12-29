@@ -6,8 +6,7 @@ import {ViewSplitter} from 'core/compiler/pipeline/view_splitter';
 import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
 import {DOM, TemplateElement} from 'facade/dom';
 
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Lexer, Parser} from 'change_detection/change_detection';
 
 export function main() {
   describe('ViewSplitter', () => {

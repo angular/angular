@@ -1,4 +1,4 @@
-import {Parser} from 'change_detection/parser/parser';
+import {Parser} from 'change_detection/change_detection';
 import {List} from 'facade/collection';
 
 import {PropertyBindingParser} from './property_binding_parser';

@@ -3,9 +3,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/te
 import {DOM} from 'facade/dom';
 
 import {Injector} from 'di/di';
-import {ChangeDetector} from 'change_detection/change_detector';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
