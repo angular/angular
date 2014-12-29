@@ -3,13 +3,13 @@ var config = exports.config = {
   specs: ['modules/*/test/**/*_perf.js'],
 
   params: {
-    // size of the sample to take
-    sampleSize: 10,
-    // error to be used for early exit
-    exitOnErrorLowerThan: 4,
-    // maxium number times the benchmark gets repeated before we output the stats
-    // of the best sample
-    maxRepeatCount: 30
+    timeBenchmark: {
+      // size of the sample to take
+      sampleSize: 10,
+      targetCoefficientOfVariation: 4,
+      timeout: 20000,
+      metrics: ['script', 'render']
+    }
   },
 
   // Disable waiting for Angular as we don't have an integration layer yet...

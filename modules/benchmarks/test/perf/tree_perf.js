@@ -1,26 +1,44 @@
 "use strict";
-var util = require('../../../../tools/perf/util.js');
+var benchpress = require('../../../../tools/benchpress/benchpress.js');
 
 describe('ng2 tree benchmark', function () {
 
   var URL = 'benchmarks/web/tree/tree_benchmark.html';
 
-  afterEach(util.verifyNoErrors);
+  afterEach(benchpress.verifyNoBrowserErrors);
 
   it('should log the ng stats', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      name: browser.params.lang+'.ng2.tree'
+      logId: 'ng2.tree'
     });
   });
 
   it('should log the baseline stats', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      name: browser.params.lang+'.baseline.tree'
+      logId: 'baseline.tree'
     });
   });
 
 });
+
+function runClickTimeBenchmark(config) {
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  var timeParams = browser.params.timeBenchmark;
+  benchpress.runTimeBenchmark({
+    sampleSize: timeParams.sampleSize,
+    targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
+    timeout: timeParams.timeout,
+    metrics: timeParams.metrics,
+    logId: browser.params.lang+'.'+config.logId
+  }, function() {
+    buttons.forEach(function(button) {
+      button.click();
+    });
+  });
+}
