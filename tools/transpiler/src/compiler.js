@@ -1,6 +1,8 @@
 import {Compiler as TraceurCompiler} from 'traceur/src/Compiler';
 import {DartTransformer} from './codegeneration/DartTransformer';
+import {ES5Transformer} from './codegeneration/ES5Transformer';
 import {DartParseTreeWriter} from './outputgeneration/DartParseTreeWriter';
+import {ES5ParseTreeWriter} from './outputgeneration/ES5ParseTreeWriter';
 import {CollectingErrorReporter} from 'traceur/src/util/CollectingErrorReporter';
 import {Parser} from './parser';
 import {SourceFile} from 'traceur/src/syntax/SourceFile';
@@ -21,6 +23,15 @@ export class Compiler extends TraceurCompiler {
       var transformedTree = transformer.transform(tree);
       this.throwIfErrors(errorReporter);
       return transformedTree;
+    } else if (this.options_.outputLanguage.toLowerCase() === 'es5') {
+      var errorReporter = new CollectingErrorReporter();
+      var transformer = new ES5Transformer(errorReporter);
+      // runs before the default transform behavior takes place, as it preserves
+      // more information about types
+      var transformedTree = transformer.transform(tree);
+      this.throwIfErrors(errorReporter);
+      // runs the default transformation too
+      return super(transformedTree, moduleName);
     } else {
       return super.transform(tree, moduleName);
     }
@@ -29,6 +40,10 @@ export class Compiler extends TraceurCompiler {
   write(tree, outputName = undefined, sourceRoot = undefined) {
     if (this.options_.outputLanguage.toLowerCase() === 'dart') {
       var writer = new DartParseTreeWriter(this.options_.moduleName, outputName);
+      writer.visitAny(tree);
+      return writer.toString();
+    } else if (this.options_.outputLanguage.toLowerCase() === 'es5') {
+      var writer = new ES5ParseTreeWriter(this.options_.moduleName, outputName);
       writer.visitAny(tree);
       return writer.toString();
     } else {

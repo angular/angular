@@ -1,6 +1,7 @@
 import {ParseTree} from 'traceur/src/syntax/trees/ParseTree';
 
 import {PropertyMethodAssignment} from 'traceur/src/syntax/trees/ParseTrees';
+import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
 
 import * as ParseTreeType from './ParseTreeType';
 
@@ -138,3 +139,25 @@ export class ObjectPatternBindingElement extends ParseTree {
   }
 }
 var OBJECT_PATTERN_BINDING_ELEMENT = ParseTreeType.OBJECT_PATTERN_BINDING_ELEMENT;
+
+// A transformed identifier that preserves its original value.
+export class TransformedIdentifierToken extends IdentifierToken {
+
+  /**
+   * @param {SourceRange} location
+   * @param {string} value
+   * @param {string} original
+   */
+  constructor(location, value, original) {
+    super(location, value);
+    this.original = original;
+  }
+
+  /**
+   * @type {ParseTreeType}
+   */
+  get type() {
+    return TRANSFORMED_IDENTIFIER_TOKEN;
+  }
+}
+var TRANSFORMED_IDENTIFIER_TOKEN = ParseTreeType.TRANSFORMED_IDENTIFIER_TOKEN;
