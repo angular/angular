@@ -3,16 +3,12 @@ var webdriver = require('protractor/node_modules/selenium-webdriver');
 module.exports = {
   perfLogs: perfLogs,
   sumTimelineRecords: sumTimelineRecords,
-  runSimpleBenchmark: runSimpleBenchmark,
+  runClickBenchmark: runClickBenchmark,
   verifyNoErrors: verifyNoErrors,
   printObjectAsMarkdown: printObjectAsMarkdown
 };
 
-// TODO: rename into runSimpleBenchmark
-function runSimpleBenchmark(config) {
-  // TODO: move this into the tests!
-  browser.get(config.url);
-
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });

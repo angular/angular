@@ -8,16 +8,16 @@ describe('ng2 compiler benchmark', function () {
   afterEach(util.verifyNoErrors);
 
   it('should log withBindings stats', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#compileWithBindings'],
       name: browser.params.lang+'.ng2.compile.withBindings'
     });
   });
 
   it('should log noBindings stats', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#compileNoBindings'],
       name: browser.params.lang+'.ng2.compile.noBindings'
     });
