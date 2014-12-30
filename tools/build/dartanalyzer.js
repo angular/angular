@@ -31,7 +31,8 @@ module.exports = function(gulp, plugins, config) {
     }));
 
     function analyze(dirName, done) {
-      var stream = spawn(config.command, ['--fatal-warnings', tempFile], {
+      //TODO remove --package-warnings once dartanalyzer handles transitive libraries
+      var stream = spawn(config.command, ['--fatal-warnings', '--package-warnings', tempFile], {
         // inherit stdin and stderr, but filter stdout
         stdio: [process.stdin, 'pipe', process.stderr],
         cwd: dirName
@@ -46,19 +47,27 @@ module.exports = function(gulp, plugins, config) {
         terminal: false
       });
       var hintCount = 0;
+      var errorCount = 0;
       rl.on('line', function(line) {
+        //TODO remove once dartanalyzer handles transitive libraries
+        //skip errors in third-party packages
+        if (line.indexOf(dirName) == -1) {
+          return;
+        }
         if (line.match(/Unused import/)) {
           return;
         }
         if (line.match(/\[hint\]/)) {
           hintCount++;
+        } else {
+          errorCount ++;
         }
         console.log(dirName + ':' + line);
       });
-      stream.on('close', function(code) {
+      stream.on('close', function() {
         var error;
-        if (code !== 0) {
-          error = new Error('Dartanalyzer failed with exit code ' + code);
+        if (errorCount > 0) {
+          error = new Error('Dartanalyzer showed errors');
         }
         if (hintCount > 0) {
           error = new Error('Dartanalyzer showed hints');
