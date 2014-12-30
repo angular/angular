@@ -38,7 +38,6 @@ export class ViewSplitter extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    var element = current.element;
     if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
