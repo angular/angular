@@ -8,32 +8,32 @@ describe('ng2 di benchmark', function () {
   afterEach(util.verifyNoErrors);
 
   it('should log the stats for getByToken', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#getByToken'],
       name: browser.params.lang+'.ng2.di.getByToken'
     });
   });
 
   it('should log the stats for getByKey', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#getByKey'],
       name: browser.params.lang+'.ng2.di.getByKey'
     });
   });
 
   it('should log the stats for getChild', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#getChild'],
       name: browser.params.lang+'.ng2.di.getChild'
     });
   });
 
   it('should log the stats for instantiate', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#instantiate'],
       name: browser.params.lang+'.ng2.di.instantiate'
     });

@@ -8,16 +8,16 @@ describe('ng2 change detection benchmark', function () {
   afterEach(util.verifyNoErrors);
 
   it('should log ng stats', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#ng2DetectChanges'],
       name: browser.params.lang+'.ng2.changeDetection'
     });
   });
 
   it('should log baseline stats', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#baselineDetectChanges'],
       name: browser.params.lang+'.baseline.changeDetection'
     });

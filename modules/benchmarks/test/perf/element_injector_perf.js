@@ -8,16 +8,16 @@ describe('ng2 element injector benchmark', function () {
   afterEach(util.verifyNoErrors);
 
   it('should log the stats for instantiate', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#instantiate'],
       name: browser.params.lang+'.ng2.elementInjector.instantiate'
     });
   });
 
   it('should log the stats for instantiateDirectives', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#instantiateDirectives'],
       name: browser.params.lang+'.ng2.elementInjector.instantiateDirectives'
     });

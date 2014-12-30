@@ -8,8 +8,8 @@ describe('ng1.x tree benchmark', function () {
   afterEach(util.verifyNoErrors);
 
   it('should log the stats', function() {
-    util.runSimpleBenchmark({
-      url: URL,
+    browser.get(URL);
+    util.runClickBenchmark({
       buttons: ['#destroyDom', '#createDom'],
       name: browser.params.lang+'.ng1.tree'
     });
