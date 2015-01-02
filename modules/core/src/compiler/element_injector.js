@@ -4,6 +4,7 @@ import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
 import {View} from 'core/compiler/view';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 
@@ -19,11 +20,16 @@ class StaticKeys {
   viewId:int;
   ngElementId:int;
   viewPortId:int;
+  destinationLightDomId:int;
+  sourceLightDomId:int;
+
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
     this.viewId = Key.get(View).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewPortId = Key.get(ViewPort).id;
+    this.destinationLightDomId = Key.get(DestinationLightDom).id;
+    this.sourceLightDomId = Key.get(SourceLightDom).id;
   }
 
   static instance() {
@@ -105,10 +111,12 @@ export class PreBuiltObjects {
   view:View;
   element:NgElement;
   viewPort:ViewPort;
-  constructor(view, element:NgElement, viewPort: ViewPort) {
+  lightDom:LightDom;
+  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom) {
     this.view = view;
     this.element = element;
     this.viewPort = viewPort;
+    this.lightDom = lightDom;
   }
 }
 
@@ -306,6 +314,15 @@ export class ElementInjector extends TreeNode {
     return this._getByKey(Key.get(token), 0, null);
   }
 
+  hasDirective(type:Type):boolean {
+    return this._getDirectiveByKeyId(Key.get(type).id) !== _undefined;
+  }
+
+  hasPreBuiltObject(type:Type):boolean {
+    var pb = this._getPreBuiltObjectByKeyId(Key.get(type).id);
+    return pb !== _undefined && isPresent(pb);
+  }
+
   getComponent() {
     if (this._proto._binding0IsComponent) {
       return this._obj0;
@@ -421,11 +438,15 @@ export class ElementInjector extends TreeNode {
     var staticKeys = StaticKeys.instance();
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewPortId) {
-      if (isBlank(staticKeys.viewPortId)) throw new BaseException(
-          'ViewPort is constructed only for @Template directives');
-      return this._preBuiltObjects.viewPort;
+    if (keyId === staticKeys.viewPortId) return this._preBuiltObjects.viewPort;
+    if (keyId === staticKeys.destinationLightDomId) {
+      var p:ElementInjector = this._parent;
+      return isPresent(p) ? p._preBuiltObjects.lightDom : null;
     }
+    if (keyId === staticKeys.sourceLightDomId)   {
+      return this._host._preBuiltObjects.lightDom;
+    }
+
     //TODO add other objects as needed
     return _undefined;
   }

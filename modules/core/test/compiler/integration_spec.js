@@ -7,6 +7,7 @@ import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {ShadowDomEmulated} from 'core/compiler/shadow_dom';
 
 import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -108,7 +109,49 @@ export function main() {
         });
       });
     });
+
+    it('should emulate content tag', (done) => {
+      var el = `<emulated-shadow-dom-component>` +
+        `<div>Light</div>` +
+        `<div template="trivial-template">DOM</div>` +
+      `</emulated-shadow-dom-component>`;
+
+      function createView(pv) {
+        var view = pv.instantiate(null);
+        view.hydrate(new Injector([]), null, {});
+        return view;
+      }
+
+      compiler.compile(MyComp, createElement(el)).
+        then(createView).
+        then((view) => {
+          expect(DOM.getText(view.nodes[0])).toEqual('Before LightDOM After');
+          done();
+        });
+
+    });
   });
+}
+
+@Template({
+  selector: '[trivial-template]'
+})
+class TrivialTemplateDirective {
+  constructor(viewPort:ViewPort) {
+    viewPort.create();
+  }
+}
+
+@Component({
+  selector: 'emulated-shadow-dom-component',
+  template: new TemplateConfig({
+    inline: 'Before <content></content> After',
+    directives: []
+  }),
+  shadowDom: ShadowDomEmulated
+})
+class EmulatedShadowDomCmp {
+
 }
 
 @Decorator({
@@ -124,7 +167,7 @@ class MyDir {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp, SomeTemplate]
+    directives: [MyDir, ChildComp, SomeTemplate, EmulatedShadowDomCmp, TrivialTemplateDirective]
   })
 })
 class MyComp {

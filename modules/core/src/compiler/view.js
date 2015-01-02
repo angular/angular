@@ -12,6 +12,8 @@ import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
+import {Content} from './shadow_dom_emulation/content_tag';
+import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -38,6 +40,7 @@ export class View {
   proto: ProtoView;
   context: any;
   contextWithLocals:ContextWithVariableBindings;
+
   constructor(proto:ProtoView, nodes:List<Node>, protoRecordRange:ProtoRecordRange, protoContextLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
@@ -156,7 +159,12 @@ export class View {
       // componentChildViews
       if (isPresent(shadowDomAppInjector)) {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
-            elementInjector, elementInjector.getComponent());
+          elementInjector, elementInjector.getComponent());
+      }
+
+      if (isPresent(componentDirective)) {
+        var lightDom = this.preBuiltObjects[i].lightDom;
+        if (isPresent(lightDom)) lightDom.redistribute();
       }
     }
   }
@@ -189,6 +197,16 @@ export class View {
     if (groupMemento instanceof DirectivePropertyGroupMemento) {
       this._notifyDirectiveAboutChanges(groupMemento, records);
     }
+  }
+
+  getViewPortByTemplateElement(node):ViewPort {
+    if (!(node instanceof Element)) return null;
+
+    for (var i = 0; i < this.viewPorts.length; ++i) {
+      if (this.viewPorts[i].templateElement === node) return this.viewPorts[i];
+    }
+
+    return null;
   }
 
   _invokeMementoForRecords(records:List<Record>) {
@@ -267,12 +285,18 @@ export class ProtoView {
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
   instantiate(hostElementInjector: ElementInjector):View {
     var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
-    var elementsWithBindings;
+    var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
-      elementsWithBindings = DOM.querySelectorAll(rootElementClone.content, NG_BINDING_CLASS_SELECTOR);
+      elementsWithBindingsDynamic = DOM.querySelectorAll(rootElementClone.content, NG_BINDING_CLASS_SELECTOR);
     } else {
-      elementsWithBindings = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
+      elementsWithBindingsDynamic= DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
     }
+
+    var elementsWithBindings = ListWrapper.createFixedSize(elementsWithBindingsDynamic.length);
+    for (var i = 0; i < elementsWithBindingsDynamic.length; ++i) {
+      elementsWithBindings[i] = elementsWithBindingsDynamic[i];
+    }
+
     var viewNodes;
     if (this.isTemplateElement) {
       var childNode = DOM.firstChild(rootElementClone.content);
@@ -319,21 +343,6 @@ export class ProtoView {
       }
       elementInjectors[i] = elementInjector;
 
-      // viewPorts
-      var viewPort = null;
-      if (isPresent(binder.templateDirective)) {
-        viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector);
-        ListWrapper.push(viewPorts, viewPort);
-      }
-
-      // preBuiltObjects
-      var preBuiltObject = null;
-      if (isPresent(elementInjector)) {
-        preBuiltObject = new PreBuiltObjects(view, new NgElement(element), viewPort);
-      }
-      preBuiltObjects[i] = preBuiltObject;
-
-      // elementsWithPropertyBindings
       if (binder.hasElementPropertyBindings) {
         ListWrapper.push(elementsWithPropertyBindings, element);
       }
@@ -351,12 +360,28 @@ export class ProtoView {
       }
 
       // componentChildViews
+      var lightDom = null;
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
         view.recordRange.addRange(childView.recordRange);
 
+        lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
         binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
+
         ListWrapper.push(componentChildViews, childView);
+      }
+
+      // viewPorts
+      var viewPort = null;
+      if (isPresent(binder.templateDirective)) {
+        var destLightDom = this._parentElementLightDom(protoElementInjector, preBuiltObjects);
+        viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector, destLightDom);
+        ListWrapper.push(viewPorts, viewPort);
+      }
+
+      // preBuiltObjects
+      if (isPresent(elementInjector)) {
+        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort, lightDom);
       }
     }
 
@@ -364,6 +389,11 @@ export class ProtoView {
       viewPorts, preBuiltObjects, componentChildViews);
 
     return view;
+  }
+
+  _parentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {
+    var p = protoElementInjector.parent;
+    return isPresent(p) ? preBuiltObjects[p.index].lightDom : null;
   }
 
   bindVariable(contextName:string, templateName:string) {

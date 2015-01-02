@@ -7,7 +7,7 @@ export var TemplateElement = window.HTMLTemplateElement;
 export var document = window.document;
 export var location = window.location;
 
-import {List, MapWrapper} from 'facade/collection';
+import {List, MapWrapper, ListWrapper} from 'facade/collection';
 
 export class DOM {
   static query(selector) {
@@ -40,6 +40,14 @@ export class DOM {
   static childNodes(el):NodeList {
     return el.childNodes;
   }
+  static childNodesAsList(el):List {
+    var childNodes = el.childNodes;
+    var res = ListWrapper.createFixedSize(childNodes.length);
+    for (var i=0; i<childNodes.length; i++) {
+      res[i] = childNodes[i];
+    }
+    return res;
+  }
   static clearNodes(el) {
     el.innerHTML = "";
   }
@@ -48,6 +56,14 @@ export class DOM {
   }
   static removeChild(el, node) {
     el.removeChild(node);
+  }
+  static insertBefore(el, node) {
+    el.parentNode.insertBefore(node, el);
+  }
+  static insertAllBefore(el, nodes) {
+    ListWrapper.forEach(nodes, (n) => {
+      el.parentNode.insertBefore(n, el);
+    });
   }
   static insertAfter(el, node) {
     el.parentNode.insertBefore(node, el.nextSibling);
@@ -68,6 +84,11 @@ export class DOM {
   }
   static createElement(tagName, doc=document) {
     return doc.createElement(tagName);
+  }
+  static createScriptTag(attrName:string, attrValue:string, doc=document) {
+    var el = doc.createElement("SCRIPT");
+    el.setAttribute(attrName, attrValue);
+    return el;
   }
   static clone(node:Node) {
     return node.cloneNode(true);
@@ -90,6 +111,9 @@ export class DOM {
   static hasClass(element:Element, classname:string) {
     return element.classList.contains(classname);
   }
+  static tagName(element:Element):string {
+    return element.tagName;
+  }
   static attributeMap(element:Element) {
     var res = MapWrapper.create();
     var elAttrs = element.attributes;
@@ -99,6 +123,9 @@ export class DOM {
     }
     return res;
   }
+  static getAttribute(element:Element, attribute:string) {
+    return element.getAttribute(attribute);
+  }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;
   }
@@ -107,5 +134,8 @@ export class DOM {
   }
   static defaultDoc() {
     return document;
+  }
+  static elementMatches(n, selector:string):boolean {
+    return n instanceof Element && n.matches(selector);
   }
 }

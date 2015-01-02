@@ -13,6 +13,7 @@ import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
+import {Content} from './shadow_dom_emulation/content_tag';
 
 /**
  * Cache that stores the ProtoView of the template of a component.
@@ -60,13 +61,8 @@ export class Compiler {
   }
 
   createSteps(component:DirectiveMetadata):List<CompileStep> {
-    var annotation: Component = component.annotation;
-    var directives = annotation.template.directives;
-    var annotatedDirectives = ListWrapper.create();
-    for (var i=0; i<directives.length; i++) {
-      ListWrapper.push(annotatedDirectives, this._reader.read(directives[i]));
-    }
-    return createDefaultSteps(this._parser, component, annotatedDirectives);
+    var dirs = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
+    return createDefaultSteps(this._parser, component, dirs);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {

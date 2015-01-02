@@ -96,8 +96,14 @@ class ListWrapper {
   static bool isList(l) => l is List;
   static void insert(List l, int index, value) { l.insert(index, value); }
   static void removeAt(List l, int index) { l.removeAt(index); }
+  static void removeAll(List list, List items) {
+    for (var i = 0; i < items.length; ++i) {
+      list.remove(items[i]);
+    }
+  }
   static void clear(List l) { l.clear(); }
   static String join(List l, String s) => l.join(s);
+  static bool isEmpty(list) => list.isEmpty;
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;

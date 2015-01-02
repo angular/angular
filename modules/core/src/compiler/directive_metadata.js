@@ -1,5 +1,6 @@
 import {Type, FIELD} from 'facade/lang';
 import {Directive} from '../annotations/annotations'
+import {List} from 'facade/collection'
 import {ShadowDomStrategy} from './shadow_dom';
 
 /**
@@ -9,10 +10,13 @@ export class DirectiveMetadata {
   type:Type;
   annotation:Directive;
   shadowDomStrategy:ShadowDomStrategy;
+  componentDirectives:List<Type>;
 
-  constructor(type:Type, annotation:Directive, shadowDomStrategy:ShadowDomStrategy) {
+  constructor(type:Type, annotation:Directive, shadowDomStrategy:ShadowDomStrategy,
+              componentDirectives:List<Type>) {
     this.annotation = annotation;
     this.type = type;
     this.shadowDomStrategy = shadowDomStrategy;
+    this.componentDirectives = componentDirectives;
   }
 }

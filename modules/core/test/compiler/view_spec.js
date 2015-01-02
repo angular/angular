@@ -7,13 +7,29 @@ import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/core';
 import {Lexer, Parser, ProtoRecordRange, ChangeDetector} from 'change_detection/change_detection';
 import {TemplateConfig} from 'core/annotations/template_config';
-import {List} from 'facade/collection';
+import {List, MapWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
-import {int} from 'facade/lang';
+import {int, proxy, IMPLEMENTS} from 'facade/lang';
 import {Injector} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ViewPort} from 'core/compiler/viewport';
 import {reflector} from 'reflection/reflection';
+
+
+@proxy
+@IMPLEMENTS(ViewPort)
+class FakeViewPort {
+  templateElement;
+
+  constructor(templateElement) {
+    this.templateElement = templateElement;
+  }
+
+  noSuchMethod(i) {
+    super.noSuchMethod(i);
+  }
+}
+
 
 export function main() {
   describe('view', function() {
@@ -50,6 +66,25 @@ export function main() {
 
         view.dehydrate();
         expect(view.hydrated()).toBe(false);
+      });
+    });
+
+    describe("getViewPortByTemplateElement", () => {
+      var view, viewPort, templateElement;
+
+      beforeEach(() => {
+        templateElement = createElement("<template></template>");
+        view = new View(null, null, new ProtoRecordRange(), MapWrapper.create());
+        viewPort = new FakeViewPort(templateElement);
+        view.viewPorts = [viewPort];
+      });
+
+      it("should return null when the given element is not an element", () => {
+        expect(view.getViewPortByTemplateElement("not an element")).toBeNull();
+      });
+
+      it("should return a view port with the matching template element", () => {
+        expect(view.getViewPortByTemplateElement(templateElement)).toBe(viewPort);
       });
     });
 

@@ -143,11 +143,20 @@ export class ListWrapper {
     list.splice(index, 1);
     return res;
   }
+  static removeAll(list, items) {
+    for (var i = 0; i < items.length; ++i) {
+      var index = list.indexOf(items[i]);
+      list.splice(index, 1);
+    }
+  }
   static clear(list) {
     list.splice(0, list.length);
   }
   static join(list, s) {
     return list.join(s);
+  }
+  static isEmpty(list) {
+    return list.length == 0;
   }
 }
 

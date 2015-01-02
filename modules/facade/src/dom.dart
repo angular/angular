@@ -47,6 +47,9 @@ class DOM {
   static List<Node> childNodes(el) {
     return el.childNodes;
   }
+  static childNodesAsList(el) {
+    return childNodes(el).toList();
+  }
   static clearNodes(el) {
     el.nodes = [];
   }
@@ -55,6 +58,12 @@ class DOM {
   }
   static removeChild(el, node) {
     node.remove();
+  }
+  static insertBefore(el, node) {
+    el.parentNode.insertBefore(node, el);
+  }
+  static insertAllBefore(el, nodes) {
+    el.parentNode.insertAllBefore(nodes, el);
   }
   static insertAfter(el, node) {
     el.parentNode.insertBefore(node, el.nextNode);
@@ -73,6 +82,12 @@ class DOM {
   static createElement(tagName, [doc=null]) {
     if (doc == null) doc = document;
     return doc.createElement(tagName);
+  }
+  static createScriptTag(String attrName, String attrValue, [doc=null]) {
+    if (doc == null) doc = document;
+    var el = doc.createElement("SCRIPT");
+    el.setAttribute(attrName, attrValue);
+    return el;
   }
   static clone(Node node) {
     return node.clone(true);
@@ -95,8 +110,14 @@ class DOM {
   static hasClass(Element element, classname) {
     return element.classes.contains(classname);
   }
+  static String tagName(Element element) {
+    return element.tagName;
+  }
   static attributeMap(Element element) {
     return element.attributes;
+  }
+  static getAttribute(Element element, String attribute) {
+    return element.getAttribute(attribute);
   }
   static Node templateAwareRoot(Element el) {
     return el is TemplateElement ? el.content : el;
@@ -106,5 +127,8 @@ class DOM {
   }
   static HtmlDocument defaultDoc() {
     return document;
+  }
+  static bool elementMatches(n, String selector) {
+    return n is Element && n.matches(selector);
   }
 }

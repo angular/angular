@@ -12,16 +12,18 @@ export class ViewPort {
   defaultProtoView: ProtoView;
   _views: List<View>;
   _viewLastNode: List<Node>;
+  _lightDom: any;
   elementInjector: ElementInjector;
   appInjector: Injector;
   hostElementInjector: ElementInjector;
 
   constructor(parentView: View, templateElement: Element, defaultProtoView: ProtoView,
-      elementInjector: ElementInjector) {
+      elementInjector: ElementInjector, lightDom = null) {
     this.parentView = parentView;
     this.templateElement = templateElement;
     this.defaultProtoView = defaultProtoView;
     this.elementInjector = elementInjector;
+    this._lightDom = lightDom;
 
     // The order in this list matches the DOM order.
     this._views = [];
@@ -77,7 +79,11 @@ export class ViewPort {
   insert(view, atIndex=-1): View {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
-    ViewPort.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
+    if (isBlank(this._lightDom)) {
+      ViewPort.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
+    } else {
+      this._lightDom.redistribute();
+    }
     this.parentView.recordRange.addRange(view.recordRange);
     this._linkElementInjectors(view);
     return view;
@@ -87,10 +93,26 @@ export class ViewPort {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var removedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
-    ViewPort.removeViewNodesFromParent(this.templateElement.parentNode, removedView);
+    if (isBlank(this._lightDom)) {
+      ViewPort.removeViewNodesFromParent(this.templateElement.parentNode, removedView);
+    } else {
+      this._lightDom.redistribute();
+    }
     removedView.recordRange.remove();
     this._unlinkElementInjectors(removedView);
     return removedView;
+  }
+
+  contentTagContainers() {
+    return this._views;
+  }
+
+  nodes():List<Node> {
+    var r = [];
+    for (var i = 0; i < this._views.length; ++i) {
+      r = ListWrapper.concat(r, this._views[i].nodes);
+    }
+    return r;
   }
 
   _linkElementInjectors(view) {

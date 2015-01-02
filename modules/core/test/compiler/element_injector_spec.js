@@ -8,10 +8,15 @@ import {View} from 'core/compiler/view';
 import {ProtoRecordRange} from 'change_detection/change_detection';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 
 @proxy
 @IMPLEMENTS(View)
 class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
+
+@proxy
+@IMPLEMENTS(LightDom)
+class DummyLightDom extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 
 
 class Directive {
@@ -65,7 +70,7 @@ class NeedsView {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -88,12 +93,15 @@ export function main() {
     return inj;
   }
 
-  function parentChildInjectors(parentBindings, childBindings) {
+  function parentChildInjectors(parentBindings, childBindings, parentPreBuildObjects = null) {
+    if (isBlank(parentPreBuildObjects)) parentPreBuildObjects = defaultPreBuiltObjects;
+
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
     var parent = protoParent.instantiate(null, null);
-    parent.instantiateDirectives(inj, null, defaultPreBuiltObjects);
+
+    parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
     var child = protoChild.instantiate(parent, null);
@@ -102,13 +110,15 @@ export function main() {
     return child;
   }
 
-  function hostShadowInjectors(hostBindings, shadowBindings) {
+  function hostShadowInjectors(hostBindings, shadowBindings, hostPreBuildObjects = null) {
+    if (isBlank(hostPreBuildObjects)) hostPreBuildObjects = defaultPreBuiltObjects;
+
     var inj = new Injector([]);
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
     var host = protoParent.instantiate(null, null);
-    host.instantiateDirectives(inj, shadowInj, null);
+    host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false);
     var shadow = protoChild.instantiate(null, host);
@@ -186,7 +196,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -291,23 +301,50 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewPort', function () {
         var viewPort = new ViewPort(null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null));
 
         expect(inj.get(ViewPort)).toEqual(viewPort);
+      });
+
+      describe("light DOM", () => {
+        var lightDom, parentPreBuiltObjects;
+
+        beforeEach(() => {
+          lightDom = new DummyLightDom();
+          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom);
+        });
+
+        it("should return destination light DOM from the parent's injector", function () {
+          var child = parentChildInjectors([], [], parentPreBuiltObjects);
+
+          expect(child.get(DestinationLightDom)).toEqual(lightDom);
+        });
+
+        it("should return null when parent's injector is a component boundary", function () {
+          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
+
+          expect(child.get(DestinationLightDom)).toBeNull();
+        });
+
+        it("should return source light DOM from the closest component boundary", function () {
+          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
+
+          expect(child.get(SourceLightDom)).toEqual(lightDom);
+        });
       });
     });
   });

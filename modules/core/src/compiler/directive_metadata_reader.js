@@ -1,4 +1,5 @@
 import {Type, isPresent, BaseException, stringify} from 'facade/lang';
+import {List, ListWrapper} from 'facade/collection';
 import {Directive, Component} from '../annotations/annotations';
 import {DirectiveMetadata} from './directive_metadata';
 import {reflector} from 'reflection/reflection';
@@ -12,11 +13,17 @@ export class DirectiveMetadataReader {
         var annotation = annotations[i];
 
         if (annotation instanceof Component) {
-          return new DirectiveMetadata(type, annotation, this.parseShadowDomStrategy(annotation));
+          var shadowDomStrategy = this.parseShadowDomStrategy(annotation);
+          return new DirectiveMetadata(
+            type,
+            annotation,
+            shadowDomStrategy,
+            this.componentDirectivesMetadata(annotation, shadowDomStrategy)
+          );
         }
 
         if (annotation instanceof Directive) {
-          return new DirectiveMetadata(type, annotation, null);
+          return new DirectiveMetadata(type, annotation, null, null);
         }
       }
     }
@@ -25,5 +32,17 @@ export class DirectiveMetadataReader {
 
   parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
     return isPresent(annotation.shadowDom) ? annotation.shadowDom : ShadowDomNative;
+  }
+
+  componentDirectivesMetadata(annotation:Component, shadowDomStrategy:ShadowDomStrategy):List<Type> {
+    var polyDirs = shadowDomStrategy.polyfillDirectives();
+    var template = annotation.template;
+    var templateDirs = isPresent(template) && isPresent(template.directives) ? template.directives : [];
+
+    var res = [];
+    res = ListWrapper.concat(res, templateDirs)
+    res = ListWrapper.concat(res, polyDirs)
+
+    return res;
   }
 }
