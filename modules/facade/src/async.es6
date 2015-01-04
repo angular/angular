@@ -34,7 +34,7 @@ export class PromiseWrapper {
     };
   }
 
-  static setTimeout(fn, millis) {
-    window.setTimeout(fn, millis);
+  static setTimeout(fn, millis, ...args) {
+    window.setTimeout(fn, millis, ...args);
   }
 }
