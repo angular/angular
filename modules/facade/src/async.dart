@@ -25,7 +25,7 @@ class PromiseWrapper {
     return new _Completer(new Completer());
   }
 
-  static setTimeout(fn, millis) {
+  static setTimeout(Function fn, int millis) {
     new Timer(new Duration(milliseconds: millis), fn);
   }
 }

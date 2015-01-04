@@ -1,3 +1,5 @@
+import {int} from 'facade/lang';
+import {List} from 'facade/collection';
 export var Promise = window.Promise;
 
 export class PromiseWrapper {
@@ -9,7 +11,7 @@ export class PromiseWrapper {
     return Promise.reject(obj);
   }
 
-  static all(promises):Promise {
+  static all(promises:List):Promise {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
@@ -34,7 +36,7 @@ export class PromiseWrapper {
     };
   }
 
-  static setTimeout(fn, millis) {
+  static setTimeout(fn:Function, millis:int) {
     window.setTimeout(fn, millis);
   }
 }
