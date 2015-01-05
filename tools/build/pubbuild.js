@@ -14,7 +14,7 @@ module.exports = function(gulp, plugins, config) {
       if (!webFolders.length) {
         return;
       }
-      var folder = getParentFolder(webFolders.shift());
+      var folder = path.resolve(path.join(webFolders.shift(), '..'));
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
       return util.processToPromise(spawn(config.command, ['build', '-o', destFolder], {
         stdio: 'inherit',
@@ -25,12 +25,6 @@ module.exports = function(gulp, plugins, config) {
     }
   };
 };
-
-function getParentFolder(folder) {
-  var parts = folder.split(path.sep);
-  parts.pop();
-  return parts.join(path.sep);
-}
 
 function replaceDartWithJsScripts(gulp, folder) {
   return util.streamToPromise(gulp.src(path.join(folder, '**/*.html'))
