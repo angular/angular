@@ -7,8 +7,9 @@ import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/core';
 import {Lexer, Parser, ProtoRecordRange, ChangeDetector} from 'change_detection/change_detection';
 import {TemplateConfig} from 'core/annotations/template_config';
+import {List} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
-import {FIELD} from 'facade/lang';
+import {int} from 'facade/lang';
 import {Injector} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ViewPort} from 'core/compiler/viewport';
@@ -205,6 +206,36 @@ export function main() {
           expect(view.elementInjectors.length).toBe(2);
           expect(view.elementInjectors[0].get(SomeDirective) instanceof SomeDirective).toBe(true);
           expect(view.elementInjectors[1].parent).toBe(view.elementInjectors[0]);
+        });
+
+        it('should not pass the host injector when a parent injector exists', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
+            new ProtoRecordRange());
+          var protoParent = new ProtoElementInjector(null, 0, [SomeDirective]);
+          pv.bindElement(protoParent);
+          var testProtoElementInjector = new TestProtoElementInjector(protoParent, 1, [AnotherDirective]);
+          pv.bindElement(testProtoElementInjector);
+
+          var hostProtoInjector = new ProtoElementInjector(null, 0, []);
+          var hostInjector = hostProtoInjector.instantiate(null, null);
+          var view;
+          expect(() => view = pv.instantiate(hostInjector)).not.toThrow();
+          expect(testProtoElementInjector.parentElementInjector).toBe(view.elementInjectors[0]);
+          expect(testProtoElementInjector.hostElementInjector).toBeNull();
+        });
+
+        it('should pass the host injector when there is no parent injector', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"><span class="ng-binding"></span></div>'),
+            new ProtoRecordRange());
+          pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirective]));
+          var testProtoElementInjector = new TestProtoElementInjector(null, 1, [AnotherDirective]);
+          pv.bindElement(testProtoElementInjector);
+
+          var hostProtoInjector = new ProtoElementInjector(null, 0, []);
+          var hostInjector = hostProtoInjector.instantiate(null, null);
+          expect(() => pv.instantiate(hostInjector)).not.toThrow();
+          expect(testProtoElementInjector.parentElementInjector).toBeNull();
+          expect(testProtoElementInjector.hostElementInjector).toBe(hostInjector);
         });
       });
 
@@ -543,4 +574,19 @@ class MyEvaluationContext {
 
 function createElement(html) {
   return DOM.createTemplate(html).content.firstChild;
+}
+
+class TestProtoElementInjector extends ProtoElementInjector {
+  parentElementInjector: ElementInjector;
+  hostElementInjector: ElementInjector;
+
+  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
+    super(parent, index, bindings, firstBindingIsComponent);
+  }
+
+  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
+    this.parentElementInjector = parent;
+    this.hostElementInjector = host;
+    return super.instantiate(parent, host);
+  }
 }

@@ -309,9 +309,11 @@ export class ProtoView {
       // elementInjectors and rootElementInjectors
       var protoElementInjector = binder.protoElementInjector;
       if (isPresent(protoElementInjector)) {
-        var parentElementInjector = isPresent(protoElementInjector.parent) ? elementInjectors[protoElementInjector.parent.index] : null;
-        elementInjector = protoElementInjector.instantiate(parentElementInjector, hostElementInjector);
-        if (isBlank(parentElementInjector)) {
+        if (isPresent(protoElementInjector.parent)) {
+          var parentElementInjector = elementInjectors[protoElementInjector.parent.index];
+          elementInjector = protoElementInjector.instantiate(parentElementInjector, null);
+        } else {
+          elementInjector = protoElementInjector.instantiate(null, hostElementInjector);
           ListWrapper.push(rootElementInjectors, elementInjector);
         }
       }

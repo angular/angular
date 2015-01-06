@@ -49,13 +49,10 @@ export class ProtoElementInjectorBuilder extends CompileStep {
   }
 
   _getParentProtoElementInjector(parent, current) {
-    var parentProtoElementInjector = null;
-    if (current.isViewRoot) {
-      parentProtoElementInjector = null;
-    } else if (isPresent(parent)) {
-      parentProtoElementInjector = parent.inheritedProtoElementInjector;
+    if (isPresent(parent) && !current.isViewRoot) {
+      return parent.inheritedProtoElementInjector;
     }
-    return parentProtoElementInjector;
+    return null;
   }
 
   _collectDirectiveBindings(pipelineElement) {
