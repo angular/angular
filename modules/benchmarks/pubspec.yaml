@@ -13,3 +13,7 @@ dependencies:
   change_detection:
     path: ../change_detection
   browser: '>=0.10.0 <0.11.0'
+transformers:
+- $dart2js:
+#    minify: false
+    commandLineOptions: ['--dump-info', '--trust-type-annotations', '--trust-primitives']
