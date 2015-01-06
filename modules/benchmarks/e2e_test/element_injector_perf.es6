@@ -1,17 +1,25 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
-describe('ng1.x tree benchmark', function () {
+describe('ng2 element injector benchmark', function () {
 
-  var URL = 'benchmarks_external/web/tree/tree_benchmark.html';
+  var URL = 'benchmarks/web/element_injector/element_injector_benchmark.html';
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log the stats', function() {
+  it('should log the stats for instantiate', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#destroyDom', '#createDom'],
-      logId: 'ng1.tree'
+      buttons: ['#instantiate'],
+      logId: 'ng2.elementInjector.instantiate'
+    });
+  });
+
+  it('should log the stats for instantiateDirectives', function() {
+    browser.get(URL);
+    runClickTimeBenchmark({
+      buttons: ['#instantiateDirectives'],
+      logId: 'ng2.elementInjector.instantiateDirectives'
     });
   });
 

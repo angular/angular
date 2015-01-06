@@ -1,5 +1,5 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
 describe('ng2 di benchmark', function () {
 

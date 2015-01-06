@@ -1,17 +1,17 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
-describe('ng1.x compiler benchmark', function () {
+describe('ng2 compiler benchmark', function () {
 
-  var URL = 'benchmarks_external/web/compiler/compiler_benchmark.html';
+  var URL = 'benchmarks/web/compiler/compiler_benchmark.html';
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log withBinding stats', function() {
+  it('should log withBindings stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
       buttons: ['#compileWithBindings'],
-      logId: 'ng1.compile.withBindings'
+      logId: 'ng2.compile.withBindings'
     });
   });
 
@@ -19,7 +19,7 @@ describe('ng1.x compiler benchmark', function () {
     browser.get(URL);
     runClickTimeBenchmark({
       buttons: ['#compileNoBindings'],
-      logId: 'ng1.compile.noBindings'
+      logId: 'ng2.compile.noBindings'
     });
   });
 

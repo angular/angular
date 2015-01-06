@@ -27,6 +27,18 @@ var _COMPILER_CONFIG_JS_DEFAULT = {
   modules: 'instantiate'
 };
 
+var CJS_COMPILER_OPTIONS = {
+  sourceMaps: true,
+  annotations: false, // parse annotations
+  types: false, // parse types
+  // TODO(tbosch): Right now, traceur generates imports that
+  // rely on absolute paths. This is why we are not using this...
+  script: true, // parse as a script
+  memberVariables: false, // parse class fields
+  typeAssertions: false,
+  modules: null // not needed
+};
+
 var _HTLM_DEFAULT_SCRIPTS_JS = [
   {src: '/deps/traceur-runtime.js', mimeType: 'text/javascript'},
   {src: '/rtts_assert/lib/rtts_assert.js', mimeType: 'text/javascript'},
@@ -51,7 +63,12 @@ var CONFIG = {
       prod: 'dist/js/prod',
       dart2js: 'dist/js/dart2js'
     },
-    dart: 'dist/dart'
+    dart: 'dist/dart',
+    cjs: {
+      all: 'dist/cjs',
+      tools: 'dist/cjs/tools',
+      e2eTest: 'dist/cjs/e2e_test'
+    }
   },
   srcFolderMapping: {
     'default': 'lib',
@@ -72,12 +89,20 @@ var CONFIG = {
   },
   transpile: {
     src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/**/perf/**/*'],
-      dart: ['modules/**/*.js', '!modules/**/perf/**/*']
+      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/**/e2e_test/**'],
+      dart: ['modules/**/*.js', '!modules/**/e2e_test/**'],
+      cjs: {
+        tools: ['tools/**/*.es6', '!tools/transpiler/**'],
+        e2eTest: ['modules/**/e2e_test/**/*.es6']
+      }
     },
     copy: {
-      js: ['modules/**/*.es5', '!modules/**/perf/**/*'],
-      dart: ['modules/**/*.dart', '!modules/**/perf/**/*']
+      js: ['modules/**/*.es5', '!modules/**/e2e_test/**'],
+      dart: ['modules/**/*.dart', '!modules/**/e2e_test/**'],
+      cjs: {
+        tools: ['tools/**/*.es5', '!tools/transpiler/**'],
+        e2eTest: ['modules/**/e2e_test/**/*.es5']
+      }
     },
     options: {
       js: {
@@ -96,7 +121,8 @@ var CONFIG = {
         script: false, // parse as a module
         memberVariables: true, // parse class fields
         outputLanguage: 'dart'
-      }
+      },
+      cjs: CJS_COMPILER_OPTIONS
     }
   },
   html: {
@@ -133,6 +159,11 @@ gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
 gulp.task('build/clean.dart', clean(gulp, gulpPlugins, {
   path: CONFIG.dest.dart
 }));
+
+gulp.task('build/clean.cjs', clean(gulp, gulpPlugins, {
+  path: CONFIG.dest.cjs.all
+}));
+
 
 // ------------
 // deps
@@ -175,6 +206,28 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   outputExt: 'dart',
   options: CONFIG.transpile.options.dart,
   srcFolderMapping: CONFIG.srcFolderMapping
+}));
+
+gulp.task('build/transpile/tools.cjs', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.cjs.tools,
+  copy: CONFIG.transpile.copy.cjs.tools,
+  dest: CONFIG.dest.cjs.tools,
+  outputExt: 'js',
+  options: CONFIG.transpile.options.cjs,
+  srcFolderMapping: {
+    'default': 'src'
+  }
+}));
+
+gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.cjs.e2eTest,
+  copy: CONFIG.transpile.copy.cjs.e2eTest,
+  dest: CONFIG.dest.cjs.e2eTest,
+  outputExt: 'js',
+  options: CONFIG.transpile.options.cjs,
+  srcFolderMapping: {
+    'default': 'src'
+  }
 }));
 
 // ------------
@@ -339,8 +392,14 @@ gulp.task('build.js.prod', function() {
   );
 });
 
+gulp.task('build.cjs', function() {
+  return runSequence(
+    ['build/transpile/tools.cjs', 'build/transpile/e2eTest.cjs']
+  );
+});
+
 gulp.task('build.js', ['build.js.dev', 'build.js.prod']);
 
-gulp.task('clean', ['build/clean.js', 'build/clean.dart']);
+gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.cjs']);
 
-gulp.task('build', ['build.js', 'build.dart']);
+gulp.task('build', ['build.js', 'build.dart', 'build.cjs']);

@@ -1,25 +1,25 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
-describe('ng2 compiler benchmark', function () {
+describe('ng2 tree benchmark', function () {
 
-  var URL = 'benchmarks/web/compiler/compiler_benchmark.html';
+  var URL = 'benchmarks/web/tree/tree_benchmark.html';
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log withBindings stats', function() {
+  it('should log the ng stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#compileWithBindings'],
-      logId: 'ng2.compile.withBindings'
+      buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
+      logId: 'ng2.tree'
     });
   });
 
-  it('should log noBindings stats', function() {
+  it('should log the baseline stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#compileNoBindings'],
-      logId: 'ng2.compile.noBindings'
+      buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
+      logId: 'baseline.tree'
     });
   });
 

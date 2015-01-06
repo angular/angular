@@ -1,6 +1,9 @@
+// load traceur runtime as our tests are written in es6
+require('traceur/bin/traceur-runtime.js');
+
 var config = exports.config = {
 
-  specs: ['modules/*/test/**/*_perf.js'],
+  specs: ['dist/cjs/**/*_perf.js'],
 
   params: {
     timeBenchmark: {
