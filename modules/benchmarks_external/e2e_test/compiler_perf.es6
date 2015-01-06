@@ -1,25 +1,25 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
-describe('ng2 change detection benchmark', function () {
+describe('ng1.x compiler benchmark', function () {
 
-  var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
+  var URL = 'benchmarks_external/web/compiler/compiler_benchmark.html';
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log ng stats', function() {
+  it('should log withBinding stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#ng2DetectChanges'],
-      logId: 'ng2.changeDetection'
+      buttons: ['#compileWithBindings'],
+      logId: 'ng1.compile.withBindings'
     });
   });
 
-  it('should log baseline stats', function() {
+  it('should log noBindings stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#baselineDetectChanges'],
-      logId: 'baseline.changeDetection'
+      buttons: ['#compileNoBindings'],
+      logId: 'ng1.compile.noBindings'
     });
   });
 

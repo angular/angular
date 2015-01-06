@@ -1,25 +1,25 @@
 "use strict";
-var benchpress = require('../../../../tools/benchpress/benchpress.js');
+var benchpress = require('../../../tools/benchpress/index.js');
 
-describe('ng2 tree benchmark', function () {
+describe('ng2 change detection benchmark', function () {
 
-  var URL = 'benchmarks/web/tree/tree_benchmark.html';
+  var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log the ng stats', function() {
+  it('should log ng stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      logId: 'ng2.tree'
+      buttons: ['#ng2DetectChanges'],
+      logId: 'ng2.changeDetection'
     });
   });
 
-  it('should log the baseline stats', function() {
+  it('should log baseline stats', function() {
     browser.get(URL);
     runClickTimeBenchmark({
-      buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      logId: 'baseline.tree'
+      buttons: ['#baselineDetectChanges'],
+      logId: 'baseline.changeDetection'
     });
   });
 

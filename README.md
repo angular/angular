@@ -6,6 +6,8 @@
 
 1. `npm install`
 2. `npm install -g gulp karma karma-cli`
+3. `npm install -g protractor`
+4. `webdriver-manager update`
 3. Optionally install Dart SDK (only if you plan on building Dart applications)
   1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
   2. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
@@ -34,17 +36,23 @@
 
 2. `gulp clean` -> cleans the `dist` folder
 
-### Tests:
+### Unit tests:
 
 1. `karma start karma-js.conf.js`: JS tests
 2. `karma start karma-dart.conf.js`: Dart tests
 
-Notes for all tests:
+Notes for transpiler tests:
 
 The karma preprocessor is setup in a way so that after every test run
 the transpiler is reloaded. With that it is possible to make changes
 to the preprocessor and run the tests without exiting karma
 (just touch a test file that you would like to run).
+
+### Performance tests
+
+1. `gulp build.cjs` (builds benchpress and tests into `dist/cjs` folder)
+2. `protractor protractor-perf-js.conf.js`: JS performance tests
+3. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
 
 ### Examples:
 
