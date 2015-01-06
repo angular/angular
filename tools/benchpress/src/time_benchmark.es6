@@ -190,6 +190,10 @@ function sumTimelineRecords(records, startTimeStampId, endTimeStampId) {
     // we need to substract the time of child records
     // that have been added to the stats from this record.
     // E.g. for a script record that triggered a gc or reflow while executing.
+
+    // Attention: If a gc happens during a script execution, the
+    // execution time of the script is usually slower than normal,
+    // even when we substract the gc time!!
     recordDuration = (record.endTime ? record.endTime - record.startTime : 0)
       - summedChildrenDuration;
 
