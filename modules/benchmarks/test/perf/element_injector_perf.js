@@ -1,26 +1,44 @@
 "use strict";
-var util = require('../../../../tools/perf/util.js');
+var benchpress = require('../../../../tools/benchpress/benchpress.js');
 
 describe('ng2 element injector benchmark', function () {
 
   var URL = 'benchmarks/web/element_injector/element_injector_benchmark.html';
 
-  afterEach(util.verifyNoErrors);
+  afterEach(benchpress.verifyNoBrowserErrors);
 
   it('should log the stats for instantiate', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#instantiate'],
-      name: browser.params.lang+'.ng2.elementInjector.instantiate'
+      logId: 'ng2.elementInjector.instantiate'
     });
   });
 
   it('should log the stats for instantiateDirectives', function() {
     browser.get(URL);
-    util.runClickBenchmark({
+    runClickTimeBenchmark({
       buttons: ['#instantiateDirectives'],
-      name: browser.params.lang+'.ng2.elementInjector.instantiateDirectives'
+      logId: 'ng2.elementInjector.instantiateDirectives'
     });
   });
 
 });
+
+function runClickTimeBenchmark(config) {
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  var timeParams = browser.params.timeBenchmark;
+  benchpress.runTimeBenchmark({
+    sampleSize: timeParams.sampleSize,
+    targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
+    timeout: timeParams.timeout,
+    metrics: timeParams.metrics,
+    logId: browser.params.lang+'.'+config.logId
+  }, function() {
+    buttons.forEach(function(button) {
+      button.click();
+    });
+  });
+}
