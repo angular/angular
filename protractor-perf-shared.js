@@ -6,7 +6,7 @@ var config = exports.config = {
   specs: ['dist/cjs/**/*_perf.js'],
 
   params: {
-    timeBenchmark: {
+    benchmark: {
       // size of the sample to take
       sampleSize: 10,
       targetCoefficientOfVariation: 4,

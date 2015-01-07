@@ -9,7 +9,7 @@ describe('ng2 di benchmark', function () {
 
   it('should log the stats for getByToken', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#getByToken'],
       logId: 'ng2.di.getByToken'
     });
@@ -17,7 +17,7 @@ describe('ng2 di benchmark', function () {
 
   it('should log the stats for getByKey', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#getByKey'],
       logId: 'ng2.di.getByKey'
     });
@@ -25,7 +25,7 @@ describe('ng2 di benchmark', function () {
 
   it('should log the stats for getChild', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#getChild'],
       logId: 'ng2.di.getChild'
     });
@@ -33,7 +33,7 @@ describe('ng2 di benchmark', function () {
 
   it('should log the stats for instantiate', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#instantiate'],
       logId: 'ng2.di.instantiate'
     });
@@ -41,12 +41,12 @@ describe('ng2 di benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,

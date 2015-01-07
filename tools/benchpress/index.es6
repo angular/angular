@@ -1,7 +1,7 @@
-var timeBenchmark = require('./src/time_benchmark');
+var benchmark = require('./src/benchmark');
 var tools = require('./src/tools');
 
 module.exports = {
-  runTimeBenchmark: timeBenchmark.runTimeBenchmark,
+  runBenchmark: benchmark.runBenchmark,
   verifyNoBrowserErrors: tools.verifyNoBrowserErrors
 };

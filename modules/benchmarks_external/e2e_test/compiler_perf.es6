@@ -9,7 +9,7 @@ describe('ng1.x compiler benchmark', function () {
 
   it('should log withBinding stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#compileWithBindings'],
       logId: 'ng1.compile.withBindings'
     });
@@ -17,7 +17,7 @@ describe('ng1.x compiler benchmark', function () {
 
   it('should log noBindings stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#compileNoBindings'],
       logId: 'ng1.compile.noBindings'
     });
@@ -25,12 +25,12 @@ describe('ng1.x compiler benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,

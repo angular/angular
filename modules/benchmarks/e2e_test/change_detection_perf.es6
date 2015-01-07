@@ -9,7 +9,7 @@ describe('ng2 change detection benchmark', function () {
 
   it('should log ng stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#ng2DetectChanges'],
       logId: 'ng2.changeDetection'
     });
@@ -17,7 +17,7 @@ describe('ng2 change detection benchmark', function () {
 
   it('should log baseline stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#baselineDetectChanges'],
       logId: 'baseline.changeDetection'
     });
@@ -25,12 +25,12 @@ describe('ng2 change detection benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,

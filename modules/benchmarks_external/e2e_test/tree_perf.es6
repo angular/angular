@@ -9,7 +9,7 @@ describe('ng1.x tree benchmark', function () {
 
   it('should log the stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#destroyDom', '#createDom'],
       logId: 'ng1.tree'
     });
@@ -17,12 +17,12 @@ describe('ng1.x tree benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,
