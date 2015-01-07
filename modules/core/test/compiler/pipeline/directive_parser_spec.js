@@ -20,7 +20,14 @@ export function main() {
 
     beforeEach( () => {
       reader = new DirectiveMetadataReader();
-      directives = [SomeDecorator, SomeTemplate, SomeTemplate2, SomeComponent, SomeComponent2];
+      directives = [
+        SomeDecorator,
+        SomeDecoratorIgnoringChildren,
+        SomeTemplate,
+        SomeTemplate2,
+        SomeComponent,
+        SomeComponent2
+      ];
     });
 
     function createPipeline({propertyBindings, variableBindings}={}) {
@@ -141,6 +148,16 @@ export function main() {
         expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
       });
 
+      it('should compile children by default', () => {
+        var results = createPipeline().process(createElement('<div some-decor></div>'));
+        expect(results[0].compileChildren).toEqual(true);
+      });
+
+      it('should stop compiling children when specified in the decorator config', () => {
+        var results = createPipeline().process(createElement('<div some-decor-ignoring-children></div>'));
+        expect(results[0].compileChildren).toEqual(false);
+      });
+
       it('should detect them in variable bindings', () => {
         var pipeline = createPipeline({variableBindings: {
           'some-decor': 'someExpr'
@@ -175,6 +192,13 @@ class MockStep extends CompileStep {
   selector: '[some-decor]'
 })
 class SomeDecorator {}
+
+@Decorator({
+  selector: '[some-decor-ignoring-children]',
+  compileChildren: false
+})
+class SomeDecoratorIgnoringChildren {
+}
 
 @Template({
   selector: '[some-templ]'

@@ -5,11 +5,15 @@ import {DOM} from 'facade/dom';
 import {MapWrapper} from 'facade/collection';
 
 import {Lexer, Parser} from 'change_detection/change_detection';
+import {IgnoreChildrenStep} from './pipeline_spec';
 
 export function main() {
   describe('TextInterpolationParser', () => {
     function createPipeline() {
-      return new CompilePipeline([new TextInterpolationParser(new Parser(new Lexer()), null)]);
+      return new CompilePipeline([
+        new IgnoreChildrenStep(),
+        new TextInterpolationParser(new Parser(new Lexer()), null)
+      ]);
     }
 
     it('should find text interpolation in normal elements', () => {
@@ -30,6 +34,13 @@ export function main() {
       var results = createPipeline().process(createElement('<div>{{expr1}}{{expr2}}</div>'));
       var bindings = results[0].textNodeBindings;
       expect(MapWrapper.get(bindings, 0).source).toEqual("(expr1)+(expr2)");
+    });
+
+    it('should not interpolate when compileChildren is false', () => {
+      var results = createPipeline().process(createElement('<div>{{included}}<span ignore-children>{{excluded}}</span></div>'));
+      var bindings = results[0].textNodeBindings;
+      expect(MapWrapper.get(bindings, 0).source).toEqual("(included)");
+      expect(results[1].textNodeBindings).toBe(null);
     });
 
     it('should allow fixed text before, in between and after expressions', () => {

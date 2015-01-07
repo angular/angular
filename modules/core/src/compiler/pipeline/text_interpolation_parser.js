@@ -54,6 +54,9 @@ export class TextInterpolationParser extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    if (!current.compileChildren) {
+      return;
+    }
     var element = current.element;
     var childNodes = DOM.templateAwareRoot(element).childNodes;
     for (var i=0; i<childNodes.length; i++) {

@@ -23,9 +23,9 @@ export function createDefaultSteps(parser:Parser, compiledComponent: DirectiveMe
 
   return [
     new ViewSplitter(parser, compilationUnit),
-    new TextInterpolationParser(parser, compilationUnit),
     new PropertyBindingParser(parser, compilationUnit),
     new DirectiveParser(directives),
+    new TextInterpolationParser(parser, compilationUnit),
     new ElementBindingMarker(),
     new ProtoViewBuilder(),
     new ProtoElementInjectorBuilder(),

@@ -131,7 +131,7 @@ class MockStep extends CompileStep {
   }
 }
 
-class IgnoreChildrenStep extends CompileStep {
+export class IgnoreChildrenStep extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-children')) {

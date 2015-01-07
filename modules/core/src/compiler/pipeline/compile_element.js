@@ -119,6 +119,9 @@ export class CompileElement {
         this.decoratorDirectives = ListWrapper.create();
       }
       ListWrapper.push(this.decoratorDirectives, directive);
+      if (!annotation.compileChildren) {
+        this.compileChildren = false;
+      }
     } else if (annotation instanceof Template) {
       this.templateDirective = directive;
     } else if (annotation instanceof Component) {

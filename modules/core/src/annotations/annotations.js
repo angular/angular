@@ -80,14 +80,17 @@ export class Decorator extends Directive {
       selector,
       bind,
       lightDomServices,
-      implementsTypes
+      implementsTypes,
+      compileChildren = true
     }:{
       selector:string,
       bind:any,
       lightDomServices:List,
-      implementsTypes:List
+      implementsTypes:List,
+      compileChildren:boolean
     }={})
   {
+    this.compileChildren = compileChildren;
     super({
         selector: selector,
         bind: bind,
