@@ -6,16 +6,57 @@ var SUPPORTED_METRICS = {
   script: true,
   gcTime: true,
   gcAmount: true,
-  gcTimeDuringScript: true,
-  gcAmountDuringScript: true,
+  gcTimeInScript: true,
+  gcAmountInScript: true,
   gcAmountPerMs: true,
   render: true
 };
-var DETERMINE_FORCE_GC_MODE_ITERATIONS = 5;
 
-var MODE_FORCE_GC = 'forceGc';
-var MODE_IGNORE_RUNS_WITH_GC = 'ignoreRunsWithGc';
-var MODE_INDETERMINATE = 'indeterminate';
+var RUN_MODE = {
+  detect: function(prevState, benchmarkData, iterationIndex) {
+    var gcInScriptCount = prevState.gcInScriptCount || 0;
+    if (benchmarkData.gcAmountInScript) {
+      gcInScriptCount++;
+    }
+    var ignoreRun = !!benchmarkData.gcAmountInScript;
+    var nextMode = RUN_MODE.detect;
+    if (iterationIndex > 10) {
+      if (gcInScriptCount / iterationIndex > 0.7) {
+        nextMode = RUN_MODE.forceGc;
+      } else {
+        nextMode = RUN_MODE.noGcInScript;
+      }
+    }
+    return {
+      forceGc: false,
+      ignoreRun: ignoreRun,
+      gcInScriptCount: gcInScriptCount,
+      nextMode: nextMode
+    };
+  },
+  forceGc: function() {
+    return {
+      forceGc: true,
+      ignoreRun: false,
+      nextMode: RUN_MODE.forceGc
+    }
+  },
+  noGcInScript: function(prevState, benchmarkData) {
+    var ignoreRun = !!benchmarkData.gcAmountInScript;
+    return {
+      forceGc: false,
+      ignoreRun: ignoreRun,
+      nextMode: RUN_MODE.noGcInScript
+    }
+  },
+  plain: function() {
+    return {
+      forceGc: false,
+      ignoreRun: false,
+      nextMode: RUN_MODE.plain
+    }
+  }
+};
 
 var nextTimestampId = 0;
 
@@ -30,25 +71,30 @@ function runBenchmark(config, workCallback) {
       throw new Error('Metric '+metric+' is not suported by benchpress right now');
     }
   });
-  var ROW_FORMAT = ['%-40s'].concat(config.metrics.map(function() {
+  var ROW_FORMAT = ['%-40s', '%12s'].concat(config.metrics.map(function() {
     return '%12s';
   })).join(' | ');
 
-  var benchmarkStatsAggregator = stats.createObjectStatsAggregator(config.sampleSize);
+  var benchmarkStatsAggregator = stats.createObjectStatsAggregator(config.metrics, config.sampleSize);
 
   var startTime = Date.now();
   startLoop().then(endLoop);
 
-  var gcDuringScriptCount = 0;
-
   function startLoop(gcData) {
     reporter.printHeading('SCRIPT DATA: sampling size '+config.sampleSize);
-    reporter.printTableHeader(ROW_FORMAT, ['name'].concat(config.metrics));
-    return loop(0, MODE_INDETERMINATE);
+    reporter.printTableHeader(ROW_FORMAT, ['name', 'action'].concat(config.metrics));
+    if (!(config.mode in RUN_MODE)) {
+      throw new Error('Unknown mode '+config.mode);
+    }
+    return loop(0, {
+      forceGc: false,
+      ignoreRun: false,
+      nextMode: RUN_MODE[config.mode]
+    });
   }
 
   function endLoop(stats) {
-    reporter.printTableFooter(ROW_FORMAT, [config.logId]
+    reporter.printTableFooter(ROW_FORMAT, [config.logId, '']
       .concat(formatObjectStats(stats, config.metrics))
     );
     return config.metrics.map(function(metric) {
@@ -56,40 +102,35 @@ function runBenchmark(config, workCallback) {
     });
   }
 
-  function loop(iterationIndex, mode) {
-    // For fast tests that don't create a lot of garbage,
-    // we don't want to force gc before every run as that
-    // can slow down the script execution time (even when we subtract
-    // the gc time)!
-    if (mode === MODE_FORCE_GC) {
-      commands.gc();
-    }
-    return measureTime(workCallback).then(function(benchmarkData) {
-      var hasGcDuringScript = !!benchmarkData.gcTimeDuringScript;
-      var ignoreBenchmarkRun = false;
-      if (hasGcDuringScript) {
-        gcDuringScriptCount ++;
-        ignoreBenchmarkRun = (mode === MODE_INDETERMINATE || mode === MODE_IGNORE_RUNS_WITH_GC);
+  function loop(iterationIndex, modeState) {
+    return measureTime(function() {
+      workCallback();
+      if (modeState.forceGc) {
+        // For fast tests that don't create a lot of garbage,
+        // we don't want to force gc before every run as that
+        // can slow down the script execution time (even when we subtract
+        // the gc time)!
+        // Note: we need to call gc AFTER the actual test so the
+        // gc amount is added to the current test run!
+        commands.gc();
       }
-      if (mode === MODE_INDETERMINATE && iterationIndex >= DETERMINE_FORCE_GC_MODE_ITERATIONS) {
-        mode = (gcDuringScriptCount / iterationIndex > 0.5) ? MODE_FORCE_GC : MODE_IGNORE_RUNS_WITH_GC;
+    }).then(function(benchmarkData) {
+      modeState = modeState.nextMode(modeState, benchmarkData, iterationIndex);
+      var action = '';
+      if (modeState.ignoreRun) {
+        action = 'ignore';
+      } else if (modeState.forceGc) {
+        action = 'forceGc';
       }
-
-      var rowTitle;
-      if (ignoreBenchmarkRun) {
-        rowTitle = '(ignored: gc in script)';
-      } else {
-        rowTitle = config.logId + '#' + iterationIndex;
-      }
-      reporter.printRow(ROW_FORMAT, [rowTitle]
+      reporter.printRow(ROW_FORMAT, [config.logId + '#' + iterationIndex, action]
         .concat(formatObjectData(benchmarkData, config.metrics))
       );
 
       var benchmarkStats;
-      if (!ignoreBenchmarkRun) {
-        benchmarkStats = benchmarkStatsAggregator(benchmarkData);
-      } else {
+      if (modeState.ignoreRun) {
         benchmarkStats = benchmarkStatsAggregator.current;
+      } else {
+        benchmarkStats = benchmarkStatsAggregator(benchmarkData);
       }
 
       if (Date.now() - startTime > config.timeout) {
@@ -102,22 +143,26 @@ function runBenchmark(config, workCallback) {
         ) {
         return benchmarkStats
       }
-      return loop(iterationIndex+1, mode);
+      return loop(iterationIndex+1, modeState);
     });
   }
 }
 
-
 function formatObjectData(data, props) {
   return props.map(function(prop) {
-    return data[prop].toFixed(2);
+    var val = data[prop];
+    if (typeof val === 'number') {
+      return val.toFixed(2);
+    } else {
+      return val;
+    }
   });
 }
 
 function formatObjectStats(stats, props) {
   return props.map(function(prop) {
     var entry = stats[prop];
-    return entry.mean.toFixed(2) + '\u00B1' + entry.coefficientOfVariation.toFixed(2);
+    return entry.mean.toFixed(2) + '\u00B1' + entry.coefficientOfVariation.toFixed(0)+ '%';
   });
 }
 
@@ -156,8 +201,8 @@ function sumTimelineRecords(records, startTimeStampId, endTimeStampId) {
     script: 0,
     gcTime: 0,
     gcAmount: 0,
-    gcTimeDuringScript: 0,
-    gcAmountDuringScript: 0,
+    gcTimeInScript: 0,
+    gcAmountInScript: 0,
     render: 0,
     timeStamps: []
   };
@@ -205,8 +250,8 @@ function sumTimelineRecords(records, startTimeStampId, endTimeStampId) {
         recordStats.gcTime += recordDuration;
         recordStats.gcAmount += record.data.usedHeapSizeDelta;
         if (parentIsFunctionCall) {
-          recordStats.gcTimeDuringScript += recordDuration;
-          recordStats.gcAmountDuringScript += record.data.usedHeapSizeDelta;
+          recordStats.gcTimeInScript += recordDuration;
+          recordStats.gcAmountInScript += record.data.usedHeapSizeDelta;
         }
         recordUsed = true;
       } else if (record.type === 'RecalculateStyles' ||

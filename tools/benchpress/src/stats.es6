@@ -5,14 +5,21 @@ module.exports = {
   calculateStandardDeviation: calculateStandardDeviation
 };
 
-function createObjectStatsAggregator(sampleSize) {
+function createObjectStatsAggregator(properties, sampleSize) {
   var propSamples = {};
-  var lastResult;
+  addData.current = {};
+  properties.forEach(function(prop) {
+    addData.current[prop] = {
+      mean: 0,
+      coefficientOfVariation: 0,
+      count: 0
+    };
+  });
   return addData;
 
   function addData(data) {
-    lastResult = {};
-    for (var prop in data) {
+    var result = {};
+    properties.forEach(function(prop) {
       var samples = propSamples[prop];
       if (!samples) {
         samples = propSamples[prop] = [];
@@ -20,14 +27,14 @@ function createObjectStatsAggregator(sampleSize) {
       samples.push(data[prop]);
       samples.splice(0, samples.length - sampleSize);
       var mean = calculateMean(samples);
-      lastResult[prop] = {
+      result[prop] = {
         mean: mean,
         coefficientOfVariation: calculateCoefficientOfVariation(samples, mean),
         count: samples.length
       };
-    }
-    addData.current = lastResult;
-    return lastResult;
+    });
+    addData.current = result;
+    return result;
   }
 }
 

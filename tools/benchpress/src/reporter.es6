@@ -1,7 +1,7 @@
 var vsprintf = require("sprintf-js").vsprintf;
 
-var HEADER_SEPARATORS = ['----', '----', '----', '----'];
-var FOOTER_SEPARATORS = ['====', '====', '====', '===='];
+var HEADER_SEPARATORS = ['----', '----', '----', '----', '----', '----', '----'];
+var FOOTER_SEPARATORS = ['====', '====', '====', '====', '====', '====', '===='];
 
 module.exports = {
   printHeading: printHeading,

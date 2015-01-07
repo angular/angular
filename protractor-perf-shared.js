@@ -11,7 +11,13 @@ var config = exports.config = {
       sampleSize: 10,
       targetCoefficientOfVariation: 4,
       timeout: 20000,
-      metrics: ['script', 'render']
+      metrics: ['script', 'render', 'gcAmount', 'gcAmountInScript', 'gcTime'],
+      // run mode of the benchmark:
+      // - detect: auto detect whether to force gc
+      // - forceGc: forces a gc before every run and ignores no runs
+      // - noGcInScript: ignore runs that have gc while a script was executing
+      // - plain: does not force nor ignore runs
+      mode: 'detect'
     }
   },
 
