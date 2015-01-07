@@ -9,7 +9,7 @@ describe('ng2 element injector benchmark', function () {
 
   it('should log the stats for instantiate', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#instantiate'],
       logId: 'ng2.elementInjector.instantiate'
     });
@@ -17,7 +17,7 @@ describe('ng2 element injector benchmark', function () {
 
   it('should log the stats for instantiateDirectives', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#instantiateDirectives'],
       logId: 'ng2.elementInjector.instantiateDirectives'
     });
@@ -25,12 +25,12 @@ describe('ng2 element injector benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,

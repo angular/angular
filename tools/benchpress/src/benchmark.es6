@@ -20,11 +20,11 @@ var MODE_INDETERMINATE = 'indeterminate';
 var nextTimestampId = 0;
 
 module.exports = {
-  runTimeBenchmark: runTimeBenchmark,
+  runBenchmark: runBenchmark,
   supportedMetrics: SUPPORTED_METRICS
 };
 
-function runTimeBenchmark(config, workCallback) {
+function runBenchmark(config, workCallback) {
   config.metrics.forEach(function(metric) {
     if (!(metric in SUPPORTED_METRICS)) {
       throw new Error('Metric '+metric+' is not suported by benchpress right now');

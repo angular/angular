@@ -9,7 +9,7 @@ describe('ng2 tree benchmark', function () {
 
   it('should log the ng stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
       logId: 'ng2.tree'
     });
@@ -17,7 +17,7 @@ describe('ng2 tree benchmark', function () {
 
   it('should log the baseline stats', function() {
     browser.get(URL);
-    runClickTimeBenchmark({
+    runClickBenchmark({
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
       logId: 'baseline.tree'
     });
@@ -25,12 +25,12 @@ describe('ng2 tree benchmark', function () {
 
 });
 
-function runClickTimeBenchmark(config) {
+function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.timeBenchmark;
-  benchpress.runTimeBenchmark({
+  var timeParams = browser.params.benchmark;
+  benchpress.runBenchmark({
     sampleSize: timeParams.sampleSize,
     targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
     timeout: timeParams.timeout,
