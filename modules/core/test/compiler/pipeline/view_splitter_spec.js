@@ -79,6 +79,13 @@ export function main() {
         expect(results[1].variableBindings).toBe(null);
       });
 
+      it('should iterate properly after a template dom modification', () => {
+        var rootElement = createElement('<div><div template></div><after></after></div>');
+        var results = createPipeline().process(rootElement);
+        // 1 root + 2 initial + 1 generated template elements
+        expect(results.length).toEqual(4);
+      });
+
     });
 
   });
