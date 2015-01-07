@@ -1,9 +1,9 @@
-import {Decorator, Component, Template} from 'core/annotations/annotations';
+import {Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/compiler/interfaces';
 import {ViewPort} from 'core/compiler/viewport';
 import {View} from 'core/compiler/view';
 import {isPresent, isBlank} from 'facade/lang';
-import {ListWrapper, List} from 'facade/collection';
+import {ListWrapper} from 'facade/collection';
 
 @Template({
   selector: '[ng-repeat]',
