@@ -74,6 +74,7 @@ export class Component extends Directive {
 }
 
 export class Decorator extends Directive {
+  compileChildren: boolean;
   @CONST()
   constructor({
       selector,

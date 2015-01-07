@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
-import {ListWrapper, List} from 'facade/collection';
+import {ListWrapper, List, MapWrapper} from 'facade/collection';
 import {DOM} from 'facade/dom';
 import {isPresent, NumberWrapper, StringWrapper} from 'facade/lang';
 
@@ -10,14 +10,27 @@ import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
 export function main() {
   describe('compile_pipeline', () => {
-    it('should walk the tree in depth first order including template contents', () => {
-      var element = createElement('<div id="1"><template id="2"><span id="3"></span></template></div>');
+    describe('children compilation', () => {
+      it('should walk the tree in depth first order including template contents', () => {
+        var element = createElement('<div id="1"><template id="2"><span id="3"></span></template></div>');
 
-      var step0Log = [];
-      var results = new CompilePipeline([createLoggerStep(step0Log)]).process(element);
+        var step0Log = [];
+        var results = new CompilePipeline([createLoggerStep(step0Log)]).process(element);
 
-      expect(step0Log).toEqual(['1', '1<2', '2<3']);
-      expect(resultIdLog(results)).toEqual(['1', '2', '3']);
+        expect(step0Log).toEqual(['1', '1<2', '2<3']);
+        expect(resultIdLog(results)).toEqual(['1', '2', '3']);
+      });
+
+      it('should stop walking the tree when compileChildren is false', () => {
+        var element = createElement('<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
+
+        var step0Log = [];
+        var pipeline = new CompilePipeline([new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
+        var results = pipeline.process(element);
+
+        expect(step0Log).toEqual(['1', '1<2']);
+        expect(resultIdLog(results)).toEqual(['1', '2']);
+      });
     });
 
     describe('control.addParent', () => {
@@ -115,6 +128,15 @@ class MockStep extends CompileStep {
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     this.processClosure(parent, current, control);
+  }
+}
+
+class IgnoreChildrenStep extends CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    var attributeMap = DOM.attributeMap(current.element);
+    if (MapWrapper.contains(attributeMap, 'ignore-children')) {
+      current.compileChildren = false;
+    }
   }
 }
 

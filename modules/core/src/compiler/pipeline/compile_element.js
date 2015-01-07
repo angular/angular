@@ -32,6 +32,7 @@ export class CompileElement {
   inheritedProtoView:ProtoView;
   inheritedProtoElementInjector:ProtoElementInjector;
   inheritedElementBinder:ElementBinder;
+  compileChildren: boolean;
   constructor(element:Element) {
     this.element = element;
     this._attrs = null;
@@ -54,6 +55,7 @@ export class CompileElement {
     // inherited down to children if they don't have
     // an own elementBinder
     this.inheritedElementBinder = null;
+    this.compileChildren = true;
   }
 
   refreshAttrs() {
