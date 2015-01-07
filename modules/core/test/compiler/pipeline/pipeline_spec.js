@@ -118,16 +118,6 @@ class MockStep extends CompileStep {
   }
 }
 
-class LoggingStep extends CompileStep {
-  logs:List;
-  constructor(logs) {
-    this.logs = logs;
-  }
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    ListWrapper.push(this.logs, {'parent':parent, 'current':current});
-  }
-}
-
 function logEntry(log, parent, current) {
   var parentId = '';
   if (isPresent(parent)) {
