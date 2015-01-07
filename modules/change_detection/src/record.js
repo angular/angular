@@ -274,12 +274,22 @@ export class Record {
   }
 
   _calculateNewValue() {
+    try {
+      return this.__calculateNewValue();
+    } catch (e) {
+      throw new ChangeDetectionError(this, e);
+    }
+  }
+
+  __calculateNewValue() {
     switch (this.getType()) {
       case RECORD_TYPE_PROPERTY:
-        return this.funcOrValue(this.context);
+        var propertyGetter:Function = this.funcOrValue;
+        return propertyGetter(this.context);
 
       case RECORD_TYPE_INVOKE_METHOD:
-        return this.funcOrValue(this.context, this.args);
+        var methodInvoker:Function = this.funcOrValue;
+        return methodInvoker(this.context, this.args);
 
       case RECORD_TYPE_INVOKE_CLOSURE:
         return FunctionWrapper.apply(this.context, this.args);
@@ -476,4 +486,20 @@ function isSame(a, b) {
   if (a === b) return true;
   if ((a !== a) && (b !== b)) return true;
   return false;
+}
+
+export class ChangeDetectionError extends Error {
+  message:string;
+  originalException:any;
+  location:string;
+
+  constructor(record:Record, originalException:any) {
+    this.originalException = originalException;
+    this.location = record.protoRecord.expressionAsString;
+    this.message = `${this.originalException} in [${this.location}]`;
+  }
+
+  toString():string {
+    return this.message;
+  }
 }
