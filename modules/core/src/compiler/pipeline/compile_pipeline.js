@@ -25,11 +25,14 @@ export class CompilePipeline {
   _process(results, parent:CompileElement, current:CompileElement) {
     var additionalChildren = this._control.internalProcess(results, 0, parent, current);
     var node = DOM.templateAwareRoot(current.element).firstChild;
-    while (isPresent(node)){
-      if(node.nodeType === Node.ELEMENT_NODE) {
+    while (isPresent(node)) {
+      // compiliation can potentially move the node, so we need to store the
+      // next sibling before recursing.
+      var nextNode = DOM.nextSibling(node);
+      if (node.nodeType === Node.ELEMENT_NODE) {
         this._process(results, current, new CompileElement(node));
       }
-      node = DOM.nextSibling(node);
+      node = nextNode;
     }
 
     if (isPresent(additionalChildren)) {
