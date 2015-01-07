@@ -1,6 +1,9 @@
 Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master)](https://travis-ci.org/angular/angular)
 =========
 
+This is the repository for the upcoming 2.0 version. If you're looking for the current official version of Angular you
+should go to [angular/angular.js](https://github.com/angular/angular.js)
+
 ## Build
 
 ### Prerequisites
