@@ -21,14 +21,9 @@ function runClickBenchmark(config) {
   var buttons = config.buttons.map(function(selector) {
     return $(selector);
   });
-  var timeParams = browser.params.benchmark;
-  benchpress.runBenchmark({
-    sampleSize: timeParams.sampleSize,
-    targetCoefficientOfVariation: timeParams.targetCoefficientOfVariation,
-    timeout: timeParams.timeout,
-    metrics: timeParams.metrics,
-    logId: browser.params.lang+'.'+config.logId
-  }, function() {
+  var params = Object.create(browser.params.benchmark);
+  params.logId = browser.params.lang+'.'+config.logId;
+  benchpress.runBenchmark(params, function() {
     buttons.forEach(function(button) {
       button.click();
     });
