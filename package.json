@@ -10,7 +10,7 @@
   "dependencies": {
     "es6-module-loader": "^0.9.2",
     "systemjs": "^0.9.1",
-    "traceur": "0.0.79",
+    "traceur": "vojtajina/traceur-compiler#disable-getters-setters",
     "which": "~1",
     "zone.js": "0.3.0"
   },

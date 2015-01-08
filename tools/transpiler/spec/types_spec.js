@@ -1,4 +1,4 @@
-import {describe, it, expect, IS_DARTIUM} from 'test_lib/test_lib';
+import {describe, xdescribe, it, expect, IS_DARTIUM} from 'test_lib/test_lib';
 
 class A {}
 class B {}
@@ -70,7 +70,7 @@ export function main() {
       f.typedVariables();
     });
 
-    describe('class fields', function() {
+    xdescribe('class fields', function() {
       it('should fail when setting wrong type value', function() {
         var wf = new WithFields();
 
@@ -87,7 +87,7 @@ export function main() {
       });
     });
 
-    describe('static class fields', function() {
+    xdescribe('static class fields', function() {
       it('should fail when setting wrong type value', function() {
         expect(function() {
           WithFields.id = true;
