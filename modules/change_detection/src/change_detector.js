@@ -56,8 +56,8 @@ export class ChangeDetector {
       if (isPresent(updatedRecords)) {
         var nextEnabled = record.nextEnabled;
         if (isBlank(nextEnabled) ||                       // we have reached the last enabled record
-            currentRange != nextEnabled.recordRange ||    // the next record is in a different range
-            currentGroup != nextEnabled.groupMemento()) { // the next record is in a different group
+            currentRange !== nextEnabled.recordRange ||    // the next record is in a different range
+            currentGroup !== nextEnabled.groupMemento()) { // the next record is in a different group
           currentRange.dispatcher.onRecordChange(currentGroup, updatedRecords);
           updatedRecords = null;
         }
