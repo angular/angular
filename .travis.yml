@@ -5,17 +5,23 @@ node_js:
 env:
   global:
   - CHANNEL=stable
-  - BROWSERS=DartiumWithWebPlatform
+  - KARMA_BROWSERS=DartiumWithWebPlatform
+  - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
+  - ARCH=linux-x64
 
 before_install:
 - export DISPLAY=:99.0
-- ./scripts/travis/install.sh
+- export GIT_SHA=$(git rev-parse HEAD)
+- ./scripts/ci/init_android.sh
+- ./scripts/ci/install_dart.sh
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 before_script:
 - mkdir -p $LOGS_DIR
 script:
-- ./scripts/travis/build.sh
+- ./scripts/ci/build.sh
+- ./scripts/ci/test_unit.sh
+- ./scripts/ci/test_e2e.sh
 after_script:
-- ./scripts/travis/print-logs.sh
+- ./scripts/ci/print-logs.sh
