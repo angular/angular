@@ -1,3 +1,4 @@
+export var window = frames.window;
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
 export var NodeList = window.NodeList;

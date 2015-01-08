@@ -8,7 +8,7 @@ import {TemplateLoader} from 'core/compiler/template_loader';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 import {reflector} from 'reflection/reflection';
-import {DOM, document, Element} from 'facade/dom';
+import {DOM, document, window, Element} from 'facade/dom';
 import {isPresent} from 'facade/lang';
 
 var MAX_DEPTH = 9;
@@ -135,6 +135,23 @@ export function main() {
     changeDetector.detectChanges();
   }
 
+  function profile(create, destroy, name) {
+    return function(_) {
+      window.console.profile(name);
+      var duration = 0;
+      var count = 0;
+      while(duration < 5000) {
+        var start = window.performance.now();
+        create(_);
+        duration += window.performance.now() - start;
+        destroy(_);
+        count++;
+      }
+      window.console.profileEnd(name);
+      window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+    };
+  }
+
   function ng2CreateDom(_) {
     var values = count++ % 2 == 0 ?
       ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
@@ -144,12 +161,16 @@ export function main() {
     changeDetector.detectChanges();
   }
 
+  function noop() {}
+
   function initNg2() {
     bootstrap(AppComponent).then((injector) => {
       changeDetector = injector.get(ChangeDetector);
       app = injector.get(AppComponent);
       DOM.on(DOM.querySelector(document, '#ng2DestroyDom'), 'click', ng2DestroyDom);
       DOM.on(DOM.querySelector(document, '#ng2CreateDom'), 'click', ng2CreateDom);
+      DOM.on(DOM.querySelector(document, '#ng2UpdateDomProfile'), 'click', profile(ng2CreateDom, noop, 'ng2-update'));
+      DOM.on(DOM.querySelector(document, '#ng2CreateDomProfile'), 'click', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
     });
   }
 
@@ -170,6 +191,8 @@ export function main() {
     DOM.appendChild(DOM.querySelector(document, 'baseline'), baselineRootTreeComponent.element);
     DOM.on(DOM.querySelector(document, '#baselineDestroyDom'), 'click', baselineDestroyDom);
     DOM.on(DOM.querySelector(document, '#baselineCreateDom'), 'click', baselineCreateDom);
+    DOM.on(DOM.querySelector(document, '#baselineUpdateDomProfile'), 'click', profile(baselineCreateDom, noop, 'baseline-update'));
+    DOM.on(DOM.querySelector(document, '#baselineCreateDomProfile'), 'click', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
