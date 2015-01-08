@@ -77,6 +77,20 @@ window.beforeEach(function() {
       };
     },
 
+    toHaveText: function() {
+      return {
+        compare: function(actual, expectedText) {
+          var actualText = elementText(actual);
+          return {
+            pass: actualText == expectedText,
+            get message() {
+              return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+            }
+          };
+        }
+      };
+    },
+
     toImplement: function() {
       return {
         compare: function(actualObject, expectedInterface) {
@@ -131,6 +145,20 @@ function mapToString(m) {
   return `{ ${res.join(',')} }`;
 }
 
+function elementText(n) {
+  var hasShadowRoot = (n) => n instanceof Element && n.shadowRoot;
+  var hasNodes = (n) => n.childNodes && n.childNodes.length > 0;
+
+  if (n instanceof Comment)         return '';
+
+  if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
+  if (n instanceof Element && n.tagName == 'CONTENT')
+    return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
+  if (hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
+  if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
+
+  return n.textContent;
+}
 
 export function el(html) {
   return DOM.createTemplate(html).content.firstChild;

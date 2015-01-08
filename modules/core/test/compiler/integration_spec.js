@@ -109,48 +109,7 @@ export function main() {
         });
       });
     });
-
-    it('should emulate content tag', (done) => {
-      var temp = `<emulated-shadow-dom-component>` +
-        `<div>Light</div>` +
-        `<div template="trivial-template">DOM</div>` +
-      `</emulated-shadow-dom-component>`;
-
-      function createView(pv) {
-        var view = pv.instantiate(null);
-        view.hydrate(new Injector([]), null, {});
-        return view;
-      }
-
-      compiler.compile(MyComp, el(temp)).
-        then(createView).
-        then((view) => {
-          expect(DOM.getText(view.nodes[0])).toEqual('Before LightDOM After');
-          done();
-        });
-    });
   });
-}
-
-@Template({
-  selector: '[trivial-template]'
-})
-class TrivialTemplateDirective {
-  constructor(viewPort:ViewPort) {
-    viewPort.create();
-  }
-}
-
-@Component({
-  selector: 'emulated-shadow-dom-component',
-  template: new TemplateConfig({
-    inline: 'Before <content></content> After',
-    directives: []
-  }),
-  shadowDom: ShadowDomEmulated
-})
-class EmulatedShadowDomCmp {
-
 }
 
 @Decorator({
@@ -166,7 +125,7 @@ class MyDir {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp, SomeTemplate, EmulatedShadowDomCmp, TrivialTemplateDirective]
+    directives: [MyDir, ChildComp, SomeTemplate]
   })
 })
 class MyComp {
@@ -207,3 +166,4 @@ class MyService {
     this.greeting = 'hello';
   }
 }
+

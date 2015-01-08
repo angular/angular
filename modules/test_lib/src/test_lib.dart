@@ -36,6 +36,7 @@ class NotExpect extends gns.NotExpect {
 }
 
 beforeEach(fn) {
+  gns.guinnessEnableHtmlMatchers();
   gns.beforeEach(_enableReflection(fn));
 }
 

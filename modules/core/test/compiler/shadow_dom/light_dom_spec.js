@@ -15,10 +15,12 @@ import {ProtoRecordRange} from 'change_detection/change_detection';
 class FakeElementInjector {
   content;
   viewPort;
+  element;
 
-  constructor(content, viewPort) {
+  constructor(content = null, viewPort = null, element = null) {
     this.content = content;
     this.viewPort = viewPort;
+    this.element = element;
   }
 
   hasDirective(type) {
@@ -27,6 +29,10 @@ class FakeElementInjector {
 
   hasPreBuiltObject(type) {
     return this.viewPort != null;
+  }
+
+  forElement(n) {
+    return this.element == n;
   }
 
   get(t) {
@@ -44,16 +50,9 @@ class FakeElementInjector {
 @IMPLEMENTS(View)
 class FakeView {
   elementInjectors;
-  ports;
 
-  constructor(elementInjectors = null, ports = null) {
+  constructor(elementInjectors = null) {
     this.elementInjectors = elementInjectors;
-    this.ports = ports;
-  }
-
-  getViewPortByTemplateElement(el) {
-    if (isBlank(this.ports)) return null;
-    return MapWrapper.get(this.ports, el);
   }
 
   noSuchMethod(i) {
@@ -67,7 +66,7 @@ class FakeViewPort {
   _nodes;
   _contentTagContainers;
 
-  constructor(nodes, views) {
+  constructor(nodes = null, views = null) {
     this._nodes = nodes;
     this._contentTagContainers = views;
   }
@@ -90,14 +89,19 @@ class FakeViewPort {
 @IMPLEMENTS(Content)
 class FakeContentTag {
   select;
-  nodes;
+  _nodes;
 
-  constructor(select = null) {
+  constructor(select = null, nodes = null) {
     this.select = select;
+    this._nodes = nodes;
   }
 
   insert(nodes){
-    this.nodes = ListWrapper.clone(nodes);
+    this._nodes = ListWrapper.clone(nodes);
+  }
+
+  nodes() {
+    return this._nodes;
   }
 
   noSuchMethod(i) {
@@ -111,13 +115,13 @@ export function main() {
     var lightDomView;
 
     beforeEach(() => {
-      lightDomView = new FakeView([], MapWrapper.create());
+      lightDomView = new FakeView([]);
     });
 
     describe("contentTags", () => {
       it("should collect content tags from element injectors", () => {
         var tag = new FakeContentTag();
-        var shadowDomView = new FakeView([new FakeElementInjector(tag, null)]);
+        var shadowDomView = new FakeView([new FakeElementInjector(tag)]);
 
         var lightDom = new LightDom(lightDomView, shadowDomView, el("<div></div>"));
 
@@ -147,15 +151,34 @@ export function main() {
 
       it("should include view port nodes", () => {
         var lightDomEl = el("<div><template></template></div>")
-        var template = lightDomEl.childNodes[0];
 
-        var lightDomView = new FakeView([],
-          MapWrapper.createFromPairs([
-            [template, new FakeViewPort([el("<a></a>")], null)]
-          ])
-        );
+        var lightDomView = new FakeView([
+          new FakeElementInjector(
+            null,
+            new FakeViewPort([el("<a></a>")]),
+            DOM.firstChild(lightDomEl))]);
 
-        var lightDom = new LightDom(lightDomView, new FakeView(), lightDomEl);
+        var lightDom = new LightDom(
+          lightDomView,
+          new FakeView(),
+          lightDomEl);
+
+        expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
+      });
+
+      it("should include content nodes", () => {
+        var lightDomEl = el("<div><content></content></div>")
+
+        var lightDomView = new FakeView([
+          new FakeElementInjector(
+            new FakeContentTag(null, [el("<a></a>")]),
+            null,
+            DOM.firstChild(lightDomEl))]);
+
+        var lightDom = new LightDom(
+          lightDomView,
+          new FakeView(),
+          lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
@@ -175,8 +198,8 @@ export function main() {
 
         lightDom.redistribute();
 
-        expect(toHtml(contentA.nodes)).toEqual(["<a>1</a>", "<a>3</a>"]);
-        expect(toHtml(contentB.nodes)).toEqual(["<b>2</b>"]);
+        expect(toHtml(contentA.nodes())).toEqual(["<a>1</a>", "<a>3</a>"]);
+        expect(toHtml(contentB.nodes())).toEqual(["<b>2</b>"]);
       });
 
       it("should support wildcard content tags", () => {
@@ -192,8 +215,8 @@ export function main() {
 
         lightDom.redistribute();
 
-        expect(toHtml(wildcard.nodes)).toEqual(["<a>1</a>", "<b>2</b>", "<a>3</a>"]);
-        expect(toHtml(contentB.nodes)).toEqual([]);
+        expect(toHtml(wildcard.nodes())).toEqual(["<a>1</a>", "<b>2</b>", "<a>3</a>"]);
+        expect(toHtml(contentB.nodes())).toEqual([]);
       });
     });
   });

@@ -69,25 +69,6 @@ export function main() {
       });
     });
 
-    describe("getViewPortByTemplateElement", () => {
-      var view, viewPort, templateElement;
-
-      beforeEach(() => {
-        templateElement = el("<template></template>");
-        view = new View(null, null, new ProtoRecordRange(), MapWrapper.create());
-        viewPort = new FakeViewPort(templateElement);
-        view.viewPorts = [viewPort];
-      });
-
-      it("should return null when the given element is not an element", () => {
-        expect(view.getViewPortByTemplateElement("not an element")).toBeNull();
-      });
-
-      it("should return a view port with the matching template element", () => {
-        expect(view.getViewPortByTemplateElement(templateElement)).toBe(viewPort);
-      });
-    });
-
     describe('with locals', function() {
       var view;
       beforeEach(() => {
@@ -204,7 +185,7 @@ export function main() {
         it('should be off by default.', () => {
           var template = el('<div></div>')
           var view = new ProtoView(template, new ProtoRecordRange())
-              .instantiate(null);
+            .instantiate(null);
           view.hydrate(null, null, null);
           expect(view.nodes[0]).not.toBe(template);
         });
@@ -333,24 +314,24 @@ export function main() {
         });
 
         it('should expose component services and component instance to directives in the shadow Dom',
-            () => {
-          var subpv = new ProtoView(
+          () => {
+            var subpv = new ProtoView(
               el('<div dec class="ng-binding">hello shadow dom</div>'), new ProtoRecordRange());
-          subpv.bindElement(
+            subpv.bindElement(
               new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
-          var pv = createComponentWithSubPV(subpv);
+            var pv = createComponentWithSubPV(subpv);
 
-          var view = createNestedView(pv);
+            var view = createNestedView(pv);
 
-          var subView = view.componentChildViews[0];
-          var subInj = subView.rootElementInjectors[0];
-          var subDecorator = subInj.get(ServiceDependentDecorator);
-          var comp = view.rootElementInjectors[0].get(SomeComponent);
+            var subView = view.componentChildViews[0];
+            var subInj = subView.rootElementInjectors[0];
+            var subDecorator = subInj.get(ServiceDependentDecorator);
+            var comp = view.rootElementInjectors[0].get(SomeComponent);
 
-          expect(subDecorator).toBeAnInstanceOf(ServiceDependentDecorator);
-          expect(subDecorator.service).toBe(comp.service);
-          expect(subDecorator.component).toBe(comp);
-        });
+            expect(subDecorator).toBeAnInstanceOf(ServiceDependentDecorator);
+            expect(subDecorator.service).toBe(comp.service);
+            expect(subDecorator.component).toBe(comp);
+          });
 
         function expectViewHasNoDirectiveInstances(view) {
           view.elementInjectors.forEach((inj) => expect(inj.hasInstances()).toBe(false));
@@ -358,9 +339,9 @@ export function main() {
 
         it('dehydration should dehydrate child component views too', () => {
           var subpv = new ProtoView(
-              el('<div dec class="ng-binding">hello shadow dom</div>'), new ProtoRecordRange());
+            el('<div dec class="ng-binding">hello shadow dom</div>'), new ProtoRecordRange());
           subpv.bindElement(
-              new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
+            new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
           var pv = createComponentWithSubPV(subpv);
 
           var view = createNestedView(pv);
@@ -369,7 +350,7 @@ export function main() {
           expect(view.hydrated()).toBe(false);
           expectViewHasNoDirectiveInstances(view);
           view.componentChildViews.forEach(
-              (view) => expectViewHasNoDirectiveInstances(view));
+            (view) => expectViewHasNoDirectiveInstances(view));
         });
 
         it('should create shadow dom', () => {
@@ -398,7 +379,7 @@ export function main() {
       describe('with template views', () => {
         function createViewWithTemplate() {
           var templateProtoView = new ProtoView(
-              el('<div id="1"></div>'), new ProtoRecordRange());
+            el('<div id="1"></div>'), new ProtoRecordRange());
           var pv = new ProtoView(el('<someTmpl class="ng-binding"></someTmpl>'), new ProtoRecordRange());
           var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeTemplate]));
           binder.templateDirective = someTemplateDirective;
@@ -419,37 +400,6 @@ export function main() {
 
           var tmplComp = view.rootElementInjectors[0].get(SomeTemplate);
           expect(tmplComp.viewPort.hydrated()).toBe(false);
-        });
-      });
-
-      describe('event handlers', () => {
-        var view, ctx, called;
-
-        function createViewAndContext(protoView) {
-          view = createView(protoView);
-          ctx = view.context;
-          called = 0;
-          ctx.callMe = () => called += 1;
-        }
-
-        function dispatchClick(el) {
-          DOM.dispatchEvent(el, DOM.createMouseEvent('click'));
-        }
-
-        it('should fire on non-bubbling native events', () => {
-          var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
-            new ProtoRecordRange());
-          pv.bindElement(null);
-          pv.bindEvent('click', parser.parseBinding('callMe()', null));
-          createViewAndContext(pv);
-
-          dispatchClick(view.nodes[0]);
-          dispatchClick(view.nodes[0].firstChild);
-
-          // the bubbled event does not execute the expression.
-          // It is trivially passing on webkit browsers due to
-          // https://bugs.webkit.org/show_bug.cgi?id=122755
-          expect(called).toEqual(1);
         });
       });
 
@@ -633,7 +583,6 @@ class MyEvaluationContext {
   foo:string;
   a;
   b;
-  callMe;
   constructor() {
     this.foo = 'bar';
   };

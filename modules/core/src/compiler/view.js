@@ -155,9 +155,17 @@ export class View {
       if (isPresent(componentDirective)) {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
           elementInjector, elementInjector.getComponent());
+      }
+    }
 
+    // this should be moved into DOM write queue
+    for (var i = 0; i < binders.length; ++i) {
+      var componentDirective = binders[i].componentDirective;
+      if (isPresent(componentDirective)) {
         var lightDom = this.preBuiltObjects[i].lightDom;
-        if (isPresent(lightDom)) lightDom.redistribute();
+        if (isPresent(lightDom)) {
+          lightDom.redistribute();
+        }
       }
     }
   }
@@ -190,16 +198,6 @@ export class View {
     if (groupMemento instanceof DirectivePropertyGroupMemento) {
       this._notifyDirectiveAboutChanges(groupMemento, records);
     }
-  }
-
-  getViewPortByTemplateElement(node):ViewPort {
-    if (!(node instanceof Element)) return null;
-
-    for (var i = 0; i < this.viewPorts.length; ++i) {
-      if (this.viewPorts[i].templateElement === node) return this.viewPorts[i];
-    }
-
-    return null;
   }
 
   _invokeMementoForRecords(records:List<Record>) {

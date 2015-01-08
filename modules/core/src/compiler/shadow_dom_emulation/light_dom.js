@@ -10,22 +10,37 @@ import {Content} from './content_tag';
 export class SourceLightDom {}
 export class DestinationLightDom {}
 
+
+class _Root {
+  node:Node;
+  injector:ElementInjector;
+
+  constructor(node, injector) {
+    this.node = node;
+    this.injector = injector;
+  }
+}
+
 // TODO: LightDom should implement SourceLightDom and DestinationLightDom
 // once interfaces are supported
 export class LightDom {
   lightDomView:View;
   shadowDomView:View;
-  roots:List<Node>;
+  nodes:List<Node>;
+  roots:List<_Root>;
 
   constructor(lightDomView:View, shadowDomView:View, element:Element) {
     this.lightDomView = lightDomView;
     this.shadowDomView = shadowDomView;
-    this.roots = DOM.childNodesAsList(element);
-    DOM.clearNodes(element);
+    this.nodes = DOM.childNodesAsList(element);
+    this.roots = null;
   }
 
   redistribute() {
-    redistributeNodes(this.contentTags(), this.expandedDomNodes());
+    var tags = this.contentTags();
+    if (isPresent(tags)) {
+      redistributeNodes(tags, this.expandedDomNodes());
+    }
   }
 
   contentTags(): List<Content> {
@@ -33,7 +48,11 @@ export class LightDom {
   }
 
   _collectAllContentTags(item, acc:List<Content>):List<Content> {
-    ListWrapper.forEach(item.elementInjectors, (ei) => {
+    var eis = item.elementInjectors;
+    for (var i = 0; i < eis.length; ++i) {
+      var ei = eis[i];
+      if (isBlank(ei)) continue;
+
       if (ei.hasDirective(Content)) {
         ListWrapper.push(acc, ei.get(Content));
 
@@ -43,22 +62,42 @@ export class LightDom {
           this._collectAllContentTags(c, acc);
         });
       }
-    });
+    }
     return acc;
   }
 
   expandedDomNodes():List {
     var res = [];
-    ListWrapper.forEach(this.roots, (root) => {
-      // TODO: vsavkin calculcate this info statically when creating light dom
-      var viewPort = this.lightDomView.getViewPortByTemplateElement(root);
-      if (isPresent(viewPort)) {
-        res = ListWrapper.concat(res, viewPort.nodes());
+
+    var roots = this._roots();
+    for (var i = 0; i < roots.length; ++i) {
+
+      var root = roots[i];
+      var ei = root.injector;
+
+      if (isPresent(ei) && ei.hasPreBuiltObject(ViewPort)) {
+        var vp = root.injector.get(ViewPort);
+        res = ListWrapper.concat(res, vp.nodes());
+
+      } else if (isPresent(ei) && ei.hasDirective(Content)) {
+        var content = root.injector.get(Content);
+        res = ListWrapper.concat(res, content.nodes());
+
       } else {
-        ListWrapper.push(res, root);
+        ListWrapper.push(res, root.node);
       }
-    });
+    }
     return res;
+  }
+
+  _roots() {
+    if (isPresent(this.roots)) return this.roots;
+
+    var viewInj = this.lightDomView.elementInjectors;
+    this.roots = ListWrapper.map(this.nodes, (n) =>
+      new _Root(n, ListWrapper.find(viewInj, (inj) => inj.forElement(n))));
+
+    return this.roots;
   }
 }
 

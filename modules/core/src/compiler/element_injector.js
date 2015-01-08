@@ -325,6 +325,10 @@ export class ElementInjector extends TreeNode {
     return pb !== _undefined && isPresent(pb);
   }
 
+  forElement(el):boolean {
+    return this._preBuiltObjects.element.domElement === el;
+  }
+
   getComponent() {
     if (this._proto._binding0IsComponent) {
       return this._obj0;
