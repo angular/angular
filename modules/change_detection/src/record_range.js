@@ -11,7 +11,7 @@ import {
   RECORD_TYPE_PROPERTY
 } from './record';
 
-import {FIELD, IMPLEMENTS, isBlank, isPresent, int, toBool, autoConvertAdd, BaseException,
+import {FIELD, IMPLEMENTS, isBlank, isPresent, int, autoConvertAdd, BaseException,
   NumberWrapper} from 'facade/lang';
 import {List, Map, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';

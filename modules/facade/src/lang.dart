@@ -27,11 +27,6 @@ class IMPLEMENTS {
 
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
-bool toBool(x) {
-  if (x is bool) return x;
-  if (x is num) return x != 0;
-  return false;
-}
 
 String stringify(obj) => obj.toString();
 
