@@ -53,13 +53,9 @@ export class View {
     this.viewPorts = null;
     this.preBuiltObjects = null;
     this.context = null;
-
-    // contextWithLocals
-    if (MapWrapper.size(protoContextLocals) > 0) {
-      this.contextWithLocals = new ContextWithVariableBindings(null, MapWrapper.clone(protoContextLocals));
-    } else {
-      this.contextWithLocals = null;
-    }
+    this.contextWithLocals = (MapWrapper.size(protoContextLocals) > 0)
+      ? new ContextWithVariableBindings(null, MapWrapper.clone(protoContextLocals))
+      : null;
   }
 
   init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List, viewPorts:List, preBuiltObjects:List, componentChildViews:List) {
@@ -271,11 +267,8 @@ export class ProtoView {
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
     this.instantiateInPlace = false;
-    if (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) {
-      this.rootBindingOffset = 1;
-    } else {
-      this.rootBindingOffset = 0;
-    }
+    this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS))
+      ? 1 : 0;
     this.isTemplateElement = this.element instanceof TemplateElement;
   }
 
