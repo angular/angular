@@ -16,8 +16,8 @@ if [[ "$AVAILABLE_DART_VERSION" == "1.7.0-dev.2.0" ]]; then
 fi
 
 URL_PREFIX=https://storage.googleapis.com/dart-archive/channels/$CHANNEL/release/$SVN_REVISION
-DART_SDK_URL=$URL_PREFIX/sdk/dartsdk-linux-x64-release.zip
-DARTIUM_URL=$URL_PREFIX/dartium/dartium-linux-x64-release.zip
+DART_SDK_URL="$URL_PREFIX/sdk/dartsdk-$ARCH-release.zip"
+DARTIUM_URL="$URL_PREFIX/dartium/dartium-$ARCH-release.zip"
 
 download_and_unzip() {
   ZIPFILE=${1/*\//}

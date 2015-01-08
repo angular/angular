@@ -46,6 +46,7 @@
     "q": "^1.0.1",
     "protractor": "1.5.x",
     "run-sequence": "^0.3.6",
-    "through2": "^0.6.1"
+    "through2": "^0.6.1",
+    "minimist": "1.1.x"
   }
 }
