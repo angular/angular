@@ -29,5 +29,5 @@ serverPid=$!
 
 trap killServer EXIT
 
-./node_modules/.bin/protractor protractor-perf-js.conf.js
-./node_modules/.bin/protractor protractor-perf-dart2js.conf.js
+./node_modules/.bin/protractor protractor-e2e-js.conf.js
+./node_modules/.bin/protractor protractor-e2e-dart2js.conf.js

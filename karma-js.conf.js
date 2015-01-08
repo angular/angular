@@ -26,6 +26,10 @@ module.exports = function(config) {
       'test-main.js'
     ],
 
+    exclude: [
+      'modules/**/e2e_test/**'
+    ],
+
     preprocessors: {
       'modules/**/*.js': ['traceur'],
       'modules/**/*.es6': ['traceur'],
