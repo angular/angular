@@ -1,11 +1,11 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
-import {bootstrap, appDocumentToken, appElementToken, documentDependentBindings}
+import {bootstrap, appDocumentToken, appElementToken}
     from 'core/application';
 import {Component} from 'core/annotations/annotations';
 import {DOM} from 'facade/dom';
 import {ListWrapper} from 'facade/collection';
 import {PromiseWrapper} from 'facade/async';
-import {bind} from 'di/di';
+import {bind, Inject} from 'di/di';
 import {TemplateConfig} from 'core/annotations/template_config';
 
 @Component({
@@ -36,8 +36,23 @@ class HelloRootCmp2 {
   }
 }
 
+@Component({
+  selector: 'hello-app',
+  template: new TemplateConfig({
+    inline: '',
+    directives: []
+  })
+})
+class HelloRootCmp3 {
+  appBinding;
+
+  constructor(@Inject("appBinding") appBinding) {
+    this.appBinding = appBinding;
+  }
+}
+
 export function main() {
-  var fakeDoc, el, el2;
+  var fakeDoc, el, el2, testBindings;
 
   beforeEach(() => {
     fakeDoc = DOM.createHtmlDocument();
@@ -45,12 +60,8 @@ export function main() {
     el2 = DOM.createElement('hello-app-2', fakeDoc);
     DOM.appendChild(fakeDoc.body, el);
     DOM.appendChild(fakeDoc.body, el2);
+    testBindings = [bind(appDocumentToken).toValue(fakeDoc)];
   });
-
-  function testBindings(appComponentType) {
-    return ListWrapper.concat([bind(appDocumentToken).toValue(fakeDoc),
-    ], documentDependentBindings(appComponentType));
-  }
 
   describe('bootstrap factory method', () => {
     it('should throw if no element is found', (done) => {
@@ -63,12 +74,12 @@ export function main() {
     });
 
     it('should create an injector promise', () => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
+      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       expect(injectorPromise).not.toBe(null);
     });
 
     it('should resolve an injector promise and contain bindings', (done) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
+      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(appElementToken)).toBe(el);
         done();
@@ -76,7 +87,7 @@ export function main() {
     });
 
     it('should provide the application component in the injector', (done) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
+      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
         done();
@@ -84,7 +95,7 @@ export function main() {
     });
 
     it('should display hello world', (done) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
+      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(appElementToken)
             .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
@@ -93,13 +104,25 @@ export function main() {
     });
 
     it('should support multiple calls to bootstrap', (done) => {
-      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings(HelloRootCmp));
-      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings(HelloRootCmp2));
+      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
+      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
       PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
         expect(injectors[0].get(appElementToken)
             .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
         expect(injectors[1].get(appElementToken)
             .shadowRoot.childNodes[0].nodeValue).toEqual('hello world, again!');
+        done();
+      });
+    });
+
+    it("should make the provided binings available to the application component", (done) => {
+      var injectorPromise = bootstrap(HelloRootCmp3, [
+        testBindings,
+        bind("appBinding").toValue("BoundValue")
+      ]);
+
+      injectorPromise.then((injector) => {
+        expect(injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
         done();
       });
     });

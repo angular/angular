@@ -148,6 +148,16 @@ export function main() {
       expect(car).toBeAnInstanceOf(Car);
     });
 
+    it("should use the last binding "+
+      "when there are mutliple bindings for same token", function () {
+      var injector = new Injector([
+        bind(Engine).toClass(Engine),
+        bind(Engine).toClass(TurboEngine)
+      ]);
+
+      expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
+    });
+
     it('should use non-type tokens', function () {
       var injector = new Injector([
         bind('token').toValue('value')

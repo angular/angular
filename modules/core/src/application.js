@@ -26,9 +26,9 @@ export var appElementToken = new OpaqueToken('AppElement');
 export var appComponentAnnotatedTypeToken = new OpaqueToken('AppComponentAnnotatedType');
 export var appDocumentToken = new OpaqueToken('AppDocument');
 
-// Exported only for tests that need to overwrite default document binding.
-export function documentDependentBindings(appComponentType) {
+function _injectorBindings(appComponentType) {
   return [
+      bind(appDocumentToken).toValue(DOM.defaultDoc()),
       bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
         // TODO(rado): inspect annotation here and warn if there are bindings,
         // lightDomServices, and other component annotations that are skipped
@@ -70,11 +70,6 @@ export function documentDependentBindings(appComponentType) {
   ];
 }
 
-function _injectorBindings(appComponentType) {
-  return ListWrapper.concat([bind(appDocumentToken).toValue(DOM.defaultDoc())],
-      documentDependentBindings(appComponentType));
-}
-
 function _createVmZone(givenReporter:Function){
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
@@ -99,10 +94,7 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
-    if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
-
-    var appInjector = _rootInjector.createChild(_injectorBindings(appComponentType));
-    if (isPresent(bindings)) appInjector = appInjector.createChild(bindings);
+    var appInjector = _createAppInjector(appComponentType, bindings);
 
     PromiseWrapper.then(appInjector.asyncGet(LifeCycle),
       (lc) => {
@@ -118,4 +110,12 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
   });
 
   return bootstrapProcess.promise;
+}
+
+function _createAppInjector(appComponentType: Type, bindings: List): Injector {
+  if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
+  var mergedBindings = isPresent(bindings) ?
+      ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
+      _injectorBindings(appComponentType);
+  return _rootInjector.createChild(mergedBindings);
 }
