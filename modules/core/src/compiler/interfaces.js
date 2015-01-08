@@ -1,5 +1,5 @@
 export class OnChange {
   onChange(changes) {
-    throw "not implemented";
+    throw "OnChange.onChange is not implemented";
   }
 }
