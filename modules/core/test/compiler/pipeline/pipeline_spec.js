@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {ListWrapper, List, MapWrapper} from 'facade/collection';
 import {DOM} from 'facade/dom';
 import {isPresent, NumberWrapper, StringWrapper} from 'facade/lang';
@@ -12,7 +12,7 @@ export function main() {
   describe('compile_pipeline', () => {
     describe('children compilation', () => {
       it('should walk the tree in depth first order including template contents', () => {
-        var element = createElement('<div id="1"><template id="2"><span id="3"></span></template></div>');
+        var element = el('<div id="1"><template id="2"><span id="3"></span></template></div>');
 
         var step0Log = [];
         var results = new CompilePipeline([createLoggerStep(step0Log)]).process(element);
@@ -22,7 +22,7 @@ export function main() {
       });
 
       it('should stop walking the tree when compileChildren is false', () => {
-        var element = createElement('<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
+        var element = el('<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
 
         var step0Log = [];
         var pipeline = new CompilePipeline([new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
@@ -35,7 +35,7 @@ export function main() {
 
     describe('control.addParent', () => {
       it('should report the new parent to the following processor and the result', () => {
-        var element = createElement('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
+        var element = el('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var pipeline = new CompilePipeline([
@@ -49,7 +49,7 @@ export function main() {
       });
 
       it('should allow to add a parent by multiple processors to the same element', () => {
-        var element = createElement('<div id="1"><span wrap0="1" wrap1="1" id="2"><b id="3"></b></span></div>');
+        var element = el('<div id="1"><span wrap0="1" wrap1="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
@@ -66,7 +66,7 @@ export function main() {
       });
 
       it('should allow to add a parent by multiple processors to different elements', () => {
-        var element = createElement('<div id="1"><span wrap0="1" id="2"><b id="3" wrap1="1"></b></span></div>');
+        var element = el('<div id="1"><span wrap0="1" id="2"><b id="3" wrap1="1"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
@@ -83,7 +83,7 @@ export function main() {
       });
 
       it('should allow to add multiple parents by the same processor', () => {
-        var element = createElement('<div id="1"><span wrap0="2" id="2"><b id="3"></b></span></div>');
+        var element = el('<div id="1"><span wrap0="2" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var pipeline = new CompilePipeline([
@@ -100,9 +100,9 @@ export function main() {
 
     describe('control.addChild', () => {
       it('should report the new child to all processors and the result', () => {
-        var element = createElement('<div id="1"><div id="2"></div></div>');
+        var element = el('<div id="1"><div id="2"></div></div>');
         var resultLog = [];
-        var newChild = new CompileElement(createElement('<div id="3"></div>'));
+        var newChild = new CompileElement(el('<div id="3"></div>'));
         var pipeline = new CompilePipeline([
           new MockStep((parent, current, control) => {
             if (StringWrapper.equals(current.element.id, '1')) {
@@ -161,7 +161,7 @@ function createWrapperStep(wrapperId, log) {
     if (isPresent(parentCountStr)) {
       var parentCount = NumberWrapper.parseInt(parentCountStr, 10);
       while (parentCount > 0) {
-        control.addParent(new CompileElement(createElement(`<a id="${wrapperId}#${nextElementId++}"></a>`)));
+        control.addParent(new CompileElement(el(`<a id="${wrapperId}#${nextElementId++}"></a>`)));
         parentCount--;
       }
     }
@@ -175,8 +175,4 @@ function resultIdLog(result) {
     logEntry(idLog, null, current);
   });
   return idLog;
-}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }

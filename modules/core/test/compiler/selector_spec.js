@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'test_lib/test_lib';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'test_lib/test_lib';
 import {SelectorMatcher} from 'core/compiler/selector';
 import {CssSelector} from 'core/compiler/selector';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
@@ -68,8 +68,8 @@ export function main() {
       matcher.addSelectable(CssSelector.parse('[some-decor]'), 1);
 
       var elementSelector = new CssSelector();
-      var el = createElement('<div attr></div>');
-      var empty = el.getAttribute('attr');
+      var element = el('<div attr></div>');
+      var empty = element.getAttribute('attr');
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([1]);
@@ -163,8 +163,4 @@ export function main() {
       expect(cssSelector.toString()).toEqual('sometag.someclass[attrname=attrvalue]');
     });
   });
-}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }

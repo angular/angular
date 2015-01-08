@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 
 import {DOM} from 'facade/dom';
 
@@ -23,10 +23,6 @@ export function main() {
       compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
-    function createElement(html) {
-      return DOM.createTemplate(html).content.firstChild;
-    }
-
     function createView(pv) {
       component = new TestComponent();
       view = pv.instantiate(null);
@@ -35,7 +31,7 @@ export function main() {
     }
 
     function compileWithTemplate(template) {
-      return compiler.compile(TestComponent, createElement(template));
+      return compiler.compile(TestComponent, el(template));
     }
 
     var TEMPLATE = '<div><copy-me template="ng-repeat #item in items">{{item.toString()}};</copy-me></div>';

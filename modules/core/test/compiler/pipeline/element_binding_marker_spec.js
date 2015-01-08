@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {isPresent} from 'facade/lang';
 import {DOM} from 'facade/dom';
 import {MapWrapper} from 'facade/collection';
@@ -40,53 +40,53 @@ export function main() {
     }
 
     it('should not mark empty elements', () => {
-      var results = createPipeline().process(createElement('<div></div>'));
+      var results = createPipeline().process(el('<div></div>'));
       assertBinding(results[0], false);
     });
 
     it('should mark elements with text node bindings', () => {
       var textNodeBindings = MapWrapper.create();
       MapWrapper.set(textNodeBindings, 0, 'expr');
-      var results = createPipeline({textNodeBindings: textNodeBindings}).process(createElement('<div></div>'));
+      var results = createPipeline({textNodeBindings: textNodeBindings}).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with property bindings', () => {
       var propertyBindings = MapWrapper.createFromStringMap({'a': 'expr'});
-      var results = createPipeline({propertyBindings: propertyBindings}).process(createElement('<div></div>'));
+      var results = createPipeline({propertyBindings: propertyBindings}).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with variable bindings', () => {
       var variableBindings = MapWrapper.createFromStringMap({'a': 'expr'});
-      var results = createPipeline({variableBindings: variableBindings}).process(createElement('<div></div>'));
+      var results = createPipeline({variableBindings: variableBindings}).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with event bindings', () => {
       var eventBindings = MapWrapper.createFromStringMap({'click': 'expr'});
-      var results = createPipeline({eventBindings: eventBindings}).process(createElement('<div></div>'));
+      var results = createPipeline({eventBindings: eventBindings}).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with decorator directives', () => {
       var results = createPipeline({
         directives: [SomeDecoratorDirective]
-      }).process(createElement('<div></div>'));
+      }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with template directives', () => {
       var results = createPipeline({
         directives: [SomeTemplateDirective]
-      }).process(createElement('<div></div>'));
+      }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
     it('should mark elements with component directives', () => {
       var results = createPipeline({
         directives: [SomeComponentDirective]
-      }).process(createElement('<div></div>'));
+      }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
 
@@ -116,7 +116,3 @@ class SomeComponentDirective {}
 
 @Decorator()
 class SomeDecoratorDirective {}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
-}

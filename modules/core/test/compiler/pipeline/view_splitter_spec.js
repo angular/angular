@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {isPresent} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 
@@ -16,7 +16,7 @@ export function main() {
     }
 
     it('should mark root elements as viewRoot', () => {
-      var rootElement = createElement('<div></div>');
+      var rootElement = el('<div></div>');
       var results = createPipeline().process(rootElement);
       expect(results[0].isViewRoot).toBe(true);
     });
@@ -24,7 +24,7 @@ export function main() {
     describe('<template> elements', () => {
 
       it('should move the content into a new <template> element and mark that as viewRoot', () => {
-        var rootElement = createElement('<div><template if="true">a</template></div>');
+        var rootElement = el('<div><template if="true">a</template></div>');
         var results = createPipeline().process(rootElement);
         expect(DOM.getOuterHTML(results[1].element)).toEqual('<template if="true"></template>');
         expect(results[1].isViewRoot).toBe(false);
@@ -33,7 +33,7 @@ export function main() {
       });
 
       it('should not wrap a root <template> element', () => {
-        var rootElement = createElement('<div></div>');
+        var rootElement = el('<div></div>');
         var results = createPipeline().process(rootElement);
         expect(results.length).toBe(1);
         expect(DOM.getOuterHTML(rootElement)).toEqual('<div></div>');
@@ -44,7 +44,7 @@ export function main() {
     describe('elements with template attribute', () => {
 
       it('should replace the element with an empty <template> element', () => {
-        var rootElement = createElement('<div><span template=""></span></div>');
+        var rootElement = el('<div><span template=""></span></div>');
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
@@ -54,25 +54,25 @@ export function main() {
       });
 
       it('should mark the element as viewRoot', () => {
-        var rootElement = createElement('<div><div template></div></div>');
+        var rootElement = el('<div><div template></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].isViewRoot).toBe(true);
       });
 
       it('should add property bindings from the template attribute', () => {
-        var rootElement = createElement('<div><div template="prop:expr"></div></div>');
+        var rootElement = el('<div><div template="prop:expr"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(MapWrapper.get(results[1].propertyBindings, 'prop').source).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute', () => {
-        var rootElement = createElement('<div><div template="varName #mapName"></div></div>');
+        var rootElement = el('<div><div template="varName #mapName"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[1].variableBindings).toEqual(MapWrapper.createFromStringMap({'varName': 'mapName'}));
       });
 
       it('should add entries without value as attribute to the element', () => {
-        var rootElement = createElement('<div><div template="varname"></div></div>');
+        var rootElement = el('<div><div template="varname"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[1].attrs()).toEqual(MapWrapper.createFromStringMap({'varname': ''}));
         expect(results[1].propertyBindings).toBe(null);
@@ -80,7 +80,7 @@ export function main() {
       });
 
       it('should iterate properly after a template dom modification', () => {
-        var rootElement = createElement('<div><div template></div><after></after></div>');
+        var rootElement = el('<div><div template></div><after></after></div>');
         var results = createPipeline().process(rootElement);
         // 1 root + 2 initial + 1 generated template elements
         expect(results.length).toEqual(4);
@@ -89,8 +89,4 @@ export function main() {
     });
 
   });
-}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }

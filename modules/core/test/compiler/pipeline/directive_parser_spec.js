@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {isPresent} from 'facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 import {DirectiveParser} from 'core/compiler/pipeline/directive_parser';
@@ -50,7 +50,7 @@ export function main() {
     }
 
     it('should not add directives if they are not used', () => {
-      var results = createPipeline().process(createElement('<div></div>'));
+      var results = createPipeline().process(el('<div></div>'));
       expect(results[0].decoratorDirectives).toBe(null);
       expect(results[0].componentDirective).toBe(null);
       expect(results[0].templateDirective).toBe(null);
@@ -58,7 +58,7 @@ export function main() {
 
     describe('component directives', () => {
       it('should detect them in attributes', () => {
-        var results = createPipeline().process(createElement('<div some-comp></div>'));
+        var results = createPipeline().process(el('<div some-comp></div>'));
         expect(results[0].componentDirective).toEqual(reader.read(SomeComponent));
       });
 
@@ -66,7 +66,7 @@ export function main() {
         var pipeline = createPipeline({propertyBindings: {
           'some-comp': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<div></div>'));
+        var results = pipeline.process(el('<div></div>'));
         expect(results[0].componentDirective).toEqual(reader.read(SomeComponent));
       });
 
@@ -74,14 +74,14 @@ export function main() {
         var pipeline = createPipeline({variableBindings: {
           'some-comp': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<div></div>'));
+        var results = pipeline.process(el('<div></div>'));
         expect(results[0].componentDirective).toEqual(reader.read(SomeComponent));
       });
 
       it('should not allow multiple component directives on the same element', () => {
         expect( () => {
           createPipeline().process(
-            createElement('<div some-comp some-comp2></div>')
+            el('<div some-comp some-comp2></div>')
           );
         }).toThrowError('Only one component directive per element is allowed!');
       });
@@ -89,7 +89,7 @@ export function main() {
       it('should not allow component directives on <template> elements', () => {
         expect( () => {
           createPipeline().process(
-            createElement('<template some-comp></template>')
+            el('<template some-comp></template>')
           );
         }).toThrowError('Only template directives are allowed on <template> elements!');
       });
@@ -97,7 +97,7 @@ export function main() {
 
     describe('template directives', () => {
       it('should detect them in attributes', () => {
-        var results = createPipeline().process(createElement('<template some-templ></template>'));
+        var results = createPipeline().process(el('<template some-templ></template>'));
         expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
       });
 
@@ -105,7 +105,7 @@ export function main() {
         var pipeline = createPipeline({propertyBindings: {
           'some-templ': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<template></template>'));
+        var results = pipeline.process(el('<template></template>'));
         expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
       });
 
@@ -113,14 +113,14 @@ export function main() {
         var pipeline = createPipeline({variableBindings: {
           'some-templ': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<template></template>'));
+        var results = pipeline.process(el('<template></template>'));
         expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
       });
 
       it('should not allow multiple template directives on the same element', () => {
         expect( () => {
           createPipeline().process(
-            createElement('<template some-templ some-templ2></template>')
+            el('<template some-templ some-templ2></template>')
           );
         }).toThrowError('Only one template directive per element is allowed!');
       });
@@ -128,7 +128,7 @@ export function main() {
       it('should not allow template directives on non <template> elements', () => {
         expect( () => {
           createPipeline().process(
-            createElement('<div some-templ></div>')
+            el('<div some-templ></div>')
           );
         }).toThrowError('Template directives need to be placed on <template> elements or elements with template attribute!');
       });
@@ -136,7 +136,7 @@ export function main() {
 
     describe('decorator directives', () => {
       it('should detect them in attributes', () => {
-        var results = createPipeline().process(createElement('<div some-decor></div>'));
+        var results = createPipeline().process(el('<div some-decor></div>'));
         expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
       });
 
@@ -144,17 +144,17 @@ export function main() {
         var pipeline = createPipeline({propertyBindings: {
           'some-decor': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<div></div>'));
+        var results = pipeline.process(el('<div></div>'));
         expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
       });
 
       it('should compile children by default', () => {
-        var results = createPipeline().process(createElement('<div some-decor></div>'));
+        var results = createPipeline().process(el('<div some-decor></div>'));
         expect(results[0].compileChildren).toEqual(true);
       });
 
       it('should stop compiling children when specified in the decorator config', () => {
-        var results = createPipeline().process(createElement('<div some-decor-ignoring-children></div>'));
+        var results = createPipeline().process(el('<div some-decor-ignoring-children></div>'));
         expect(results[0].compileChildren).toEqual(false);
       });
 
@@ -162,14 +162,14 @@ export function main() {
         var pipeline = createPipeline({variableBindings: {
           'some-decor': 'someExpr'
         }});
-        var results = pipeline.process(createElement('<div></div>'));
+        var results = pipeline.process(el('<div></div>'));
         expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
       });
 
       it('should not allow decorator directives on <template> elements', () => {
         expect( () => {
           createPipeline().process(
-            createElement('<template some-decor></template>')
+            el('<template some-decor></template>')
           );
         }).toThrowError('Only template directives are allowed on <template> elements!');
       });
@@ -226,7 +226,3 @@ class SomeComponent2 {}
   })
 })
 class MyComp {}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
-}

@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {isPresent} from 'facade/lang';
 import {DOM} from 'facade/dom';
 import {ListWrapper, MapWrapper} from 'facade/collection';
@@ -82,7 +82,7 @@ export function main() {
 
     it('should not create an ElementBinder for elements that have no bindings', () => {
       var pipeline = createPipeline();
-      var results = pipeline.process(createElement('<div viewroot><span></span></div>'));
+      var results = pipeline.process(el('<div viewroot><span></span></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders.length).toBe(0);
@@ -90,7 +90,7 @@ export function main() {
 
     it('should create an ElementBinder for elements that have bindings', () => {
       var pipeline = createPipeline();
-      var results = pipeline.process(createElement('<div viewroot prop-binding><span prop-binding></span></div>'));
+      var results = pipeline.process(el('<div viewroot prop-binding><span prop-binding></span></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders.length).toBe(2);
@@ -99,7 +99,7 @@ export function main() {
 
     it('should inherit ElementBinders to children that have no bindings', () => {
       var pipeline = createPipeline();
-      var results = pipeline.process(createElement('<div viewroot prop-binding><span></span></div>'));
+      var results = pipeline.process(el('<div viewroot prop-binding><span></span></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders.length).toBe(1);
@@ -111,7 +111,7 @@ export function main() {
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
 
       var pipeline = createPipeline({protoElementInjector: protoElementInjector, directives: directives});
-      var results = pipeline.process(createElement('<div viewroot directives></div>'));
+      var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].protoElementInjector).toBe(protoElementInjector);
@@ -120,7 +120,7 @@ export function main() {
     it('should store the component directive', () => {
       var directives = [SomeComponentDirective];
       var pipeline = createPipeline({protoElementInjector: null, directives: directives});
-      var results = pipeline.process(createElement('<div viewroot directives></div>'));
+      var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].componentDirective.type).toBe(SomeComponentDirective);
@@ -129,7 +129,7 @@ export function main() {
     it('should store the template directive', () => {
       var directives = [SomeTemplateDirective];
       var pipeline = createPipeline({protoElementInjector: null, directives: directives});
-      var results = pipeline.process(createElement('<div viewroot directives></div>'));
+      var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].templateDirective.type).toBe(SomeTemplateDirective);
@@ -140,7 +140,7 @@ export function main() {
       MapWrapper.set(textNodeBindings, 0, 'prop1');
       MapWrapper.set(textNodeBindings, 2, 'prop2');
       var pipeline = createPipeline({textNodeBindings: textNodeBindings});
-      var results = pipeline.process(createElement('<div viewroot text-binding>{{}}<span></span>{{}}</div>'));
+      var results = pipeline.process(el('<div viewroot text-binding>{{}}<span></span>{{}}</div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(sortArr(pv.elementBinders[0].textNodeIndices)).toEqual([0, 2]);
@@ -160,7 +160,7 @@ export function main() {
         'hidden': 'prop2'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
-      var results = pipeline.process(createElement('<input viewroot prop-binding>'));
+      var results = pipeline.process(el('<input viewroot prop-binding>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
@@ -179,7 +179,7 @@ export function main() {
         'event1': '1+1'
       });
       var pipeline = createPipeline({eventBindings: eventBindings});
-      var results = pipeline.process(createElement('<div viewroot event-binding></div>'));
+      var results = pipeline.process(el('<div viewroot event-binding></div>'));
       var pv = results[0].inheritedProtoView;
 
       var ast = MapWrapper.get(pv.elementBinders[0].events, 'event1');
@@ -201,10 +201,10 @@ export function main() {
         directives: directives,
         protoElementInjector: protoElementInjector
       });
-      var results = pipeline.process(createElement('<div viewroot prop-binding directives></div>'));
+      var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          createElement('<div></div>'), new ProtoRecordRange());
+          el('<div></div>'), new ProtoRecordRange());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
@@ -230,7 +230,7 @@ export function main() {
         protoElementInjector: protoElementInjector
       });
       var results = pipeline.process(
-        createElement('<div viewroot><div prop-binding directives>'+
+        el('<div viewroot><div prop-binding directives>'+
           '</div><div prop-binding directives></div></div>'));
       var pv = results[0].inheritedProtoView;
 
@@ -246,7 +246,7 @@ export function main() {
       it('should throw if there is no element property bindings for a directive property binding', () => {
         var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirectiveWithBinding]});
         expect( () => {
-          pipeline.process(createElement('<div viewroot prop-binding directives>'));
+          pipeline.process(el('<div viewroot prop-binding directives>'));
         }).toThrowError('No element binding found for property boundprop1 which is required by directive SomeDecoratorDirectiveWithBinding');
       });
 
@@ -341,8 +341,3 @@ function sortArr(arr) {
   arr2.sort();
   return arr2;
 }
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
-}
-

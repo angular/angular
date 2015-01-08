@@ -1,3 +1,5 @@
+import {DOM} from 'facade/dom';
+
 export var describe = window.describe;
 export var xdescribe = window.xdescribe;
 export var ddescribe = window.ddescribe;
@@ -127,4 +129,9 @@ function mapToString(m) {
     res.push(`${k}:${v}`);
   });
   return `{ ${res.join(',')} }`;
+}
+
+
+export function el(html) {
+  return DOM.createTemplate(html).content.firstChild;
 }

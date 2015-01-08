@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, ddescribe, iit} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'test_lib/test_lib';
 import {DOM} from 'facade/dom';
 import {List} from 'facade/collection';
 
@@ -32,19 +32,19 @@ export function main() {
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = rootProtoView;
       });
-      compiler.compile(MainComponent, createElement('<div></div>')).then( (protoView) => {
+      compiler.compile(MainComponent, el('<div></div>')).then( (protoView) => {
         expect(protoView).toBe(rootProtoView);
         done();
       });
     });
 
     it('should use the given element', (done) => {
-      var el = createElement('<div></div>');
+      var element = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = new ProtoView(current.element, null);
       });
-      compiler.compile(MainComponent, el).then( (protoView) => {
-        expect(protoView.element).toBe(el);
+      compiler.compile(MainComponent, element).then( (protoView) => {
+        expect(protoView.element).toBe(element);
         done();
       });
     });
@@ -60,7 +60,7 @@ export function main() {
     });
 
     it('should load nested components', (done) => {
-      var mainEl = createElement('<div></div>');
+      var mainEl = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = new ProtoView(current.element, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
@@ -77,14 +77,14 @@ export function main() {
     });
 
     it('should cache components', (done) => {
-      var el = createElement('<div></div>');
+      var element = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = new ProtoView(current.element, null);
       });
       var firstProtoView;
-      compiler.compile(MainComponent, el).then( (protoView) => {
+      compiler.compile(MainComponent, element).then( (protoView) => {
         firstProtoView = protoView;
-        return compiler.compile(MainComponent, el);
+        return compiler.compile(MainComponent, element);
       }).then( (protoView) => {
         expect(firstProtoView).toBe(protoView);
         done();
@@ -150,8 +150,4 @@ class MockStep extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     this.processClosure(parent, current, control);
   }
-}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }

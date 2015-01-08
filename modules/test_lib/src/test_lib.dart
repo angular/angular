@@ -6,6 +6,7 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
 import 'package:reflection/reflection.dart';
+import 'package:facade/dom.dart';
 import 'package:reflection/reflection_capabilities.dart';
 
 bool IS_DARTIUM = true;
@@ -67,4 +68,8 @@ _handleAsync(fn) {
   }
 
   return fn;
+}
+
+el(String html) {
+  return DOM.createTemplate(html).content.firstChild;
 }

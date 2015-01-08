@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 import {View, ProtoView} from 'core/compiler/view';
 import {ViewPort} from 'core/compiler/viewport';
 import {DOM} from 'facade/dom';
@@ -6,10 +6,6 @@ import {ListWrapper, MapWrapper} from 'facade/collection';
 import {Injector} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
 import {ProtoRecordRange, Lexer, Parser} from 'change_detection/change_detection';
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
-}
 
 function createView(nodes) {
   var view = new View(null, nodes, new ProtoRecordRange(), MapWrapper.create());
@@ -23,14 +19,14 @@ export function main() {
         customViewWithTwoNodes, elementInjector;
 
     beforeEach(() => {
-      dom = createElement(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
+      dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(createElement('<div>hi</div>'), new ProtoRecordRange());
+      protoView = new ProtoView(el('<div>hi</div>'), new ProtoRecordRange());
       elementInjector = new ElementInjector(null, null, null);
       viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector);
-      customViewWithOneNode = createView([createElement('<div>single</div>')]);
-      customViewWithTwoNodes = createView([createElement('<div>one</div>'), createElement('<div>two</div>')]);
+      customViewWithOneNode = createView([el('<div>single</div>')]);
+      customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
 
     describe('when dehydrated', () => {
@@ -52,7 +48,7 @@ export function main() {
 
       beforeEach(() => {
         viewPort.hydrate(new Injector([]), null);
-        var fillerView = createView([createElement('<filler>filler</filler>')]);
+        var fillerView = createView([el('<filler>filler</filler>')]);
         viewPort.insert(fillerView);
       });
 
@@ -120,7 +116,7 @@ export function main() {
         var parser = new Parser(new Lexer());
         viewPort.hydrate(new Injector([]), null);
 
-        var pv = new ProtoView(createElement('<div class="ng-binding">{{}}</div>'),
+        var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
           new ProtoRecordRange());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));

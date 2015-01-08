@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject} from 'test_lib/test_lib';
+import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'test_lib/test_lib';
 import {proxy, IMPLEMENTS, isBlank} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {DOM} from 'facade/dom';
@@ -119,7 +119,7 @@ export function main() {
         var tag = new FakeContentTag();
         var shadowDomView = new FakeView([new FakeElementInjector(tag, null)]);
 
-        var lightDom = new LightDom(lightDomView, shadowDomView, createElement("<div></div>"));
+        var lightDom = new LightDom(lightDomView, shadowDomView, el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
       });
@@ -132,7 +132,7 @@ export function main() {
 
         var shadowDomView = new FakeView([new FakeElementInjector(null, vp)]);
 
-        var lightDom = new LightDom(lightDomView, shadowDomView, createElement("<div></div>"));
+        var lightDom = new LightDom(lightDomView, shadowDomView, el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
       });
@@ -140,18 +140,18 @@ export function main() {
 
     describe("expanded roots", () => {
       it("should contain root nodes", () => {
-        var lightDomEl = createElement("<div><a></a></div>")
+        var lightDomEl = el("<div><a></a></div>")
         var lightDom = new LightDom(lightDomView, new FakeView(), lightDomEl);
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
 
       it("should include view port nodes", () => {
-        var lightDomEl = createElement("<div><template></template></div>")
+        var lightDomEl = el("<div><template></template></div>")
         var template = lightDomEl.childNodes[0];
 
         var lightDomView = new FakeView([],
           MapWrapper.createFromPairs([
-            [template, new FakeViewPort([createElement("<a></a>")], null)]
+            [template, new FakeViewPort([el("<a></a>")], null)]
           ])
         );
 
@@ -166,7 +166,7 @@ export function main() {
         var contentA = new FakeContentTag("a");
         var contentB = new FakeContentTag("b");
 
-        var lightDomEl = createElement("<div><a>1</a><b>2</b><a>3</a></div>")
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
         var lightDom = new LightDom(lightDomView, new FakeView([
           new FakeElementInjector(contentA, null),
@@ -183,7 +183,7 @@ export function main() {
         var wildcard = new FakeContentTag(null);
         var contentB = new FakeContentTag("b");
 
-        var lightDomEl = createElement("<div><a>1</a><b>2</b><a>3</a></div>")
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
         var lightDom = new LightDom(lightDomView, new FakeView([
           new FakeElementInjector(wildcard, null),
@@ -202,8 +202,4 @@ export function main() {
 function toHtml(nodes) {
   if (isBlank(nodes)) return [];
   return ListWrapper.map(nodes, DOM.getOuterHTML);
-}
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }

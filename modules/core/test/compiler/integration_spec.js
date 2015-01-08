@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 
 import {DOM} from 'facade/dom';
 
@@ -33,7 +33,7 @@ export function main() {
       }
 
       it('should consume text node changes', (done) => {
-        compiler.compile(MyComp, createElement('<div>{{ctxProp}}</div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div>{{ctxProp}}</div>')).then((pv) => {
           createView(pv);
           ctx.ctxProp = 'Hello World!';
 
@@ -44,7 +44,7 @@ export function main() {
       });
 
       it('should consume element binding changes', (done) => {
-        compiler.compile(MyComp, createElement('<div [id]="ctxProp"></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div [id]="ctxProp"></div>')).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
@@ -56,7 +56,7 @@ export function main() {
       });
 
       it('should consume directive watch expression change.', (done) => {
-        compiler.compile(MyComp, createElement('<div my-dir [elprop]="ctxProp"></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div my-dir [elprop]="ctxProp"></div>')).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
@@ -69,7 +69,7 @@ export function main() {
       });
 
       it('should support nested components.', (done) => {
-        compiler.compile(MyComp, createElement('<child-cmp></child-cmp>')).then((pv) => {
+        compiler.compile(MyComp, el('<child-cmp></child-cmp>')).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -80,7 +80,7 @@ export function main() {
       });
 
       it('should support template directives via `<template>` elements.', (done) => {
-        compiler.compile(MyComp, createElement('<div><template let-some-tmpl="greeting"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div><template let-some-tmpl="greeting"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -95,7 +95,7 @@ export function main() {
       });
 
       it('should support template directives via `template` attribute.', (done) => {
-        compiler.compile(MyComp, createElement('<div><copy-me template="some-tmpl #greeting">{{greeting}}</copy-me></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div><copy-me template="some-tmpl #greeting">{{greeting}}</copy-me></div>')).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -111,7 +111,7 @@ export function main() {
     });
 
     it('should emulate content tag', (done) => {
-      var el = `<emulated-shadow-dom-component>` +
+      var temp = `<emulated-shadow-dom-component>` +
         `<div>Light</div>` +
         `<div template="trivial-template">DOM</div>` +
       `</emulated-shadow-dom-component>`;
@@ -122,7 +122,7 @@ export function main() {
         return view;
       }
 
-      compiler.compile(MyComp, createElement(el)).
+      compiler.compile(MyComp, el(temp)).
         then(createView).
         then((view) => {
           expect(DOM.getText(view.nodes[0])).toEqual('Before LightDOM After');
@@ -206,9 +206,4 @@ class MyService {
   constructor() {
     this.greeting = 'hello';
   }
-}
-
-
-function createElement(html) {
-  return DOM.createTemplate(html).content.firstChild;
 }
