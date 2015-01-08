@@ -1,5 +1,3 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit} from 'test_lib/test_lib';
-
 import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/compiler/interfaces';
 import {ViewPort} from 'core/compiler/viewport';
