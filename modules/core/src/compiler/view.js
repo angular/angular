@@ -156,13 +156,10 @@ export class View {
         elementInjector.instantiateDirectives(appInjector, shadowDomAppInjector, this.preBuiltObjects[i]);
       }
 
-      // componentChildViews
-      if (isPresent(shadowDomAppInjector)) {
+      if (isPresent(componentDirective)) {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
           elementInjector, elementInjector.getComponent());
-      }
 
-      if (isPresent(componentDirective)) {
         var lightDom = this.preBuiltObjects[i].lightDom;
         if (isPresent(lightDom)) lightDom.redistribute();
       }
