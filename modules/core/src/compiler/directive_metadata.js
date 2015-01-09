@@ -1,4 +1,4 @@
-import {Type, FIELD} from 'facade/lang';
+import {Type} from 'facade/lang';
 import {Directive} from '../annotations/annotations'
 import {List} from 'facade/collection'
 import {ShadowDomStrategy} from './shadow_dom';

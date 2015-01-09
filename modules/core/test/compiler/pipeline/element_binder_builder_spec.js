@@ -56,7 +56,8 @@ export function main() {
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
-                current.addDirective(reflector.read(directives[i]));
+                var dirMetadata = reflector.read(directives[i]);
+                current.addDirective(dirMetadata);
               }
             }
             if (hasBinding) {
@@ -192,9 +193,9 @@ export function main() {
         'boundprop2': 'prop2',
         'boundprop3': 'prop3'
       });
-      var directives = [SomeDecoratorDirectiveWith2Bindings,
+      var directives = [SomeComponentDirectiveWithBinding,
                         SomeTemplateDirectiveWithBinding,
-                        SomeComponentDirectiveWithBinding];
+                        SomeDecoratorDirectiveWith2Bindings];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
       var pipeline = createPipeline({
         propertyBindings: propertyBindings,

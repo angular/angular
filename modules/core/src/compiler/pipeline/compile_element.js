@@ -1,6 +1,6 @@
 import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
 import {Element, DOM} from 'facade/dom';
-import {int, isBlank, isPresent} from 'facade/lang';
+import {int, isBlank, isPresent, Type} from 'facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator} from '../../annotations/annotations';
 import {Component} from '../../annotations/annotations';
@@ -27,6 +27,7 @@ export class CompileElement {
   decoratorDirectives:List<DirectiveMetadata>;
   templateDirective:DirectiveMetadata;
   componentDirective:DirectiveMetadata;
+  _allDirectives:List<DirectiveMetadata>;
   isViewRoot:boolean;
   hasBindings:boolean;
   inheritedProtoView:ProtoView;
@@ -45,6 +46,7 @@ export class CompileElement {
     this.decoratorDirectives = null;
     this.templateDirective = null;
     this.componentDirective = null;
+    this._allDirectives = null;
     this.isViewRoot = false;
     this.hasBindings = false;
     // inherited down to children if they don't have
@@ -116,6 +118,7 @@ export class CompileElement {
 
   addDirective(directive:DirectiveMetadata) {
     var annotation = directive.annotation;
+    this._allDirectives = null;
     if (annotation instanceof Decorator) {
       if (isBlank(this.decoratorDirectives)) {
         this.decoratorDirectives = ListWrapper.create();
@@ -129,5 +132,24 @@ export class CompileElement {
     } else if (annotation instanceof Component) {
       this.componentDirective = directive;
     }
+  }
+
+  getAllDirectives(): List<DirectiveMetadata> {
+    if (this._allDirectives === null) {
+      // Collect all the directives
+      // When present the component directive must be first
+      var directives = ListWrapper.create();
+      if (isPresent(this.componentDirective)) {
+        ListWrapper.push(directives, this.componentDirective);
+      }
+      if (isPresent(this.templateDirective)) {
+        ListWrapper.push(directives, this.templateDirective);
+      }
+      if (isPresent(this.decoratorDirectives)) {
+        directives = ListWrapper.concat(directives, this.decoratorDirectives);
+      }
+      this._allDirectives = directives;
+    }
+    return this._allDirectives;
   }
 }

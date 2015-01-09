@@ -62,6 +62,14 @@ export function main() {
         expect(results[0].componentDirective).toEqual(reader.read(SomeComponent));
       });
 
+      it('component directives must be first in collected directives', () => {
+        var results = createPipeline().process(el('<div some-comp some-decor></div>'));
+        var dirs = results[0].getAllDirectives();
+        expect(dirs.length).toEqual(2);
+        expect(dirs[0]).toEqual(reader.read(SomeComponent));
+        expect(dirs[1]).toEqual(reader.read(SomeDecorator));
+      });
+
       it('should detect them in property bindings', () => {
         var pipeline = createPipeline({propertyBindings: {
           'some-comp': 'someExpr'
