@@ -79,6 +79,22 @@ export function main() {
         });
       });
 
+      // GH issue 328 - https://github.com/angular/angular/issues/328
+      it('should support different directive types on a single node', (done) => {
+        compiler.compile(MyComp, el('<child-cmp my-dir [elprop]="ctxProp"></child-cmp>')).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'Hello World!';
+          cd.detectChanges();
+
+          var elInj = view.elementInjectors[0];
+          expect(elInj.get(MyDir).dirProp).toEqual('Hello World!');
+          expect(elInj.get(ChildComp).dirProp).toEqual(null);
+
+          done();
+        });
+      });
+
       it('should support template directives via `<template>` elements.', (done) => {
         compiler.compile(MyComp, el('<div><template let-some-tmpl="greeting"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
           createView(pv);
@@ -145,8 +161,10 @@ class MyComp {
 })
 class ChildComp {
   ctxProp:string;
+  dirProp:string;
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
+    this.dirProp = null;
   }
 }
 

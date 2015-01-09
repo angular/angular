@@ -32,8 +32,7 @@ export class ProtoElementInjectorBuilder extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var distanceToParentInjector = this._getDistanceToParentInjector(parent, current);
     var parentProtoElementInjector = this._getParentProtoElementInjector(parent, current);
-    var injectorBindings = this._collectDirectiveBindings(current);
-
+    var injectorBindings = ListWrapper.map(current.getAllDirectives(), this._createBinding);
     // TODO: add lightDomServices as well,
     // but after the directives as we rely on that order
     // in the element_binder_builder.
@@ -63,22 +62,6 @@ export class ProtoElementInjectorBuilder extends CompileStep {
       return parent.inheritedProtoElementInjector;
     }
     return null;
-  }
-
-  _collectDirectiveBindings(pipelineElement) {
-    var directiveTypes = [];
-    if (isPresent(pipelineElement.componentDirective)) {
-      ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.componentDirective));
-    }
-    if (isPresent(pipelineElement.templateDirective)) {
-      ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.templateDirective));
-    }
-    if (isPresent(pipelineElement.decoratorDirectives)) {
-      for (var i=0; i<pipelineElement.decoratorDirectives.length; i++) {
-        ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.decoratorDirectives[i]));
-      }
-    }
-    return directiveTypes;
   }
 
   _createBinding(d:DirectiveMetadata): DirectiveBinding {

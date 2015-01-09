@@ -32,7 +32,8 @@ export function main() {
         }
         if (isPresent(current.element.getAttribute('directives'))) {
           for (var i=0; i<directives.length; i++) {
-            current.addDirective(reader.read(directives[i]));
+            var dirMetadata = reader.read(directives[i]);
+            current.addDirective(dirMetadata);
           }
         }
         current.inheritedProtoView = protoView;
@@ -133,9 +134,11 @@ export function main() {
 
 class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
   debugObjects:List;
+
   constructor() {
     this.debugObjects = [];
   }
+
   findArgsFor(protoElementInjector:ProtoElementInjector) {
     for (var i=0; i<this.debugObjects.length; i+=2) {
       if (this.debugObjects[i] === protoElementInjector) {
@@ -144,6 +147,7 @@ class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
     }
     return null;
   }
+
   internalCreateProtoElementInjector(parent, index, bindings, firstBindingIsComponent, distance) {
     var result = new ProtoElementInjector(parent, index, bindings, firstBindingIsComponent, distance);
     ListWrapper.push(this.debugObjects, result);

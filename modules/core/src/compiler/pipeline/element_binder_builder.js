@@ -58,7 +58,7 @@ export class ElementBinderBuilder extends CompileStep {
       if (isPresent(current.eventBindings)) {
         this._bindEvents(protoView, current);
       }
-      this._bindDirectiveProperties(this._collectDirectives(current), current);
+      this._bindDirectiveProperties(current.getAllDirectives(), current);
     } else if (isPresent(parent)) {
       elementBinder = parent.inheritedElementBinder;
     }
@@ -85,37 +85,21 @@ export class ElementBinderBuilder extends CompileStep {
     });
   }
 
-  _collectDirectives(compileElement) {
-    var directives;
-    if (isPresent(compileElement.decoratorDirectives)) {
-      directives = ListWrapper.clone(compileElement.decoratorDirectives);
-    } else {
-      directives = [];
-    }
-    if (isPresent(compileElement.templateDirective)) {
-      ListWrapper.push(directives, compileElement.templateDirective);
-    }
-    if (isPresent(compileElement.componentDirective)) {
-      ListWrapper.push(directives, compileElement.componentDirective);
-    }
-    return directives;
-  }
-
-  _bindDirectiveProperties(typesWithAnnotations, compileElement) {
+  _bindDirectiveProperties(directives: List<DirectiveMetadata>,
+                           compileElement: CompileElement) {
     var protoView = compileElement.inheritedProtoView;
-    var directiveIndex = 0;
-    ListWrapper.forEach(typesWithAnnotations, (typeWithAnnotation) => {
-      var annotation = typeWithAnnotation.annotation;
-      if (isBlank(annotation.bind)) {
-        return;
-      }
-      StringMapWrapper.forEach(annotation.bind, (dirProp, elProp) => {
+
+    for (var directiveIndex = 0; directiveIndex < directives.length; directiveIndex++) {
+      var directive = ListWrapper.get(directives, directiveIndex);
+      var annotation = directive.annotation;
+      if (isBlank(annotation.bind)) continue;
+      StringMapWrapper.forEach(annotation.bind, function (dirProp, elProp) {
         var expression = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
         if (isBlank(expression)) {
           throw new BaseException('No element binding found for property '+elProp
-            +' which is required by directive '+stringify(typeWithAnnotation.type));
+            +' which is required by directive '+stringify(directive.type));
         }
         var len = dirProp.length;
         var dirBindingName = dirProp;
@@ -129,7 +113,6 @@ export class ElementBinderBuilder extends CompileStep {
           isContentWatch
         );
       });
-      directiveIndex++;
-    });
+    }
   }
 }
