@@ -26,7 +26,7 @@ export function main() {
       // Note: we don't test all corner cases of interpolation as we assume shared functionality between text interpolation
       // and attribute interpolation.
       var results = createPipeline().process(el('<div a="{{b}}"></div>'));
-      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('(b)');
+      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('{{b}}');
     });
 
     it('should detect let- syntax', () => {

@@ -47,6 +47,10 @@ export function main() {
     return createParser().parseTemplateBindings(text, location);
   }
 
+  function parseInterpolation(text, location = null) {
+    return createParser().parseInterpolation(text, location);
+  }
+
   function expectEval(text, passedInContext = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
     return expect(parseAction(text).eval(c));
@@ -492,6 +496,27 @@ export function main() {
       it('should store the passed-in location', () => {
         var bindings = parseTemplateBindings("a 1,b 2", 'location');
         expect(bindings[0].expression.location).toEqual('location');
+      });
+    });
+
+    describe('parseInterpolation', () => {
+      it('should return null if no interpolation', () => {
+        expect(parseInterpolation('nothing')).toBe(null);
+      });
+
+      it('should parse no prefix/suffix interpolation', () => {
+        var ast = parseInterpolation('{{a}}').ast;
+        expect(ast.strings).toEqual(['', '']);
+        expect(ast.expressions.length).toEqual(1);
+        expect(ast.expressions[0].name).toEqual('a');
+      });
+
+      it('should parse prefix/suffix with multiple interpolation', () => {
+        var ast = parseInterpolation('before{{a}}middle{{b}}after').ast;
+        expect(ast.strings).toEqual(['before', 'middle', 'after']);
+        expect(ast.expressions.length).toEqual(2);
+        expect(ast.expressions[0].name).toEqual('a');
+        expect(ast.expressions[1].name).toEqual('b');
       });
     });
   });
