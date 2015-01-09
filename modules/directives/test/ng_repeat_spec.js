@@ -3,7 +3,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_li
 import {DOM} from 'facade/dom';
 
 import {Injector} from 'di/di';
-import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
+import {Lexer, Parser} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {OnChange} from 'core/compiler/interfaces';
