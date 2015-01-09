@@ -7,7 +7,7 @@ describe('ng2 tree benchmark', function () {
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log the ng stats', function() {
+  iit('should log the ng stats', function() {
     browser.get(URL);
     runClickBenchmark({
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
@@ -15,7 +15,7 @@ describe('ng2 tree benchmark', function () {
     });
   });
 
-  it('should log the baseline stats', function() {
+  iit('should log the baseline stats', function() {
     browser.get(URL);
     runClickBenchmark({
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
