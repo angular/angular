@@ -5,6 +5,8 @@ var config = exports.config = {
 
   specs: ['dist/cjs/**/*_spec.js'],
 
+  framework: 'jasmine2',
+
   // Disable waiting for Angular as we don't have an integration layer yet...
   // TODO(tbosch): Implement a proper debugging API for Ng2.0, remove this here
   // and the sleeps in all tests.

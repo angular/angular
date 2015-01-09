@@ -5,6 +5,8 @@ var config = exports.config = {
 
   specs: ['dist/cjs/**/*_perf.js'],
 
+  framework: 'jasmine2',
+
   params: {
     benchmark: {
       // size of the sample to take
