@@ -249,6 +249,23 @@ export class LiteralMap extends AST {
   }
 }
 
+export class Interpolation extends AST {
+  strings:List;
+  expressions:List;
+  constructor(strings:List, expressions:List) {
+    this.strings = strings;
+    this.expressions = expressions;
+  }
+
+  eval(context) {
+    throw new Error("unsuported");
+  }
+
+  visit(visitor, args) {
+    visitor.visitInterpolation(this, args);
+  }
+}
+
 export class Binary extends AST {
   operation:string;
   left:AST;

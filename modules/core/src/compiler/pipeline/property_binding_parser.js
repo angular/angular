@@ -8,8 +8,6 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {interpolationToExpression} from './text_interpolation_parser';
-
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)');
 
@@ -56,12 +54,16 @@ export class PropertyBindingParser extends CompileStep {
           current.addEventBinding(bindParts[6], this._parseBinding(attrValue));
         }
       } else {
-        var expression = interpolationToExpression(attrValue);
-        if (isPresent(expression)) {
-          current.addPropertyBinding(attrName, this._parseBinding(expression));
+        var ast = this._parseInterpolation(attrValue);
+        if (isPresent(ast)) {
+          current.addPropertyBinding(attrName, ast);
         }
       }
     });
+  }
+
+  _parseInterpolation(input:string):AST {
+    return this._parser.parseInterpolation(input, this._compilationUnit);
   }
 
   _parseBinding(input:string):AST {
