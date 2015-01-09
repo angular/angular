@@ -54,8 +54,9 @@ to the preprocessor and run the tests without exiting karma
 ### Performance tests
 
 1. `gulp build.cjs` (builds benchpress and tests into `dist/cjs` folder)
-2. `protractor protractor-perf-js.conf.js`: JS performance tests
-3. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
+2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
+3. `protractor protractor-perf-js.conf.js`: JS performance tests
+4. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
 
 ### Examples
 
