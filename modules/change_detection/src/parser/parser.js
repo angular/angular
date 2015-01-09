@@ -1,4 +1,4 @@
-import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper} from 'facade/lang';
+import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'facade/lang';
 import {ListWrapper, List} from 'facade/collection';
 import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
   $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
@@ -19,6 +19,7 @@ import {
   KeyedAccess,
   LiteralArray,
   LiteralMap,
+  Interpolation,
   MethodCall,
   FunctionCall,
   TemplateBindings,
@@ -27,6 +28,9 @@ import {
   } from './ast';
 
 var _implicitReceiver = new ImplicitReceiver();
+// TODO(tbosch): Cannot make this const/final right now because of the transpiler...
+var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
+var QUOTE_REGEXP = RegExpWrapper.create("'");
 
 export class Parser {
   _lexer:Lexer;
@@ -52,6 +56,29 @@ export class Parser {
     var tokens = this._lexer.tokenize(input);
     return new _ParseAST(input, location, tokens, this._reflector, false).parseTemplateBindings();
   }
+
+  parseInterpolation(input:string, location:any):ASTWithSource {
+    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+    if (parts.length <= 1) {
+      return null;
+    }
+    var strings = [];
+    var expressions = [];
+
+    for (var i=0; i<parts.length; i++) {
+      var part = parts[i];
+      if (i%2 === 0) {
+        // fixed string
+        ListWrapper.push(strings, part);
+      } else {
+        var tokens = this._lexer.tokenize(part);
+        var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+        ListWrapper.push(expressions, ast);
+      }
+    }
+    return new ASTWithSource(new Interpolation(strings, expressions), input, location);
+  }
+
 }
 
 class _ParseAST {

@@ -30,6 +30,7 @@ import {
   KeyedAccess,
   LiteralArray,
   LiteralMap,
+  Interpolation,
   LiteralPrimitive,
   MethodCall,
   PrefixNot
@@ -439,6 +440,16 @@ class ProtoRecordCreator {
     this.add(record);
   }
 
+  visitInterpolation(ast:Interpolation, dest) {
+    var length = ast.expressions.length;
+    var record = this.construct(RECORD_TYPE_INVOKE_PURE_FUNCTION,
+        _interpolationFn(ast.strings), length, "Interpolate()", dest);
+    for (var i = 0; i < length; ++i) {
+      ast.expressions[i].visit(this, new Destination(record, i));
+    }
+    this.add(record);
+  }
+
   visitChain(ast:Chain, dest){this._unsupported();}
 
   visitAssignment(ast:Assignment, dest) {this._unsupported();}
@@ -545,6 +556,38 @@ function _mapFn(keys:List, length:int) {
     default: throw new BaseException(`Does not support literal maps with more than 9 elements`);
   }
 }
+
+function s(v) {
+  return isPresent(v) ? '' + v : '';
+}
+
+function _interpolationFn(strings:List) {
+  var length = strings.length;
+  var i = -1;
+  var c0 = length > ++i ? strings[i] : null;
+  var c1 = length > ++i ? strings[i] : null;
+  var c2 = length > ++i ? strings[i] : null;
+  var c3 = length > ++i ? strings[i] : null;
+  var c4 = length > ++i ? strings[i] : null;
+  var c5 = length > ++i ? strings[i] : null;
+  var c6 = length > ++i ? strings[i] : null;
+  var c7 = length > ++i ? strings[i] : null;
+  var c8 = length > ++i ? strings[i] : null;
+  var c9 = length > ++i ? strings[i] : null;
+  switch (length - 1) {
+    case 1: return (a1) => c0 + s(a1) + c1;
+    case 2: return (a1, a2) =>  c0 + s(a1) + c1 + s(a2) + c2;
+    case 3: return (a1, a2, a3) =>  c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3;
+    case 4: return (a1, a2, a3, a4) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4;
+    case 5: return (a1, a2, a3, a4, a5) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4 + s(a5) + c5;
+    case 6: return (a1, a2, a3, a4, a5, a6) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4 + s(a5) + c5 + s(a6) + c6;
+    case 7: return (a1, a2, a3, a4, a5, a6, a7) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4 + s(a5) + c5 + s(a6) + c6 + s(a7) + c7;
+    case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4 + s(a5) + c5 + s(a6) + c6 + s(a7) + c7 + s(a8) + c8;
+    case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => c0 + s(a1) + c1 + s(a2) + c2 + s(a3) + c3 + s(a4) + c4 + s(a5) + c5 + s(a6) + c6 + s(a7) + c7 + s(a8) + c8 + s(a9) + c9;
+    default: throw new BaseException(`Does not support more than 9 expressions`);
+  }
+}
+
 
 //TODO: cache the getters
 function _mapGetter(key) {
