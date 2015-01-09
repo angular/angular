@@ -44,7 +44,7 @@
     "lodash": "^2.4.1",
     "sprintf-js": "1.0.*",
     "q": "^1.0.1",
-    "protractor": "1.5.x",
+    "protractor": "1.6.x",
     "run-sequence": "^0.3.6",
     "through2": "^0.6.1",
     "minimist": "1.1.x"
