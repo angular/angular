@@ -13,7 +13,7 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
   1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
   2. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
 4. `gulp build`
-5. `pub get`
+5. If you plan on building Dart applications: `pub get`
 
 ### Folder structure
 
