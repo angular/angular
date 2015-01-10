@@ -3,17 +3,19 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
 
 ## Build
 
-### Prerequisites:
+### Prerequisites
+
+If you don't already have `npm`, get it by installing [node.js](http://nodejs.org/).
 
 1. `npm install`
-2. `npm install -g gulp karma karma-cli`
-3. `npm install -g protractor`
+2. `npm install -g gulp karma karma-cli` (you might need to prefix this command with `sudo`)
+3. `npm install -g protractor` (you might need to prefix this command with `sudo`)
 4. `webdriver-manager update`
-3. Optionally install Dart SDK (only if you plan on building Dart applications)
+5. If you plan to use Dart:
   1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
   2. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
-4. `gulp build`
-5. `pub get`
+  3. Get the pub packages you need: `pub get`
+6. `gulp build`
 
 ### Folder structure
 
@@ -27,7 +29,7 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
 * `*.es5`: javascript files that don't get transpiled
 * `*.dart`: dart files that don't get transpiled
 
-### Build:
+### Build
 
 1. `gulp build` -> result is in `dist` folder
 
@@ -37,7 +39,7 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
 
 2. `gulp clean` -> cleans the `dist` folder
 
-### Unit tests:
+### Unit tests
 
 1. `karma start karma-js.conf.js`: JS tests
 2. `karma start karma-dart.conf.js`: Dart tests
@@ -55,7 +57,7 @@ to the preprocessor and run the tests without exiting karma
 2. `protractor protractor-perf-js.conf.js`: JS performance tests
 3. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
 
-### Examples:
+### Examples
 
 To see the examples, first build the project as described above.
 
