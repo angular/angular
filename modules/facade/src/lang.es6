@@ -44,7 +44,7 @@ export function stringify(token):string {
 }
 
 export class StringWrapper {
-  static fromCharCode(code:int) {
+  static fromCharCode(code:int):string {
     return String.fromCharCode(code);
   }
 
@@ -56,11 +56,11 @@ export class StringWrapper {
     return s.split(regExp.multiple);
   }
 
-  static equals(s:string, s2:string) {
+  static equals(s:string, s2:string):boolean {
     return s === s2;
   }
 
-  static replaceAll(s:string, from:RegExp, replace:string) {
+  static replaceAll(s:string, from:RegExp, replace:string):string {
     return s.replace(from.multiple, replace);
   }
 }
@@ -122,12 +122,12 @@ export class NumberWrapper {
     return parseFloat(text);
   }
 
-  static isNaN(value) {
-    return isNaN(value);
-  }
-
   static get NaN():number {
     return NaN;
+  }
+
+  static isNaN(value):boolean {
+    return isNaN(value);
   }
 
   static isInteger(value):boolean {
@@ -200,7 +200,7 @@ export function isJsObject(o):boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
 }
 
-export function assertionsEnabled() {
+export function assertionsEnabled():boolean {
   try {
     var x:int = "string";
     return false;

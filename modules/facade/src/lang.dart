@@ -53,7 +53,7 @@ class StringWrapper {
     return parts;
   }
 
-  static equals(String s, String s2) {
+  static bool equals(String s, String s2) {
     return s == s2;
   }
 
@@ -150,7 +150,7 @@ bool isJsObject(o) {
 }
 
 
-assertionsEnabled() {
+bool assertionsEnabled() {
   try {
     assert(false);
     return false;
