@@ -103,7 +103,7 @@ export function main() {
 
     parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
-    var protoChild = new ProtoElementInjector(protoParent, 1, childBindings);
+    var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
     var child = protoChild.instantiate(parent, null);
     child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
@@ -120,7 +120,7 @@ export function main() {
     var host = protoParent.instantiate(null, null);
     host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
-    var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false);
+    var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false, 1);
     var shadow = protoChild.instantiate(null, host);
     shadow.instantiateDirectives(shadowInj, null, null);
 
@@ -143,6 +143,30 @@ export function main() {
           [c1, 'child1'],
           [c2, 'child2']
         ])).toEqual(["parent", ["child1", "child2"]]);
+      });
+
+      describe("direct parent", () => {
+        it("should return parent injector when distance is 1", () => {
+          var distance = 1;
+          var protoParent = new ProtoElementInjector(null, 0, []);
+          var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
+
+          expect(c.directParent()).toEqual(p);
+        });
+
+        it("should return null otherwise", () => {
+          var distance = 2;
+          var protoParent = new ProtoElementInjector(null, 0, []);
+          var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
+
+          expect(c.directParent()).toEqual(null);
+        });
       });
     });
 

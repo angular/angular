@@ -128,7 +128,6 @@ export function main() {
           expect(DOM.getText(view.nodes[0])).toEqual('Before LightDOM After');
           done();
         });
-
     });
   });
 }

@@ -24,14 +24,15 @@ import {CompileControl} from './compile_control';
  */
 export class ProtoElementInjectorBuilder extends CompileStep {
   // public so that we can overwrite it in tests
-  internalCreateProtoElementInjector(parent, index, directives, firstBindingIsComponent) {
-    return new ProtoElementInjector(parent, index, directives, firstBindingIsComponent);
+  internalCreateProtoElementInjector(parent, index, directives, firstBindingIsComponent, distance) {
+    return new ProtoElementInjector(parent, index, directives, firstBindingIsComponent, distance);
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    var inheritedProtoElementInjector = null;
+    var distanceToParentInjector = this._getDistanceToParentInjector(parent, current);
     var parentProtoElementInjector = this._getParentProtoElementInjector(parent, current);
     var injectorBindings = this._collectDirectiveBindings(current);
+
     // TODO: add lightDomServices as well,
     // but after the directives as we rely on that order
     // in the element_binder_builder.
@@ -39,13 +40,21 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     if (injectorBindings.length > 0) {
       var protoView = current.inheritedProtoView;
       var hasComponent = isPresent(current.componentDirective);
-      inheritedProtoElementInjector = this.internalCreateProtoElementInjector(
-        parentProtoElementInjector, protoView.elementBinders.length, injectorBindings, hasComponent
+
+      current.inheritedProtoElementInjector = this.internalCreateProtoElementInjector(
+        parentProtoElementInjector, protoView.elementBinders.length, injectorBindings,
+        hasComponent, distanceToParentInjector
       );
+      current.distanceToParentInjector = 0;
+
     } else {
-      inheritedProtoElementInjector = parentProtoElementInjector;
+      current.inheritedProtoElementInjector = parentProtoElementInjector;
+      current.distanceToParentInjector = distanceToParentInjector;
     }
-    current.inheritedProtoElementInjector = inheritedProtoElementInjector;
+  }
+
+  _getDistanceToParentInjector(parent, current) {
+    return isPresent(parent) ? parent.distanceToParentInjector + 1 : 0;
   }
 
   _getParentProtoElementInjector(parent, current) {

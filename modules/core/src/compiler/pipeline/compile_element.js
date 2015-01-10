@@ -32,6 +32,7 @@ export class CompileElement {
   inheritedProtoView:ProtoView;
   inheritedProtoElementInjector:ProtoElementInjector;
   inheritedElementBinder:ElementBinder;
+  distanceToParentInjector:number;
   compileChildren: boolean;
   constructor(element:Element) {
     this.element = element;
@@ -55,6 +56,7 @@ export class CompileElement {
     // inherited down to children if they don't have
     // an own elementBinder
     this.inheritedElementBinder = null;
+    this.distanceToParentInjector = 0;
     this.compileChildren = true;
   }
 

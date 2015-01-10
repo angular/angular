@@ -165,9 +165,11 @@ export class ProtoElementInjector  {
   parent:ProtoElementInjector;
   index:int;
   view:View;
-  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
+  distanceToParent:number;
+  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false, distanceToParent:number = 0) {
     this.parent = parent;
     this.index = index;
+    this.distanceToParent = distanceToParent;
 
     this._binding0IsComponent = firstBindingIsComponent;
     this._binding0 = null; this._keyId0 = null;
@@ -331,6 +333,10 @@ export class ElementInjector extends TreeNode {
     }
   }
 
+  directParent(): ElementInjector {
+    return this._proto.distanceToParent < 2 ? this.parent : null;
+  }
+
   _isComponentKey(key:Key) {
     return this._proto._binding0IsComponent && key.id === this._proto._keyId0;
   }
@@ -396,11 +402,11 @@ export class ElementInjector extends TreeNode {
    *
    * Write benchmarks before doing this optimization.
    */
-  _getByKey(key:Key, depth:int, requestor:Key) {
+  _getByKey(key:Key, depth:number, requestor:Key) {
     var ei = this;
 
     if (! this._shouldIncludeSelf(depth)) {
-      depth -= 1;
+      depth -= ei._proto.distanceToParent;
       ei = ei._parent;
     }
 
@@ -411,8 +417,8 @@ export class ElementInjector extends TreeNode {
       var dir = ei._getDirectiveByKeyId(key.id);
       if (dir !== _undefined) return dir;
 
+      depth -= ei._proto.distanceToParent;
       ei = ei._parent;
-      depth -= 1;
     }
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
@@ -440,7 +446,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewPortId) return this._preBuiltObjects.viewPort;
     if (keyId === staticKeys.destinationLightDomId) {
-      var p:ElementInjector = this._parent;
+      var p:ElementInjector = this.directParent();
       return isPresent(p) ? p._preBuiltObjects.lightDom : null;
     }
     if (keyId === staticKeys.sourceLightDomId)   {
