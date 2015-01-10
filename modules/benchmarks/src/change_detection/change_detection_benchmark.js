@@ -1,7 +1,7 @@
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {reflector} from 'reflection/reflection';
 import {isPresent} from 'facade/lang';
-import {document, DOM} from 'facade/dom';
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 import {
   Lexer,
@@ -11,8 +11,6 @@ import {
   ChangeDispatcher,
 } from 'change_detection/change_detection';
 
-
-var ITERATIONS = 500000;
 
 class Obj {
   field0;
@@ -77,7 +75,7 @@ function setUpReflector() {
   });
 }
 
-function setUpBaseline() {
+function setUpBaseline(iterations) {
   function createRow(i) {
     var obj = new Obj();
     var index = i % 10;
@@ -92,7 +90,7 @@ function setUpBaseline() {
 
   var head = createRow(0);
   var current = head;
-  for (var i = 1; i < ITERATIONS; i++) {
+  for (var i = 1; i < iterations; i++) {
     var newRow = createRow(i);
     current.next = newRow;
     current = newRow;
@@ -100,7 +98,7 @@ function setUpBaseline() {
   return head;
 }
 
-function setUpChangeDetection() {
+function setUpChangeDetection(iterations) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
@@ -139,7 +137,7 @@ function setUpChangeDetection() {
     proto(9)
   ];
 
-  for (var i = 0; i < ITERATIONS; ++i) {
+  for (var i = 0; i < iterations; ++i) {
     var obj = new Obj();
     var index = i % 10;
     obj.setField(index, i);
@@ -154,11 +152,13 @@ function setUpChangeDetection() {
 }
 
 export function main () {
-  setUpReflector();
-  var baselineHead = setUpBaseline();
-  var ng2ChangeDetector = setUpChangeDetection();
+  var iterations = getIntParameter('iterations');
 
-  function baselineDetectChanges(_) {
+  setUpReflector();
+  var baselineHead = setUpBaseline(iterations);
+  var ng2ChangeDetector = setUpChangeDetection(iterations);
+
+  function baselineDetectChanges() {
     var current = baselineHead;
     while (isPresent(current)) {
       if (current.getter(current.obj) !== current.previousValue) {
@@ -168,12 +168,12 @@ export function main () {
     }
   }
 
-  function ng2DetectChanges(_) {
+  function ng2DetectChanges() {
     ng2ChangeDetector.detectChanges();
   }
 
-  DOM.on(DOM.querySelector(document, '#ng2DetectChanges'), 'click', ng2DetectChanges);
-  DOM.on(DOM.querySelector(document, '#baselineDetectChanges'), 'click', baselineDetectChanges);
+  bindAction('#ng2DetectChanges', ng2DetectChanges);
+  bindAction('#baselineDetectChanges', baselineDetectChanges);
 }
 
 

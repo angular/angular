@@ -1,5 +1,5 @@
 // compiler benchmark in AngularJS 1.x
-var COUNT = 30;
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 export function main() {
   var ngEl = document.createElement('div');
@@ -74,19 +74,20 @@ angular.module('app', [])
   };
 }])
 .run(['$compile', function($compile) {
-  var templateNoBindings = loadTemplate('templateNoBindings', COUNT);
-  var templateWithBindings = loadTemplate('templateWithBindings', COUNT);
+  var count = getIntParameter('elements');
+  var templateNoBindings = loadTemplate('templateNoBindings', count);
+  var templateWithBindings = loadTemplate('templateWithBindings', count);
 
-  document.querySelector('#compileWithBindings').addEventListener('click', compileWithBindings, false);
-  document.querySelector('#compileNoBindings').addEventListener('click', compileNoBindings, false);
+  bindAction('#compileWithBindings', compileWithBindings);
+  bindAction('#compileNoBindings', compileNoBindings);
 
-  function compileNoBindings(_) {
+  function compileNoBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = templateNoBindings.cloneNode(true);
     $compile(cloned);
   }
 
-  function compileWithBindings(_) {
+  function compileWithBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = templateWithBindings.cloneNode(true);
     $compile(cloned);

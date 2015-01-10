@@ -1,20 +1,14 @@
-var benchpress = require('../../../tools/benchpress/index.js');
+var testUtil = require('../../e2e_test_lib/e2e_test/test_util');
 
 describe('ng1.x compiler benchmark', function () {
 
   var URL = 'benchmarks_external/web/compiler/compiler_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(testUtil.verifyNoBrowserErrors);
 
   it('should not throw errors', function() {
     browser.get(URL);
-    clickAll(['#compileWithBindings', '#compileNoBindings']);
+    testUtil.clickAll(['#compileWithBindings', '#compileNoBindings']);
   });
 
 });
-
-function clickAll(buttonSelectors) {
-  buttonSelectors.forEach(function(selector) {
-    $(selector).click();
-  });
-}

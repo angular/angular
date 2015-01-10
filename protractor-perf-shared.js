@@ -1,6 +1,13 @@
 // load traceur runtime as our tests are written in es6
 require('traceur/bin/traceur-runtime.js');
 
+var cloudReporterConfig;
+try {
+  cloudReporterConfig = require('./perf-cloud-secret.js');
+} catch (e) {
+  cloudReporterConfig = null;
+}
+
 var config = exports.config = {
 
   specs: ['dist/cjs/**/*_perf.js'],
@@ -8,16 +15,16 @@ var config = exports.config = {
   params: {
     benchmark: {
       // size of the sample to take
-      sampleSize: 10,
-      targetCoefficientOfVariation: 4,
+      sampleSize: 20,
       timeout: 20000,
       metrics: ['script', 'render', 'gcAmount', 'gcAmountInScript', 'gcTime'],
-      // run mode of the benchmark:
-      // - detect: auto detect whether to force gc
-      // - forceGc: forces a gc before every run and ignores no runs
-      // - noGcInScript: ignore runs that have gc while a script was executing
-      // - plain: does not force nor ignore runs
-      mode: 'detect'
+      // forces a gc after every run
+      forceGc: false,
+      reporters: [
+        require('./dist/cjs/tools/benchpress/src/console_reporter.js'),
+        cloudReporterConfig ? require('./dist/cjs/tools/benchpress/src/cloud_reporter.js') : null,
+      ],
+      cloudReporter: cloudReporterConfig
     }
   },
 

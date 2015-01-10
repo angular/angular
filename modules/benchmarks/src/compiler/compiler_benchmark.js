@@ -13,8 +13,7 @@ import {Decorator} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 
 import {reflector} from 'reflection/reflection';
-
-var COUNT = 30;
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
@@ -75,31 +74,33 @@ function setupReflector() {
 }
 
 export function main() {
+  var count = getIntParameter('elements');
+
   setupReflector();
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
   var compiler = new Compiler(null, reader, new Parser(new Lexer()), cache);
   var annotatedComponent = reader.read(BenchmarkComponent);
 
-  var templateNoBindings = loadTemplate('templateNoBindings', COUNT);
-  var templateWithBindings = loadTemplate('templateWithBindings', COUNT);
+  var templateNoBindings = loadTemplate('templateNoBindings', count);
+  var templateWithBindings = loadTemplate('templateWithBindings', count);
 
-  function compileNoBindings(_) {
+  function compileNoBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateNoBindings);
     cache.clear();
     compiler.compileAllLoaded(null, annotatedComponent, cloned);
   }
 
-  function compileWithBindings(_) {
+  function compileWithBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateWithBindings);
     cache.clear();
     compiler.compileAllLoaded(null, annotatedComponent, cloned);
   }
 
-  DOM.on(DOM.querySelector(document, '#compileNoBindings'), 'click', compileNoBindings);
-  DOM.on(DOM.querySelector(document, '#compileWithBindings'), 'click', compileWithBindings);
+  bindAction('#compileNoBindings', compileNoBindings);
+  bindAction('#compileWithBindings', compileWithBindings);
 }
 
 function loadTemplate(templateId, repeatCount) {

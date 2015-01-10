@@ -9,6 +9,7 @@ System.paths = {
   'reflection/*': '/reflection/lib/*.js',
   'benchpress/*': '/benchpress/lib/*.js',
   'examples/*': '/examples/web/*.js',
+  'e2e_test_lib/*': '/e2e_test_lib/lib/*.js',
   'benchmarks/*': '/benchmarks/web/*.js',
   'benchmarks_external/*': '/benchmarks_external/web/*.js',
 };

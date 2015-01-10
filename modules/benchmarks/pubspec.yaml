@@ -12,6 +12,8 @@ dependencies:
     path: ../core
   change_detection:
     path: ../change_detection
+  e2e_test_lib:
+    path: ../e2e_test_lib
   browser: '>=0.10.0 <0.11.0'
 transformers:
 - $dart2js:

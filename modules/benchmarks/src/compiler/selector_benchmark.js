@@ -1,46 +1,45 @@
-import {document, DOM} from 'facade/dom';
-
 import {SelectorMatcher} from "core/compiler/selector";
 import {CssSelector} from "core/compiler/selector";
 import {StringWrapper, Math} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
-
-var COUNT = 1000;
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 export function main() {
+  var count = getIntParameter('selectors');
+
   var fixedMatcher;
   var fixedSelectorStrings = [];
   var fixedSelectors = [];
-  for (var i=0; i<COUNT; i++) {
+  for (var i=0; i<count; i++) {
     ListWrapper.push(fixedSelectorStrings, randomSelector());
   }
-  for (var i=0; i<COUNT; i++) {
+  for (var i=0; i<count; i++) {
     ListWrapper.push(fixedSelectors, CssSelector.parse(fixedSelectorStrings[i]));
   }
   fixedMatcher = new SelectorMatcher();
-  for (var i=0; i<COUNT; i++) {
+  for (var i=0; i<count; i++) {
     fixedMatcher.addSelectable(fixedSelectors[i], i);
   }
 
-  function parse(_) {
+  function parse() {
     var result = [];
-    for (var i=0; i<COUNT; i++) {
+    for (var i=0; i<count; i++) {
       ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
     }
     return result;
   }
 
-  function addSelectable(_) {
+  function addSelectable() {
     var matcher = new SelectorMatcher();
-    for (var i=0; i<COUNT; i++) {
+    for (var i=0; i<count; i++) {
       matcher.addSelectable(fixedSelectors[i], i);
     }
     return matcher;
   }
 
-  function match(_) {
+  function match() {
     var matchCount = 0;
-    for (var i=0; i<COUNT; i++) {
+    for (var i=0; i<count; i++) {
       fixedMatcher.match(fixedSelectors[i], (selected) => {
         matchCount += selected;
       });
@@ -48,9 +47,9 @@ export function main() {
     return matchCount;
   }
 
-  DOM.on(DOM.querySelector(document, '#parse'), 'click', parse);
-  DOM.on(DOM.querySelector(document, '#addSelectable'), 'click', addSelectable);
-  DOM.on(DOM.querySelector(document, '#match'), 'click', match);
+  bindAction('#parse', parse);
+  bindAction('#addSelectable', addSelectable);
+  bindAction('#match', match);
 }
 
 function randomSelector() {

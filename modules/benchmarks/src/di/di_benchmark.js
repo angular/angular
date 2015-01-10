@@ -1,6 +1,6 @@
 import {Injector, Key} from "di/di";
 import {reflector} from 'reflection/reflection';
-import {document, DOM} from 'facade/dom';
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 var count = 0;
 
@@ -33,6 +33,8 @@ function setupReflector() {
 }
 
 export function main() {
+  var iterations = getIntParameter('iterations');
+
   setupReflector();
   var bindings = [A, B, C, D, E];
   var injector = new Injector(bindings);
@@ -46,37 +48,37 @@ export function main() {
     createChild([]).
     createChild([]);
 
-  function getByToken (_) {
-    for (var i = 0; i < 20000; ++i) {
+  function getByToken () {
+    for (var i = 0; i < iterations; ++i) {
       injector.get(D);
       injector.get(E);
     }
   }
-  function getByKey(_) {
-    for (var i = 0; i < 20000; ++i) {
+  function getByKey() {
+    for (var i = 0; i < iterations; ++i) {
       injector.get(D_KEY);
       injector.get(E_KEY);
     }
   }
 
-  function getChild (_) {
-    for (var i = 0; i < 20000; ++i) {
+  function getChild () {
+    for (var i = 0; i < iterations; ++i) {
       childInjector.get(D);
       childInjector.get(E);
     }
   }
 
-  function instantiate (_) {
-    for (var i = 0; i < 5000; ++i) {
+  function instantiate () {
+    for (var i = 0; i < iterations; ++i) {
       var child = injector.createChild([E]);
       child.get(E);
     }
   }
 
-  DOM.on(DOM.querySelector(document, '#getByToken'), 'click', getByToken);
-  DOM.on(DOM.querySelector(document, '#getByKey'), 'click', getByKey);
-  DOM.on(DOM.querySelector(document, '#getChild'), 'click', getChild);
-  DOM.on(DOM.querySelector(document, '#instantiate'), 'click', instantiate);
+  bindAction('#getByToken', getByToken);
+  bindAction('#getByKey', getByKey);
+  bindAction('#getChild', getChild);
+  bindAction('#instantiate', instantiate);
 }
 
 

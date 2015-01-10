@@ -19,5 +19,7 @@ pubspec.lock
 .idea/
 *.swo
 
+# Don't check in secret files
+*secret.js
 
 /docs/bower_components/

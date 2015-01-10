@@ -1,39 +1,31 @@
-"use strict";
-var benchpress = require('../../../tools/benchpress/index.js');
+var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 tree benchmark', function () {
 
   var URL = 'benchmarks/web/tree/tree_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(perfUtil.verifyNoBrowserErrors);
 
   it('should log the ng stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      logId: 'ng2.tree'
+      id: 'ng2.tree',
+      params: [{
+        name: 'depth', value: 9
+      }]
     });
   });
 
   it('should log the baseline stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      logId: 'baseline.tree'
+      id: 'baseline.tree',
+      params: [{
+        name: 'depth', value: 9
+      }]
     });
   });
 
 });
-
-function runClickBenchmark(config) {
-  var buttons = config.buttons.map(function(selector) {
-    return $(selector);
-  });
-  var params = Object.create(browser.params.benchmark);
-  params.logId = browser.params.lang+'.'+config.logId;
-  benchpress.runBenchmark(params, function() {
-    buttons.forEach(function(button) {
-      button.click();
-    });
-  });
-}

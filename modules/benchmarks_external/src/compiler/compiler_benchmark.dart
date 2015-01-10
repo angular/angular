@@ -4,10 +4,11 @@ library compiler_benchmark_ng10;
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory.dart';
 import 'dart:html';
-
-var COUNT = 30;
+import 'package:e2e_test_lib/benchmark_util.dart';
 
 main() {
+
+  var count = getIntParameter('elements');
 
   var m = new Module()
     ..bind(Dir0)
@@ -16,25 +17,25 @@ main() {
     ..bind(Dir3)
     ..bind(Dir4);
 
-  var templateWithBindings = loadTemplate('templateWithBindings', COUNT);
-  var templateNoBindings = loadTemplate('templateWithBindings', COUNT);
+  var templateWithBindings = loadTemplate('templateWithBindings', count);
+  var templateNoBindings = loadTemplate('templateWithBindings', count);
 
   final injector = applicationFactory().addModule(m).run();
   final compiler = injector.get(Compiler);
   final directiveMap = injector.get(DirectiveMap);
 
-  compileWithBindings(_) {
+  compileWithBindings() {
     final cloned = templateWithBindings.clone(true);
     compiler([cloned], directiveMap);
   }
 
-  compileNoBindings(_) {
+  compileNoBindings() {
     final cloned = templateNoBindings.clone(true);
     compiler([cloned], directiveMap);
   }
 
-  document.querySelector('#compileWithBindings').addEventListener('click', compileWithBindings);
-  document.querySelector('#compileNoBindings').addEventListener('click', compileNoBindings);
+  bindAction('#compileWithBindings', compileWithBindings);
+  bindAction('#compileNoBindings', compileNoBindings);
 
 }
 

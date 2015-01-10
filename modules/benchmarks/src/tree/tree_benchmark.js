@@ -10,8 +10,7 @@ import {LifeCycle} from 'core/life_cycle/life_cycle';
 import {reflector} from 'reflection/reflection';
 import {DOM, document, window, Element, gc} from 'facade/dom';
 import {isPresent} from 'facade/lang';
-
-var MAX_DEPTH = 9;
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
@@ -121,14 +120,16 @@ function setupReflector() {
 }
 
 export function main() {
-  setupReflector();
+ var maxDepth = getIntParameter('depth');
+
+ setupReflector();
 
   var app;
   var changeDetector;
   var baselineRootTreeComponent;
   var count = 0;
 
-  function ng2DestroyDom(_) {
+  function ng2DestroyDom() {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     app.initData = new TreeNode('', null, null);
@@ -136,16 +137,16 @@ export function main() {
   }
 
   function profile(create, destroy, name) {
-    return function(_) {
+    return function() {
       window.console.profile(name + ' w GC');
       var duration = 0;
       var count = 0;
       while(count++ < 150) {
         gc();
         var start = window.performance.now();
-        create(_);
+        create();
         duration += window.performance.now() - start;
-        destroy(_);
+        destroy();
       }
       window.console.profileEnd(name + ' w GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
@@ -155,21 +156,21 @@ export function main() {
       count = 0;
       while(count++ < 150) {
         var start = window.performance.now();
-        create(_);
+        create();
         duration += window.performance.now() - start;
-        destroy(_);
+        destroy();
       }
       window.console.profileEnd(name + ' w/o GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
     };
   }
 
-  function ng2CreateDom(_) {
+  function ng2CreateDom() {
     var values = count++ % 2 == 0 ?
       ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
       ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
-    app.initData = buildTree(MAX_DEPTH, values, 0);
+    app.initData = buildTree(maxDepth, values, 0);
     changeDetector.detectChanges();
   }
 
@@ -179,33 +180,35 @@ export function main() {
     bootstrap(AppComponent).then((injector) => {
       changeDetector = injector.get(ChangeDetector);
       app = injector.get(AppComponent);
-      DOM.on(DOM.querySelector(document, '#ng2DestroyDom'), 'click', ng2DestroyDom);
-      DOM.on(DOM.querySelector(document, '#ng2CreateDom'), 'click', ng2CreateDom);
-      DOM.on(DOM.querySelector(document, '#ng2UpdateDomProfile'), 'click', profile(ng2CreateDom, noop, 'ng2-update'));
-      DOM.on(DOM.querySelector(document, '#ng2CreateDomProfile'), 'click', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
     });
   }
 
-  function baselineDestroyDom(_) {
+  function baselineDestroyDom() {
     baselineRootTreeComponent.update(new TreeNode('', null, null));
   }
 
-  function baselineCreateDom(_) {
+  function baselineCreateDom() {
     var values = count++ % 2 == 0 ?
       ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
       ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
-    baselineRootTreeComponent.update(buildTree(MAX_DEPTH, values, 0));
+    baselineRootTreeComponent.update(buildTree(maxDepth, values, 0));
   }
 
   function initBaseline() {
     var tree = DOM.createElement('tree');
     DOM.appendChild(DOM.querySelector(document, 'baseline'), tree);
     baselineRootTreeComponent = new BaseLineTreeComponent(tree);
-    DOM.on(DOM.querySelector(document, '#baselineDestroyDom'), 'click', baselineDestroyDom);
-    DOM.on(DOM.querySelector(document, '#baselineCreateDom'), 'click', baselineCreateDom);
-    DOM.on(DOM.querySelector(document, '#baselineUpdateDomProfile'), 'click', profile(baselineCreateDom, noop, 'baseline-update'));
-    DOM.on(DOM.querySelector(document, '#baselineCreateDomProfile'), 'click', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+
+    bindAction('#baselineDestroyDom', baselineDestroyDom);
+    bindAction('#baselineCreateDom', baselineCreateDom);
+
+    bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
+    bindAction('#baselineCreateDomProfile', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();

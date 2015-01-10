@@ -1,6 +1,7 @@
-var stats = require('./stats');
-var reporter = require('./reporter');
+var statistics = require('./statistics');
 var commands = require('./commands');
+var nodeUuid = require('node-uuid');
+var webdriver = require('protractor/node_modules/selenium-webdriver');
 
 var SUPPORTED_METRICS = {
   script: true,
@@ -12,52 +13,6 @@ var SUPPORTED_METRICS = {
   render: true
 };
 
-var RUN_MODE = {
-  detect: function(prevState, benchmarkData, iterationIndex) {
-    var gcInScriptCount = prevState.gcInScriptCount || 0;
-    if (benchmarkData.gcAmountInScript) {
-      gcInScriptCount++;
-    }
-    var ignoreRun = !!benchmarkData.gcAmountInScript;
-    var nextMode = RUN_MODE.detect;
-    if (iterationIndex > 10) {
-      if (gcInScriptCount / iterationIndex > 0.7) {
-        nextMode = RUN_MODE.forceGc;
-      } else {
-        nextMode = RUN_MODE.noGcInScript;
-      }
-    }
-    return {
-      forceGc: false,
-      ignoreRun: ignoreRun,
-      gcInScriptCount: gcInScriptCount,
-      nextMode: nextMode
-    };
-  },
-  forceGc: function() {
-    return {
-      forceGc: true,
-      ignoreRun: false,
-      nextMode: RUN_MODE.forceGc
-    }
-  },
-  noGcInScript: function(prevState, benchmarkData) {
-    var ignoreRun = !!benchmarkData.gcAmountInScript;
-    return {
-      forceGc: false,
-      ignoreRun: ignoreRun,
-      nextMode: RUN_MODE.noGcInScript
-    }
-  },
-  plain: function() {
-    return {
-      forceGc: false,
-      ignoreRun: false,
-      nextMode: RUN_MODE.plain
-    }
-  }
-};
-
 var nextTimestampId = 0;
 
 module.exports = {
@@ -66,133 +21,139 @@ module.exports = {
 };
 
 function runBenchmark(config, workCallback) {
-  config.metrics.forEach(function(metric) {
+  var sampleId = nodeUuid.v1();
+  var reporters = config.reporters.map(function(Class) {
+    return new Class(sampleId, config);
+  });
+  var scriptMetricIndex = -1;
+  config.metrics.forEach(function(metric, index) {
     if (!(metric in SUPPORTED_METRICS)) {
       throw new Error('Metric '+metric+' is not suported by benchpress right now');
     }
+    if (metric === 'script') {
+      scriptMetricIndex = index;
+    }
   });
-  var ROW_FORMAT = ['%-40s', '%12s'].concat(config.metrics.map(function() {
-    return '%12s';
-  })).join(' | ');
-
-  var benchmarkStatsAggregator = stats.createObjectStatsAggregator(config.metrics, config.sampleSize);
+  if (scriptMetricIndex === -1) {
+    throw new Error('Metric "script" needs to be included in the metrics');
+  }
 
   var startTime = Date.now();
-  startLoop().then(endLoop);
-
-  function startLoop(gcData) {
-    reporter.printHeading('SCRIPT DATA: sampling size '+config.sampleSize);
-    reporter.printTableHeader(ROW_FORMAT, ['name', 'action'].concat(config.metrics));
-    if (!(config.mode in RUN_MODE)) {
-      throw new Error('Unknown mode '+config.mode);
-    }
-    return loop(0, {
-      forceGc: false,
-      ignoreRun: false,
-      nextMode: RUN_MODE[config.mode]
-    });
-  }
-
-  function endLoop(stats) {
-    reporter.printTableFooter(ROW_FORMAT, [config.logId, '']
-      .concat(formatObjectStats(stats, config.metrics))
-    );
-    return config.metrics.map(function(metric) {
-      return stats[metric];
-    });
-  }
-
-  function loop(iterationIndex, modeState) {
-    return measureTime(function() {
+  commands.gc();
+  reporters.forEach(function(reporter) {
+    reporter.begin();
+  });
+  return measureLoop({
+    index: 0,
+    prevSample: [],
+    endAfterRun: false,
+    work: function() {
       workCallback();
-      if (modeState.forceGc) {
-        // For fast tests that don't create a lot of garbage,
-        // we don't want to force gc before every run as that
-        // can slow down the script execution time (even when we subtract
-        // the gc time)!
-        // Note: we need to call gc AFTER the actual test so the
-        // gc amount is added to the current test run!
+      if (this.endAfterRun || config.forceGc) {
         commands.gc();
       }
-    }).then(function(benchmarkData) {
-      modeState = modeState.nextMode(modeState, benchmarkData, iterationIndex);
-      var action = '';
-      if (modeState.ignoreRun) {
-        action = 'ignore';
-      } else if (modeState.forceGc) {
-        action = 'forceGc';
+    },
+    process: function(data) {
+      var measuredValues = config.metrics.map(function(metric) {
+        return data.stats[metric];
+      });
+      var reporterData = {
+        values: measuredValues,
+        index: this.index,
+        records: data.records,
+        forceGc: this.endAfterRun || config.forceGc
+      };
+      reporters.forEach(function(reporter) {
+        reporter.add(reporterData);
+      });
+
+      var newSample = this.prevSample.concat([reporterData]);
+      if (newSample.length > config.sampleSize) {
+        newSample = newSample.slice(newSample.length - config.sampleSize);
       }
-      reporter.printRow(ROW_FORMAT, [config.logId + '#' + iterationIndex, action]
-        .concat(formatObjectData(benchmarkData, config.metrics))
+
+      var result = null;
+      var xValues = [];
+      var yValues = [];
+      newSample.forEach(function(data, index) {
+        // For now, we only use the array index as x value.
+        // TODO(tbosch): think about whether we should use time here instead
+        xValues.push(index);
+        yValues.push(data.values[scriptMetricIndex]);
+      });
+      var regressionSlope = statistics.getRegressionSlope(
+        xValues, statistics.calculateMean(xValues),
+        yValues, statistics.calculateMean(yValues)
       );
+      // TODO(tbosch): ask someone who really understands statistics whether this is reasonable
+      // When we detect that we are not getting slower any more,
+      // we do one more round where we force gc so we get all the gc data before we stop.
+      var endAfterNextRun = ((Date.now() - startTime > config.timeout) ||
+          (newSample.length === config.sampleSize && regressionSlope >= 0));
+      return {
+        index: this.index+1,
+        work: this.work,
+        process: this.process,
+        endAfterRun: endAfterNextRun,
+        result: this.endAfterRun ? newSample : null,
+        prevSample: newSample
+      };
+    }
+  }).then(function(stableSample) {
+    reporters.forEach(function(reporter) {
+      reporter.end(stableSample);
+    });
+  });
+}
 
-      var benchmarkStats;
-      if (modeState.ignoreRun) {
-        benchmarkStats = benchmarkStatsAggregator.current;
+function measureLoop(startState) {
+  var startTimestampId = (nextTimestampId++).toString();
+  commands.timelineTimestamp(startTimestampId);
+
+  return next(startTimestampId, startState, []);
+
+  function next(startTimestampId, state, lastRecords) {
+    state.work();
+    var endTimestampId = (nextTimestampId++).toString();
+    commands.timelineTimestamp(endTimestampId);
+
+    return readStats(startTimestampId, endTimestampId, lastRecords).then(function(data) {
+      var nextState = state.process({
+        stats: data.stats,
+        records: data.records
+      });
+      if (nextState.result) {
+        return nextState.result;
       } else {
-        benchmarkStats = benchmarkStatsAggregator(benchmarkData);
+        return next(endTimestampId, nextState, data.lastRecords);
       }
-
-      if (Date.now() - startTime > config.timeout) {
-        return benchmarkStats;
-      }
-      if (benchmarkStats &&
-        (
-          benchmarkStats.script.count >= config.sampleSize &&
-          benchmarkStats.script.coefficientOfVariation < config.targetCoefficientOfVariation)
-        ) {
-        return benchmarkStats
-      }
-      return loop(iterationIndex+1, modeState);
     });
   }
-}
 
-function formatObjectData(data, props) {
-  return props.map(function(prop) {
-    var val = data[prop];
-    if (typeof val === 'number') {
-      return val.toFixed(2);
-    } else {
-      return val;
-    }
-  });
-}
-
-function formatObjectStats(stats, props) {
-  return props.map(function(prop) {
-    var entry = stats[prop];
-    return entry.mean.toFixed(2) + '\u00B1' + entry.coefficientOfVariation.toFixed(0)+ '%';
-  });
-}
-
-function measureTime(callback) {
-  var startId = (nextTimestampId++).toString();
-  var endId = (nextTimestampId++).toString();
-  commands.timelineTimestamp(startId);
-  callback();
-  commands.timelineTimestamp(endId);
-  var allRecords = [];
-  return readResult();
-
-  function readResult() {
-    return commands.timelineRecords().then(function(records) {
-      allRecords.push.apply(allRecords, records);
-      var stats = sumTimelineRecords(allRecords, startId, endId);
-      if (stats.timeStamps.indexOf(startId) === -1 ||
-          stats.timeStamps.indexOf(endId) === -1) {
+  function readStats(startTimestampId, endTimestampId, lastRecords) {
+    return commands.timelineRecords().then(function(newRecords) {
+      var records = lastRecords.concat(newRecords);
+      var stats = sumTimelineRecords(records, startTimestampId, endTimestampId);
+      if (stats.timeStamps.indexOf(startTimestampId) === -1 ||
+          stats.timeStamps.indexOf(endTimestampId) === -1) {
         // Sometimes the logs have not yet arrived at the webdriver
-        // server from the browser.
+        // server from the browser, so we need to wait
+        // TODO(tbosch): This seems to be a bug in chrome / chromedriver!
         // And sometimes, just waiting is not enough, so we
         // execute a dummy js function :-(
         browser.executeScript('1+1');
         browser.sleep(100);
-        return readResult();
+        return readStats(startTimestampId, endTimestampId, records);
       } else {
-        return stats;
+        return {
+          stats: stats,
+          records: records,
+          lastRecords: newRecords
+        };
       }
     });
   }
+
 }
 
 function sumTimelineRecords(records, startTimeStampId, endTimeStampId) {

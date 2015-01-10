@@ -54,6 +54,10 @@ var _HTLM_DEFAULT_SCRIPTS_JS = [
   }
 ];
 
+var _HTML_DEFAULT_SCRIPTS_DART = [
+  {src: '$MODULENAME_WITHOUT_PATH$.dart', mimeType: 'application/dart'},
+  {src: 'packages/browser/dart.js', mimeType: 'text/javascript'}
+];
 
 var CONFIG = {
   dest: {
@@ -72,7 +76,8 @@ var CONFIG = {
   },
   srcFolderMapping: {
     'default': 'lib',
-    '**/benchmark*/**': 'web',
+    '**/benchmarks/**': 'web',
+    '**/benchmarks_external/**': 'web',
     '**/example*/**': 'web'
   },
   deps: {
@@ -83,8 +88,12 @@ var CONFIG = {
       "node_modules/systemjs/lib/extension-register.js",
       "node_modules/zone.js/zone.js",
       "node_modules/zone.js/long-stack-trace-zone.js",
-      "tools/build/runtime_paths.js",
+      "tools/build/snippets/runtime_paths.js",
+      "tools/build/snippets/url_params_to_form.js",
       "node_modules/angular/angular.js"
+    ],
+    dart: [
+      "tools/build/snippets/url_params_to_form.js"
     ]
   },
   transpile: {
@@ -133,14 +142,22 @@ var CONFIG = {
     scriptsPerFolder: {
       js: {
         default: _HTLM_DEFAULT_SCRIPTS_JS,
+        'benchmarks/**':
+          [
+            { src: '/deps/url_params_to_form.js', mimeType: 'text/javascript' }
+          ].concat(_HTLM_DEFAULT_SCRIPTS_JS),
         'benchmarks_external/**':
-          [{ src: '/deps/angular.js', mimeType: 'text/javascript' }].concat(_HTLM_DEFAULT_SCRIPTS_JS)
+          [
+            { src: '/deps/angular.js', mimeType: 'text/javascript' },
+            { src: '/deps/url_params_to_form.js', mimeType: 'text/javascript' }
+          ].concat(_HTLM_DEFAULT_SCRIPTS_JS)
       },
       dart: {
-        default: [
-          {src: '$MODULENAME_WITHOUT_PATH$.dart', mimeType: 'application/dart'},
-          {src: 'packages/browser/dart.js', mimeType: 'text/javascript'}
-        ]
+        default: _HTML_DEFAULT_SCRIPTS_DART,
+        'benchmarks*/**':
+          [
+            { src: '/deps/url_params_to_form.js', mimeType: 'text/javascript' }
+          ].concat(_HTML_DEFAULT_SCRIPTS_DART)
       }
     }
   },
@@ -176,6 +193,11 @@ gulp.task('build/deps.js.dev', deps(gulp, gulpPlugins, {
 gulp.task('build/deps.js.prod', deps(gulp, gulpPlugins, {
   src: CONFIG.deps.js,
   dest: CONFIG.dest.js.prod
+}));
+
+gulp.task('build/deps.js.dart2js', deps(gulp, gulpPlugins, {
+  src: CONFIG.deps.dart,
+  dest: CONFIG.dest.js.dart2js
 }));
 
 // ------------
@@ -373,7 +395,7 @@ gulp.task('docs/serve', function() {
 // orchestrated targets
 gulp.task('build.dart', function() {
   return runSequence(
-    ['build/transpile.dart', 'build/html.dart'],
+    ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
     'build/pubbuild.dart',
     'build/analyze.dart'

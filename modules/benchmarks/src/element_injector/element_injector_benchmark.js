@@ -1,10 +1,9 @@
 import {reflector} from 'reflection/reflection';
 import {Injector} from 'di/di';
 import {ProtoElementInjector} from 'core/compiler/element_injector';
-import {document, DOM} from 'facade/dom';
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 var count = 0;
-var ITERATIONS = 20000;
 
 function setupReflector() {
   reflector.registerType(A, {
@@ -25,6 +24,8 @@ function setupReflector() {
 }
 
 export function main() {
+  var iterations = getIntParameter('iterations');
+
   setupReflector();
   var appInjector = new Injector([]);
 
@@ -32,22 +33,22 @@ export function main() {
   var proto = new ProtoElementInjector(null, 0, bindings);
   var elementInjector = proto.instantiate(null,null);
 
-  function instantiate (_) {
-    for (var i = 0; i < ITERATIONS; ++i) {
+  function instantiate () {
+    for (var i = 0; i < iterations; ++i) {
       var ei = proto.instantiate(null, null);
       ei.instantiateDirectives(appInjector, null, null);
     }
   }
 
-  function instantiateDirectives (_) {
-    for (var i = 0; i < ITERATIONS; ++i) {
+  function instantiateDirectives () {
+    for (var i = 0; i < iterations; ++i) {
       elementInjector.clearDirectives();
       elementInjector.instantiateDirectives(appInjector, null, null);
     }
   }
 
-  DOM.on(DOM.querySelector(document, '#instantiate'), 'click', instantiate);
-  DOM.on(DOM.querySelector(document, '#instantiateDirectives'), 'click', instantiateDirectives);
+  bindAction('#instantiate', instantiate);
+  bindAction('#instantiateDirectives', instantiateDirectives);
 }
 
 class A {

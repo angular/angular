@@ -1,39 +1,31 @@
-"use strict";
-var benchpress = require('../../../tools/benchpress/index.js');
+var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 change detection benchmark', function () {
 
   var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(perfUtil.verifyNoBrowserErrors);
 
   it('should log ng stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#ng2DetectChanges'],
-      logId: 'ng2.changeDetection'
+      id: 'ng2.changeDetection',
+      params: [{
+        name: 'iterations', value: 500000
+      }]
     });
   });
 
   it('should log baseline stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#baselineDetectChanges'],
-      logId: 'baseline.changeDetection'
+      id: 'baseline.changeDetection',
+      params: [{
+        name: 'iterations', value: 500000
+      }]
     });
   });
 
 });
-
-function runClickBenchmark(config) {
-  var buttons = config.buttons.map(function(selector) {
-    return $(selector);
-  });
-  var params = Object.create(browser.params.benchmark);
-  params.logId = browser.params.lang+'.'+config.logId;
-  benchpress.runBenchmark(params, function() {
-    buttons.forEach(function(button) {
-      button.click();
-    });
-  });
-}

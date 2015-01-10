@@ -1,5 +1,5 @@
 // tree benchmark in AngularJS 1.x
-var MAX_DEPTH = 9;
+import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 export function main() {
   angular.bootstrap(document.body, ['app']);
@@ -57,24 +57,24 @@ angular.module('app', [])
 }])
 .run(['$rootScope', function($rootScope) {
   var count = 0;
+  var maxDepth = getIntParameter('depth');
 
-  document.querySelector('#destroyDom').addEventListener('click', destroyDom, false);
-  document.querySelector('#createDom').addEventListener('click', createDom, false);
+  bindAction('#destroyDom', destroyDom);
+  bindAction('#createDom', createDom);
 
-  function destroyDom(_) {
+  function destroyDom() {
     $rootScope.$apply(function() {
       $rootScope.initData = new TreeNode('', null, null);
     });
   }
 
-  function createDom(_) {
-    var maxDepth = MAX_DEPTH;
+  function createDom() {
     var values = count++ % 2 == 0 ?
       ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
       ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
     $rootScope.$apply(function() {
-      $rootScope.initData = buildTree(MAX_DEPTH, values, 0);
+      $rootScope.initData = buildTree(maxDepth, values, 0);
     });
   }
 }]);

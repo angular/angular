@@ -1,39 +1,31 @@
-"use strict";
-var benchpress = require('../../../tools/benchpress/index.js');
+var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 element injector benchmark', function () {
 
   var URL = 'benchmarks/web/element_injector/element_injector_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(perfUtil.verifyNoBrowserErrors);
 
   it('should log the stats for instantiate', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#instantiate'],
-      logId: 'ng2.elementInjector.instantiate'
+      id: 'ng2.elementInjector.instantiate',
+      params: [{
+        name: 'iterations', value: 20000
+      }]
     });
   });
 
   it('should log the stats for instantiateDirectives', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#instantiateDirectives'],
-      logId: 'ng2.elementInjector.instantiateDirectives'
+      id: 'ng2.elementInjector.instantiateDirectives',
+      params: [{
+        name: 'iterations', value: 20000
+      }]
     });
   });
 
 });
-
-function runClickBenchmark(config) {
-  var buttons = config.buttons.map(function(selector) {
-    return $(selector);
-  });
-  var params = Object.create(browser.params.benchmark);
-  params.logId = browser.params.lang+'.'+config.logId;
-  benchpress.runBenchmark(params, function() {
-    buttons.forEach(function(button) {
-      button.click();
-    });
-  });
-}

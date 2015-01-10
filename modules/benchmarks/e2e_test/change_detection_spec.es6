@@ -1,20 +1,14 @@
-var benchpress = require('../../../tools/benchpress/index.js');
+var testUtil = require('../../e2e_test_lib/e2e_test/test_util');
 
 describe('ng2 change detection benchmark', function () {
 
   var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(testUtil.verifyNoBrowserErrors);
 
   it('should not throw errors', function() {
     browser.get(URL);
-    clickAll(['#ng2DetectChanges', '#baselineDetectChanges']);
+    testUtil.clickAll(['#ng2DetectChanges', '#baselineDetectChanges']);
   });
 
 });
-
-function clickAll(buttonSelectors) {
-  buttonSelectors.forEach(function(selector) {
-    $(selector).click();
-  });
-}

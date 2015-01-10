@@ -4,8 +4,7 @@ library tree_benchmark_ng10;
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory.dart';
 import 'dart:html';
-
-var MAX_DEPTH = 9;
+import 'package:e2e_test_lib/benchmark_util.dart';
 
 setup() {
 
@@ -20,29 +19,31 @@ setup() {
 }
 
 main() {
+  var maxDepth = getIntParameter('depth');
+
   final injector = setup();
   final zone = injector.get(VmTurnZone);
   final rootScope = injector.get(Scope);
   var count = 0;
 
-  destroyDom(_) {
+  destroyDom() {
     zone.run(() {
       rootScope.context['initData'] = new TreeNode('');
     });
   }
 
-  createDom(_) {
+  createDom() {
     zone.run(() {
       var values = count++ % 2 == 0 ?
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
-      rootScope.context['initData'] = buildTree(MAX_DEPTH, values, 0);
+      rootScope.context['initData'] = buildTree(maxDepth, values, 0);
     });
   }
 
-  document.querySelector('#destroyDom').addEventListener('click', destroyDom);
-  document.querySelector('#createDom').addEventListener('click', createDom);
+  bindAction('#destroyDom', destroyDom);
+  bindAction('#createDom', createDom);
 }
 
 @Component(

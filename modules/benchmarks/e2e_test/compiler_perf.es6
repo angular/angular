@@ -1,39 +1,31 @@
-"use strict";
-var benchpress = require('../../../tools/benchpress/index.js');
+var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 compiler benchmark', function () {
 
   var URL = 'benchmarks/web/compiler/compiler_benchmark.html';
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(perfUtil.verifyNoBrowserErrors);
 
   it('should log withBindings stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#compileWithBindings'],
-      logId: 'ng2.compile.withBindings'
+      id: 'ng2.compile.withBindings',
+      params: [{
+        name: 'elementCount', selector: '#elementCount', value: 150
+      }]
     });
   });
 
   it('should log noBindings stats', function() {
-    browser.get(URL);
-    runClickBenchmark({
+    perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#compileNoBindings'],
-      logId: 'ng2.compile.noBindings'
+      id: 'ng2.compile.noBindings',
+      params: [{
+        name: 'elementCount', value: 150
+      }]
     });
   });
 
 });
-
-function runClickBenchmark(config) {
-  var buttons = config.buttons.map(function(selector) {
-    return $(selector);
-  });
-  var params = Object.create(browser.params.benchmark);
-  params.logId = browser.params.lang+'.'+config.logId;
-  benchpress.runBenchmark(params, function() {
-    buttons.forEach(function(button) {
-      button.click();
-    });
-  });
-}
