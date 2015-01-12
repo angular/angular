@@ -7,7 +7,7 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_
 import {ElementBinder} from './element_binder';
 import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'reflection/types';
-import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
+import {Type, FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/dom/element';
 import {ViewPort} from './viewport';
@@ -20,6 +20,297 @@ const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
 // TODO(tbosch): Cannot use `const` because of Dart.
 var NO_FORMATTERS = MapWrapper.create();
 
+
+
+
+
+export class DirectivePropertyMemento {
+  _elementInjectorIndex:int;
+  _directiveIndex:int;
+  _setterName:string;
+  _setter:SetterFn;
+  constructor(
+    elementInjectorIndex:number,
+    directiveIndex:number,
+    setterName:string,
+    setter:SetterFn) {
+    this._elementInjectorIndex = elementInjectorIndex;
+    this._directiveIndex = directiveIndex;
+    this._setterName = setterName;
+    this._setter = setter;
+  }
+
+  invoke(record:Record, elementInjectors:List<ElementInjector>) {
+    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
+    var directive = elementInjector.getAtIndex(this._directiveIndex);
+    this._setter(directive, record.currentValue);
+  }
+
+  invokeWithoutRecord(currentValue, elementInjectors:List<ElementInjector>) {
+    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
+    var directive = elementInjector.getAtIndex(this._directiveIndex);
+    this._setter(directive, currentValue);
+  }
+}
+
+
+
+
+
+
+var INIT_MEMENTO = new DirectivePropertyMemento(0, 0, 'data', (o, v) => o.data = v);
+var DATA_MEMENTO = new DirectivePropertyMemento(0, 0, 'data', (o, v) => o.data = v);
+var LEFT_MEMENTO = new DirectivePropertyMemento(1, 0, 'ngIf', (o, v) => o.ngIf = v);
+var RIGHT_MEMENTO = new DirectivePropertyMemento(2, 0, 'ngIf', (o, v) => o.ngIf = v);
+
+class App_ChangeDetector {
+  dispatcher:any;
+  context:any;
+  children:List;
+
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+    this.children = [];
+    this.context = null;
+  }
+
+  hydrate(context) {
+    this.context = context;
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].hydrate(context);
+    }
+  }
+
+  detectChanges() {
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].detectChanges();
+    }
+  }
+}
+
+class TopLevel_ChangeDetector {
+  dispatcher:any;
+  context:any;
+  children:List;
+
+  // Store last values here
+  _initData;
+
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+    this.children = [];
+    this.context = null;
+    this._initData = null;
+  }
+
+  hydrate(context) {
+    this.context = context;
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].hydrate(context);
+    }
+  }
+
+  detectChanges() {
+    var _initData;
+    var context = this.context;
+
+    if (this._initData !== (_initData = context.initData)) {
+      this._initData = _initData;
+      this.dispatcher.invokeMemento(_initData, INIT_MEMENTO);
+    }
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].detectChanges();
+    }
+  }
+}
+
+
+class TreeComponent_ChangeDetector {
+  dispatcher:any;
+  context:any;
+  children:List;
+
+  // Store last values here
+  _data;
+  _data_value;
+  _data_left;
+  _data_right;
+  _data_left_NOT_NULL;
+  _data_right_NOT_NULL;
+
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+    this.children = [];
+    this.context = null;
+    this._data = null;
+    this._data_value = null;
+    this._data_left = null;
+    this._data_right = null;
+    this._data_left_NOT_NULL = null;
+    this._data_right_NOT_NULL = null;
+  }
+
+  hydrate(context) {
+    this.context = context;
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].hydrate(context);
+    }
+  }
+
+  detectChanges() {
+    var context = this.context;
+
+    var _data;
+    var _data_value;
+    var _data_left;
+    var _data_right;
+    var _data_left_NOT_NULL;
+    var _data_right_NOT_NULL;
+
+    if (this._data !== (_data = context.data)) {
+      this._data = _data;
+    }
+
+    if (this._data_value !== (_data_value = _data.value)) {
+      this._data_value = _data_value;
+      this.dispatcher.invokeMemento(_data_value, 0)
+    }
+
+    if (this._data_left !== (_data_left = _data.left)) {
+      this._data_left = _data_left;
+    }
+
+    if (this._data_right !== (_data_right = _data.right)) {
+      this._data_right = _data_right;
+    }
+
+    if (this._data_left_NOT_NULL !== (_data_left_NOT_NULL = _data_left !== null)) {
+      this._data_left_NOT_NULL = _data_left_NOT_NULL;
+      this.dispatcher.invokeMemento(_data_left_NOT_NULL, LEFT_MEMENTO);
+    }
+
+    if (this._data_right_NOT_NULL !== (_data_right_NOT_NULL = _data_right !== null)) {
+      this._data_right_NOT_NULL = _data_right_NOT_NULL;
+      this.dispatcher.invokeMemento(_data_right_NOT_NULL, RIGHT_MEMENTO);
+    }
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].detectChanges();
+    }
+  }
+}
+
+class TreeComponentNfIfLeft_ChangeDetector {
+  dispatcher:any;
+  context:any;
+  children:List;
+
+  // Store last values here
+  _data;
+  _data_left;
+
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+    this.children = [];
+    this.context = null;
+    this._data = null;
+    this._data_left = null;
+  }
+
+  hydrate(context) {
+    this.context = context;
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].hydrate(context);
+    }
+  }
+
+  detectChanges() {
+    var context = this.context;
+
+    var _data;
+    var _data_left;
+
+    if (this._data !== (_data = context.data)) {
+      this._data = _data;
+    }
+
+    if (this._data_left !== (_data_left = _data.left)) {
+      this._data_left = _data_left;
+      this.dispatcher.invokeMemento(_data_left, DATA_MEMENTO);
+    }
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].detectChanges();
+    }
+  }
+}
+
+class TreeComponentNfIfRight_ChangeDetector {
+  dispatcher:any;
+  context:any;
+  children:List;
+
+  // Store last values here
+  _data;
+  _data_right;
+
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+    this.children = [];
+    this.context = null;
+    this._data = null;
+    this._data_right = null;
+  }
+
+  hydrate(context) {
+    this.context = context;
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].hydrate(context);
+    }
+  }
+
+  detectChanges() {
+    var context = this.context;
+
+    var _data;
+    var _data_right;
+
+    if (this._data !== (_data = context.data)) {
+      this._data = _data;
+    }
+
+    if (this._data_right !== (_data_right = _data.right)) {
+      this._data_right = _data_right;
+      this.dispatcher.invokeMemento(_data_right, DATA_MEMENTO);
+    }
+
+    var children = this.children;
+    for(var i = 0; i < children.length; i++) {
+      children[i].detectChanges();
+    }
+  }
+}
+
+
+
+
+
+
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
@@ -30,7 +321,10 @@ export class View {
   elementInjectors:List<ElementInjector>;
   bindElements:List<Element>;
   textNodes:List<Text>;
+
+  changeDetector:any;
   recordRange:RecordRange;
+
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
   nodes:List<Node>;
@@ -44,7 +338,11 @@ export class View {
   constructor(proto:ProtoView, nodes:List<Node>, protoRecordRange:ProtoRecordRange, protoContextLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
-    this.recordRange = protoRecordRange.instantiate(this, NO_FORMATTERS);
+    this.recordRange = null;
+    //this.recordRange = protoRecordRange.instantiate(this, NO_FORMATTERS);
+
+    this.changeDetector = new proto.ChangeDetector(this);
+
     this.elementInjectors = null;
     this.rootElementInjectors = null;
     this.textNodes = null;
@@ -96,7 +394,8 @@ export class View {
     // TODO(tbosch): if we have a contextWithLocals we actually only need to
     // set the contextWithLocals once. Would it be faster to always use a contextWithLocals
     // even if we don't have locals and not update the recordRange here?
-    this.recordRange.setContext(this.context);
+    //this.recordRange.setContext(this.context);
+    this.changeDetector.hydrate(this.context);
   }
 
   _dehydrateContext() {
@@ -238,6 +537,21 @@ export class View {
     }
   }
 
+  invokeMemento(currentValue, memento) {
+    if (memento instanceof DirectivePropertyMemento) {
+      var directiveMemento:DirectivePropertyMemento = memento;
+      directiveMemento.invokeWithoutRecord(currentValue, this.elementInjectors);
+
+    } else if (memento instanceof ElementPropertyMemento) {
+
+
+    } else {
+      // we know it refers to _textNodes.
+      var textNodeIndex:number = memento;
+      DOM.setText(this.textNodes[textNodeIndex], currentValue);
+    }
+  }
+
   _collectChanges(records:List<Record>) {
     var changes = StringMapWrapper.create();
     for(var i = 0; i < records.length; ++i) {
@@ -260,6 +574,8 @@ export class ProtoView {
   instantiateInPlace:boolean;
   rootBindingOffset:int;
   isTemplateElement:boolean;
+  ChangeDetector:Type;
+
   constructor(
       template:Element,
       protoRecordRange:ProtoRecordRange) {
@@ -276,6 +592,20 @@ export class ProtoView {
     } else {
       this.rootBindingOffset = 0;
     }
+
+    var html = template.outerHTML;
+    if (html.indexOf("initData") != -1) {
+      this.ChangeDetector = TopLevel_ChangeDetector;
+    } else if (html.indexOf("{{data.value}}") != -1) {
+      this.ChangeDetector = TreeComponent_ChangeDetector;
+    } else if (html.indexOf("data.left") != -1) {
+      this.ChangeDetector = TreeComponentNfIfLeft_ChangeDetector;
+    } else if (html.indexOf("data.right") != -1) {
+      this.ChangeDetector = TreeComponentNfIfRight_ChangeDetector;
+    } else {
+      this.ChangeDetector = App_ChangeDetector;
+    }
+
     this.isTemplateElement = this.element instanceof TemplateElement;
   }
 
@@ -360,7 +690,14 @@ export class ProtoView {
       var lightDom = null;
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
-        view.recordRange.addRange(childView.recordRange);
+        //view.recordRange.addRange(childView.recordRange);
+
+
+        view.changeDetector.children.push(childView.changeDetector);
+        childView.changeDetector.parent = view.changeDetector;
+
+
+
 
         lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
         binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
@@ -494,28 +831,6 @@ export class ElementPropertyMemento {
   }
 }
 
-export class DirectivePropertyMemento {
-  _elementInjectorIndex:int;
-  _directiveIndex:int;
-  _setterName:string;
-  _setter:SetterFn;
-  constructor(
-      elementInjectorIndex:number,
-      directiveIndex:number,
-      setterName:string,
-      setter:SetterFn) {
-    this._elementInjectorIndex = elementInjectorIndex;
-    this._directiveIndex = directiveIndex;
-    this._setterName = setterName;
-    this._setter = setter;
-  }
-
-  invoke(record:Record, elementInjectors:List<ElementInjector>) {
-    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    var directive = elementInjector.getAtIndex(this._directiveIndex);
-    this._setter(directive, record.currentValue);
-  }
-}
 
 var _groups = MapWrapper.create();
 

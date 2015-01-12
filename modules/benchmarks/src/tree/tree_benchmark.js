@@ -6,6 +6,7 @@ import {CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'core/compiler/template_loader';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
+import {appViewToken} from "core/application";
 
 import {reflector} from 'reflection/reflection';
 import {DOM, document, Element} from 'facade/dom';
@@ -41,8 +42,8 @@ function setupReflector() {
           directives: [TreeComponent, NgIf],
           inline: `
     <span> {{data.value}}
-       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
        <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span>
+       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
     </span>`
       })
     })]
@@ -124,6 +125,7 @@ export function main() {
   setupReflector();
 
   var app;
+  var appView;
   var changeDetector;
   var baselineRootTreeComponent;
   var count = 0;
@@ -141,13 +143,14 @@ export function main() {
       ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
     app.initData = buildTree(MAX_DEPTH, values, 0);
-    changeDetector.detectChanges();
+    appView.changeDetector.detectChanges();
   }
 
   function initNg2() {
     bootstrap(AppComponent).then((injector) => {
       changeDetector = injector.get(ChangeDetector);
       app = injector.get(AppComponent);
+      appView = injector.get(appViewToken);
       DOM.on(DOM.querySelector(document, '#ng2DestroyDom'), 'click', ng2DestroyDom);
       DOM.on(DOM.querySelector(document, '#ng2CreateDom'), 'click', ng2CreateDom);
     });
@@ -293,6 +296,6 @@ class NgIf {
 }
 
 class TreeComponent {
-  data:TreeNode;
+  data;
 }
 

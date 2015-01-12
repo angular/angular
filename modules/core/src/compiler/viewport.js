@@ -84,7 +84,16 @@ export class ViewPort {
     } else {
       this._lightDom.redistribute();
     }
-    this.parentView.recordRange.addRange(view.recordRange);
+
+
+
+    this.parentView.changeDetector.children.push(view.changeDetector);
+    view.changeDetector.parent = this.parentView.changeDetector;
+
+
+
+
+
     this._linkElementInjectors(view);
     return view;
   }
@@ -98,7 +107,21 @@ export class ViewPort {
     } else {
       this._lightDom.redistribute();
     }
-    removedView.recordRange.remove();
+
+
+
+
+
+    // should remove it here!!!!
+    //removedView.recordRange.remove();
+    var p = removedView.changeDetector.parent;
+    if (p) {
+      p.children.splice(p.children.indexOf(removedView.changeDetector), 1);
+    }
+
+
+
+
     this._unlinkElementInjectors(removedView);
     return removedView;
   }

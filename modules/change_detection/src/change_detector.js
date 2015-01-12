@@ -6,6 +6,7 @@ import {ListWrapper, List} from 'facade/collection';
 export * from './record';
 export * from './record_range'
 
+
 class ExpressionChangedAfterItHasBeenChecked extends Error {
   message:string;
 
@@ -23,17 +24,20 @@ export class ChangeDetector {
   _rootRecordRange:RecordRange;
   _enforceNoNewChanges:boolean;
 
-  constructor(recordRange:RecordRange, enforceNoNewChanges:boolean = false) {
+  constructor(recordRange:RecordRange, appView, enforceNoNewChanges:boolean = false) {
     this._rootRecordRange = recordRange;
     this._enforceNoNewChanges = enforceNoNewChanges;
+    this.appView = appView;
   }
 
   detectChanges():int {
-    var count = this._detectChanges(false);
-    if (this._enforceNoNewChanges) {
-      this._detectChanges(true)
-    }
-    return count;
+    this.appView.changeDetector.detectChanges();
+    return 0;
+    //var count = this._detectChanges(false);
+    //if (this._enforceNoNewChanges) {
+    //  this._detectChanges(true)
+    //}
+    //return count;
   }
 
   _detectChanges(throwOnChange:boolean):int {
