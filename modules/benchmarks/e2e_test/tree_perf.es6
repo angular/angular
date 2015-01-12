@@ -7,19 +7,35 @@ describe('ng2 tree benchmark', function () {
 
   afterEach(benchpress.verifyNoBrowserErrors);
 
-  it('should log the ng stats', function() {
+  iit('should log the ng stats', function() {
     browser.get(URL);
     runClickBenchmark({
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      logId: 'ng2.tree'
+      logId: 'ng2.tree.create'
     });
   });
 
-  it('should log the baseline stats', function() {
+  iit('should log the ng stats  (update)', function() {
+    browser.get(URL);
+    runClickBenchmark({
+      buttons: ['#ng2CreateDom'],
+      logId: 'ng2.tree.update'
+    });
+  });
+
+  iit('should log the baseline stats', function() {
     browser.get(URL);
     runClickBenchmark({
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      logId: 'baseline.tree'
+      logId: 'baseline.tree.create'
+    });
+  });
+
+  iit('should log the baseline stats  (update)', function() {
+    browser.get(URL);
+    runClickBenchmark({
+      buttons: ['#baselineCreateDom'],
+      logId: 'baseline.tree.update'
     });
   });
 

@@ -62,8 +62,8 @@ function _injectorBindings(appComponentType) {
 
       bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
           [appViewToken]),
-      bind(ChangeDetector).toFactory((appRecordRange) =>
-          new ChangeDetector(appRecordRange, assertionsEnabled()), [appRecordRangeToken]),
+      bind(ChangeDetector).toFactory((appRecordRange, appView) =>
+          new ChangeDetector(appRecordRange, appView, assertionsEnabled()), [appRecordRangeToken, appViewToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
       bind(LifeCycle).toClass(LifeCycle)
