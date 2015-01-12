@@ -373,6 +373,22 @@ export class ProtoView {
       if (isPresent(elementInjector)) {
         preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort, lightDom);
       }
+
+      // events
+      if (isPresent(binder.events)) {
+        // TODO(rado): if there is directive at this element that injected an
+        // event emitter for that eventType do not attach the handler.
+        MapWrapper.forEach(binder.events, (expr, eventName) => {
+          DOM.on(element, eventName, (event) => {
+            if (event.target === element) {
+              // TODO(rado): replace with
+              // expr.eval(new ContextWithVariableBindings(view.context, {'$event': event}));
+              // when eval with variable bindinds works.
+              expr.eval(view.context);
+            }
+          });
+        });
+      }
     }
 
     view.init(elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,

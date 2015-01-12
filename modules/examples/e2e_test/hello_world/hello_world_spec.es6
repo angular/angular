@@ -9,7 +9,7 @@ describe('hello world', function () {
     it('should greet', function() {
       browser.get(URL);
 
-      expect(getShadowText('hello-app')).toBe('hello world!');
+      expect(getGreetingText('hello-app')).toBe('hello world!');
     });
   });
 
@@ -19,12 +19,12 @@ describe('hello world', function () {
     it('should greet', function() {
       browser.get(URL);
 
-      expect(getShadowText('hello-app')).toBe('hello world!');
+      expect(getGreetingText('hello-app')).toBe('hello world!');
     });
   });
 
 });
 
-function getShadowText(selector) {
-  return browser.executeScript('return document.querySelector("'+selector+'").shadowRoot.textContent');
+function getGreetingText(selector) {
+  return browser.executeScript('return document.querySelector("'+selector+'").shadowRoot.firstChild.textContent');
 }

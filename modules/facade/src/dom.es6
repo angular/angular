@@ -24,6 +24,14 @@ export class DOM {
   static on(el, evt, listener) {
     el.addEventListener(evt, listener, false);
   }
+  static dispatchEvent(el, evt) {
+    el.dispatchEvent(evt);
+  }
+  static createMouseEvent(eventType) {
+    var evt = new MouseEvent(eventType);
+    evt.initEvent(eventType, true, true);
+    return evt;
+  }
   static getInnerHTML(el) {
     return el.innerHTML;
   }

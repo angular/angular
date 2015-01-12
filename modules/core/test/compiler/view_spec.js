@@ -422,6 +422,37 @@ export function main() {
         });
       });
 
+      describe('event handlers', () => {
+        var view, ctx, called;
+
+        function createViewAndContext(protoView) {
+          view = createView(protoView);
+          ctx = view.context;
+          called = 0;
+          ctx.callMe = () => called += 1;
+        }
+
+        function dispatchClick(el) {
+          DOM.dispatchEvent(el, DOM.createMouseEvent('click'));
+        }
+
+        it('should fire on non-bubbling native events', () => {
+          var pv = new ProtoView(createElement('<div class="ng-binding"><div></div></div>'),
+            new ProtoRecordRange());
+          pv.bindElement(null);
+          pv.bindEvent('click', parser.parseBinding('callMe()', null));
+          createViewAndContext(pv);
+
+          dispatchClick(view.nodes[0]);
+          dispatchClick(view.nodes[0].firstChild);
+
+          // the bubbled event does not execute the expression.
+          // It is trivially passing on webkit browsers due to
+          // https://bugs.webkit.org/show_bug.cgi?id=122755
+          expect(called).toEqual(1);
+        });
+      });
+
       describe('react to record changes', () => {
         var view, cd, ctx;
 
@@ -602,6 +633,7 @@ class MyEvaluationContext {
   foo:string;
   a;
   b;
+  callMe;
   constructor() {
     this.foo = 'bar';
   };

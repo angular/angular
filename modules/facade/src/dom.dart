@@ -33,7 +33,15 @@ class DOM {
     return el.querySelectorAll(selector);
   }
   static on(element, event, callback) {
-    element.addEventListener(event, callback);
+    // due to https://code.google.com/p/dart/issues/detail?id=17406
+    // addEventListener misses zones so we use element.on.
+    element.on[event].listen(callback);
+  }
+  static dispatchEvent(el, evt) {
+    el.dispatchEvent(evt);
+  }
+  static createMouseEvent(eventType) {
+    return new MouseEvent(eventType, canBubble: true);
   }
   static getInnerHTML(el) {
     return el.innerHtml;
