@@ -27,6 +27,9 @@ System.paths = {
   'directives/*': './directives/src/*.js',
   'directives/test/*': './directives/test/*.js',
 
+  'router/*': './router/src/*.js',
+  'router/test/*': './router/test/*.js',
+
   'reflection/*': './reflection/src/*.js',
   'reflection/test/*': './reflection/test/*.js',
 
