@@ -139,8 +139,9 @@ export function main() {
     return function(_) {
       window.console.profile(name);
       var duration = 0;
+      var downCount = 200;
       var count = 0;
-      while(duration < 5000) {
+      while(downCount--) {
         var start = window.performance.now();
         create(_);
         duration += window.performance.now() - start;
