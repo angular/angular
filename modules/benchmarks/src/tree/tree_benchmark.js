@@ -41,8 +41,8 @@ function setupReflector() {
           directives: [TreeComponent, NgIf],
           inline: `
     <span> {{data.value}}
-       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
        <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span>
+       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
     </span>`
       })
     })]
@@ -188,8 +188,9 @@ export function main() {
   }
 
   function initBaseline() {
-    baselineRootTreeComponent = new BaseLineTreeComponent();
-    DOM.appendChild(DOM.querySelector(document, 'baseline'), baselineRootTreeComponent.element);
+    var tree = DOM.createElement('tree');
+    DOM.appendChild(DOM.querySelector(document, 'baseline'), tree);
+    baselineRootTreeComponent = new BaseLineTreeComponent(tree);
     DOM.on(DOM.querySelector(document, '#baselineDestroyDom'), 'click', baselineDestroyDom);
     DOM.on(DOM.querySelector(document, '#baselineCreateDom'), 'click', baselineCreateDom);
     DOM.on(DOM.querySelector(document, '#baselineUpdateDomProfile'), 'click', profile(baselineCreateDom, noop, 'baseline-update'));
@@ -219,18 +220,19 @@ function buildTree(maxDepth, values, curDepth) {
       buildTree(maxDepth, values, curDepth+1));
 }
 
-var BASELINE_TEMPLATE = DOM.createTemplate(
+var BASELINE_TREE_TEMPLATE = DOM.createTemplate(
     '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+var BASELINE_IF_TEMPLATE = DOM.createTemplate(
+    '<span template="ng-if"><tree></tree></span>');
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
-  element:Element;
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;
-  constructor() {
-    this.element = DOM.createElement('span');
-    var clone = DOM.clone(BASELINE_TEMPLATE.content.firstChild);
+  constructor(element) {
+    this.element = element;
+    var clone = DOM.clone(BASELINE_TREE_TEMPLATE.content.firstChild);
     var shadowRoot = this.element.createShadowRoot();
     DOM.appendChild(shadowRoot, clone);
 
@@ -281,8 +283,9 @@ class BaseLineIf {
         this.component = null;
       }
       if (this.condition) {
-        this.component = new BaseLineTreeComponent();
-        this.anchor.parentNode.insertBefore(this.component.element, this.anchor);
+        var element = DOM.clone(BASELINE_IF_TEMPLATE).content.firstChild;
+        this.anchor.parentNode.insertBefore(element, this.anchor.nextSibling);
+        this.component = new BaseLineTreeComponent(element.firstChild);
       }
     }
     if (isPresent(this.component)) {
