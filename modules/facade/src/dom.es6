@@ -7,6 +7,7 @@ export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
 export var document = window.document;
 export var location = window.location;
+export var gc = window.gc ? () => window.gc() : () => null;
 
 import {List, MapWrapper, ListWrapper} from 'facade/collection';
 

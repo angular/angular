@@ -8,7 +8,7 @@ import {TemplateLoader} from 'core/compiler/template_loader';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 import {reflector} from 'reflection/reflection';
-import {DOM, document, window, Element} from 'facade/dom';
+import {DOM, document, window, Element, gc} from 'facade/dom';
 import {isPresent} from 'facade/lang';
 
 var MAX_DEPTH = 9;
@@ -137,18 +137,29 @@ export function main() {
 
   function profile(create, destroy, name) {
     return function(_) {
-      window.console.profile(name);
+      window.console.profile(name + ' w GC');
       var duration = 0;
-      var downCount = 200;
       var count = 0;
-      while(downCount--) {
+      while(count++ < 150) {
+        gc();
         var start = window.performance.now();
         create(_);
         duration += window.performance.now() - start;
         destroy(_);
-        count++;
       }
-      window.console.profileEnd(name);
+      window.console.profileEnd(name + ' w GC');
+      window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+
+      window.console.profile(name + ' w/o GC');
+      duration = 0;
+      count = 0;
+      while(count++ < 150) {
+        var start = window.performance.now();
+        create(_);
+        duration += window.performance.now() - start;
+        destroy(_);
+      }
+      window.console.profileEnd(name + ' w/o GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
     };
   }
@@ -227,6 +238,7 @@ var BASELINE_IF_TEMPLATE = DOM.createTemplate(
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
+  element:Element;
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;

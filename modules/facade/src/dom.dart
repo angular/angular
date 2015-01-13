@@ -1,7 +1,7 @@
 library angular.core.facade.dom;
 
 import 'dart:html';
-import 'dart:js' show JsObject;
+import 'dart:js' show JsObject, context;
 
 export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text, document, location, window;
 
@@ -9,6 +9,15 @@ export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text, 
 // removing unknown elements by default?
 class IdentitySanitizer implements NodeTreeSanitizer {
   void sanitizeTree(Node node) {}
+}
+
+var _window = context['window'];
+var _gc = context['gc'];
+
+gc() {
+  if (_gc != null) {
+    _gc.apply(const []);
+  }
 }
 
 final identitySanitizer = new IdentitySanitizer();
