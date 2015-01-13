@@ -230,6 +230,7 @@ class BaseLineTreeComponent {
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;
+  element:Element;
   constructor(element) {
     this.element = element;
     var clone = DOM.clone(BASELINE_TREE_TEMPLATE.content.firstChild);
@@ -283,9 +284,9 @@ class BaseLineIf {
         this.component = null;
       }
       if (this.condition) {
-        var element = DOM.clone(BASELINE_IF_TEMPLATE).content.firstChild;
-        this.anchor.parentNode.insertBefore(element, this.anchor.nextSibling);
-        this.component = new BaseLineTreeComponent(element.firstChild);
+        var element = DOM.firstChild(DOM.clone(BASELINE_IF_TEMPLATE).content);
+        this.anchor.parentNode.insertBefore(element, DOM.nextSibling(this.anchor));
+        this.component = new BaseLineTreeComponent(DOM.firstChild(element));
       }
     }
     if (isPresent(this.component)) {
