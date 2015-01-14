@@ -4,7 +4,7 @@ import {DOM, Element} from 'facade/dom';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
-import {Parser, Lexer, ChangeDetector, RecordRange} from 'change_detection/change_detection';
+import {Parser, Lexer, ChangeDetector} from 'change_detection/change_detection';
 import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
@@ -21,7 +21,7 @@ var _rootBindings = [
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
-export var appRecordRangeToken = new OpaqueToken('AppRecordRange');
+export var appChangeDetectorToken = new OpaqueToken('AppChangeDetector');
 export var appElementToken = new OpaqueToken('AppElement');
 export var appComponentAnnotatedTypeToken = new OpaqueToken('AppComponentAnnotatedType');
 export var appDocumentToken = new OpaqueToken('AppDocument');
@@ -49,24 +49,22 @@ function _injectorBindings(appComponentType) {
             appComponentAnnotatedType) => {
         return compiler.compile(appComponentAnnotatedType.type, null).then(
             (protoView) => {
-          var appProtoView = ProtoView.createRootProtoView(protoView,
+              var appProtoView = ProtoView.createRootProtoView(protoView,
               appElement, appComponentAnnotatedType);
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null);
-          view.hydrate(injector, null, new Object());
+              var view = appProtoView.instantiate(null);
+              view.hydrate(injector, null, new Object());
           return view;
         });
       }, [Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
 
-      bind(appRecordRangeToken).toFactory((rootView) => rootView.recordRange,
+      bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),
-      bind(ChangeDetector).toFactory((appRecordRange) =>
-          new ChangeDetector(appRecordRange, assertionsEnabled()), [appRecordRangeToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
-      bind(LifeCycle).toClass(LifeCycle)
+      bind(LifeCycle).toFactory((cd) => new LifeCycle(cd, assertionsEnabled()), [appChangeDetectorToken])
   ];
 }
 

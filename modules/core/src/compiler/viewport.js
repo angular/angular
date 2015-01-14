@@ -84,7 +84,7 @@ export class ViewPort {
     } else {
       this._lightDom.redistribute();
     }
-    this.parentView.recordRange.addRange(view.recordRange);
+    this.parentView.changeDetector.addChild(view.changeDetector);
     this._linkElementInjectors(view);
     return view;
   }
@@ -98,7 +98,7 @@ export class ViewPort {
     } else {
       this._lightDom.redistribute();
     }
-    removedView.recordRange.remove();
+    removedView.changeDetector.remove();
     this._unlinkElementInjectors(removedView);
     return removedView;
   }

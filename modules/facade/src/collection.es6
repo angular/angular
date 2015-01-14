@@ -149,6 +149,10 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
+  static remove(list, item) {
+    var index = list.indexOf(item);
+    list.splice(index, 1);
+  }
   static clear(list) {
     list.splice(0, list.length);
   }

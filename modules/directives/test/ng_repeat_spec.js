@@ -27,7 +27,7 @@ export function main() {
       component = new TestComponent();
       view = pv.instantiate(null);
       view.hydrate(new Injector([]), null, component);
-      cd = new ChangeDetector(view.recordRange);
+      cd = view.changeDetector;
     }
 
     function compileWithTemplate(template) {

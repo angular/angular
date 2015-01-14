@@ -4,7 +4,7 @@ import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection
 
 import {reflector} from 'reflection/reflection';
 
-import {Parser, ProtoRecordRange} from 'change_detection/change_detection';
+import {Parser, ProtoChangeDetector} from 'change_detection/change_detection';
 
 import {Component, Directive} from '../../annotations/annotations';
 import {DirectiveMetadata} from '../directive_metadata';
@@ -18,7 +18,7 @@ import {CompileControl} from './compile_control';
 
 /**
  * Creates the ElementBinders and adds watches to the
- * ProtoRecordRange.
+ * ProtoChangeDetector.
  *
  * Fills:
  * - CompileElement#inheritedElementBinder

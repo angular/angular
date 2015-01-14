@@ -7,7 +7,7 @@ import {
   Lexer,
   Parser,
   ChangeDetector,
-  ProtoRecordRange,
+  ProtoChangeDetector,
   ChangeDispatcher,
 } from 'change_detection/change_detection';
 
@@ -102,8 +102,8 @@ function setUpChangeDetection(iterations) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = new ProtoRecordRange();
-  var parentRange = parentProto.instantiate(dispatcher, MapWrapper.create());
+  var parentProto = new ProtoChangeDetector();
+  var parentCD = parentProto.instantiate(dispatcher, MapWrapper.create());
 
   var astWithSource = [
     parser.parseBinding('field0', null),
@@ -119,12 +119,12 @@ function setUpChangeDetection(iterations) {
   ];
 
   function proto(i) {
-    var prr = new ProtoRecordRange();
-    prr.addRecordsFromAST(astWithSource[i % 10].ast, "memo", i, false);
-    return prr;
+    var pcd = new ProtoChangeDetector();
+    pcd.addAst(astWithSource[i % 10].ast, "memo", i, false);
+    return pcd;
   }
 
-  var prr = [
+  var pcd = [
     proto(0),
     proto(1),
     proto(2),
@@ -142,13 +142,13 @@ function setUpChangeDetection(iterations) {
     var index = i % 10;
     obj.setField(index, i);
 
-    var rr = prr[index].instantiate(dispatcher,  null);
+    var rr = pcd[index].instantiate(dispatcher,  null);
     rr.setContext(obj);
 
-    parentRange.addRange(rr);
+    parentCD.addChild(rr);
   }
 
-  return new ChangeDetector(parentRange);
+  return parentCD;
 }
 
 export function main () {

@@ -5,9 +5,11 @@ import {ListWrapper} from 'facade/collection';
 
 export class LifeCycle {
   _changeDetector:ChangeDetector;
+  _enforceNoNewChanges:boolean;
 
-  constructor(changeDetector:ChangeDetector) {
+  constructor(changeDetector:ChangeDetector, enforceNoNewChanges:boolean = false) {
     this._changeDetector = changeDetector;
+    this._enforceNoNewChanges = enforceNoNewChanges;
   }
 
   registerWith(zone:VmTurnZone) {
@@ -26,5 +28,8 @@ export class LifeCycle {
 
   tick() {
     this._changeDetector.detectChanges();
+    if (this._enforceNoNewChanges) {
+      this._changeDetector.checkNoChanges();
+    }
   }
 }

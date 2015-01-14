@@ -1,7 +1,7 @@
 import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
-import {ProtoRecordRange, RecordRange, Record,
-  ChangeDispatcher, AST, ContextWithVariableBindings} from 'change_detection/change_detection';
+import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
+  from 'change_detection/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
@@ -30,7 +30,7 @@ export class View {
   elementInjectors:List<ElementInjector>;
   bindElements:List<Element>;
   textNodes:List<Text>;
-  recordRange:RecordRange;
+  changeDetector:ChangeDetector;
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
   /// to keep track of the nodes.
   nodes:List<Node>;
@@ -41,10 +41,10 @@ export class View {
   context: any;
   contextWithLocals:ContextWithVariableBindings;
 
-  constructor(proto:ProtoView, nodes:List<Node>, protoRecordRange:ProtoRecordRange, protoContextLocals:Map) {
+  constructor(proto:ProtoView, nodes:List<Node>, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
-    this.recordRange = protoRecordRange.instantiate(this, NO_FORMATTERS);
+    this.changeDetector = protoChangeDetector.instantiate(this, NO_FORMATTERS);
     this.elementInjectors = null;
     this.rootElementInjectors = null;
     this.textNodes = null;
@@ -92,7 +92,7 @@ export class View {
     // TODO(tbosch): if we have a contextWithLocals we actually only need to
     // set the contextWithLocals once. Would it be faster to always use a contextWithLocals
     // even if we don't have locals and not update the recordRange here?
-    this.recordRange.setContext(this.context);
+    this.changeDetector.setContext(this.context);
   }
 
   _dehydrateContext() {
@@ -195,20 +195,20 @@ export class View {
     this._dehydrateContext();
   }
 
-  onRecordChange(groupMemento, records:List<Record>) {
-    this._invokeMementoForRecords(records);
+  onRecordChange(groupMemento, records:List) {
+    this._invokeMementos(records);
     if (groupMemento instanceof DirectivePropertyGroupMemento) {
       this._notifyDirectiveAboutChanges(groupMemento, records);
     }
   }
 
-  _invokeMementoForRecords(records:List<Record>) {
+  _invokeMementos(records:List) {
     for(var i = 0; i < records.length; ++i) {
       this._invokeMementoFor(records[i]);
     }
   }
 
-  _notifyDirectiveAboutChanges(groupMemento, records:List<Record>) {
+  _notifyDirectiveAboutChanges(groupMemento, records:List) {
     var dir = groupMemento.directive(this.elementInjectors);
     if (dir instanceof OnChange) {
       dir.onChange(this._collectChanges(records));
@@ -216,8 +216,8 @@ export class View {
   }
 
     // dispatch to element injector or text nodes based on context
-  _invokeMementoFor(record:Record) {
-    var memento = record.expressionMemento();
+  _invokeMementoFor(record:ChangeRecord) {
+    var memento = record.bindingMemento;
     if (memento instanceof DirectivePropertyMemento) {
       // we know that it is DirectivePropertyMemento
       var directiveMemento:DirectivePropertyMemento = memento;
@@ -234,12 +234,12 @@ export class View {
     }
   }
 
-  _collectChanges(records:List<Record>) {
+  _collectChanges(records:List) {
     var changes = StringMapWrapper.create();
     for(var i = 0; i < records.length; ++i) {
       var record = records[i];
       var propertyUpdate = new PropertyUpdate(record.currentValue, record.previousValue);
-      StringMapWrapper.set(changes, record.expressionMemento()._setterName, propertyUpdate);
+      StringMapWrapper.set(changes, record.bindingMemento._setterName, propertyUpdate);
     }
     return changes;
   }
@@ -248,7 +248,7 @@ export class View {
 export class ProtoView {
   element:Element;
   elementBinders:List<ElementBinder>;
-  protoRecordRange:ProtoRecordRange;
+  protoChangeDetector:ProtoChangeDetector;
   variableBindings: Map;
   protoContextLocals:Map;
   textNodesWithBindingCount:int;
@@ -258,12 +258,12 @@ export class ProtoView {
   isTemplateElement:boolean;
   constructor(
       template:Element,
-      protoRecordRange:ProtoRecordRange) {
+      protoChangeDetector:ProtoChangeDetector) {
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
     this.protoContextLocals = MapWrapper.create();
-    this.protoRecordRange = protoRecordRange;
+    this.protoChangeDetector = protoChangeDetector;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
     this.instantiateInPlace = false;
@@ -299,8 +299,8 @@ export class ProtoView {
     } else {
       viewNodes = [rootElementClone];
     }
-    var view = new View(this, viewNodes, this.protoRecordRange, this.protoContextLocals);
 
+    var view = new View(this, viewNodes, this.protoChangeDetector, this.protoContextLocals);
     var binders = this.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
     var rootElementInjectors = [];
@@ -353,7 +353,7 @@ export class ProtoView {
       var lightDom = null;
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
-        view.recordRange.addRange(childView.recordRange);
+        view.changeDetector.addChild(childView.changeDetector);
 
         lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
         binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
@@ -434,7 +434,7 @@ export class ProtoView {
     }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
     var memento = this.textNodesWithBindingCount++;
-    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
+    this.protoChangeDetector.addAst(expression, memento, memento);
   }
 
   /**
@@ -447,7 +447,7 @@ export class ProtoView {
       this.elementsWithBindingCount++;
     }
     var memento = new ElementPropertyMemento(this.elementsWithBindingCount-1, setterName, setter);
-    this.protoRecordRange.addRecordsFromAST(expression, memento, memento);
+    this.protoChangeDetector.addAst(expression, memento, memento);
   }
 
   /**
@@ -478,7 +478,7 @@ export class ProtoView {
       setter
     );
     var groupMemento = DirectivePropertyGroupMemento.get(expMemento);
-    this.protoRecordRange.addRecordsFromAST(expression, expMemento, groupMemento, isContentWatch);
+    this.protoChangeDetector.addAst(expression, expMemento, groupMemento, isContentWatch);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
@@ -487,7 +487,7 @@ export class ProtoView {
   static createRootProtoView(protoView: ProtoView,
       insertionElement, rootComponentAnnotatedType: DirectiveMetadata): ProtoView {
     DOM.addClass(insertionElement, 'ng-binding');
-    var rootProtoView = new ProtoView(insertionElement, new ProtoRecordRange());
+    var rootProtoView = new ProtoView(insertionElement, new ProtoChangeDetector());
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
         new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
@@ -507,7 +507,7 @@ export class ElementPropertyMemento {
     this._setter = setter;
   }
 
-  invoke(record:Record, bindElements:List<Element>) {
+  invoke(record:ChangeRecord, bindElements:List<Element>) {
     var element:Element = bindElements[this._elementIndex];
     this._setter(element, record.currentValue);
   }
@@ -529,7 +529,7 @@ export class DirectivePropertyMemento {
     this._setter = setter;
   }
 
-  invoke(record:Record, elementInjectors:List<ElementInjector>) {
+  invoke(record:ChangeRecord, elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
     var directive = elementInjector.getAtIndex(this._directiveIndex);
     this._setter(directive, record.currentValue);

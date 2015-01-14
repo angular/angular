@@ -34,7 +34,7 @@ export function main() {
           compiler.compile(MyComp, el(template)).
             then(createView).
             then((view) => {
-              var lc = new LifeCycle(new ChangeDetector(view.recordRange));
+              var lc = new LifeCycle(view.changeDetector, false);
               assertions(view, lc);
             });
         }

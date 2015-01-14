@@ -125,7 +125,7 @@ export function main() {
  setupReflector();
 
   var app;
-  var changeDetector;
+  var lifeCycle;
   var baselineRootTreeComponent;
   var count = 0;
 
@@ -133,7 +133,7 @@ export function main() {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     app.initData = new TreeNode('', null, null);
-    changeDetector.detectChanges();
+    lifeCycle.tick();
   }
 
   function profile(create, destroy, name) {
@@ -171,14 +171,15 @@ export function main() {
       ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
     app.initData = buildTree(maxDepth, values, 0);
-    changeDetector.detectChanges();
+    lifeCycle.tick();
   }
 
   function noop() {}
 
   function initNg2() {
     bootstrap(AppComponent).then((injector) => {
-      changeDetector = injector.get(ChangeDetector);
+      lifeCycle = injector.get(LifeCycle);
+
       app = injector.get(AppComponent);
       bindAction('#ng2DestroyDom', ng2DestroyDom);
       bindAction('#ng2CreateDom', ng2CreateDom);

@@ -9,7 +9,7 @@ import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
 
-import {ASTWithSource} from 'change_detection/change_detection';
+import {AST} from 'change_detection/change_detection';
 
 /**
  * Collects all data that is needed to process an element
@@ -86,14 +86,14 @@ export class CompileElement {
     return this._classList;
   }
 
-  addTextNodeBinding(indexInParent:int, expression:ASTWithSource) {
+  addTextNodeBinding(indexInParent:int, expression:AST) {
     if (isBlank(this.textNodeBindings)) {
       this.textNodeBindings = MapWrapper.create();
     }
     MapWrapper.set(this.textNodeBindings, indexInParent, expression);
   }
 
-  addPropertyBinding(property:string, expression:ASTWithSource) {
+  addPropertyBinding(property:string, expression:AST) {
     if (isBlank(this.propertyBindings)) {
       this.propertyBindings = MapWrapper.create();
     }
@@ -107,7 +107,7 @@ export class CompileElement {
     MapWrapper.set(this.variableBindings, contextName, templateName);
   }
 
-  addEventBinding(eventName:string, expression:ASTWithSource) {
+  addEventBinding(eventName:string, expression:AST) {
     if (isBlank(this.eventBindings)) {
       this.eventBindings = MapWrapper.create();
     }

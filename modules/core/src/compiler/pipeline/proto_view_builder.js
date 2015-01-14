@@ -2,7 +2,7 @@ import {isPresent, BaseException} from 'facade/lang';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 
 import {ProtoView} from '../view';
-import {ProtoRecordRange} from 'change_detection/change_detection';
+import {ProtoChangeDetector} from 'change_detection/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -21,7 +21,7 @@ export class ProtoViewBuilder extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var inheritedProtoView = null;
     if (current.isViewRoot) {
-      inheritedProtoView = new ProtoView(current.element, new ProtoRecordRange());
+      inheritedProtoView = new ProtoView(current.element, new ProtoChangeDetector());
       if (isPresent(parent)) {
         if (isPresent(parent.inheritedElementBinder.nestedProtoView)) {
           throw new BaseException('Only one nested view per element is allowed');

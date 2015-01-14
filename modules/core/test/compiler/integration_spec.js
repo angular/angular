@@ -29,7 +29,7 @@ export function main() {
         ctx = new MyComp();
         view = pv.instantiate(null);
         view.hydrate(new Injector([]), null, ctx);
-        cd = new ChangeDetector(view.recordRange);
+        cd = view.changeDetector;
       }
 
       it('should consume text node changes', (done) => {

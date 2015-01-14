@@ -5,10 +5,10 @@ import {DOM} from 'facade/dom';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {Injector} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {ProtoRecordRange, Lexer, Parser} from 'change_detection/change_detection';
+import {ProtoChangeDetector, Lexer, Parser} from 'change_detection/change_detection';
 
 function createView(nodes) {
-  var view = new View(null, nodes, new ProtoRecordRange(), MapWrapper.create());
+  var view = new View(null, nodes, new ProtoChangeDetector(), MapWrapper.create());
   view.init([], [], [], [], [], [], []);
   return view;
 }
@@ -22,7 +22,7 @@ export function main() {
       dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(el('<div>hi</div>'), new ProtoRecordRange());
+      protoView = new ProtoView(el('<div>hi</div>'), new ProtoChangeDetector());
       elementInjector = new ElementInjector(null, null, null);
       viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector);
       customViewWithOneNode = createView([el('<div>single</div>')]);
@@ -117,25 +117,26 @@ export function main() {
         viewPort.hydrate(new Injector([]), null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
-          new ProtoRecordRange());
+          new ProtoChangeDetector());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null);
       });
 
-      it('hydrating should update rootElementInjectors and parent RR', () => {
+      it('hydrating should update rootElementInjectors and parent change detector', () => {
         viewPort.insert(fancyView);
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(elementInjector));
-        expect(parentView.recordRange.findFirstEnabledRecord()).not.toBe(null);
+
+        expect(parentView.changeDetector.children.length).toBe(1);
       });
 
-      it('dehydrating should update rootElementInjectors and parent RR', () => {
+      it('dehydrating should update rootElementInjectors and parent change detector', () => {
         viewPort.insert(fancyView);
         viewPort.remove();
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(null));
-        expect(parentView.recordRange.findFirstEnabledRecord()).toBe(null);
+        expect(parentView.changeDetector.children.length).toBe(0);
         expect(viewPort.length).toBe(0);
       });
     });
