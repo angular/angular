@@ -242,7 +242,6 @@ class BaseLineTreeComponent {
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;
-  element:Element;
   constructor(element) {
     this.element = element;
     var clone = DOM.clone(BASELINE_TREE_TEMPLATE.content.firstChild);
