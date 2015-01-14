@@ -10,23 +10,27 @@ export class Directive {
   bind:any;
   lightDomServices:any; //List;
   implementsTypes:any; //List;
+  lifecycle:any; //List
   @CONST()
   constructor({
       selector,
       bind,
       lightDomServices,
-      implementsTypes
+      implementsTypes,
+      lifecycle
     }:{
       selector:string,
       bind:any,
       lightDomServices:List,
-      implementsTypes:List
+      implementsTypes:List,
+      lifecycle:List
     }={})
   {
     this.selector = selector;
     this.lightDomServices = lightDomServices;
     this.implementsTypes = implementsTypes;
     this.bind = bind;
+    this.lifecycle = lifecycle;
   }
 }
 
@@ -37,8 +41,9 @@ export class Component extends Directive {
   shadowDomServices:any; //List;
   componentServices:any; //List;
   shadowDom:any; //ShadowDomStrategy;
+  lifecycle:any; //List
 
-  @CONST()
+@CONST()
   constructor({
     selector,
     bind,
@@ -47,29 +52,34 @@ export class Component extends Directive {
     shadowDomServices,
     componentServices,
     implementsTypes,
-    shadowDom
+    shadowDom,
+    lifecycle
     }:{
-    selector:String,
+      selector:String,
       bind:Object,
       template:TemplateConfig,
       lightDomServices:List,
       shadowDomServices:List,
       componentServices:List,
       implementsTypes:List,
-      shadowDom:ShadowDomStrategy
-  }={})
+      shadowDom:ShadowDomStrategy,
+      lifecycle:List
+    }={})
   {
     super({
       selector: selector,
       bind: bind,
       lightDomServices: lightDomServices,
-      implementsTypes: implementsTypes});
+      implementsTypes: implementsTypes,
+      lifecycle: lifecycle
+    });
 
     this.template = template;
     this.lightDomServices = lightDomServices;
     this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;
     this.shadowDom = shadowDom;
+    this.lifecycle = lifecycle;
   }
 }
 
@@ -81,12 +91,14 @@ export class Decorator extends Directive {
       bind,
       lightDomServices,
       implementsTypes,
-      compileChildren = true
+      lifecycle,
+      compileChildren = true,
     }:{
       selector:string,
       bind:any,
       lightDomServices:List,
       implementsTypes:List,
+      lifecycle:List,
       compileChildren:boolean
     }={})
   {
@@ -95,7 +107,8 @@ export class Decorator extends Directive {
         selector: selector,
         bind: bind,
         lightDomServices: lightDomServices,
-        implementsTypes: implementsTypes
+        implementsTypes: implementsTypes,
+        lifecycle: lifecycle
     });
   }
 }
@@ -106,19 +119,24 @@ export class Template extends Directive {
       selector,
       bind,
       lightDomServices,
-      implementsTypes
+      implementsTypes,
+      lifecycle
     }:{
       selector:string,
       bind:any,
       lightDomServices:List,
-      implementsTypes:List
+      implementsTypes:List,
+      lifecycle:List
     }={})
   {
     super({
         selector: selector,
         bind: bind,
         lightDomServices: lightDomServices,
-        implementsTypes: implementsTypes
+        implementsTypes: implementsTypes,
+        lifecycle: lifecycle
     });
   }
 }
+
+export var onDestroy = "onDestroy";

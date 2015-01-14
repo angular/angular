@@ -2,11 +2,12 @@ import {isPresent, isBlank} from 'facade/lang';
 import {ListWrapper} from 'facade/collection';
 
 import {Key} from 'di/di';
-import {ProtoElementInjector, ComponentKeyMetaData} from '../element_injector';
+import {ProtoElementInjector, ComponentKeyMetaData, DirectiveBinding} from '../element_injector';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {DirectiveMetadata} from '../directive_metadata';
 
 /**
  * Creates the ProtoElementInjectors.
@@ -67,16 +68,20 @@ export class ProtoElementInjectorBuilder extends CompileStep {
   _collectDirectiveBindings(pipelineElement) {
     var directiveTypes = [];
     if (isPresent(pipelineElement.componentDirective)) {
-      ListWrapper.push(directiveTypes, pipelineElement.componentDirective.type);
+      ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.componentDirective));
     }
     if (isPresent(pipelineElement.templateDirective)) {
-      ListWrapper.push(directiveTypes, pipelineElement.templateDirective.type);
+      ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.templateDirective));
     }
     if (isPresent(pipelineElement.decoratorDirectives)) {
       for (var i=0; i<pipelineElement.decoratorDirectives.length; i++) {
-        ListWrapper.push(directiveTypes, pipelineElement.decoratorDirectives[i].type);
+        ListWrapper.push(directiveTypes, this._createBinding(pipelineElement.decoratorDirectives[i]));
       }
     }
     return directiveTypes;
+  }
+
+  _createBinding(d:DirectiveMetadata): DirectiveBinding {
+    return DirectiveBinding.createFromType(d.type, d.annotation);
   }
 }

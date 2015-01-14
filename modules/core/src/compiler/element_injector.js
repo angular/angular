@@ -3,10 +3,12 @@ import {Math} from 'facade/math';
 import {List, ListWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {onDestroy} from 'core/annotations/annotations';
 import {View} from 'core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
+import {Directive} from 'core/annotations/annotations'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -85,8 +87,9 @@ class TreeNode {
   }
 }
 
-class DirectiveDependency extends Dependency {
+export class DirectiveDependency extends Dependency {
   depth:int;
+
   constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int) {
     super(key, asPromise, lazy, properties);
     this.depth = depth;
@@ -102,6 +105,28 @@ class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
+  }
+}
+
+export class DirectiveBinding extends Binding {
+  callOnDestroy:boolean;
+
+  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, callOnDestroy:boolean) {
+    super(key, factory, dependencies, providedAsPromise);
+    this.callOnDestroy = callOnDestroy;
+  }
+
+  static createFromBinding(b:Binding, annotation:Directive):Binding {
+    var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
+    var callOnDestroy = isPresent(annotation) && isPresent(annotation.lifecycle) ?
+      ListWrapper.contains(annotation.lifecycle, onDestroy) :
+      false;
+    return new DirectiveBinding(b.key, b.factory, deps, b.providedAsPromise, callOnDestroy);
+  }
+
+  static createFromType(type:Type, annotation:Directive):Binding {
+    var binding = bind(type).toClass(type);
+    return DirectiveBinding.createFromBinding(binding, annotation);
   }
 }
 
@@ -205,11 +230,12 @@ export class ProtoElementInjector  {
   }
 
   _createBinding(bindingOrType) {
-    var b = (bindingOrType instanceof Type) ?
-      bind(bindingOrType).toClass(bindingOrType) :
-      bindingOrType;
-    var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
-    return new Binding(b.key, b.factory, deps, b.providedAsPromise);
+    if (bindingOrType instanceof DirectiveBinding) {
+      return bindingOrType;
+    } else {
+      var b = bind(bindingOrType).toClass(bindingOrType);
+      return DirectiveBinding.createFromBinding(b, null);
+    }
   }
 
   get hasBindings():boolean {
@@ -271,6 +297,19 @@ export class ElementInjector extends TreeNode {
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
 
+    var p = this._proto;
+
+    if (isPresent(p._binding0) && p._binding0.callOnDestroy) {this._obj0.onDestroy();}
+    if (isPresent(p._binding1) && p._binding1.callOnDestroy) {this._obj1.onDestroy();}
+    if (isPresent(p._binding2) && p._binding2.callOnDestroy) {this._obj2.onDestroy();}
+    if (isPresent(p._binding3) && p._binding3.callOnDestroy) {this._obj3.onDestroy();}
+    if (isPresent(p._binding4) && p._binding4.callOnDestroy) {this._obj4.onDestroy();}
+    if (isPresent(p._binding5) && p._binding5.callOnDestroy) {this._obj5.onDestroy();}
+    if (isPresent(p._binding6) && p._binding6.callOnDestroy) {this._obj6.onDestroy();}
+    if (isPresent(p._binding7) && p._binding7.callOnDestroy) {this._obj7.onDestroy();}
+    if (isPresent(p._binding8) && p._binding8.callOnDestroy) {this._obj8.onDestroy();}
+    if (isPresent(p._binding9) && p._binding9.callOnDestroy) {this._obj9.onDestroy();}
+
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -281,6 +320,7 @@ export class ElementInjector extends TreeNode {
     this._obj7 = null;
     this._obj8 = null;
     this._obj9 = null;
+
     this._constructionCounter = 0;
   }
 

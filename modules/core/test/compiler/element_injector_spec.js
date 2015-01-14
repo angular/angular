@@ -1,14 +1,16 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'test_lib/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {ProtoElementInjector, PreBuiltObjects} from 'core/compiler/element_injector';
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {onDestroy} from 'core/annotations/annotations';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ProtoRecordRange} from 'change_detection/change_detection';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
+import {Directive} from 'core/annotations/annotations';
 
 @proxy
 @IMPLEMENTS(View)
@@ -19,7 +21,7 @@ class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 class DummyLightDom extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 
 
-class Directive {
+class SimpleDirective {
 }
 
 
@@ -27,22 +29,22 @@ class SomeOtherDirective {
 }
 
 class NeedsDirective {
-  dependency:Directive;
-  constructor(dependency:Directive){
+  dependency:SimpleDirective;
+  constructor(dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromParent {
-  dependency:Directive;
-  constructor(@Parent() dependency:Directive){
+  dependency:SimpleDirective;
+  constructor(@Parent() dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
 
 class NeedDirectiveFromAncestor {
-  dependency:Directive;
-  constructor(@Ancestor() dependency:Directive){
+  dependency:SimpleDirective;
+  constructor(@Ancestor() dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
@@ -66,6 +68,18 @@ class NeedsView {
   view:any;
   constructor(@Inject(View) view) {
     this.view = view;
+  }
+}
+
+class DirectiveWithDestroy {
+  onDestroyCounter:number;
+
+  constructor(){
+    this.onDestroyCounter = 0;
+  }
+
+  onDestroy() {
+    this.onDestroyCounter ++;
   }
 }
 
@@ -172,7 +186,7 @@ export function main() {
 
     describe("hasBindings", function () {
       it("should be true when there are bindings", function () {
-        var p = new ProtoElementInjector(null, 0, [Directive]);
+        var p = new ProtoElementInjector(null, 0, [SimpleDirective]);
         expect(p.hasBindings).toBeTruthy();
       });
 
@@ -188,23 +202,23 @@ export function main() {
       });
 
       it("should be true when directives are instantiated", function () {
-        expect(injector([Directive]).hasInstances()).toBe(true);
+        expect(injector([SimpleDirective]).hasInstances()).toBe(true);
       });
     });
 
     describe("instantiateDirectives", function () {
       it("should instantiate directives that have no dependencies", function () {
-        var inj = injector([Directive]);
-        expect(inj.get(Directive)).toBeAnInstanceOf(Directive);
+        var inj = injector([SimpleDirective]);
+        expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should instantiate directives that depend on other directives", function () {
-        var inj = injector([Directive, NeedsDirective]);
+        var inj = injector([SimpleDirective, NeedsDirective]);
 
         var d = inj.get(NeedsDirective);
 
         expect(d).toBeAnInstanceOf(NeedsDirective);
-        expect(d.dependency).toBeAnInstanceOf(Directive);
+        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should instantiate directives that depend on app services", function () {
@@ -226,17 +240,17 @@ export function main() {
       });
 
       it("should instantiate directives that depend on the containing component", function () {
-        var shadow = hostShadowInjectors([Directive], [NeedsDirective]);
+        var shadow = hostShadowInjectors([SimpleDirective], [NeedsDirective]);
 
         var d = shadow.get(NeedsDirective);
         expect(d).toBeAnInstanceOf(NeedsDirective);
-        expect(d.dependency).toBeAnInstanceOf(Directive);
+        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should not instantiate directives that depend on other directives in the containing component's ElementInjector", () => {
         expect( () => {
-          hostShadowInjectors([SomeOtherDirective, Directive], [NeedsDirective]);
-        }).toThrowError('No provider for Directive! (NeedsDirective -> Directive)')
+          hostShadowInjectors([SomeOtherDirective, SimpleDirective], [NeedsDirective]);
+        }).toThrowError('No provider for SimpleDirective! (NeedsDirective -> SimpleDirective)')
       });
 
       it("should instantiate component directives that depend on app services in the shadow app injector", () => {
@@ -269,42 +283,46 @@ export function main() {
       });
 
       it("should get directives from parent", function () {
-        var child = parentChildInjectors([Directive], [NeedDirectiveFromParent]);
+        var child = parentChildInjectors([SimpleDirective], [NeedDirectiveFromParent]);
 
         var d = child.get(NeedDirectiveFromParent);
 
         expect(d).toBeAnInstanceOf(NeedDirectiveFromParent);
-        expect(d.dependency).toBeAnInstanceOf(Directive);
+        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should not return parent's directives on self", function () {
         expect(() => {
-          injector([Directive, NeedDirectiveFromParent]);
+          injector([SimpleDirective, NeedDirectiveFromParent]);
         }).toThrowError();
       });
 
       it("should get directives from ancestor", function () {
-        var child = parentChildInjectors([Directive], [NeedDirectiveFromAncestor]);
+        var child = parentChildInjectors([SimpleDirective], [NeedDirectiveFromAncestor]);
 
         var d = child.get(NeedDirectiveFromAncestor);
 
         expect(d).toBeAnInstanceOf(NeedDirectiveFromAncestor);
-        expect(d.dependency).toBeAnInstanceOf(Directive);
+        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should throw when no directive found", function () {
+      it("should throw when no SimpleDirective found", function () {
         expect(() => injector([NeedDirectiveFromParent])).
-            toThrowError('No provider for Directive! (NeedDirectiveFromParent -> Directive)');
+            toThrowError('No provider for SimpleDirective! (NeedDirectiveFromParent -> SimpleDirective)');
       });
 
-      it("should accept bindings instead of directive types", function () {
-        var inj = injector([bind(Directive).toClass(Directive)]);
-        expect(inj.get(Directive)).toBeAnInstanceOf(Directive);
+      it("should accept SimpleDirective bindings instead of SimpleDirective types", function () {
+        var inj = injector([
+          DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
+        ]);
+        expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should allow for direct access using getAtIndex", function () {
-        var inj = injector([bind(Directive).toClass(Directive)]);
-        expect(inj.getAtIndex(0)).toBeAnInstanceOf(Directive);
+        var inj = injector([
+          DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
+        ]);
+        expect(inj.getAtIndex(0)).toBeAnInstanceOf(SimpleDirective);
         expect(() => inj.getAtIndex(-1)).toThrowError(
           'Index -1 is out-of-bounds.');
         expect(() => inj.getAtIndex(10)).toThrowError(
@@ -313,12 +331,23 @@ export function main() {
 
       it("should handle cyclic dependencies", function () {
         expect(() => {
+          var bAneedsB = bind(A_Needs_B).toFactory((a) => new A_Needs_B(a), [B_Needs_A]);
+          var bBneedsA = bind(B_Needs_A).toFactory((a) => new B_Needs_A(a), [A_Needs_B]);
           injector([
-            bind(A_Needs_B).toFactory((a) => new A_Needs_B(a), [B_Needs_A]),
-            bind(B_Needs_A).toFactory((a) => new B_Needs_A(a), [A_Needs_B])
+            DirectiveBinding.createFromBinding(bAneedsB, null),
+            DirectiveBinding.createFromBinding(bBneedsA, null)
           ]);
         }).toThrowError('Cannot instantiate cyclic dependency! ' +
           '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
+      });
+
+      it("should call onDestroy on directives subscribed to this event", function () {
+        var inj = injector([
+          DirectiveBinding.createFromType(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}))
+        ]);
+        var destroy = inj.get(DirectiveWithDestroy);
+        inj.clearDirectives();
+        expect(destroy.onDestroyCounter).toBe(1);
       });
     });
 

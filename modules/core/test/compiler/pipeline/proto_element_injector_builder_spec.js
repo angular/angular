@@ -52,7 +52,8 @@ export function main() {
       var directives = [SomeComponentDirective, SomeTemplateDirective, SomeDecoratorDirective];
       var results = createPipeline(directives).process(el('<div directives></div>'));
       var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
-      expect(creationArgs['bindings']).toEqual(directives);
+      var boundDirectives = creationArgs['bindings'].map((b) => b.key.token);
+      expect(boundDirectives).toEqual(directives);
     });
 
     it('should mark ProtoElementInjector for elements with component directives and use the ComponentDirective as first binding', () => {
@@ -60,7 +61,8 @@ export function main() {
       var results = createPipeline(directives).process(el('<div directives></div>'));
       var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
       expect(creationArgs['firstBindingIsComponent']).toBe(true);
-      expect(creationArgs['bindings']).toEqual([SomeComponentDirective, SomeDecoratorDirective]);
+      var boundDirectives = creationArgs['bindings'].map((b) => b.key.token);
+      expect(boundDirectives).toEqual([SomeComponentDirective, SomeDecoratorDirective]);
     });
 
     it('should use the next ElementBinder index as index of the ProtoElementInjector', () => {

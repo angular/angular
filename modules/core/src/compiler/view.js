@@ -180,7 +180,9 @@ export class View {
 
     // elementInjectors
     for (var i = 0; i < this.elementInjectors.length; i++) {
-      this.elementInjectors[i].clearDirectives();
+      if (isPresent(this.elementInjectors[i])) {
+        this.elementInjectors[i].clearDirectives();
+      }
     }
 
     // viewPorts
