@@ -12,7 +12,7 @@ describe('ng2 tree benchmark', function () {
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
       id: 'ng2.tree',
       params: [{
-        name: 'depth', value: 9
+        name: 'depth', value: 9, scale: 'log2'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng2 tree benchmark', function () {
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
       id: 'baseline.tree',
       params: [{
-        name: 'depth', value: 9
+        name: 'depth', value: 9, scale: 'log2'
       }]
     });
   });

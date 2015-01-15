@@ -12,7 +12,7 @@ describe('ng2 change detection benchmark', function () {
       buttons: ['#ng2DetectChanges'],
       id: 'ng2.changeDetection',
       params: [{
-        name: 'iterations', value: 500000
+        name: 'iterations', value: 500000, scale: 'linear'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng2 change detection benchmark', function () {
       buttons: ['#baselineDetectChanges'],
       id: 'baseline.changeDetection',
       params: [{
-        name: 'iterations', value: 500000
+        name: 'iterations', value: 500000, scale: 'linear'
       }]
     });
   });
