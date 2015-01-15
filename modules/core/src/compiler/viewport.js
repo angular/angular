@@ -89,18 +89,29 @@ export class ViewPort {
     return view;
   }
 
-  remove(atIndex=-1): View {
+  remove(atIndex=-1) {
     if (atIndex == -1) atIndex = this._views.length - 1;
-    var removedView = this.get(atIndex);
+    var view = this.detach(atIndex);
+    view.dehydrate();
+    // view is intentionally not returned to the client.
+  }
+
+  /**
+   * The method can be used together with insert to implement a view move, i.e.
+   * moving the dom nodes while the directives in the view stay intact.
+   */
+  detach(atIndex=-1): View {
+    if (atIndex == -1) atIndex = this._views.length - 1;
+    var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     if (isBlank(this._lightDom)) {
-      ViewPort.removeViewNodesFromParent(this.templateElement.parentNode, removedView);
+      ViewPort.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
     } else {
       this._lightDom.redistribute();
     }
-    removedView.changeDetector.remove();
-    this._unlinkElementInjectors(removedView);
-    return removedView;
+    detachedView.changeDetector.remove();
+    this._unlinkElementInjectors(detachedView);
+    return detachedView;
   }
 
   contentTagContainers() {

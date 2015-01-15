@@ -1,16 +1,62 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 import {View, ProtoView} from 'core/compiler/view';
 import {ViewPort} from 'core/compiler/viewport';
+import {proxy, IMPLEMENTS} from 'facade/lang';
 import {DOM} from 'facade/dom';
 import {ListWrapper, MapWrapper} from 'facade/collection';
 import {Injector} from 'di/di';
 import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {ProtoChangeDetector, Lexer, Parser} from 'change_detection/change_detection';
+import {ProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'change_detection/change_detection';
 
 function createView(nodes) {
   var view = new View(null, nodes, new ProtoChangeDetector(), MapWrapper.create());
   view.init([], [], [], [], [], [], []);
   return view;
+}
+
+@proxy
+@IMPLEMENTS(ChangeDetector)
+class AttachableChangeDetector {
+  parent;
+  constructor() {
+  }
+  remove() {
+    this.parent = null;
+  }
+  noSuchMethod(i) {
+    super.noSuchMethod(i);
+  }
+}
+
+@proxy
+@IMPLEMENTS(View)
+class HydrateAwareFakeView {
+  isHydrated: boolean;
+  nodes: List<Nodes>;
+  changeDetector: ChangeDetector;
+  rootElementInjectors;
+  constructor(isHydrated) {
+    this.isHydrated = isHydrated;
+    this.nodes = [DOM.createElement('div')];
+    this.rootElementInjectors = [];
+    this.changeDetector = new AttachableChangeDetector();
+  }
+
+  hydrated() {
+    return this.isHydrated;
+  }
+
+  hydrate(_, __, ___) {
+    this.isHydrated = true;
+  }
+
+  dehydrate() {
+    this.isHydrated = false;
+  }
+
+  noSuchMethod(i) {
+    super.noSuchMethod(i);
+  }
 }
 
 export function main() {
@@ -81,10 +127,9 @@ export function main() {
       it('should remove the last view by default', () => {
         viewPort.insert(customViewWithOneNode);
 
-        var removedView = viewPort.remove();
+        viewPort.remove();
 
         expect(textInViewPort()).toEqual('filler');
-        expect(removedView).toBe(customViewWithOneNode);
         expect(viewPort.length).toBe(1);
       });
 
@@ -92,11 +137,61 @@ export function main() {
         viewPort.insert(customViewWithOneNode);
         viewPort.insert(customViewWithTwoNodes);
 
-        var removedView = viewPort.remove(1);
-        expect(removedView).toBe(customViewWithOneNode);
+        viewPort.remove(1);
+
         expect(textInViewPort()).toEqual('filler one two');
         expect(viewPort.get(1)).toBe(customViewWithTwoNodes);
         expect(viewPort.length).toBe(2);
+      });
+
+      it('should detach the last view by default', () => {
+        viewPort.insert(customViewWithOneNode);
+        expect(viewPort.length).toBe(2);
+
+        var detachedView = viewPort.detach();
+
+        expect(detachedView).toBe(customViewWithOneNode);
+        expect(textInViewPort()).toEqual('filler');
+        expect(viewPort.length).toBe(1);
+      });
+
+      it('should detach the view at a given index', () => {
+        viewPort.insert(customViewWithOneNode);
+        viewPort.insert(customViewWithTwoNodes);
+        expect(viewPort.length).toBe(3);
+
+        var detachedView = viewPort.detach(1);
+        expect(detachedView).toBe(customViewWithOneNode);
+        expect(textInViewPort()).toEqual('filler one two');
+        expect(viewPort.length).toBe(2);
+      });
+      
+      it('should keep views hydration state during insert', () => {
+        var hydratedView = new HydrateAwareFakeView(true);
+        var dehydratedView = new HydrateAwareFakeView(false);
+        viewPort.insert(hydratedView);
+        viewPort.insert(dehydratedView);
+
+        expect(hydratedView.hydrated()).toBe(true);
+        expect(dehydratedView.hydrated()).toBe(false);
+      });
+
+      it('should dehydrate on remove', () => {
+        var hydratedView = new HydrateAwareFakeView(true);
+        viewPort.insert(hydratedView);
+        viewPort.remove();
+
+        expect(hydratedView.hydrated()).toBe(false);
+      });
+
+      it('should keep views hydration state during detach', () => {
+        var hydratedView = new HydrateAwareFakeView(true);
+        var dehydratedView = new HydrateAwareFakeView(false);
+        viewPort.insert(hydratedView);
+        viewPort.insert(dehydratedView);
+
+        expect(viewPort.detach().hydrated()).toBe(false);
+        expect(viewPort.detach().hydrated()).toBe(true);
       });
 
       it('should support adding/removing views with more than one node', () => {

@@ -59,10 +59,12 @@ export class NgRepeat extends OnChange {
     var movedTuples = [];
     for (var i = tuples.length - 1; i >= 0; i--) {
       var tuple = tuples[i];
-      var view = viewPort.remove(tuple.record.previousIndex);
+      // separate moved views from removed views.
       if (isPresent(tuple.record.currentIndex)) {
-        tuple.view = view;
+        tuple.view = viewPort.detach(tuple.record.previousIndex);
         ListWrapper.push(movedTuples, tuple);
+      } else {
+        viewPort.remove(tuple.record.previousIndex);
       }
     }
     return movedTuples;
