@@ -10,11 +10,13 @@ import {TemplateConfig} from 'core/annotations/template_config';
 import {List, MapWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 import {int, proxy, IMPLEMENTS} from 'facade/lang';
-import {Injector} from 'di/di';
+import {Injector, bind} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ViewPort} from 'core/compiler/viewport';
 import {reflector} from 'reflection/reflection';
-
+import {EventManager} from 'core/events/event_manager';
+import {DomEventsPlugin} from 'core/events/dom_events';
+import {VmTurnZone} from 'core/zone/vm_turn_zone';
 
 @proxy
 @IMPLEMENTS(ViewPort)
@@ -30,15 +32,33 @@ class FakeViewPort {
   }
 }
 
+@proxy
+@IMPLEMENTS(VmTurnZone)
+export class FakeVmTurnZone {
+  constructor() {
+  }
+
+  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler} = {}) {
+  }
+
+  run(fn) {
+    fn();
+  }
+
+  runOutsideAngular(fn) {
+    fn();
+  }
+}
+
 
 export function main() {
   describe('view', function() {
     var parser, someComponentDirective, someTemplateDirective;
 
-    function createView(protoView) {
+    function createView(protoView: ProtoView, appInjector: Injector = null): View {
       var ctx = new MyEvaluationContext();
       var view = protoView.instantiate(null);
-      view.hydrate(null, null, ctx);
+      view.hydrate(appInjector, null, ctx);
       return view;
     }
 
@@ -407,7 +427,10 @@ export function main() {
         var view, ctx, called, receivedEvent, dispatchedEvent;
 
         function createViewAndContext(protoView) {
-          view = createView(protoView);
+          var injector = new Injector([bind(EventManager).toFactory(() => {
+            return new EventManager([new DomEventsPlugin()], new FakeVmTurnZone());
+          })]);
+          view = createView(protoView, injector);
           ctx = view.context;
           called = 0;
           receivedEvent = null;
