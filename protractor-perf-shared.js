@@ -27,7 +27,7 @@ config.params = {
     ],
     cloudReporter: cloudReporterConfig,
     scaling: [{
-      browserName: /chrome/, value: 0.5
+      userAgent: /Android/, value: 0.125
     }]
   }
 };

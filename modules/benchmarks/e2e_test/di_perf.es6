@@ -12,7 +12,7 @@ describe('ng2 di benchmark', function () {
       buttons: ['#getByToken'],
       id: 'ng2.di.getByToken',
       params: [{
-        name: 'iterations', value: 20000
+        name: 'iterations', value: 20000, scale: 'linear'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng2 di benchmark', function () {
       buttons: ['#getByKey'],
       id: 'ng2.di.getByKey',
       params: [{
-        name: 'iterations', value: 20000
+        name: 'iterations', value: 20000, scale: 'linear'
       }]
     });
   });
@@ -34,7 +34,7 @@ describe('ng2 di benchmark', function () {
       buttons: ['#getChild'],
       id: 'ng2.di.getChild',
       params: [{
-        name: 'iterations', value: 20000
+        name: 'iterations', value: 20000, scale: 'linear'
       }]
     });
   });
@@ -45,7 +45,7 @@ describe('ng2 di benchmark', function () {
       buttons: ['#instantiate'],
       id: 'ng2.di.instantiate',
       params: [{
-        name: 'iterations', value: 10000
+        name: 'iterations', value: 10000, scale: 'linear'
       }]
     });
   });

@@ -12,7 +12,7 @@ describe('ng1.x tree benchmark', function () {
       buttons: ['#destroyDom', '#createDom'],
       id: 'ng1.tree',
       params: [{
-        name: 'depth', value: 9
+        name: 'depth', value: 9, scale: 'log2'
       }]
     });
   });

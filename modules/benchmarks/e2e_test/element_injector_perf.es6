@@ -12,7 +12,7 @@ describe('ng2 element injector benchmark', function () {
       buttons: ['#instantiate'],
       id: 'ng2.elementInjector.instantiate',
       params: [{
-        name: 'iterations', value: 20000
+        name: 'iterations', value: 20000, scale: 'linear'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng2 element injector benchmark', function () {
       buttons: ['#instantiateDirectives'],
       id: 'ng2.elementInjector.instantiateDirectives',
       params: [{
-        name: 'iterations', value: 20000
+        name: 'iterations', value: 20000, scale: 'linear'
       }]
     });
   });

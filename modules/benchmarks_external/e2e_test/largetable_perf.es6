@@ -24,10 +24,12 @@ describe('ng1.x largetable benchmark', function () {
         id: 'ng1.largetable.' + benchmarkType,
         params: [{
           name: 'columns',
-          value: 100
+          value: 100,
+          scale: 'sqrt'
         },{
           name: 'rows',
-          value: 20
+          value: 20,
+          scale: 'sqrt'
         },{
           name: 'benchmarkType',
           value: benchmarkType

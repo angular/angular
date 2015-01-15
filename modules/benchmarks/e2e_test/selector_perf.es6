@@ -12,7 +12,7 @@ describe('ng2 selector benchmark', function () {
       buttons: ['#parse'],
       id: 'ng2.selector.parse',
       params: [{
-        name: 'selectors', value: 10000
+        name: 'selectors', value: 10000, scale: 'linear'
       }]
     });
   });
@@ -22,7 +22,7 @@ describe('ng2 selector benchmark', function () {
       buttons: ['#addSelectable'],
       id: 'ng2.selector.addSelectable',
       params: [{
-        name: 'selectors', value: 10000
+        name: 'selectors', value: 10000, scale: 'linear'
       }]
     });
   });
@@ -33,7 +33,7 @@ describe('ng2 selector benchmark', function () {
       buttons: ['#match'],
       id: 'ng2.selector.match',
       params: [{
-        name: 'selectors', value: 10000
+        name: 'selectors', value: 10000, scale: 'linear'
       }]
     });
   });

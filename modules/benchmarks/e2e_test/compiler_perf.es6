@@ -12,7 +12,7 @@ describe('ng2 compiler benchmark', function () {
       buttons: ['#compileWithBindings'],
       id: 'ng2.compile.withBindings',
       params: [{
-        name: 'elementCount', selector: '#elementCount', value: 150
+        name: 'elementCount', selector: '#elementCount', value: 150, scale: 'linear'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng2 compiler benchmark', function () {
       buttons: ['#compileNoBindings'],
       id: 'ng2.compile.noBindings',
       params: [{
-        name: 'elementCount', value: 150
+        name: 'elementCount', value: 150, scale: 'linear'
       }]
     });
   });
