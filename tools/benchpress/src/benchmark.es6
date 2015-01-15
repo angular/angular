@@ -22,7 +22,9 @@ module.exports = {
 
 function runBenchmark(config, workCallback) {
   var sampleId = nodeUuid.v1();
-  var reporters = config.reporters.map(function(Class) {
+  var reporters = config.reporters.filter(function(Class) {
+    return !!Class;
+  }).map(function(Class) {
     return new Class(sampleId, config);
   });
   var scriptMetricIndex = -1;
