@@ -2,7 +2,7 @@
 import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
 
 export function main() {
-  angular.bootstrap(document.body, ['app']);
+  angular.bootstrap(document.querySelector('tree'), ['app']);
 }
 
 angular.module('app', [])
