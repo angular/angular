@@ -9,7 +9,14 @@ describe('hello world', function () {
     it('should greet', function() {
       browser.get(URL);
 
-      expect(getGreetingText('hello-app')).toBe('hello world!');
+      expect(getComponentText('hello-app', '.greeting')).toBe('hello world!');
+    });
+
+    it('should change greeting', function() {
+      browser.get(URL);
+
+      clickComponentButton('hello-app', '.changeButton');
+      expect(getComponentText('hello-app', '.greeting')).toBe('howdy world!');
     });
   });
 
@@ -19,12 +26,23 @@ describe('hello world', function () {
     it('should greet', function() {
       browser.get(URL);
 
-      expect(getGreetingText('hello-app')).toBe('hello world!');
+      expect(getComponentText('hello-app', '.greeting')).toBe('hello world!');
+    });
+
+    it('should change greeting', function() {
+      browser.get(URL);
+
+      clickComponentButton('hello-app', '.changeButton');
+      expect(getComponentText('hello-app', '.greeting')).toBe('howdy world!');
     });
   });
 
 });
 
-function getGreetingText(selector) {
-  return browser.executeScript('return document.querySelector("'+selector+'").shadowRoot.firstChild.textContent');
+function getComponentText(selector, innerSelector) {
+  return browser.executeScript('return document.querySelector("'+selector+'").shadowRoot.querySelector("'+innerSelector+'").textContent');
+}
+
+function clickComponentButton(selector, innerSelector) {
+  return browser.executeScript('return document.querySelector("'+selector+'").shadowRoot.querySelector("'+innerSelector+'").click()');
 }

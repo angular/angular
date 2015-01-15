@@ -19,7 +19,8 @@ function setup() {
       componentServices: [app.GreetingService],
       template: new TemplateConfig({
         directives: [app.RedDec],
-        inline: `{{greeting}} <span red>world</span>!`})
+        inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
+                 <button class="changeButton" (click)="changeGreeting()">change greeting</button>`})
     })]
   });
 
@@ -83,6 +84,10 @@ function setup() {
 
   reflector.registerSetters({
     "greeting": (a,v) => a.greeting = v
+  });
+
+  reflector.registerMethods({
+    "changeGreeting": (obj, args) => obj.changeGreeting()
   });
 }
 
