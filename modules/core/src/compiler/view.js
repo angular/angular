@@ -381,10 +381,14 @@ export class ProtoView {
         MapWrapper.forEach(binder.events, (expr, eventName) => {
           DOM.on(element, eventName, (event) => {
             if (event.target === element) {
+              // Most of the time the event will be fired only when the view is
+              // in the live document.  However, in a rare circumstance the
+              // view might get dehydrated, in between the event queuing up and
+              // firing.
               // TODO(rado): replace with
               // expr.eval(new ContextWithVariableBindings(view.context, {'$event': event}));
               // when eval with variable bindinds works.
-              expr.eval(view.context);
+              if (view.hydrated()) expr.eval(view.context);
             }
           });
         });

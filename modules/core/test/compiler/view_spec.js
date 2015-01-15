@@ -403,6 +403,54 @@ export function main() {
         });
       });
 
+      describe('event handlers', () => {
+        var view, ctx, called;
+
+        function createViewAndContext(protoView) {
+          view = createView(protoView);
+          ctx = view.context;
+          called = 0;
+          ctx.callMe = () => called += 1;
+        }
+
+        function dispatchClick(el) {
+          DOM.dispatchEvent(el, DOM.createMouseEvent('click'));
+        }
+
+        function createProtoView() {
+          var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
+            new ProtoRecordRange());
+          pv.bindElement(new TestProtoElementInjector(null, 0, []));
+          pv.bindEvent('click', parser.parseBinding('callMe()', null));
+          return pv;
+        }
+
+        it('should fire on non-bubbling native events', () => {
+          createViewAndContext(createProtoView());
+
+          dispatchClick(view.nodes[0]);
+
+          expect(called).toEqual(1);
+        });
+
+        it('should not fire on a bubbled native events', () => {
+          createViewAndContext(createProtoView());
+
+          dispatchClick(view.nodes[0].firstChild);
+
+          // This test passes trivially on webkit browsers due to
+          // https://bugs.webkit.org/show_bug.cgi?id=122755
+          expect(called).toEqual(0);
+        });
+
+        it('should not throw if the view is dehydrated', () => {
+          createViewAndContext(createProtoView());
+
+          view.dehydrate();
+          dispatchClick(view.nodes[0]);
+        });
+      });
+
       describe('react to record changes', () => {
         var view, cd, ctx;
 
@@ -583,6 +631,7 @@ class MyEvaluationContext {
   foo:string;
   a;
   b;
+  callMe;
   constructor() {
     this.foo = 'bar';
   };
