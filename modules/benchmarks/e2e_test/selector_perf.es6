@@ -19,6 +19,7 @@ describe('ng2 selector benchmark', function () {
 
   it('should log addSelectable stats', function() {
     perfUtil.runClickBenchmark({
+      url: URL,
       buttons: ['#addSelectable'],
       id: 'ng2.selector.addSelectable',
       params: [{
