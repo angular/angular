@@ -7,6 +7,7 @@ import {Component, Decorator, Template} from 'core/annotations/annotations';
 import {OnChange} from 'core/core';
 import {Lexer, Parser, ProtoChangeDetector, ChangeDetector} from 'change_detection/change_detection';
 import {TemplateConfig} from 'core/annotations/template_config';
+import {EventEmitter} from 'core/annotations/events';
 import {List, MapWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 import {int, proxy, IMPLEMENTS} from 'facade/lang';
@@ -233,7 +234,7 @@ export function main() {
           pv.bindElement(testProtoElementInjector);
 
           var hostProtoInjector = new ProtoElementInjector(null, 0, []);
-          var hostInjector = hostProtoInjector.instantiate(null, null);
+          var hostInjector = hostProtoInjector.instantiate(null, null, null);
           var view;
           expect(() => view = pv.instantiate(hostInjector)).not.toThrow();
           expect(testProtoElementInjector.parentElementInjector).toBe(view.elementInjectors[0]);
@@ -248,7 +249,7 @@ export function main() {
           pv.bindElement(testProtoElementInjector);
 
           var hostProtoInjector = new ProtoElementInjector(null, 0, []);
-          var hostInjector = hostProtoInjector.instantiate(null, null);
+          var hostInjector = hostProtoInjector.instantiate(null, null, null);
           expect(() => pv.instantiate(hostInjector)).not.toThrow();
           expect(testProtoElementInjector.parentElementInjector).toBeNull();
           expect(testProtoElementInjector.hostElementInjector).toBe(hostInjector);
@@ -453,8 +454,29 @@ export function main() {
           createViewAndContext(createProtoView());
 
           view.dehydrate();
-          dispatchClick(view.nodes[0]);
+          expect(() => dispatchClick(view.nodes[0])).not.toThrow();
           expect(called).toEqual(0);
+        });
+
+        it('should support custom event emitters', () => {
+          var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
+            new ProtoChangeDetector());
+          pv.bindElement(new TestProtoElementInjector(null, 0, [EventEmitterDirective]));
+          pv.bindEvent('click', parser.parseBinding('callMe(\$event)', null));
+
+          createViewAndContext(pv);
+          var dir = view.elementInjectors[0].get(EventEmitterDirective);
+
+          var dispatchedEvent = new Object();
+
+          dir.click(dispatchedEvent);
+          expect(receivedEvent).toBe(dispatchedEvent);
+          expect(called).toEqual(1);
+
+          // Should not eval the binding, because custom emitter takes over.
+          dispatchClick(view.nodes[0]);
+
+          expect(called).toEqual(1);
         });
       });
 
@@ -634,6 +656,17 @@ class AnotherDirective {
   }
 }
 
+class EventEmitterDirective {
+  _clicker:Function;
+  constructor(@EventEmitter('click') clicker:Function) {
+    this._clicker = clicker;
+  }
+  click(eventData) {
+    this._clicker(eventData);
+  }
+}
+
+
 class MyEvaluationContext {
   foo:string;
   a;
@@ -652,9 +685,9 @@ class TestProtoElementInjector extends ProtoElementInjector {
     super(parent, index, bindings, firstBindingIsComponent);
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
+  instantiate(parent:ElementInjector, host:ElementInjector, events):ElementInjector {
     this.parentElementInjector = parent;
     this.hostElementInjector = host;
-    return super.instantiate(parent, host);
+    return super.instantiate(parent, host, events);
   }
 }

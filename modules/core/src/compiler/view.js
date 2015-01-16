@@ -325,9 +325,9 @@ export class ProtoView {
       if (isPresent(protoElementInjector)) {
         if (isPresent(protoElementInjector.parent)) {
           var parentElementInjector = elementInjectors[protoElementInjector.parent.index];
-          elementInjector = protoElementInjector.instantiate(parentElementInjector, null);
+          elementInjector = protoElementInjector.instantiate(parentElementInjector, null, binder.events);
         } else {
-          elementInjector = protoElementInjector.instantiate(null, hostElementInjector);
+          elementInjector = protoElementInjector.instantiate(null, hostElementInjector, binder.events);
           ListWrapper.push(rootElementInjectors, elementInjector);
         }
       }
@@ -376,10 +376,10 @@ export class ProtoView {
 
       // events
       if (isPresent(binder.events)) {
-        // TODO(rado): if there is directive at this element that injected an
-        // event emitter for that eventType do not attach the handler.
         MapWrapper.forEach(binder.events, (expr, eventName) => {
-          ProtoView._addNativeEventListener(element, eventName, expr, view);
+          if (isBlank(elementInjector) || !elementInjector.hasEventEmitter(eventName)) {
+            ProtoView._addNativeEventListener(element, eventName, expr, view);
+          }
         });
       }
     }
@@ -390,21 +390,28 @@ export class ProtoView {
     return view;
   }
 
-  static _addNativeEventListener(element: Element, eventName: string, expr, view: View) {
+  static _addNativeEventListener(element: Element, eventName: string, expr: AST, view: View) {
     var locals = MapWrapper.create();
+    var innerCallback = ProtoView.buildInnerCallback(expr, view, locals);
     DOM.on(element, eventName, (event) => {
       if (event.target === element) {
-        // Most of the time the event will be fired only when the view is
-        // in the live document.  However, in a rare circumstance the
-        // view might get dehydrated, in between the event queuing up and
-        // firing.
-        if (view.hydrated()) {
-          MapWrapper.set(locals, '\$event', event);
-          var context = new ContextWithVariableBindings(view.context, locals);
-          expr.eval(context);
-        }
+        innerCallback(event);
       }
     });
+  }
+
+  static buildInnerCallback(expr:AST, view:View, locals: Map) {
+    return (event) => {
+      // Most of the time the event will be fired only when the view is
+      // in the live document.  However, in a rare circumstance the
+      // view might get dehydrated, in between the event queuing up and
+      // firing.
+      if (view.hydrated()) {
+        MapWrapper.set(locals, '\$event', event);
+        var context = new ContextWithVariableBindings(view.context, locals);
+        expr.eval(context);
+      }
+    }
   }
 
   _parentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {

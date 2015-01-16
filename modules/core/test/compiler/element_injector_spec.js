@@ -3,6 +3,7 @@ import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/lang';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {EventEmitter} from 'core/annotations/events';
 import {onDestroy} from 'core/annotations/annotations';
 import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
@@ -56,6 +57,16 @@ class NeedsService {
   }
 }
 
+class NeedsEventEmitter {
+  clickEmitter;
+  constructor(@EventEmitter('click') clickEmitter:Function) {
+    this.clickEmitter = clickEmitter;
+  }
+  click() {
+    this.clickEmitter(null);
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -100,7 +111,7 @@ export function main() {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
-    var inj = proto.instantiate(null, null);
+    var inj = proto.instantiate(null, null, null);
     var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
 
     inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector, preBuilt);
@@ -113,12 +124,12 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null);
+    var parent = protoParent.instantiate(null, null, null);
 
     parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
-    var child = protoChild.instantiate(parent, null);
+    var child = protoChild.instantiate(parent, null, null);
     child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     return child;
@@ -131,11 +142,11 @@ export function main() {
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
-    var host = protoParent.instantiate(null, null);
+    var host = protoParent.instantiate(null, null, null);
     host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false, 1);
-    var shadow = protoChild.instantiate(null, host);
+    var shadow = protoChild.instantiate(null, host, null);
     shadow.instantiateDirectives(shadowInj, null, null);
 
     return shadow;
@@ -148,9 +159,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null);
-        var c1 = protoChild1.instantiate(p, null);
-        var c2 = protoChild2.instantiate(p, null);
+        var p = protoParent.instantiate(null, null, null);
+        var c1 = protoChild1.instantiate(p, null, null);
+        var c2 = protoChild2.instantiate(p, null, null);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -165,8 +176,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null);
-          var c = protoChild.instantiate(p, null);
+          var p = protoParent.instantiate(null, null, null);
+          var c = protoChild.instantiate(p, null, null);
 
           expect(c.directParent()).toEqual(p);
         });
@@ -176,8 +187,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null);
-          var c = protoChild.instantiate(p, null);
+          var p = protoParent.instantiate(null, null, null);
+          var c = protoChild.instantiate(p, null, null);
 
           expect(c.directParent()).toEqual(null);
         });
@@ -398,6 +409,19 @@ export function main() {
 
           expect(child.get(SourceLightDom)).toEqual(lightDom);
         });
+      });
+    });
+
+    describe('event emitters', () => {
+      it('should be injectable and callable', () => {
+        var inj = injector([NeedsEventEmitter]);
+        inj.get(NeedsEventEmitter).click();
+      });
+
+      it('should be queryable through hasEventEmitter', () => {
+        var inj = injector([NeedsEventEmitter]);
+        expect(inj.hasEventEmitter('click')).toBe(true);
+        expect(inj.hasEventEmitter('move')).toBe(false);
       });
     });
   });

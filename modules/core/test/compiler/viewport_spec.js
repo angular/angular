@@ -69,7 +69,7 @@ export function main() {
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new ProtoChangeDetector());
-      elementInjector = new ElementInjector(null, null, null);
+      elementInjector = new ElementInjector(null, null, null, null);
       viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
