@@ -72,7 +72,8 @@ var CONFIG = {
       all: 'dist/cjs',
       tools: 'dist/cjs/tools',
       e2eTest: 'dist/cjs/e2e_test'
-    }
+    },
+    docs: 'dist/docs'
   },
   srcFolderMapping: {
     'default': 'lib',
@@ -179,6 +180,10 @@ gulp.task('build/clean.dart', clean(gulp, gulpPlugins, {
 
 gulp.task('build/clean.cjs', clean(gulp, gulpPlugins, {
   path: CONFIG.dest.cjs.all
+}));
+
+gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
+    path: CONFIG.dest.docs
 }));
 
 
@@ -422,6 +427,6 @@ gulp.task('build.cjs', function() {
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod']);
 
-gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.cjs']);
+gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.cjs', 'build/clean.docs']);
 
 gulp.task('build', ['build.js', 'build.dart', 'build.cjs']);
