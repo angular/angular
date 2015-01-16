@@ -1,10 +1,11 @@
 import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'facade/lang';
 import {Math} from 'facade/math';
-import {List, ListWrapper} from 'facade/collection';
+import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
 import {Parent, Ancestor} from 'core/annotations/visibility';
+import {EventEmitter} from 'core/annotations/events';
 import {onDestroy} from 'core/annotations/annotations';
-import {View} from 'core/compiler/view';
+import {View, ProtoView} from 'core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 import {ViewPort} from 'core/compiler/viewport';
 import {NgElement} from 'core/dom/element';
@@ -89,15 +90,18 @@ class TreeNode {
 
 export class DirectiveDependency extends Dependency {
   depth:int;
+  eventEmitterName:string;
 
-  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int) {
+  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int, eventEmitterName: string) {
     super(key, asPromise, lazy, properties);
     this.depth = depth;
+    this.eventEmitterName = eventEmitterName;
   }
 
   static createFrom(d:Dependency):Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy,
-      d.properties, DirectiveDependency._depth(d.properties));
+      d.properties, DirectiveDependency._depth(d.properties),
+      DirectiveDependency._eventEmitterName(d.properties));
   }
 
   static _depth(properties):int {
@@ -105,6 +109,15 @@ export class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
+  }
+
+  static _eventEmitterName(properties):string {
+    for (var i = 0; i < properties.length; i++) {
+      if (properties[i] instanceof EventEmitter) {
+        return properties[i].eventName;
+      }
+    }
+    return null;
   }
 }
 
@@ -127,6 +140,10 @@ export class DirectiveBinding extends Binding {
   static createFromType(type:Type, annotation:Directive):Binding {
     var binding = bind(type).toClass(type);
     return DirectiveBinding.createFromBinding(binding, annotation);
+  }
+
+  static _hasEventEmitter(eventName: string, binding: DirectiveBinding) {
+    return ListWrapper.any(binding.dependencies, (d) => (d.eventEmitterName == eventName));
   }
 }
 
@@ -225,8 +242,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
-    return new ElementInjector(this, parent, host);
+  instantiate(parent:ElementInjector, host:ElementInjector, eventCallbacks):ElementInjector {
+    return new ElementInjector(this, parent, host, eventCallbacks);
   }
 
   _createBinding(bindingOrType) {
@@ -240,6 +257,21 @@ export class ProtoElementInjector  {
 
   get hasBindings():boolean {
     return isPresent(this._binding0);
+  }
+
+  hasEventEmitter(eventName: string) {
+    var p = this;
+    if (isPresent(p._binding0) && DirectiveBinding._hasEventEmitter(eventName, p._binding0)) return true;
+    if (isPresent(p._binding1) && DirectiveBinding._hasEventEmitter(eventName, p._binding1)) return true;
+    if (isPresent(p._binding2) && DirectiveBinding._hasEventEmitter(eventName, p._binding2)) return true;
+    if (isPresent(p._binding3) && DirectiveBinding._hasEventEmitter(eventName, p._binding3)) return true;
+    if (isPresent(p._binding4) && DirectiveBinding._hasEventEmitter(eventName, p._binding4)) return true;
+    if (isPresent(p._binding5) && DirectiveBinding._hasEventEmitter(eventName, p._binding5)) return true;
+    if (isPresent(p._binding6) && DirectiveBinding._hasEventEmitter(eventName, p._binding6)) return true;
+    if (isPresent(p._binding7) && DirectiveBinding._hasEventEmitter(eventName, p._binding7)) return true;
+    if (isPresent(p._binding8) && DirectiveBinding._hasEventEmitter(eventName, p._binding8)) return true;
+    if (isPresent(p._binding9) && DirectiveBinding._hasEventEmitter(eventName, p._binding9)) return true;
+    return false;
   }
 }
 
@@ -261,7 +293,8 @@ export class ElementInjector extends TreeNode {
   _view:View;
   _preBuiltObjects;
   _constructionCounter;
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
+  _eventCallbacks;
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, eventCallbacks: Map) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -279,6 +312,7 @@ export class ElementInjector extends TreeNode {
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
+    this._eventCallbacks = eventCallbacks;
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -431,7 +465,20 @@ export class ElementInjector extends TreeNode {
   }
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
+    if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
     return this._getByKey(dep.key, dep.depth, requestor);
+  }
+
+  _buildEventEmitter(dep) {
+    var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
+    if (isPresent(this._eventCallbacks)) {
+      var callback = MapWrapper.get(this._eventCallbacks, dep.eventEmitterName);
+      if (isPresent(callback)) {
+        var locals = MapWrapper.create();
+        return ProtoView.buildInnerCallback(callback, view, locals);
+      }
+    }
+    return (_) => {};
   }
 
   /*
@@ -533,6 +580,10 @@ export class ElementInjector extends TreeNode {
 
   hasInstances() {
     return this._constructionCounter > 0;
+  }
+
+  hasEventEmitter(eventName: string) {
+    return this._proto.hasEventEmitter(eventName);
   }
 }
 
