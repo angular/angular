@@ -80,6 +80,8 @@ var TABLE_FIELDS = [
   }
 ];
 
+var RETRY_COUNT = 3;
+
 class CloudReporter {
   constructor(benchmarkConfig) {
     this.tableConfig = createTableConfig(benchmarkConfig);
@@ -95,12 +97,12 @@ class CloudReporter {
     var self = this;
     var flow = browser.driver.controlFlow();
     flow.execute(function() {
-      return authenticate(self.authConfig).then(function(authClient) {
+      return authenticate(self.authConfig, RETRY_COUNT).then(function(authClient) {
         self.authClient = authClient;
       });
     });
     flow.execute(function() {
-      return getOrCreateTable(self.authClient, self.tableConfig);
+      return getOrCreateTable(self.authClient, self.tableConfig, RETRY_COUNT);
     });
   }
   add(data) {
@@ -112,40 +114,40 @@ class CloudReporter {
     var allRows = this.allSample.map(function(data) {
       return self._convertToTableRow(data, stableSample);
     });
-    flow.execute(function() {
-      return insertRows(self.authClient, self.tableConfig, allRows)
-    });
+    return insertRows(this.authClient, this.tableConfig, allRows, RETRY_COUNT);
   }
   _convertToTableRow(benchpressRow, stableSample) {
-    var tableRow = {
-      runId: this.benchmarkConfig.runId,
-      benchmarkId: this.benchmarkConfig.id,
-      index: benchpressRow.index,
-      creationTime: new Date(),
-      browser: this.browserUserAgent,
-      forceGc: benchpressRow.forceGc,
-      stable: stableSample.indexOf(benchpressRow) >= 0,
-      params: this.benchmarkConfig.params.map(function(param) {
-        if (typeof param.value === 'number') {
-          return {
-            name: param.name,
-            numvalue: param.value
-          };
-        } else {
-          return {
-            name: param.name,
-            strvalue: ''+param.value
+    return {
+      insertId: this.benchmarkConfig.runId+'#'+benchpressRow.index,
+      json: {
+        runId: this.benchmarkConfig.runId,
+        benchmarkId: this.benchmarkConfig.id,
+        index: benchpressRow.index,
+        creationTime: new Date(),
+        browser: this.browserUserAgent,
+        forceGc: benchpressRow.forceGc,
+        stable: stableSample.indexOf(benchpressRow) >= 0,
+        params: this.benchmarkConfig.params.map(function(param) {
+          if (typeof param.value === 'number') {
+            return {
+              name: param.name,
+              numvalue: param.value
+            };
+          } else {
+            return {
+              name: param.name,
+              strvalue: ''+param.value
+            }
           }
-        }
-      }),
-      metrics: this.benchmarkConfig.metrics.map(function(metricName, index) {
-        return {
-          name: metricName,
-          value: benchpressRow.values[index]
-        };
-      })
+        }),
+        metrics: this.benchmarkConfig.metrics.map(function(metricName, index) {
+          return {
+            name: metricName,
+            value: benchpressRow.values[index]
+          };
+        })
+      }
     };
-    return tableRow;
   }
 }
 
@@ -160,14 +162,14 @@ function createTableConfig(benchmarkConfig) {
   };
 }
 
-function getOrCreateTable(authClient, tableConfig) {
-  return getTable(authClient, tableConfig).then(null, function(err) {
+function getOrCreateTable(authClient, tableConfig, retryCount) {
+  return getTable(authClient, tableConfig, retryCount).then(null, function(err) {
     // create the table if it does not exist
-    return createTable(authClient, tableConfig);
+    return createTable(authClient, tableConfig, retryCount);
   });
 }
 
-function authenticate(authConfig) {
+function authenticate(authConfig, retryCount) {
   var authClient = new google.auth.JWT(
     authConfig['client_email'],
     null,
@@ -178,12 +180,16 @@ function authenticate(authConfig) {
 
   var defer = webdriver.promise.defer();
   authClient.authorize(makeNodeJsResolver(defer));
-  return defer.promise.then(function() {
+  var resultPromise = defer.promise.then(function() {
     return authClient;
   });
+  resultPromise = retryIfNeeded(resultPromise, retryCount, function(newRetryCount) {
+    return authenticate(authConfig, newRetryCount);
+  });
+  return resultPromise;
 }
 
-function getTable(authClient, tableConfig) {
+function getTable(authClient, tableConfig, retryCount) {
   // see https://cloud.google.com/bigquery/docs/reference/v2/tables/get
   var params = {
     auth: authClient,
@@ -193,10 +199,14 @@ function getTable(authClient, tableConfig) {
   };
   var defer = webdriver.promise.defer();
   bigquery.tables.get(params, makeNodeJsResolver(defer));
-  return defer.promise;
+  var resultPromise = defer.promise;
+  resultPromise = retryIfNeeded(resultPromise, retryCount, function(newRetryCount) {
+    return getTable(authClient, tableConfig, newRetryCount);
+  });
+  return resultPromise;
 }
 
-function createTable(authClient, tableConfig) {
+function createTable(authClient, tableConfig, retryCount) {
   // see https://cloud.google.com/bigquery/docs/reference/v2/tables
   // see https://cloud.google.com/bigquery/docs/reference/v2/tables#resource
   var params = {
@@ -217,10 +227,23 @@ function createTable(authClient, tableConfig) {
   };
   var defer = webdriver.promise.defer();
   bigquery.tables.insert(params, makeNodeJsResolver(defer));
-  return defer.promise;
+  var resultPromise = defer.promise;
+  resultPromise = retryIfNeeded(resultPromise, retryCount, function(newRetryCount) {
+    return createTable(authClient, tableConfig, newRetryCount);
+  });
+  return resultPromise;
 }
 
-function insertRows(authClient, tableConfig, rows) {
+function insertRows(authClient, tableConfig, rows, retryCount) {
+  // We need to split up the rows in batches as BigQuery
+  // has a size limit on requests.
+  // Note: executing the requests in parallel leads to timeouts sometime...
+  var recurseRows = null;
+  if (rows.length > 10) {
+    recurseRows = rows.slice(10);
+    rows = rows.slice(0, 10);
+  }
+
   // see https://cloud.google.com/bigquery/docs/reference/v2/tabledata/insertAll
   var params = {
     auth: authClient,
@@ -229,22 +252,41 @@ function insertRows(authClient, tableConfig, rows) {
     tableId: tableConfig.table.id,
     resource: {
       "kind": "bigquery#tableDataInsertAllRequest",
-      "rows": rows.map(function(row) {
-        return {
-          json: row
-        }
-      })
+      "rows": rows
     }
   };
   var defer = webdriver.promise.defer();
   bigquery.tabledata.insertAll(params, makeNodeJsResolver(defer));
-  return defer.promise.then(function(result) {
+  var resultPromise = defer.promise.then(function(result) {
     if (result.insertErrors) {
-      throw result.insertErrors.map(function(err) {
-        return err.errors.map(function(err) {
-          return err.message;
-        }).join('\n');
-      }).join('\n');
+      throw JSON.stringify(result.insertErrors, null, '  ');
+    }
+  });
+  resultPromise = retryIfNeeded(resultPromise, retryCount, function(newRetryCount) {
+    return insertRows(authClient, tableConfig, rows, newRetryCount);
+  });
+  if (recurseRows) {
+    resultPromise = resultPromise.then(function() {
+      return insertRows(authClient, tableConfig, recurseRows, retryCount);
+    });
+  }
+  return resultPromise;
+}
+
+function retryIfNeeded(promise, retryCount, retryCallback) {
+  if (!retryCount) {
+    return promise;
+  }
+  return promise.then(null, function(err) {
+    var errStr = err.toString();
+    if (typeof err === 'object') {
+      errStr += JSON.stringify(err, null, '  ');
+    }
+    if (errStr.indexOf('timeout') !== -1) {
+      console.log('Retrying', retryCallback.toString());
+      return retryCallback();
+    } else {
+      throw err;
     }
   });
 }
@@ -252,13 +294,8 @@ function insertRows(authClient, tableConfig, rows) {
 function makeNodeJsResolver(defer) {
   return function(err, result) {
     if (err) {
-      // Normalize errors messages from BigCloud so that they show up nicely
-      if (err.errors) {
-        err = err.errors.map(function(err) {
-          return err.message;
-        }).join('\n');
-      }
-      defer.reject(err);
+      // Format errors in a nice way
+      defer.reject(JSON.stringify(err, null, '  '));
     } else {
       defer.fulfill(result);
     }
