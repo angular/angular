@@ -5,9 +5,8 @@ var HEADER_SEPARATORS = ['----', '----', '----', '----', '----', '----', '----']
 var FOOTER_SEPARATORS = ['====', '====', '====', '====', '====', '====', '===='];
 
 class ConsoleReporter {
-  constructor(runId, config) {
+  constructor(config) {
     this.config = config;
-    this.runId = runId;
     this.rowFormat = ['%12s'].concat(config.metrics.map(function() {
       return '%12s';
     })).join(' | ');
@@ -15,7 +14,7 @@ class ConsoleReporter {
   begin() {
     printHeading('BENCHMARK '+this.config.id);
     console.log('sample size', this.config.sampleSize);
-    console.log('run id', this.runId);
+    console.log('run id', this.config.runId);
     console.log('params', JSON.stringify(this.config.params, null, '  '));
     printTableHeader(this.rowFormat, ['index', 'forceGc'].concat(this.config.metrics));
   }

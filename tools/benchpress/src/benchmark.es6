@@ -1,6 +1,5 @@
 var statistics = require('./statistics');
 var commands = require('./commands');
-var nodeUuid = require('node-uuid');
 var webdriver = require('protractor/node_modules/selenium-webdriver');
 
 var SUPPORTED_METRICS = {
@@ -21,11 +20,10 @@ module.exports = {
 };
 
 function runBenchmark(config, workCallback) {
-  var sampleId = nodeUuid.v1();
   var reporters = config.reporters.filter(function(Class) {
     return !!Class;
   }).map(function(Class) {
-    return new Class(sampleId, config);
+    return new Class(config);
   });
   var scriptMetricIndex = -1;
   config.metrics.forEach(function(metric, index) {

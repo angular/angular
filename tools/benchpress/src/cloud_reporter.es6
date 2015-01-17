@@ -2,11 +2,16 @@ var google = require('googleapis');
 var bigquery = google.bigquery('v2');
 var webdriver = require('protractor/node_modules/selenium-webdriver');
 
-var HEADER_FIELDS = [
+var TABLE_FIELDS = [
   {
     "name": 'runId',
     "type": 'STRING',
-    "description": 'uuid for the benchmark run'
+    "description": 'git SHA and uuid for the benchmark run'
+  },
+  {
+    "name": 'benchmarkId',
+    "type": 'STRING',
+    "description": 'id of the benchmark'
   },
   {
     "name": 'index',
@@ -26,22 +31,65 @@ var HEADER_FIELDS = [
     "name": 'forceGc',
     "type": 'BOOLEAN',
     "description": 'whether gc was forced at end of action'
+  },
+  {
+    "name": 'stable',
+    "type": 'BOOLEAN',
+    "description": 'whether this entry was part of the stable sample'
+  },
+  {
+    "name": 'params',
+    "type": 'RECORD',
+    "description": 'parameters of the benchmark',
+    "mode": 'REPEATED',
+    "fields": [
+      {
+        "name": 'name',
+        "type": 'STRING',
+        "description": 'param name'
+      },
+      {
+        "name": 'strvalue',
+        "type": 'STRING',
+        "description": 'param value for strings'
+      },
+      {
+        "name": 'numvalue',
+        "type": 'FLOAT',
+        "description": 'param value for numbers'
+      }
+    ]
+  },
+  {
+    "name": 'metrics',
+    "type": 'RECORD',
+    "description": 'metrics of the benchmark',
+    "mode": 'REPEATED',
+    "fields": [
+      {
+        "name": 'name',
+        "type": 'STRING',
+        "description": 'metric name'
+      },
+      {
+        "name": 'value',
+        "type": 'FLOAT',
+        "description": 'metric value'
+      }
+    ]
   }
 ];
 
 class CloudReporter {
-  constructor(runId, benchmarkConfig) {
-    this.stableRowsTableConfig = createTableConfig(benchmarkConfig, '_stable');
-    this.allRowsTableConfig = createTableConfig(benchmarkConfig, '_all')
+  constructor(benchmarkConfig) {
+    this.tableConfig = createTableConfig(benchmarkConfig);
     this.authConfig = benchmarkConfig.cloudReporter.auth;
     this.benchmarkConfig = benchmarkConfig;
-    this.runId = runId;
-    this.allRows = [];
+    this.allSample = [];
     var self = this;
     browser.executeScript('return navigator.userAgent').then(function(userAgent) {
       self.browserUserAgent = userAgent;
     });
-
   }
   begin() {
     var self = this;
@@ -52,66 +100,62 @@ class CloudReporter {
       });
     });
     flow.execute(function() {
-      return webdriver.promise.all([
-        getOrCreateTable(self.authClient, self.allRowsTableConfig),
-        getOrCreateTable(self.authClient, self.stableRowsTableConfig)
-      ]);
+      return getOrCreateTable(self.authClient, self.tableConfig);
     });
   }
   add(data) {
-    this.allRows.push(this._convertToTableRow(data));
+    this.allSample.push(data);
   }
   end(stableSample) {
     var self = this;
     var flow = browser.driver.controlFlow();
-    var stableRows = stableSample.map(function(data) {
-      return self._convertToTableRow(data);
+    var allRows = this.allSample.map(function(data) {
+      return self._convertToTableRow(data, stableSample);
     });
     flow.execute(function() {
-      return webdriver.promise.all([
-        insertRows(self.authClient, self.stableRowsTableConfig, stableRows),
-        insertRows(self.authClient, self.allRowsTableConfig, self.allRows)
-      ]);
+      return insertRows(self.authClient, self.tableConfig, allRows)
     });
   }
-  _convertToTableRow(benchpressRow) {
+  _convertToTableRow(benchpressRow, stableSample) {
     var tableRow = {
-      runId: this.runId,
+      runId: this.benchmarkConfig.runId,
+      benchmarkId: this.benchmarkConfig.id,
       index: benchpressRow.index,
       creationTime: new Date(),
       browser: this.browserUserAgent,
-      forceGc: benchpressRow.forceGc
+      forceGc: benchpressRow.forceGc,
+      stable: stableSample.indexOf(benchpressRow) >= 0,
+      params: this.benchmarkConfig.params.map(function(param) {
+        if (typeof param.value === 'number') {
+          return {
+            name: param.name,
+            numvalue: param.value
+          };
+        } else {
+          return {
+            name: param.name,
+            strvalue: ''+param.value
+          }
+        }
+      }),
+      metrics: this.benchmarkConfig.metrics.map(function(metricName, index) {
+        return {
+          name: metricName,
+          value: benchpressRow.values[index]
+        };
+      })
     };
-    this.benchmarkConfig.params.forEach(function(param) {
-      tableRow['p_'+param.name] = param.value;
-    });
-    this.benchmarkConfig.metrics.forEach(function(metric, index) {
-      tableRow['m_'+metric] = benchpressRow.values[index];
-    });
     return tableRow;
   }
 }
 
-function createTableConfig(benchmarkConfig, tableSuffix) {
-  var tableId = (benchmarkConfig.id+tableSuffix).replace(/\./g, '_');
+function createTableConfig(benchmarkConfig) {
   return {
     projectId: benchmarkConfig.cloudReporter.projectId,
     datasetId: benchmarkConfig.cloudReporter.datasetId,
     table: {
-      id: tableId,
-      fields: HEADER_FIELDS
-        .concat(benchmarkConfig.params.map(function(param) {
-          return {
-            "name": 'p_'+param.name,
-            "type": 'FLOAT'
-          };
-        }))
-        .concat(benchmarkConfig.metrics.map(function(metricName) {
-          return {
-            "name": 'm_'+metricName,
-            "type": 'FLOAT'
-          };
-        }))
+      id: benchmarkConfig.cloudReporter.tableId,
+      fields: TABLE_FIELDS
     }
   };
 }
