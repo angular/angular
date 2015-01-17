@@ -13,11 +13,13 @@ if (process.env.CLOUD_SECRET_PATH) {
 }
 
 config.specs = ['dist/cjs/**/*_perf.js'];
+config.jasmineNodeOpts.defaultTimeoutInterval = 80000;
+
 config.params = {
   benchmark: {
     // size of the sample to take
     sampleSize: 20,
-    timeout: 20000,
+    timeout: 60000,
     metrics: ['script', 'render', 'gcAmount', 'gcAmountInScript', 'gcTime'],
     // forces a gc after every run
     forceGc: false,
