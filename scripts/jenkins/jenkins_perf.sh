@@ -10,6 +10,7 @@ export CHANNEL=stable
 export ARCH=macos-ia32
 export PERF_BROWSERS=ChromeAndroid
 export CLOUD_SECRET_PATH="/Users/Shared/jenkins/keys/perf-cloud-secret"
+export GIT_SHA=$(git rev-parse HEAD)
 
 nvm use 0.10
 

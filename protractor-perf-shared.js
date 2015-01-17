@@ -1,6 +1,7 @@
 var config = exports.config = require('./protractor-shared.js').config;
 // load traceur runtime as our tests are written in es6
 require('traceur/bin/traceur-runtime.js');
+var nodeUuid = require('node-uuid');
 
 var cloudReporterConfig;
 if (process.env.CLOUD_SECRET_PATH) {
@@ -8,15 +9,22 @@ if (process.env.CLOUD_SECRET_PATH) {
   cloudReporterConfig = {
     auth: require(process.env.CLOUD_SECRET_PATH),
     projectId: 'angular-perf',
-    datasetId: 'benchmarks'
+    datasetId: 'benchmarks',
+    tableId: 'ng2perf'
   };
 }
 
 config.specs = ['dist/cjs/**/*_perf.js'];
 config.jasmineNodeOpts.defaultTimeoutInterval = 80000;
 
+var runId = nodeUuid.v1();
+if (process.env.GIT_SHA) {
+  runId = process.env.GIT_SHA + ' ' + runId;
+}
+
 config.params = {
   benchmark: {
+    runId: runId,
     // size of the sample to take
     sampleSize: 20,
     timeout: 60000,
