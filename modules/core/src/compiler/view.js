@@ -379,18 +379,7 @@ export class ProtoView {
         // TODO(rado): if there is directive at this element that injected an
         // event emitter for that eventType do not attach the handler.
         MapWrapper.forEach(binder.events, (expr, eventName) => {
-          DOM.on(element, eventName, (event) => {
-            if (event.target === element) {
-              // Most of the time the event will be fired only when the view is
-              // in the live document.  However, in a rare circumstance the
-              // view might get dehydrated, in between the event queuing up and
-              // firing.
-              // TODO(rado): replace with
-              // expr.eval(new ContextWithVariableBindings(view.context, {'$event': event}));
-              // when eval with variable bindinds works.
-              if (view.hydrated()) expr.eval(view.context);
-            }
-          });
+          ProtoView._addNativeEventListener(element, eventName, expr, view);
         });
       }
     }
@@ -399,6 +388,21 @@ export class ProtoView {
       viewPorts, preBuiltObjects, componentChildViews);
 
     return view;
+  }
+
+  static _addNativeEventListener(element: Element, eventName: string, expr, view: View) {
+    DOM.on(element, eventName, (event) => {
+      if (event.target === element) {
+        // Most of the time the event will be fired only when the view is
+        // in the live document.  However, in a rare circumstance the
+        // view might get dehydrated, in between the event queuing up and
+        // firing.
+        // TODO(rado): replace with
+        // expr.eval(new ContextWithVariableBindings(view.context, {'$event': event}));
+        // when eval with variable bindinds works.
+        if (view.hydrated()) expr.eval(view.context);
+      }
+    });
   }
 
   _parentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {
