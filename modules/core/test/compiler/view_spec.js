@@ -404,24 +404,29 @@ export function main() {
       });
 
       describe('event handlers', () => {
-        var view, ctx, called;
+        var view, ctx, called, receivedEvent, dispatchedEvent;
 
         function createViewAndContext(protoView) {
           view = createView(protoView);
           ctx = view.context;
           called = 0;
-          ctx.callMe = () => called += 1;
+          receivedEvent = null;
+          ctx.callMe = (event) => {
+            called += 1;
+            receivedEvent = event;
+          }
         }
 
         function dispatchClick(el) {
-          DOM.dispatchEvent(el, DOM.createMouseEvent('click'));
+          dispatchedEvent = DOM.createMouseEvent('click');
+          DOM.dispatchEvent(el, dispatchedEvent);
         }
 
         function createProtoView() {
           var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
             new ProtoRecordRange());
           pv.bindElement(new TestProtoElementInjector(null, 0, []));
-          pv.bindEvent('click', parser.parseBinding('callMe()', null));
+          pv.bindEvent('click', parser.parseBinding('callMe(\$event)', null));
           return pv;
         }
 
@@ -431,6 +436,7 @@ export function main() {
           dispatchClick(view.nodes[0]);
 
           expect(called).toEqual(1);
+          expect(receivedEvent).toBe(dispatchedEvent);
         });
 
         it('should not fire on a bubbled native events', () => {
@@ -448,6 +454,7 @@ export function main() {
 
           view.dehydrate();
           dispatchClick(view.nodes[0]);
+          expect(called).toEqual(0);
         });
       });
 

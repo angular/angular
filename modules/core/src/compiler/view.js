@@ -391,16 +391,18 @@ export class ProtoView {
   }
 
   static _addNativeEventListener(element: Element, eventName: string, expr, view: View) {
+    var locals = MapWrapper.create();
     DOM.on(element, eventName, (event) => {
       if (event.target === element) {
         // Most of the time the event will be fired only when the view is
         // in the live document.  However, in a rare circumstance the
         // view might get dehydrated, in between the event queuing up and
         // firing.
-        // TODO(rado): replace with
-        // expr.eval(new ContextWithVariableBindings(view.context, {'$event': event}));
-        // when eval with variable bindinds works.
-        if (view.hydrated()) expr.eval(view.context);
+        if (view.hydrated()) {
+          MapWrapper.set(locals, '\$event', event);
+          var context = new ContextWithVariableBindings(view.context, locals);
+          expr.eval(context);
+        }
       }
     });
   }
