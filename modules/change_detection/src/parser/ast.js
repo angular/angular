@@ -335,8 +335,18 @@ export class MethodCall extends AST {
   }
 
   eval(context) {
-    var obj = this.receiver.eval(context);
-    return this.fn(obj, evalList(context, this.args));
+    var evaluatedContext = this.receiver.eval(context);
+    var evaluatedArgs = evalList(context, this.args);
+
+    while (evaluatedContext instanceof ContextWithVariableBindings) {
+      if (evaluatedContext.hasBinding(this.name)) {
+        var fn = evaluatedContext.get(this.name);
+        return FunctionWrapper.apply(fn, evaluatedArgs);
+      }
+      evaluatedContext = evaluatedContext.parent;
+    }
+
+    return this.fn(evaluatedContext, evaluatedArgs);
   }
 
   visit(visitor, args) {

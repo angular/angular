@@ -194,7 +194,7 @@ export function main() {
         });
 
         it("should fall back to a regular field read when ContextWithVariableBindings "+
-          "does not have the requested field", () => {
+           "does not have the requested field", () => {
           var locals = new ContextWithVariableBindings(td(999), MapWrapper.create());
           expectEval("a", locals).toEqual(999);
         });
@@ -210,6 +210,23 @@ export function main() {
 
         it('should throw when no method', () => {
           expectEvalError("blah()").toThrowError();
+        });
+
+        it('should evaluate a method from ContextWithVariableBindings', () => {
+          var context = new ContextWithVariableBindings(
+            td(0, 0, 'parent'),
+            MapWrapper.createFromPairs([['fn', () => 'child']])
+          );
+          expectEval("fn()", context).toEqual('child');
+        });
+
+        it('should fall back to the parent context when ContextWithVariableBindings does not ' +
+           'have the requested method', () => {
+          var context = new ContextWithVariableBindings(
+            td(0, 0, 'parent'),
+            MapWrapper.create()
+          );
+          expectEval("fn()", context).toEqual('parent');
         });
       });
 
