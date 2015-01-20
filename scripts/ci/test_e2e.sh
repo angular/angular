@@ -18,13 +18,5 @@ serverPid=$!
 
 trap killServer EXIT
 
-if [[ $PERF_BROWSERS =~ .*Android.* ]]
-then
-  adb usb
-  adb wait-for-device
-  adb reverse tcp:8001 tcp:8001
-  adb reverse tcp:8002 tcp:8002
-fi
-
 ./node_modules/.bin/protractor protractor-e2e-js.conf.js --browsers=$E2E_BROWSERS
 ./node_modules/.bin/protractor protractor-e2e-dart2js.conf.js --browsers=$E2E_BROWSERS
