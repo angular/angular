@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException} from 'facade/lang';
+import {isPresent, isBlank, BaseException, Type, isString} from 'facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 
 import {
@@ -24,55 +24,118 @@ import {
   } from './parser/ast';
 
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
-import {ChangeDispatcher, ChangeDetector} from './interfaces';
+import {ChangeRecord, ChangeDispatcher, ChangeDetector} from './interfaces';
+import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
+import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
+
+import {ArrayChanges} from './array_changes';
+import {KeyValueChanges} from './keyvalue_changes';
 
 export const RECORD_TYPE_SELF = 0;
-export const RECORD_TYPE_PROPERTY = 1;
-export const RECORD_TYPE_INVOKE_METHOD = 2;
-export const RECORD_TYPE_CONST = 3;
-export const RECORD_TYPE_INVOKE_CLOSURE = 4;
-export const RECORD_TYPE_INVOKE_PURE_FUNCTION = 5;
-export const RECORD_TYPE_INVOKE_FORMATTER = 6;
-export const RECORD_TYPE_STRUCTURAL_CHECK = 10;
+export const RECORD_TYPE_CONST = 1;
+export const RECORD_TYPE_PRIMITIVE_OP = 2;
+export const RECORD_TYPE_PROPERTY = 3;
+export const RECORD_TYPE_INVOKE_METHOD = 4;
+export const RECORD_TYPE_INVOKE_CLOSURE = 5;
+export const RECORD_TYPE_KEYED_ACCESS = 6;
+export const RECORD_TYPE_INVOKE_FORMATTER = 7;
+export const RECORD_TYPE_STRUCTURAL_CHECK = 8;
+export const RECORD_TYPE_INTERPOLATE = 9;
 
 export class ProtoRecord {
   mode:number;
   name:string;
   funcOrValue:any;
   args:List;
+  fixedArgs:List;
   contextIndex:number;
-  record_type_selfIndex:number;
+  selfIndex:number;
   bindingMemento:any;
   groupMemento:any;
-  terminal:boolean;
+  lastInBinding:boolean;
+  lastInGroup:boolean;
   expressionAsString:string;
 
   constructor(mode:number,
               name:string,
               funcOrValue,
               args:List,
+              fixedArgs:List,
               contextIndex:number,
-              record_type_selfIndex:number,
+              selfIndex:number,
               bindingMemento:any,
               groupMemento:any,
-              terminal:boolean,
               expressionAsString:string) {
 
     this.mode = mode;
     this.name = name;
     this.funcOrValue = funcOrValue;
     this.args = args;
+    this.fixedArgs = fixedArgs;
     this.contextIndex = contextIndex;
-    this.record_type_selfIndex = record_type_selfIndex;
+    this.selfIndex = selfIndex;
     this.bindingMemento = bindingMemento;
     this.groupMemento = groupMemento;
-    this.terminal = terminal;
+    this.lastInBinding = false;
+    this.lastInGroup = false;
     this.expressionAsString = expressionAsString;
   }
 }
 
-export class ProtoChangeDetector {
+export class ProtoChangeDetector  {
+  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false){}
+  instantiate(dispatcher:any, formatters:Map):ChangeDetector{
+    return null;
+  }
+}
+
+export class DynamicProtoChangeDetector extends ProtoChangeDetector {
+  _recordBuilder:ProtoRecordBuilder;
+
+  constructor() {
+    this._recordBuilder = new ProtoRecordBuilder();
+  }
+
+  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
+    this._recordBuilder.addAst(ast, bindingMemento, groupMemento, structural);
+  }
+
+  instantiate(dispatcher:any, formatters:Map) {
+    var records = this._recordBuilder.records;
+    return new DynamicChangeDetector(dispatcher, formatters, records);
+  }
+}
+
+var _jitProtoChangeDetectorClassCounter:number = 0;
+export class JitProtoChangeDetector extends ProtoChangeDetector {
+  _factory:Function;
+  _recordBuilder:ProtoRecordBuilder;
+
+  constructor() {
+    this._recordBuilder = new ProtoRecordBuilder();
+  }
+
+  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
+    this._recordBuilder.addAst(ast, bindingMemento, groupMemento, structural);
+  }
+
+  instantiate(dispatcher:any, formatters:Map) {
+    this._createFactoryIfNecessary();
+    return this._factory(dispatcher, formatters);
+  }
+
+  _createFactoryIfNecessary() {
+    if (isBlank(this._factory)) {
+      var c = _jitProtoChangeDetectorClassCounter++;
+      var records = this._recordBuilder.records;
+      var typeName = `ChangeDetector${c}`;
+      this._factory = new ChangeDetectorJITGenerator(typeName, records).generate();
+    }
+  }
+}
+
+class ProtoRecordBuilder {
   records:List<ProtoRecord>;
 
   constructor() {
@@ -82,23 +145,23 @@ export class ProtoChangeDetector {
   addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
     if (structural) ast = new Structural(ast);
 
-    var c = new ProtoOperationsCreator(bindingMemento, groupMemento,
-      this.records.length, ast.toString());
-    ast.visit(c);
-
-    if (! ListWrapper.isEmpty(c.protoRecords)) {
-      var last = ListWrapper.last(c.protoRecords);
-      last.terminal = true;
-      this.records = ListWrapper.concat(this.records, c.protoRecords);
+    var last = ListWrapper.last(this.records);
+    if (isPresent(last) && last.groupMemento == groupMemento) {
+      last.lastInGroup = false;
     }
-  }
 
-  instantiate(dispatcher:any, formatters:Map) {
-    return new DynamicChangeDetector(dispatcher, formatters, this.records);
+    var pr = _ConvertAstIntoProtoRecords.convert(ast, bindingMemento, groupMemento, this.records.length);
+    if (! ListWrapper.isEmpty(pr)) {
+      var last = ListWrapper.last(pr);
+      last.lastInBinding = true;
+      last.lastInGroup = true;
+
+      this.records = ListWrapper.concat(this.records, pr);
+    }
   }
 }
 
-class ProtoOperationsCreator {
+class _ConvertAstIntoProtoRecords {
   protoRecords:List;
   bindingMemento:any;
   groupMemento:any;
@@ -113,77 +176,89 @@ class ProtoOperationsCreator {
     this.expressionAsString = expressionAsString;
   }
 
+  static convert(ast:AST, bindingMemento:any, groupMemento:any, contextIndex:number) {
+    var c = new _ConvertAstIntoProtoRecords(bindingMemento, groupMemento, contextIndex, ast.toString());
+    ast.visit(c);
+    return c.protoRecords;
+  }
+
   visitImplicitReceiver(ast:ImplicitReceiver) {
     return 0;
   }
 
   visitInterpolation(ast:Interpolation) {
     var args = this._visitAll(ast.expressions);
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, "Interpolate()", _interpolationFn(ast.strings), args, 0);
+    return this._addRecord(RECORD_TYPE_INTERPOLATE, "interpolate", _interpolationFn(ast.strings),
+      args, ast.strings, 0);
   }
 
   visitLiteralPrimitive(ast:LiteralPrimitive) {
-    return this._addRecord(RECORD_TYPE_CONST, null, ast.value, [], 0);
+    return this._addRecord(RECORD_TYPE_CONST, "literal", ast.value, [], null, 0);
   }
 
   visitAccessMember(ast:AccessMember) {
     var receiver = ast.receiver.visit(this);
-    return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], receiver);
+    return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
   }
 
   visitFormatter(ast:Formatter) {
-    return this._addRecord(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.name, this._visitAll(ast.allArgs), 0);
+    return this._addRecord(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.name, this._visitAll(ast.allArgs), null, 0);
   }
 
   visitMethodCall(ast:MethodCall) {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
-    return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, receiver);
+    return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
   }
 
   visitFunctionCall(ast:FunctionCall) {
     var target = ast.target.visit(this);
     var args = this._visitAll(ast.args);
-    return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, null, null, args, target);
+    return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, "closure", null, args, null, target);
   }
 
   visitLiteralArray(ast:LiteralArray) {
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, "Array()", _arrayFn(ast.expressions.length),
-      this._visitAll(ast.expressions), 0);
+    var primitiveName = `arrayFn${ast.expressions.length}`;
+    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, primitiveName, _arrayFn(ast.expressions.length),
+      this._visitAll(ast.expressions), null, 0);
   }
 
   visitLiteralMap(ast:LiteralMap) {
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, "Map()", _mapFn(ast.keys, ast.values.length),
-      this._visitAll(ast.values), 0);
+    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, _mapPrimitiveName(ast.keys),
+      ChangeDetectionUtil.mapFn(ast.keys), this._visitAll(ast.values), null, 0);
   }
 
   visitBinary(ast:Binary) {
     var left = ast.left.visit(this);
     var right = ast.right.visit(this);
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, ast.operation, _operationToFunction(ast.operation), [left, right], 0);
+    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, _operationToPrimitiveName(ast.operation),
+      _operationToFunction(ast.operation), [left, right], null, 0);
   }
 
   visitPrefixNot(ast:PrefixNot) {
     var exp = ast.expression.visit(this)
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, "-", _operation_negate, [exp], 0);
+    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, "operation_negate",
+      ChangeDetectionUtil.operation_negate, [exp], null, 0);
   }
 
   visitConditional(ast:Conditional) {
     var c = ast.condition.visit(this);
     var t = ast.trueExp.visit(this);
     var f = ast.falseExp.visit(this);
-    return this._addRecord(RECORD_TYPE_INVOKE_PURE_FUNCTION, "?:", _cond, [c,t,f], 0);
+    return this._addRecord(RECORD_TYPE_PRIMITIVE_OP, "cond",
+      ChangeDetectionUtil.cond, [c,t,f], null, 0);
   }
 
   visitStructural(ast:Structural) {
     var value = ast.value.visit(this);
-    return this._addRecord(RECORD_TYPE_STRUCTURAL_CHECK, "record_type_structural_check", null, [], value);
+    return this._addRecord(RECORD_TYPE_STRUCTURAL_CHECK, "structural", null, [], null, value);
   }
 
   visitKeyedAccess(ast:KeyedAccess) {
     var obj = ast.obj.visit(this);
     var key = ast.key.visit(this);
-    return this._addRecord(RECORD_TYPE_INVOKE_METHOD, "[]", _keyedAccess, [key], obj);
+    return this._addRecord(RECORD_TYPE_KEYED_ACCESS, "keyedAccess",
+      ChangeDetectionUtil.keyedAccess, [key], null, obj);
   }
 
   _visitAll(asts:List) {
@@ -194,92 +269,75 @@ class ProtoOperationsCreator {
     return res;
   }
 
-  _addRecord(type, name, funcOrValue, args, context) {
-    var record_type_selfIndex = ++ this.contextIndex;
+  _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
+    var selfIndex = ++ this.contextIndex;
     ListWrapper.push(this.protoRecords,
-      new ProtoRecord(type, name, funcOrValue, args, context, record_type_selfIndex,
-        this.bindingMemento, this.groupMemento, false, this.expressionAsString));
-    return record_type_selfIndex;
+      new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, selfIndex,
+        this.bindingMemento, this.groupMemento, this.expressionAsString));
+    return selfIndex;
   }
 }
 
-function _arrayFn(length:int) {
-  switch (length) {
-    case 0: return () => [];
-    case 1: return (a1) => [a1];
-    case 2: return (a1, a2) => [a1, a2];
-    case 3: return (a1, a2, a3) => [a1, a2, a3];
-    case 4: return (a1, a2, a3, a4) => [a1, a2, a3, a4];
-    case 5: return (a1, a2, a3, a4, a5) => [a1, a2, a3, a4, a5];
-    case 6: return (a1, a2, a3, a4, a5, a6) => [a1, a2, a3, a4, a5, a6];
-    case 7: return (a1, a2, a3, a4, a5, a6, a7) => [a1, a2, a3, a4, a5, a6, a7];
-    case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => [a1, a2, a3, a4, a5, a6, a7, a8];
-    case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => [a1, a2, a3, a4, a5, a6, a7, a8, a9];
-    default: throw new BaseException(`Does not support literal arrays with more than 9 elements`);
-  }
-}
 
-function _mapFn(keys:List, length:int) {
-  function buildMap(values) {
-    var res = StringMapWrapper.create();
-    for(var i = 0; i < keys.length; ++i) {
-      StringMapWrapper.set(res, keys[i], values[i]);
-    }
-    return res;
-  }
-
+function _arrayFn(length:number):Function {
   switch (length) {
-    case 0: return () => [];
-    case 1: return (a1) => buildMap([a1]);
-    case 2: return (a1, a2) => buildMap([a1, a2]);
-    case 3: return (a1, a2, a3) => buildMap([a1, a2, a3]);
-    case 4: return (a1, a2, a3, a4) => buildMap([a1, a2, a3, a4]);
-    case 5: return (a1, a2, a3, a4, a5) => buildMap([a1, a2, a3, a4, a5]);
-    case 6: return (a1, a2, a3, a4, a5, a6) => buildMap([a1, a2, a3, a4, a5, a6]);
-    case 7: return (a1, a2, a3, a4, a5, a6, a7) => buildMap([a1, a2, a3, a4, a5, a6, a7]);
-    case 8: return (a1, a2, a3, a4, a5, a6, a7, a8) => buildMap([a1, a2, a3, a4, a5, a6, a7, a8]);
-    case 9: return (a1, a2, a3, a4, a5, a6, a7, a8, a9) => buildMap([a1, a2, a3, a4, a5, a6, a7, a8, a9]);
+    case 0: return ChangeDetectionUtil.arrayFn0;
+    case 1: return ChangeDetectionUtil.arrayFn1;
+    case 2: return ChangeDetectionUtil.arrayFn2;
+    case 3: return ChangeDetectionUtil.arrayFn3;
+    case 4: return ChangeDetectionUtil.arrayFn4;
+    case 5: return ChangeDetectionUtil.arrayFn5;
+    case 6: return ChangeDetectionUtil.arrayFn6;
+    case 7: return ChangeDetectionUtil.arrayFn7;
+    case 8: return ChangeDetectionUtil.arrayFn8;
+    case 9: return ChangeDetectionUtil.arrayFn9;
     default: throw new BaseException(`Does not support literal maps with more than 9 elements`);
+  }
+}
+
+function _mapPrimitiveName(keys:List) {
+  var stringifiedKeys = ListWrapper.join(
+    ListWrapper.map(keys, (k) => isString(k) ? `"${k}"` : `${k}`),
+    ", ");
+  return `mapFn([${stringifiedKeys}])`;
+}
+
+function _operationToPrimitiveName(operation:string):string {
+  switch(operation) {
+    case '+'  : return "operation_add";
+    case '-'  : return "operation_subtract";
+    case '*'  : return "operation_multiply";
+    case '/'  : return "operation_divide";
+    case '%'  : return "operation_remainder";
+    case '==' : return "operation_equals";
+    case '!=' : return "operation_not_equals";
+    case '<'  : return "operation_less_then";
+    case '>'  : return "operation_greater_then";
+    case '<=' : return "operation_less_or_equals_then";
+    case '>=' : return "operation_greater_or_equals_then";
+    case '&&' : return "operation_logical_and";
+    case '||' : return "operation_logical_or";
+    default: throw new BaseException(`Unsupported operation ${operation}`);
   }
 }
 
 function _operationToFunction(operation:string):Function {
   switch(operation) {
-    case '+'  : return _operation_add;
-    case '-'  : return _operation_subtract;
-    case '*'  : return _operation_multiply;
-    case '/'  : return _operation_divide;
-    case '%'  : return _operation_remainder;
-    case '==' : return _operation_equals;
-    case '!=' : return _operation_not_equals;
-    case '<'  : return _operation_less_then;
-    case '>'  : return _operation_greater_then;
-    case '<=' : return _operation_less_or_equals_then;
-    case '>=' : return _operation_greater_or_equals_then;
-    case '&&' : return _operation_logical_and;
-    case '||' : return _operation_logical_or;
+    case '+'  : return ChangeDetectionUtil.operation_add;
+    case '-'  : return ChangeDetectionUtil.operation_subtract;
+    case '*'  : return ChangeDetectionUtil.operation_multiply;
+    case '/'  : return ChangeDetectionUtil.operation_divide;
+    case '%'  : return ChangeDetectionUtil.operation_remainder;
+    case '==' : return ChangeDetectionUtil.operation_equals;
+    case '!=' : return ChangeDetectionUtil.operation_not_equals;
+    case '<'  : return ChangeDetectionUtil.operation_less_then;
+    case '>'  : return ChangeDetectionUtil.operation_greater_then;
+    case '<=' : return ChangeDetectionUtil.operation_less_or_equals_then;
+    case '>=' : return ChangeDetectionUtil.operation_greater_or_equals_then;
+    case '&&' : return ChangeDetectionUtil.operation_logical_and;
+    case '||' : return ChangeDetectionUtil.operation_logical_or;
     default: throw new BaseException(`Unsupported operation ${operation}`);
   }
-}
-
-function _operation_negate(value)                       {return !value;}
-function _operation_add(left, right)                    {return left + right;}
-function _operation_subtract(left, right)               {return left - right;}
-function _operation_multiply(left, right)               {return left * right;}
-function _operation_divide(left, right)                 {return left / right;}
-function _operation_remainder(left, right)              {return left % right;}
-function _operation_equals(left, right)                 {return left == right;}
-function _operation_not_equals(left, right)             {return left != right;}
-function _operation_less_then(left, right)              {return left < right;}
-function _operation_greater_then(left, right)           {return left > right;}
-function _operation_less_or_equals_then(left, right)    {return left <= right;}
-function _operation_greater_or_equals_then(left, right) {return left >= right;}
-function _operation_logical_and(left, right)            {return left && right;}
-function _operation_logical_or(left, right)             {return left || right;}
-function _cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
-
-function _keyedAccess(obj, args) {
-  return obj[args[0]];
 }
 
 function s(v) {
@@ -288,17 +346,16 @@ function s(v) {
 
 function _interpolationFn(strings:List) {
   var length = strings.length;
-  var i = -1;
-  var c0 = length > ++i ? strings[i] : null;
-  var c1 = length > ++i ? strings[i] : null;
-  var c2 = length > ++i ? strings[i] : null;
-  var c3 = length > ++i ? strings[i] : null;
-  var c4 = length > ++i ? strings[i] : null;
-  var c5 = length > ++i ? strings[i] : null;
-  var c6 = length > ++i ? strings[i] : null;
-  var c7 = length > ++i ? strings[i] : null;
-  var c8 = length > ++i ? strings[i] : null;
-  var c9 = length > ++i ? strings[i] : null;
+  var c0 = length > 0 ? strings[0] : null;
+  var c1 = length > 1 ? strings[1] : null;
+  var c2 = length > 2 ? strings[2] : null;
+  var c3 = length > 3 ? strings[3] : null;
+  var c4 = length > 4 ? strings[4] : null;
+  var c5 = length > 5 ? strings[5] : null;
+  var c6 = length > 6 ? strings[6] : null;
+  var c7 = length > 7 ? strings[7] : null;
+  var c8 = length > 8 ? strings[8] : null;
+  var c9 = length > 9 ? strings[9] : null;
   switch (length - 1) {
     case 1: return (a1) => c0 + s(a1) + c1;
     case 2: return (a1, a2) =>  c0 + s(a1) + c1 + s(a2) + c2;

@@ -12,7 +12,7 @@ import {CompileElement} from 'core/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/compiler/pipeline/compile_control';
 
-import {Lexer, Parser} from 'change_detection/change_detection';
+import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
 
 export function main() {
   describe('compiler', function() {
@@ -134,7 +134,7 @@ class RecursiveComponent {}
 class TestableCompiler extends Compiler {
   steps:List;
   constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
-    super(null, reader, new Parser(new Lexer()), new CompilerCache());
+    super(dynamicChangeDetection, null, reader, new Parser(new Lexer()), new CompilerCache());
     this.steps = steps;
   }
   createSteps(component):List<CompileStep> {

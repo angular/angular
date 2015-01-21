@@ -4,7 +4,7 @@ import {DOM, Element} from 'facade/dom';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
-import {Parser, Lexer, ChangeDetector} from 'change_detection/change_detection';
+import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'change_detection/change_detection';
 import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
@@ -17,7 +17,14 @@ var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector), Compiler, CompilerCache, TemplateLoader, DirectiveMetadataReader, Parser, Lexer
+  bind(Reflector).toValue(reflector),
+  bind(ChangeDetection).toValue(dynamicChangeDetection),
+  Compiler,
+  CompilerCache,
+  TemplateLoader,
+  DirectiveMetadataReader,
+  Parser,
+  Lexer
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -45,20 +52,20 @@ function _injectorBindings(appComponentType) {
         return element;
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
-      bind(appViewToken).toAsyncFactory((compiler, injector, appElement,
+      bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
             appComponentAnnotatedType) => {
         return compiler.compile(appComponentAnnotatedType.type, null).then(
             (protoView) => {
-              var appProtoView = ProtoView.createRootProtoView(protoView,
-              appElement, appComponentAnnotatedType);
+          var appProtoView = ProtoView.createRootProtoView(protoView,
+          appElement, appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'));
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-              var view = appProtoView.instantiate(null);
-              view.hydrate(injector, null, new Object());
+          var view = appProtoView.instantiate(null);
+          view.hydrate(injector, null, new Object());
           return view;
         });
-      }, [Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
+      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),

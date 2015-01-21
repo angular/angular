@@ -3,7 +3,7 @@ import {Promise, PromiseWrapper} from 'facade/async';
 import {List, ListWrapper, MapWrapper} from 'facade/collection';
 import {DOM, Element} from 'facade/dom';
 
-import {Parser} from 'change_detection/change_detection';
+import {ChangeDetection, Parser} from 'change_detection/change_detection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {ProtoView} from './view';
@@ -52,7 +52,10 @@ export class Compiler {
   _reader: DirectiveMetadataReader;
   _parser:Parser;
   _compilerCache:CompilerCache;
-  constructor(templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser, cache:CompilerCache) {
+  _changeDetection:ChangeDetection;
+
+  constructor(changeDetection:ChangeDetection, templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser, cache:CompilerCache) {
+    this._changeDetection = changeDetection;
     this._reader = reader;
     this._parser = parser;
     this._compilerCache = cache;
@@ -60,7 +63,7 @@ export class Compiler {
 
   createSteps(component:DirectiveMetadata):List<CompileStep> {
     var dirs = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
-    return createDefaultSteps(this._parser, component, dirs);
+    return createDefaultSteps(this._changeDetection, this._parser, component, dirs);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {

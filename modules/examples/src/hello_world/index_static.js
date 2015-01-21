@@ -1,7 +1,7 @@
 import *  as app from './index_common';
 
 import {Component, Decorator, TemplateConfig, NgElement} from 'angular/angular';
-import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
+import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'change_detection/change_detection';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
@@ -37,8 +37,8 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (templateLoader, reader, parser, compilerCache) => new Compiler(templateLoader, reader, parser, compilerCache),
-    "parameters": [[TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache) => new Compiler(changeDetection, templateLoader, reader, parser, compilerCache),
+    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
     "annotations": []
   });
 

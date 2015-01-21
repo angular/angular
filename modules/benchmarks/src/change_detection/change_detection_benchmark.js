@@ -8,6 +8,7 @@ import {
   Parser,
   ChangeDetector,
   ProtoChangeDetector,
+  DynamicProtoChangeDetector,
   ChangeDispatcher,
 } from 'change_detection/change_detection';
 
@@ -102,7 +103,7 @@ function setUpChangeDetection(iterations) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = new ProtoChangeDetector();
+  var parentProto = new DynamicProtoChangeDetector();
   var parentCD = parentProto.instantiate(dispatcher, MapWrapper.create());
 
   var astWithSource = [
@@ -119,7 +120,7 @@ function setUpChangeDetection(iterations) {
   ];
 
   function proto(i) {
-    var pcd = new ProtoChangeDetector();
+    var pcd = new DynamicProtoChangeDetector();
     pcd.addAst(astWithSource[i % 10].ast, "memo", i, false);
     return pcd;
   }

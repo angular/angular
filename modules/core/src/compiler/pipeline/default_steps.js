@@ -1,4 +1,4 @@
-import {Parser} from 'change_detection/change_detection';
+import {ChangeDetection, Parser} from 'change_detection/change_detection';
 import {List} from 'facade/collection';
 
 import {PropertyBindingParser} from './property_binding_parser';
@@ -17,8 +17,12 @@ import {stringify} from 'facade/lang';
  * Takes in an HTMLElement and produces the ProtoViews,
  * ProtoElementInjectors and ElementBinders in the end.
  */
-export function createDefaultSteps(parser:Parser, compiledComponent: DirectiveMetadata,
+export function createDefaultSteps(
+    changeDetection:ChangeDetection,
+    parser:Parser,
+    compiledComponent: DirectiveMetadata,
     directives: List<DirectiveMetadata>) {
+
   var compilationUnit = stringify(compiledComponent.type);
 
   return [
@@ -27,7 +31,7 @@ export function createDefaultSteps(parser:Parser, compiledComponent: DirectiveMe
     new DirectiveParser(directives),
     new TextInterpolationParser(parser, compilationUnit),
     new ElementBindingMarker(),
-    new ProtoViewBuilder(),
+    new ProtoViewBuilder(changeDetection),
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder()
   ];

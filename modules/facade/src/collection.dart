@@ -89,8 +89,8 @@ class ListWrapper {
   static reduce(List list, Function fn, init) {
     return list.fold(init, fn);
   }
-  static first(List list) => list.first;
-  static last(List list) => list.last;
+  static first(List list) => list.isEmpty ? null : list.first;
+  static last(List list) => list.isEmpty ? null : list.last;
   static List reversed(List list) => list.reversed.toList();
   static void push(List l, e) { l.add(e); }
   static List concat(List a, List b) {a.addAll(b); return a;}

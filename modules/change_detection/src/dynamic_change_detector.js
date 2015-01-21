@@ -2,6 +2,9 @@ import {isPresent, isBlank, BaseException, FunctionWrapper} from 'facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 
+import {AbstractChangeDetector} from './abstract_change_detector';
+import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
+
 import {ArrayChanges} from './array_changes';
 import {KeyValueChanges} from './keyvalue_changes';
 
@@ -12,76 +15,37 @@ import {
   RECORD_TYPE_INVOKE_METHOD,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
-  RECORD_TYPE_INVOKE_PURE_FUNCTION,
+  RECORD_TYPE_PRIMITIVE_OP,
+  RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_INVOKE_FORMATTER,
   RECORD_TYPE_STRUCTURAL_CHECK,
+  RECORD_TYPE_INTERPOLATE,
   ProtoChangeDetector
   } from './proto_change_detector';
 
-import {ChangeDetector, ChangeRecord, ChangeDispatcher} from './interfaces';
+import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
-var _uninitialized = new Object();
-
-class SimpleChange {
-  previousValue:any;
-  currentValue:any;
-
-  constructor(previousValue:any, currentValue:any) {
-    this.previousValue = previousValue;
-    this.currentValue = currentValue;
-  }
-}
-
-export class DynamicChangeDetector extends ChangeDetector {
+export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
   formatters:Map;
-  children:List;
   values:List;
   protos:List<ProtoRecord>;
-  parent:ChangeDetector;
 
   constructor(dispatcher:any, formatters:Map, protoRecords:List<ProtoRecord>) {
+    super();
     this.dispatcher = dispatcher;
     this.formatters = formatters;
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
-    ListWrapper.fill(this.values, _uninitialized);
+    ListWrapper.fill(this.values, uninitialized);
     this.protos = protoRecords;
-
-    this.children = [];
-  }
-
-  addChild(cd:ChangeDetector) {
-    ListWrapper.push(this.children, cd);
-    cd.parent = this;
-  }
-
-  removeChild(cd:ChangeDetector) {
-    ListWrapper.remove(this.children, cd);
-  }
-
-  remove() {
-    this.parent.removeChild(this);
   }
 
   setContext(context:any) {
     this.values[0] = context;
   }
 
-  detectChanges() {
-    this._detectChanges(false);
-  }
-
-  checkNoChanges() {
-    this._detectChanges(true);
-  }
-
-  _detectChanges(throwOnChange:boolean) {
-    this._detectChangesInRecords(throwOnChange);
-    this._detectChangesInChildren(throwOnChange);
-  }
-
-  _detectChangesInRecords(throwOnChange:boolean) {
+  detectChangesInRecords(throwOnChange:boolean) {
     var protos:List<ProtoRecord> = this.protos;
 
     var updatedRecords = null;
@@ -91,21 +55,16 @@ export class DynamicChangeDetector extends ChangeDetector {
       var proto:ProtoRecord = protos[i];
       var change = this._check(proto);
 
-      // only when the terminal record, which ends a binding, changes
-      // we need to add it to a list of changed records
-      if (isPresent(change) && proto.terminal) {
-        if (throwOnChange) throw new ExpressionChangedAfterItHasBeenChecked(proto, change);
+      if (isPresent(change)) {
         currentGroup = proto.groupMemento;
         updatedRecords = this._addRecord(updatedRecords, proto, change);
       }
 
-      if (isPresent(updatedRecords)) {
-        var lastRecordOfCurrentGroup = protos.length == i + 1 ||
-          currentGroup !== protos[i + 1].groupMemento;
-        if (lastRecordOfCurrentGroup) {
-          this.dispatcher.onRecordChange(currentGroup, updatedRecords);
-          updatedRecords = null;
-        }
+      if (proto.lastInGroup && isPresent(updatedRecords)) {
+        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, updatedRecords[0]);
+
+        this.dispatcher.onRecordChange(currentGroup, updatedRecords);
+        updatedRecords = null;
       }
     }
   }
@@ -128,7 +87,11 @@ export class DynamicChangeDetector extends ChangeDetector {
 
     if (!isSame(prevValue, currValue)) {
       this._writeSelf(proto, currValue);
-      return new SimpleChange(prevValue === _uninitialized ? null : prevValue, currValue);
+      if (proto.lastInBinding) {
+        return new SimpleChange(prevValue, currValue);
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -144,23 +107,28 @@ export class DynamicChangeDetector extends ChangeDetector {
 
       case RECORD_TYPE_PROPERTY:
         var context = this._readContext(proto);
-        while (context instanceof ContextWithVariableBindings) {
-          if (context.hasBinding(proto.name)) {
-            return context.get(proto.name);
-          }
-          context = context.parent;
+        var c = ChangeDetectionUtil.findContext(proto.name, context);
+        if (c instanceof ContextWithVariableBindings) {
+          return c.get(proto.name);
+        } else {
+          var propertyGetter:Function = proto.funcOrValue;
+          return propertyGetter(c);
         }
-        var propertyGetter:Function = proto.funcOrValue;
-        return propertyGetter(context);
+        break;
 
       case RECORD_TYPE_INVOKE_METHOD:
         var methodInvoker:Function = proto.funcOrValue;
         return methodInvoker(this._readContext(proto), this._readArgs(proto));
 
+      case RECORD_TYPE_KEYED_ACCESS:
+        var arg = this._readArgs(proto)[0];
+        return this._readContext(proto)[arg];
+
       case RECORD_TYPE_INVOKE_CLOSURE:
         return FunctionWrapper.apply(this._readContext(proto), this._readArgs(proto));
 
-      case RECORD_TYPE_INVOKE_PURE_FUNCTION:
+      case RECORD_TYPE_INTERPOLATE:
+      case RECORD_TYPE_PRIMITIVE_OP:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
 
       case RECORD_TYPE_INVOKE_FORMATTER:
@@ -176,39 +144,16 @@ export class DynamicChangeDetector extends ChangeDetector {
     var self = this._readSelf(proto);
     var context = this._readContext(proto);
 
-    if (isBlank(self) || self === _uninitialized) {
-      if (ArrayChanges.supports(context)) {
-        self = new ArrayChanges();
-      } else if (KeyValueChanges.supports(context)) {
-        self = new KeyValueChanges();
-      }
+    var change = ChangeDetectionUtil.structuralCheck(self, context);
+    if (isPresent(change)) {
+      this._writeSelf(proto, change.currentValue);
     }
-
-    if (ArrayChanges.supports(context)) {
-      if (self.check(context)) {
-        this._writeSelf(proto, self);
-        return new SimpleChange(null, self); // TODO: don't wrap and return self instead
-      }
-
-    } else if (KeyValueChanges.supports(context)) {
-      if (self.check(context)) {
-        this._writeSelf(proto, self);
-        return new SimpleChange(null, self); // TODO: don't wrap and return self instead
-      }
-
-    } else if (context == null) {
-      this._writeSelf(proto, null);
-      return new SimpleChange(null, null);
-
-    } else {
-      throw new BaseException(`Unsupported type (${context})`);
-    }
-
+    return change;
   }
 
   _addRecord(updatedRecords:List, proto:ProtoRecord, change):List {
     // we can use a pool of change records not to create extra garbage
-    var record = new ChangeRecord(proto.bindingMemento, change);
+    var record = ChangeDetectionUtil.changeRecord(proto.bindingMemento, change);
     if (isBlank(updatedRecords)) {
       updatedRecords = _singleElementList;
       updatedRecords[0] = record;
@@ -222,23 +167,16 @@ export class DynamicChangeDetector extends ChangeDetector {
     return updatedRecords;
   }
 
-  _detectChangesInChildren(throwOnChange:boolean) {
-    var children = this.children;
-    for(var i = 0; i < children.length; ++i) {
-      children[i]._detectChanges(throwOnChange);
-    }
-  }
-
   _readContext(proto:ProtoRecord) {
     return this.values[proto.contextIndex];
   }
 
   _readSelf(proto:ProtoRecord) {
-    return this.values[proto.record_type_selfIndex];
+    return this.values[proto.selfIndex];
   }
 
   _writeSelf(proto:ProtoRecord, value) {
-    this.values[proto.record_type_selfIndex] = value;
+    this.values[proto.selfIndex] = value;
   }
 
   _readArgs(proto:ProtoRecord) {

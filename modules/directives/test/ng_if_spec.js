@@ -3,7 +3,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, IS_DARTIUM, el} f
 import {DOM} from 'facade/dom';
 
 import {Injector} from 'di/di';
-import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
@@ -17,7 +17,8 @@ export function main() {
   describe('ng-if', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
+        new Parser(new Lexer()), new CompilerCache());
     });
 
     function createView(pv) {

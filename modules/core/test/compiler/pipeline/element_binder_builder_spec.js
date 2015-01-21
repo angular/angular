@@ -16,7 +16,8 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/
 import {ProtoElementInjector} from 'core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 
-import {ChangeDetector, Lexer, Parser, ProtoChangeDetector} from 'change_detection/change_detection';
+import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
+  } from 'change_detection/change_detection';
 import {Injector} from 'di/di';
 
 export function main() {
@@ -66,7 +67,7 @@ export function main() {
             }
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element, new ProtoChangeDetector());
+              current.inheritedProtoView = new ProtoView(current.element, new DynamicProtoChangeDetector());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -205,7 +206,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new ProtoChangeDetector());
+          el('<div></div>'), new DynamicProtoChangeDetector());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

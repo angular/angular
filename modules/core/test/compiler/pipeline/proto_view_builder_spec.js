@@ -1,5 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
 import {isPresent} from 'facade/lang';
+import {dynamicChangeDetection} from 'change_detection/change_detection';
 import {ElementBinder} from 'core/compiler/element_binder';
 import {ProtoViewBuilder} from 'core/compiler/pipeline/proto_view_builder';
 import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
@@ -20,7 +21,7 @@ export function main() {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(null, null, null);
-      }), new ProtoViewBuilder()]);
+      }), new ProtoViewBuilder(dynamicChangeDetection)]);
     }
 
     it('should not create a ProtoView when the isViewRoot flag is not set', () => {

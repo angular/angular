@@ -3,7 +3,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_li
 import {DOM} from 'facade/dom';
 
 import {Injector} from 'di/di';
-import {Lexer, Parser, ChangeDetector} from 'change_detection/change_detection';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
@@ -26,7 +26,8 @@ export function main() {
         var compiler;
 
         beforeEach( () => {
-          compiler = new Compiler(null, new TestDirectiveMetadataReader(strategy),
+          compiler = new Compiler(dynamicChangeDetection, null,
+            new TestDirectiveMetadataReader(strategy),
             new Parser(new Lexer()), new CompilerCache());
         });
 

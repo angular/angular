@@ -27,6 +27,10 @@ export function isBlank(obj):boolean {
   return obj === undefined || obj === null;
 }
 
+export function isString(obj):boolean {
+  return typeof obj === "string";
+}
+
 export function stringify(token):string {
   if (typeof token === 'string') {
     return token;

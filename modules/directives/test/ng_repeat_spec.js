@@ -3,7 +3,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_li
 import {DOM} from 'facade/dom';
 
 import {Injector} from 'di/di';
-import {Lexer, Parser} from 'change_detection/change_detection';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {OnChange} from 'core/compiler/interfaces';
@@ -20,7 +20,8 @@ export function main() {
   describe('ng-repeat', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
+        new Parser(new Lexer()), new CompilerCache());
     });
 
     function createView(pv) {

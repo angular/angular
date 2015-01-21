@@ -3,7 +3,7 @@ import {isBlank, Type} from 'facade/lang';
 import {MapWrapper} from 'facade/collection';
 import {DirectiveMetadata} from 'core/compiler/directive_metadata';
 
-import {Parser, Lexer, ProtoRecordRange} from 'change_detection/change_detection';
+import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
@@ -79,7 +79,7 @@ export function main() {
   setupReflector();
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
-  var compiler = new Compiler(null, reader, new Parser(new Lexer()), cache);
+  var compiler = new Compiler(dynamicChangeDetection, null, reader, new Parser(new Lexer()), cache);
   var annotatedComponent = reader.read(BenchmarkComponent);
 
   var templateNoBindings = loadTemplate('templateNoBindings', count);

@@ -1,4 +1,5 @@
-import {Parser, Lexer, ChangeDetector} from 'change_detection/change_detection';
+import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
+  from 'change_detection/change_detection';
 
 import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular/angular';
 
@@ -38,11 +39,7 @@ function setupReflector() {
       },
       template: new TemplateConfig({
           directives: [TreeComponent, NgIf],
-          inline: `
-    <span> {{data.value}}
-       <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span>
-       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
-    </span>`
+          inline: `<span>{{data.value}}<span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
       })
     })]
   });
@@ -59,8 +56,8 @@ function setupReflector() {
   });
 
   reflector.registerType(Compiler, {
-    'factory': (templateLoader, reader, parser, compilerCache) => new Compiler(templateLoader, reader, parser, compilerCache),
-    'parameters': [[TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    'factory': (cd, templateLoader, reader, parser, compilerCache) => new Compiler(cd, templateLoader, reader, parser, compilerCache),
+    'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
     'annotations': []
   });
 

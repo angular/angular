@@ -492,9 +492,12 @@ export class ProtoView {
   // and the component template is already compiled into protoView.
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
-      insertionElement, rootComponentAnnotatedType: DirectiveMetadata): ProtoView {
+      insertionElement, rootComponentAnnotatedType: DirectiveMetadata,
+      protoChangeDetector:ProtoChangeDetector
+  ): ProtoView {
+
     DOM.addClass(insertionElement, 'ng-binding');
-    var rootProtoView = new ProtoView(insertionElement, new ProtoChangeDetector());
+    var rootProtoView = new ProtoView(insertionElement, protoChangeDetector);
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
         new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
