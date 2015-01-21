@@ -118,7 +118,7 @@ class CloudReporter {
   }
   _convertToTableRow(benchpressRow, stableSample) {
     return {
-      insertId: this.benchmarkConfig.runId+'#'+benchpressRow.index,
+      insertId: this.benchmarkConfig.runId+'#'+this.benchmarkConfig.id+'#'+benchpressRow.index,
       json: {
         runId: this.benchmarkConfig.runId,
         benchmarkId: this.benchmarkConfig.id,
