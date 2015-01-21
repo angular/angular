@@ -18,5 +18,8 @@ serverPid=$!
 
 trap killServer EXIT
 
+# wait for server to come up!
+sleep 10
+
 ./node_modules/.bin/protractor protractor-perf-js.conf.js --browsers=$PERF_BROWSERS
 ./node_modules/.bin/protractor protractor-perf-dart2js.conf.js --browsers=$PERF_BROWSERS
