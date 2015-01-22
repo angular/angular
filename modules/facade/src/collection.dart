@@ -101,9 +101,7 @@ class ListWrapper {
       list.remove(items[i]);
     }
   }
-  static remove(List list, item) {
-    list.remove(item);
-  }
+  static bool remove(List list, item) => list.remove(item);
   static void clear(List l) { l.clear(); }
   static String join(List l, String s) => l.join(s);
   static bool isEmpty(list) => list.isEmpty;
