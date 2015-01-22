@@ -14,6 +14,7 @@ import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
+import {EventManager} from 'core/events/event_manager';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -40,6 +41,8 @@ export class View {
   proto: ProtoView;
   context: any;
   contextWithLocals:ContextWithVariableBindings;
+  elementsWithEvents: List<Element>;
+  eventsBound: boolean;
 
   constructor(proto:ProtoView, nodes:List<Node>, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map) {
     this.proto = proto;
@@ -56,9 +59,12 @@ export class View {
     this.contextWithLocals = (MapWrapper.size(protoContextLocals) > 0)
       ? new ContextWithVariableBindings(null, MapWrapper.clone(protoContextLocals))
       : null;
+    this.eventsBound = false;
+    this.elementsWithEvents = null;
   }
 
-  init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List, viewPorts:List, preBuiltObjects:List, componentChildViews:List) {
+  init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List,
+       viewPorts:List, preBuiltObjects:List, componentChildViews:List, elementsWithEvents: List) {
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.textNodes = textNodes;
@@ -66,6 +72,7 @@ export class View {
     this.viewPorts = viewPorts;
     this.preBuiltObjects = preBuiltObjects;
     this.componentChildViews = componentChildViews;
+    this.elementsWithEvents = elementsWithEvents
   }
 
   setLocal(contextName: string, value) {
@@ -128,10 +135,17 @@ export class View {
       this.viewPorts[i].hydrate(appInjector, hostElementInjector);
     }
 
+    var eventIndex = 0;
+    var eventManager = null;
+    if (!this.eventsBound && this.elementsWithEvents.length > 0) {
+      eventManager = appInjector.get(EventManager);
+    }
+
     var binders = this.proto.elementBinders;
     var componentChildViewIndex = 0;
     for (var i = 0; i < binders.length; ++i) {
-      var componentDirective = binders[i].componentDirective;
+      var binder = binders[i];
+      var componentDirective = binder.componentDirective;
       var shadowDomAppInjector = null;
 
       // shadowDomAppInjector
@@ -156,6 +170,24 @@ export class View {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
           elementInjector, elementInjector.getComponent());
       }
+
+      // TODO(vicb): move to view creation
+      if (!this.eventsBound && isPresent(binder.events)) {
+        var element = this.elementsWithEvents[eventIndex++];
+
+        MapWrapper.forEach(binder.events, (expression, eventName) => {
+          // long term plans are to replace the AST with generated code
+          var locals = MapWrapper.create();
+          var handler = (event) => {
+            if (this.hydrated()) {
+              MapWrapper.set(locals, '$event', event);
+              var context = new ContextWithVariableBindings(this.context, locals);
+              expression.eval(context);
+            }
+          }
+          eventManager.addEventListener(element, eventName, handler);
+        });
+      }
     }
 
     // this should be moved into DOM write queue
@@ -168,6 +200,8 @@ export class View {
         }
       }
     }
+
+    this.eventsBound = true;
   }
 
   dehydrate() {
@@ -306,6 +340,7 @@ export class ProtoView {
     var rootElementInjectors = [];
     var textNodes = [];
     var elementsWithPropertyBindings = [];
+    var elementsWithEvents = [];
     var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
     var viewPorts = [];
     var componentChildViews = [];
@@ -342,7 +377,7 @@ export class ProtoView {
       if (isPresent(textNodeIndices)) {
         var childNode = DOM.firstChild(DOM.templateAwareRoot(element));
         for (var j = 0, k = 0; j < textNodeIndices.length; j++) {
-          for(var index = textNodeIndices[j]; k < index; k++) {
+          for (var index = textNodeIndices[j]; k < index; k++) {
             childNode = DOM.nextSibling(childNode);
           }
           ListWrapper.push(textNodes, childNode);
@@ -376,35 +411,15 @@ export class ProtoView {
 
       // events
       if (isPresent(binder.events)) {
-        // TODO(rado): if there is directive at this element that injected an
-        // event emitter for that eventType do not attach the handler.
-        MapWrapper.forEach(binder.events, (expr, eventName) => {
-          ProtoView._addNativeEventListener(element, eventName, expr, view);
-        });
+        // TODO(vicb): bind events here, see https://github.com/angular/angular/pull/439#discussion_r23255137
+        ListWrapper.push(elementsWithEvents, element);
       }
     }
 
     view.init(elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,
-      viewPorts, preBuiltObjects, componentChildViews);
+      viewPorts, preBuiltObjects, componentChildViews, elementsWithEvents);
 
     return view;
-  }
-
-  static _addNativeEventListener(element: Element, eventName: string, expr, view: View) {
-    var locals = MapWrapper.create();
-    DOM.on(element, eventName, (event) => {
-      if (event.target === element) {
-        // Most of the time the event will be fired only when the view is
-        // in the live document.  However, in a rare circumstance the
-        // view might get dehydrated, in between the event queuing up and
-        // firing.
-        if (view.hydrated()) {
-          MapWrapper.set(locals, '\$event', event);
-          var context = new ContextWithVariableBindings(view.context, locals);
-          expr.eval(context);
-        }
-      }
-    });
   }
 
   _parentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {

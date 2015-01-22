@@ -10,7 +10,7 @@ import {ProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'change_detecti
 
 function createView(nodes) {
   var view = new View(null, nodes, new ProtoChangeDetector(), MapWrapper.create());
-  view.init([], [], [], [], [], [], []);
+  view.init([], [], [], [], [], [], [], []);
   return view;
 }
 
@@ -165,7 +165,7 @@ export function main() {
         expect(textInViewPort()).toEqual('filler one two');
         expect(viewPort.length).toBe(2);
       });
-      
+
       it('should keep views hydration state during insert', () => {
         var hydratedView = new HydrateAwareFakeView(true);
         var dehydratedView = new HydrateAwareFakeView(false);

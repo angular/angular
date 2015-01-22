@@ -21,7 +21,8 @@ import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'core/c
     // Expressions in the template (like {{greeting}}) are evaluated in the
     // context of the HelloCmp class below.
     inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-             <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
+             <button class="changeButton" (click)="changeGreeting()">change greeting</button>
+             <div (swipe)="swipe()" id="swipe" style="height: 200px; background-color: green">Swipe</div>`,
     // All directives used in the template need to be specified. This allows for
     // modularity (RedDec can only be used in this template)
     // and better tooling (the template can be invalidated if the attribute is
@@ -34,8 +35,13 @@ class HelloCmp {
   constructor(service: GreetingService) {
     this.greeting = service.greeting;
   }
+
   changeGreeting() {
     this.greeting = 'howdy';
+  }
+
+  swipe() {
+    this.greeting = "swipe !!!";
   }
 }
 

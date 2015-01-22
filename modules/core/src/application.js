@@ -13,6 +13,10 @@ import {PromiseWrapper} from 'facade/async';
 import {VmTurnZone} from 'core/zone/vm_turn_zone';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 
+import {EventManager} from 'core/events/event_manager';
+import {DomEventsPlugin} from 'core/events/dom_events';
+import {HammerGesturesPlugin} from 'core/events/hammer_gestures';
+
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
@@ -64,7 +68,11 @@ function _injectorBindings(appComponentType) {
           [appViewToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
-      bind(LifeCycle).toFactory((cd) => new LifeCycle(cd, assertionsEnabled()), [appChangeDetectorToken])
+      bind(LifeCycle).toFactory((cd) => new LifeCycle(cd, assertionsEnabled()), [appChangeDetectorToken]),
+      bind(EventManager).toFactory(function (zone) {
+        var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
+        return new EventManager(plugins, zone);
+      }, [VmTurnZone]),
   ];
 }
 
@@ -92,7 +100,7 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
-    var appInjector = _createAppInjector(appComponentType, bindings);
+    var appInjector = _createAppInjector(appComponentType, bindings, zone);
 
     PromiseWrapper.then(appInjector.asyncGet(LifeCycle),
       (lc) => {
@@ -110,10 +118,11 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List): Injector {
+function _createAppInjector(appComponentType: Type, bindings: List, zone: VmTurnZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
       _injectorBindings(appComponentType);
+  ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
   return _rootInjector.createChild(mergedBindings);
 }
