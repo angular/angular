@@ -21,6 +21,8 @@ import {
 import {ChangeDetector, ChangeRecord, ChangeDispatcher} from './interfaces';
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
+var _uninitialized = new Object();
+
 class SimpleChange {
   previousValue:any;
   currentValue:any;
@@ -43,6 +45,7 @@ export class DynamicChangeDetector extends ChangeDetector {
     this.dispatcher = dispatcher;
     this.formatters = formatters;
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
+    ListWrapper.fill(this.values, _uninitialized);
     this.protos = protoRecords;
 
     this.children = [];
@@ -123,10 +126,9 @@ export class DynamicChangeDetector extends ChangeDetector {
     var prevValue = this._readSelf(proto);
     var currValue = this._calculateCurrValue(proto);
 
-    if (! isSame(prevValue, currValue)) {
+    if (!isSame(prevValue, currValue)) {
       this._writeSelf(proto, currValue);
-      return new SimpleChange(prevValue, currValue);
-
+      return new SimpleChange(prevValue === _uninitialized ? null : prevValue, currValue);
     } else {
       return null;
     }
@@ -174,7 +176,7 @@ export class DynamicChangeDetector extends ChangeDetector {
     var self = this._readSelf(proto);
     var context = this._readContext(proto);
 
-    if (isBlank(self)) {
+    if (isBlank(self) || self === _uninitialized) {
       if (ArrayChanges.supports(context)) {
         self = new ArrayChanges();
       } else if (KeyValueChanges.supports(context)) {

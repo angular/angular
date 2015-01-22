@@ -166,6 +166,9 @@ export class ListWrapper {
   static isEmpty(list) {
     return list.length == 0;
   }
+  static fill(list:List, value, start:int = 0, end:int = undefined) {
+    list.fill(value, start, end);
+  }
 }
 
 export function isListLikeIterable(obj):boolean {

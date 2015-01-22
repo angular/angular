@@ -2,6 +2,7 @@ library facade.collection;
 
 import 'dart:collection' show HashMap, IterableBase, Iterator;
 export 'dart:core' show Map, List, Set;
+import 'dart:math' show max, min;
 
 class MapIterator extends Iterator<List> {
   Iterator _iterator;
@@ -105,6 +106,18 @@ class ListWrapper {
   static void clear(List l) { l.clear(); }
   static String join(List l, String s) => l.join(s);
   static bool isEmpty(list) => list.isEmpty;
+  static void fill(List l, value, [int start = 0, int end]) {
+    // JS semantics
+    // see https://github.com/google/traceur-compiler/blob/81880cd3f17bac7de90a4cd0339e9f1a9f61d24c/src/runtime/polyfills/Array.js#L94
+    int len = l.length;
+    start = start < 0 ? max(len + start, 0) : min(start, len);
+    if (end == null) {
+      end = len;
+    } else {
+      end = end < 0 ? max(len + end, 0) : min(end, len);
+    }
+    l.fillRange(start, end, value);
+  }
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;
