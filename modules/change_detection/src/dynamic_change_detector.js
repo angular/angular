@@ -119,7 +119,7 @@ export class DynamicChangeDetector extends ChangeDetector {
     }
   }
 
-  _referenceCheck(proto) {
+  _referenceCheck(proto:ProtoRecord) {
     var prevValue = this._readSelf(proto);
     var currValue = this._calculateCurrValue(proto);
 
@@ -132,7 +132,7 @@ export class DynamicChangeDetector extends ChangeDetector {
     }
   }
 
-  _calculateCurrValue(proto) {
+  _calculateCurrValue(proto:ProtoRecord) {
     switch (proto.mode) {
       case RECORD_TYPE_SELF:
         throw new BaseException("Cannot evaluate self");
@@ -170,7 +170,7 @@ export class DynamicChangeDetector extends ChangeDetector {
     }
   }
 
-  _structuralCheck(proto) {
+  _structuralCheck(proto:ProtoRecord) {
     var self = this._readSelf(proto);
     var context = this._readContext(proto);
 
@@ -227,19 +227,19 @@ export class DynamicChangeDetector extends ChangeDetector {
     }
   }
 
-  _readContext(proto) {
+  _readContext(proto:ProtoRecord) {
     return this.values[proto.contextIndex];
   }
 
-  _readSelf(proto) {
+  _readSelf(proto:ProtoRecord) {
     return this.values[proto.record_type_selfIndex];
   }
 
-  _writeSelf(proto, value) {
+  _writeSelf(proto:ProtoRecord, value) {
     this.values[proto.record_type_selfIndex] = value;
   }
 
-  _readArgs(proto) {
+  _readArgs(proto:ProtoRecord) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
