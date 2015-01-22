@@ -72,7 +72,7 @@ export class ViewSplitter extends CompileStep {
   }
 
   _addParentElement(currentElement, newParentElement) {
-    DOM.parentElement(currentElement).insertBefore(newParentElement, currentElement);
+    DOM.insertBefore(currentElement, newParentElement);
     DOM.appendChild(newParentElement, currentElement);
   }
 
