@@ -59,6 +59,18 @@ export function main() {
         expect(results[2].isViewRoot).toBe(true);
       });
 
+      it('should work with top-level template node', () => {
+        var rootElement = DOM.createTemplate('<div template>x</div>');
+        var originalChild = rootElement.content.childNodes[0];
+        var results = createPipeline().process(rootElement);
+
+        expect(results[0].element).toBe(rootElement);
+        expect(results[0].isViewRoot).toBe(true);
+        expect(results[2].isViewRoot).toBe(true);
+        expect(DOM.getOuterHTML(results[0].element)).toEqual('<template><template></template></template>');
+        expect(results[2].element).toBe(originalChild);
+      });
+
       it('should add property bindings from the template attribute', () => {
         var rootElement = el('<div><div template="prop:expr"></div></div>');
         var results = createPipeline().process(rootElement);
