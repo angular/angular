@@ -57,6 +57,16 @@ export function main() {
       expect(dispatcher.log).toEqual(['name=Misko']);
     });
 
+    it('should report all changes on the first run including uninitialized values', () => {
+      var uninit = new Uninitialized();
+      var c = createChangeDetector('value', 'value', uninit);
+      var cd = c["changeDetector"];
+      var dispatcher = c["dispatcher"];
+
+      cd.detectChanges();
+      expect(dispatcher.log).toEqual(['value=null']);
+    });
+
     it("should support literals", () => {
       expect(executeWatch('const', '10')).toEqual(['const=10']);
       expect(executeWatch('const', '"str"')).toEqual(['const=str']);
@@ -237,10 +247,10 @@ export function main() {
         pcd.addAst(ast('invalidProp', 'someComponent'), "a", 1);
 
         var cd = pcd.instantiate(new TestDispatcher(), null);
+        cd.setContext(null);
 
         try {
           cd.detectChanges();
-
           throw new BaseException("fail");
         } catch (e) {
           expect(e).toBeAnInstanceOf(ChangeDetectionError);
@@ -428,6 +438,10 @@ class Address {
   toString():string {
     return this.city;
   }
+}
+
+class Uninitialized {
+  value:any;
 }
 
 class TestData {
