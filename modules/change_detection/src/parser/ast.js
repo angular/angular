@@ -258,11 +258,11 @@ export class Interpolation extends AST {
   }
 
   eval(context) {
-    throw new Error("unsuported");
+    throw new BaseException("evaluating an Interpolation is not supported");
   }
 
-  visit(visitor, args) {
-    visitor.visitInterpolation(this, args);
+  visit(visitor) {
+    visitor.visitInterpolation(this);
   }
 }
 
