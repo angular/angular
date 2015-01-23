@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, IS_DARTIUM} from 'test_lib/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, IS_DARTIUM, el} from 'test_lib/test_lib';
 
 import {DOM} from 'facade/dom';
 
@@ -20,10 +20,6 @@ export function main() {
       compiler = new Compiler(null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
-    function createElement(html) {
-      return DOM.createTemplate(html).content.firstChild;
-    }
-
     function createView(pv) {
       component = new TestComponent();
       view = pv.instantiate(null);
@@ -32,7 +28,7 @@ export function main() {
     }
 
     function compileWithTemplate(template) {
-      return compiler.compile(TestComponent, createElement(template));
+      return compiler.compile(TestComponent, el(template));
     }
 
     it('should work in a template attribute', (done) => {
@@ -60,7 +56,7 @@ export function main() {
     it('should toggle node when condition changes', (done) => {
       compileWithTemplate('<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
-        
+
         component.booleanCondition = false;
         cd.detectChanges();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
@@ -109,7 +105,7 @@ export function main() {
       });
     });
 
-    
+
     if (!IS_DARTIUM) {
       it('should leave the element if the condition is a non-empty string (JS)', (done) => {
         compileWithTemplate('<div><copy-me template="ng-if stringCondition">hello</copy-me></div>').then((pv) => {
