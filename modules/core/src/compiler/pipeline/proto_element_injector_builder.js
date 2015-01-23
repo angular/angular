@@ -13,10 +13,12 @@ import {DirectiveMetadata} from '../directive_metadata';
  * Creates the ProtoElementInjectors.
  *
  * Fills:
- * - CompileElement#inheriteProtoElementInjector
+ * - CompileElement#inheritedProtoElementInjector
+ * - CompileElement#distanceToParentInjector
  *
  * Reads:
- * - (in parent) CompileElement#inheriteProtoElementInjector
+ * - (in parent) CompileElement#inheritedProtoElementInjector
+ * - (in parent) CompileElement#distanceToParentInjector
  * - CompileElement#isViewRoot
  * - CompileElement#inheritedProtoView
  * - CompileElement#decoratorDirectives

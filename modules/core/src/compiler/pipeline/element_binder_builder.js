@@ -26,8 +26,7 @@ import {CompileControl} from './compile_control';
  * Reads:
  * - (in parent) CompileElement#inheritedElementBinder
  * - CompileElement#hasBindings
- * - CompileElement#isViewRoot
- * - CompileElement#inheritedViewRoot
+ * - CompileElement#inheritedProtoView
  * - CompileElement#inheritedProtoElementInjector
  * - CompileElement#textNodeBindings
  * - CompileElement#propertyBindings

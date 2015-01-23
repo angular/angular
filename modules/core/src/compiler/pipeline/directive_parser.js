@@ -24,7 +24,7 @@ import {CompileControl} from './compile_control';
  * - CompileElement#propertyBindings (to find directives contained
  *   in the property bindings)
  * - CompileElement#variableBindings (to find directives contained
- *   in the property bindings)
+ *   in the variable bindings)
  */
 export class DirectiveParser extends CompileStep {
   _selectorMatcher:SelectorMatcher;
