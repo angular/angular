@@ -9,12 +9,15 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 /**
+ * Creates ProtoViews and forwards variable bindings from parent to children.
+ *
  * Fills:
  * - (in parent): CompileElement#inheritedElementBinder.nestedProtoView
- * - CompileElement#inhertiedViewRoot
+ * - CompileElement#inheritedProtoView
  *
  * Reads:
- * - (in parent): CompileElement#inhertiedViewRoot
+ * - (in parent): CompileElement#inheritedProtoView
+ * - (in parent): CompileElement#variableBindings
  * - CompileElement#isViewRoot
  */
 export class ProtoViewBuilder extends CompileStep {
