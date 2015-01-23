@@ -1,4 +1,5 @@
 System.paths = {
+  'angular/*': '/angular/lib/*.js',
   'core/*': '/core/lib/*.js',
   'change_detection/*': '/change_detection/lib/*.js',
   'facade/*': '/facade/lib/*.js',

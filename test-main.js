@@ -12,6 +12,9 @@ System.baseURL = '/base/modules/';
 
 // So that we can import packages like `core/foo`, instead of `core/src/foo`.
 System.paths = {
+  'angular/*': './angular/src/*.js',
+  'angular/test/*': './angular/test/*.js',
+
   'core/*': './core/src/*.js',
   'core/test/*': './core/test/*.js',
 

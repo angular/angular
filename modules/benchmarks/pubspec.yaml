@@ -2,6 +2,8 @@ name: benchmarks
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  angular:
+    path: ../angular
   facade:
     path: ../facade
   di:

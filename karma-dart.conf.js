@@ -42,6 +42,7 @@ module.exports = function(config) {
       '/packages/path': 'http://localhost:9877/base/packages/path',
 
       // Local dependencies, transpiled from the source.
+      '/packages/angular': 'http://localhost:9877/base/modules/angular/src',
       '/packages/core': 'http://localhost:9877/base/modules/core/src',
       '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection/src',
       '/packages/reflection': 'http://localhost:9877/base/modules/reflection/src',

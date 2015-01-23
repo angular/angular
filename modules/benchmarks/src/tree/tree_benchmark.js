@@ -1,6 +1,6 @@
 import {Parser, Lexer, ChangeDetector} from 'change_detection/change_detection';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'core/core';
+import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular/angular';
 
 import {CompilerCache} from 'core/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
