@@ -2,6 +2,7 @@
 // That's what Traceur outputs: `System.register()`.
 register(System);
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 50;
 
 // Cancel Karma's synchronous start,
 // we will call `__karma__.start()` later, once all the specs are loaded.
