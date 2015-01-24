@@ -24,8 +24,11 @@ class _Root {
 // TODO: LightDom should implement SourceLightDom and DestinationLightDom
 // once interfaces are supported
 export class LightDom {
+  // The light DOM of the element is enclosed inside the lightDomView
   lightDomView:View;
+  // The shadow DOM
   shadowDomView:View;
+  // The nodes of the light DOM
   nodes:List<Node>;
   roots:List<_Root>;
 
@@ -47,6 +50,7 @@ export class LightDom {
     return this._collectAllContentTags(this.shadowDomView, []);
   }
 
+  // Collects the Content directives from the view and all its child views
   _collectAllContentTags(view: View, acc:List<Content>):List<Content> {
     var eis = view.elementInjectors;
     for (var i = 0; i < eis.length; ++i) {
@@ -66,6 +70,10 @@ export class LightDom {
     return acc;
   }
 
+  // Collects the nodes of the light DOM by merging:
+  // - nodes from enclosed ViewPorts,
+  // - nodes from enclosed content tags,
+  // - plain DOM nodes
   expandedDomNodes():List {
     var res = [];
 
@@ -90,6 +98,8 @@ export class LightDom {
     return res;
   }
 
+  // Returns a list of Roots for all the nodes of the light DOM.
+  // The Root object contains the DOM node and its corresponding injector (could be null).
   _roots() {
     if (isPresent(this.roots)) return this.roots;
 
@@ -101,6 +111,7 @@ export class LightDom {
   }
 }
 
+// Projects the light DOM into the shadow DOM
 function redistributeNodes(contents:List<Content>, nodes:List<Node>) {
   for (var i = 0; i < contents.length; ++i) {
     var content = contents[i];

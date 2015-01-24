@@ -9,7 +9,7 @@ import {NgElement} from 'core/dom/element';
 var _scriptTemplate = DOM.createScriptTag('type', 'ng/content')
 
 class ContentStrategy {
-  nodes;
+  nodes: List<Node>;
   insert(nodes:List<Nodes>){}
 }
 
@@ -21,19 +21,21 @@ class ContentStrategy {
 class RenderedContent extends ContentStrategy {
   beginScript:Element;
   endScript:Element;
-  nodes:List<Node>;
 
-  constructor(el:Element) {
-    this._replaceContentElementWithScriptTags(el);
+  constructor(contentEl:Element) {
+    this._replaceContentElementWithScriptTags(contentEl);
     this.nodes = [];
   }
 
+  // Inserts the nodes in between the start and end scripts.
+  // Previous content is removed.
   insert(nodes:List<Node>) {
     this.nodes = nodes;
     DOM.insertAllBefore(this.endScript, nodes);
     this._removeNodesUntil(ListWrapper.isEmpty(nodes) ? this.endScript : nodes[0]);
   }
 
+  // Replaces the content tag with a pair of script tags
   _replaceContentElementWithScriptTags(contentEl:Element) {
     this.beginScript = DOM.clone(_scriptTemplate);
     this.endScript = DOM.clone(_scriptTemplate);
@@ -60,7 +62,6 @@ class RenderedContent extends ContentStrategy {
  */
 class IntermediateContent extends ContentStrategy {
   destinationLightDom:LightDom;
-  nodes:List<Node>;
 
   constructor(destinationLightDom:LightDom) {
     this.destinationLightDom = destinationLightDom;
