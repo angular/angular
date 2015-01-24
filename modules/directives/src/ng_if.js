@@ -1,5 +1,4 @@
 import {Template} from 'core/annotations/annotations';
-import {OnChange} from 'core/compiler/interfaces';
 import {ViewPort} from 'core/compiler/viewport';
 import {isBlank} from 'facade/lang';
 
