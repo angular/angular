@@ -2,6 +2,11 @@
   "name": "angular",
   "version": "0.0.0",
   "description": "Angular",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "bugs": "https://github.com/angular/angular/issues",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
