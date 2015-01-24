@@ -537,7 +537,7 @@ langugage, binding expressions behave differently in following ways:
   This is done to allow early detection of errors in the templates. 
 * *Safe dereference*: Expressions `user.name` where `user` is null will throw `NullPointerException` in the langugage. 
   In contrast Angular will silently ignore `null` on `user`. This is done because Views often have to wait for the data
-  to arrive from the backend and many fields will be null until the data arrives. Safe dereference so cammon in the
+  to arrive from the backend and many fields will be `null` until the data arrives. Safe dereference is so common in the
   Views, that we have made it the default.
 * *Single expression*: An expression must be a single statemnet. (i.e. no `;`)
 * *No assignments*: Binding expressions can not contain assignments.
