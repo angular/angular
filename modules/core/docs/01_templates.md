@@ -573,7 +573,7 @@ Examples of where statments can be used in Angular are:
 ```
 
 Statements are similar to statments in the langugage in which you are writing your application. (i.e. 
-statments fallow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike statments in the 
+statments follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike statments in the 
 langugage, binding expressions behave differently in following ways:
 
 * *Unsafe dereference*: Expressions `user.verify()` where `user` is null will throw `NullPointerException` in the 
