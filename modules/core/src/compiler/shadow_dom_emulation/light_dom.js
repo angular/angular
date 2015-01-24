@@ -38,7 +38,7 @@ export class LightDom {
 
   redistribute() {
     var tags = this.contentTags();
-    if (isPresent(tags)) {
+    if (tags.length > 0) {
       redistributeNodes(tags, this.expandedDomNodes());
     }
   }
@@ -47,8 +47,8 @@ export class LightDom {
     return this._collectAllContentTags(this.shadowDomView, []);
   }
 
-  _collectAllContentTags(item, acc:List<Content>):List<Content> {
-    var eis = item.elementInjectors;
+  _collectAllContentTags(view: View, acc:List<Content>):List<Content> {
+    var eis = view.elementInjectors;
     for (var i = 0; i < eis.length; ++i) {
       var ei = eis[i];
       if (isBlank(ei)) continue;
@@ -58,8 +58,8 @@ export class LightDom {
 
       } else if (ei.hasPreBuiltObject(ViewPort)) {
         var vp = ei.get(ViewPort);
-        ListWrapper.forEach(vp.contentTagContainers(), (c) => {
-          this._collectAllContentTags(c, acc);
+        ListWrapper.forEach(vp.contentTagContainers(), (view) => {
+          this._collectAllContentTags(view, acc);
         });
       }
     }
