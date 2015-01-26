@@ -4,7 +4,6 @@ import {stringify, looseIdentical, isJsObject} from 'facade/lang';
 
 export class KeyValueChanges {
   _records:Map;
-  _map:any;
 
   _mapHead:KVChangeRecord;
   _previousMapHead:KVChangeRecord;
@@ -17,7 +16,6 @@ export class KeyValueChanges {
 
   constructor() {
     this._records = MapWrapper.create();
-    this._map = null;
     this._mapHead = null;
     this._previousMapHead = null;
     this._changesHead = null;
@@ -75,7 +73,6 @@ export class KeyValueChanges {
 
   check(map):boolean {
     this._reset();
-    this._map = map;
     var records = this._records;
     var oldSeqRecord:KVChangeRecord = this._mapHead;
     var lastOldSeqRecord:KVChangeRecord = null;

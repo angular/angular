@@ -94,7 +94,6 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  _selectables:List;
   _elementMap:Map;
   _elementPartialMap:Map;
   _classMap:Map;
@@ -102,8 +101,6 @@ export class SelectorMatcher {
   _attrValueMap:Map;
   _attrValuePartialMap:Map;
   constructor() {
-    this._selectables = ListWrapper.create();
-
     this._elementMap = MapWrapper.create();
     this._elementPartialMap = MapWrapper.create();
 

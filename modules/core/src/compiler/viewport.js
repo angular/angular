@@ -11,7 +11,6 @@ export class ViewPort {
   templateElement: Element;
   defaultProtoView: ProtoView;
   _views: List<View>;
-  _viewLastNode: List<Node>;
   _lightDom: any;
   elementInjector: ElementInjector;
   appInjector: Injector;
