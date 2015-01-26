@@ -12,7 +12,7 @@ describe('ng1.x compiler benchmark', function () {
       buttons: ['#compileWithBindings'],
       id: 'ng1.compile.withBindings',
       params: [{
-        name: 'elementCount', value: 150, scale: 'linear'
+        name: 'elements', value: 150, scale: 'linear'
       }]
     });
   });
@@ -23,7 +23,7 @@ describe('ng1.x compiler benchmark', function () {
       buttons: ['#compileNoBindings'],
       id: 'ng1.compile.noBindings',
       params: [{
-        name: 'elementCount', value: 150, scale: 'linear'
+        name: 'elements', value: 150, scale: 'linear'
       }]
     });
   });
