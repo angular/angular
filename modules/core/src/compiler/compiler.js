@@ -49,12 +49,10 @@ export class CompilerCache {
  * the CompilePipeline and the CompileSteps.
  */
 export class Compiler {
-  _templateLoader:TemplateLoader;
   _reader: DirectiveMetadataReader;
   _parser:Parser;
   _compilerCache:CompilerCache;
   constructor(templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser, cache:CompilerCache) {
-    this._templateLoader = templateLoader;
     this._reader = reader;
     this._parser = parser;
     this._compilerCache = cache;

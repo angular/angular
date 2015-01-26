@@ -12,14 +12,12 @@ export class CompileControl {
   _steps:List<CompileStep>;
   _currentStepIndex:number;
   _parent:CompileElement;
-  _current:CompileElement;
   _results;
   _additionalChildren;
   constructor(steps) {
     this._steps = steps;
     this._currentStepIndex = 0;
     this._parent = null;
-    this._current = null;
     this._results = null;
     this._additionalChildren = null;
   }
@@ -33,7 +31,6 @@ export class CompileControl {
     for (var i=startStepIndex; i<this._steps.length; i++) {
       var step = this._steps[i];
       this._parent = parent;
-      this._current = current;
       this._currentStepIndex = i;
       step.process(parent, current, this);
       parent = this._parent;

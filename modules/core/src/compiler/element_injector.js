@@ -46,13 +46,11 @@ class TreeNode {
   _head:TreeNode;
   _tail:TreeNode;
   _next:TreeNode;
-  _prev:TreeNode;
   constructor(parent:TreeNode) {
     this._parent = parent;
     this._head = null;
     this._tail = null;
     this._next = null;
-    this._prev = null;
     if (isPresent(parent)) parent._addChild(this);
   }
 
@@ -62,7 +60,6 @@ class TreeNode {
   _addChild(child:TreeNode) {
     if (isPresent(this._tail)) {
       this._tail._next = child;
-      child._prev = this._tail;
       this._tail = child;
     } else {
       this._tail = this._head = child;
@@ -290,7 +287,6 @@ export class ElementInjector extends TreeNode {
   _obj7:any;
   _obj8:any;
   _obj9:any;
-  _view:View;
   _preBuiltObjects;
   _constructionCounter;
   _eventCallbacks;

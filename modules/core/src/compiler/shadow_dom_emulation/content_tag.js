@@ -78,7 +78,6 @@ class IntermediateContent extends ContentStrategy {
   selector: 'content'
 })
 export class Content {
-  _element:Element;
   select:string;
   _strategy:ContentStrategy;
 
