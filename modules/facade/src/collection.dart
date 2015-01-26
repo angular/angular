@@ -137,6 +137,9 @@ void iterateListLike(iter, Function fn) {
 }
 
 class SetWrapper {
-  static Set createFromList(List l) { return new Set.from(l); }
-  static bool has(Set s, key) { return s.contains(key); }
+  static Set create() => new Set();
+  static Set createFromList(List l) => new Set.from(l);
+  static bool has(Set s, key) => s.contains(key);
+  static Set add(Set s, key) => s..add(key);
+  static Set addAll(Set s, List keys) => s..addAll(keys);
 }

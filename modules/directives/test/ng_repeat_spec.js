@@ -8,6 +8,7 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_dete
 import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {OnChange} from 'core/compiler/interfaces';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'core/compiler/template_loader';
 
 import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -20,8 +21,8 @@ export function main() {
   describe('ng-repeat', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+        new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
     function createView(pv) {

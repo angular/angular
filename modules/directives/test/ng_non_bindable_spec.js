@@ -8,13 +8,14 @@ import {Decorator, Component} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
 import {NgElement} from 'core/dom/element';
 import {NgNonBindable} from 'directives/ng_non_bindable';
+import {TemplateLoader} from 'core/compiler/template_loader';
 
 export function main() {
   describe('ng-non-bindable', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection,
-        null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+        new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache());
     });
 
     function createView(pv) {

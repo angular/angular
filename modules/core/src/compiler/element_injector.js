@@ -8,8 +8,9 @@ import {onDestroy} from 'core/annotations/annotations';
 import {View, ProtoView} from 'core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 import {ViewPort} from 'core/compiler/viewport';
+import {ShadowBoundary} from 'core/compiler/shadow_boundary';
 import {NgElement} from 'core/dom/element';
-import {Directive} from 'core/annotations/annotations'
+import {Directive} from 'core/annotations/annotations';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -25,6 +26,7 @@ class StaticKeys {
   viewPortId:int;
   destinationLightDomId:int;
   sourceLightDomId:int;
+  shadowBoundaryId:int;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
@@ -33,6 +35,7 @@ class StaticKeys {
     this.viewPortId = Key.get(ViewPort).id;
     this.destinationLightDomId = Key.get(DestinationLightDom).id;
     this.sourceLightDomId = Key.get(SourceLightDom).id;
+    this.shadowBoundaryId = Key.get(ShadowBoundary).id;
   }
 
   static instance() {
@@ -151,11 +154,14 @@ export class PreBuiltObjects {
   element:NgElement;
   viewPort:ViewPort;
   lightDom:LightDom;
-  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom) {
+  shadowBoundary:ShadowBoundary;
+  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom,
+              shadowBoundary: ShadowBoundary) {
     this.view = view;
     this.element = element;
     this.viewPort = viewPort;
     this.lightDom = lightDom;
+    this.shadowBoundary = shadowBoundary;
   }
 }
 
@@ -538,6 +544,16 @@ export class ElementInjector extends TreeNode {
     }
     if (keyId === staticKeys.sourceLightDomId)   {
       return this._host._preBuiltObjects.lightDom;
+    }
+    if (keyId === staticKeys.shadowBoundaryId) {
+      var host = this;
+      do {
+        if (isPresent(host._preBuiltObjects.shadowBoundary)) {
+          return host._preBuiltObjects.shadowBoundary;
+        }
+        host = host._host;
+      } while (isPresent(host));
+      return _undefined;
     }
 
     //TODO add other objects as needed

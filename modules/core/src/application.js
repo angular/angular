@@ -1,13 +1,17 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
 import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'facade/lang';
 import {DOM, Element} from 'facade/dom';
+import {JS} from 'facade/js_interop';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'change_detection/change_detection';
 import {TemplateLoader} from './compiler/template_loader';
+import {ShadowDomTransformer} from './compiler/shadow_dom_emulation/shadow_dom_transformer';
+import {WebComponentPolyfill} from './compiler/shadow_dom_emulation/webcmp_polyfill';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
+import {ShadowBoundary, DefaultShadowBoundary} from './compiler/shadow_boundary';
 import {List, ListWrapper} from 'facade/collection';
 import {PromiseWrapper} from 'facade/async';
 import {VmTurnZone} from 'core/zone/vm_turn_zone';
@@ -22,9 +26,14 @@ var _rootBindings = [
   Compiler,
   CompilerCache,
   TemplateLoader,
+  bind(WebComponentPolyfill).toFactory(function() {
+    return new WebComponentPolyfill(JS.getContext());
+  }),
+  ShadowDomTransformer,
   DirectiveMetadataReader,
   Parser,
-  Lexer
+  Lexer,
+  bind(ShadowBoundary).toClass(DefaultShadowBoundary),
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -53,11 +62,14 @@ function _injectorBindings(appComponentType) {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-            appComponentAnnotatedType) => {
-        return compiler.compile(appComponentAnnotatedType.type, null).then(
+            appComponentAnnotatedType, polyfill) => {
+        return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView,
-          appElement, appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'));
+            appElement,
+            appComponentAnnotatedType,
+            changeDetection.createProtoChangeDetector('root'),
+            polyfill);
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
@@ -65,7 +77,8 @@ function _injectorBindings(appComponentType) {
           view.hydrate(injector, null, new Object());
           return view;
         });
-      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
+      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
+          WebComponentPolyfill]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),

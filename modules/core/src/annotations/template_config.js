@@ -1,4 +1,4 @@
-import {ABSTRACT, CONST, Type} from 'facade/lang';
+import {CONST, Type} from 'facade/lang';
 import {List} from 'facade/collection';
 
 export class TemplateConfig {
@@ -7,19 +7,22 @@ export class TemplateConfig {
   directives:any; //List<Type>;
   formatters:any; //List<Type>;
   source:any;//List<TemplateConfig>;
+  cssUrls:any;//List<string>
   @CONST()
   constructor({
       url,
       inline,
       directives,
       formatters,
-      source
+      source,
+      cssUrls
     }: {
       url: string,
       inline: string,
       directives: List<Type>,
       formatters: List<Type>,
-      source: List<TemplateConfig>
+      source: List<TemplateConfig>,
+      cssUrls: List<string>
     })
   {
     this.url = url;
@@ -27,5 +30,6 @@ export class TemplateConfig {
     this.directives = directives;
     this.formatters = formatters;
     this.source = source;
+    this.cssUrls = cssUrls;
   }
 }
