@@ -296,7 +296,7 @@ export class ChangeDetectorJITGenerator {
 
     switch (r.mode) {
       case RECORD_TYPE_SELF:
-        throw new BaseException("Cannot evaluate self");
+        return assignmentTemplate(newValue, context);
 
       case RECORD_TYPE_CONST:
         return `${newValue} = ${this.genLiteral(r.funcOrValue)}`;

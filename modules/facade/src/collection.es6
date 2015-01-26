@@ -169,6 +169,13 @@ export class ListWrapper {
   static fill(list:List, value, start:int = 0, end:int = undefined) {
     list.fill(value, start, end);
   }
+  static equals(a:List, b:List):boolean {
+    if(a.length != b.length) return false;
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
 }
 
 export function isListLikeIterable(obj):boolean {

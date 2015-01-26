@@ -100,7 +100,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   _calculateCurrValue(proto:ProtoRecord) {
     switch (proto.mode) {
       case RECORD_TYPE_SELF:
-        throw new BaseException("Cannot evaluate self");
+        return this._readContext(proto);
 
       case RECORD_TYPE_CONST:
         return proto.funcOrValue;

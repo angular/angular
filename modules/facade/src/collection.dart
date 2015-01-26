@@ -118,6 +118,13 @@ class ListWrapper {
     }
     l.fillRange(start, end, value);
   }
+  static bool equals(List a, List b){
+    if(a.length != b.length) return false;
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;

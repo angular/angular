@@ -31,6 +31,7 @@ import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 
 import {ArrayChanges} from './array_changes';
 import {KeyValueChanges} from './keyvalue_changes';
+import {coalesce} from './coalesce';
 
 export const RECORD_TYPE_SELF = 0;
 export const RECORD_TYPE_CONST = 1;
@@ -66,7 +67,9 @@ export class ProtoRecord {
               selfIndex:number,
               bindingMemento:any,
               groupMemento:any,
-              expressionAsString:string) {
+              expressionAsString:string,
+              lastInBinding:boolean,
+              lastInGroup:boolean) {
 
     this.mode = mode;
     this.name = name;
@@ -77,8 +80,8 @@ export class ProtoRecord {
     this.selfIndex = selfIndex;
     this.bindingMemento = bindingMemento;
     this.groupMemento = groupMemento;
-    this.lastInBinding = false;
-    this.lastInGroup = false;
+    this.lastInBinding = lastInBinding;
+    this.lastInGroup = lastInGroup;
     this.expressionAsString = expressionAsString;
   }
 }
@@ -91,9 +94,11 @@ export class ProtoChangeDetector  {
 }
 
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
+  _records:List<ProtoRecord>;
   _recordBuilder:ProtoRecordBuilder;
 
   constructor() {
+    this._records = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
@@ -102,8 +107,15 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   }
 
   instantiate(dispatcher:any, formatters:Map) {
-    var records = this._recordBuilder.records;
-    return new DynamicChangeDetector(dispatcher, formatters, records);
+    this._createRecordsIfNecessary();
+    return new DynamicChangeDetector(dispatcher, formatters, this._records);
+  }
+
+  _createRecordsIfNecessary() {
+    if (isBlank(this._records)) {
+      var records = this._recordBuilder.records;
+      this._records = coalesce(records);
+    }
   }
 }
 
@@ -113,6 +125,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
   _recordBuilder:ProtoRecordBuilder;
 
   constructor() {
+    this._factory = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
@@ -128,7 +141,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
   _createFactoryIfNecessary() {
     if (isBlank(this._factory)) {
       var c = _jitProtoChangeDetectorClassCounter++;
-      var records = this._recordBuilder.records;
+      var records = coalesce(this._recordBuilder.records);
       var typeName = `ChangeDetector${c}`;
       this._factory = new ChangeDetectorJITGenerator(typeName, records).generate();
     }
@@ -273,7 +286,7 @@ class _ConvertAstIntoProtoRecords {
     var selfIndex = ++ this.contextIndex;
     ListWrapper.push(this.protoRecords,
       new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, selfIndex,
-        this.bindingMemento, this.groupMemento, this.expressionAsString));
+        this.bindingMemento, this.groupMemento, this.expressionAsString, false, false));
     return selfIndex;
   }
 }
