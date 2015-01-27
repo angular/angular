@@ -84,8 +84,8 @@ export function main() {
         expect(view.context.get('template-foo')).toBe('bar');
       });
 
-      it('should throw on undeclared locals', () => {
-        expect(() => view.setLocal('setMePlease', 'bar')).toThrowError();
+      it('should not throw on undeclared locals', () => {
+        expect(() => view.setLocal('setMePlease', 'bar')).not.toThrow();
       });
 
       it('when dehydrated should set locals to null', () => {

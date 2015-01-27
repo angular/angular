@@ -71,8 +71,7 @@ export class View {
   setLocal(contextName: string, value) {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
     if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
-      throw new BaseException(
-          `Local binding ${contextName} not defined in the view template.`);
+      return;
     }
     var templateName = MapWrapper.get(this.proto.variableBindings, contextName);
     this.context.set(templateName, value);

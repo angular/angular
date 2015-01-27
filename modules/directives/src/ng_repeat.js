@@ -50,8 +50,7 @@ export class NgRepeat extends OnChange {
 
   perViewChange(view, record) {
     view.setLocal('ng-repeat', record.item);
-    // Uncomment when binding is ready.
-    // view.setLocal('index', record.item);
+    view.setLocal('index', record.currentIndex);
   }
 
   static bulkRemove(tuples, viewPort) {
