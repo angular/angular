@@ -3,10 +3,23 @@ var webdriver = require('protractor/node_modules/selenium-webdriver');
 
 module.exports = {
   runClickBenchmark: runClickBenchmark,
+  runBenchmark: runBenchmark,
   verifyNoBrowserErrors: benchpress.verifyNoBrowserErrors
 };
 
 function runClickBenchmark(config) {
+  var buttons = config.buttons.map(function(selector) {
+    return $(selector);
+  });
+  config.work = function() {
+    buttons.forEach(function(button) {
+      button.click();
+    });
+  }
+  runBenchmark(config);
+}
+
+function runBenchmark(config) {
   var globalParams = browser.params;
   getScaleFactor(globalParams.benchmark.scaling).then(function(scaleFactor) {
     var params = config.params.map(function(param) {
@@ -23,14 +36,7 @@ function runClickBenchmark(config) {
       return param.name + '=' + param.value;
     }).join('&'));
     browser.get(url);
-    var buttons = config.buttons.map(function(selector) {
-      return $(selector);
-    });
-    benchpress.runBenchmark(benchmarkConfig, function() {
-      buttons.forEach(function(button) {
-        button.click();
-      });
-    });
+    benchpress.runBenchmark(benchmarkConfig, config.work);
   });
 }
 
