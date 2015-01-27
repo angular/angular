@@ -88,7 +88,7 @@ Example of usage:
 
 ```<span tooltip="Tooltip text goes here.">Some text here.</span>```
 
-The developer of an applacation can now freely use the `tooltip` attribute wherever the behavior is needed. The code above has tought the browser a new reusable and declarative bahavior.
+The developer of an applacation can now freely use the `tooltip` attribute wherever the behavior is needed. The code above has taught the browser a new reusable and declarative bahavior.
 
 Notice that databinding will work with this decorator with no further effort as show below.
 
@@ -214,7 +214,7 @@ Dependency Injection (DI) is a key aspect of directives. DI allows directives to
 
 When Angular directives are instantiated, the directive can ask for other related directives to be injected into it. By assembing the directives in different order and subtypes the application behavior can be controlled. A good mental model is that DOM structure controlles the directive instantiation graph.
 
-Directive instantiation is triggered by the directive CSS selector matching the DOM structure. The directive in its constructor can ask for other directives or application services. When asking for directives the dependency is locating by fallowing the DOM hieranchy and if not found using the application level injector.
+Directive instantiation is triggered by the directive CSS selector matching the DOM structure. The directive in its constructor can ask for other directives or application services. When asking for directives the dependency is locating by following the DOM hieranchy and if not found using the application level injector.
 
 To better understand the kinds of injections which are supported in Angular we have broken them down into use case examples.
 
@@ -251,7 +251,7 @@ class House {                        |
 
 ```
 
-Assume fallowing DOM structure for `my_app.html`:
+Assume the following DOM structure for `my_app.html`:
 ```
 <div house>     | The house attribute triggers the creation of House directive. 
 </div>          | This is equivalent to:
@@ -261,7 +261,7 @@ Assume fallowing DOM structure for `my_app.html`:
 
 ### Injecting other Directives
 
-Injecting other directives into directives fallows similar mechanism as injecting services, but with added constraint of visibility governed by DOM structure.
+Injecting other directives into directives follows a similar mechanism as injecting services, but with added constraint of visibility governed by DOM structure.
 
 There are five kinds of visibilities:
 
@@ -316,7 +316,7 @@ class Primary {                      |
 }                                    |
 ```
 
-Assume fallowing DOM structure for `my_app.html`:
+Assume the following DOM structure for `my_app.html`:
 ```
 <form>                         |
   <div>                        |

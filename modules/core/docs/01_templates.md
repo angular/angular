@@ -21,7 +21,7 @@ about the template runtime characteristics.
 ## Summary
 
 Below is a summary of the kinds of syntaxes which Angular templating supports. The syntaxes are explained in more
-detail in fallowing sections.
+detail in following sections.
 
 <table>
   <thead>
@@ -408,7 +408,7 @@ which allows us to further shorten the text.
 </ul>
 ```
 
-We can also optionaly use `var` instead of `#` and add `:` to `ng-repeat` which creates the fallowing recomended
+We can also optionaly use `var` instead of `#` and add `:` to `ng-repeat` which creates the following recomended
 microsyntax for `ng-repeat`.
 
 ```
@@ -418,7 +418,7 @@ microsyntax for `ng-repeat`.
 ```
 
 The format is intentionally defined freely, so that developers of directives can build expressive microsyntax for
-their directives. Fallowing describes a more formal definition.
+their directives. Following describes a more formal definition.
 
 ```
 expression: ...                     // as defined in Expressions section
@@ -518,7 +518,7 @@ have different semantics.
 ### Expressions
 
 Expressions can be used to bind to a properties only. Expressions represent how data should be projected to the View.
-Expressions should not have any sideeffects and should be idempotent. Examples of where expressions can be used in 
+Expressions should not have any side effects and should be idempotent. Examples of where expressions can be used in
 Angular are:
 ```
 <div title="{{expression}}">{{expression}}</div>
@@ -537,7 +537,7 @@ langugage, binding expressions behave differently in following ways:
   This is done to allow early detection of errors in the templates. 
 * *Safe dereference*: Expressions `user.name` where `user` is null will throw `NullPointerException` in the langugage. 
   In contrast Angular will silently ignore `null` on `user`. This is done because Views often have to wait for the data
-  to arrive from the backend and many fields will be null until the data arrives. Safe dereference so cammon in the
+  to arrive from the backend and many fields will be `null` until the data arrives. Safe dereference is so common in the
   Views, that we have made it the default.
 * *Single expression*: An expression must be a single statemnet. (i.e. no `;`)
 * *No assignments*: Binding expressions can not contain assignments.
@@ -572,16 +572,16 @@ Examples of where statments can be used in Angular are:
 <div on-click="statments">...</div>
 ```
 
-Statements are similar to statments in the langugage in which you are writing your application. (i.e. 
-statments fallow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike statments in the 
+Statements are similar to statments in the langugage in which you are writing your application. (i.e.
+statments follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike statments in the
 langugage, binding expressions behave differently in following ways:
 
-* *Unsafe dereference*: Expressions `user.verify()` where `user` is null will throw `NullPointerException` in the 
+* *Unsafe dereference*: Expressions `user.verify()` where `user` is `null` will throw `NullPointerException` in the
   langugage as well as in statments. (In contrast to Safe dereference in Angular expressions.) While angular protects
   you from null dereferencing in expressions due to lazy loading of data, no such protection is required for statments,
   and doing so would make it harder to detect typos in statements.
 * *Multiple statements OK*: Statements can be composed from more than one statemnet. (i.e. no `doA(); doB()`)
-* *Assignments OK*: Event bindings can have sideeffects and hence assignments are allowed.
+* *Assignments OK*: Event bindings can have side effects and hence assignments are allowed.
 * *No keywords*: Statements can not contain keywords such as: `var`, `if`, and so on.
 * *No Formatters*: Angular statements can not contain formatters. (Formatters are only usefull for data binding)
 
