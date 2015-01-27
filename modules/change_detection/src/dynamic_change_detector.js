@@ -30,14 +30,19 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
   formatters:Map;
   values:List;
+  changes:List;
   protos:List<ProtoRecord>;
 
   constructor(dispatcher:any, formatters:Map, protoRecords:List<ProtoRecord>) {
     super();
     this.dispatcher = dispatcher;
     this.formatters = formatters;
+
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
     ListWrapper.fill(this.values, uninitialized);
+
+    this.changes = ListWrapper.createFixedSize(protoRecords.length + 1);
+
     this.protos = protoRecords;
   }
 
@@ -82,17 +87,25 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   }
 
   _referenceCheck(proto:ProtoRecord) {
+    if (this._pureFuncAndArgsDidNotChange(proto)) {
+      this._setChanged(proto, false);
+      return null;
+    }
+
     var prevValue = this._readSelf(proto);
     var currValue = this._calculateCurrValue(proto);
 
     if (!isSame(prevValue, currValue)) {
       this._writeSelf(proto, currValue);
+      this._setChanged(proto, true);
+
       if (proto.lastInBinding) {
         return new SimpleChange(prevValue, currValue);
       } else {
         return null;
       }
     } else {
+      this._setChanged(proto, false);
       return null;
     }
   }
@@ -177,6 +190,24 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _writeSelf(proto:ProtoRecord, value) {
     this.values[proto.selfIndex] = value;
+  }
+
+  _setChanged(proto:ProtoRecord, value:boolean) {
+    this.changes[proto.selfIndex] = value;
+  }
+
+  _pureFuncAndArgsDidNotChange(proto:ProtoRecord):boolean {
+    return proto.isPureFunction() && !this._argsChanged(proto);
+  }
+
+  _argsChanged(proto:ProtoRecord):boolean {
+    var args = proto.args;
+    for(var i = 0; i < args.length; ++i) {
+      if (this.changes[args[i]]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   _readArgs(proto:ProtoRecord) {
