@@ -138,9 +138,10 @@ ${type}.prototype.detectChangesInRecords = function(throwOnChange) {
 }
 
 
-function bodyTemplate(localDefinitions:string, records:string):string {
+function bodyTemplate(localDefinitions:string, changeDefinitions:string, records:string):string {
   return `
 ${localDefinitions}
+${changeDefinitions}
 var ${TEMP_LOCAL};
 var ${CHANGE_LOCAL};
 var ${CHANGES_LOCAL} = [];
@@ -172,10 +173,11 @@ ${notify}
 `;
 }
 
-function referenceCheckTemplate(assignment, newValue, oldValue, addRecord, notify) {
+function referenceCheckTemplate(assignment, newValue, oldValue, change, addRecord, notify) {
   return `
 ${assignment}
 if (${newValue} !== ${oldValue} || (${newValue} !== ${newValue}) && (${oldValue} !== ${oldValue})) {
+  ${change} = true;
   ${addRecord}
   ${oldValue} = ${newValue};
 }
@@ -202,8 +204,21 @@ function localDefinitionsTemplate(names:List):string {
   return names.map((n) => `var ${n};`).join("\n");
 }
 
+function changeDefinitionsTemplate(names:List):string {
+  return names.map((n) => `var ${n} = false;`).join("\n");
+}
+
 function fieldDefinitionsTemplate(names:List):string {
   return names.map((n) => `${n} = ${UTIL}.unitialized();`).join("\n");
+}
+
+function ifChangedGuardTemplate(changeNames:List, body:string):string {
+  var cond = changeNames.join(" || ");
+  return `
+if (${cond}) {
+  ${body}
+}
+`;
 }
 
 function addSimpleChangeRecordTemplate(protoIndex:number, oldValue:string, newValue:string) {
@@ -215,6 +230,7 @@ export class ChangeDetectorJITGenerator {
   typeName:string;
   records:List<ProtoRecord>;
   localNames:List<String>;
+  changeNames:List<String>;
   fieldNames:List<String>;
 
   constructor(typeName:string, records:List<ProtoRecord>) {
@@ -222,6 +238,7 @@ export class ChangeDetectorJITGenerator {
     this.records = records;
 
     this.localNames = this.getLocalNames(records);
+    this.changeNames = this.getChangeNames(this.localNames);
     this.fieldNames = this.getFieldNames(this.localNames);
   }
 
@@ -232,6 +249,10 @@ export class ChangeDetectorJITGenerator {
       return `${sanitizedName}${index++}`
     });
     return ["context"].concat(names);
+  }
+
+  getChangeNames(localNames:List<String>):List<String> {
+    return localNames.map((n) => `change_${n}`);
   }
 
   getFieldNames(localNames:List<String>):List<String> {
@@ -259,11 +280,15 @@ export class ChangeDetectorJITGenerator {
 
   genBody():string {
     var rec = this.records.map((r) => this.genRecord(r)).join("\n");
-    return bodyTemplate(this.genLocalDefinitions(), rec);
+    return bodyTemplate(this.genLocalDefinitions(), this.genChangeDefinitions(), rec);
   }
 
   genLocalDefinitions():string {
     return localDefinitionsTemplate(this.localNames);
+  }
+
+  genChangeDefinitions():string {
+    return changeDefinitionsTemplate(this.changeNames);
   }
 
   genRecord(r:ProtoRecord):string {
@@ -283,10 +308,17 @@ export class ChangeDetectorJITGenerator {
   genReferenceCheck(r:ProtoRecord):string {
     var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
+    var change = this.changeNames[r.selfIndex];
     var assignment = this.genUpdateCurrentValue(r);
     var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
     var notify = this.genNotify(r);
-    return referenceCheckTemplate(assignment, newValue, oldValue, r.lastInBinding ? addRecord : '', notify);
+
+    var check = referenceCheckTemplate(assignment, newValue, oldValue, change, r.lastInBinding ? addRecord : '', notify);;
+    if (r.isPureFunction()) {
+      return this.ifChangedGuard(r, check);
+    } else {
+      return check;
+    }
   }
 
   genUpdateCurrentValue(r:ProtoRecord):string {
@@ -320,16 +352,20 @@ export class ChangeDetectorJITGenerator {
       case RECORD_TYPE_INTERPOLATE:
         return assignmentTemplate(newValue, this.genInterpolation(r));
 
+      case RECORD_TYPE_INVOKE_FORMATTER:
+        return assignmentTemplate(newValue, `${FORMATTERS_ACCESSOR}.get("${r.name}")(${args})`);
+
       case RECORD_TYPE_KEYED_ACCESS:
         var key = this.localNames[r.args[0]];
         return assignmentTemplate(newValue, `${context}[${key}]`);
 
-      case RECORD_TYPE_INVOKE_FORMATTER:
-        return assignmentTemplate(newValue, `${FORMATTERS_ACCESSOR}.get("${r.name}")(${args})`);
-
       default:
         throw new BaseException(`Unknown operation ${r.mode}`);
     }
+  }
+
+  ifChangedGuard(r:ProtoRecord, body:string):string {
+    return ifChangedGuardTemplate(r.args.map((a) => this.changeNames[a]), body);
   }
 
   genInterpolation(r:ProtoRecord):string{
