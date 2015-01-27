@@ -20,33 +20,47 @@ window.print = function(msg) {
   }
 };
 
+// Some Map polyfills don't polyfill Map.toString correctly, which
+// gives us bad error messages in tests.
+// The only way to do this in Jasmine is to monkey patch a method
+// to the object :-(
+window.Map.prototype.jasmineToString = function() {
+  var m = this;
+  if (!m) {
+    return ''+m;
+  }
+  var res = [];
+  m.forEach( (v,k) => {
+    res.push(`${k}:${v}`);
+  });
+  return `{ ${res.join(',')} }`;
+}
+
 window.beforeEach(function() {
   jasmine.addMatchers({
-    // Custom handler for Map to give nice error messages in JavaScript
+    // Custom handler for Map as Jasmine does not support it yet
     toEqual: function(util, customEqualityTesters) {
       return {
         compare: function(actual, expected) {
-          var pass;
-          if (actual instanceof Map) {
-            pass = actual.size === expected.size;
-            if (pass) {
-              actual.forEach( (v,k) => {
-                pass = pass && util.equals(v, expected.get(k));
-              });
-            }
-            return {
-              pass: pass,
-              get message() {
-                return `Expected ${mapToString(actual)} ${(pass ? 'not' : '')} to equal to ${mapToString(expected)}`;
-              }
-            };
-          } else {
-            return {
-              pass: util.equals(actual, expected)
-            }
-          }
+          return {
+            pass: util.equals(actual, expected, [compareMap])
+          };
         }
       };
+
+      function compareMap(actual, expected) {
+        if (actual instanceof Map) {
+          var pass = actual.size === expected.size;
+          if (pass) {
+            actual.forEach( (v,k) => {
+              pass = pass && util.equals(v, expected.get(k));
+            });
+          }
+          return pass;
+        } else {
+          return undefined;
+        }
+      }
     },
 
     toBePromise: function() {
@@ -133,17 +147,6 @@ export class SpyObject {
   }
 }
 
-
-function mapToString(m) {
-  if (!m) {
-    return ''+m;
-  }
-  var res = [];
-  m.forEach( (v,k) => {
-    res.push(`${k}:${v}`);
-  });
-  return `{ ${res.join(',')} }`;
-}
 
 function elementText(n) {
   var hasShadowRoot = (n) => n instanceof Element && n.shadowRoot;

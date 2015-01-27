@@ -26,8 +26,13 @@ export function main() {
         expect(falseActual).not.toEqual(expected);
       });
 
-      it('should work for arrays of maps', () => {
+      it('should work for arrays of string maps', () => {
         expect([{'a':'b'}]).toEqual([{'a':'b'}]);
+      });
+
+      it('should work for arrays of real maps', () => {
+        expect([MapWrapper.createFromStringMap({'a':'b'})]).toEqual([MapWrapper.createFromStringMap({'a':'b'})]);
+        expect([MapWrapper.createFromStringMap({'a':'b'})]).not.toEqual([MapWrapper.createFromStringMap({'a':'c'})]);
       });
     });
 
