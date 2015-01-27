@@ -88,7 +88,7 @@ Example of usage:
 
 ```<span tooltip="Tooltip text goes here.">Some text here.</span>```
 
-The developer of an applacation can now freely use the `tooltip` attribute wherever the behavior is needed. The code above has tought the browser a new reusable and declarative bahavior.
+The developer of an applacation can now freely use the `tooltip` attribute wherever the behavior is needed. The code above has taught the browser a new reusable and declarative bahavior.
 
 Notice that databinding will work with this decorator with no further effort as show below.
 
