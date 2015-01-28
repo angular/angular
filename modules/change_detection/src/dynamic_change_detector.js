@@ -62,7 +62,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
       if (isPresent(change)) {
         currentGroup = proto.groupMemento;
-        updatedRecords = this._addRecord(updatedRecords, proto, change);
+        var record = ChangeDetectionUtil.changeRecord(proto.bindingMemento, change);
+        updatedRecords = ChangeDetectionUtil.addRecord(updatedRecords, record);
       }
 
       if (proto.lastInGroup && isPresent(updatedRecords)) {
@@ -100,7 +101,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       this._setChanged(proto, true);
 
       if (proto.lastInBinding) {
-        return new SimpleChange(prevValue, currValue);
+        return ChangeDetectionUtil.simpleChange(prevValue, currValue);
       } else {
         return null;
       }
@@ -162,22 +163,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       this._writeSelf(proto, change.currentValue);
     }
     return change;
-  }
-
-  _addRecord(updatedRecords:List, proto:ProtoRecord, change):List {
-    // we can use a pool of change records not to create extra garbage
-    var record = ChangeDetectionUtil.changeRecord(proto.bindingMemento, change);
-    if (isBlank(updatedRecords)) {
-      updatedRecords = _singleElementList;
-      updatedRecords[0] = record;
-
-    } else if (updatedRecords === _singleElementList) {
-      updatedRecords = [_singleElementList[0], record];
-
-    } else {
-      ListWrapper.push(updatedRecords, record);
-    }
-    return updatedRecords;
   }
 
   _readContext(proto:ProtoRecord) {

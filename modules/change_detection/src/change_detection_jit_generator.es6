@@ -43,7 +43,7 @@ import {
  *   var address0;
  *   var city1;
  *   var change;
- *   var changes = [];
+ *   var changes = null;
  *   var temp;
  *   var context = this.context;
  * 
@@ -60,14 +60,15 @@ import {
  * 
  *   city1 = address0.city;
  *   if (city1 !== this.city1) {
- *     changes.push(ChangeDetectionUtil.simpleChangeRecord(this.protos[1].bindingMemento, this.city1, city1));
+ *     changes = ChangeDetectionUtil.addRecord(changes,
+ *       ChangeDetectionUtil.simpleChangeRecord(this.protos[1].bindingMemento, this.city1, city1));
  *     this.city1 = city1;
  *   }
  * 
  *   if (changes.length > 0) {
  *     if(throwOnChange) ChangeDetectionUtil.throwOnChange(this.protos[1], changes[0]);
  *     this.dispatcher.onRecordChange('address.city', changes);
- *     changes = [];
+ *     changes = null;
  *   }
  * }
  * 
@@ -144,7 +145,7 @@ ${localDefinitions}
 ${changeDefinitions}
 var ${TEMP_LOCAL};
 var ${CHANGE_LOCAL};
-var ${CHANGES_LOCAL} = [];
+var ${CHANGES_LOCAL} = null;
 
 context = this.context;
 ${records}
@@ -153,10 +154,10 @@ ${records}
 
 function notifyTemplate(index:number):string{
   return  `
-if (${CHANGES_LOCAL}.length > 0) {
+if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
   if(throwOnChange) ${UTIL}.throwOnChange(${PROTOS_ACCESSOR}[${index}], ${CHANGES_LOCAL}[0]);
   ${DISPATCHER_ACCESSOR}.onRecordChange(${PROTOS_ACCESSOR}[${index}].groupMemento, ${CHANGES_LOCAL});
-  ${CHANGES_LOCAL} = [];
+  ${CHANGES_LOCAL} = null;
 }
 `;
 }
@@ -166,7 +167,8 @@ function structuralCheckTemplate(selfIndex:number, field:string, context:string,
   return `
 ${CHANGE_LOCAL} = ${UTIL}.structuralCheck(${field}, ${context});
 if (${CHANGE_LOCAL}) {
-  ${CHANGES_LOCAL}.push(${UTIL}.changeRecord(${PROTOS_ACCESSOR}[${selfIndex}].bindingMemento, ${CHANGE_LOCAL}));
+  ${CHANGES_LOCAL} = ${UTIL}.addRecord(${CHANGES_LOCAL},
+    ${UTIL}.changeRecord(${PROTOS_ACCESSOR}[${selfIndex}].bindingMemento, ${CHANGE_LOCAL}));
   ${field} = ${CHANGE_LOCAL}.currentValue;
 }
 ${notify}
@@ -222,7 +224,8 @@ if (${cond}) {
 }
 
 function addSimpleChangeRecordTemplate(protoIndex:number, oldValue:string, newValue:string) {
-  return `${CHANGES_LOCAL}.push(${UTIL}.simpleChangeRecord(${PROTOS_ACCESSOR}[${protoIndex}].bindingMemento, ${oldValue}, ${newValue}));`;
+  return `${CHANGES_LOCAL} = ${UTIL}.addRecord(${CHANGES_LOCAL},
+    ${UTIL}.simpleChangeRecord(${PROTOS_ACCESSOR}[${protoIndex}].bindingMemento, ${oldValue}, ${newValue}));`;
 }
 
 
