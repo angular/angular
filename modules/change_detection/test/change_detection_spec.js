@@ -59,6 +59,10 @@ export function main() {
             expect(dispatcher.log).toEqual(['name=misko']);
             dispatcher.clear();
 
+            cd.detectChanges();
+            expect(dispatcher.log).toEqual([]);
+            dispatcher.clear();
+
             person.name = "Misko";
             cd.detectChanges();
             expect(dispatcher.log).toEqual(['name=Misko']);

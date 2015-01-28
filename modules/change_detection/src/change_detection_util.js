@@ -19,6 +19,72 @@ export class SimpleChange {
   }
 }
 
+var _simpleChangesIndex = 0;
+var _simpleChanges = [
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null),
+  new SimpleChange(null, null)
+]
+
+var _changeRecordsIndex = 0;
+var _changeRecords = [
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null),
+  new ChangeRecord(null, null)
+]
+
+function _simpleChange(previousValue, currentValue) {
+  var index = _simpleChangesIndex++ % 20;
+  var s = _simpleChanges[index];
+  s.previousValue = previousValue;
+  s.currentValue = currentValue;
+  return s;
+}
+
+function _changeRecord(bindingMemento, change) {
+  var index = _changeRecordsIndex++ % 20;
+  var s = _changeRecords[index];
+  s.bindingMemento = bindingMemento;
+  s.change = change;
+  return s;
+}
+
+var _singleElementList = [null];
+
 export class ChangeDetectionUtil {
   static unitialized() {
     return uninitialized;
@@ -128,11 +194,29 @@ export class ChangeDetectionUtil {
     throw new ExpressionChangedAfterItHasBeenChecked(proto, change);
   }
 
+  static simpleChange(previousValue:any, currentValue:any):SimpleChange {
+    return _simpleChange(previousValue, currentValue);
+  }
+
   static changeRecord(memento:any, change:any):ChangeRecord {
-    return new ChangeRecord(memento, change);
+    return _changeRecord(memento, change);
   }
 
   static simpleChangeRecord(memento:any, previousValue:any, currentValue:any):ChangeRecord {
-    return new ChangeRecord(memento, new SimpleChange(previousValue, currentValue));
+    return _changeRecord(memento, _simpleChange(previousValue, currentValue));
+  }
+
+  static addRecord(updatedRecords:List, changeRecord:ChangeRecord):List {
+    if (isBlank(updatedRecords)) {
+      updatedRecords = _singleElementList;
+      updatedRecords[0] = changeRecord;
+
+    } else if (updatedRecords === _singleElementList) {
+      updatedRecords = [_singleElementList[0], changeRecord];
+
+    } else {
+      ListWrapper.push(updatedRecords, changeRecord);
+    }
+    return updatedRecords;
   }
 }
