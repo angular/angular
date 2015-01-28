@@ -1,15 +1,15 @@
 import {ListWrapper, MapWrapper} from 'facade/src/collection';
 import {reflector} from 'reflection/src/reflection';
-import {isPresent} from 'facade/src/lang';
+import {isPresent, isJsObject} from 'facade/src/lang';
 import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 import {
   Lexer,
   Parser,
-  ChangeDetector,
-  ProtoChangeDetector,
-  DynamicProtoChangeDetector,
   ChangeDispatcher,
+  ChangeDetection,
+  dynamicChangeDetection,
+  jitChangeDetection
 } from 'change_detection/change_detection';
 
 
@@ -43,9 +43,8 @@ class Obj {
 }
 
 class Row {
+  currentValue;
   previousValue;
-  obj;
-  getter;
   next;
 }
 
@@ -79,13 +78,13 @@ function setUpReflector() {
 function setUpBaseline(iterations) {
   function createRow(i) {
     var obj = new Obj();
-    var index = i % 10;
-    obj.setField(index, i);
+    for (var j = 0; j < 10; ++j) {
+      obj.setField(j, i);
+    }
 
     var r = new Row();
-    r.obj = obj;
-    r.previousValue = i;
-    r.getter = reflector.getter(`field${index}`);
+    r.currentValue = obj;
+    r.previousValue = obj;
     return r;
   }
 
@@ -99,13 +98,14 @@ function setUpBaseline(iterations) {
   return head;
 }
 
-function setUpChangeDetection(iterations) {
+function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = new DynamicProtoChangeDetector();
-  var parentCD = parentProto.instantiate(dispatcher, MapWrapper.create());
+  var parentProto = changeDetection.createProtoChangeDetector('parent');
+  var parentCd = parentProto.instantiate(dispatcher, MapWrapper.create());
 
+  var proto = changeDetection.createProtoChangeDetector("proto");
   var astWithSource = [
     parser.parseBinding('field0', null),
     parser.parseBinding('field1', null),
@@ -118,63 +118,90 @@ function setUpChangeDetection(iterations) {
     parser.parseBinding('field8', null),
     parser.parseBinding('field9', null)
   ];
-
-  function proto(i) {
-    var pcd = new DynamicProtoChangeDetector();
-    pcd.addAst(astWithSource[i % 10].ast, "memo", i, false);
-    return pcd;
+  for (var j = 0; j < 10; ++j) {
+    proto.addAst(astWithSource[j].ast, "memo", j, false);
   }
-
-  var pcd = [
-    proto(0),
-    proto(1),
-    proto(2),
-    proto(3),
-    proto(4),
-    proto(5),
-    proto(6),
-    proto(7),
-    proto(8),
-    proto(9)
-  ];
 
   for (var i = 0; i < iterations; ++i) {
     var obj = new Obj();
-    var index = i % 10;
-    obj.setField(index, i);
-
-    var rr = pcd[index].instantiate(dispatcher,  null);
-    rr.setContext(obj);
-
-    parentCD.addChild(rr);
+    for (var j = 0; j < 10; ++j) {
+      obj.setField(j, i);
+    }
+    var cd = proto.instantiate(dispatcher,  null);
+    cd.setContext(obj);
+    parentCd.addChild(cd);
   }
-
-  return parentCD;
+  return parentCd;
 }
 
 export function main () {
-  var iterations = getIntParameter('iterations');
+  var numberOfChecks = getIntParameter('numberOfChecks');
+
+  var numberOfChecksPerDetector = 10;
+  var numberOfRuns = 20;
+  var numberOfDetectors = numberOfChecks / numberOfChecksPerDetector / numberOfRuns;
 
   setUpReflector();
-  var baselineHead = setUpBaseline(iterations);
-  var ng2ChangeDetector = setUpChangeDetection(iterations);
 
-  function baselineDetectChanges() {
+  // -- BASELINE
+  function checkBaselineRow(r) {
+    var curr = r.currentValue;
+    var prev = r.previousValue;
+    if (curr.field0 !== prev.field0) throw "should not happen";
+    if (curr.field1 !== prev.field1) throw "should not happen";
+    if (curr.field2 !== prev.field2) throw "should not happen";
+    if (curr.field3 !== prev.field3) throw "should not happen";
+    if (curr.field4 !== prev.field4) throw "should not happen";
+    if (curr.field5 !== prev.field5) throw "should not happen";
+    if (curr.field6 !== prev.field6) throw "should not happen";
+    if (curr.field7 !== prev.field7) throw "should not happen";
+    if (curr.field8 !== prev.field8) throw "should not happen";
+    if (curr.field9 !== prev.field9) throw "should not happen";
+  }
+  var baselineHead = setUpBaseline(numberOfDetectors);
+  function runBaselineChangeDetection(){
     var current = baselineHead;
     while (isPresent(current)) {
-      if (current.getter(current.obj) !== current.previousValue) {
-        throw "should not happen";
-      }
+      checkBaselineRow(current);
       current = current.next;
     }
   }
-
-  function ng2DetectChanges() {
-    ng2ChangeDetector.detectChanges();
+  function baselineChangeDetection() {
+    for (var i = 0; i < numberOfRuns; ++i) {
+      runBaselineChangeDetection();
+    }
   }
+  runBaselineChangeDetection();
+  bindAction('#baselineChangeDetection', baselineChangeDetection);
 
-  bindAction('#ng2DetectChanges', ng2DetectChanges);
-  bindAction('#baselineDetectChanges', baselineDetectChanges);
+
+  // -- DYNAMIC
+  var ng2DynamicChangeDetector = setUpChangeDetection(dynamicChangeDetection, numberOfDetectors);
+  function ng2ChangeDetectionDynamic() {
+    for(var i = 0; i < numberOfRuns; ++i) {
+      ng2DynamicChangeDetector.detectChanges();
+    }
+  }
+  ng2DynamicChangeDetector.detectChanges();
+  bindAction('#ng2ChangeDetectionDynamic', ng2ChangeDetectionDynamic);
+
+
+  // -- JIT
+  // Reenable when we have transformers for Dart
+  if (isJsObject({})) {
+    var ng2JitChangeDetector = setUpChangeDetection(jitChangeDetection, numberOfDetectors);
+
+    function ng2ChangeDetectionJit() {
+      for (var i = 0; i < numberOfRuns; ++i) {
+        ng2JitChangeDetector.detectChanges();
+      }
+    }
+
+    ng2JitChangeDetector.detectChanges();
+    bindAction('#ng2ChangeDetectionJit', ng2ChangeDetectionJit);
+  } else {
+    bindAction('#ng2ChangeDetectionJit', () => {});
+  }
 }
 
 

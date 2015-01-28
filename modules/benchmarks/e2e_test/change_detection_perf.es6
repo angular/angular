@@ -6,13 +6,24 @@ describe('ng2 change detection benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log ng stats', function() {
+  it('should log ng stats (dynamic)', function() {
     perfUtil.runClickBenchmark({
       url: URL,
-      buttons: ['#ng2DetectChanges'],
-      id: 'ng2.changeDetection',
+      buttons: ['#ng2ChangeDetectionDynamic'],
+      id: 'ng2.changeDetection.dynamic',
       params: [{
-        name: 'iterations', value: 500000, scale: 'linear'
+        name: 'numberOfChecks', value: 900000, scale: 'linear'
+      }]
+    });
+  });
+
+  it('should log ng stats (jit)', function() {
+    perfUtil.runClickBenchmark({
+      url: URL,
+      buttons: ['#ng2ChangeDetectionJit'],
+      id: 'ng2.changeDetection.jit',
+      params: [{
+        name: 'numberOfChecks', value: 900000, scale: 'linear'
       }]
     });
   });
@@ -20,10 +31,10 @@ describe('ng2 change detection benchmark', function () {
   it('should log baseline stats', function() {
     perfUtil.runClickBenchmark({
       url: URL,
-      buttons: ['#baselineDetectChanges'],
+      buttons: ['#baselineChangeDetection'],
       id: 'baseline.changeDetection',
       params: [{
-        name: 'iterations', value: 500000, scale: 'linear'
+        name: 'numberOfChecks', value: 900000, scale: 'linear'
       }]
     });
   });
