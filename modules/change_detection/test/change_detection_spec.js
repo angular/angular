@@ -443,6 +443,25 @@ export function main() {
             });
           });
         });
+
+        describe("optimizations", () => {
+          it("should not rerun formatters when args did not change", () => {
+            var count = 0;
+            var formatters = MapWrapper.createFromPairs([
+              ['count', (v) => {count ++; "value"}]]);
+
+            var c = createChangeDetector('a', 'a | count', new TestData(null), formatters);
+            var cd = c["changeDetector"];
+
+            cd.detectChanges();
+
+            expect(count).toEqual(1);
+
+            cd.detectChanges();
+
+            expect(count).toEqual(1);
+          });
+        });
       });
   });
 }

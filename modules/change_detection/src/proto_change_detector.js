@@ -84,6 +84,12 @@ export class ProtoRecord {
     this.lastInGroup = lastInGroup;
     this.expressionAsString = expressionAsString;
   }
+
+  isPureFunction():boolean {
+    return this.mode === RECORD_TYPE_INTERPOLATE ||
+      this.mode === RECORD_TYPE_INVOKE_FORMATTER ||
+      this.mode === RECORD_TYPE_PRIMITIVE_OP;
+  }
 }
 
 export class ProtoChangeDetector  {
