@@ -5,15 +5,16 @@
 <h2>Params</h2>
 <form>
   Iterations:
-  <input type="number" name="iterations" placeholder="iterations" value="500000">
+  <input type="number" name="numberOfChecks" placeholder="numberOfChecks" value="900000">
   <br>
   <button>Apply</button>
 </form>
 
 <h2>Actions</h2>
 <p>
-<button id="ng2DetectChanges">Ng2 detect changes</button>
-<button id="baselineDetectChanges">baselineDetectChanges</button>
+<button id="ng2ChangeDetectionDynamic">Ng2 detect changes (dynamic)</button>
+<button id="ng2ChangeDetectionJit">Ng2 detect changes (jit)</button>
+<button id="baselineChangeDetection">baselineDetectChanges</button>
 </p>
 
 $SCRIPTS$
