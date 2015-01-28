@@ -425,10 +425,12 @@ export class ASTWithSource extends AST {
 
 export class TemplateBinding {
   key:string;
+  keyIsVar:boolean;
   name:string;
   expression:ASTWithSource;
-  constructor(key:string, name:string, expression:ASTWithSource) {
+  constructor(key:string, keyIsVar:boolean, name:string, expression:ASTWithSource) {
     this.key = key;
+    this.keyIsVar = keyIsVar;
     // only either name or expression will be filled.
     this.name = name;
     this.expression = expression;

@@ -123,6 +123,19 @@ class _ParseAST {
     }
   }
 
+  optionalKeywordVar():boolean {
+    if (this.peekKeywordVar()) {
+      this.advance();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  peekKeywordVar():boolean {
+    return this.next.isKeywordVar() || this.next.isOperator('#');
+  }
+
   expectCharacter(code:int) {
     if (this.optionalCharacter(code)) return;
     this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
@@ -469,21 +482,26 @@ class _ParseAST {
   parseTemplateBindings() {
     var bindings = [];
     while (this.index < this.tokens.length) {
+      var keyIsVar:boolean = this.optionalKeywordVar();
       var key = this.expectTemplateBindingKey();
       this.optionalCharacter($COLON);
       var name = null;
       var expression = null;
       if (this.next !== EOF) {
-        if (this.optionalOperator("#")) {
-          name = this.expectIdentifierOrKeyword();
-        } else {
+        if (keyIsVar) {
+          if (this.optionalOperator("=")) {
+            name = this.expectTemplateBindingKey();
+          } else {
+            name = '\$implicit';
+          }
+        } else if (!this.peekKeywordVar()) {
           var start = this.inputIndex;
           var ast = this.parseExpression();
           var source = this.input.substring(start, this.inputIndex);
           expression = new ASTWithSource(ast, source, this.location);
         }
       }
-      ListWrapper.push(bindings, new TemplateBinding(key, name, expression));
+      ListWrapper.push(bindings, new TemplateBinding(key, keyIsVar, name, expression));
       if (!this.optionalCharacter($SEMICOLON)) {
         this.optionalCharacter($COMMA);
       };

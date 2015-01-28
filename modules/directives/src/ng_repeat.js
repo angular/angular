@@ -49,7 +49,7 @@ export class NgRepeat extends OnChange {
   }
 
   perViewChange(view, record) {
-    view.setLocal('ng-repeat', record.item);
+    view.setLocal('\$implicit', record.item);
     view.setLocal('index', record.currentIndex);
   }
 

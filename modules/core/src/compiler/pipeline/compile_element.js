@@ -23,6 +23,10 @@ export class CompileElement {
   textNodeBindings:Map;
   propertyBindings:Map;
   eventBindings:Map;
+
+  /// Store directive name to template name mapping.
+  /// Directive name is what the directive exports the variable as
+  /// Template name is how it is reffered to it in template
   variableBindings:Map;
   decoratorDirectives:List<DirectiveMetadata>;
   templateDirective:DirectiveMetadata;
@@ -102,11 +106,11 @@ export class CompileElement {
     MapWrapper.set(this.propertyBindings, property, expression);
   }
 
-  addVariableBinding(contextName:string, templateName:string) {
+  addVariableBinding(directiveName:string, templateName:string) {
     if (isBlank(this.variableBindings)) {
       this.variableBindings = MapWrapper.create();
     }
-    MapWrapper.set(this.variableBindings, contextName, templateName);
+    MapWrapper.set(this.variableBindings, templateName, directiveName);
   }
 
   addEventBinding(eventName:string, expression:AST) {

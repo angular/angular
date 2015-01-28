@@ -80,7 +80,7 @@ export class ViewSplitter extends CompileStep {
     var bindings = this._parser.parseTemplateBindings(templateBindings, this._compilationUnit);
     for (var i=0; i<bindings.length; i++) {
       var binding = bindings[i];
-      if (isPresent(binding.name)) {
+      if (binding.keyIsVar) {
         compileElement.addVariableBinding(binding.key, binding.name);
       } else if (isPresent(binding.expression)) {
         compileElement.addPropertyBinding(binding.key, binding.expression);

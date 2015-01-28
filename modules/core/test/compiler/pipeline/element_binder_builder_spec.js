@@ -249,7 +249,7 @@ export function main() {
         var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirectiveWithBinding]});
         expect( () => {
           pipeline.process(el('<div viewroot prop-binding directives>'));
-        }).toThrowError('No element binding found for property boundprop1 which is required by directive SomeDecoratorDirectiveWithBinding');
+        }).toThrowError("No element binding found for property 'boundprop1' which is required by directive 'SomeDecoratorDirectiveWithBinding'");
       });
 
     });

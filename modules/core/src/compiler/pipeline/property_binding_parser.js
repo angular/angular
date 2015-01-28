@@ -9,7 +9,7 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(let)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)');
+var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)');
 
 /**
  * Parses the property bindings on a single element.
@@ -40,7 +40,7 @@ export class PropertyBindingParser extends CompileStep {
           // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
           // only be present on <template> elements any more!
           if (!(current.element instanceof TemplateElement)) {
-            throw new BaseException('let-* is only allowed on <template> elements!');
+            throw new BaseException('var-* is only allowed on <template> elements!');
           }
           current.addVariableBinding(bindParts[4], attrValue);
         } else if (isPresent(bindParts[3])) {
