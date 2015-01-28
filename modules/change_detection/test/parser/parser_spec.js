@@ -408,6 +408,16 @@ export function main() {
         return ListWrapper.map(templateBindings, (binding) => binding.key );
       }
 
+      function keyValues(templateBindings) {
+        return ListWrapper.map(templateBindings, (binding) => {
+          if (binding.keyIsVar) {
+            return '#' + binding.key + (isBlank(binding.name) ? '' : '=' + binding.name);
+          } else {
+            return binding.key +  (isBlank(binding.expression) ? '' : `=${binding.expression}`)
+          }
+        });
+      }
+
       function names(templateBindings) {
         return ListWrapper.map(templateBindings, (binding) => binding.name );
       }
@@ -466,9 +476,7 @@ export function main() {
 
       it('should detect names as value', () => {
         var bindings = parseTemplateBindings("a:#b");
-        expect(names(bindings)).toEqual(['b']);
-        expect(exprSources(bindings)).toEqual([null]);
-        expect(exprAsts(bindings)).toEqual([null]);
+        expect(keyValues(bindings)).toEqual(['a', '#b']);
       });
 
       it('should allow space and colon as separators', () => {
@@ -496,6 +504,26 @@ export function main() {
       it('should store the passed-in location', () => {
         var bindings = parseTemplateBindings("a 1,b 2", 'location');
         expect(bindings[0].expression.location).toEqual('location');
+      });
+
+      it('should support var/# notation', () => {
+        var bindings = parseTemplateBindings("var i");
+        expect(keyValues(bindings)).toEqual(['#i']);
+
+        bindings = parseTemplateBindings("#i");
+        expect(keyValues(bindings)).toEqual(['#i']);
+
+        bindings = parseTemplateBindings("var i-a = k-a");
+        expect(keyValues(bindings)).toEqual(['#i-a=k-a']);
+
+        bindings = parseTemplateBindings("keyword var item; var i = k");
+        expect(keyValues(bindings)).toEqual(['keyword', '#item=\$implicit', '#i=k']);
+
+        bindings = parseTemplateBindings("keyword: #item; #i = k");
+        expect(keyValues(bindings)).toEqual(['keyword', '#item=\$implicit', '#i=k']);
+
+        bindings = parseTemplateBindings("directive: var item in expr; var a = b", 'location');
+        expect(keyValues(bindings)).toEqual(['directive', '#item=\$implicit', 'in=expr in location', '#a=b']);
       });
     });
 

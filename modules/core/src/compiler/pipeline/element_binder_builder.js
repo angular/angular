@@ -97,8 +97,8 @@ export class ElementBinderBuilder extends CompileStep {
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
         if (isBlank(expression)) {
-          throw new BaseException('No element binding found for property '+elProp
-            +' which is required by directive '+stringify(directive.type));
+          throw new BaseException("No element binding found for property '" + elProp
+            + "' which is required by directive '" + stringify(directive.type) + "'");
         }
         var len = dirProp.length;
         var dirBindingName = dirProp;

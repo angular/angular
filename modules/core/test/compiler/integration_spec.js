@@ -97,7 +97,7 @@ export function main() {
       });
 
       it('should support template directives via `<template>` elements.', (done) => {
-        compiler.compile(MyComp, el('<div><template let-some-tmpl="greeting"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div><template some-tmplate var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -112,7 +112,7 @@ export function main() {
       });
 
       it('should support template directives via `template` attribute.', (done) => {
-        compiler.compile(MyComp, el('<div><copy-me template="some-tmpl #greeting">{{greeting}}</copy-me></div>')).then((pv) => {
+        compiler.compile(MyComp, el('<div><copy-me template="some-tmplate: var greeting=some-tmpl">{{greeting}}</copy-me></div>')).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -170,7 +170,7 @@ class ChildComp {
 }
 
 @Template({
-  selector: '[some-tmpl]'
+  selector: '[some-tmplate]'
 })
 class SomeTemplate {
   constructor(viewPort: ViewPort) {

@@ -62,6 +62,10 @@ export class Token {
     return (this.type == TOKEN_TYPE_KEYWORD);
   }
 
+  isKeywordVar():boolean {
+    return (this.type == TOKEN_TYPE_KEYWORD && this._strValue == "var");
+  }
+
   isKeywordNull():boolean {
     return (this.type == TOKEN_TYPE_KEYWORD && this._strValue == "null");
   }
@@ -469,6 +473,7 @@ var OPERATORS = SetWrapper.createFromList([
 
 
 var KEYWORDS = SetWrapper.createFromList([
+    'var',
     'null',
     'undefined',
     'true',

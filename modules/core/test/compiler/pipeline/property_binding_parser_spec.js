@@ -29,15 +29,15 @@ export function main() {
       expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('{{b}}');
     });
 
-    it('should detect let- syntax', () => {
-      var results = createPipeline().process(el('<template let-a="b"></template>'));
-      expect(MapWrapper.get(results[0].variableBindings, 'a')).toEqual('b');
+    it('should detect var- syntax', () => {
+      var results = createPipeline().process(el('<template var-a="b"></template>'));
+      expect(MapWrapper.get(results[0].variableBindings, 'b')).toEqual('a');
     });
 
-    it('should not allow let- syntax on non template elements', () => {
+    it('should not allow var- syntax on non template elements', () => {
       expect( () => {
-        createPipeline().process(el('<div let-a="b"></div>'))
-      }).toThrowError('let-* is only allowed on <template> elements!');
+        createPipeline().process(el('<div var-a="b"></div>'))
+      }).toThrowError('var-* is only allowed on <template> elements!');
     });
 
     it('should detect () syntax', () => {

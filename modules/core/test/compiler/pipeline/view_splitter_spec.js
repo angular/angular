@@ -78,9 +78,9 @@ export function main() {
       });
 
       it('should add variable mappings from the template attribute', () => {
-        var rootElement = el('<div><div template="varName #mapName"></div></div>');
+        var rootElement = el('<div><div template="var varName=mapName"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(results[1].variableBindings).toEqual(MapWrapper.createFromStringMap({'varName': 'mapName'}));
+        expect(results[1].variableBindings).toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
       });
 
       it('should add entries without value as attribute to the element', () => {
