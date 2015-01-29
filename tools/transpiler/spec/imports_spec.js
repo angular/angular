@@ -37,7 +37,7 @@ export function main() {
           // Dart
           "No top-level method 'exportModule.Bar3' declared.":
           // JavaScript
-          'undefined is not a function'
+          new RegExp('.*is not a function')
         );
 
       expect(Type).toBeTruthy();
