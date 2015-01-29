@@ -78,6 +78,10 @@ export class View {
     this.context.set(templateName, value);
   }
 
+  isLocal(contextName: string) {
+    return MapWrapper.contains(this.proto.variableBindings, contextName);
+  }
+
   hydrated() {
     return isPresent(this.context);
   }

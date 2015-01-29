@@ -191,10 +191,9 @@ export function main() {
     });
   });
 
-/*
-TODO(rado): enable after compiler is fixed.
+
   it('should display indices correctly', (done) => {
-    var INDEX_TEMPLATE = '<div><copy-me template="ng-repeat #item in items index #i">{{index.toString()}};</copy-me></div>';
+    var INDEX_TEMPLATE = '<div><copy-me template="ng-repeat #item in items index #i">{{i.toString()}}</copy-me></div>';
     compileWithTemplate(INDEX_TEMPLATE).then((pv) => {
       createView(pv);
       component.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -207,7 +206,7 @@ TODO(rado): enable after compiler is fixed.
       done();
     });
   });
-*/
+
   });
 }
 
