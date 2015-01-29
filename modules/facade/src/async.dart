@@ -4,44 +4,36 @@ import 'dart:async';
 export 'dart:async' show Future;
 
 class PromiseWrapper {
-  static Future resolve(obj) {
-    return new Future.value(obj);
-  }
+  static Future resolve(obj) => new Future.value(obj);
 
-  static Future reject(obj) {
-    return new Future.error(obj);
-  }
+  static Future reject(obj) => new Future.error(obj);
 
-  static Future<List> all(List<Future> promises) {
-    return Future.wait(promises);
-  }
+  static Future<List> all(List<Future> promises) => Future.wait(promises);
 
-  static Future then(Future promise, Function success, Function onError) {
+  static Future then(Future promise, success(value), Function onError) {
     if (success == null) return promise.catchError(onError);
     return promise.then(success, onError: onError);
   }
 
-  static completer(){
-    return new _Completer(new Completer());
-  }
+  static _Completer completer() => new _Completer(new Completer());
 
-  static setTimeout(Function fn, int millis) {
+  static void setTimeout(fn(), int millis) {
     new Timer(new Duration(milliseconds: millis), fn);
   }
 }
 
 class _Completer {
-  Completer c;
+  final Completer c;
 
   _Completer(this.c);
 
-  get promise => c.future;
+  Future get promise => c.future;
 
-  complete(v) {
+  void complete(v) {
     c.complete(v);
   }
 
-  reject(v) {
+  void reject(v) {
     c.completeError(v);
   }
 }
