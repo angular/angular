@@ -1,4 +1,4 @@
-import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
+import {DOM, Element, Node, Text, TemplateElement, StyleElement} from 'facade/dom';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
   from 'change_detection/change_detection';
@@ -14,6 +14,8 @@ import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
+import {ShadowBoundary} from './shadow_boundary';
+import {WebComponentPolyfill} from './shadow_dom_emulation/webcmp_polyfill';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -152,8 +154,15 @@ export class View {
       }
 
       if (isPresent(componentDirective)) {
-        this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
+        var componentView = this.componentChildViews[componentChildViewIndex++];
+        componentView.hydrate(shadowDomAppInjector,
           elementInjector, elementInjector.getComponent());
+
+        var styles = componentView.proto.styles;
+        if (styles.length > 0) {
+          var boundary = elementInjector.get(ShadowBoundary);
+          boundary.insertStyles(styles);
+        }
       }
     }
 
@@ -255,6 +264,8 @@ export class ProtoView {
   instantiateInPlace:boolean;
   rootBindingOffset:int;
   isTemplateElement:boolean;
+  styles:List<StyleElement>;
+  webComponentPolyfill: WebComponentPolyfill;
   constructor(
       template:Element,
       protoChangeDetector:ProtoChangeDetector) {
@@ -269,6 +280,7 @@ export class ProtoView {
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS))
       ? 1 : 0;
     this.isTemplateElement = this.element instanceof TemplateElement;
+    this.styles = [];
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -350,13 +362,14 @@ export class ProtoView {
 
       // componentChildViews
       var lightDom = null;
+      var shadowBoundary = null;
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
         view.changeDetector.addChild(childView.changeDetector);
-
-        lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
-        binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
-
+        var strategy = binder.componentDirective.shadowDomStrategy;
+        lightDom = strategy.constructLightDom(view, childView, element);
+        strategy.attachTemplate(element, childView);
+        shadowBoundary = strategy.getShadowBoundary(element, this.webComponentPolyfill);
         ListWrapper.push(componentChildViews, childView);
       }
 
@@ -370,7 +383,7 @@ export class ProtoView {
 
       // preBuiltObjects
       if (isPresent(elementInjector)) {
-        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort, lightDom);
+        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort, lightDom, shadowBoundary);
       }
 
       // events
@@ -387,6 +400,10 @@ export class ProtoView {
       viewPorts, preBuiltObjects, componentChildViews);
 
     return view;
+  }
+
+  addStyle(style: StyleElement) {
+    ListWrapper.push(this.styles, style);
   }
 
   static _addNativeEventListener(element: Element, eventName: string, expr: AST, view: View) {
@@ -492,12 +509,13 @@ export class ProtoView {
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
       insertionElement, rootComponentAnnotatedType: DirectiveMetadata,
-      protoChangeDetector:ProtoChangeDetector
+      protoChangeDetector:ProtoChangeDetector, polyfill: WebComponentPolyfill
   ): ProtoView {
 
     DOM.addClass(insertionElement, 'ng-binding');
     var rootProtoView = new ProtoView(insertionElement, protoChangeDetector);
     rootProtoView.instantiateInPlace = true;
+    rootProtoView.webComponentPolyfill = polyfill;
     var binder = rootProtoView.bindElement(
         new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
     binder.componentDirective = rootComponentAnnotatedType;

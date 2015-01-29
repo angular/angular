@@ -1,5 +1,6 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'test_lib/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/lang';
+import {DOM} from 'facade/dom';
 import {ListWrapper, MapWrapper, List} from 'facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/compiler/element_injector';
 import {Parent, Ancestor} from 'core/annotations/visibility';
@@ -9,6 +10,7 @@ import {Injector, Inject, bind} from 'di/di';
 import {View} from 'core/compiler/view';
 import {ProtoRecordRange} from 'change_detection/change_detection';
 import {ViewPort} from 'core/compiler/viewport';
+import {ShadowBoundary, DefaultShadowBoundary} from 'core/compiler/shadow_boundary';
 import {NgElement} from 'core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'core/annotations/annotations';
@@ -95,7 +97,7 @@ class DirectiveWithDestroy {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -245,7 +247,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -365,21 +367,21 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewPort', function () {
         var viewPort = new ViewPort(null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null, null));
 
         expect(inj.get(ViewPort)).toEqual(viewPort);
       });
@@ -389,7 +391,7 @@ export function main() {
 
         beforeEach(() => {
           lightDom = new DummyLightDom();
-          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom);
+          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom, null);
         });
 
         it("should return destination light DOM from the parent's injector", function () {
@@ -408,6 +410,31 @@ export function main() {
           var child = hostShadowInjectors([], [], parentPreBuiltObjects);
 
           expect(child.get(SourceLightDom)).toEqual(lightDom);
+        });
+      });
+
+      describe("shadow boundary", () => {
+        var boundary, pbObjs;
+
+        beforeEach(() => {
+          boundary = new ShadowBoundary(DOM.createElement('div'));
+          pbObjs = new PreBuiltObjects(null, null, null, null, boundary);
+        });
+
+        it("should return the shadow boundary from the element injector", () => {
+          var inj = injector([], null, null, pbObjs);
+          expect(inj.get(ShadowBoundary)).toBe(boundary);
+        });
+
+        it("should return the shadow boundary from the parent component", () => {
+        });
+
+        it("should return the shadow boundary from an ancestor component", () => {
+
+        });
+
+        it("should return the default shadow boundary", () => {
+
         });
       });
     });

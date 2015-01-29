@@ -1,7 +1,7 @@
-import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'facade/lang';
+import {Type, isBlank, isPresent, BaseException, normalizeBlank} from 'facade/lang';
 import {Promise, PromiseWrapper} from 'facade/async';
-import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {DOM, Element} from 'facade/dom';
+import {List, ListWrapper, MapWrapper, Map} from 'facade/collection';
+import {DOM, Element, TemplateElement} from 'facade/dom';
 
 import {ChangeDetection, Parser} from 'change_detection/change_detection';
 
@@ -14,6 +14,8 @@ import {TemplateLoader} from './template_loader';
 import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
 import {Content} from './shadow_dom_emulation/content_tag';
+import {WebComponentPolyfill} from './shadow_dom_emulation/webcmp_polyfill';
+import {ShadowDomTransformer} from './shadow_dom_emulation/shadow_dom_transformer';
 
 /**
  * Cache that stores the ProtoView of the template of a component.
@@ -30,16 +32,11 @@ export class CompilerCache {
   }
 
   get(component:Type):ProtoView {
-    var result = MapWrapper.get(this._cache, component);
-    if (isBlank(result)) {
-      // need to normalize undefined to null so that type checking passes :-(
-      return null;
-    }
-    return result;
+    return normalizeBlank(MapWrapper.get(this._cache, component));
   }
 
   clear() {
-    this._cache = MapWrapper.create();
+    MapWrapper.clear(this._cache);
   }
 }
 
@@ -53,12 +50,26 @@ export class Compiler {
   _parser:Parser;
   _compilerCache:CompilerCache;
   _changeDetection:ChangeDetection;
+  _tplLoader:TemplateLoader;
+  _compiling: Map<Type, Promise>;
+  _shadowDomTransformer: ShadowDomTransformer;
+  _webComponentPolyfill: WebComponentPolyfill;
 
-  constructor(changeDetection:ChangeDetection, templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser, cache:CompilerCache) {
+  constructor(changeDetection:ChangeDetection,
+              templateLoader:TemplateLoader,
+              reader: DirectiveMetadataReader,
+              parser:Parser,
+              cache:CompilerCache,
+              webComponentPolyfill: WebComponentPolyfill,
+              shadowDomTransformer: ShadowDomTransformer) {
     this._changeDetection = changeDetection;
     this._reader = reader;
     this._parser = parser;
     this._compilerCache = cache;
+    this._tplLoader = templateLoader;
+    this._compiling = MapWrapper.create();
+    this._shadowDomTransformer = shadowDomTransformer;
+    this._webComponentPolyfill = webComponentPolyfill;
   }
 
   createSteps(component:DirectiveMetadata):List<CompileStep> {
@@ -67,45 +78,105 @@ export class Compiler {
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
+    // todo(vicb) - templateCache in TemplateLoader
     var templateCache = null;
-    // TODO load all components that have urls
-    // transitively via the _templateLoader and store them in templateCache
-
-    return PromiseWrapper.resolve(this.compileAllLoaded(
-      templateCache, this._reader.read(component), templateRoot)
-    );
+    return this._compile(this._reader.read(component), templateRoot);
   }
 
-  // public so that we can compile in sync in performance tests.
-  compileAllLoaded(templateCache, component:DirectiveMetadata, templateRoot:Element = null):ProtoView {
-    var rootProtoView = this._compilerCache.get(component.type);
-    if (isPresent(rootProtoView)) {
-      return rootProtoView;
+  _compile(cmpMetadata: DirectiveMetadata, templateRoot:Element = null) {
+    var pvCached = this._compilerCache.get(cmpMetadata.type);
+    if (isPresent(pvCached)) {
+      // The component has already been compiled into a ProtoView,
+      // returns a resolved Promise.
+      return PromiseWrapper.resolve(pvCached);
     }
 
-    if (isBlank(templateRoot)) {
-      // TODO: read out the cache if templateRoot = null. Could contain:
-      // - templateRoot string
-      // - precompiled template
-      // - ProtoView
-      var annotation:any = component.annotation;
-      templateRoot = DOM.createTemplate(annotation.template.inline);
+    // todo(vicb): unit test
+    var pvPromise = MapWrapper.get(this._compiling, cmpMetadata.type);
+    if (isPresent(pvPromise)) {
+      // The component is already being compiled, attach to the existing Promise
+      // instead of re-compiling the component.
+      // It happens when a template references a component multiple times.
+      return pvPromise;
     }
 
-    var pipeline = new CompilePipeline(this.createSteps(component));
-    var compileElements = pipeline.process(templateRoot);
-    rootProtoView = compileElements[0].inheritedProtoView;
-    // Save the rootProtoView before we recurse so that we are able
-    // to compile components that use themselves in their template.
-    this._compilerCache.set(component.type, rootProtoView);
+    var tplPromise = isBlank(templateRoot) ?
+        this._tplLoader.loadTemplate(cmpMetadata) :
+        PromiseWrapper.resolve(templateRoot);
 
-    for (var i=0; i<compileElements.length; i++) {
-      var ce = compileElements[i];
-      if (isPresent(ce.componentDirective)) {
-        ce.inheritedElementBinder.nestedProtoView = this.compileAllLoaded(templateCache, ce.componentDirective, null);
+    var cssPromise = this._tplLoader.loadStyles(cmpMetadata).then((styles) => {
+      for (var i = 0; i < styles.length; i++) {
+        this._shadowDomTransformer.transformStyle(styles[i], cmpMetadata);
       }
-    }
+      return styles;
+    });
 
-    return rootProtoView;
+    pvPromise = tplPromise.then((template) => {
+      var inlineStyles = _extractStyles(template);
+      this._shadowDomTransformer.transformTemplate(template, cmpMetadata);
+      var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
+      var compileElements = pipeline.process(template);
+      var protoView = compileElements[0].inheritedProtoView;
+      protoView.webComponentPolyfill = this._webComponentPolyfill;
+
+      // Populate the cache before compiling the template, so that components can
+      // reference themselves in their template.
+      this._compilerCache.set(cmpMetadata.type, protoView);
+      MapWrapper.delete(this._compiling, cmpMetadata.type);
+
+      // Compile all the components from the template
+      var componentPromises = [];
+      for (var i = 0; i < compileElements.length; i++) {
+        var ce = compileElements[i];
+        if (isPresent(ce.componentDirective)) {
+          var componentPromise = this._compileNestedProtoView(ce);
+          ListWrapper.push(componentPromises, componentPromise);
+        }
+      }
+
+      for (var i = 0; i < inlineStyles.length; i++) {
+        var style = this._shadowDomTransformer.transformStyle(inlineStyles[i], cmpMetadata);
+        protoView.addStyle(style);
+      }
+
+      // The protoView is resolved after all the components in the template
+      // have been compiled.
+      return PromiseWrapper.all(componentPromises)
+        .then(function(_) { return cssPromise; })
+        .then((styles) => {
+          for (var i = 0; i < styles.length; i++) {
+            protoView.addStyle(styles[i]);
+          }
+          return protoView;
+        });
+    });
+
+    MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
+
+    return pvPromise;
+  }
+
+  _compileNestedProtoView(ce: CompileElement):Promise<ProtoView> {
+    var pvPromise = this._compile(ce.componentDirective);
+    pvPromise.then(function(protoView) {
+      ce.inheritedElementBinder.nestedProtoView = protoView;
+    });
+    return pvPromise;
+  }
+
+  compileAllLoaded(templateCache, component:DirectiveMetadata, templateRoot:Element = null):ProtoView {
+    // todo(vicb) empty placeholder for now - fix perf tests
+    // public so that we can compile in sync in performance tests.
+    return null;
   }
 }
+
+// Detach the styles from the template and returns them
+function _extractStyles(template: TemplateElement) {
+  var styles = DOM.querySelectorAll(template.content, 'style');
+  for (var i = 0; i < styles.length; i++) {
+    DOM.detach(styles[i]);
+  }
+  return styles;
+}
+

@@ -9,6 +9,7 @@ import {Compiler, CompilerCache} from 'core/compiler/compiler';
 import {LifeCycle} from 'core/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, ShadowDomNative, ShadowDomEmulated} from 'core/compiler/shadow_dom';
+import {TemplateLoader} from 'core/compiler/template_loader';
 
 import {Decorator, Component, Template} from 'core/annotations/annotations';
 import {TemplateConfig} from 'core/annotations/template_config';
@@ -26,9 +27,8 @@ export function main() {
         var compiler;
 
         beforeEach( () => {
-          compiler = new Compiler(dynamicChangeDetection, null,
-            new TestDirectiveMetadataReader(strategy),
-            new Parser(new Lexer()), new CompilerCache());
+          compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+            new TestDirectiveMetadataReader(strategy), new Parser(new Lexer()), new CompilerCache());
         });
 
         function compile(template, assertions) {

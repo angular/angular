@@ -98,7 +98,7 @@ export function main() {
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
         current.componentDirective = reader.read(RecursiveComponent);
       });
-      compiler.compile(RecursiveComponent, null).then( (protoView) => {
+      compiler.compile(RecursiveComponent).then( (protoView) => {
         expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
         done();
       });
@@ -134,7 +134,8 @@ class RecursiveComponent {}
 class TestableCompiler extends Compiler {
   steps:List;
   constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
-    super(dynamicChangeDetection, null, reader, new Parser(new Lexer()), new CompilerCache());
+    super(dynamicChangeDetection, new TemplateLoader(null), reader,
+          new Parser(new Lexer()), new CompilerCache());
     this.steps = steps;
   }
   createSteps(component):List<CompileStep> {

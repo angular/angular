@@ -192,6 +192,14 @@ export function iterateListLike(obj, fn:Function) {
 }
 
 export class SetWrapper {
-  static createFromList(lst:List) { return new Set(lst); }
+  static create():Set { return new Set(); }
+  static createFromList(lst:List):Set { return new Set(lst); }
   static has(s:Set, key):boolean { return s.has(key); }
+  static add(s:Set, key):Set { return s.add(key); }
+  static addAll(s:Set, keys:List) {
+    for (var i = 0; i < keys.length; i++) {
+      s.add(keys[i]);
+    }
+    return s;
+  }
 }
