@@ -13,6 +13,7 @@ var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
+var rundartpackage = require('./tools/build/rundartpackage');
 var karma = require('karma').server;
 var minimist = require('minimist');
 
@@ -166,6 +167,10 @@ var CONFIG = {
   },
   pubspec: {
     src: 'modules/*/pubspec.yaml'
+  },
+  formatDart: {
+    packageName: 'dart_style',
+    args: ['dart_style:format', '-w', 'dist/dart']
   }
 };
 
@@ -310,6 +315,15 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
   command: DART_SDK.PUB
 }));
 
+// ------------
+// format dart
+
+gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
+  pub: DART_SDK.PUB,
+  packageName: CONFIG.formatDart.packageName,
+  args: CONFIG.formatDart.args
+}));
+
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
@@ -430,7 +444,8 @@ gulp.task('build.dart', function() {
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
     'build/pubbuild.dart',
-    'build/analyze.dart'
+    'build/analyze.dart',
+    'build/format.dart'
   );
 });
 
