@@ -4,6 +4,7 @@ import {Injector} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/directives/ng_switch';
@@ -12,8 +13,14 @@ export function main() {
   describe('ng-switch', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(
+        dynamicChangeDetection,
+        null,
+        new DirectiveMetadataReader(),
+        new Parser(new Lexer()),
+        new CompilerCache(),
+        new NativeShadowDomStrategy()
+      );
     });
 
     function createView(pv) {

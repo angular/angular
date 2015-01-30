@@ -4,6 +4,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Injector} from 'angular2/di';
 import {DOM} from 'angular2/src/facade/dom';
 
@@ -17,7 +18,7 @@ export function main() {
 
   function compile(componentType, template, context, callback) {
     var compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-      new Parser(new Lexer()), new CompilerCache());
+      new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
 
     compiler.compile(componentType, el(template)).then((pv) => {
       var view = pv.instantiate(null);

@@ -2,6 +2,7 @@ import {DOM, document} from 'angular2/src/facade/dom';
 import {isBlank, Type} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
 
@@ -11,9 +12,12 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {Decorator} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
@@ -79,9 +83,8 @@ export function main() {
   setupReflector();
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
-  var compiler = new Compiler(dynamicChangeDetection, null, reader, new Parser(new Lexer()), cache);
-  var annotatedComponent = reader.read(BenchmarkComponent);
-
+  var compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(new XHRImpl()),
+    reader, new Parser(new Lexer()), cache, new NativeShadowDomStrategy());
   var templateNoBindings = loadTemplate('templateNoBindings', count);
   var templateWithBindings = loadTemplate('templateWithBindings', count);
 
@@ -89,14 +92,14 @@ export function main() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateNoBindings);
     cache.clear();
-    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+    compiler.compile(BenchmarkComponent, cloned);
   }
 
   function compileWithBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateWithBindings);
     cache.clear();
-    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+    compiler.compile(BenchmarkComponent, cloned);
   }
 
   bindAction('#compileNoBindings', compileNoBindings);

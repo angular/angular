@@ -6,6 +6,7 @@ import {DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/di';
 import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
 
 function createView(nodes) {
@@ -68,7 +69,7 @@ export function main() {
       dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector());
+      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
       elementInjector = new ElementInjector(null, null, null, null);
       viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector);
       customViewWithOneNode = createView([el('<div>single</div>')]);
@@ -212,7 +213,7 @@ export function main() {
         viewPort.hydrate(new Injector([]), null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
-          new DynamicProtoChangeDetector());
+          new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null);

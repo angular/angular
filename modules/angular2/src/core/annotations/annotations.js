@@ -1,8 +1,6 @@
 import {ABSTRACT, CONST, normalizeBlank} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import {TemplateConfig} from './template_config';
-import {ShadowDomStrategy} from '../compiler/shadow_dom';
-
 
 @ABSTRACT()
 export class Directive {
@@ -40,7 +38,6 @@ export class Component extends Directive {
   lightDomServices:any; //List;
   shadowDomServices:any; //List;
   componentServices:any; //List;
-  shadowDom:any; //ShadowDomStrategy;
   lifecycle:any; //List
 
 @CONST()
@@ -52,7 +49,6 @@ export class Component extends Directive {
     shadowDomServices,
     componentServices,
     implementsTypes,
-    shadowDom,
     lifecycle
     }:{
       selector:String,
@@ -62,7 +58,6 @@ export class Component extends Directive {
       shadowDomServices:List,
       componentServices:List,
       implementsTypes:List,
-      shadowDom:ShadowDomStrategy,
       lifecycle:List
     }={})
   {
@@ -78,7 +73,6 @@ export class Component extends Directive {
     this.lightDomServices = lightDomServices;
     this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;
-    this.shadowDom = shadowDom;
     this.lifecycle = lifecycle;
   }
 }

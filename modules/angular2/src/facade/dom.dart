@@ -3,7 +3,16 @@ library angular.core.facade.dom;
 import 'dart:html';
 import 'dart:js' show JsObject, context;
 
-export 'dart:html' show DocumentFragment, Node, Element, TemplateElement, Text, document, location, window;
+export 'dart:html' show
+  document,
+  DocumentFragment,
+  Element,
+  location,
+  Node,
+  StyleElement,
+  TemplateElement,
+  Text,
+  window;
 
 // TODO(tbosch): Is there a builtin one? Why is Dart
 // removing unknown elements by default?
@@ -62,7 +71,10 @@ class DOM {
   static void removeChild(Element el, Node node) {
     node.remove();
   }
-  static void insertBefore(Node el, Node node) {
+  static Element remove(Element el) {
+    return el..remove();
+  }
+  static insertBefore(Node el, node) {
     el.parentNode.insertBefore(node, el);
   }
   static void insertAllBefore(Node el, Iterable<Node> nodes) {
@@ -72,8 +84,8 @@ class DOM {
     el.parentNode.insertBefore(node, el.nextNode);
   }
   static String getText(Node el) => el.text;
-  static void setText(Text text, String value) {
-    text.text = value;
+  static void setText(Node el, String value) {
+    el.text = value;
   }
   static TemplateElement createTemplate(String html) {
     var t = new TemplateElement();
@@ -115,6 +127,10 @@ class DOM {
 
   static String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
+
+  static void setAttribute(Element element, String name, String value) {
+    element.setAttribute(name, value);
+  }
 
   static Node templateAwareRoot(Element el) =>
       el is TemplateElement ? el.content : el;

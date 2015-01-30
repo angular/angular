@@ -1,6 +1,6 @@
-import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM, Element} from 'angular2/src/facade/dom';
 
 import {ChangeDetection, Parser} from 'angular2/change_detection';
@@ -14,6 +14,7 @@ import {TemplateLoader} from './template_loader';
 import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
 import {Content} from './shadow_dom_emulation/content_tag';
+import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 /**
  * Cache that stores the ProtoView of the template of a component.
@@ -31,15 +32,11 @@ export class CompilerCache {
 
   get(component:Type):ProtoView {
     var result = MapWrapper.get(this._cache, component);
-    if (isBlank(result)) {
-      // need to normalize undefined to null so that type checking passes :-(
-      return null;
-    }
-    return result;
+    return normalizeBlank(result);
   }
 
   clear() {
-    this._cache = MapWrapper.create();
+    MapWrapper.clear(this._cache);
   }
 }
 
@@ -53,59 +50,107 @@ export class Compiler {
   _parser:Parser;
   _compilerCache:CompilerCache;
   _changeDetection:ChangeDetection;
+  _templateLoader:TemplateLoader;
+  _compiling:Map<Type, Promise>;
+  _shadowDomStrategy: ShadowDomStrategy;
+  _shadowDomDirectives: List<DirectiveMetadata>;
 
-  constructor(changeDetection:ChangeDetection, templateLoader:TemplateLoader, reader: DirectiveMetadataReader, parser:Parser, cache:CompilerCache) {
+  constructor(changeDetection:ChangeDetection,
+              templateLoader:TemplateLoader,
+              reader: DirectiveMetadataReader,
+              parser:Parser,
+              cache:CompilerCache,
+              shadowDomStrategy: ShadowDomStrategy) {
     this._changeDetection = changeDetection;
     this._reader = reader;
     this._parser = parser;
     this._compilerCache = cache;
+    this._templateLoader = templateLoader;
+    this._compiling = MapWrapper.create();
+    this._shadowDomStrategy = shadowDomStrategy;
+    this._shadowDomDirectives = [];
+    var types = shadowDomStrategy.polyfillDirectives();
+    for (var i = 0; i < types.length; i++) {
+      ListWrapper.push(this._shadowDomDirectives, reader.read(types[i]));
+    }
   }
 
   createSteps(component:DirectiveMetadata):List<CompileStep> {
-    var dirs = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
-    return createDefaultSteps(this._changeDetection, this._parser, component, dirs);
+    var directives = []
+    var cmpDirectives = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
+    directives = ListWrapper.concat(directives, cmpDirectives);
+    directives = ListWrapper.concat(directives, this._shadowDomDirectives);
+    return createDefaultSteps(this._changeDetection, this._parser, component, directives,
+      this._shadowDomStrategy);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
-    var templateCache = null;
-    // TODO load all components that have urls
-    // transitively via the _templateLoader and store them in templateCache
-
-    return PromiseWrapper.resolve(this.compileAllLoaded(
-      templateCache, this._reader.read(component), templateRoot)
-    );
+    return this._compile(this._reader.read(component), templateRoot);
   }
 
-  // public so that we can compile in sync in performance tests.
-  compileAllLoaded(templateCache, component:DirectiveMetadata, templateRoot:Element = null):ProtoView {
-    var rootProtoView = this._compilerCache.get(component.type);
-    if (isPresent(rootProtoView)) {
-      return rootProtoView;
+  _compile(cmpMetadata: DirectiveMetadata, templateRoot:Element = null) {
+    var pvCached = this._compilerCache.get(cmpMetadata.type);
+    if (isPresent(pvCached)) {
+      // The component has already been compiled into a ProtoView,
+      // returns a resolved Promise.
+      return PromiseWrapper.resolve(pvCached);
     }
 
-    if (isBlank(templateRoot)) {
-      // TODO: read out the cache if templateRoot = null. Could contain:
-      // - templateRoot string
-      // - precompiled template
-      // - ProtoView
-      var annotation:any = component.annotation;
-      templateRoot = DOM.createTemplate(annotation.template.inline);
+    var pvPromise = MapWrapper.get(this._compiling, cmpMetadata.type);
+    if (isPresent(pvPromise)) {
+      // The component is already being compiled, attach to the existing Promise
+      // instead of re-compiling the component.
+      // It happens when a template references a component multiple times.
+      return pvPromise;
     }
 
-    var pipeline = new CompilePipeline(this.createSteps(component));
-    var compileElements = pipeline.process(templateRoot);
-    rootProtoView = compileElements[0].inheritedProtoView;
-    // Save the rootProtoView before we recurse so that we are able
-    // to compile components that use themselves in their template.
-    this._compilerCache.set(component.type, rootProtoView);
+    var tplPromise = isBlank(templateRoot) ?
+        this._templateLoader.load(cmpMetadata) :
+        PromiseWrapper.resolve(templateRoot);
 
-    for (var i=0; i<compileElements.length; i++) {
+    pvPromise = PromiseWrapper.then(tplPromise,
+      (el) => this._compileTemplate(el, cmpMetadata),
+      (_) => { throw new BaseException(`Failed to load the template for ${stringify(cmpMetadata.type)}`) }
+    );
+
+    MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
+
+    return pvPromise;
+  }
+
+  _compileTemplate(template: Element, cmpMetadata): Promise<ProtoView> {
+    this._shadowDomStrategy.processTemplate(template, cmpMetadata);
+    var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
+    var compileElements = pipeline.process(template);
+    var protoView = compileElements[0].inheritedProtoView;
+
+    // Populate the cache before compiling the nested components,
+    // so that components can reference themselves in their template.
+    this._compilerCache.set(cmpMetadata.type, protoView);
+    MapWrapper.delete(this._compiling, cmpMetadata.type);
+
+    // Compile all the components from the template
+    var componentPromises = [];
+    for (var i = 0; i < compileElements.length; i++) {
       var ce = compileElements[i];
       if (isPresent(ce.componentDirective)) {
-        ce.inheritedElementBinder.nestedProtoView = this.compileAllLoaded(templateCache, ce.componentDirective, null);
+        var componentPromise = this._compileNestedProtoView(ce);
+        ListWrapper.push(componentPromises, componentPromise);
       }
     }
 
-    return rootProtoView;
+    // The protoView is resolved after all the components in the template have been compiled.
+    return PromiseWrapper.then(PromiseWrapper.all(componentPromises),
+      (_) => protoView,
+      (e) => { throw new BaseException(`${e} -> Failed to compile ${stringify(cmpMetadata.type)}`) }
+    );
+  }
+
+  _compileNestedProtoView(ce: CompileElement):Promise<ProtoView> {
+    var pvPromise = this._compile(ce.componentDirective);
+    pvPromise.then(function(protoView) {
+      ce.inheritedElementBinder.nestedProtoView = protoView;
+    });
+    return pvPromise;
   }
 }

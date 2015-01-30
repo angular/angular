@@ -15,6 +15,7 @@ import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
+import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -256,9 +257,11 @@ export class ProtoView {
   instantiateInPlace:boolean;
   rootBindingOffset:int;
   isTemplateElement:boolean;
+  shadowDomStrategy: ShadowDomStrategy;
   constructor(
       template:Element,
-      protoChangeDetector:ProtoChangeDetector) {
+      protoChangeDetector:ProtoChangeDetector,
+      shadowDomStrategy: ShadowDomStrategy) {
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
@@ -270,6 +273,7 @@ export class ProtoView {
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS))
       ? 1 : 0;
     this.isTemplateElement = this.element instanceof TemplateElement;
+    this.shadowDomStrategy = shadowDomStrategy;
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -353,11 +357,12 @@ export class ProtoView {
       var lightDom = null;
       var bindingPropagationConfig = null;
       if (isPresent(binder.componentDirective)) {
+        var strategy = this.shadowDomStrategy;
         var childView = binder.nestedProtoView.instantiate(elementInjector);
         view.changeDetector.addChild(childView.changeDetector);
 
-        lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
-        binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
+        lightDom = strategy.constructLightDom(view, childView, element);
+        strategy.attachTemplate(element, childView);
 
         bindingPropagationConfig = new BindingPropagationConfig(view.changeDetector);
 
@@ -497,12 +502,14 @@ export class ProtoView {
   // and the component template is already compiled into protoView.
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
-      insertionElement, rootComponentAnnotatedType: DirectiveMetadata,
-      protoChangeDetector:ProtoChangeDetector
+      insertionElement,
+      rootComponentAnnotatedType: DirectiveMetadata,
+      protoChangeDetector:ProtoChangeDetector,
+      shadowDomStrategy: ShadowDomStrategy
   ): ProtoView {
 
     DOM.addClass(insertionElement, 'ng-binding');
-    var rootProtoView = new ProtoView(insertionElement, protoChangeDetector);
+    var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
         new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));

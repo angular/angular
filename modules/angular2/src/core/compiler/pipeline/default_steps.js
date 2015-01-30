@@ -10,6 +10,7 @@ import {ProtoViewBuilder} from './proto_view_builder';
 import {ProtoElementInjectorBuilder} from './proto_element_injector_builder';
 import {ElementBinderBuilder} from './element_binder_builder';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
+import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {stringify} from 'angular2/src/facade/lang';
 
 /**
@@ -21,7 +22,8 @@ export function createDefaultSteps(
     changeDetection:ChangeDetection,
     parser:Parser,
     compiledComponent: DirectiveMetadata,
-    directives: List<DirectiveMetadata>) {
+    directives: List<DirectiveMetadata>,
+    shadowDomStrategy: ShadowDomStrategy) {
 
   var compilationUnit = stringify(compiledComponent.type);
 
@@ -31,7 +33,7 @@ export function createDefaultSteps(
     new DirectiveParser(directives),
     new TextInterpolationParser(parser, compilationUnit),
     new ElementBindingMarker(),
-    new ProtoViewBuilder(changeDetection),
+    new ProtoViewBuilder(changeDetection, shadowDomStrategy),
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder()
   ];

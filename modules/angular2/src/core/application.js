@@ -12,6 +12,9 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 var _rootInjector: Injector;
 
@@ -24,7 +27,9 @@ var _rootBindings = [
   TemplateLoader,
   DirectiveMetadataReader,
   Parser,
-  Lexer
+  Lexer,
+  bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()),
+  bind(XHR).toValue(new XHRImpl()),
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -53,11 +58,12 @@ function _injectorBindings(appComponentType) {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-            appComponentAnnotatedType) => {
+        appComponentAnnotatedType, strategy) => {
         return compiler.compile(appComponentAnnotatedType.type, null).then(
             (protoView) => {
-          var appProtoView = ProtoView.createRootProtoView(protoView,
-          appElement, appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'));
+          var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
+            appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'),
+            strategy);
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
@@ -65,7 +71,8 @@ function _injectorBindings(appComponentType) {
           view.hydrate(injector, null, new Object());
           return view;
         });
-      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
+      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
+          ShadowDomStrategy]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),

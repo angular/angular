@@ -6,7 +6,10 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 
@@ -37,8 +40,10 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache) => new Compiler(changeDetection, templateLoader, reader, parser, compilerCache),
-    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
+                   [CompilerCache], [ShadowDomStrategy]],
     "annotations": []
   });
 
@@ -55,7 +60,13 @@ function setup() {
   });
 
   reflector.registerType(TemplateLoader, {
-    "factory": () => new TemplateLoader(),
+    "factory": (xhr) => new TemplateLoader(xhr),
+    "parameters": [[XHR]],
+    "annotations": []
+  });
+
+  reflector.registerType(XHR, {
+    "factory": () => new XHRImpl(),
     "parameters": [],
     "annotations": []
   });
@@ -75,6 +86,12 @@ function setup() {
   reflector.registerType(LifeCycle, {
     "factory": (cd) => new LifeCycle(cd),
     "parameters": [[ChangeDetector]],
+    "annotations": []
+  });
+
+  reflector.registerType(ShadowDomStrategy, {
+    "factory": () => new NativeShadowDomStrategy(),
+    "parameters": [],
     "annotations": []
   });
 

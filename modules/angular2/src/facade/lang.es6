@@ -75,6 +75,16 @@ export class StringWrapper {
   static substring(s:string, start:int, end:int = undefined) {
     return s.substring(start, end);
   }
+
+  static replaceAllMapped(s:string, from:RegExp, cb:Function): string {
+    return s.replace(from.multiple, function(...matches) {
+      return cb(matches);
+    });
+  }
+
+  static contains(s:string, substr:string): boolean {
+    return s.indexOf(substr) != -1;
+  }
 }
 
 export class StringJoiner {
@@ -160,10 +170,11 @@ export var RegExp = assert.define('RegExp', function(obj) {
 });
 
 export class RegExpWrapper {
-  static create(regExpStr):RegExp {
+  static create(regExpStr, flags:string = ''):RegExp {
+    flags = flags.replace(/g/g, '');
     return {
-      multiple: new window.RegExp(regExpStr, 'g'),
-      single: new window.RegExp(regExpStr)
+      multiple: new window.RegExp(regExpStr, flags + 'g'),
+      single: new window.RegExp(regExpStr, flags)
     };
   }
   static firstMatch(regExp, input) {

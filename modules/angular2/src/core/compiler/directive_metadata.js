@@ -1,7 +1,7 @@
 import {Type} from 'angular2/src/facade/lang';
-import {Directive} from '../annotations/annotations'
+import {Directive} from 'angular2/src/core/annotations/annotations'
 import {List} from 'angular2/src/facade/collection'
-import {ShadowDomStrategy} from './shadow_dom';
+import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 /**
  * Combination of a type with the Directive annotation
@@ -9,14 +9,13 @@ import {ShadowDomStrategy} from './shadow_dom';
 export class DirectiveMetadata {
   type:Type;
   annotation:Directive;
-  shadowDomStrategy:ShadowDomStrategy;
   componentDirectives:List<Type>;
 
-  constructor(type:Type, annotation:Directive, shadowDomStrategy:ShadowDomStrategy,
+  constructor(type:Type,
+              annotation:Directive,
               componentDirectives:List<Type>) {
     this.annotation = annotation;
     this.type = type;
-    this.shadowDomStrategy = shadowDomStrategy;
     this.componentDirectives = componentDirectives;
   }
 }

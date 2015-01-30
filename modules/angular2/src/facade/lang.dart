@@ -69,6 +69,14 @@ class StringWrapper {
   static String substring(String s, int start, [int end]) {
     return s.substring(start, end);
   }
+
+  static String replaceAllMapped(String s, RegExp from, Function cb) {
+    return s.replaceAllMapped(from, cb);
+  }
+
+  static bool contains(String s, String substr) {
+    return s.contains(substr);
+  }
 }
 
 class StringJoiner {
@@ -102,8 +110,10 @@ class NumberWrapper {
 }
 
 class RegExpWrapper {
-  static RegExp create(String regExpStr) {
-    return new RegExp(regExpStr);
+  static RegExp create(regExpStr, [String flags = '']) {
+    bool multiLine = flags.contains('m');
+    bool caseSensitive = !flags.contains('i');
+    return new RegExp(regExpStr, multiLine: multiLine, caseSensitive: caseSensitive);
   }
   static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);

@@ -3,35 +3,15 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {ShadowDomStrategy, ShadowDomNative} from 'angular2/src/core/compiler/shadow_dom';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {CONST} from 'angular2/src/facade/lang';
 
-
-class FakeShadowDomStrategy extends ShadowDomStrategy {
-  @CONST()
-  constructor() {}
-
-  polyfillDirectives() {
-    return [SomeDirective];
-  }
-}
 
 @Decorator({
   selector: 'someSelector'
 })
 class SomeDirective {
 }
-
-@Component({
-  selector: 'someSelector'
-})
-class ComponentWithoutExplicitShadowDomStrategy {}
-
-@Component({
-  selector: 'someSelector',
-  shadowDom: new FakeShadowDomStrategy()
-})
-class ComponentWithExplicitShadowDomStrategy {}
 
 class SomeDirectiveWithoutAnnotation {
 }
@@ -55,32 +35,20 @@ export function main() {
   describe("DirectiveMetadataReader", () => {
     var reader;
 
-    beforeEach( () => {
+    beforeEach(() => {
       reader = new DirectiveMetadataReader();
     });
 
     it('should read out the annotation', () => {
       var directiveMetadata = reader.read(SomeDirective);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeDirective, new Decorator({selector: 'someSelector'}), null, null));
+        new DirectiveMetadata(SomeDirective, new Decorator({selector: 'someSelector'}), null));
     });
 
     it('should throw if not matching annotation is found', () => {
       expect(() => {
         reader.read(SomeDirectiveWithoutAnnotation);
       }).toThrowError('No Directive annotation found on SomeDirectiveWithoutAnnotation');
-    });
-
-    describe("shadow dom strategy", () => {
-      it('should return the provided shadow dom strategy when it is present', () => {
-        var directiveMetadata = reader.read(ComponentWithExplicitShadowDomStrategy);
-        expect(directiveMetadata.shadowDomStrategy).toBeAnInstanceOf(FakeShadowDomStrategy);
-      });
-
-      it('should return Native otherwise', () => {
-        var directiveMetadata = reader.read(ComponentWithoutExplicitShadowDomStrategy);
-        expect(directiveMetadata.shadowDomStrategy).toEqual(ShadowDomNative);
-      });
     });
 
     describe("componentDirectives", () => {
@@ -92,11 +60,6 @@ export function main() {
       it("should return a list of directives specified in the template config", () => {
         var cmp = reader.read(ComponentWithDirectives);
         expect(cmp.componentDirectives).toEqual([ComponentWithoutDirectives]);
-      });
-
-      it("should include directives required by the shadow DOM strategy", () => {
-        var cmp = reader.read(ComponentWithExplicitShadowDomStrategy);
-        expect(cmp.componentDirectives).toEqual([SomeDirective]);
       });
     });
   });

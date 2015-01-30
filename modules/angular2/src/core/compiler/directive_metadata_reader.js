@@ -3,7 +3,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Directive, Component} from '../annotations/annotations';
 import {DirectiveMetadata} from './directive_metadata';
 import {reflector} from 'angular2/src/reflection/reflection';
-import {ShadowDom, ShadowDomStrategy, ShadowDomNative} from './shadow_dom';
+import {ShadowDom, ShadowDomStrategy, ShadowDomNative} from './shadow_dom_strategy';
 
 export class DirectiveMetadataReader {
   read(type:Type):DirectiveMetadata {
@@ -13,36 +13,23 @@ export class DirectiveMetadataReader {
         var annotation = annotations[i];
 
         if (annotation instanceof Component) {
-          var shadowDomStrategy = this.parseShadowDomStrategy(annotation);
           return new DirectiveMetadata(
             type,
             annotation,
-            shadowDomStrategy,
-            this.componentDirectivesMetadata(annotation, shadowDomStrategy)
+            this.componentDirectivesMetadata(annotation)
           );
         }
 
         if (annotation instanceof Directive) {
-          return new DirectiveMetadata(type, annotation, null, null);
+          return new DirectiveMetadata(type, annotation, null);
         }
       }
     }
     throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
   }
 
-  parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
-    return isPresent(annotation.shadowDom) ? annotation.shadowDom : ShadowDomNative;
-  }
-
-  componentDirectivesMetadata(annotation:Component, shadowDomStrategy:ShadowDomStrategy):List<Type> {
-    var polyDirs = shadowDomStrategy.polyfillDirectives();
+  componentDirectivesMetadata(annotation:Component):List<Type> {
     var template = annotation.template;
-    var templateDirs = isPresent(template) && isPresent(template.directives) ? template.directives : [];
-
-    var res = [];
-    res = ListWrapper.concat(res, templateDirs)
-    res = ListWrapper.concat(res, polyDirs)
-
-    return res;
+    return isPresent(template) && isPresent(template.directives) ? template.directives : [];
   }
 }

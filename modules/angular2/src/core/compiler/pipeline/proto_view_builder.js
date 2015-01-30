@@ -7,6 +7,7 @@ import {ChangeDetection} from 'angular2/change_detection';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {ShadowDomStrategy} from '../shadow_dom_strategy';
 
 /**
  * Creates ProtoViews and forwards variable bindings from parent to children.
@@ -22,7 +23,9 @@ import {CompileControl} from './compile_control';
  */
 export class ProtoViewBuilder extends CompileStep {
   changeDetection:ChangeDetection;
-  constructor(changeDetection:ChangeDetection) {
+  _shadowDomStrategy:ShadowDomStrategy;
+  constructor(changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
+    this._shadowDomStrategy = shadowDomStrategy;
     this.changeDetection = changeDetection;
   }
 
@@ -30,7 +33,8 @@ export class ProtoViewBuilder extends CompileStep {
     var inheritedProtoView = null;
     if (current.isViewRoot) {
       var protoChangeDetector = this.changeDetection.createProtoChangeDetector('dummy');
-      inheritedProtoView = new ProtoView(current.element, protoChangeDetector);
+      inheritedProtoView = new ProtoView(current.element, protoChangeDetector,
+        this._shadowDomStrategy);
       if (isPresent(parent)) {
         if (isPresent(parent.inheritedElementBinder.nestedProtoView)) {
           throw new BaseException('Only one nested view per element is allowed');

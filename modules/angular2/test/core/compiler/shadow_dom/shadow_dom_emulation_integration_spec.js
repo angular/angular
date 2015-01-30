@@ -8,7 +8,10 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, ShadowDomNative, ShadowDomEmulated} from 'angular2/src/core/compiler/shadow_dom';
+import {ShadowDomStrategy,
+        NativeShadowDomStrategy,
+        EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 
 import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -16,19 +19,28 @@ import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {StringMapWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
+import {XHRMock} from 'angular2/src/mock/xhr_mock';
+
 export function main() {
   describe('integration tests', function() {
 
-    StringMapWrapper.forEach(
-      {"native" : ShadowDomNative, "emulated" : ShadowDomEmulated}, (strategy, name) => {
+    StringMapWrapper.forEach({
+        "native" : new NativeShadowDomStrategy(),
+        "emulated" : new EmulatedShadowDomStrategy()
+      },
+      (strategy, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
         var compiler;
 
         beforeEach( () => {
-          compiler = new Compiler(dynamicChangeDetection, null,
-            new TestDirectiveMetadataReader(strategy),
-            new Parser(new Lexer()), new CompilerCache());
+          compiler = new Compiler(dynamicChangeDetection,
+            new TemplateLoader(new XHRMock()),
+            new DirectiveMetadataReader(),
+            new Parser(new Lexer()),
+            new CompilerCache(),
+            strategy
+          );
         });
 
         function compile(template, assertions) {
@@ -297,6 +309,7 @@ class InnerInnerComponent {
 
 
 @Component({
+  selector: 'my-comp',
   template: new TemplateConfig({
     directives: [MultipleContentTagsComponent, ManualTemplateDirective,
       ConditionalContentComponent, OuterWithIndirectNestedComponent, OuterComponent]

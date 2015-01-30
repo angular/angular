@@ -7,6 +7,7 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -17,8 +18,13 @@ export function main() {
   describe('ng-if', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(
+        dynamicChangeDetection,
+        null,
+        new DirectiveMetadataReader(),
+        new Parser(new Lexer()),
+        new CompilerCache(),
+        new NativeShadowDomStrategy());
     });
 
     function createView(pv) {

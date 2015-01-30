@@ -7,7 +7,8 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomEmulated} from 'angular2/src/core/compiler/shadow_dom';
+import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 
 import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -15,13 +16,20 @@ import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
+import {XHRMock} from 'angular2/src/mock/xhr_mock';
+
 export function main() {
   describe('integration tests', function() {
     var compiler;
 
     beforeEach( () => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection,
+        new TemplateLoader(new XHRMock()),
+        new DirectiveMetadataReader(),
+        new Parser(new Lexer()),
+        new CompilerCache(),
+        new NativeShadowDomStrategy()
+      );
     });
 
     describe('react to record changes', function() {
@@ -65,22 +73,6 @@ export function main() {
 
           var elInj = view.elementInjectors[0];
           expect(elInj.get(MyDir).dirProp).toEqual('Hello World!');
-          done();
-        });
-      });
-
-      it('should consume element binding for class attribute', (done) => {
-        compiler.compile(MyComp, el('<div class="foo" [class.bar]="boolProp"></div>')).then((pv) => {
-          createView(pv);
-
-          ctx.boolProp = true;
-          cd.detectChanges();
-          expect(view.nodes[0].className).toEqual('foo ng-binding bar');
-
-          ctx.boolProp = false;
-          cd.detectChanges();
-          expect(view.nodes[0].className).toEqual('foo ng-binding');
-
           done();
         });
       });
@@ -163,7 +155,6 @@ class MyDir {
 })
 class MyComp {
   ctxProp:string;
-  boolProp:boolean;
   constructor() {
     this.ctxProp = 'initial value';
   }

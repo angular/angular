@@ -5,6 +5,7 @@ export var NodeList = window.NodeList;
 export var Text = window.Text;
 export var Element = window.HTMLElement;
 export var TemplateElement = window.HTMLTemplateElement;
+export var StyleElement = window.HTMLStyleElement;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
@@ -70,6 +71,11 @@ export class DOM {
   static removeChild(el, node) {
     el.removeChild(node);
   }
+  static remove(el: Element): Element {
+    var parent = el.parentNode;
+    parent.removeChild(el);
+    return el;
+  }
   static insertBefore(el, node) {
     el.parentNode.insertBefore(node, el);
   }
@@ -87,8 +93,9 @@ export class DOM {
   static getText(el: Element) {
     return el.textContent;
   }
-  static setText(text:Text, value:string) {
-    text.nodeValue = value;
+  // TODO(vicb): removed Element type because it does not support StyleElement
+  static setText(el, value:string) {
+    el.textContent = value;
   }
   static createTemplate(html) {
     var t = document.createElement('template');
@@ -102,6 +109,11 @@ export class DOM {
     var el = doc.createElement("SCRIPT");
     el.setAttribute(attrName, attrValue);
     return el;
+  }
+  static createStyleElement(css:string, doc=document):StyleElement {
+    var style = doc.createElement('STYLE');
+    style.innerText = css;
+    return style;
   }
   static clone(node:Node) {
     return node.cloneNode(true);
@@ -141,6 +153,9 @@ export class DOM {
   }
   static getAttribute(element:Element, attribute:string) {
     return element.getAttribute(attribute);
+  }
+  static setAttribute(element:Element, name:string, value:string) {
+    element.setAttribute(name, value);
   }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;

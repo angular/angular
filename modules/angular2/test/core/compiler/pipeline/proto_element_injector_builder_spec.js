@@ -18,7 +18,7 @@ export function main() {
     var protoElementInjectorBuilder, protoView;
     beforeEach( () => {
       protoElementInjectorBuilder = new TestableProtoElementInjectorBuilder();
-      protoView = new ProtoView(null, null);
+      protoView = new ProtoView(null, null, null);
     });
 
     function createPipeline(directives = null) {
