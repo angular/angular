@@ -1,4 +1,4 @@
-import {CONST} from 'facade/src/lang';
+import {Type} from 'facade/src/lang';
 import {DOM, Element} from 'facade/src/dom';
 import {List} from 'facade/src/collection';
 import {View} from './view';
@@ -6,14 +6,12 @@ import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
 
 export class ShadowDomStrategy {
-  @CONST() constructor() {}
   attachTemplate(el:Element, view:View){}
   constructLightDom(lightDomView:View, shadowDomView:View, el:Element){}
   polyfillDirectives():List<Type>{ return null; };
 }
 
 export class EmulatedShadowDomStrategy extends ShadowDomStrategy {
-  @CONST() constructor() {}
   attachTemplate(el:Element, view:View){
     DOM.clearNodes(el);
     moveViewNodesIntoParent(el, view);
@@ -29,7 +27,6 @@ export class EmulatedShadowDomStrategy extends ShadowDomStrategy {
 }
 
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
-  @CONST() constructor() {}
   attachTemplate(el:Element, view:View){
     moveViewNodesIntoParent(el.createShadowRoot(), view);
   }

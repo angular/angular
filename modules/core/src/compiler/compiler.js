@@ -14,6 +14,7 @@ import {TemplateLoader} from './template_loader';
 import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
 import {Content} from './shadow_dom_emulation/content_tag';
+import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 /**
  * Cache that stores the ProtoView of the template of a component.
@@ -51,30 +52,39 @@ export class Compiler {
   _changeDetection:ChangeDetection;
   _templateLoader:TemplateLoader;
   _compiling:Map<Type, Promise>;
+  _shadowDomStrategy: ShadowDomStrategy;
+  _shadowDomDirectives: List<DirectiveMetadata>;
 
   constructor(changeDetection:ChangeDetection,
               templateLoader:TemplateLoader,
               reader: DirectiveMetadataReader,
               parser:Parser,
-              cache:CompilerCache) {
+              cache:CompilerCache,
+              shadowDomStrategy: ShadowDomStrategy) {
     this._changeDetection = changeDetection;
     this._reader = reader;
     this._parser = parser;
     this._compilerCache = cache;
     this._templateLoader = templateLoader;
     this._compiling = MapWrapper.create();
+    this._shadowDomStrategy = shadowDomStrategy;
+    this._shadowDomDirectives = [];
+    var types = shadowDomStrategy.polyfillDirectives();
+    for (var i = 0; i < types.length; i++) {
+      ListWrapper.push(this._shadowDomDirectives, reader.read(types[i]));
+    }
   }
 
   createSteps(component:DirectiveMetadata):List<CompileStep> {
-    var dirs = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
-    return createDefaultSteps(this._changeDetection, this._parser, component, dirs);
+    var directives = []
+    var cmpDirectives = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
+    directives = ListWrapper.concat(directives, cmpDirectives);
+    directives = ListWrapper.concat(directives, this._shadowDomDirectives);
+    return createDefaultSteps(this._changeDetection, this._parser, component, directives,
+      this._shadowDomStrategy);
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
-    var templateCache = null;
-    // TODO load all components that have urls
-    // transitively via the _templateLoader and store them in templateCache
-
     return this._compile(this._reader.read(component), templateRoot);
   }
 
@@ -140,13 +150,5 @@ export class Compiler {
       ce.inheritedElementBinder.nestedProtoView = protoView;
     });
     return pvPromise;
-  }
-
-  compileAllLoaded(templateCache,
-                   component:DirectiveMetadata,
-                   templateRoot:Element = null):ProtoView {
-    // todo(vicb) - use async in perf tests
-    // public so that we can compile in sync in performance tests.
-    return null;
   }
 }

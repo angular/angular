@@ -12,6 +12,7 @@ import {List, ListWrapper} from 'facade/src/collection';
 import {PromiseWrapper} from 'facade/src/async';
 import {VmTurnZone} from 'core/src/zone/vm_turn_zone';
 import {LifeCycle} from 'core/src/life_cycle/life_cycle';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 var _rootInjector: Injector;
 
@@ -24,7 +25,8 @@ var _rootBindings = [
   TemplateLoader,
   DirectiveMetadataReader,
   Parser,
-  Lexer
+  Lexer,
+  bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy())
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -53,11 +55,12 @@ function _injectorBindings(appComponentType) {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-            appComponentAnnotatedType) => {
+        appComponentAnnotatedType, strategy) => {
         return compiler.compile(appComponentAnnotatedType.type, null).then(
             (protoView) => {
-          var appProtoView = ProtoView.createRootProtoView(protoView,
-          appElement, appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'));
+          var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
+            appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'),
+            strategy);
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
@@ -65,7 +68,8 @@ function _injectorBindings(appComponentType) {
           view.hydrate(injector, null, new Object());
           return view;
         });
-      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken]),
+      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
+          ShadowDomStrategy]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),

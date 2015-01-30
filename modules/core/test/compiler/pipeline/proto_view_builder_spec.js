@@ -7,12 +7,13 @@ import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
 import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {DOM} from 'facade/src/dom';
 import {MapWrapper} from 'facade/src/collection';
 
 export function main() {
   describe('ProtoViewBuilder', () => {
-    function createPipeline(variableBindings=null) {
+    function createPipeline(variableBindings = null) {
       return new CompilePipeline([new MockStep((parent, current, control) => {
         if (isPresent(current.element.getAttribute('viewroot'))) {
           current.isViewRoot = true;
@@ -21,7 +22,7 @@ export function main() {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(null, null, null);
-      }), new ProtoViewBuilder(dynamicChangeDetection)]);
+      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy())]);
     }
 
     it('should not create a ProtoView when the isViewRoot flag is not set', () => {

@@ -14,6 +14,7 @@ import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
 import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 export function main() {
   describe('compiler', function() {
@@ -29,7 +30,7 @@ export function main() {
     }
 
     it('should run the steps and return the ProtoView of the root element', (done) => {
-      var rootProtoView = new ProtoView(null, null);
+      var rootProtoView = new ProtoView(null, null, null);
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = rootProtoView;
       });
@@ -42,7 +43,7 @@ export function main() {
     it('should use the given element', (done) => {
       var element = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
       });
       compiler.compile(MainComponent, element).then( (protoView) => {
         expect(protoView.element).toBe(element);
@@ -52,7 +53,7 @@ export function main() {
 
     it('should use the inline template if no element is given explicitly', (done) => {
       var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
       });
       compiler.compile(MainComponent, null).then( (protoView) => {
         expect(DOM.getInnerHTML(protoView.element)).toEqual('inline component');
@@ -63,7 +64,7 @@ export function main() {
     it('should load nested components', (done) => {
       var mainEl = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
         if (current.element === mainEl) {
           current.componentDirective = reader.read(NestedComponent);
@@ -80,7 +81,7 @@ export function main() {
     it('should cache compiled components', (done) => {
       var element = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
       });
       var firstProtoView;
       compiler.compile(MainComponent, element).then( (protoView) => {
@@ -98,7 +99,7 @@ export function main() {
       var mainEl = el('<div><div class="nested"></div><div class="nested"></div></div>');
       var compiler = createCompiler( (parent, current, control) => {
         if (DOM.hasClass(current.element, 'nested')) {
-          current.inheritedProtoView = new ProtoView(current.element, null);
+          current.inheritedProtoView = new ProtoView(current.element, null, null);
           current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
           current.componentDirective = reader.read(NestedComponent);
           ListWrapper.push(nestedElBinders, current.inheritedElementBinder);
@@ -113,7 +114,7 @@ export function main() {
 
     it('should allow recursive components', (done) => {
       var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null);
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
         current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
         current.componentDirective = reader.read(RecursiveComponent);
       });
@@ -154,8 +155,12 @@ class TestableCompiler extends Compiler {
   steps:List;
 
   constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
-    super(dynamicChangeDetection, new TemplateLoader(), reader,
-      new Parser(new Lexer()), new CompilerCache());
+    super(dynamicChangeDetection,
+          new TemplateLoader(),
+          reader,
+          new Parser(new Lexer()),
+          new CompilerCache(),
+          new NativeShadowDomStrategy());
     this.steps = steps;
   }
 

@@ -7,6 +7,8 @@ import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'change_de
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 import {Component} from 'core/src/annotations/annotations';
 import {Decorator} from 'core/src/annotations/annotations';
@@ -14,6 +16,8 @@ import {TemplateConfig} from 'core/src/annotations/template_config';
 
 import {reflector} from 'reflection/src/reflection';
 import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+
+import {XHRImpl} from 'core/src/compiler/xhr/xhr_impl';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
@@ -79,9 +83,8 @@ export function main() {
   setupReflector();
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
-  var compiler = new Compiler(dynamicChangeDetection, null, reader, new Parser(new Lexer()), cache);
-  var annotatedComponent = reader.read(BenchmarkComponent);
-
+  var compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(new XHRImpl()),
+    reader, new Parser(new Lexer()), cache, new NativeShadowDomStrategy());
   var templateNoBindings = loadTemplate('templateNoBindings', count);
   var templateWithBindings = loadTemplate('templateWithBindings', count);
 
@@ -89,14 +92,14 @@ export function main() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateNoBindings);
     cache.clear();
-    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+    compiler.compile(BenchmarkComponent, cloned);
   }
 
   function compileWithBindings() {
     // Need to clone every time as the compiler might modify the template!
     var cloned = DOM.clone(templateWithBindings);
     cache.clear();
-    compiler.compileAllLoaded(null, annotatedComponent, cloned);
+    compiler.compile(BenchmarkComponent, cloned);
   }
 
   bindAction('#compileNoBindings', compileNoBindings);

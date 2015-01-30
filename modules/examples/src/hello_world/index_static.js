@@ -6,6 +6,7 @@ import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {reflector} from 'reflection/src/reflection';
@@ -37,8 +38,10 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache) => new Compiler(changeDetection, templateLoader, reader, parser, compilerCache),
-    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
+                   [CompilerCache], [ShadowDomStrategy]],
     "annotations": []
   });
 
@@ -75,6 +78,12 @@ function setup() {
   reflector.registerType(LifeCycle, {
     "factory": (cd) => new LifeCycle(cd),
     "parameters": [[ChangeDetector]],
+    "annotations": []
+  });
+
+  reflector.registerType(ShadowDomStrategy, {
+    "factory": () => new NativeShadowDomStrategy(),
+    "parameters": [],
     "annotations": []
   });
 

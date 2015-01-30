@@ -9,7 +9,9 @@ import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {TemplateLoader} from 'core/src/compiler/template_loader';
 import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, ShadowDomNative, ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
+import {ShadowDomStrategy,
+        NativeShadowDomStrategy,
+        EmulatedShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 import {Decorator, Component, Template} from 'core/src/annotations/annotations';
 import {TemplateConfig} from 'core/src/annotations/template_config';
@@ -20,8 +22,11 @@ import {StringMapWrapper, MapWrapper} from 'facade/src/collection';
 export function main() {
   describe('integration tests', function() {
 
-    StringMapWrapper.forEach(
-      {"native" : ShadowDomNative, "emulated" : ShadowDomEmulated}, (strategy, name) => {
+    StringMapWrapper.forEach({
+        "native" : new NativeShadowDomStrategy(),
+        "emulated" : new EmulatedShadowDomStrategy()
+      },
+      (strategy, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
         var compiler;
@@ -29,9 +34,11 @@ export function main() {
         beforeEach( () => {
           compiler = new Compiler(dynamicChangeDetection,
             new TemplateLoader(),
-            new TestDirectiveMetadataReader(strategy),
+            new DirectiveMetadataReader(),
             new Parser(new Lexer()),
-            new CompilerCache());
+            new CompilerCache(),
+            strategy
+          );
         });
 
         function compile(template, assertions) {
@@ -174,18 +181,6 @@ export function main() {
     });
 
   });
-}
-
-class TestDirectiveMetadataReader extends DirectiveMetadataReader {
-  shadowDomStrategy;
-
-  constructor(shadowDomStrategy) {
-    this.shadowDomStrategy = shadowDomStrategy;
-  }
-
-  parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
-    return this.shadowDomStrategy;
-  }
 }
 
 @Template({
