@@ -6,6 +6,7 @@ import {Injector} from 'di/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
 import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, ShadowDomNative, ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
@@ -26,9 +27,11 @@ export function main() {
         var compiler;
 
         beforeEach( () => {
-          compiler = new Compiler(dynamicChangeDetection, null,
+          compiler = new Compiler(dynamicChangeDetection,
+            new TemplateLoader(),
             new TestDirectiveMetadataReader(strategy),
-            new Parser(new Lexer()), new CompilerCache());
+            new Parser(new Lexer()),
+            new CompilerCache());
         });
 
         function compile(template, assertions) {

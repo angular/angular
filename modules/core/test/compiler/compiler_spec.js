@@ -1,16 +1,17 @@
 import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'test_lib/test_lib';
 import {DOM} from 'facade/src/dom';
-import {List} from 'facade/src/collection';
+import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
+import {Type, isBlank} from 'facade/src/lang';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {ProtoView} from 'core/src/compiler/view';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/src/compiler/template_loader';
 import {Component} from 'core/src/annotations/annotations';
 import {TemplateConfig} from 'core/src/annotations/template_config';
 import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
 
@@ -76,7 +77,7 @@ export function main() {
 
     });
 
-    it('should cache components', (done) => {
+    it('should cache compiled components', (done) => {
       var element = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
         current.inheritedProtoView = new ProtoView(current.element, null);
@@ -87,6 +88,24 @@ export function main() {
         return compiler.compile(MainComponent, element);
       }).then( (protoView) => {
         expect(firstProtoView).toBe(protoView);
+        done();
+      });
+
+    });
+
+    it('should re-use components being compiled', (done) => {
+      var nestedElBinders = [];
+      var mainEl = el('<div><div class="nested"></div><div class="nested"></div></div>');
+      var compiler = createCompiler( (parent, current, control) => {
+        if (DOM.hasClass(current.element, 'nested')) {
+          current.inheritedProtoView = new ProtoView(current.element, null);
+          current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+          current.componentDirective = reader.read(NestedComponent);
+          ListWrapper.push(nestedElBinders, current.inheritedElementBinder);
+        }
+      });
+      compiler.compile(MainComponent, mainEl).then( (protoView) => {
+        expect(nestedElBinders[0].nestedProtoView).toBe(nestedElBinders[1].nestedProtoView);
         done();
       });
 
@@ -133,10 +152,13 @@ class RecursiveComponent {}
 
 class TestableCompiler extends Compiler {
   steps:List;
+
   constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
-    super(dynamicChangeDetection, null, reader, new Parser(new Lexer()), new CompilerCache());
+    super(dynamicChangeDetection, new TemplateLoader(), reader,
+      new Parser(new Lexer()), new CompilerCache());
     this.steps = steps;
   }
+
   createSteps(component):List<CompileStep> {
     return this.steps;
   }
@@ -151,3 +173,4 @@ class MockStep extends CompileStep {
     this.processClosure(parent, current, control);
   }
 }
+
