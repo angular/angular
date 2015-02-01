@@ -1,12 +1,15 @@
+import {isPresent} from 'facade/src/lang';
 import {List, ListWrapper} from 'facade/src/collection';
-import {ChangeDetector} from './interfaces';
+import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {
   children:List;
   parent:ChangeDetector;
+  status:string;
 
   constructor() {
     this.children = [];
+    this.status = CHECK_ALWAYS;
   }
 
   addChild(cd:ChangeDetector) {
@@ -31,8 +34,20 @@ export class AbstractChangeDetector extends ChangeDetector {
   }
 
   _detectChanges(throwOnChange:boolean) {
+    if (this.mode === DETACHED || this.mode === CHECKED) return;
+
     this.detectChangesInRecords(throwOnChange);
     this._detectChangesInChildren(throwOnChange);
+
+    if (this.mode === CHECK_ONCE) this.mode = CHECKED;
+  }
+
+  markAsCheckOnce(){
+    var c = this;
+    while(isPresent(c) && (c.mode === CHECKED || c.mode === CHECK_ALWAYS)) {
+      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
+      c = c.parent;
+    }
   }
 
   detectChangesInRecords(throwOnChange:boolean){}

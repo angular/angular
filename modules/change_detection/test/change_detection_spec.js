@@ -13,6 +13,7 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWi
 
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'change_detection/src/proto_change_detector';
+import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'change_detection/src/interfaces';
 
 
 export function main() {
@@ -471,6 +472,75 @@ export function main() {
             cd.detectChanges();
 
             expect(count).toEqual(1);
+          });
+        });
+
+        describe("mode", () => {
+          it("should not check a detached change detector", () => {
+            var c = createChangeDetector('name', 'a', new TestData("value"));
+            var cd = c["changeDetector"];
+            var dispatcher = c["dispatcher"];
+
+            cd.mode = DETACHED;
+            cd.detectChanges();
+
+            expect(dispatcher.log).toEqual([]);
+          });
+
+          it("should not check a checked change detector", () => {
+            var c = createChangeDetector('name', 'a', new TestData("value"));
+            var cd = c["changeDetector"];
+            var dispatcher = c["dispatcher"];
+
+            cd.mode = CHECKED;
+            cd.detectChanges();
+
+            expect(dispatcher.log).toEqual([]);
+          });
+
+          it("should change CHECK_ONCE to CHECKED", () => {
+            var cd = createProtoChangeDetector().instantiate(null, null);
+            cd.mode = CHECK_ONCE;
+
+            cd.detectChanges();
+
+            expect(cd.mode).toEqual(CHECKED);
+          });
+
+          it("should not change the CHECK_ALWAYS", () => {
+            var cd = createProtoChangeDetector().instantiate(null, null);
+            cd.mode = CHECK_ALWAYS;
+
+            cd.detectChanges();
+
+            expect(cd.mode).toEqual(CHECK_ALWAYS);
+          });
+        });
+
+        describe("markAsCheckOnce", () => {
+          function changeDetector(mode, parent) {
+            var cd = createProtoChangeDetector().instantiate(null, null);
+            cd.mode = mode;
+            if (isPresent(parent)) parent.addChild(cd);
+            return cd;
+          }
+
+          it("should mark all checked detectors as CHECK_ONCE " +
+            "until reaching a detached one", () => {
+
+            var root = changeDetector(CHECK_ALWAYS, null);
+            var disabled = changeDetector(DETACHED, root);
+            var parent = changeDetector(CHECKED, disabled);
+            var child = changeDetector(CHECK_ALWAYS, parent);
+            var grandChild = changeDetector(CHECKED, child);
+
+            grandChild.markAsCheckOnce();
+
+            expect(root.mode).toEqual(CHECK_ALWAYS);
+            expect(disabled.mode).toEqual(DETACHED);
+            expect(parent.mode).toEqual(CHECK_ONCE);
+            expect(child.mode).toEqual(CHECK_ALWAYS);
+            expect(grandChild.mode).toEqual(CHECK_ONCE);
           });
         });
       });
