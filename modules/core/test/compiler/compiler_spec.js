@@ -2,6 +2,7 @@ import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from '
 import {DOM, Element, TemplateElement} from 'facade/src/dom';
 import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
 import {Type, isBlank} from 'facade/src/lang';
+import {PromiseWrapper} from 'facade/src/async';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {ProtoView} from 'core/src/compiler/view';
@@ -16,6 +17,7 @@ import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
+import {XHRMock} from 'mock/src/xhr_mock';
 
 export function main() {
   describe('compiler', function() {
@@ -25,12 +27,15 @@ export function main() {
       reader = new DirectiveMetadataReader();
     });
 
-    function createCompiler(processClosure, strategy:ShadowDomStrategy = null) {
-      if (strategy === null) {
+    function createCompiler(processClosure, strategy:ShadowDomStrategy = null, xhr: XHRMock = null) {
+      var steps = [new MockStep(processClosure)];
+      if (isBlank(strategy)) {
         strategy = new NativeShadowDomStrategy();
       }
-      var steps = [new MockStep(processClosure)];
-      return new TestableCompiler(reader, steps, strategy);
+      if (isBlank(xhr)) {
+        xhr = new XHRMock();
+      }
+      return new TestableCompiler(reader, steps, strategy, xhr);
     }
 
     it('should run the steps and return the ProtoView of the root element', (done) => {
@@ -142,9 +147,51 @@ export function main() {
       });
     });
 
+    describe('XHR', () => {
+      it('should load template via xhr', (done) => {
+        var xhr = new XHRMock();
+        xhr.expect('/parent', 'xhr');
+
+        var compiler = createCompiler((parent, current, control) => {
+          current.inheritedProtoView = new ProtoView(current.element, null, null);
+        }, null, xhr);
+
+        compiler.compile(XHRParentComponent).then( (protoView) => {
+          expect(DOM.getInnerHTML(protoView.element)).toEqual('xhr');
+          done();
+        });
+
+        xhr.flush();
+      });
+
+      it('should return a rejected promise when loading a template fails', (done) => {
+        var xhr = new XHRMock();
+        xhr.expect('/parent', null);
+
+        var compiler = createCompiler((parent, current, control) => {}, null, xhr);
+
+        PromiseWrapper.then(compiler.compile(XHRParentComponent),
+          function(_) { throw 'Failure expected'; },
+          function(e) {
+            expect(e.message).toEqual('Failed to load the template for XHRParentComponent');
+            done();
+          }
+        );
+
+        xhr.flush();
+      });
+    });
   });
 
 }
+
+
+@Component({
+  template: new TemplateConfig({
+    url: '/parent'
+  })
+})
+class XHRParentComponent {}
 
 @Component({
   template: new TemplateConfig({
@@ -171,9 +218,10 @@ class RecursiveComponent {}
 class TestableCompiler extends Compiler {
   steps:List;
 
-  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, strategy:ShadowDomStrategy) {
+  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, strategy:ShadowDomStrategy,
+    xhr: XHRMock) {
     super(dynamicChangeDetection,
-          new TemplateLoader(),
+          new TemplateLoader(xhr),
           reader,
           new Parser(new Lexer()),
           new CompilerCache(),

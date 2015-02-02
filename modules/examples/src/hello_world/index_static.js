@@ -8,6 +8,8 @@ import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'core/src/compiler/template_loader';
+import {XHR} from 'core/src/compiler/xhr/xhr';
+import {XHRImpl} from 'core/src/compiler/xhr/xhr_impl';
 
 import {reflector} from 'reflection/src/reflection';
 
@@ -58,7 +60,13 @@ function setup() {
   });
 
   reflector.registerType(TemplateLoader, {
-    "factory": () => new TemplateLoader(),
+    "factory": (xhr) => new TemplateLoader(xhr),
+    "parameters": [[XHR]],
+    "annotations": []
+  });
+
+  reflector.registerType(XHR, {
+    "factory": () => new XHRImpl(),
     "parameters": [],
     "annotations": []
   });

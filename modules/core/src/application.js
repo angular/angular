@@ -13,6 +13,8 @@ import {PromiseWrapper} from 'facade/src/async';
 import {VmTurnZone} from 'core/src/zone/vm_turn_zone';
 import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
+import {XHR} from 'core/src/compiler/xhr/xhr';
+import {XHRImpl} from 'core/src/compiler/xhr/xhr_impl';
 
 var _rootInjector: Injector;
 
@@ -26,7 +28,8 @@ var _rootBindings = [
   DirectiveMetadataReader,
   Parser,
   Lexer,
-  bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy())
+  bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()),
+  bind(XHR).toValue(new XHRImpl()),
 ];
 
 export var appViewToken = new OpaqueToken('AppView');

@@ -19,6 +19,8 @@ import {TemplateConfig} from 'core/src/annotations/template_config';
 import {ViewPort} from 'core/src/compiler/viewport';
 import {StringMapWrapper, MapWrapper} from 'facade/src/collection';
 
+import {XHRMock} from 'mock/src/xhr_mock';
+
 export function main() {
   describe('integration tests', function() {
 
@@ -33,7 +35,7 @@ export function main() {
 
         beforeEach( () => {
           compiler = new Compiler(dynamicChangeDetection,
-            new TemplateLoader(),
+            new TemplateLoader(new XHRMock()),
             new DirectiveMetadataReader(),
             new Parser(new Lexer()),
             new CompilerCache(),

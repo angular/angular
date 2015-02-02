@@ -1,4 +1,4 @@
-import {Type, isBlank, isPresent, BaseException, normalizeBlank} from 'facade/src/lang';
+import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'facade/src/lang';
 import {Promise, PromiseWrapper} from 'facade/src/async';
 import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
 import {DOM, Element} from 'facade/src/dom';
@@ -108,39 +108,42 @@ export class Compiler {
         this._templateLoader.load(cmpMetadata) :
         PromiseWrapper.resolve(templateRoot);
 
-    pvPromise = tplPromise.then((template) => {
-      this._shadowDomStrategy.processTemplate(template, cmpMetadata);
-      var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
-      var compileElements = pipeline.process(template);
-      var protoView = compileElements[0].inheritedProtoView;
-
-      // Populate the cache before compiling the nested components,
-      // so that components can reference themselves in their template.
-      this._compilerCache.set(cmpMetadata.type, protoView);
-      MapWrapper.delete(this._compiling, cmpMetadata.type);
-
-      // Compile all the components from the template
-      var componentPromises = [];
-      for (var i = 0; i < compileElements.length; i++) {
-        var ce = compileElements[i];
-        if (isPresent(ce.componentDirective)) {
-          var componentPromise = this._compileNestedProtoView(ce);
-          ListWrapper.push(componentPromises, componentPromise);
-        }
-      }
-
-      // The protoView is resolved after all the components in the template
-      // have been compiled.
-      return PromiseWrapper
-        .all(componentPromises)
-        .then(function(_) {
-          return protoView;
-        })
-    });
+    pvPromise = PromiseWrapper.then(tplPromise,
+      (el) => this._compileTemplate(el, cmpMetadata),
+      (_) => { throw new BaseException(`Failed to load the template for ${stringify(cmpMetadata.type)}`) }
+    );
 
     MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
 
     return pvPromise;
+  }
+
+  _compileTemplate(template: Element, cmpMetadata): Promise<ProtoView> {
+    this._shadowDomStrategy.processTemplate(template, cmpMetadata);
+    var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
+    var compileElements = pipeline.process(template);
+    var protoView = compileElements[0].inheritedProtoView;
+
+    // Populate the cache before compiling the nested components,
+    // so that components can reference themselves in their template.
+    this._compilerCache.set(cmpMetadata.type, protoView);
+    MapWrapper.delete(this._compiling, cmpMetadata.type);
+
+    // Compile all the components from the template
+    var componentPromises = [];
+    for (var i = 0; i < compileElements.length; i++) {
+      var ce = compileElements[i];
+      if (isPresent(ce.componentDirective)) {
+        var componentPromise = this._compileNestedProtoView(ce);
+        ListWrapper.push(componentPromises, componentPromise);
+      }
+    }
+
+    // The protoView is resolved after all the components in the template have been compiled.
+    return PromiseWrapper.then(PromiseWrapper.all(componentPromises),
+      (_) => protoView,
+      (e) => { throw new BaseException(`${e} -> Failed to compile ${stringify(cmpMetadata.type)}`) }
+    );
   }
 
   _compileNestedProtoView(ce: CompileElement):Promise<ProtoView> {
