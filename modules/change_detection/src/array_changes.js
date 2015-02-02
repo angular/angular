@@ -52,6 +52,10 @@ export class ArrayChanges {
     return isListLikeIterable(obj);
   }
 
+  supportsObj(obj):boolean {
+    return ArrayChanges.supports(obj);
+  }
+
   get collection() {
     return this._collection;
   }
