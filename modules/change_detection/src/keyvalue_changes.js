@@ -30,6 +30,10 @@ export class KeyValueChanges {
     return obj instanceof Map || isJsObject(obj);
   }
 
+  supportsObj(obj):boolean {
+    return KeyValueChanges.supports(obj);
+  }
+
   get isDirty():boolean {
     return this._additionsHead !== null ||
            this._changesHead !== null ||

@@ -85,6 +85,10 @@ function _changeRecord(bindingMemento, change) {
 
 var _singleElementList = [null];
 
+function _isBlank(val):boolean {
+  return isBlank(val) || val === uninitialized;
+}
+
 export class ChangeDetectionUtil {
   static unitialized() {
     return uninitialized;
@@ -146,7 +150,13 @@ export class ChangeDetectionUtil {
   }
 
   static structuralCheck(self, context) {
-    if (isBlank(self) || self === uninitialized) {
+    if (_isBlank(self) && _isBlank(context)) {
+      return null;
+    } else if (_isBlank(context)) {
+      return new SimpleChange(null, null);
+    }
+
+    if (_isBlank(self)) {
       if (ArrayChanges.supports(context)) {
         self = new ArrayChanges();
       } else if (KeyValueChanges.supports(context)) {
@@ -154,29 +164,14 @@ export class ChangeDetectionUtil {
       }
     }
 
-    if (isBlank(context) || context === uninitialized) {
-      return new SimpleChange(null, null);
+    if (isBlank(self) || !self.supportsObj(context)) {
+      throw new BaseException(`Unsupported type (${context})`);
+    }
 
+    if (self.check(context)) {
+      return new SimpleChange(null, self); // TODO: don't wrap and return self instead
     } else {
-      if (ArrayChanges.supports(context)) {
-
-        if (self.check(context)) {
-          return new SimpleChange(null, self); // TODO: don't wrap and return self instead
-        } else {
-          return null;
-        }
-
-      } else if (KeyValueChanges.supports(context)) {
-
-        if (self.check(context)) {
-          return new SimpleChange(null, self); // TODO: don't wrap and return self instead
-        } else {
-          return null;
-        }
-
-      } else {
-        throw new BaseException(`Unsupported type (${context})`);
-      }
+      return null;
     }
   }
 
