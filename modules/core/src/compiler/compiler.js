@@ -108,9 +108,8 @@ export class Compiler {
         this._templateLoader.load(cmpMetadata) :
         PromiseWrapper.resolve(templateRoot);
 
-
     pvPromise = tplPromise.then((template) => {
-      // todo(vicb) transform template (use strategy)
+      this._shadowDomStrategy.processTemplate(template, cmpMetadata);
       var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
       var compileElements = pipeline.process(template);
       var protoView = compileElements[0].inheritedProtoView;

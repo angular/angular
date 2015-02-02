@@ -1,11 +1,12 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'test_lib/test_lib';
-import {DOM} from 'facade/src/dom';
+import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from 'test_lib/test_lib';
+import {DOM, Element, TemplateElement} from 'facade/src/dom';
 import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
 import {Type, isBlank} from 'facade/src/lang';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {ProtoView} from 'core/src/compiler/view';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
 import {Component} from 'core/src/annotations/annotations';
 import {TemplateConfig} from 'core/src/annotations/template_config';
 import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
@@ -14,7 +15,7 @@ import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
 import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
-import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 export function main() {
   describe('compiler', function() {
@@ -24,9 +25,12 @@ export function main() {
       reader = new DirectiveMetadataReader();
     });
 
-    function createCompiler(processClosure) {
+    function createCompiler(processClosure, strategy:ShadowDomStrategy = null) {
+      if (strategy === null) {
+        strategy = new NativeShadowDomStrategy();
+      }
       var steps = [new MockStep(processClosure)];
-      return new TestableCompiler(reader, steps);
+      return new TestableCompiler(reader, steps, strategy);
     }
 
     it('should run the steps and return the ProtoView of the root element', (done) => {
@@ -61,6 +65,23 @@ export function main() {
       });
     });
 
+    it('should use the shadow dom strategy to process the template', (done) => {
+      // TODO(vicb) test in Dart when the bug is fixed
+      // https://code.google.com/p/dart/issues/detail?id=18249
+      if (IS_DARTIUM) {
+        done();
+        return;
+      }
+      var templateHtml = 'processed template';
+      var compiler = createCompiler((parent, current, control) => {
+        current.inheritedProtoView = new ProtoView(current.element, null, null);
+      }, new FakeShadowDomStrategy(templateHtml));
+      compiler.compile(MainComponent, null).then( (protoView) => {
+        expect(DOM.getInnerHTML(protoView.element)).toEqual('processed template');
+        done();
+      });
+    });
+
     it('should load nested components', (done) => {
       var mainEl = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
@@ -75,7 +96,6 @@ export function main() {
         expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
         done();
       });
-
     });
 
     it('should cache compiled components', (done) => {
@@ -91,7 +111,6 @@ export function main() {
         expect(firstProtoView).toBe(protoView);
         done();
       });
-
     });
 
     it('should re-use components being compiled', (done) => {
@@ -109,7 +128,6 @@ export function main() {
         expect(nestedElBinders[0].nestedProtoView).toBe(nestedElBinders[1].nestedProtoView);
         done();
       });
-
     });
 
     it('should allow recursive components', (done) => {
@@ -122,7 +140,6 @@ export function main() {
         expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
         done();
       });
-
     });
 
   });
@@ -154,13 +171,13 @@ class RecursiveComponent {}
 class TestableCompiler extends Compiler {
   steps:List;
 
-  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>) {
+  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, strategy:ShadowDomStrategy) {
     super(dynamicChangeDetection,
           new TemplateLoader(),
           reader,
           new Parser(new Lexer()),
           new CompilerCache(),
-          new NativeShadowDomStrategy());
+          strategy);
     this.steps = steps;
   }
 
@@ -179,3 +196,13 @@ class MockStep extends CompileStep {
   }
 }
 
+class FakeShadowDomStrategy extends NativeShadowDomStrategy {
+  templateHtml: string;
+  constructor(templateHtml: string) {
+    this.templateHtml = templateHtml;
+  }
+
+  processTemplate(template: Element, cmpMetadata: DirectiveMetadata) {
+    DOM.setInnerHTML(template, this.templateHtml);
+  }
+}

@@ -295,6 +295,7 @@ class InnerInnerComponent {
 
 
 @Component({
+  selector: 'my-comp',
   template: new TemplateConfig({
     directives: [MultipleContentTagsComponent, ManualTemplateDirective,
       ConditionalContentComponent, OuterWithIndirectNestedComponent, OuterComponent]
