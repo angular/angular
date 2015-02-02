@@ -283,7 +283,7 @@ export function main() {
           });
 
           describe("collections", () => {
-            it("should support null values", () => {
+            it("should not register a change when going from null to null", () => {
               var context = new TestData(null);
 
               var c = createChangeDetector('a', 'a', context, null, true);
@@ -291,8 +291,15 @@ export function main() {
               var dispatcher = c["dispatcher"];
 
               cd.detectChanges();
-              expect(dispatcher.log).toEqual(['a=null']);
-              dispatcher.clear();
+              expect(dispatcher.log).toEqual([]);
+            });
+
+            it("should register changes when switching from null to collection and back", () => {
+              var context = new TestData(null);
+
+              var c = createChangeDetector('a', 'a', context, null, true);
+              var cd = c["changeDetector"];
+              var dispatcher = c["dispatcher"];
 
               context.a = [0];
               cd.detectChanges();
