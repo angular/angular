@@ -56,6 +56,7 @@ export class ChangeDetector {
   removeChild(cd:ChangeDetector) {}
   remove() {}
   setContext(context:any) {}
+  markPathToRootAsCheckOnce() {}
 
   detectChanges() {}
   checkNoChanges() {}

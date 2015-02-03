@@ -8,12 +8,12 @@ import {Lexer} from 'change_detection/src/parser/lexer';
 import {reflector} from 'reflection/src/reflection';
 import {arrayChangesAsString, kvChangesAsString} from './util';
 
-import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings}
-  from 'change_detection/change_detection';
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
+  CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'change_detection/change_detection';
 
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'change_detection/src/proto_change_detector';
-import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'change_detection/src/interfaces';
+import {ChangeDetectionUtil} from 'change_detection/src/change_detection_util';
 
 
 export function main() {
@@ -517,7 +517,7 @@ export function main() {
           });
         });
 
-        describe("markAsCheckOnce", () => {
+        describe("markPathToRootAsCheckOnce", () => {
           function changeDetector(mode, parent) {
             var cd = createProtoChangeDetector().instantiate(null, null);
             cd.mode = mode;
@@ -531,16 +531,18 @@ export function main() {
             var root = changeDetector(CHECK_ALWAYS, null);
             var disabled = changeDetector(DETACHED, root);
             var parent = changeDetector(CHECKED, disabled);
-            var child = changeDetector(CHECK_ALWAYS, parent);
-            var grandChild = changeDetector(CHECKED, child);
+            var checkAlwaysChild = changeDetector(CHECK_ALWAYS, parent);
+            var checkOnceChild = changeDetector(CHECK_ONCE, checkAlwaysChild);
+            var checkedChild = changeDetector(CHECKED, checkOnceChild);
 
-            grandChild.markAsCheckOnce();
+            ChangeDetectionUtil.markPathToRootAsCheckOnce(checkedChild);
 
             expect(root.mode).toEqual(CHECK_ALWAYS);
             expect(disabled.mode).toEqual(DETACHED);
             expect(parent.mode).toEqual(CHECK_ONCE);
-            expect(child.mode).toEqual(CHECK_ALWAYS);
-            expect(grandChild.mode).toEqual(CHECK_ONCE);
+            expect(checkAlwaysChild.mode).toEqual(CHECK_ALWAYS);
+            expect(checkOnceChild.mode).toEqual(CHECK_ONCE);
+            expect(checkedChild.mode).toEqual(CHECK_ONCE);
           });
         });
       });

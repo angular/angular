@@ -5,7 +5,7 @@ import {ArrayChanges} from './array_changes';
 import {KeyValueChanges} from './keyvalue_changes';
 import {ProtoRecord} from './proto_change_detector';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
-import {ChangeRecord} from './interfaces';
+import {ChangeRecord, ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export var uninitialized = new Object();
 
@@ -213,5 +213,13 @@ export class ChangeDetectionUtil {
       ListWrapper.push(updatedRecords, changeRecord);
     }
     return updatedRecords;
+  }
+
+  static markPathToRootAsCheckOnce(cd:ChangeDetector) {
+    var c = cd;
+    while(isPresent(c) && c.mode != DETACHED) {
+      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
+      c = c.parent;
+    }
   }
 }

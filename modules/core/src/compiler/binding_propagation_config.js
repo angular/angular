@@ -12,7 +12,7 @@ export class BindingPropagationConfig {
   }
 
   shouldBePropagatedFromRoot() {
-    this._cd.markAsCheckOnce();
+    this._cd.markPathToRootAsCheckOnce();
   }
 
   shouldNotPropagate() {
