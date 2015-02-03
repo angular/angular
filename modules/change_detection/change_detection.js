@@ -4,7 +4,8 @@ export {Parser} from './src/parser/parser';
 export {ContextWithVariableBindings} from './src/parser/context_with_variable_bindings';
 
 export {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './src/exceptions';
-export {ChangeRecord, ChangeDispatcher, ChangeDetector} from './src/interfaces';
+export {ChangeRecord, ChangeDispatcher, ChangeDetector,
+  CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED} from './src/interfaces';
 export {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector} from './src/proto_change_detector';
 export {DynamicChangeDetector} from './src/dynamic_change_detector';
 

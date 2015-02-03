@@ -10,6 +10,7 @@ import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/s
 import {ViewPort} from 'core/src/compiler/viewport';
 import {NgElement} from 'core/src/dom/element';
 import {Directive} from 'core/src/annotations/annotations'
+import {BindingPropagationConfig} from 'core/src/compiler/binding_propagation_config'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -20,11 +21,12 @@ var _undefined = new Object();
 var _staticKeys;
 
 class StaticKeys {
-  viewId:int;
-  ngElementId:int;
-  viewPortId:int;
-  destinationLightDomId:int;
-  sourceLightDomId:int;
+  viewId:number;
+  ngElementId:number;
+  viewPortId:number;
+  destinationLightDomId:number;
+  sourceLightDomId:number;
+  bindingPropagationConfigId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
@@ -33,6 +35,7 @@ class StaticKeys {
     this.viewPortId = Key.get(ViewPort).id;
     this.destinationLightDomId = Key.get(DestinationLightDom).id;
     this.sourceLightDomId = Key.get(SourceLightDom).id;
+    this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
   }
 
   static instance() {
@@ -151,11 +154,14 @@ export class PreBuiltObjects {
   element:NgElement;
   viewPort:ViewPort;
   lightDom:LightDom;
-  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom) {
+  bindingPropagationConfig:BindingPropagationConfig;
+  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom,
+              bindingPropagationConfig:BindingPropagationConfig) {
     this.view = view;
     this.element = element;
     this.viewPort = viewPort;
     this.lightDom = lightDom;
+    this.bindingPropagationConfig = bindingPropagationConfig;
   }
 }
 
@@ -532,6 +538,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewPortId) return this._preBuiltObjects.viewPort;
+    if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
     if (keyId === staticKeys.destinationLightDomId) {
       var p:ElementInjector = this.directParent();
       return isPresent(p) ? p._preBuiltObjects.lightDom : null;
