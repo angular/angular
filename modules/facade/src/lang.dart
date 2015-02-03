@@ -36,18 +36,18 @@ class StringWrapper {
     return new String.fromCharCode(code);
   }
 
-  static charCodeAt(String s, int index) {
+  static int charCodeAt(String s, int index) {
     return s.codeUnitAt(index);
   }
 
-  static split(String s, RegExp regExp) {
-    var parts = [];
+  static List<String> split(String s, RegExp regExp) {
+    var parts = <String>[];
     var lastEnd = 0;
     regExp.allMatches(s).forEach((match) {
       parts.add(s.substring(lastEnd, match.start));
       lastEnd = match.end;
-      for (var i=0; i<match.groupCount; i++) {
-        parts.add(match.group(i+1));
+      for (var i = 0; i < match.groupCount; i++) {
+        parts.add(match.group(i + 1));
       }
     });
     parts.add(s.substring(lastEnd));
@@ -64,7 +64,7 @@ class StringWrapper {
 }
 
 class StringJoiner {
-  List<String> _parts = <String>[];
+  final List<String> _parts = <String>[];
 
   void add(String part) {
     _parts.add(part);
@@ -72,7 +72,6 @@ class StringJoiner {
 
   String toString() => _parts.join("");
 }
-
 
 class NumberWrapper {
   static int parseIntAutoRadix(String text) {
@@ -87,7 +86,7 @@ class NumberWrapper {
     return double.parse(text);
   }
 
-  static get NaN => double.NAN;
+  static double get NaN => double.NAN;
 
   static bool isNaN(num value) => value.isNaN;
 
@@ -95,19 +94,19 @@ class NumberWrapper {
 }
 
 class RegExpWrapper {
-  static RegExp create(regExpStr) {
+  static RegExp create(String regExpStr) {
     return new RegExp(regExpStr);
   }
-  static firstMatch(regExp, input) {
+  static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);
   }
-  static matcher(regExp, input) {
+  static Iterator<Match> matcher(RegExp regExp, String input) {
     return regExp.allMatches(input).iterator;
   }
 }
 
 class RegExpMatcherWrapper {
-  static next(matcher) {
+  static Match next(Iterator<Match> matcher) {
     if (matcher.moveNext()) {
       return matcher.current;
     }
@@ -134,7 +133,8 @@ class BaseException extends Error {
 const _NAN_KEY = const Object();
 
 // Dart can have identical(str1, str2) == false while str1 == str2
-bool looseIdentical(a, b) => a is String && b is String ? a == b : identical(a, b);
+bool looseIdentical(a, b) =>
+    a is String && b is String ? a == b : identical(a, b);
 
 // Dart compare map keys by equality and we can have NaN != NaN
 dynamic getMapKey(value) {
@@ -149,7 +149,6 @@ dynamic normalizeBlank(obj) {
 bool isJsObject(o) {
   return false;
 }
-
 
 bool assertionsEnabled() {
   try {
