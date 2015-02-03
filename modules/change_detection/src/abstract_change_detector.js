@@ -42,14 +42,6 @@ export class AbstractChangeDetector extends ChangeDetector {
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
-  markAsCheckOnce(){
-    var c = this;
-    while(isPresent(c) && (c.mode === CHECKED || c.mode === CHECK_ALWAYS)) {
-      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
-      c = c.parent;
-    }
-  }
-
   detectChangesInRecords(throwOnChange:boolean){}
 
   _detectChangesInChildren(throwOnChange:boolean) {
