@@ -41,6 +41,8 @@ class DOM {
   }
   static MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
+  static createEvent(eventType) =>
+    new Event(eventType, canBubble: true);
   static String getInnerHTML(Element el) => el.innerHtml;
   static String getOuterHTML(Element el) => el.outerHtml;
   static void setInnerHTML(Element el, String value) {

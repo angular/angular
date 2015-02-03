@@ -1,4 +1,5 @@
 export * from './src/annotations/annotations';
+export * from './src/annotations/visibility';
 export * from './src/compiler/interfaces';
 export * from './src/annotations/template_config';
 

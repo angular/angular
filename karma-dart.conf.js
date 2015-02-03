@@ -49,7 +49,8 @@ module.exports = function(config) {
       '/packages/di': 'http://localhost:9877/base/modules/di',
       '/packages/directives': 'http://localhost:9877/base/modules/directives',
       '/packages/facade': 'http://localhost:9877/base/modules/facade',
-      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib',
+      '/packages/forms': 'http://localhost:9877/base/modules/forms',
+      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib'
     },
 
     preprocessors: {

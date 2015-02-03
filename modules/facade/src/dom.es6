@@ -32,6 +32,9 @@ export class DOM {
     evt.initEvent(eventType, true, true);
     return evt;
   }
+  static createEvent(eventType) {
+    return new Event(eventType, true);
+  }
   static getInnerHTML(el) {
     return el.innerHTML;
   }
