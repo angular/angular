@@ -1,4 +1,4 @@
-import {CONST} from 'facade/lang';
+import {CONST} from 'facade/src/lang';
 import {DependencyAnnotation} from 'di/di';
 
 /**

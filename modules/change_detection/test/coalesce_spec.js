@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'test_lib/test_lib';
 
-import {coalesce} from 'change_detection/coalesce';
-import {RECORD_TYPE_SELF, ProtoRecord} from 'change_detection/proto_change_detector';
+import {coalesce} from 'change_detection/src/coalesce';
+import {RECORD_TYPE_SELF, ProtoRecord} from 'change_detection/src/proto_change_detector';
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false) {

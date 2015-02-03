@@ -3,7 +3,7 @@ import {
   iterateListLike,
   ListWrapper,
   MapWrapper
-} from 'facade/collection';
+} from 'facade/src/collection';
 
 import {
   int,
@@ -12,7 +12,7 @@ import {
   stringify,
   getMapKey,
   looseIdentical,
-} from 'facade/lang';
+} from 'facade/src/lang';
 
 export class ArrayChanges {
   _collection;

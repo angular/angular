@@ -1,5 +1,5 @@
-import {Type, isPresent} from 'facade/lang';
-import {List, ListWrapper} from 'facade/collection';
+import {Type, isPresent} from 'facade/src/lang';
+import {List, ListWrapper} from 'facade/src/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
 export class ReflectionCapabilities {

@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'test_lib/test_lib';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
 import {IterableList} from './fixtures/facade';
 
 export function main() {

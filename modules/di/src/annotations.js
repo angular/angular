@@ -1,4 +1,4 @@
-import {CONST} from "facade/lang";
+import {CONST} from "facade/src/lang";
 
 /**
  * A parameter annotation that creates a synchronous eager dependency.

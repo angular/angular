@@ -1,8 +1,8 @@
-import {Type, isPresent, BaseException, stringify} from 'facade/lang';
-import {List, ListWrapper} from 'facade/collection';
+import {Type, isPresent, BaseException, stringify} from 'facade/src/lang';
+import {List, ListWrapper} from 'facade/src/collection';
 import {Directive, Component} from '../annotations/annotations';
 import {DirectiveMetadata} from './directive_metadata';
-import {reflector} from 'reflection/reflection';
+import {reflector} from 'reflection/src/reflection';
 import {ShadowDom, ShadowDomStrategy, ShadowDomNative} from './shadow_dom';
 
 export class DirectiveMetadataReader {

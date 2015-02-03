@@ -1,21 +1,21 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
-import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
-import {ShadowDomEmulated} from 'core/compiler/shadow_dom';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {Component, Decorator, Template} from 'core/annotations/annotations';
+import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/src/compiler/view';
+import {ProtoElementInjector, ElementInjector} from 'core/src/compiler/element_injector';
+import {ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {Component, Decorator, Template} from 'core/src/annotations/annotations';
 import {OnChange} from 'core/core';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'change_detection/change_detection';
-import {TemplateConfig} from 'core/annotations/template_config';
-import {EventEmitter} from 'core/annotations/events';
-import {List, MapWrapper} from 'facade/collection';
-import {DOM, Element} from 'facade/dom';
-import {int, proxy, IMPLEMENTS} from 'facade/lang';
+import {TemplateConfig} from 'core/src/annotations/template_config';
+import {EventEmitter} from 'core/src/annotations/events';
+import {List, MapWrapper} from 'facade/src/collection';
+import {DOM, Element} from 'facade/src/dom';
+import {int, proxy, IMPLEMENTS} from 'facade/src/lang';
 import {Injector} from 'di/di';
-import {View} from 'core/compiler/view';
-import {ViewPort} from 'core/compiler/viewport';
-import {reflector} from 'reflection/reflection';
+import {View} from 'core/src/compiler/view';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {reflector} from 'reflection/src/reflection';
 
 
 @proxy

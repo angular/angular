@@ -1,7 +1,7 @@
 import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach} from 'test_lib/test_lib';
-import {MapWrapper, ListWrapper} from 'facade/collection';
-import {PromiseWrapper} from 'facade/async';
-import {IMPLEMENTS, proxy} from 'facade/lang';
+import {MapWrapper, ListWrapper} from 'facade/src/collection';
+import {PromiseWrapper} from 'facade/src/async';
+import {IMPLEMENTS, proxy} from 'facade/src/lang';
 
 class TestObj {
   prop;

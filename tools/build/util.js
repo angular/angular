@@ -1,22 +1,14 @@
 var Q = require('q');
+var path = require('path');
 var minimatch = require('minimatch');
 
 module.exports = {
   processToPromise: processToPromise,
   streamToPromise: streamToPromise,
-  renameSrcFolder: renameSrcFolder,
+  insertSrcFolder: insertSrcFolder,
   filterByFile: filterByFile
 };
 
-function filterByFile(valuesWithPatterns, fileName) {
-  var match = null;
-  for (var pattern in valuesWithPatterns) {
-    if (pattern !== 'default' && minimatch(fileName, pattern)) {
-      match = valuesWithPatterns[pattern];
-    }
-  }
-  return match || valuesWithPatterns['default'];
-}
 
 function processToPromise(process) {
   var defer = Q.defer();
@@ -37,9 +29,33 @@ function streamToPromise(stream) {
   return defer.promise;
 }
 
-function renameSrcFolder(plugins, srcFolderMapping) {
+function filterByFile(pathMapping, folder) {
+  var folderParts = folder.split(path.sep);
+  var match;
+  var lastPattern;
+  for (var pattern in pathMapping) {
+    if (minimatch(folder, pattern)) {
+      if (!lastPattern || lastPattern.length < pattern.length) {
+        match = pathMapping[pattern];
+        lastPattern = pattern;
+      }
+    }
+  }
+  if (match !== undefined) {
+    return match;
+  } else {
+    throw new Error('No entry for folder '+folder+' found in '+JSON.stringify(pathMapping));
+  }
+}
+
+function insertSrcFolder(plugins, srcFolderInsertion) {
   return plugins.rename(function(file) {
-    var srcOutputFolder = filterByFile(srcFolderMapping, file.dirname);
-    file.dirname = file.dirname.replace(/\bsrc\b/, srcOutputFolder);
+    var folder = file.dirname;
+    var srcDir = filterByFile(srcFolderInsertion, folder);
+    if (srcDir) {
+      var folderParts = file.dirname.split(path.sep);
+      folder = [folderParts[0], srcDir].concat(folderParts.slice(1)).join(path.sep);
+    }
+    file.dirname = folder;
   });
 }

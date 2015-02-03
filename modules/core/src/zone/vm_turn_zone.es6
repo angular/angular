@@ -1,5 +1,5 @@
-import {List, ListWrapper, StringMapWrapper} from 'facade/collection';
-import {normalizeBlank, isPresent} from 'facade/lang';
+import {List, ListWrapper, StringMapWrapper} from 'facade/src/collection';
+import {normalizeBlank, isPresent} from 'facade/src/lang';
 
 export class VmTurnZone {
   _outerZone;

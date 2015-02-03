@@ -1,10 +1,10 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {Decorator, Component} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
-import {DirectiveMetadata} from 'core/compiler/directive_metadata';
-import {ShadowDomStrategy, ShadowDomNative} from 'core/compiler/shadow_dom';
-import {CONST} from 'facade/lang';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {Decorator, Component} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
+import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
+import {ShadowDomStrategy, ShadowDomNative} from 'core/src/compiler/shadow_dom';
+import {CONST} from 'facade/src/lang';
 
 
 class FakeShadowDomStrategy extends ShadowDomStrategy {

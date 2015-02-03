@@ -1,4 +1,4 @@
-import {List, ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/src/collection';
 
 export class Log {
   _result:List;

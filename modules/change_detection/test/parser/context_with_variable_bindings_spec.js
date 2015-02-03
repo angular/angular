@@ -1,9 +1,9 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'test_lib/test_lib';
 
-import {ContextWithVariableBindings} from 'change_detection/parser/context_with_variable_bindings';
+import {ContextWithVariableBindings} from 'change_detection/src/parser/context_with_variable_bindings';
 
-import {BaseException, isBlank, isPresent} from 'facade/lang';
-import {MapWrapper, ListWrapper} from 'facade/collection';
+import {BaseException, isBlank, isPresent} from 'facade/src/lang';
+import {MapWrapper, ListWrapper} from 'facade/src/collection';
 
 export function main() {
   describe('ContextWithVariableBindings', () => {

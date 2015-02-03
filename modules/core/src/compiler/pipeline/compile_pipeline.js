@@ -1,6 +1,6 @@
-import {isPresent} from 'facade/lang';
-import {List, ListWrapper} from 'facade/collection';
-import {Element, Node, DOM} from 'facade/dom';
+import {isPresent} from 'facade/src/lang';
+import {List, ListWrapper} from 'facade/src/collection';
+import {Element, Node, DOM} from 'facade/src/dom';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';

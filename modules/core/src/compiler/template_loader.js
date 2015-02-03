@@ -1,5 +1,5 @@
-import {Promise} from 'facade/async';
-//import {Document} from 'facade/dom';
+import {Promise} from 'facade/src/async';
+//import {Document} from 'facade/src/dom';
 
 /**
  * Strategy to load component templates.

@@ -1,6 +1,6 @@
 import {Injector, Key} from "di/di";
-import {reflector} from 'reflection/reflection';
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {reflector} from 'reflection/src/reflection';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 var count = 0;
 

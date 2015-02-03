@@ -1,5 +1,5 @@
-import {MapWrapper} from 'facade/collection';
-import {BaseException} from 'facade/lang';
+import {MapWrapper} from 'facade/src/collection';
+import {BaseException} from 'facade/src/lang';
 
 export class ContextWithVariableBindings {
   parent:any;

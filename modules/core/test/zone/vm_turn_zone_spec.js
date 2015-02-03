@@ -1,8 +1,8 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, async, tick} from 'test_lib/test_lib';
-import {Log, once} from 'test_lib/utils';
-import {PromiseWrapper} from 'facade/async';
-import {BaseException} from 'facade/lang';
-import {VmTurnZone} from 'core/zone/vm_turn_zone';
+import {Log, once} from 'test_lib/test_lib';
+import {PromiseWrapper} from 'facade/src/async';
+import {BaseException} from 'facade/src/lang';
+import {VmTurnZone} from 'core/src/zone/vm_turn_zone';
 
 export function main() {
   describe("VmTurnZone", () => {

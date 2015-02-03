@@ -1,8 +1,8 @@
-import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'facade/lang';
-import {ListWrapper, List} from 'facade/collection';
+import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'facade/src/lang';
+import {ListWrapper, List} from 'facade/src/collection';
 import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
   $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
-import {reflector, Reflector} from 'reflection/reflection';
+import {reflector, Reflector} from 'reflection/src/reflection';
 import {
   AST,
   EmptyExpr,

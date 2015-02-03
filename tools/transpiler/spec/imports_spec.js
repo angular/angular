@@ -7,7 +7,7 @@ import * as fooModule from './foo';
 
 import * as exportModule from './export';
 
-import {Type} from 'facade/lang';
+import {Type} from 'facade/src/lang';
 
 import {Baz} from './reexport';
 

@@ -1,5 +1,5 @@
-import {List, ListWrapper, SetWrapper} from "facade/collection";
-import {int, FIELD, NumberWrapper, StringJoiner, StringWrapper} from "facade/lang";
+import {List, ListWrapper, SetWrapper} from "facade/src/collection";
+import {int, FIELD, NumberWrapper, StringJoiner, StringWrapper} from "facade/src/lang";
 
 export const TOKEN_TYPE_CHARACTER  = 1;
 export const TOKEN_TYPE_IDENTIFIER = 2;

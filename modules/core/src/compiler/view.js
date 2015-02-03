@@ -1,15 +1,15 @@
-import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/dom';
-import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/collection';
+import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'facade/src/dom';
+import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'facade/src/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
   from 'change_detection/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {ElementBinder} from './element_binder';
 import {DirectiveMetadata} from './directive_metadata';
-import {SetterFn} from 'reflection/types';
-import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/lang';
+import {SetterFn} from 'reflection/src/types';
+import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/src/lang';
 import {Injector} from 'di/di';
-import {NgElement} from 'core/dom/element';
+import {NgElement} from 'core/src/dom/element';
 import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';

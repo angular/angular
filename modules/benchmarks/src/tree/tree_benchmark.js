@@ -3,15 +3,15 @@ import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
 
 import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular/angular';
 
-import {CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/compiler/template_loader';
-import {LifeCycle} from 'core/life_cycle/life_cycle';
+import {CompilerCache} from 'core/src/compiler/compiler';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
+import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 
-import {reflector} from 'reflection/reflection';
-import {DOM, document, window, Element, gc} from 'facade/dom';
-import {isPresent} from 'facade/lang';
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {reflector} from 'reflection/src/reflection';
+import {DOM, document, window, Element, gc} from 'facade/src/dom';
+import {isPresent} from 'facade/src/lang';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file

@@ -1,4 +1,4 @@
-import {DOM} from 'facade/dom';
+import {DOM} from 'facade/src/dom';
 
 export var describe = window.describe;
 export var xdescribe = window.xdescribe;

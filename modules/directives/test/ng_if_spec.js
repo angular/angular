@@ -1,17 +1,17 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, IS_DARTIUM, el} from 'test_lib/test_lib';
 
-import {DOM} from 'facade/dom';
+import {DOM} from 'facade/src/dom';
 
 import {Injector} from 'di/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 
-import {Component} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
+import {Component} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
 
-import {NgIf} from 'directives/ng_if';
+import {NgIf} from 'directives/src/ng_if';
 
 export function main() {
   describe('ng-if', () => {

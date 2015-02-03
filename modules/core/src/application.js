@@ -1,17 +1,17 @@
 import {Injector, bind, OpaqueToken} from 'di/di';
-import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'facade/lang';
-import {DOM, Element} from 'facade/dom';
+import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'facade/src/lang';
+import {DOM, Element} from 'facade/src/dom';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
-import {Reflector, reflector} from 'reflection/reflection';
+import {Reflector, reflector} from 'reflection/src/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'change_detection/change_detection';
 import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
-import {List, ListWrapper} from 'facade/collection';
-import {PromiseWrapper} from 'facade/async';
-import {VmTurnZone} from 'core/zone/vm_turn_zone';
-import {LifeCycle} from 'core/life_cycle/life_cycle';
+import {List, ListWrapper} from 'facade/src/collection';
+import {PromiseWrapper} from 'facade/src/async';
+import {VmTurnZone} from 'core/src/zone/vm_turn_zone';
+import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 
 var _rootInjector: Injector;
 

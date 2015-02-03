@@ -1,6 +1,6 @@
-import {FIELD, Type, isBlank, isPresent} from 'facade/lang';
-import {List, MapWrapper, ListWrapper} from 'facade/collection';
-import {reflector} from 'reflection/reflection';
+import {FIELD, Type, isBlank, isPresent} from 'facade/src/lang';
+import {List, MapWrapper, ListWrapper} from 'facade/src/collection';
+import {reflector} from 'reflection/src/reflection';
 import {Key} from './key';
 import {Inject, InjectLazy, InjectPromise, DependencyAnnotation} from './annotations';
 import {NoAnnotationError} from './exceptions';

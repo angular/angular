@@ -1,5 +1,5 @@
-import {isPresent, isBlank, BaseException, Type} from 'facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {isPresent, isBlank, BaseException, Type} from 'facade/src/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {AbstractChangeDetector} from './abstract_change_detector';
@@ -24,21 +24,21 @@ import {
  * The code generator takes a list of proto records and creates a function/class
  * that "emulates" what the developer would write by hand to implement the same
  * kind of behaviour.
- * 
+ *
  * For example: An expression `address.city` will result in the following class:
- * 
+ *
  * var ChangeDetector0 = function ChangeDetector0(dispatcher, formatters, protos) {
  *   AbstractChangeDetector.call(this);
  *   this.dispatcher = dispatcher;
  *   this.formatters = formatters;
  *   this.protos = protos;
- * 
+ *
  *   this.context = null;
  *   this.address0 = null;
  *   this.city1 = null;
  * }
  * ChangeDetector0.prototype = Object.create(AbstractChangeDetector.prototype);
- * 
+ *
  * ChangeDetector0.prototype.detectChangesInRecords = function(throwOnChange) {
  *   var address0;
  *   var city1;
@@ -46,47 +46,47 @@ import {
  *   var changes = null;
  *   var temp;
  *   var context = this.context;
- * 
+ *
  *   temp = ChangeDetectionUtil.findContext("address", context);
  *   if (temp instanceof ContextWithVariableBindings) {
  *     address0 = temp.get('address');
  *   } else {
  *     address0 = temp.address;
  *   }
- * 
+ *
  *   if (address0 !== this.address0) {
  *     this.address0 = address0;
  *   }
- * 
+ *
  *   city1 = address0.city;
  *   if (city1 !== this.city1) {
  *     changes = ChangeDetectionUtil.addRecord(changes,
  *       ChangeDetectionUtil.simpleChangeRecord(this.protos[1].bindingMemento, this.city1, city1));
  *     this.city1 = city1;
  *   }
- * 
+ *
  *   if (changes.length > 0) {
  *     if(throwOnChange) ChangeDetectionUtil.throwOnChange(this.protos[1], changes[0]);
  *     this.dispatcher.onRecordChange('address.city', changes);
  *     changes = null;
  *   }
  * }
- * 
- * 
+ *
+ *
  * ChangeDetector0.prototype.setContext = function(context) {
  *   this.context = context;
  * }
- * 
+ *
  * return ChangeDetector0;
- * 
- * 
+ *
+ *
  * The only thing the generated class depends on is the super class AbstractChangeDetector.
  *
  * The implementation comprises two parts:
  * * ChangeDetectorJITGenerator has the logic of how everything fits together.
  * * template functions (e.g., constructorTemplate) define what code is generated.
 */
-  
+
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
@@ -382,7 +382,7 @@ export class ChangeDetectorJITGenerator {
     res += this.genLiteral(r.fixedArgs[r.args.length]);
     return res;
   }
-  
+
   genLiteral(value):string {
     return JSON.stringify(value);
   }

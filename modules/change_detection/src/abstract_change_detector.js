@@ -1,4 +1,4 @@
-import {List, ListWrapper} from 'facade/collection';
+import {List, ListWrapper} from 'facade/src/collection';
 import {ChangeDetector} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {

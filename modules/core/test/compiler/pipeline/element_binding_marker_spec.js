@@ -1,15 +1,15 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/lang';
-import {DOM} from 'facade/dom';
-import {MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/src/lang';
+import {DOM} from 'facade/src/dom';
+import {MapWrapper} from 'facade/src/collection';
 
-import {ElementBindingMarker} from 'core/compiler/pipeline/element_binding_marker';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'core/annotations/annotations';
+import {ElementBindingMarker} from 'core/src/compiler/pipeline/element_binding_marker';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {Template, Decorator, Component} from 'core/src/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {

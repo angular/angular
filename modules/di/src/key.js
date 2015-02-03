@@ -1,6 +1,6 @@
 import {KeyMetadataError} from './exceptions';
-import {MapWrapper, Map} from 'facade/collection';
-import {FIELD, int, isPresent} from 'facade/lang';
+import {MapWrapper, Map} from 'facade/src/collection';
+import {FIELD, int, isPresent} from 'facade/src/lang';
 
 export class Key {
   token;

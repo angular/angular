@@ -1,8 +1,8 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'test_lib/test_lib';
-import {SelectorMatcher} from 'core/compiler/selector';
-import {CssSelector} from 'core/compiler/selector';
-import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {DOM} from 'facade/dom';
+import {SelectorMatcher} from 'core/src/compiler/selector';
+import {CssSelector} from 'core/src/compiler/selector';
+import {List, ListWrapper, MapWrapper} from 'facade/src/collection';
+import {DOM} from 'facade/src/dom';
 
 export function main() {
   describe('SelectorMatcher', () => {

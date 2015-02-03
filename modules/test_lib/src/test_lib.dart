@@ -5,9 +5,9 @@ export 'package:guinness/guinness_html.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
-import 'package:reflection/reflection.dart';
-import 'package:facade/dom.dart';
-import 'package:reflection/reflection_capabilities.dart';
+import 'package:reflection/src/reflection.dart';
+import 'package:facade/src/dom.dart';
+import 'package:reflection/src/reflection_capabilities.dart';
 
 bool IS_DARTIUM = true;
 

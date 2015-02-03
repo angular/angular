@@ -2,7 +2,7 @@ var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 element injector benchmark', function () {
 
-  var URL = 'benchmarks/web/element_injector/element_injector_benchmark.html';
+  var URL = 'benchmarks/src/element_injector/element_injector_benchmark.html';
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 

@@ -1,5 +1,5 @@
-import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
-import {isPresent, isBlank, RegExpWrapper, RegExpMatcherWrapper, StringWrapper} from 'facade/lang';
+import {List, Map, ListWrapper, MapWrapper} from 'facade/src/collection';
+import {isPresent, isBlank, RegExpWrapper, RegExpMatcherWrapper, StringWrapper} from 'facade/src/lang';
 
 const _EMPTY_ATTR_VALUE = '';
 

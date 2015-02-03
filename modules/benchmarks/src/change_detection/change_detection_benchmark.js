@@ -1,7 +1,7 @@
-import {ListWrapper, MapWrapper} from 'facade/collection';
-import {reflector} from 'reflection/reflection';
-import {isPresent} from 'facade/lang';
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
+import {reflector} from 'reflection/src/reflection';
+import {isPresent} from 'facade/src/lang';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 import {
   Lexer,

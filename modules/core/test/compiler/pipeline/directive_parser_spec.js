@@ -1,17 +1,17 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/lang';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
-import {DirectiveParser} from 'core/compiler/pipeline/directive_parser';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {CompileStep} from 'core/compiler/pipeline/compile_step';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
-import {DOM} from 'facade/dom';
-import {Component} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
-import {Template} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {isPresent} from 'facade/src/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
+import {DirectiveParser} from 'core/src/compiler/pipeline/directive_parser';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {DOM} from 'facade/src/dom';
+import {Component} from 'core/src/annotations/annotations';
+import {Decorator} from 'core/src/annotations/annotations';
+import {Template} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 import {Lexer, Parser} from 'change_detection/change_detection';
 
 export function main() {

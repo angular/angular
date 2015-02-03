@@ -6,7 +6,7 @@ var path = require('path');
 module.exports = function(gulp, plugins, config) {
   return function() {
     return gulp.src(config.src)
-      .pipe(util.renameSrcFolder(plugins, config.srcFolderMapping))
+      .pipe(util.insertSrcFolder(plugins, config.srcFolderInsertion, config.modulesFolder))
       .pipe(through2.obj(function(file, enc, done) {
         var fileName = file.relative;
         var moduleName = file2moduleName(fileName);

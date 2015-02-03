@@ -1,6 +1,6 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
-import {stringify, looseIdentical, isJsObject} from 'facade/lang';
+import {stringify, looseIdentical, isJsObject} from 'facade/src/lang';
 
 export class KeyValueChanges {
   _records:Map;

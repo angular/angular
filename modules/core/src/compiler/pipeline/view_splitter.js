@@ -1,6 +1,6 @@
-import {isBlank, isPresent} from 'facade/lang';
-import {DOM, TemplateElement} from 'facade/dom';
-import {MapWrapper, ListWrapper} from 'facade/collection';
+import {isBlank, isPresent} from 'facade/src/lang';
+import {DOM, TemplateElement} from 'facade/src/dom';
+import {MapWrapper, ListWrapper} from 'facade/src/collection';
 
 import {Parser} from 'change_detection/change_detection';
 

@@ -1,12 +1,12 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {ListWrapper, List, MapWrapper} from 'facade/collection';
-import {DOM} from 'facade/dom';
-import {isPresent, NumberWrapper, StringWrapper} from 'facade/lang';
+import {ListWrapper, List, MapWrapper} from 'facade/src/collection';
+import {DOM} from 'facade/src/dom';
+import {isPresent, NumberWrapper, StringWrapper} from 'facade/src/lang';
 
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
 
 export function main() {
   describe('compile_pipeline', () => {

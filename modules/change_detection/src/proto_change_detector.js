@@ -1,5 +1,5 @@
-import {isPresent, isBlank, BaseException, Type, isString} from 'facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {isPresent, isBlank, BaseException, Type, isString} from 'facade/src/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
 import {
   AccessMember,
