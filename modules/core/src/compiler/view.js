@@ -4,6 +4,7 @@ import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector,
   from 'change_detection/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
+import {BindingPropagationConfig} from './binding_propagation_config';
 import {ElementBinder} from './element_binder';
 import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'reflection/src/types';
@@ -350,12 +351,15 @@ export class ProtoView {
 
       // componentChildViews
       var lightDom = null;
+      var bindingPropagationConfig = null;
       if (isPresent(binder.componentDirective)) {
         var childView = binder.nestedProtoView.instantiate(elementInjector);
         view.changeDetector.addChild(childView.changeDetector);
 
         lightDom = binder.componentDirective.shadowDomStrategy.constructLightDom(view, childView, element);
         binder.componentDirective.shadowDomStrategy.attachTemplate(element, childView);
+
+        bindingPropagationConfig = new BindingPropagationConfig(view.changeDetector);
 
         ListWrapper.push(componentChildViews, childView);
       }
@@ -370,7 +374,8 @@ export class ProtoView {
 
       // preBuiltObjects
       if (isPresent(elementInjector)) {
-        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort, lightDom);
+        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewPort,
+          lightDom, bindingPropagationConfig);
       }
 
       // events

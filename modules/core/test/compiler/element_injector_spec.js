@@ -12,6 +12,7 @@ import {ViewPort} from 'core/src/compiler/viewport';
 import {NgElement} from 'core/src/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'core/src/annotations/annotations';
+import {BindingPropagationConfig} from 'core/src/compiler/binding_propagation_config';
 
 @proxy
 @IMPLEMENTS(View)
@@ -95,7 +96,7 @@ class DirectiveWithDestroy {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -245,7 +246,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -365,23 +366,30 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewPort', function () {
         var viewPort = new ViewPort(null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null, null));
 
         expect(inj.get(ViewPort)).toEqual(viewPort);
+      });
+
+      it('should return bindingPropagationConfig', function () {
+        var config = new BindingPropagationConfig(null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, null, config));
+
+        expect(inj.get(BindingPropagationConfig)).toEqual(config);
       });
 
       describe("light DOM", () => {
@@ -389,7 +397,7 @@ export function main() {
 
         beforeEach(() => {
           lightDom = new DummyLightDom();
-          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom);
+          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom, null);
         });
 
         it("should return destination light DOM from the parent's injector", function () {
