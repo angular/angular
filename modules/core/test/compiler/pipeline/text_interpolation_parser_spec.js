@@ -1,8 +1,8 @@
 import {describe, beforeEach, expect, it, iit, ddescribe, el} from 'test_lib/test_lib';
-import {TextInterpolationParser} from 'core/compiler/pipeline/text_interpolation_parser';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {DOM} from 'facade/dom';
-import {MapWrapper} from 'facade/collection';
+import {TextInterpolationParser} from 'core/src/compiler/pipeline/text_interpolation_parser';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {DOM} from 'facade/src/dom';
+import {MapWrapper} from 'facade/src/collection';
 
 import {Lexer, Parser} from 'change_detection/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';

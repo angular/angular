@@ -1,12 +1,12 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
 import {bootstrap, appDocumentToken, appElementToken}
-    from 'core/application';
-import {Component} from 'core/annotations/annotations';
-import {DOM} from 'facade/dom';
-import {ListWrapper} from 'facade/collection';
-import {PromiseWrapper} from 'facade/async';
+    from 'core/src/application';
+import {Component} from 'core/src/annotations/annotations';
+import {DOM} from 'facade/src/dom';
+import {ListWrapper} from 'facade/src/collection';
+import {PromiseWrapper} from 'facade/src/async';
 import {bind, Inject} from 'di/di';
-import {TemplateConfig} from 'core/annotations/template_config';
+import {TemplateConfig} from 'core/src/annotations/template_config';
 
 @Component({
   selector: 'hello-app',

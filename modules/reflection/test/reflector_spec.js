@@ -1,7 +1,7 @@
 import {describe, it, iit, ddescribe, expect, beforeEach} from 'test_lib/test_lib';
-import {Reflector} from 'reflection/reflection';
-import {ReflectionCapabilities} from 'reflection/reflection_capabilities';
-import {CONST} from 'facade/lang';
+import {Reflector} from 'reflection/src/reflection';
+import {ReflectionCapabilities} from 'reflection/src/reflection_capabilities';
+import {CONST} from 'facade/src/lang';
 
 class Annotation {
   value;
@@ -122,7 +122,7 @@ export function main() {
         expect(reflector.annotations(TestObj)).toEqual([1,2]);
       });
     });
-    
+
     describe("getter", () => {
       it("returns a function reading a property", () => {
         var getA = reflector.getter('a');

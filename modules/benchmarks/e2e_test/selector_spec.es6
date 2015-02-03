@@ -2,7 +2,7 @@ var testUtil = require('../../e2e_test_lib/e2e_test/test_util');
 
 describe('ng2 selector benchmark', function () {
 
-  var URL = 'benchmarks/web/compiler/selector_benchmark.html';
+  var URL = 'benchmarks/src/compiler/selector_benchmark.html';
 
   afterEach(testUtil.verifyNoBrowserErrors);
 

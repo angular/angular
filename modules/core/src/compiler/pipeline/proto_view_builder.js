@@ -1,5 +1,5 @@
-import {isPresent, BaseException} from 'facade/lang';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {isPresent, BaseException} from 'facade/src/lang';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
 
 import {ProtoView} from '../view';
 import {ChangeDetection} from 'change_detection/change_detection';

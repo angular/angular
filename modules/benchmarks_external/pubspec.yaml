@@ -10,5 +10,5 @@ dependencies:
 transformers:
 - angular:
     html_files:
-      - web/naive_infinite_scroll/scroll_area.html
-      - web/naive_infinite_scroll/scroll_item.html
+      - web/src/naive_infinite_scroll/scroll_area.html
+      - web/src/naive_infinite_scroll/scroll_item.html

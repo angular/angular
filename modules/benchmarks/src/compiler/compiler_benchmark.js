@@ -1,19 +1,19 @@
-import {DOM, document} from 'facade/dom';
-import {isBlank, Type} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
-import {DirectiveMetadata} from 'core/compiler/directive_metadata';
+import {DOM, document} from 'facade/src/dom';
+import {isBlank, Type} from 'facade/src/lang';
+import {MapWrapper} from 'facade/src/collection';
+import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
 
 import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'change_detection/change_detection';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 
-import {Component} from 'core/annotations/annotations';
-import {Decorator} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
+import {Component} from 'core/src/annotations/annotations';
+import {Decorator} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
 
-import {reflector} from 'reflection/reflection';
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {reflector} from 'reflection/src/reflection';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {

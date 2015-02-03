@@ -1,5 +1,5 @@
 // compiler benchmark in AngularJS 1.x
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 export function main() {
   var ngEl = document.createElement('div');

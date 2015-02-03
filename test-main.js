@@ -13,33 +13,7 @@ System.baseURL = '/base/modules/';
 
 // So that we can import packages like `core/foo`, instead of `core/src/foo`.
 System.paths = {
-  'angular/*': './angular/src/*.js',
-  'angular/test/*': './angular/test/*.js',
-
-  'core/*': './core/src/*.js',
-  'core/test/*': './core/test/*.js',
-
-  'change_detection/*': './change_detection/src/*.js',
-  'change_detection/test/*': './change_detection/test/*.js',
-
-  'facade/*': './facade/src/*.js',
-  'facade/test/*': './facade/test/*.js',
-
-  'di/*': './di/src/*.js',
-  'di/test/*': './di/test/*.js',
-
-  'directives/*': './directives/src/*.js',
-  'directives/test/*': './directives/test/*.js',
-
-  'reflection/*': './reflection/src/*.js',
-  'reflection/test/*': './reflection/test/*.js',
-
-  'rtts_assert/*': './rtts_assert/src/*.js',
-  'rtts_assert/test/*': './rtts_assert/test/*.js',
-
-  'test_lib/*': './test_lib/src/*.js',
-  'test_lib/test/*': './test_lib/test/*.js',
-
+  '*': './*.js',
   'transpiler/*': '../tools/transpiler/*.js'
 }
 

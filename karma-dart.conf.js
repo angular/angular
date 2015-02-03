@@ -42,14 +42,14 @@ module.exports = function(config) {
       '/packages/path': 'http://localhost:9877/base/packages/path',
 
       // Local dependencies, transpiled from the source.
-      '/packages/angular': 'http://localhost:9877/base/modules/angular/src',
-      '/packages/core': 'http://localhost:9877/base/modules/core/src',
-      '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection/src',
-      '/packages/reflection': 'http://localhost:9877/base/modules/reflection/src',
-      '/packages/di': 'http://localhost:9877/base/modules/di/src',
-      '/packages/directives': 'http://localhost:9877/base/modules/directives/src',
-      '/packages/facade': 'http://localhost:9877/base/modules/facade/src',
-      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib/src',
+      '/packages/angular': 'http://localhost:9877/base/modules/angular',
+      '/packages/core': 'http://localhost:9877/base/modules/core',
+      '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection',
+      '/packages/reflection': 'http://localhost:9877/base/modules/reflection',
+      '/packages/di': 'http://localhost:9877/base/modules/di',
+      '/packages/directives': 'http://localhost:9877/base/modules/directives',
+      '/packages/facade': 'http://localhost:9877/base/modules/facade',
+      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib',
     },
 
     preprocessors: {

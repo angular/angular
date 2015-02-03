@@ -1,6 +1,6 @@
-import {isPresent} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
-import {DOM} from 'facade/dom';
+import {isPresent} from 'facade/src/lang';
+import {MapWrapper} from 'facade/src/collection';
+import {DOM} from 'facade/src/dom';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

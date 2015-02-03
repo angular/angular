@@ -1,7 +1,7 @@
 var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng1.x largetable benchmark', function () {
-  var URL = 'benchmarks_external/web/largetable/largetable_benchmark.html';
+  var URL = 'benchmarks_external/src/largetable/largetable_benchmark.html';
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 

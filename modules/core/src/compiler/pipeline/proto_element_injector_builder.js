@@ -1,5 +1,5 @@
-import {isPresent, isBlank} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
+import {isPresent, isBlank} from 'facade/src/lang';
+import {ListWrapper} from 'facade/src/collection';
 
 import {Key} from 'di/di';
 import {ProtoElementInjector, ComponentKeyMetaData, DirectiveBinding} from '../element_injector';

@@ -1,5 +1,5 @@
-import {isPresent, isBlank, BaseException, Type} from 'facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {isPresent, isBlank, BaseException, Type} from 'facade/src/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {ArrayChanges} from './array_changes';
 import {KeyValueChanges} from './keyvalue_changes';

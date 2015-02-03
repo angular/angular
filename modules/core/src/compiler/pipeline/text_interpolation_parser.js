@@ -1,5 +1,5 @@
-import {RegExpWrapper, StringWrapper, isPresent} from 'facade/lang';
-import {Node, DOM} from 'facade/dom';
+import {RegExpWrapper, StringWrapper, isPresent} from 'facade/src/lang';
+import {Node, DOM} from 'facade/src/dom';
 
 import {Parser} from 'change_detection/change_detection';
 

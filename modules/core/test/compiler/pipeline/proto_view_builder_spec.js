@@ -1,14 +1,14 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/lang';
+import {isPresent} from 'facade/src/lang';
 import {dynamicChangeDetection} from 'change_detection/change_detection';
-import {ElementBinder} from 'core/compiler/element_binder';
-import {ProtoViewBuilder} from 'core/compiler/pipeline/proto_view_builder';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
-import {DOM} from 'facade/dom';
-import {MapWrapper} from 'facade/collection';
+import {ElementBinder} from 'core/src/compiler/element_binder';
+import {ProtoViewBuilder} from 'core/src/compiler/pipeline/proto_view_builder';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {DOM} from 'facade/src/dom';
+import {MapWrapper} from 'facade/src/collection';
 
 export function main() {
   describe('ProtoViewBuilder', () => {

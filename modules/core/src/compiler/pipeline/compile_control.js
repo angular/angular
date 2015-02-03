@@ -1,6 +1,6 @@
-import {isBlank} from 'facade/lang';
-import {List, ListWrapper} from 'facade/collection';
-import {DOM, Element} from 'facade/dom';
+import {isBlank} from 'facade/src/lang';
+import {List, ListWrapper} from 'facade/src/collection';
+import {DOM, Element} from 'facade/src/dom';
 import {CompileElement} from './compile_element';
 import {CompileStep} from './compile_step';
 

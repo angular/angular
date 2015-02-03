@@ -1,6 +1,6 @@
-import {CONST} from 'facade/lang';
-import {DOM, Element} from 'facade/dom';
-import {List} from 'facade/collection';
+import {CONST} from 'facade/src/lang';
+import {DOM, Element} from 'facade/src/dom';
+import {List} from 'facade/src/collection';
 import {View} from './view';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';

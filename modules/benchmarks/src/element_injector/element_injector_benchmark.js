@@ -1,7 +1,7 @@
-import {reflector} from 'reflection/reflection';
+import {reflector} from 'reflection/src/reflection';
 import {Injector} from 'di/di';
-import {ProtoElementInjector} from 'core/compiler/element_injector';
-import {getIntParameter, bindAction} from 'e2e_test_lib/benchmark_util';
+import {ProtoElementInjector} from 'core/src/compiler/element_injector';
+import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
 
 var count = 0;
 

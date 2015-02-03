@@ -1,10 +1,10 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/src/lang';
+import {MapWrapper} from 'facade/src/collection';
 
-import {ViewSplitter} from 'core/compiler/pipeline/view_splitter';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {DOM, TemplateElement} from 'facade/dom';
+import {ViewSplitter} from 'core/src/compiler/pipeline/view_splitter';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {DOM, TemplateElement} from 'facade/src/dom';
 
 import {Lexer, Parser} from 'change_detection/change_detection';
 

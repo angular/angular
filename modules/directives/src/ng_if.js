@@ -1,6 +1,6 @@
-import {Template} from 'core/annotations/annotations';
-import {ViewPort} from 'core/compiler/viewport';
-import {isBlank} from 'facade/lang';
+import {Template} from 'core/src/annotations/annotations';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {isBlank} from 'facade/src/lang';
 
 @Template({
   selector: '[ng-if]',

@@ -1,7 +1,7 @@
-import {FIELD, print} from 'facade/lang';
+import {FIELD, print} from 'facade/src/lang';
 import {ChangeDetector} from 'change_detection/change_detection';
-import {VmTurnZone} from 'core/zone/vm_turn_zone';
-import {ListWrapper} from 'facade/collection';
+import {VmTurnZone} from 'core/src/zone/vm_turn_zone';
+import {ListWrapper} from 'facade/src/collection';
 
 export class LifeCycle {
   _changeDetector:ChangeDetector;

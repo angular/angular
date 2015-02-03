@@ -44,7 +44,7 @@ var CJS_COMPILER_OPTIONS = {
 
 var _HTLM_DEFAULT_SCRIPTS_JS = [
   {src: '/deps/traceur-runtime.js', mimeType: 'text/javascript'},
-  {src: '/rtts_assert/lib/rtts_assert.js', mimeType: 'text/javascript'},
+  {src: '/rtts_assert/rtts_assert.js', mimeType: 'text/javascript'},
   {src: '/deps/es6-module-loader-sans-promises.src.js', mimeType: 'text/javascript'},
   {src: '/deps/zone.js', mimeType: 'text/javascript'},
   {src: '/deps/long-stack-trace-zone.js', mimeType: 'text/javascript'},
@@ -78,11 +78,20 @@ var CONFIG = {
     },
     docs: 'dist/docs'
   },
-  srcFolderMapping: {
-    'default': 'lib',
-    '**/benchmarks/**': 'web',
-    '**/benchmarks_external/**': 'web',
-    '**/example*/**': 'web'
+  srcFolderInsertion: {
+    js: {
+      '**': ''
+    },
+    dart: {
+      '**': 'lib',
+      '*/test/**': '',
+      'benchmarks/**': 'web',
+      'benchmarks/test/**': '',
+      'benchmarks_external/**': 'web',
+      'benchmarks_external/test/**': '',
+      'example*/**': 'web',
+      'example*/test/**': ''
+    }
   },
   deps: {
     js: [
@@ -145,7 +154,7 @@ var CONFIG = {
     },
     scriptsPerFolder: {
       js: {
-        default: _HTLM_DEFAULT_SCRIPTS_JS,
+        '**': _HTLM_DEFAULT_SCRIPTS_JS,
         'benchmarks/**':
           [
             { src: '/deps/url_params_to_form.js', mimeType: 'text/javascript' }
@@ -157,7 +166,7 @@ var CONFIG = {
           ].concat(_HTLM_DEFAULT_SCRIPTS_JS)
       },
       dart: {
-        default: _HTML_DEFAULT_SCRIPTS_DART,
+        '**': _HTML_DEFAULT_SCRIPTS_DART,
         'benchmarks*/**':
           [
             { src: '/deps/url_params_to_form.js', mimeType: 'text/javascript' }
@@ -221,7 +230,7 @@ gulp.task('build/transpile.js.dev', transpile(gulp, gulpPlugins, {
   dest: CONFIG.dest.js.dev,
   outputExt: 'js',
   options: CONFIG.transpile.options.js.dev,
-  srcFolderMapping: CONFIG.srcFolderMapping
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
 gulp.task('build/transpile.js.prod', transpile(gulp, gulpPlugins, {
@@ -230,7 +239,7 @@ gulp.task('build/transpile.js.prod', transpile(gulp, gulpPlugins, {
   dest: CONFIG.dest.js.prod,
   outputExt: 'js',
   options: CONFIG.transpile.options.js.prod,
-  srcFolderMapping: CONFIG.srcFolderMapping
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
 gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
@@ -239,7 +248,7 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
   outputExt: 'dart',
   options: CONFIG.transpile.options.dart,
-  srcFolderMapping: CONFIG.srcFolderMapping
+  srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
 
 gulp.task('build/transpile/tools.cjs', transpile(gulp, gulpPlugins, {
@@ -248,9 +257,7 @@ gulp.task('build/transpile/tools.cjs', transpile(gulp, gulpPlugins, {
   dest: CONFIG.dest.cjs.tools,
   outputExt: 'js',
   options: CONFIG.transpile.options.cjs,
-  srcFolderMapping: {
-    'default': 'src'
-  }
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
 gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
@@ -259,9 +266,7 @@ gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
   dest: CONFIG.dest.cjs.e2eTest,
   outputExt: 'js',
   options: CONFIG.transpile.options.cjs,
-  srcFolderMapping: {
-    'default': 'src'
-  }
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
 // ------------
@@ -270,21 +275,21 @@ gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
 gulp.task('build/html.js.dev', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.js,
   dest: CONFIG.dest.js.dev,
-  srcFolderMapping: CONFIG.srcFolderMapping,
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
 }));
 
 gulp.task('build/html.js.prod', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.js,
   dest: CONFIG.dest.js.prod,
-  srcFolderMapping: CONFIG.srcFolderMapping,
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
 }));
 
 gulp.task('build/html.dart', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.dart,
   dest: CONFIG.dest.dart,
-  srcFolderMapping: CONFIG.srcFolderMapping,
+  srcFolderInsertion: CONFIG.srcFolderInsertion.dart,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.dart
 }));
 
@@ -302,8 +307,7 @@ gulp.task('build/pubspec.dart', pubspec(gulp, gulpPlugins, {
 
 gulp.task('build/analyze.dart', dartanalyzer(gulp, gulpPlugins, {
   dest: CONFIG.dest.dart,
-  command: DART_SDK.ANALYZER,
-  srcFolderMapping: CONFIG.srcFolderMapping
+  command: DART_SDK.ANALYZER
 }));
 
 // ------------

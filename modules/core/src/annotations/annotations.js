@@ -1,5 +1,5 @@
-import {ABSTRACT, CONST, normalizeBlank} from 'facade/lang';
-import {List} from 'facade/collection';
+import {ABSTRACT, CONST, normalizeBlank} from 'facade/src/lang';
+import {List} from 'facade/src/collection';
 import {TemplateConfig} from './template_config';
 import {ShadowDomStrategy} from '../compiler/shadow_dom';
 

@@ -1,15 +1,15 @@
-import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'facade/lang';
-import {Math} from 'facade/math';
-import {List, ListWrapper, MapWrapper} from 'facade/collection';
+import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'facade/src/lang';
+import {Math} from 'facade/src/math';
+import {List, ListWrapper, MapWrapper} from 'facade/src/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
-import {Parent, Ancestor} from 'core/annotations/visibility';
-import {EventEmitter} from 'core/annotations/events';
-import {onDestroy} from 'core/annotations/annotations';
-import {View, ProtoView} from 'core/compiler/view';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
-import {ViewPort} from 'core/compiler/viewport';
-import {NgElement} from 'core/dom/element';
-import {Directive} from 'core/annotations/annotations'
+import {Parent, Ancestor} from 'core/src/annotations/visibility';
+import {EventEmitter} from 'core/src/annotations/events';
+import {onDestroy} from 'core/src/annotations/annotations';
+import {View, ProtoView} from 'core/src/compiler/view';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {NgElement} from 'core/src/dom/element';
+import {Directive} from 'core/src/annotations/annotations'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 

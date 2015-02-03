@@ -1,8 +1,8 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {PropertyBindingParser} from 'core/compiler/pipeline/property_binding_parser';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {DOM} from 'facade/dom';
-import {MapWrapper} from 'facade/collection';
+import {PropertyBindingParser} from 'core/src/compiler/pipeline/property_binding_parser';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {DOM} from 'facade/src/dom';
+import {MapWrapper} from 'facade/src/collection';
 
 import {Lexer, Parser} from 'change_detection/change_detection';
 

@@ -1,4 +1,4 @@
-import {isBlank} from 'facade/lang';
+import {isBlank} from 'facade/src/lang';
 
 export function arrayChangesAsString({collection, previous, additions, moves, removals}) {
   if (isBlank(collection)) collection = [];

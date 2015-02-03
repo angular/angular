@@ -1,6 +1,6 @@
 import *  as app from './index_common';
-import {reflector} from 'reflection/reflection';
-import {ReflectionCapabilities} from 'reflection/reflection_capabilities';
+import {reflector} from 'reflection/src/reflection';
+import {ReflectionCapabilities} from 'reflection/src/reflection_capabilities';
 
 export function main() {
   // Initializing the reflector is only required for the Dart version of the application.

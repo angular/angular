@@ -1,13 +1,13 @@
 import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'test_lib/test_lib';
-import {proxy, IMPLEMENTS, isBlank} from 'facade/lang';
-import {ListWrapper, MapWrapper} from 'facade/collection';
-import {DOM} from 'facade/dom';
-import {Content} from 'core/compiler/shadow_dom_emulation/content_tag';
-import {NgElement} from 'core/dom/element';
-import {LightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
-import {View} from 'core/compiler/view';
-import {ViewPort} from 'core/compiler/viewport';
-import {ElementInjector} from 'core/compiler/element_injector';
+import {proxy, IMPLEMENTS, isBlank} from 'facade/src/lang';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
+import {DOM} from 'facade/src/dom';
+import {Content} from 'core/src/compiler/shadow_dom_emulation/content_tag';
+import {NgElement} from 'core/src/dom/element';
+import {LightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
+import {View} from 'core/src/compiler/view';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {ElementInjector} from 'core/src/compiler/element_injector';
 import {ProtoRecordRange} from 'change_detection/change_detection';
 
 @proxy

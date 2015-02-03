@@ -1,20 +1,20 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 
-import {DOM} from 'facade/dom';
+import {DOM} from 'facade/src/dom';
 
 import {Injector} from 'di/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {OnChange} from 'core/compiler/interfaces';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {OnChange} from 'core/src/compiler/interfaces';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 
-import {Decorator, Component, Template} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
+import {Decorator, Component, Template} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
 
-import {ViewPort} from 'core/compiler/viewport';
-import {MapWrapper, ListWrapper} from 'facade/collection';
-import {NgRepeat} from 'directives/ng_repeat';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {MapWrapper, ListWrapper} from 'facade/src/collection';
+import {NgRepeat} from 'directives/src/ng_repeat';
 
 export function main() {
   describe('ng-repeat', () => {

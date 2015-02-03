@@ -1,4 +1,4 @@
-import {int, isJsObject} from 'facade/lang';
+import {int, isJsObject} from 'facade/src/lang';
 
 export var List = window.Array;
 export var Map = window.Map;

@@ -1,5 +1,5 @@
-import {DOM, document, location} from 'facade/dom';
-import {NumberWrapper, BaseException, isBlank} from 'facade/lang';
+import {DOM, document, location} from 'facade/src/dom';
+import {NumberWrapper, BaseException, isBlank} from 'facade/src/lang';
 
 export function getIntParameter(name:string) {
   return NumberWrapper.parseInt(getStringParameter(name), 10);

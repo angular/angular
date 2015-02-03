@@ -1,5 +1,5 @@
-import {isPresent} from 'facade/lang';
-import {List, ListWrapper, Map, MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/src/lang';
+import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
 import {RECORD_TYPE_SELF, ProtoRecord} from './proto_change_detector';
 
 /**

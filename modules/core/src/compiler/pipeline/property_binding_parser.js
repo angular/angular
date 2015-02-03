@@ -1,6 +1,6 @@
-import {isPresent, isBlank, RegExpWrapper, BaseException} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
-import {TemplateElement} from 'facade/dom';
+import {isPresent, isBlank, RegExpWrapper, BaseException} from 'facade/src/lang';
+import {MapWrapper} from 'facade/src/collection';
+import {TemplateElement} from 'facade/src/dom';
 
 import {Parser, AST, ExpressionWithSource} from 'change_detection/change_detection';
 

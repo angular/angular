@@ -1,20 +1,20 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/lang';
-import {DOM} from 'facade/dom';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {isPresent} from 'facade/src/lang';
+import {DOM} from 'facade/src/dom';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
 
-import {ElementBinderBuilder} from 'core/compiler/pipeline/element_binder_builder';
-import {CompilePipeline} from 'core/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
+import {ElementBinderBuilder} from 'core/src/compiler/pipeline/element_binder_builder';
+import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
 
-import {Decorator} from 'core/annotations/annotations';
-import {Template} from 'core/annotations/annotations';
-import {Component} from 'core/annotations/annotations';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/compiler/view';
-import {ProtoElementInjector} from 'core/compiler/element_injector';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
+import {Decorator} from 'core/src/annotations/annotations';
+import {Template} from 'core/src/annotations/annotations';
+import {Component} from 'core/src/annotations/annotations';
+import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/src/compiler/view';
+import {ProtoElementInjector} from 'core/src/compiler/element_injector';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
 
 import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
   } from 'change_detection/change_detection';

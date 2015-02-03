@@ -1,11 +1,11 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
-import {View, ProtoView} from 'core/compiler/view';
-import {ViewPort} from 'core/compiler/viewport';
-import {proxy, IMPLEMENTS} from 'facade/lang';
-import {DOM} from 'facade/dom';
-import {ListWrapper, MapWrapper} from 'facade/collection';
+import {View, ProtoView} from 'core/src/compiler/view';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {proxy, IMPLEMENTS} from 'facade/src/lang';
+import {DOM} from 'facade/src/dom';
+import {ListWrapper, MapWrapper} from 'facade/src/collection';
 import {Injector} from 'di/di';
-import {ProtoElementInjector, ElementInjector} from 'core/compiler/element_injector';
+import {ProtoElementInjector, ElementInjector} from 'core/src/compiler/element_injector';
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'change_detection/change_detection';
 
 function createView(nodes) {

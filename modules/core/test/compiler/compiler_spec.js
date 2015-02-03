@@ -1,16 +1,16 @@
 import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'test_lib/test_lib';
-import {DOM} from 'facade/dom';
-import {List} from 'facade/collection';
+import {DOM} from 'facade/src/dom';
+import {List} from 'facade/src/collection';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {ProtoView} from 'core/compiler/view';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/compiler/template_loader';
-import {Component} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
-import {CompileElement} from 'core/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/compiler/pipeline/compile_control';
+import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {ProtoView} from 'core/src/compiler/view';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
+import {Component} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
 

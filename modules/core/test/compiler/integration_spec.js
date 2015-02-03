@@ -1,19 +1,19 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
 
-import {DOM} from 'facade/dom';
+import {DOM} from 'facade/src/dom';
 
 import {Injector} from 'di/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {ShadowDomEmulated} from 'core/compiler/shadow_dom';
+import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
 
-import {Decorator, Component, Template} from 'core/annotations/annotations';
-import {TemplateConfig} from 'core/annotations/template_config';
+import {Decorator, Component, Template} from 'core/src/annotations/annotations';
+import {TemplateConfig} from 'core/src/annotations/template_config';
 
-import {ViewPort} from 'core/compiler/viewport';
-import {MapWrapper} from 'facade/collection';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {MapWrapper} from 'facade/src/collection';
 
 export function main() {
   describe('integration tests', function() {

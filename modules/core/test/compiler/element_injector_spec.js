@@ -1,17 +1,17 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'test_lib/test_lib';
-import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/lang';
-import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/compiler/element_injector';
-import {Parent, Ancestor} from 'core/annotations/visibility';
-import {EventEmitter} from 'core/annotations/events';
-import {onDestroy} from 'core/annotations/annotations';
+import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/src/lang';
+import {ListWrapper, MapWrapper, List} from 'facade/src/collection';
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/src/compiler/element_injector';
+import {Parent, Ancestor} from 'core/src/annotations/visibility';
+import {EventEmitter} from 'core/src/annotations/events';
+import {onDestroy} from 'core/src/annotations/annotations';
 import {Injector, Inject, bind} from 'di/di';
-import {View} from 'core/compiler/view';
+import {View} from 'core/src/compiler/view';
 import {ProtoRecordRange} from 'change_detection/change_detection';
-import {ViewPort} from 'core/compiler/viewport';
-import {NgElement} from 'core/dom/element';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'core/compiler/shadow_dom_emulation/light_dom';
-import {Directive} from 'core/annotations/annotations';
+import {ViewPort} from 'core/src/compiler/viewport';
+import {NgElement} from 'core/src/dom/element';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
+import {Directive} from 'core/src/annotations/annotations';
 
 @proxy
 @IMPLEMENTS(View)

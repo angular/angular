@@ -4,6 +4,7 @@ var spawn = require('child_process').spawn;
 var through2 = require('through2');
 var path = require('path');
 var glob = require('glob');
+var fs = require('fs');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
@@ -21,6 +22,8 @@ module.exports = function(gulp, plugins, config) {
         cwd: folder
       })).then(function() {
         return replaceDartWithJsScripts(gulp, destFolder);
+      }).then(function() {
+        return removeWebFolder(gulp, destFolder);
       }).then(nextFolder);
     }
   };
@@ -37,4 +40,11 @@ function replaceDartWithJsScripts(gulp, folder) {
       done();
     }))
     .pipe(gulp.dest(folder)));
+}
+
+function removeWebFolder(gulp, folder) {
+  fs.renameSync(path.join(folder, 'web', 'src'), path.join(folder, 'src'));
+  fs.renameSync(path.join(folder, 'web', 'packages'), path.join(folder, 'packages'));
+  fs.rmdirSync(path.join(folder, 'web'));
+  return Q.resolve();
 }

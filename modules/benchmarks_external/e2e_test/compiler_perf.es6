@@ -2,7 +2,7 @@ var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng1.x compiler benchmark', function () {
 
-  var URL = 'benchmarks_external/web/compiler/compiler_benchmark.html';
+  var URL = 'benchmarks_external/src/compiler/compiler_benchmark.html';
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 

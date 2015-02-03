@@ -1,6 +1,6 @@
-import {List, Map, ListWrapper, MapWrapper} from 'facade/collection';
-import {Element, DOM} from 'facade/dom';
-import {int, isBlank, isPresent, Type} from 'facade/lang';
+import {List, Map, ListWrapper, MapWrapper} from 'facade/src/collection';
+import {Element, DOM} from 'facade/src/dom';
+import {int, isBlank, isPresent, Type} from 'facade/src/lang';
 import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator} from '../../annotations/annotations';
 import {Component} from '../../annotations/annotations';

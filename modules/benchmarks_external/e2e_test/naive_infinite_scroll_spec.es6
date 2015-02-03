@@ -2,7 +2,7 @@ var testUtil = require('../../e2e_test_lib/e2e_test/test_util');
 
 describe('ng-dart1.x naive infinite scroll benchmark', function () {
 
-  var URL = 'benchmarks_external/web/naive_infinite_scroll/index.html';
+  var URL = 'benchmarks_external/src/naive_infinite_scroll/index.html';
 
   afterEach(testUtil.verifyNoBrowserErrors);
 

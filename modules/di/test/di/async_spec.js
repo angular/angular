@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
 import {Injector, Inject, InjectPromise, bind, Key} from 'di/di';
-import {Promise, PromiseWrapper} from 'facade/async';
+import {Promise, PromiseWrapper} from 'facade/src/async';
 
 class UserList {
 }

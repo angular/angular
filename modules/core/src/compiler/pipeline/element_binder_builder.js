@@ -1,8 +1,8 @@
-import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/lang';
-import {Element, DOM} from 'facade/dom';
-import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/src/lang';
+import {Element, DOM} from 'facade/src/dom';
+import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
-import {reflector} from 'reflection/reflection';
+import {reflector} from 'reflection/src/reflection';
 
 import {Parser, ProtoChangeDetector} from 'change_detection/change_detection';
 

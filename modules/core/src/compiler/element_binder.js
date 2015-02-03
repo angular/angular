@@ -1,8 +1,8 @@
 import {ProtoElementInjector} from './element_injector';
-import {FIELD} from 'facade/lang';
-import {MapWrapper} from 'facade/collection';
+import {FIELD} from 'facade/src/lang';
+import {MapWrapper} from 'facade/src/collection';
 import {DirectiveMetadata} from './directive_metadata';
-import {List, Map} from 'facade/collection';
+import {List, Map} from 'facade/src/collection';
 import {ProtoView} from './view';
 
 export class ElementBinder {

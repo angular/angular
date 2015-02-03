@@ -1,18 +1,18 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DARTIUM} from 'test_lib/test_lib';
 
-import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'facade/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/collection';
+import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'facade/src/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
-import {reflector} from 'reflection/reflection';
+import {Parser} from 'change_detection/src/parser/parser';
+import {Lexer} from 'change_detection/src/parser/lexer';
+import {reflector} from 'reflection/src/reflection';
 import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings}
   from 'change_detection/change_detection';
 
 
-import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'change_detection/proto_change_detector';
+import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'change_detection/src/proto_change_detector';
 
 
 export function main() {

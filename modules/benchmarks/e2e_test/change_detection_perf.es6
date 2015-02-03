@@ -2,7 +2,7 @@ var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
 
 describe('ng2 change detection benchmark', function () {
 
-  var URL = 'benchmarks/web/change_detection/change_detection_benchmark.html';
+  var URL = 'benchmarks/src/change_detection/change_detection_benchmark.html';
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 

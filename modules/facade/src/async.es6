@@ -1,5 +1,5 @@
-import {int} from 'facade/lang';
-import {List} from 'facade/collection';
+import {int} from 'facade/src/lang';
+import {List} from 'facade/src/collection';
 export var Promise = window.Promise;
 
 export class PromiseWrapper {

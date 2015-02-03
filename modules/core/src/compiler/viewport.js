@@ -1,10 +1,10 @@
 import {View, ProtoView} from './view';
-import {DOM, Node, Element} from 'facade/dom';
-import {ListWrapper, MapWrapper, List} from 'facade/collection';
-import {BaseException} from 'facade/lang';
+import {DOM, Node, Element} from 'facade/src/dom';
+import {ListWrapper, MapWrapper, List} from 'facade/src/collection';
+import {BaseException} from 'facade/src/lang';
 import {Injector} from 'di/di';
-import {ElementInjector} from 'core/compiler/element_injector';
-import {isPresent, isBlank} from 'facade/lang';
+import {ElementInjector} from 'core/src/compiler/element_injector';
+import {isPresent, isBlank} from 'facade/src/lang';
 
 export class ViewPort {
   parentView: View;

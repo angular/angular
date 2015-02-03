@@ -1,7 +1,7 @@
-import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'facade/lang';
-import {Promise, PromiseWrapper} from 'facade/async';
-import {List, ListWrapper, MapWrapper} from 'facade/collection';
-import {DOM, Element} from 'facade/dom';
+import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'facade/src/lang';
+import {Promise, PromiseWrapper} from 'facade/src/async';
+import {List, ListWrapper, MapWrapper} from 'facade/src/collection';
+import {DOM, Element} from 'facade/src/dom';
 
 import {ChangeDetection, Parser} from 'change_detection/change_detection';
 
