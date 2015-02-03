@@ -70,7 +70,3 @@ _handleAsync(fn) {
 
   return fn;
 }
-
-el(String html) {
-  return DOM.createTemplate(html).content.firstChild;
-}

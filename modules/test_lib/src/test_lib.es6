@@ -162,7 +162,3 @@ function elementText(n) {
 
   return n.textContent;
 }
-
-export function el(html) {
-  return DOM.createTemplate(html).content.firstChild;
-}
