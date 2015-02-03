@@ -418,10 +418,6 @@ export function main() {
         });
       }
 
-      function names(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => binding.name );
-      }
-
       function exprSources(templateBindings) {
         return ListWrapper.map(templateBindings,
           (binding) => isPresent(binding.expression) ? binding.expression.source : null );
