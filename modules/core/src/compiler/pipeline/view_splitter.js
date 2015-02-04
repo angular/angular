@@ -1,4 +1,4 @@
-import {isBlank, isPresent} from 'facade/src/lang';
+import {isBlank, isPresent, BaseException} from 'facade/src/lang';
 import {DOM, TemplateElement} from 'facade/src/dom';
 import {MapWrapper, ListWrapper} from 'facade/src/collection';
 
@@ -7,6 +7,9 @@ import {Parser} from 'change_detection/change_detection';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {StringWrapper} from 'facade/src/lang';
+
+import {$BANG} from 'change_detection/src/parser/lexer';
 
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
@@ -51,8 +54,26 @@ export class ViewSplitter extends CompileStep {
           control.addChild(viewRoot);
         }
       } else {
-        var templateBindings = MapWrapper.get(current.attrs(), 'template');
-        if (isPresent(templateBindings)) {
+        var attrs = current.attrs();
+        var templateBindings = MapWrapper.get(attrs, 'template');
+        var hasTemplateBinding = isPresent(templateBindings);
+
+        // look for template shortcuts such as !if="condition" and treat them as template="if condition"
+        MapWrapper.forEach(attrs, (attrValue, attrName) => {
+          if (StringWrapper.charCodeAt(attrName, 0) == $BANG) {
+            var key = StringWrapper.substring(attrName, 1);  // remove the bang
+            if (hasTemplateBinding) {
+              // 2nd template binding detected
+              throw new BaseException(`Only one template directive per element is allowed: ` +
+                  `${templateBindings} and ${key} cannot be used simultaneously!`);
+            } else {
+              templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
+              hasTemplateBinding = true;
+            }
+          }
+        });
+
+        if (hasTemplateBinding) {
           var newParent = new CompileElement(DOM.createTemplate(''));
           current.isViewRoot = true;
           this._parseTemplateBindings(templateBindings, newParent);
