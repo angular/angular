@@ -17,7 +17,7 @@
     "systemjs": "^0.9.1",
     "traceur": "vojtajina/traceur-compiler#disable-getters-setters",
     "which": "~1",
-    "zone.js": "0.3.0",
+    "zone.js": "0.4.0",
     "googleapis": "1.0.x",
     "node-uuid": "1.4.x"
   },
