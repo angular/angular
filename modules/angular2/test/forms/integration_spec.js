@@ -9,7 +9,11 @@ import {Injector} from 'angular2/di';
 import {DOM} from 'angular2/src/facade/dom';
 
 import {Component, TemplateConfig} from 'angular2/core';
-import {ControlDecorator, ControlGroupDecorator, Control, ControlGroup} from 'angular2/forms';
+import {ControlDirective, ControlNameDirective, ControlGroupDirective, NewControlGroupDirective,
+  Control, ControlGroup} from 'angular2/forms';
+
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {XHRMock} from 'angular2/src/mock/xhr_mock';
 
 export function main() {
   function detectChanges(view) {
@@ -17,8 +21,12 @@ export function main() {
   }
 
   function compile(componentType, template, context, callback) {
-    var compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-      new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
+    var compiler = new Compiler(dynamicChangeDetection,
+      new TemplateLoader(new XHRMock()),
+      new DirectiveMetadataReader(),
+      new Parser(new Lexer()),
+      new CompilerCache(),
+      new NativeShadowDomStrategy());
 
     compiler.compile(componentType, el(template)).then((pv) => {
       var view = pv.instantiate(null);
@@ -26,6 +34,11 @@ export function main() {
       detectChanges(view);
       callback(view);
     });
+  }
+
+  function formComponent(view) {
+    // TODO: vsavkin remove when view variables work
+    return view.elementInjectors[0].getComponent();
   }
 
   describe("integration tests", () => {
@@ -109,19 +122,58 @@ export function main() {
         done();
       });
     });
+
+    describe("declarative forms", () => {
+      it("should initialize dom elements", (done) => {
+        var t = `<div [new-control-group]="{'login': 'loginValue', 'password':'passValue'}">
+                  <input id="login" [control]="'login'">
+                  <input id="password" [control]="'password'">
+                </div>`;
+
+        compile(MyComp, t, new MyComp(), (view) => {
+          var loginInput = queryView(view, "#login")
+          expect(loginInput.value).toEqual("loginValue");
+
+          var passInput = queryView(view, "#password")
+          expect(passInput.value).toEqual("passValue");
+
+          done();
+        });
+      });
+
+      it("should update the control group values on DOM change", (done) => {
+        var t = `<div [new-control-group]="{'login': 'loginValue'}">
+                  <input [control]="'login'">
+                </div>`;
+
+        compile(MyComp, t, new MyComp(), (view) => {
+          var input = queryView(view, "input")
+
+          input.value = "updatedValue";
+          dispatchEvent(input, "change");
+
+          expect(formComponent(view).value).toEqual({'login': 'updatedValue'});
+          done();
+        });
+      });
+
+    });
   });
 }
 
 @Component({
+  selector: "my-comp",
   template: new TemplateConfig({
-    directives: [ControlGroupDecorator, ControlDecorator]
+    inline: "",
+    directives: [ControlGroupDirective, ControlNameDirective,
+      ControlDirective, NewControlGroupDirective]
   })
 })
 class MyComp {
   form:ControlGroup;
   name:string;
 
-  constructor(form, name = null) {
+  constructor(form = null, name = null) {
     this.form = form;
     this.name = name;
   }
