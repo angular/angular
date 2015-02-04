@@ -7,20 +7,14 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/directives/ng_switch';
+import {Switch, SwitchWhen, SwitchDefault} from 'angular2/src/directives/switch';
 
 export function main() {
-  describe('ng-switch', () => {
+  describe('switch', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(
-        dynamicChangeDetection,
-        null,
-        new DirectiveMetadataReader(),
-        new Parser(new Lexer()),
-        new CompilerCache(),
-        new NativeShadowDomStrategy()
-      );
+      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
+        new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
     });
 
     function createView(pv) {
@@ -37,9 +31,9 @@ export function main() {
     describe('switch value changes', () => {
       it('should switch amongst when values', (done) => {
         var template = '<div>' +
-          '<ul [ng-switch]="switchValue">' +
-            '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
-            '<template [ng-switch-when]="\'b\'"><li>when b</li></template>' +
+          '<ul [switch]="switchValue">' +
+            '<template [switch-when]="\'a\'"><li>when a</li></template>' +
+            '<template [switch-when]="\'b\'"><li>when b</li></template>' +
           '</ul></div>';
         compileWithTemplate(template).then((pv) => {
           createView(pv);
@@ -60,9 +54,9 @@ export function main() {
 
       it('should switch amongst when values with fallback to default', (done) => {
         var template = '<div>' +
-          '<ul [ng-switch]="switchValue">' +
-            '<li template="ng-switch-when \'a\'">when a</li>' +
-            '<li template="ng-switch-default">when default</li>' +
+          '<ul [switch]="switchValue">' +
+            '<li template="switch-when \'a\'">when a</li>' +
+            '<li template="switch-default">when default</li>' +
           '</ul></div>';
         compileWithTemplate(template).then((pv) => {
           createView(pv);
@@ -83,13 +77,13 @@ export function main() {
 
       it('should support multiple whens with the same value', (done) => {
         var template = '<div>' +
-          '<ul [ng-switch]="switchValue">' +
-            '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
-            '<template [ng-switch-when]="\'b\'"><li>when b1;</li></template>' +
-            '<template [ng-switch-when]="\'a\'"><li>when a2;</li></template>' +
-            '<template [ng-switch-when]="\'b\'"><li>when b2;</li></template>' +
-            '<template [ng-switch-default]><li>when default1;</li></template>' +
-            '<template [ng-switch-default]><li>when default2;</li></template>' +
+          '<ul [switch]="switchValue">' +
+            '<template [switch-when]="\'a\'"><li>when a1;</li></template>' +
+            '<template [switch-when]="\'b\'"><li>when b1;</li></template>' +
+            '<template [switch-when]="\'a\'"><li>when a2;</li></template>' +
+            '<template [switch-when]="\'b\'"><li>when b2;</li></template>' +
+            '<template [switch-default]><li>when default1;</li></template>' +
+            '<template [switch-default]><li>when default2;</li></template>' +
           '</ul></div>';
         compileWithTemplate(template).then((pv) => {
           createView(pv);
@@ -112,10 +106,10 @@ export function main() {
     describe('when values changes', () => {
       it('should switch amongst when values', (done) => {
         var template = '<div>' +
-          '<ul [ng-switch]="switchValue">' +
-            '<template [ng-switch-when]="when1"><li>when 1;</li></template>' +
-            '<template [ng-switch-when]="when2"><li>when 2;</li></template>' +
-            '<template [ng-switch-default]><li>when default;</li></template>' +
+          '<ul [switch]="switchValue">' +
+            '<template [switch-when]="when1"><li>when 1;</li></template>' +
+            '<template [switch-when]="when2"><li>when 2;</li></template>' +
+            '<template [switch-default]><li>when default;</li></template>' +
           '</ul></div>';
         compileWithTemplate(template).then((pv) => {
           createView(pv);
@@ -153,7 +147,7 @@ export function main() {
   selector: 'test-cmp',
   template: new TemplateConfig({
     inline: '',  // each test swaps with a custom template.
-    directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]
+    directives: [Switch, SwitchWhen, SwitchDefault]
   })
 })
 class TestComponent {

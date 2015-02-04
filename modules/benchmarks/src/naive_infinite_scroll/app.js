@@ -6,7 +6,7 @@ import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler}
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
-import {NgIf, NgRepeat} from 'angular2/directives';
+import {If, Foreach} from 'angular2/directives';
 import {DOM, document, Element} from 'angular2/src/facade/dom';
 
 export class App {
@@ -86,7 +86,7 @@ export function setupReflectorForApp() {
       new Component({
         selector: 'scroll-app',
         template: new TemplateConfig({
-          directives: [ScrollAreaComponent, NgIf, NgRepeat],
+          directives: [ScrollAreaComponent, If, Foreach],
           inline: `
             <div>
               <div style="display: flex">
@@ -96,9 +96,9 @@ export function setupReflectorForApp() {
                   <button id="reset-btn">Reset</button>
                 </div>
               </div>
-              <div template="ng-if scrollAreas.length > 0">
+              <div template="if scrollAreas.length > 0">
                 <p>Following tables are only here to add weight to the UI:</p>
-                <scroll-area template="ng-repeat #scrollArea in scrollAreas"></scroll-area>
+                <scroll-area template="foreach #scrollArea in scrollAreas"></scroll-area>
               </div>
             </div>`
         })

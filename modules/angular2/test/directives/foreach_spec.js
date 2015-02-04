@@ -6,7 +6,6 @@ import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {OnChange} from 'angular2/src/core/compiler/interfaces';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
@@ -15,20 +14,14 @@ import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {NgRepeat} from 'angular2/src/directives/ng_repeat';
+import {Foreach} from 'angular2/src/directives/foreach';
 
 export function main() {
-  describe('ng-repeat', () => {
+  describe('foreach', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(
-        dynamicChangeDetection,
-        null,
-        new DirectiveMetadataReader(),
-        new Parser(new Lexer()),
-        new CompilerCache(),
-        new NativeShadowDomStrategy()
-      );
+      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
+        new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
     });
 
     function createView(pv) {
@@ -42,7 +35,7 @@ export function main() {
       return compiler.compile(TestComponent, el(template));
     }
 
-    var TEMPLATE = '<div><copy-me template="ng-repeat #item in items">{{item.toString()}};</copy-me></div>';
+    var TEMPLATE = '<div><copy-me template="foreach #item in items">{{item.toString()}};</copy-me></div>';
 
     it('should reflect initial elements', (done) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
@@ -109,7 +102,7 @@ export function main() {
     });
 
     it('should iterate over an array of objects', () => {
-      compileWithTemplate('<ul><li template="ng-repeat #item in items">{{item["name"]}};</li></ul>').then((pv) => {
+      compileWithTemplate('<ul><li template="foreach #item in items">{{item["name"]}};</li></ul>').then((pv) => {
         createView(pv);
 
         // INIT
@@ -133,7 +126,7 @@ export function main() {
     });
 
     it('should gracefully handle nulls', (done) => {
-      compileWithTemplate('<ul><li template="ng-repeat #item in null">{{item}};</li></ul>').then((pv) => {
+      compileWithTemplate('<ul><li template="foreach #item in null">{{item}};</li></ul>').then((pv) => {
         createView(pv);
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('');
@@ -183,8 +176,8 @@ export function main() {
 
   it('should repeat over nested arrays', (done) => {
     compileWithTemplate(
-        '<div><div template="ng-repeat #item in items">' +
-          '<div template="ng-repeat #subitem in item">' +
+        '<div><div template="foreach #item in items">' +
+          '<div template="foreach #subitem in item">' +
           '{{subitem}};' +
         '</div>|</div></div>'
     ).then((pv) => {
@@ -201,7 +194,7 @@ export function main() {
 
   it('should display indices correctly', (done) => {
     var INDEX_TEMPLATE =
-      '<div><copy-me template="ng-repeat: var item in items; var i=index">{{i.toString()}}</copy-me></div>';
+      '<div><copy-me template="foreach: var item in items; var i=index">{{i.toString()}}</copy-me></div>';
     compileWithTemplate(INDEX_TEMPLATE).then((pv) => {
       createView(pv);
       component.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -228,7 +221,7 @@ class Foo {
   selector: 'test-cmp',
   template: new TemplateConfig({
     inline: '',  // each test swaps with a custom template.
-    directives: [NgRepeat]
+    directives: [Foreach]
   })
 })
 class TestComponent {

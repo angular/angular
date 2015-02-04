@@ -3,12 +3,12 @@ import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {isBlank} from 'angular2/src/facade/lang';
 
 @Template({
-  selector: '[ng-if]',
+  selector: '[if]',
   bind: {
-    'ng-if': 'condition'
+    'if': 'condition'
   }
 })
-export class NgIf {
+export class If {
   viewPort: ViewPort;
   prevCondition: boolean;
 

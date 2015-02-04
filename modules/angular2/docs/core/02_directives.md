@@ -10,7 +10,7 @@ There are three different kinds of directives (described in mored detailed in la
 
 1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
 2. *Components*: Components have encapsulated view and can configure injectors.
-3. *Instantiator*: Is responsible for adding or removing child views in parent view. (i.e. ng-repeat, ng-if)
+3. *Instantiator*: Is responsible for adding or removing child views in parent view. (i.e. foreach, if)
 
 
 
@@ -166,7 +166,7 @@ Example of usage:
 
 ## Instantiator
 
-Instantiator is a directive which can controll instantiation of child views which are then inserted into the DOM. (Examples are `ng-if` and `ng-repeat`.) 
+Instantiator is a directive which can controll instantiation of child views which are then inserted into the DOM. (Examples are `if` and `foreach`.) 
 
 * Instantiators can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
 * Only one instantiator can be present per DOM template element.
@@ -179,12 +179,12 @@ Instantiator is a directive which can controll instantiation of child views whic
 
 ```
 @Instantiator({
-  selector: '[ng-if]',
+  selector: '[if]',
   bind: {
-    'ng-if': 'condition'
+    'if': 'condition'
   }
 })
-export class NgIf {
+export class If {
   viewPort: ViewPort;
   view: View;
 

@@ -6,12 +6,12 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 @Template({
-  selector: '[ng-repeat]',
+  selector: '[foreach][in]',
   bind: {
     'in': 'iterable[]'
   }
 })
-export class NgRepeat extends OnChange {
+export class Foreach extends OnChange {
   viewPort: ViewPort;
   iterable;
   constructor(viewPort: ViewPort) {
@@ -35,13 +35,13 @@ export class NgRepeat extends OnChange {
       (movedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(movedRecord, null))
     );
 
-    var insertTuples = NgRepeat.bulkRemove(recordViewTuples, this.viewPort);
+    var insertTuples = Foreach.bulkRemove(recordViewTuples, this.viewPort);
 
     iteratorChanges.currentValue.forEachAddedItem(
       (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
     );
 
-    NgRepeat.bulkInsert(insertTuples, this.viewPort);
+    Foreach.bulkInsert(insertTuples, this.viewPort);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this.perViewChange(insertTuples[i].view, insertTuples[i].record);

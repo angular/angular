@@ -492,7 +492,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   toString() {
-    return "library " + this.libName + ";\n" + super.toString();
+    return "library " + this.libName + "_dart;\n" + super.toString();
   }
 }
 

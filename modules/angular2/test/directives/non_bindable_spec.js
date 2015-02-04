@@ -8,20 +8,14 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
+import {NonBindable} from 'angular2/src/directives/non_bindable';
 
 export function main() {
-  describe('ng-non-bindable', () => {
+  describe('non-bindable', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(
-        dynamicChangeDetection,
-        null,
-        new DirectiveMetadataReader(),
-        new Parser(new Lexer()),
-        new CompilerCache(),
-        new NativeShadowDomStrategy()
-      );
+      compiler = new Compiler(dynamicChangeDetection,
+        null, new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
     });
 
     function createView(pv) {
@@ -36,7 +30,7 @@ export function main() {
     }
 
     it('should not interpolate children', (done) => {
-      var template = '<div>{{text}}<span ng-non-bindable>{{text}}</span></div>';
+      var template = '<div>{{text}}<span non-bindable>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -46,7 +40,7 @@ export function main() {
     });
 
     it('should ignore directives on child nodes', (done) => {
-      var template = '<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>';
+      var template = '<div non-bindable><span id=child test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -57,7 +51,7 @@ export function main() {
     });
 
     it('should trigger directives on the same node', (done) => {
-      var template = '<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>';
+      var template = '<div><span id=child non-bindable test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -73,7 +67,7 @@ export function main() {
   selector: 'test-cmp',
   template: new TemplateConfig({
     inline: '',  // each test swaps with a custom template.
-    directives: [NgNonBindable, TestDecorator]
+    directives: [NonBindable, TestDecorator]
   })
 })
 class TestComponent {
