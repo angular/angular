@@ -117,7 +117,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     if (tree.name) {
-      this.writeType_(tree.typeAnnotation);
+      this.writeType_(tree.typeAnnotation) || this.write_("void");
       this.visitAny(tree.name);
     }
 
@@ -254,7 +254,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 
   writeType_(typeAnnotation) {
     if (!typeAnnotation) {
-      return;
+      return false;
     }
 
     // TODO(vojta): Figure out why `typeAnnotation` has different structure when used with a variable.
@@ -262,11 +262,12 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     var typeName = typeAnnotation.typeToken && typeAnnotation.typeToken.value || (typeAnnotation.name && typeAnnotation.name.value) || null;
 
     if (!typeName) {
-      return;
+      return false;
     }
 
     this.write_(this.normalizeType_(typeName));
     this.writeSpace_();
+    return true;
   }
 
   // EXPORTS
