@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, IS_DARTIUM, el} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/facade/dom';
 
@@ -12,19 +12,14 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
-import {NgIf} from 'angular2/src/directives/ng_if';
+import {If} from 'angular2/src/directives/if';
 
 export function main() {
-  describe('ng-if', () => {
+  describe('if directive', () => {
     var view, cd, compiler, component;
     beforeEach(() => {
-      compiler = new Compiler(
-        dynamicChangeDetection,
-        null,
-        new DirectiveMetadataReader(),
-        new Parser(new Lexer()),
-        new CompilerCache(),
-        new NativeShadowDomStrategy());
+      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
+        new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
     });
 
     function createView(pv) {
@@ -39,7 +34,7 @@ export function main() {
     }
 
     it('should work in a template attribute', (done) => {
-      compileWithTemplate('<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>').then((pv) => {
+      compileWithTemplate('<div><copy-me template="if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
         cd.detectChanges();
 
@@ -50,7 +45,7 @@ export function main() {
     });
 
     it('should work in a template element', (done) => {
-      compileWithTemplate('<div><template [ng-if]="booleanCondition"><copy-me>hello2</copy-me></template></div>').then((pv) => {
+      compileWithTemplate('<div><template [if]="booleanCondition"><copy-me>hello2</copy-me></template></div>').then((pv) => {
         createView(pv);
         cd.detectChanges();
 
@@ -61,7 +56,7 @@ export function main() {
     });
 
     it('should toggle node when condition changes', (done) => {
-      compileWithTemplate('<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>').then((pv) => {
+      compileWithTemplate('<div><copy-me template="if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
 
         component.booleanCondition = false;
@@ -84,12 +79,12 @@ export function main() {
       });
     });
 
-    it('should update several nodes with ng-if', (done) => {
+    it('should update several nodes with if', (done) => {
       var templateString =
       '<div>' +
-        '<copy-me template="ng-if numberCondition + 1 >= 2">helloNumber</copy-me>' +
-        '<copy-me template="ng-if stringCondition == \'foo\'">helloString</copy-me>' +
-        '<copy-me template="ng-if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
+        '<copy-me template="if numberCondition + 1 >= 2">helloNumber</copy-me>' +
+        '<copy-me template="if stringCondition == \'foo\'">helloString</copy-me>' +
+        '<copy-me template="if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
       '</div>';
       compileWithTemplate(templateString).then((pv) => {
         createView(pv);
@@ -115,7 +110,7 @@ export function main() {
 
     if (!IS_DARTIUM) {
       it('should leave the element if the condition is a non-empty string (JS)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if stringCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if stringCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
@@ -126,7 +121,7 @@ export function main() {
       });
 
       it('should leave the element if the condition is an object (JS)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if objectCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if objectCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
@@ -137,7 +132,7 @@ export function main() {
       });
 
       it('should remove the element if the condition is null (JS)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if nullCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if nullCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
@@ -148,7 +143,7 @@ export function main() {
       });
 
       it('should not add the element twice if the condition goes from true to true (JS)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if numberCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -165,7 +160,7 @@ export function main() {
       });
 
       it('should not recreate the element if the condition goes from true to true (JS)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if numberCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -180,7 +175,7 @@ export function main() {
       });
     } else {
       it('should not create the element if the condition is not a boolean (DART)', (done) => {
-        compileWithTemplate('<div><copy-me template="ng-if numberCondition">hello</copy-me></div>').then((pv) => {
+        compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           expect(function(){cd.detectChanges();}).toThrowError();
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
@@ -197,7 +192,7 @@ export function main() {
   selector: 'test-cmp',
   template: new TemplateConfig({
     inline: '',  // each test swaps with a custom template.
-    directives: [NgIf]
+    directives: [If]
   })
 })
 class TestComponent {

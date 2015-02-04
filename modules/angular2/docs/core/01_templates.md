@@ -157,7 +157,7 @@ Example:
 
 ```
 <ul>
-  <li template="ng-repeat: #item in items">
+  <li template="foreach: #item in items">
     {{item}}
   </li>
 </ul>
@@ -169,8 +169,8 @@ Example:
 Example:
 ```
 <ul>
-  <template def-ng-repeat:"item"
-            bind-ng-repeat-in="items">
+  <template def-foreach:"item"
+            bind-foreach-in="items">
     <li>
       {{item}}
     </li>
@@ -187,8 +187,8 @@ Example:
 Example:
 
 ```
-<template #ng-repeat="item"
-          [ng-repeat-in]="items">
+<template #foreach="item"
+          [foreach-in]="items">
   _some_content_to_repeat_
 </template>
 ```
@@ -198,8 +198,8 @@ Example:
 
 Example:
 ```
-<template def-ng-repeat="item"
-          bind-ng-repeat-in="items">
+<template def-foreach="item"
+          bind-foreach-in="items">
   _some_content_to_repeat_
 </template>
 ```
@@ -345,20 +345,20 @@ Example of conditionally included template:
 
 ```
 Hello {{user}}!
-<div template="ng-if: isAdimnistrator">
+<div template="if: isAdimnistrator">
   ...administrator menu here...
 </div>
 ```
 
-In the above example the `ng-if` instantiator determins if the child view (an instance of the child template) should be
-inserted into ther root view. The `ng-if` makes this decision based on if the `isAdimnistrator` binding is true.
+In the above example the `if` instantiator determins if the child view (an instance of the child template) should be
+inserted into ther root view. The `if` makes this decision based on if the `isAdimnistrator` binding is true.
 
 The above example is in the shart form, for better clarity let's rewrite it in the canonical form, which is functionaly
 identical.
 
 ```
 Hello {{user}}!
-<template [ng-if]="isAdimnistrator">
+<template [if]="isAdimnistrator">
   <div>
     ...administrator menu here...
   </div>
@@ -371,22 +371,22 @@ NOTE: Only Instantiator directives can be placed on the template element. (Decor
 ### Template Microsyntax
 
 Often times it is necessary to encode a lot of different bindings into a template to controll how the instantiation
-of the templates occures. One such example is ng-repeat.
+of the templates occures. One such example is foreach.
 
 ```
 <form #foo=form>
 </form>
 <ul>
-  <template ng-repeat #person [in]="people" #i="index">
+  <template foreach #person [in]="people" #i="index">
     <li>{{i}}. {{item}}<li>
   </template>
 </ul>
 ```
 
 Where:
-* `ng-repeat` triggers the ng-repeat directive.
-* `[in]="people"` binds to an iterable object to the `ng-repeat` controller.
-* `#person` exports the implicit `ng-repeat` item.
+* `foreach` triggers the foreach directive.
+* `[in]="people"` binds to an iterable object to the `foreach` controller.
+* `#person` exports the implicit `foreach` item.
 * `#i=index` exports item index as `i`.
 
 The above example is explicit but quite wordy, for this reason in most situatios a short hand version of the
@@ -394,7 +394,7 @@ syntax is prefferable.
 
 ```
 <ul>
-  <li template="ng-repeat; #person; in=people; #i=index;">{{i}}. {{item}}<li>
+  <li template="foreach; #person; in=people; #i=index;">{{i}}. {{item}}<li>
 </ul>
 ```
 
@@ -404,16 +404,16 @@ which allows us to further shorten the text.
 
 ```
 <ul>
-  <li template="ng-repeat #person in people #i=index">{{i}}. {{item}}<li>
+  <li template="foreach #person in people #i=index">{{i}}. {{item}}<li>
 </ul>
 ```
 
-We can also optionaly use `var` instead of `#` and add `:` to `ng-repeat` which creates the following recomended
-microsyntax for `ng-repeat`.
+We can also optionaly use `var` instead of `#` and add `:` to `foreach` which creates the following recomended
+microsyntax for `foreach`.
 
 ```
 <ul>
-  <li template="ng-repeat: var person in people; var i=index">{{i}}. {{item}}<li>
+  <li template="foreach: var person in people; var i=index">{{i}}. {{item}}<li>
 </ul>
 ```
 
@@ -524,7 +524,7 @@ Angular are:
 <div title="{{expression}}">{{expression}}</div>
 <div [title]="expression">...</div>
 <div bind-title="expression">...</div>
-<div template="ng-if: expression">...</div>
+<div template="if: expression">...</div>
 ```
 
 Expressions are simplified version of expression in the langugage in which you are writing your application. (i.e. 

@@ -15,7 +15,7 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
-import {NgIf, NgRepeat} from 'angular2/directives';
+import {If, Foreach} from 'angular2/directives';
 import {App, setupReflectorForApp} from './app';
 import {ScrollAreaComponent, setupReflectorForScrollArea} from './scroll_area';
 import {ScrollItemComponent, setupReflectorForScrollItem} from './scroll_item';
@@ -149,22 +149,22 @@ export function setupReflector() {
 }
 
 export function setupReflectorForAngular() {
-  reflector.registerType(NgIf, {
-    'factory': (vp) => new NgIf(vp),
+  reflector.registerType(If, {
+    'factory': (vp) => new If(vp),
     'parameters': [[ViewPort]],
     'annotations' : [new Template({
-      selector: '[ng-if]',
+      selector: '[if]',
       bind: {
-        'ng-if': 'condition'
+        'if': 'condition'
       }
     })]
   });
 
-  reflector.registerType(NgRepeat, {
-    'factory': (vp) => new NgRepeat(vp),
+  reflector.registerType(Foreach, {
+    'factory': (vp) => new Foreach(vp),
     'parameters': [[ViewPort]],
     'annotations' : [new Template({
-      selector: '[ng-repeat]',
+      selector: '[foreach]',
       bind: {
         'in': 'iterable[]'
       }

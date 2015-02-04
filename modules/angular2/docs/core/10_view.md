@@ -77,7 +77,7 @@ Let's start with a Template such as:
 
 ```
 <ul>
-  <li template="ng-repeat: person in people">{{person}}</li>
+  <li template="foreach: person in people">{{person}}</li>
 </ul>
 ```
 
@@ -102,28 +102,28 @@ The next step is to compose these two ProtoViews into actual view which is rende
 
 ```
 <ul>                    | viewA(SomeContexnt)
-  <template></template> | viewA(SomeContexnt): new NgRepeat(new ViewPort(protoViewB))
+  <template></template> | viewA(SomeContexnt): new Foreach(new ViewPort(protoViewB))
 </ul>                   | viewA(SomeContexnt)
 ```
 
-*Step2:* Instantiate `NgRepeat` directive which will receive the `ViewPort`. (The ViewPort has reference to `protoViewA`).
+*Step2:* Instantiate `Foreach` directive which will receive the `ViewPort`. (The ViewPort has reference to `protoViewA`).
 
 
-*Step3:* As the `NgRepeat` unrolls it asks the `ViewPort` to instantiate `protoViewB` and insert it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that 
+*Step3:* As the `Foreach` unrolls it asks the `ViewPort` to instantiate `protoViewB` and insert it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that 
 
 ```
 <ul>                    | viewA(someContext)
-  <template></template> | viewA(someContext): new NgRepeat(new ViewPort(protoViewB))
+  <template></template> | viewA(someContext): new Foreach(new ViewPort(protoViewB))
   <li>{{person}}</li>   | viewB0(locals0(someContext))
   <li>{{person}}</li>   | viewB1(locals0(someContext))
 </ul>                   | viewA(lomeContexnt)
 ```
 
-*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `NgRepeat` the evaluation context for the `viewB0` and `viewB1` are `locals0` and `locals1` respectively. Locals allow the introduction of new local variables visible only within the scope of the View, and delegate any unknown references to the parent context.
+*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `Foreach` the evaluation context for the `viewB0` and `viewB1` are `locals0` and `locals1` respectively. Locals allow the introduction of new local variables visible only within the scope of the View, and delegate any unknown references to the parent context.
 
 ```
 <ul>                    | viewA
-  <template></template> | viewA: new NgRepeat(new ViewPort(protoViewB))
+  <template></template> | viewA: new Foreach(new ViewPort(protoViewB))
   <li>Alice</li>        | viewB0
   <li>Bob</li>          | viewB1
 </ul>                   | viewA

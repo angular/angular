@@ -7,37 +7,37 @@ import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection
 import {Parent} from 'angular2/src/core/annotations/visibility';
 
 /**
- * The `ngSwitch` directive is used to conditionally swap DOM structure on your template based on a
+ * The `Switch` directive is used to conditionally swap DOM structure on your template based on a
  * scope expression.
- * Elements within `ngSwitch` but without `ngSwitchWhen` or `ngSwitchDefault` directives will be
+ * Elements within `Switch` but without `SwitchWhen` or `SwitchDefault` directives will be
  * preserved at the location as specified in the template.
  *
- * `ngSwitch` simply chooses nested elements and makes them visible based on which element matches
+ * `Switch` simply chooses nested elements and makes them visible based on which element matches
  * the value obtained from the evaluated expression. In other words, you define a container element
- * (where you place the directive), place an expression on the **`[ng-switch]="..."` attribute**),
- * define any inner elements inside of the directive and place a `[ng-switch-when]` attribute per
+ * (where you place the directive), place an expression on the **`[switch]="..."` attribute**),
+ * define any inner elements inside of the directive and place a `[switch-when]` attribute per
  * element.
- * The when attribute is used to inform ngSwitch which element to display when the expression is
+ * The when attribute is used to inform Switch which element to display when the expression is
  * evaluated. If a matching expression is not found via a when attribute then an element with the
  * default attribute is displayed.
  *
  * Example:
  *
  * ```
- * <ANY [ng-switch]="expression">
- *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template [ng-switch-default]>...</template>
+ * <ANY [switch]="expression">
+ *   <template [switch-when]="whenExpression1">...</template>
+ *   <template [switch-when]="whenExpression1">...</template>
+ *   <template [switch-default]>...</template>
  * </ANY>
  * ```
  */
 @Decorator({
-  selector: '[ng-switch]',
+  selector: '[switch]',
   bind: {
-    'ng-switch': 'value'
+    'switch': 'value'
   }
 })
-export class NgSwitch {
+export class Switch {
   _switchValue: any;
   _useDefault: boolean;
   _valueViewPorts: Map;
@@ -130,38 +130,38 @@ export class NgSwitch {
 /**
  * Defines a case statement as an expression.
  *
- * If multiple `ngSwitchWhen` match the `ngSwitch` value, all of them are displayed.
+ * If multiple `SwitchWhen` match the `Switch` value, all of them are displayed.
  *
  * Example:
  *
  * ```
  * // match against a context variable
- * <template [ng-switch-when]="contextVariable">...</template>
+ * <template [switch-when]="contextVariable">...</template>
  *
  * // match against a constant string
- * <template [ng-switch-when]="'stringValue'">...</template>
+ * <template [switch-when]="'stringValue'">...</template>
  * ```
  */
 @Template({
-  selector: '[ng-switch-when]',
+  selector: '[switch-when]',
   bind: {
-    'ng-switch-when' : 'when'
+    'switch-when' : 'when'
   }
 })
-export class NgSwitchWhen {
+export class SwitchWhen {
   _value: any;
-  _ngSwitch: NgSwitch;
+  _switch: Switch;
   _viewPort: ViewPort;
 
-  constructor(el: NgElement, viewPort: ViewPort, @Parent() ngSwitch: NgSwitch) {
+  constructor(el: NgElement, viewPort: ViewPort, @Parent() sswitch: Switch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
-    this._ngSwitch = ngSwitch;
+    this._switch = sswitch;
     this._viewPort = viewPort;
   }
 
   set when(value) {
-    this._ngSwitch._onWhenValueChanged(this._value, value, this._viewPort);
+    this._switch._onWhenValueChanged(this._value, value, this._viewPort);
     this._value = value;
   }
 }
@@ -170,20 +170,20 @@ export class NgSwitchWhen {
 /**
  * Defines a default case statement.
  *
- * Default case statements are displayed when no `NgSwitchWhen` match the `ngSwitch` value.
+ * Default case statements are displayed when no `SwitchWhen` match the `switch` value.
  *
  * Example:
  *
  * ```
- * <template [ng-switch-default]>...</template>
+ * <template [switch-default]>...</template>
  * ```
  */
 @Template({
-  selector: '[ng-switch-default]'
+  selector: '[switch-default]'
 })
-export class NgSwitchDefault {
-  constructor(viewPort: ViewPort, @Parent() ngSwitch: NgSwitch) {
-    ngSwitch._registerViewPort(_whenDefault, viewPort);
+export class SwitchDefault {
+  constructor(viewPort: ViewPort, @Parent() sswitch: Switch) {
+    sswitch._registerViewPort(_whenDefault, viewPort);
   }
 }
 
