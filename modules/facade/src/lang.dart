@@ -61,6 +61,10 @@ class StringWrapper {
   static String replaceAll(String s, RegExp from, String replace) {
     return s.replaceAll(from, replace);
   }
+
+  static String substring(String s, int start, [int end]) {
+    return s.substring(start, end);
+  }
 }
 
 class StringJoiner {
