@@ -78,7 +78,7 @@ function _injectorBindings(appComponentType) {
           [appViewToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
-      bind(LifeCycle).toFactory((cd) => new LifeCycle(cd, assertionsEnabled()), [appChangeDetectorToken])
+      bind(LifeCycle).toFactory(() => new LifeCycle(null, assertionsEnabled()),[])
   ];
 }
 
@@ -108,9 +108,11 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
 
     var appInjector = _createAppInjector(appComponentType, bindings);
 
-    PromiseWrapper.then(appInjector.asyncGet(LifeCycle),
-      (lc) => {
-        lc.registerWith(zone);
+    PromiseWrapper.then(appInjector.asyncGet(appViewToken),
+      (rootView) => {
+        // retrieve life cycle: may have already been created if injected in root component
+        var lc=appInjector.get(LifeCycle); 
+        lc.registerWith(zone, rootView.changeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
         bootstrapProcess.complete(appInjector);

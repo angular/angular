@@ -7,6 +7,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 @Component({
   selector: 'hello-app',
@@ -48,6 +49,21 @@ class HelloRootCmp3 {
 
   constructor(@Inject("appBinding") appBinding) {
     this.appBinding = appBinding;
+  }
+}
+
+@Component({
+  selector: 'hello-app',
+  template: new TemplateConfig({
+    inline: '',
+    directives: []
+  })
+})
+class HelloRootCmp4 {
+  lc;
+
+  constructor(@Inject(LifeCycle) lc) {
+    this.lc = lc;
   }
 }
 
@@ -123,6 +139,15 @@ export function main() {
 
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
+        done();
+      });
+    });
+
+    it("should avoid cyclic dependencies when root component requires Lifecycle through DI", (done) => {
+      var injectorPromise = bootstrap(HelloRootCmp4, testBindings);
+
+      injectorPromise.then((injector) => {
+        expect(injector.get(HelloRootCmp4).lc).toBe(injector.get(LifeCycle));
         done();
       });
     });
