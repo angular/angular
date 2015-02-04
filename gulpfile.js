@@ -434,8 +434,13 @@ gulp.task('test.js/ci', function (done) {
 gulp.task('test.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js', singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
+gulp.task('test.transpiler.unittest', function (done) {
+  return gulp.src('tools/transpiler/unittest/**/*.js')
+      .pipe(jasmine())
+});
 gulp.task('ci', function(done) {
   runSequence(
+    'test.transpiler.unittest',
     'test.js/ci',
     'test.dart/ci'
   );
