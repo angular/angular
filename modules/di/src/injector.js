@@ -18,7 +18,6 @@ function _isWaiting(obj):boolean {
   return obj instanceof _Waiting;
 }
 
-
 export class Injector {
   _bindings:List;
   _instances:List;
@@ -38,11 +37,11 @@ export class Injector {
   }
 
   get(token) {
-    return this._getByKey(Key.get(token), false, false);
+    return this._getByKey(this, Key.get(token), false, false);
   }
 
   asyncGet(token) {
-    return this._getByKey(Key.get(token), true, false);
+    return this._getByKey(this, Key.get(token), true, false);
   }
 
   createChild(bindings:List):Injector {
@@ -60,9 +59,9 @@ export class Injector {
     return ListWrapper.createFixedSize(Key.numberOfKeys + 1);
   }
 
-  _getByKey(key:Key, returnPromise:boolean, returnLazy:boolean) {
+  _getByKey(requestor:Injector, key:Key, returnPromise:boolean, returnLazy:boolean) {
     if (returnLazy) {
-      return () => this._getByKey(key, returnPromise, false);
+      return () => this._getByKey(requestor, key, returnPromise, false);
     }
 
     var strategy = returnPromise ? this._asyncStrategy : this._syncStrategy;
@@ -70,18 +69,18 @@ export class Injector {
     var instance = strategy.readFromCache(key);
     if (isPresent(instance)) return instance;
 
-    instance = strategy.instantiate(key);
+    instance = strategy.instantiate(requestor, key);
     if (isPresent(instance)) return instance;
 
     if (isPresent(this._parent)) {
-      return this._parent._getByKey(key, returnPromise, returnLazy);
+      return this._parent._getByKey(requestor, key, returnPromise, returnLazy);
     }
     throw new NoProviderError(key);
   }
 
   _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List {
     try {
-      var getDependency = d => this._getByKey(d.key, forceAsync || d.asPromise, d.lazy);
+      var getDependency = d => this._getByKey(this, d.key, forceAsync || d.asPromise, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
       this._clear(key);
@@ -143,7 +142,7 @@ class _SyncInjectorStrategy {
     }
   }
 
-  instantiate(key:Key) {
+  instantiate(requestor:Injector, key:Key) {
     var binding = this.injector._getBinding(key);
     if (isBlank(binding)) return null;
 
@@ -152,7 +151,7 @@ class _SyncInjectorStrategy {
     //add a marker so we can detect cyclic dependencies
     this.injector._markAsConstructing(key);
 
-    var deps = this.injector._resolveDependencies(key, binding, false);
+    var deps = requestor._resolveDependencies(key, binding, false);
     return this._createInstance(key, binding, deps);
   }
 
@@ -193,14 +192,14 @@ class _AsyncInjectorStrategy {
     }
   }
 
-  instantiate(key:Key) {
+  instantiate(requestor:Injector, key:Key) {
     var binding = this.injector._getBinding(key);
     if (isBlank(binding)) return null;
 
     //add a marker so we can detect cyclic dependencies
     this.injector._markAsConstructing(key);
 
-    var deps = this.injector._resolveDependencies(key, binding, true);
+    var deps = requestor._resolveDependencies(key, binding, true);
     var depsPromise = PromiseWrapper.all(deps);
 
     var promise = PromiseWrapper

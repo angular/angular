@@ -285,6 +285,28 @@ export function main() {
 
         expect(childCar).toBe(parentCar);
       });
+
+      it('should resolve dependencies', function () {
+        var parent = new Injector([Car])
+        var child = parent.createChild([
+          bind(Engine).toClass(TurboEngine)
+        ]);
+
+        var carFromChild = child.get(Car);
+
+        expect(carFromChild.engine).toBeAnInstanceOf(TurboEngine);
+      });
+
+      it('should resolve dependencies', function () {
+        var parent = new Injector([Car, Engine])
+        var child = parent.createChild([
+          bind(Engine).toClass(TurboEngine)
+        ]);
+
+        var carFromChild = child.get(Car);
+
+        expect(carFromChild.engine).toBeAnInstanceOf(TurboEngine);
+      });
     });
 
     describe("lazy", function () {
