@@ -1,4 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/src/lang';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, stringify} from 'facade/src/lang';
 import {Element, DOM} from 'facade/src/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
@@ -64,6 +64,10 @@ export class ElementBinderBuilder extends CompileStep {
     current.inheritedElementBinder = elementBinder;
   }
 
+  _isAttrWithSpecialBinding(property) {
+    return StringWrapper.equals(property, 'class');
+  }
+
   _bindTextNodes(protoView, compileElement) {
     MapWrapper.forEach(compileElement.textNodeBindings, (expression, indexInParent) => {
       protoView.bindTextNode(indexInParent, expression);
@@ -74,6 +78,8 @@ export class ElementBinderBuilder extends CompileStep {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       if (DOM.hasProperty(compileElement.element, property)) {
         protoView.bindElementProperty(expression.ast, property, reflector.setter(property));
+      } else if (this._isAttrWithSpecialBinding(property)) {
+        protoView.bindElementProperty(expression.ast, property, null);
       }
     });
   }

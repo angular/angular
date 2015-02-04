@@ -526,6 +526,50 @@ export function main() {
           expect(view.elementInjectors[0].get(SomeDirective).prop).toEqual('buz');
         });
 
+        it('should consume element binding changes for classes', () => {
+          var pv = new ProtoView(el('<div class="start ng-binding"></div>'),
+            new DynamicProtoChangeDetector());
+          pv.bindElement(null);
+          pv.bindElementProperty(parser.parseBinding('foo', null), 'class', null);
+          createViewAndChangeDetector(pv);
+
+          ctx.foo = 'bar';
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding bar');
+
+          ctx.foo = 'baz';
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding baz');
+
+          ctx.foo = '';
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding');
+        });
+
+        it('should consume element binding changes for multiple classes', () => {
+          var pv = new ProtoView(el('<div class="start ng-binding"></div>'),
+            new DynamicProtoChangeDetector());
+          pv.bindElement(null);
+          pv.bindElementProperty(parser.parseBinding('foo', null), 'class', null);
+          createViewAndChangeDetector(pv);
+
+          ctx.foo = 'bar baz';
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding bar baz');
+
+          ctx.foo = 'bar buz';
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding bar buz');
+
+          ctx.foo = null;
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding');
+
+          ctx.foo = "foo bar";
+          cd.detectChanges();
+          expect(view.bindElements[0].className).toEqual('start ng-binding foo bar');
+        });
+
         it('should notify a directive about changes after all its properties have been set', () => {
           var pv = new ProtoView(el('<div class="ng-binding"></div>'),
             new DynamicProtoChangeDetector());
