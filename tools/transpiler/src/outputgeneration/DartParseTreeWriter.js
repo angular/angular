@@ -444,6 +444,12 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     super.visitArrayLiteralExpression(tree);
   }
 
+  visitLiteralExpression(tree) {
+    // JavaScript regex doesn't support lookbehind so eat a char before
+    // dollar and then print it in the replacement
+    this.write_(('' + tree.literalToken).replace(/([^\\])\$/g, "$1\\\$"));
+  }
+
   visitNewExpression(tree) {
     if (this.annotationContextCounter) {
       this.write_('const');
