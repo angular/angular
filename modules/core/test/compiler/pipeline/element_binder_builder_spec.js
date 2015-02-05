@@ -8,6 +8,7 @@ import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
 import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
 import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
 import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 import {Decorator} from 'core/src/annotations/annotations';
 import {Template} from 'core/src/annotations/annotations';
@@ -67,7 +68,8 @@ export function main() {
             }
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element, new DynamicProtoChangeDetector());
+              current.inheritedProtoView = new ProtoView(current.element,
+                new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -206,7 +208,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new DynamicProtoChangeDetector());
+          el('<div></div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

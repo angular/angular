@@ -28,6 +28,10 @@ export class PropertyBindingParser extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    if (current.ignoreBindings) {
+      return;
+    }
+
     var attrs = current.attrs();
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);

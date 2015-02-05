@@ -9,7 +9,9 @@ import {ElementBindingMarker} from './element_binding_marker';
 import {ProtoViewBuilder} from './proto_view_builder';
 import {ProtoElementInjectorBuilder} from './proto_element_injector_builder';
 import {ElementBinderBuilder} from './element_binder_builder';
+import {ShadowDomTransformer} from './shadow_dom_transformer';
 import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
+import {ShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {stringify} from 'facade/src/lang';
 
 /**
@@ -21,17 +23,19 @@ export function createDefaultSteps(
     changeDetection:ChangeDetection,
     parser:Parser,
     compiledComponent: DirectiveMetadata,
-    directives: List<DirectiveMetadata>) {
+    directives: List<DirectiveMetadata>,
+    shadowDomStrategy: ShadowDomStrategy) {
 
   var compilationUnit = stringify(compiledComponent.type);
 
   return [
     new ViewSplitter(parser, compilationUnit),
+    new ShadowDomTransformer(compiledComponent, shadowDomStrategy),
     new PropertyBindingParser(parser, compilationUnit),
     new DirectiveParser(directives),
     new TextInterpolationParser(parser, compilationUnit),
     new ElementBindingMarker(),
-    new ProtoViewBuilder(changeDetection),
+    new ProtoViewBuilder(changeDetection, shadowDomStrategy),
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder()
   ];

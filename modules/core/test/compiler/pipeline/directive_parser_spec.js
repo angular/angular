@@ -6,6 +6,7 @@ import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
 import {CompileStep} from 'core/src/compiler/pipeline/compile_step';
 import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
 import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {NativeShadowDomStrategy, ShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {DOM} from 'facade/src/dom';
 import {Component} from 'core/src/annotations/annotations';
 import {Decorator} from 'core/src/annotations/annotations';
@@ -182,7 +183,6 @@ export function main() {
         }).toThrowError('Only template directives are allowed on <template> elements!');
       });
     });
-
   });
 }
 

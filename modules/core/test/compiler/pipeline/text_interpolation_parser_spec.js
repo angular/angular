@@ -4,17 +4,27 @@ import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
 import {DOM} from 'facade/src/dom';
 import {MapWrapper} from 'facade/src/collection';
 
+import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
+import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
+import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+
 import {Lexer, Parser} from 'change_detection/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
 
 export function main() {
   describe('TextInterpolationParser', () => {
-    function createPipeline() {
+    function createPipeline(ignoreBindings = false) {
       return new CompilePipeline([
+        new MockStep((parent, current, control) => { current.ignoreBindings = ignoreBindings; }),
         new IgnoreChildrenStep(),
         new TextInterpolationParser(new Parser(new Lexer()), null)
       ]);
     }
+
+    it('should not look for text interpolation when ignoreBindings is true', () => {
+      var results = createPipeline(true).process(el('<div>{{expr1}}<span></span>{{expr2}}</div>'));
+      expect(results[0].textNodeBindings).toBe(null);
+    });
 
     it('should find text interpolation in normal elements', () => {
       var results = createPipeline().process(el('<div>{{expr1}}<span></span>{{expr2}}</div>'));
@@ -54,4 +64,14 @@ export function main() {
       expect(MapWrapper.get(results[0].textNodeBindings, 0).source).toEqual("'\"a{{expr1}}");
     });
   });
+}
+
+class MockStep extends CompileStep {
+  processClosure:Function;
+  constructor(process) {
+    this.processClosure = process;
+  }
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    this.processClosure(parent, current, control);
+  }
 }

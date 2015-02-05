@@ -50,7 +50,8 @@ module.exports = function(config) {
       '/packages/directives': 'http://localhost:9877/base/modules/directives',
       '/packages/facade': 'http://localhost:9877/base/modules/facade',
       '/packages/forms': 'http://localhost:9877/base/modules/forms',
-      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib'
+      '/packages/test_lib': 'http://localhost:9877/base/modules/test_lib',
+      '/packages/mock': 'http://localhost:9877/base/modules/mock',
     },
 
     preprocessors: {
