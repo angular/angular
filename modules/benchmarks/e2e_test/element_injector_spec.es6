@@ -1,4 +1,4 @@
-var testUtil = require('../../e2e_test_lib/e2e_test/test_util');
+var testUtil = require('../../angular2/e2e_test/test_util');
 
 describe('ng2 element injector benchmark', function () {
 

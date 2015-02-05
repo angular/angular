@@ -1,4 +1,4 @@
-var perfUtil = require('../../e2e_test_lib/e2e_test/perf_util');
+var perfUtil = require('../../angular2/e2e_test/perf_util');
 
 describe('ng1.x compiler benchmark', function () {
 
