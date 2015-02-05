@@ -35,6 +35,6 @@ export function createDefaultSteps(
     new ElementBindingMarker(),
     new ProtoViewBuilder(changeDetection, shadowDomStrategy),
     new ProtoElementInjectorBuilder(),
-    new ElementBinderBuilder()
+    new ElementBinderBuilder(parser, compilationUnit)
   ];
 }

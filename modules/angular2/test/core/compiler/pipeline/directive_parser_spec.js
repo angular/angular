@@ -24,6 +24,7 @@ export function main() {
       directives = [
         SomeDecorator,
         SomeDecoratorIgnoringChildren,
+        SomeDecoratorWithBinding,
         SomeTemplate,
         SomeTemplate2,
         SomeComponent,
@@ -182,6 +183,15 @@ export function main() {
           );
         }).toThrowError('Only template directives are allowed on <template> elements!');
       });
+
+      it('should not instantiate decorator directive twice', () => {
+        var pipeline = createPipeline({propertyBindings: {
+          'some-decor-with-binding': 'someExpr'
+        }});
+        var results = pipeline.process(el('<div some-decor-with-binding="foo"></div>'));
+        expect(results[0].decoratorDirectives.length).toEqual(1);
+        expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecoratorWithBinding)]);
+      });
     });
   });
 }
@@ -207,6 +217,14 @@ class SomeDecorator {}
 })
 class SomeDecoratorIgnoringChildren {
 }
+
+@Decorator({
+  selector: '[some-decor-with-binding]',
+  bind: {
+    'some-decor-with-binding': 'foo'
+  }
+})
+class SomeDecoratorWithBinding {}
 
 @Template({
   selector: '[some-templ]'

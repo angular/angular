@@ -1,4 +1,4 @@
-import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {TemplateElement} from 'angular2/src/facade/dom';
 import {SelectorMatcher} from '../selector';
@@ -50,7 +50,10 @@ export class DirectiveParser extends CompileStep {
       cssSelector.addClassName(classList[i]);
     }
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
-      cssSelector.addAttribute(attrName, attrValue);
+      if (isBlank(current.propertyBindings) ||
+        isPresent(current.propertyBindings) && !MapWrapper.contains(current.propertyBindings, attrName)) {
+        cssSelector.addAttribute(attrName, attrValue);
+      }
     });
     if (isPresent(current.propertyBindings)) {
       MapWrapper.forEach(current.propertyBindings, (expression, prop) => {
