@@ -31,12 +31,14 @@ export class ControlDecorator {
   _updateDOM() {
     // remove it once all DOM write go throuh a queue
     if (isPresent(this._controlName)) {
-      this._el.domElement.value = this._control().value;
+      var inputElem: any = this._el.domElement;
+      inputElem.value = this._control().value;
     }
   }
 
   _updateControl() {
-    this._control().value = this._el.domElement.value;
+    var inputElem: any = this._el.domElement;
+    this._control().value = inputElem.value;
   }
 
   _control() {

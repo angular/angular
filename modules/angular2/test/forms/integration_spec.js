@@ -27,13 +27,6 @@ export function main() {
     });
   }
 
-  var compiler;
-
-  beforeEach(() => {
-    compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-      new Parser(new Lexer()), new CompilerCache());
-  });
-
   describe("integration tests", () => {
     it("should initialize DOM elements with the given form object", (done) => {
       var ctx = new MyComp(new ControlGroup({
