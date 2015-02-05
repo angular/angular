@@ -1,5 +1,5 @@
 var benchpress = require('../../../../tools/benchpress/index.js');
-fdescribe('hello world', function () {
+describe('hello world', function () {
 
   afterEach(benchpress.verifyNoBrowserErrors);
 

@@ -8,7 +8,7 @@ describe('ng2 change detection benchmark', function () {
 
   it('should not throw errors', function() {
     browser.get(URL);
-    testUtil.clickAll(['#ng2DetectChanges', '#baselineDetectChanges']);
+    testUtil.clickAll(['#ng2ChangeDetectionDynamic', '#ng2ChangeDetectionJit', '#baselineChangeDetection']);
   });
 
 });
