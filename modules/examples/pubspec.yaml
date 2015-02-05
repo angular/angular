@@ -2,18 +2,10 @@ name: examples
 environment:
   sdk: '>=1.4.0'
 dependencies:
-  angular:
-    path: ../angular
-  facade:
-    path: ../facade
-  reflection:
-    path: ../reflection
-  core:
-    path: ../core
+  angular2:
+    path: ../angular2
   browser: '>=0.10.0 <0.11.0'
 dev_dependencies:
-  test_lib:
-    path: ../test_lib
   guinness: ">=0.1.16 <0.2.0"
 transformers:
   - $dart2js:

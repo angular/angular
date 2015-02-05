@@ -1,5 +1,5 @@
-import {Type, isPresent, stringify, BaseException} from 'facade/src/lang';
-import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'facade/src/collection';
+import {Type, isPresent, stringify, BaseException} from 'angular2/src/facade/lang';
+import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
 export {SetterFn, GetterFn, MethodFn} from './types';
 

@@ -1,4 +1,4 @@
-import {ChangeDetector, CHECK_ONCE, DETACHED, CHECK_ALWAYS} from 'change_detection/change_detection';
+import {ChangeDetector, CHECK_ONCE, DETACHED, CHECK_ALWAYS} from 'angular2/change_detection';
 
 export class BindingPropagationConfig {
   _cd:ChangeDetector;

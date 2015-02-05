@@ -1,13 +1,13 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
-import {DOM} from 'facade/src/dom';
-import {Injector} from 'di/di';
-import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
-import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Decorator, Component} from 'core/src/annotations/annotations';
-import {TemplateConfig} from 'core/src/annotations/template_config';
-import {NgElement} from 'core/src/dom/element';
-import {NgNonBindable} from 'directives/src/ng_non_bindable';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {DOM} from 'angular2/src/facade/dom';
+import {Injector} from 'angular2/di';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {NgElement} from 'angular2/src/core/dom/element';
+import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
 
 export function main() {
   describe('ng-non-bindable', () => {

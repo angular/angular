@@ -1,8 +1,8 @@
-import {SelectorMatcher} from "core/src/compiler/selector";
-import {CssSelector} from "core/src/compiler/selector";
-import {StringWrapper, Math} from 'facade/src/lang';
-import {ListWrapper} from 'facade/src/collection';
-import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {SelectorMatcher} from "angular2/src/core/compiler/selector";
+import {CssSelector} from "angular2/src/core/compiler/selector";
+import {StringWrapper, Math} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 export function main() {
   var count = getIntParameter('selectors');

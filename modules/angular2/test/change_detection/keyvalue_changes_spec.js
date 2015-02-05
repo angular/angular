@@ -1,7 +1,7 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'test_lib/test_lib';
-import {KeyValueChanges} from 'change_detection/src/keyvalue_changes';
-import {NumberWrapper, isJsObject} from 'facade/src/lang';
-import {MapWrapper} from 'facade/src/collection';
+import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {KeyValueChanges} from 'angular2/src/change_detection/keyvalue_changes';
+import {NumberWrapper, isJsObject} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
 import {kvChangesAsString} from './util';
 
 // todo(vicb): Update the code & tests for object equality

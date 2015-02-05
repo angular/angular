@@ -1,19 +1,19 @@
-import {DOM, document} from 'facade/src/dom';
-import {isBlank, Type} from 'facade/src/lang';
-import {MapWrapper} from 'facade/src/collection';
-import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
+import {DOM, document} from 'angular2/src/facade/dom';
+import {isBlank, Type} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
+import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
-import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'change_detection/change_detection';
+import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
 
-import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {Component} from 'core/src/annotations/annotations';
-import {Decorator} from 'core/src/annotations/annotations';
-import {TemplateConfig} from 'core/src/annotations/template_config';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {Decorator} from 'angular2/src/core/annotations/annotations';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
-import {reflector} from 'reflection/src/reflection';
-import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {

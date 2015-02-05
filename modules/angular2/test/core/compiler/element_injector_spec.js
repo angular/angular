@@ -1,18 +1,18 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'test_lib/test_lib';
-import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'facade/src/lang';
-import {ListWrapper, MapWrapper, List} from 'facade/src/collection';
-import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'core/src/compiler/element_injector';
-import {Parent, Ancestor} from 'core/src/annotations/visibility';
-import {EventEmitter} from 'core/src/annotations/events';
-import {onDestroy} from 'core/src/annotations/annotations';
-import {Injector, Inject, bind} from 'di/di';
-import {View} from 'core/src/compiler/view';
-import {ProtoRecordRange} from 'change_detection/change_detection';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {NgElement} from 'core/src/dom/element';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
-import {Directive} from 'core/src/annotations/annotations';
-import {BindingPropagationConfig} from 'core/src/compiler/binding_propagation_config';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'angular2/test_lib';
+import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
+import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
+import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {onDestroy} from 'angular2/src/core/annotations/annotations';
+import {Injector, Inject, bind} from 'angular2/di';
+import {View} from 'angular2/src/core/compiler/view';
+import {ProtoRecordRange} from 'angular2/change_detection';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {NgElement} from 'angular2/src/core/dom/element';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {Directive} from 'angular2/src/core/annotations/annotations';
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 @proxy
 @IMPLEMENTS(View)

@@ -1,7 +1,7 @@
-import {reflector} from 'reflection/src/reflection';
-import {Injector} from 'di/di';
-import {ProtoElementInjector} from 'core/src/compiler/element_injector';
-import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {Injector} from 'angular2/di';
+import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 var count = 0;
 

@@ -1,24 +1,24 @@
-import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/src/lang';
-import {DOM} from 'facade/src/dom';
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {isPresent} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
-import {ElementBinderBuilder} from 'core/src/compiler/pipeline/element_binder_builder';
-import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {ElementBinderBuilder} from 'angular2/src/core/compiler/pipeline/element_binder_builder';
+import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 
-import {Decorator} from 'core/src/annotations/annotations';
-import {Template} from 'core/src/annotations/annotations';
-import {Component} from 'core/src/annotations/annotations';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/src/compiler/view';
-import {ProtoElementInjector} from 'core/src/compiler/element_injector';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {Decorator} from 'angular2/src/core/annotations/annotations';
+import {Template} from 'angular2/src/core/annotations/annotations';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
+import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
 import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
-  } from 'change_detection/change_detection';
-import {Injector} from 'di/di';
+  } from 'angular2/change_detection';
+import {Injector} from 'angular2/di';
 
 export function main() {
   describe('ElementBinderBuilder', () => {

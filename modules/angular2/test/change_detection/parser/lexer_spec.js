@@ -1,9 +1,9 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect} from 'angular2/test_lib';
 
-import {Lexer, Token} from 'change_detection/src/parser/lexer';
+import {Lexer, Token} from 'angular2/src/change_detection/parser/lexer';
 
-import {List, ListWrapper} from "facade/src/collection";
-import {StringWrapper, int} from "facade/src/lang";
+import {List, ListWrapper} from "angular2/src/facade/collection";
+import {StringWrapper, int} from "angular2/src/facade/lang";
 
 function lex(text:string):List {
   return new Lexer().tokenize(text);

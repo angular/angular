@@ -1,9 +1,9 @@
-import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'facade/src/lang';
-import {Promise, PromiseWrapper} from 'facade/src/async';
-import {List, ListWrapper, MapWrapper} from 'facade/src/collection';
-import {DOM, Element} from 'facade/src/dom';
+import {Type, FIELD, isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {DOM, Element} from 'angular2/src/facade/dom';
 
-import {ChangeDetection, Parser} from 'change_detection/change_detection';
+import {ChangeDetection, Parser} from 'angular2/change_detection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {ProtoView} from './view';

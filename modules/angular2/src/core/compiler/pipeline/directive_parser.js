@@ -1,6 +1,6 @@
-import {isPresent, BaseException} from 'facade/src/lang';
-import {List, MapWrapper} from 'facade/src/collection';
-import {TemplateElement} from 'facade/src/dom';
+import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {List, MapWrapper} from 'angular2/src/facade/collection';
+import {TemplateElement} from 'angular2/src/facade/dom';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 

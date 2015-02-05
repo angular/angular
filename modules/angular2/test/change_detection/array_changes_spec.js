@@ -1,8 +1,8 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'test_lib/test_lib';
-import {ArrayChanges} from 'change_detection/src/array_changes';
+import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {ArrayChanges} from 'angular2/src/change_detection/array_changes';
 
-import {NumberWrapper} from 'facade/src/lang';
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
+import {NumberWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {TestIterable} from './iterable';
 import {arrayChangesAsString} from './util';

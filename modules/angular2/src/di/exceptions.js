@@ -1,5 +1,5 @@
-import {ListWrapper, List} from 'facade/src/collection';
-import {stringify} from 'facade/src/lang';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {stringify} from 'angular2/src/facade/lang';
 import {Key} from './key';
 
 function findFirstClosedCycle(keys:List) {

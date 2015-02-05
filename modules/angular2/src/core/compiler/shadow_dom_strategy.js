@@ -1,6 +1,6 @@
-import {CONST} from 'facade/src/lang';
-import {DOM, Element} from 'facade/src/dom';
-import {List} from 'facade/src/collection';
+import {CONST} from 'angular2/src/facade/lang';
+import {DOM, Element} from 'angular2/src/facade/dom';
+import {List} from 'angular2/src/facade/collection';
 import {View} from './view';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';

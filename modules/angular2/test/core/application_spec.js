@@ -1,12 +1,12 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'test_lib/test_lib';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'angular2/test_lib';
 import {bootstrap, appDocumentToken, appElementToken}
-    from 'core/src/application';
-import {Component} from 'core/src/annotations/annotations';
-import {DOM} from 'facade/src/dom';
-import {ListWrapper} from 'facade/src/collection';
-import {PromiseWrapper} from 'facade/src/async';
-import {bind, Inject} from 'di/di';
-import {TemplateConfig} from 'core/src/annotations/template_config';
+    from 'angular2/src/core/application';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {DOM} from 'angular2/src/facade/dom';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {bind, Inject} from 'angular2/di';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
 @Component({
   selector: 'hello-app',

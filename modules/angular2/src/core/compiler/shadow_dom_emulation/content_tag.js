@@ -1,10 +1,10 @@
 import {Decorator} from '../../annotations/annotations';
 import {SourceLightDom, DestinationLightDom, LightDom} from './light_dom';
-import {Inject} from 'di/di';
-import {Element, Node, DOM} from 'facade/src/dom';
-import {isPresent} from 'facade/src/lang';
-import {List, ListWrapper} from 'facade/src/collection';
-import {NgElement} from 'core/src/dom/element';
+import {Inject} from 'angular2/di';
+import {Element, Node, DOM} from 'angular2/src/facade/dom';
+import {isPresent} from 'angular2/src/facade/lang';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {NgElement} from 'angular2/src/core/dom/element';
 
 var _scriptTemplate = DOM.createScriptTag('type', 'ng/content')
 

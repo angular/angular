@@ -1,4 +1,4 @@
-import {getIntParameter, getStringParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 var totalRows = getIntParameter('rows');
 var totalColumns = getIntParameter('columns');

@@ -1,4 +1,4 @@
-import {List} from 'facade/src/collection';
+import {List} from 'angular2/src/facade/collection';
 
 export class ChangeRecord {
   bindingMemento:any;

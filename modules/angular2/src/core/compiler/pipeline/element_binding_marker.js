@@ -1,6 +1,6 @@
-import {isPresent} from 'facade/src/lang';
-import {MapWrapper} from 'facade/src/collection';
-import {DOM} from 'facade/src/dom';
+import {isPresent} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/facade/dom';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

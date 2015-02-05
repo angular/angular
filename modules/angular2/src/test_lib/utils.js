@@ -1,6 +1,6 @@
-import {List, ListWrapper} from 'facade/src/collection';
-import {DOM} from 'facade/src/dom';
-import {isPresent} from 'facade/src/lang';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/facade/dom';
+import {isPresent} from 'angular2/src/facade/lang';
 
 export class Log {
   _result:List;

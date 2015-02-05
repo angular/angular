@@ -1,14 +1,14 @@
 import *  as app from './index_common';
 
-import {Component, Decorator, TemplateConfig, NgElement} from 'angular/angular';
-import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'change_detection/change_detection';
-import {LifeCycle} from 'core/src/life_cycle/life_cycle';
+import {Component, Decorator, TemplateConfig, NgElement} from 'angular2/angular2';
+import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
+import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/src/compiler/template_loader';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 
-import {reflector} from 'reflection/src/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 function setup() {
   reflector.registerType(app.HelloCmp, {

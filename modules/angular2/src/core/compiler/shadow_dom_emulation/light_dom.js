@@ -1,6 +1,6 @@
-import {Element, Node, DOM} from 'facade/src/dom';
-import {List, ListWrapper} from 'facade/src/collection';
-import {isBlank, isPresent} from 'facade/src/lang';
+import {Element, Node, DOM} from 'angular2/src/facade/dom';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {View} from '../view';
 import {ElementInjector} from '../element_injector';

@@ -1,18 +1,18 @@
-import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/src/lang';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
-import {DirectiveParser} from 'core/src/compiler/pipeline/directive_parser';
-import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
-import {CompileStep} from 'core/src/compiler/pipeline/compile_step';
-import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
-import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
-import {DOM} from 'facade/src/dom';
-import {Component} from 'core/src/annotations/annotations';
-import {Decorator} from 'core/src/annotations/annotations';
-import {Template} from 'core/src/annotations/annotations';
-import {TemplateConfig} from 'core/src/annotations/template_config';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Lexer, Parser} from 'change_detection/change_detection';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {isPresent} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {DirectiveParser} from 'angular2/src/core/compiler/pipeline/directive_parser';
+import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step';
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
+import {DOM} from 'angular2/src/facade/dom';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {Decorator} from 'angular2/src/core/annotations/annotations';
+import {Template} from 'angular2/src/core/annotations/annotations';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Lexer, Parser} from 'angular2/change_detection';
 
 export function main() {
   describe('DirectiveParser', () => {

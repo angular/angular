@@ -1,6 +1,6 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'test_lib/test_lib';
-import {Injector, Inject, InjectPromise, bind, Key} from 'di/di';
-import {Promise, PromiseWrapper} from 'facade/src/async';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'angular2/test_lib';
+import {Injector, Inject, InjectPromise, bind, Key} from 'angular2/di';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 class UserList {
 }

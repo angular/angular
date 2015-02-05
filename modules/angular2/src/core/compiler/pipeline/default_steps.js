@@ -1,5 +1,5 @@
-import {ChangeDetection, Parser} from 'change_detection/change_detection';
-import {List} from 'facade/src/collection';
+import {ChangeDetection, Parser} from 'angular2/change_detection';
+import {List} from 'angular2/src/facade/collection';
 
 import {PropertyBindingParser} from './property_binding_parser';
 import {TextInterpolationParser} from './text_interpolation_parser';
@@ -9,8 +9,8 @@ import {ElementBindingMarker} from './element_binding_marker';
 import {ProtoViewBuilder} from './proto_view_builder';
 import {ProtoElementInjectorBuilder} from './proto_element_injector_builder';
 import {ElementBinderBuilder} from './element_binder_builder';
-import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
-import {stringify} from 'facade/src/lang';
+import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
+import {stringify} from 'angular2/src/facade/lang';
 
 /**
  * Default steps used for compiling a template.

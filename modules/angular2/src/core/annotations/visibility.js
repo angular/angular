@@ -1,5 +1,5 @@
-import {CONST} from 'facade/src/lang';
-import {DependencyAnnotation} from 'di/di';
+import {CONST} from 'angular2/src/facade/lang';
+import {DependencyAnnotation} from 'angular2/di';
 
 /**
  * The directive can only be injected from the current element

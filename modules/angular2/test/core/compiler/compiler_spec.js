@@ -1,18 +1,18 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'test_lib/test_lib';
-import {DOM} from 'facade/src/dom';
-import {List} from 'facade/src/collection';
+import {describe, beforeEach, it, expect, ddescribe, iit, el} from 'angular2/test_lib';
+import {DOM} from 'angular2/src/facade/dom';
+import {List} from 'angular2/src/facade/collection';
 
-import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
-import {ProtoView} from 'core/src/compiler/view';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/src/compiler/template_loader';
-import {Component} from 'core/src/annotations/annotations';
-import {TemplateConfig} from 'core/src/annotations/template_config';
-import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {ProtoView} from 'angular2/src/core/compiler/view';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 
-import {Lexer, Parser, dynamicChangeDetection} from 'change_detection/change_detection';
+import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
 
 export function main() {
   describe('compiler', function() {

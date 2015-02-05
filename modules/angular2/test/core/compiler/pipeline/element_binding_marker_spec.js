@@ -1,15 +1,15 @@
-import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent} from 'facade/src/lang';
-import {DOM} from 'facade/src/dom';
-import {MapWrapper} from 'facade/src/collection';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {isPresent} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
+import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {ElementBindingMarker} from 'core/src/compiler/pipeline/element_binding_marker';
-import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'core/src/annotations/annotations';
+import {ElementBindingMarker} from 'angular2/src/core/compiler/pipeline/element_binding_marker';
+import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Template, Decorator, Component} from 'angular2/src/core/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {

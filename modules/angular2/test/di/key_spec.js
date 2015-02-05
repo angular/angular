@@ -1,5 +1,5 @@
-import {describe, iit, it, expect, beforeEach} from 'test_lib/test_lib';
-import {Key, KeyRegistry} from 'di/di';
+import {describe, iit, it, expect, beforeEach} from 'angular2/test_lib';
+import {Key, KeyRegistry} from 'angular2/di';
 
 export function main() {
 

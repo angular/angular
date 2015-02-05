@@ -1,5 +1,5 @@
-import {isPresent} from 'facade/src/lang';
-import {List, ListWrapper} from 'facade/src/collection';
+import {isPresent} from 'angular2/src/facade/lang';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {

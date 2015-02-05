@@ -1,5 +1,5 @@
-import {Type, isPresent} from 'facade/src/lang';
-import {List, ListWrapper} from 'facade/src/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
 export class ReflectionCapabilities {

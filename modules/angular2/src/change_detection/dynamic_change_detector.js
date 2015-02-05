@@ -1,5 +1,5 @@
-import {isPresent, isBlank, BaseException, FunctionWrapper} from 'facade/src/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
+import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 
 import {AbstractChangeDetector} from './abstract_change_detector';

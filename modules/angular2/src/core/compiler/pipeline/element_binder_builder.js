@@ -1,10 +1,10 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, stringify} from 'facade/src/lang';
-import {Element, DOM} from 'facade/src/dom';
-import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/src/collection';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, stringify} from 'angular2/src/facade/lang';
+import {Element, DOM} from 'angular2/src/facade/dom';
+import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {reflector} from 'reflection/src/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 
-import {Parser, ProtoChangeDetector} from 'change_detection/change_detection';
+import {Parser, ProtoChangeDetector} from 'angular2/change_detection';
 
 import {Component, Directive} from '../../annotations/annotations';
 import {DirectiveMetadata} from '../directive_metadata';

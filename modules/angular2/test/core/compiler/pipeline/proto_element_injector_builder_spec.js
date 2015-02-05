@@ -1,17 +1,17 @@
-import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'test_lib/test_lib';
-import {isPresent, isBlank} from 'facade/src/lang';
-import {DOM} from 'facade/src/dom';
-import {List, ListWrapper} from 'facade/src/collection';
+import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 
-import {ProtoElementInjectorBuilder} from 'core/src/compiler/pipeline/proto_element_injector_builder';
-import {CompilePipeline} from 'core/src/compiler/pipeline/compile_pipeline';
-import {CompileElement} from 'core/src/compiler/pipeline/compile_element';
-import {CompileStep} from 'core/src/compiler/pipeline/compile_step'
-import {CompileControl} from 'core/src/compiler/pipeline/compile_control';
-import {ProtoView} from 'core/src/compiler/view';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'core/src/annotations/annotations';
-import {ProtoElementInjector} from 'core/src/compiler/element_injector';
+import {ProtoElementInjectorBuilder} from 'angular2/src/core/compiler/pipeline/proto_element_injector_builder';
+import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
+import {ProtoView} from 'angular2/src/core/compiler/view';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Template, Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 
 export function main() {
   describe('ProtoElementInjectorBuilder', () => {

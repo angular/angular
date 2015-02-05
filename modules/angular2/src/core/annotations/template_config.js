@@ -1,5 +1,5 @@
-import {ABSTRACT, CONST, Type} from 'facade/src/lang';
-import {List} from 'facade/src/collection';
+import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
+import {List} from 'angular2/src/facade/collection';
 
 export class TemplateConfig {
   url:any; //string;

@@ -1,7 +1,7 @@
-import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach} from 'test_lib/test_lib';
-import {MapWrapper, ListWrapper} from 'facade/src/collection';
-import {PromiseWrapper} from 'facade/src/async';
-import {IMPLEMENTS, proxy} from 'facade/src/lang';
+import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach} from 'angular2/test_lib';
+import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {IMPLEMENTS, proxy} from 'angular2/src/facade/lang';
 
 class TestObj {
   prop;

@@ -1,7 +1,0 @@
-name: e2e_test_lib
-environment:
-  sdk: '>=1.4.0'
-dependencies:
-  facade:
-    path: ../facade
-  browser: '>=0.10.0 <0.11.0'

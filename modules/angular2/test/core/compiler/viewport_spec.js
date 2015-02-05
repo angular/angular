@@ -1,12 +1,12 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
-import {View, ProtoView} from 'core/src/compiler/view';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {proxy, IMPLEMENTS} from 'facade/src/lang';
-import {DOM} from 'facade/src/dom';
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
-import {Injector} from 'di/di';
-import {ProtoElementInjector, ElementInjector} from 'core/src/compiler/element_injector';
-import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'change_detection/change_detection';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {View, ProtoView} from 'angular2/src/core/compiler/view';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Injector} from 'angular2/di';
+import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
 
 function createView(nodes) {
   var view = new View(null, nodes, new DynamicProtoChangeDetector(), MapWrapper.create());

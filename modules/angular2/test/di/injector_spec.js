@@ -1,5 +1,5 @@
-import {describe, ddescribe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {Injector, Inject, InjectLazy, bind} from 'di/di';
+import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
+import {Injector, Inject, InjectLazy, bind} from 'angular2/di';
 
 class Engine {
 }

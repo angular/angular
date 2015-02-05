@@ -2,11 +2,12 @@ name: benchmarks_external
 environment:
   sdk: '>=1.4.0'
 dependencies:
-  e2e_test_lib:
-    path: ../e2e_test_lib
   angular: '>=1.0.0 <2.0.0'
   browser: '>=0.10.0 <0.11.0'
   fixnum: '>=0.9.0 <1.0.0'
+dev_dependencies:
+  angular2:
+    path: ../angular2
 transformers:
 - angular:
     html_files:

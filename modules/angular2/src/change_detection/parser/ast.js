@@ -1,5 +1,5 @@
-import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "facade/src/lang";
-import {List, Map, ListWrapper, StringMapWrapper} from "facade/src/collection";
+import {FIELD, autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
+import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
 import {ContextWithVariableBindings} from "./context_with_variable_bindings";
 
 export class AST {

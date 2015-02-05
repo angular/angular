@@ -1,17 +1,17 @@
 import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
-  from 'change_detection/change_detection';
+  from 'angular2/change_detection';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular/angular';
+import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular2/angular2';
 
-import {CompilerCache} from 'core/src/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/src/compiler/template_loader';
-import {LifeCycle} from 'core/src/life_cycle/life_cycle';
+import {CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-import {reflector} from 'reflection/src/reflection';
-import {DOM, document, window, Element, gc} from 'facade/src/dom';
-import {isPresent} from 'facade/src/lang';
-import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {DOM, document, window, Element, gc} from 'angular2/src/facade/dom';
+import {isPresent} from 'angular2/src/facade/lang';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file

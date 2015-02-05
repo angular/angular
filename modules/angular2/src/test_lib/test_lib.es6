@@ -1,4 +1,4 @@
-import {DOM} from 'facade/src/dom';
+import {DOM} from 'angular2/src/facade/dom';
 
 export var describe = window.describe;
 export var xdescribe = window.xdescribe;

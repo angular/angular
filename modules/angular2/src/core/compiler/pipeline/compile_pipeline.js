@@ -1,6 +1,6 @@
-import {isPresent} from 'facade/src/lang';
-import {List, ListWrapper} from 'facade/src/collection';
-import {Element, Node, DOM} from 'facade/src/dom';
+import {isPresent} from 'angular2/src/facade/lang';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {Element, Node, DOM} from 'angular2/src/facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';

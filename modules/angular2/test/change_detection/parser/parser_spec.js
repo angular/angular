@@ -1,11 +1,11 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {BaseException, isBlank, isPresent} from 'facade/src/lang';
-import {reflector} from 'reflection/src/reflection';
-import {MapWrapper, ListWrapper} from 'facade/src/collection';
-import {Parser} from 'change_detection/src/parser/parser';
-import {Lexer} from 'change_detection/src/parser/lexer';
-import {ContextWithVariableBindings} from 'change_detection/src/parser/context_with_variable_bindings';
-import {Formatter, LiteralPrimitive} from 'change_detection/src/parser/ast';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
+import {BaseException, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Parser} from 'angular2/src/change_detection/parser/parser';
+import {Lexer} from 'angular2/src/change_detection/parser/lexer';
+import {ContextWithVariableBindings} from 'angular2/src/change_detection/parser/context_with_variable_bindings';
+import {Formatter, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
   a;

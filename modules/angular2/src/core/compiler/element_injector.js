@@ -1,16 +1,16 @@
-import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'facade/src/lang';
-import {Math} from 'facade/src/math';
-import {List, ListWrapper, MapWrapper} from 'facade/src/collection';
-import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'di/di';
-import {Parent, Ancestor} from 'core/src/annotations/visibility';
-import {EventEmitter} from 'core/src/annotations/events';
-import {onDestroy} from 'core/src/annotations/annotations';
-import {View, ProtoView} from 'core/src/compiler/view';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {NgElement} from 'core/src/dom/element';
-import {Directive} from 'core/src/annotations/annotations'
-import {BindingPropagationConfig} from 'core/src/compiler/binding_propagation_config'
+import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
+import {Math} from 'angular2/src/facade/math';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
+import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
+import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {onDestroy} from 'angular2/src/core/annotations/annotations';
+import {View, ProtoView} from 'angular2/src/core/compiler/view';
+import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {NgElement} from 'angular2/src/core/dom/element';
+import {Directive} from 'angular2/src/core/annotations/annotations'
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 

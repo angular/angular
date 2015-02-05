@@ -1,7 +1,7 @@
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
-import {reflector} from 'reflection/src/reflection';
-import {isPresent, isJsObject} from 'facade/src/lang';
-import {getIntParameter, bindAction} from 'e2e_test_lib/src/benchmark_util';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {isPresent, isJsObject} from 'angular2/src/facade/lang';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {
   Lexer,
@@ -10,7 +10,7 @@ import {
   ChangeDetection,
   dynamicChangeDetection,
   jitChangeDetection
-} from 'change_detection/change_detection';
+} from 'angular2/change_detection';
 
 
 class Obj {

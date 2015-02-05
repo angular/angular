@@ -1,10 +1,10 @@
-import {Decorator, Template} from 'core/src/annotations/annotations';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {NgElement} from 'core/src/dom/element';
-import {DOM} from 'facade/src/dom';
-import {isPresent, isBlank} from 'facade/src/lang';
-import {ListWrapper, List, MapWrapper, Map} from 'facade/src/collection';
-import {Parent} from 'core/src/annotations/visibility';
+import {Decorator, Template} from 'angular2/src/core/annotations/annotations';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {NgElement} from 'angular2/src/core/dom/element';
+import {DOM} from 'angular2/src/facade/dom';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
+import {Parent} from 'angular2/src/core/annotations/visibility';
 
 /**
  * The `ngSwitch` directive is used to conditionally swap DOM structure on your template based on a

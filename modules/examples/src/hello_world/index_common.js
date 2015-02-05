@@ -1,4 +1,4 @@
-import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'angular/angular';
+import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'angular2/angular2';
 
 // Angular 2.0 supports 3 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by

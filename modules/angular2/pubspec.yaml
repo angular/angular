@@ -1,20 +1,8 @@
-name: angular
+name: angular2
 version: 2.0.0-alpha.1
 environment:
   sdk: '>=1.4.0'
 dependencies:
   stack_trace: '1.1.1'
-  change_detection:
-    path: ../change_detection
-  di:
-    path: ../di
-  facade:
-    path: ../facade
-  reflection:
-    path: ../reflection
-  directives:
-    path: ../directives
 dev_dependencies:
-  test_lib:
-    path: ../test_lib
   guinness: ">=0.1.16 <0.2.0"

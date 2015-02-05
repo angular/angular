@@ -1,8 +1,8 @@
-import {isPresent, BaseException} from 'facade/src/lang';
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
+import {isPresent, BaseException} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ProtoView} from '../view';
-import {ChangeDetection} from 'change_detection/change_detection';
+import {ChangeDetection} from 'angular2/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

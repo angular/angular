@@ -1,4 +1,4 @@
-import {isBlank} from 'facade/src/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 
 export function arrayChangesAsString({collection, previous, additions, moves, removals}) {
   if (isBlank(collection)) collection = [];

@@ -3,7 +3,7 @@ import {
   iterateListLike,
   ListWrapper,
   MapWrapper
-} from 'facade/src/collection';
+} from 'angular2/src/facade/collection';
 
 import {
   int,
@@ -12,7 +12,7 @@ import {
   stringify,
   getMapKey,
   looseIdentical,
-} from 'facade/src/lang';
+} from 'angular2/src/facade/lang';
 
 export class ArrayChanges {
   _collection;

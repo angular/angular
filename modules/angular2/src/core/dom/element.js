@@ -1,5 +1,5 @@
-import {DOM, Element} from 'facade/src/dom';
-import {normalizeBlank} from 'facade/src/lang';
+import {DOM, Element} from 'angular2/src/facade/dom';
+import {normalizeBlank} from 'angular2/src/facade/lang';
 
 export class NgElement {
   domElement:Element;

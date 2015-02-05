@@ -1,10 +1,10 @@
-import {ddescribe, describe, it, iit, expect, beforeEach} from 'test_lib/test_lib';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Decorator, Component} from 'core/src/annotations/annotations';
-import {TemplateConfig} from 'core/src/annotations/template_config';
-import {DirectiveMetadata} from 'core/src/compiler/directive_metadata';
-import {ShadowDomStrategy, ShadowDomNative} from 'core/src/compiler/shadow_dom';
-import {CONST} from 'facade/src/lang';
+import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
+import {ShadowDomStrategy, ShadowDomNative} from 'angular2/src/core/compiler/shadow_dom';
+import {CONST} from 'angular2/src/facade/lang';
 
 
 class FakeShadowDomStrategy extends ShadowDomStrategy {

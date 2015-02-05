@@ -1,6 +1,6 @@
-import {FIELD, Type, isBlank, isPresent} from 'facade/src/lang';
-import {List, MapWrapper, ListWrapper} from 'facade/src/collection';
-import {reflector} from 'reflection/src/reflection';
+import {FIELD, Type, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {Inject, InjectLazy, InjectPromise, DependencyAnnotation} from './annotations';
 import {NoAnnotationError} from './exceptions';

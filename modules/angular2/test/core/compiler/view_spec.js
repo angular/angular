@@ -1,21 +1,21 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'test_lib/test_lib';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'core/src/compiler/view';
-import {ProtoElementInjector, ElementInjector} from 'core/src/compiler/element_injector';
-import {ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Component, Decorator, Template} from 'core/src/annotations/annotations';
-import {OnChange} from 'core/core';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
+import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {ShadowDomEmulated} from 'angular2/src/core/compiler/shadow_dom';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Component, Decorator, Template} from 'angular2/src/core/annotations/annotations';
+import {OnChange} from 'angular2/core';
 import {Lexer, Parser, DynamicProtoChangeDetector,
-  ChangeDetector} from 'change_detection/change_detection';
-import {TemplateConfig} from 'core/src/annotations/template_config';
-import {EventEmitter} from 'core/src/annotations/events';
-import {List, MapWrapper} from 'facade/src/collection';
-import {DOM, Element} from 'facade/src/dom';
-import {int, proxy, IMPLEMENTS} from 'facade/src/lang';
-import {Injector} from 'di/di';
-import {View} from 'core/src/compiler/view';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {reflector} from 'reflection/src/reflection';
+  ChangeDetector} from 'angular2/change_detection';
+import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {List, MapWrapper} from 'angular2/src/facade/collection';
+import {DOM, Element} from 'angular2/src/facade/dom';
+import {int, proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {Injector} from 'angular2/di';
+import {View} from 'angular2/src/core/compiler/view';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 
 @proxy

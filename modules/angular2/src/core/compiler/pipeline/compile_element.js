@@ -1,6 +1,6 @@
-import {List, Map, ListWrapper, MapWrapper} from 'facade/src/collection';
-import {Element, DOM} from 'facade/src/dom';
-import {int, isBlank, isPresent, Type} from 'facade/src/lang';
+import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {Element, DOM} from 'angular2/src/facade/dom';
+import {int, isBlank, isPresent, Type} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator} from '../../annotations/annotations';
 import {Component} from '../../annotations/annotations';
@@ -9,7 +9,7 @@ import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
 
-import {AST} from 'change_detection/change_detection';
+import {AST} from 'angular2/change_detection';
 
 /**
  * Collects all data that is needed to process an element

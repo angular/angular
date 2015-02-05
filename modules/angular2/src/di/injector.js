@@ -1,9 +1,9 @@
-import {Map, List, MapWrapper, ListWrapper} from 'facade/src/collection';
+import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
 import {ProviderError, NoProviderError, InvalidBindingError,
   AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
-import {FunctionWrapper, Type, isPresent, isBlank} from 'facade/src/lang';
-import {Promise, PromiseWrapper} from 'facade/src/async';
+import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Key} from './key';
 
 var _constructing = new Object();

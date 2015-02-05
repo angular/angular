@@ -9,7 +9,7 @@ export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
 
-import {List, MapWrapper, ListWrapper} from 'facade/src/collection';
+import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 export class DOM {
   static query(selector) {

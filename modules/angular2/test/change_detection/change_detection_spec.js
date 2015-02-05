@@ -1,19 +1,19 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DARTIUM} from 'test_lib/test_lib';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DARTIUM} from 'angular2/test_lib';
 
-import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'facade/src/lang';
-import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'facade/src/collection';
+import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Parser} from 'change_detection/src/parser/parser';
-import {Lexer} from 'change_detection/src/parser/lexer';
-import {reflector} from 'reflection/src/reflection';
+import {Parser} from 'angular2/src/change_detection/parser/parser';
+import {Lexer} from 'angular2/src/change_detection/parser/lexer';
+import {reflector} from 'angular2/src/reflection/reflection';
 import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
-  CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'change_detection/change_detection';
+  CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
 
 
-import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'change_detection/src/proto_change_detector';
-import {ChangeDetectionUtil} from 'change_detection/src/change_detection_util';
+import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
+import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
 
 export function main() {

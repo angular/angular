@@ -2,20 +2,8 @@ name: benchmarks
 environment:
   sdk: '>=1.4.0'
 dependencies:
-  angular:
-    path: ../angular
-  facade:
-    path: ../facade
-  di:
-    path: ../di
-  reflection:
-    path: ../reflection
-  core:
-    path: ../core
-  change_detection:
-    path: ../change_detection
-  e2e_test_lib:
-    path: ../e2e_test_lib
+  angular2:
+    path: ../angular2
   browser: '>=0.10.0 <0.11.0'
 transformers:
 - $dart2js:

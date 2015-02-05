@@ -1,8 +1,8 @@
-import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'facade/src/lang';
-import {ListWrapper, List} from 'facade/src/collection';
+import {FIELD, int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
   $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
-import {reflector, Reflector} from 'reflection/src/reflection';
+import {reflector, Reflector} from 'angular2/src/reflection/reflection';
 import {
   AST,
   EmptyExpr,

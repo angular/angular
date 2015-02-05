@@ -1,7 +1,7 @@
-import {isPresent, isBlank} from 'facade/src/lang';
-import {ListWrapper} from 'facade/src/collection';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {Key} from 'di/di';
+import {Key} from 'angular2/di';
 import {ProtoElementInjector, ComponentKeyMetaData, DirectiveBinding} from '../element_injector';
 
 import {CompileStep} from './compile_step';

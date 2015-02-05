@@ -1,5 +1,5 @@
-import {isPresent} from 'facade/src/lang';
-import {List, ListWrapper, Map, MapWrapper} from 'facade/src/collection';
+import {isPresent} from 'angular2/src/facade/lang';
+import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {RECORD_TYPE_SELF, ProtoRecord} from './proto_change_detector';
 
 /**

@@ -1,8 +1,8 @@
-import {isPresent, isBlank, RegExpWrapper, BaseException} from 'facade/src/lang';
-import {MapWrapper} from 'facade/src/collection';
-import {TemplateElement} from 'facade/src/dom';
+import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
+import {TemplateElement} from 'angular2/src/facade/dom';
 
-import {Parser, AST, ExpressionWithSource} from 'change_detection/change_detection';
+import {Parser, AST, ExpressionWithSource} from 'angular2/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

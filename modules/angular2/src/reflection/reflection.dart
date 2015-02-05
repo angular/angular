@@ -3,7 +3,7 @@ library reflection.reflection;
 import 'reflector.dart';
 import 'types.dart';
 export 'reflector.dart';
-import 'package:facade/src/lang.dart';
+import 'package:angular2/src/facade/lang.dart';
 
 class NoReflectionCapabilities {
   Function factory(Type type){

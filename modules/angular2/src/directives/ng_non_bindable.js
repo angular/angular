@@ -1,4 +1,4 @@
-import {Decorator} from 'core/src/annotations/annotations';
+import {Decorator} from 'angular2/src/core/annotations/annotations';
 
 @Decorator({
   selector: '[ng-non-bindable]',

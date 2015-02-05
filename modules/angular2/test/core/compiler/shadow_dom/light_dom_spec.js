@@ -1,14 +1,14 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'test_lib/test_lib';
-import {proxy, IMPLEMENTS, isBlank} from 'facade/src/lang';
-import {ListWrapper, MapWrapper} from 'facade/src/collection';
-import {DOM} from 'facade/src/dom';
-import {Content} from 'core/src/compiler/shadow_dom_emulation/content_tag';
-import {NgElement} from 'core/src/dom/element';
-import {LightDom} from 'core/src/compiler/shadow_dom_emulation/light_dom';
-import {View} from 'core/src/compiler/view';
-import {ViewPort} from 'core/src/compiler/viewport';
-import {ElementInjector} from 'core/src/compiler/element_injector';
-import {ProtoRecordRange} from 'change_detection/change_detection';
+import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
+import {proxy, IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/facade/dom';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {NgElement} from 'angular2/src/core/dom/element';
+import {LightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {View} from 'angular2/src/core/compiler/view';
+import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {ProtoRecordRange} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(ElementInjector)

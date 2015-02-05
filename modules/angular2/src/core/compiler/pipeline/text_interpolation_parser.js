@@ -1,7 +1,7 @@
-import {RegExpWrapper, StringWrapper, isPresent} from 'facade/src/lang';
-import {Node, DOM} from 'facade/src/dom';
+import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {Node, DOM} from 'angular2/src/facade/dom';
 
-import {Parser} from 'change_detection/change_detection';
+import {Parser} from 'angular2/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

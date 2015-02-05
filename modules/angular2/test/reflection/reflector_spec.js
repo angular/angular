@@ -1,7 +1,7 @@
-import {describe, it, iit, ddescribe, expect, beforeEach} from 'test_lib/test_lib';
-import {Reflector} from 'reflection/src/reflection';
-import {ReflectionCapabilities} from 'reflection/src/reflection_capabilities';
-import {CONST} from 'facade/src/lang';
+import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
+import {Reflector} from 'angular2/src/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+import {CONST} from 'angular2/src/facade/lang';
 
 class Annotation {
   value;
