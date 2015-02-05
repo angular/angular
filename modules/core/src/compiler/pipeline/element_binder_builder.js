@@ -1,4 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, stringify} from 'facade/src/lang';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, stringify} from 'facade/src/lang';
 import {Element, DOM} from 'facade/src/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'facade/src/collection';
 
@@ -15,6 +15,26 @@ import {ElementBinder} from '../element_binder';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+
+const CLASS_PREFIX = 'class.';
+var classSettersCache = StringMapWrapper.create();
+
+function classSetterFactory(className:string) {
+  var setterFn = StringMapWrapper.get(classSettersCache, className);
+
+  if (isBlank(setterFn)) {
+    setterFn = function(element:Element, value) {
+      if (value) {
+        DOM.addClass(element, className);
+      } else {
+        DOM.removeClass(element, className);
+      }
+    };
+    StringMapWrapper.set(classSettersCache, className, setterFn);
+  }
+
+  return setterFn;
+}
 
 /**
  * Creates the ElementBinders and adds watches to the
@@ -72,8 +92,16 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      if (DOM.hasProperty(compileElement.element, property)) {
-        protoView.bindElementProperty(expression.ast, property, reflector.setter(property));
+      var setterFn;
+      
+      if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
+        setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
+      } else if (DOM.hasProperty(compileElement.element, property)) {
+        setterFn = reflector.setter(property);
+      }
+
+      if (isPresent(setterFn)) {
+        protoView.bindElementProperty(expression.ast, property, setterFn);
       }
     });
   }

@@ -102,6 +102,9 @@ class DOM {
   static void addClass(Element element, String classname) {
     element.classes.add(classname);
   }
+  static void removeClass(Element element, String classname) {
+      element.classes.remove(classname);
+  }
   static bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 

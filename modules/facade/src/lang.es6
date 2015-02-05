@@ -68,6 +68,10 @@ export class StringWrapper {
     return s.replace(from.multiple, replace);
   }
 
+  static startsWith(s:string, start:string) {
+    return s.startsWith(start);
+  }
+
   static substring(s:string, start:int, end:int = undefined) {
     return s.substring(start, end);
   }

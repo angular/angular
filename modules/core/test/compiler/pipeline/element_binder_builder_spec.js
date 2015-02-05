@@ -176,6 +176,27 @@ export function main() {
       expect(view.nodes[0].hidden).toEqual(false);
     });
 
+    it('should bind class with a dot', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'class.bar': 'prop1',
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<input class="foo" viewroot prop-binding>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = true;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].className).toEqual('foo ng-binding bar');
+
+      evalContext.prop1 = false;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].className).toEqual('foo ng-binding');
+    });
+
     it('should bind events', () => {
       var eventBindings = MapWrapper.createFromStringMap({
         'event1': '1+1'

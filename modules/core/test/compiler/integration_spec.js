@@ -69,6 +69,22 @@ export function main() {
         });
       });
 
+      it('should consume element binding for class attribute', (done) => {
+        compiler.compile(MyComp, el('<div class="foo" [class.bar]="boolProp"></div>')).then((pv) => {
+          createView(pv);
+
+          ctx.boolProp = true;
+          cd.detectChanges();
+          expect(view.nodes[0].className).toEqual('foo ng-binding bar');
+
+          ctx.boolProp = false;
+          cd.detectChanges();
+          expect(view.nodes[0].className).toEqual('foo ng-binding');
+
+          done();
+        });
+      });
+
       it('should support nested components.', (done) => {
         compiler.compile(MyComp, el('<child-cmp></child-cmp>')).then((pv) => {
           createView(pv);
@@ -147,6 +163,7 @@ class MyDir {
 })
 class MyComp {
   ctxProp:string;
+  boolProp:boolean;
   constructor() {
     this.ctxProp = 'initial value';
   }
