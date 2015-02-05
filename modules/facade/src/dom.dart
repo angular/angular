@@ -100,7 +100,10 @@ class DOM {
       element.querySelectorAll(name);
   static List<String> classList(Element element) => element.classes.toList();
   static void addClass(Element element, String classname) {
-    element.classes.add(classname);
+      element.classes.add(classname);
+  }
+  static void removeClass(Element element, String classname) {
+      element.classes.remove(classname);
   }
   static bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);

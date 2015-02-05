@@ -8,9 +8,10 @@ import {BindingPropagationConfig} from './binding_propagation_config';
 import {ElementBinder} from './element_binder';
 import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'reflection/src/types';
-import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'facade/src/lang';
+import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException, StringWrapper} from 'facade/src/lang';
 import {Injector} from 'di/di';
 import {NgElement} from 'core/src/dom/element';
+import {CSSUtil} from './domutils';
 import {ViewPort} from './viewport';
 import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';
@@ -523,7 +524,16 @@ export class ElementPropertyMemento {
 
   invoke(record:ChangeRecord, bindElements:List<Element>) {
     var element:Element = bindElements[this._elementIndex];
-    this._setter(element, record.currentValue);
+    if (StringWrapper.equals(this._setterName, 'class')) {
+      this._toggleClasses(record, element);
+    } else {
+      this._setter(element, record.currentValue);
+    }
+  }
+
+  _toggleClasses(record:ChangeRecord, element:Element) {
+    CSSUtil.removeClasses(element, record.previousValue);
+    CSSUtil.addClasses(element, record.currentValue);
   }
 }
 

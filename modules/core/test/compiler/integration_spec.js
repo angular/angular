@@ -56,6 +56,23 @@ export function main() {
         });
       });
 
+
+      it('should consume element binding for class attribute', (done) => {
+        compiler.compile(MyComp, el('<div class="foo" [class]="ctxProp"></div>')).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'bar baz';
+          cd.detectChanges();
+          expect(view.nodes[0].className).toEqual('foo ng-binding bar baz');
+
+          ctx.ctxProp = 'bar';
+          cd.detectChanges();
+          expect(view.nodes[0].className).toEqual('foo ng-binding bar');
+
+          done();
+        });
+      });
+
       it('should consume directive watch expression change.', (done) => {
         compiler.compile(MyComp, el('<div my-dir [elprop]="ctxProp"></div>')).then((pv) => {
           createView(pv);
