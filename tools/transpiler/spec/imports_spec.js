@@ -1,4 +1,4 @@
-import {describe, it, expect, IS_DARTIUM} from 'test_lib/test_lib';
+import {describe, it, expect, IS_DARTIUM} from 'angular2/test_lib';
 
 import {Foo, Bar} from './foo';
 // TODO: Does not work, as dart does not support renaming imports
@@ -7,7 +7,7 @@ import * as fooModule from './foo';
 
 import * as exportModule from './export';
 
-import {Type} from 'facade/src/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 import {Baz} from './reexport';
 

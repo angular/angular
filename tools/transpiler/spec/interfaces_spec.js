@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, iit, expect, IS_DARTIUM} from 'test_lib/test_lib';
+import {ddescribe, describe, it, iit, expect, IS_DARTIUM} from 'angular2/test_lib';
 import {IMPLEMENTS} from './fixtures/annotations';
 
 class Interface1 {

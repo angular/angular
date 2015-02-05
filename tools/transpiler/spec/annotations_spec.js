@@ -1,6 +1,6 @@
-import {describe, it, expect, iit} from 'test_lib/test_lib';
+import {describe, it, expect, iit} from 'angular2/test_lib';
 import {readFirstAnnotation} from './fixtures/annotations';
-import {CONST} from 'facade/src/lang';
+import {CONST} from 'angular2/src/facade/lang';
 
 class Inject {}
 class Bar {}
