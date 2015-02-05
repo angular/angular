@@ -67,6 +67,10 @@ export class StringWrapper {
   static replaceAll(s:string, from:RegExp, replace:string):string {
     return s.replace(from.multiple, replace);
   }
+
+  static substring(s:string, start:int, end:int = undefined) {
+    return s.substring(start, end);
+  }
 }
 
 export class StringJoiner {
