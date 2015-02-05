@@ -104,9 +104,7 @@ class ListWrapper {
   static void insert(List l, int index, value) {
     l.insert(index, value);
   }
-  static void removeAt(List l, int index) {
-    l.removeAt(index);
-  }
+  static removeAt(List l, int index) => l.removeAt(index);
   static void removeAll(List list, List items) {
     for (var i = 0; i < items.length; ++i) {
       list.remove(items[i]);

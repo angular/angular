@@ -7,7 +7,8 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_dete
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
 
 import {Decorator, Component, Template} from 'core/src/annotations/annotations';
 import {TemplateConfig} from 'core/src/annotations/template_config';
@@ -15,13 +16,20 @@ import {TemplateConfig} from 'core/src/annotations/template_config';
 import {ViewPort} from 'core/src/compiler/viewport';
 import {MapWrapper} from 'facade/src/collection';
 
+import {XHRMock} from 'mock/src/xhr_mock';
+
 export function main() {
   describe('integration tests', function() {
     var compiler;
 
     beforeEach( () => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache());
+      compiler = new Compiler(dynamicChangeDetection,
+        new TemplateLoader(new XHRMock()),
+        new DirectiveMetadataReader(),
+        new Parser(new Lexer()),
+        new CompilerCache(),
+        new NativeShadowDomStrategy()
+      );
     });
 
     describe('react to record changes', function() {

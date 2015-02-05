@@ -4,6 +4,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
+import {NativeShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 import {Injector} from 'di/di';
 import {DOM} from 'facade/src/dom';
 
@@ -17,7 +18,7 @@ export function main() {
 
   function compile(componentType, template, context, callback) {
     var compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-      new Parser(new Lexer()), new CompilerCache());
+      new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
 
     compiler.compile(componentType, el(template)).then((pv) => {
       var view = pv.instantiate(null);
@@ -31,7 +32,7 @@ export function main() {
 
   beforeEach(() => {
     compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-      new Parser(new Lexer()), new CompilerCache());
+      new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
   });
 
   describe("integration tests", () => {

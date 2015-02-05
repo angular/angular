@@ -6,9 +6,12 @@ import {Injector} from 'di/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
 
 import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
+import {TemplateLoader} from 'core/src/compiler/template_loader';
 import {LifeCycle} from 'core/src/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, ShadowDomNative, ShadowDomEmulated} from 'core/src/compiler/shadow_dom';
+import {ShadowDomStrategy,
+        NativeShadowDomStrategy,
+        EmulatedShadowDomStrategy} from 'core/src/compiler/shadow_dom_strategy';
 
 import {Decorator, Component, Template} from 'core/src/annotations/annotations';
 import {TemplateConfig} from 'core/src/annotations/template_config';
@@ -16,19 +19,28 @@ import {TemplateConfig} from 'core/src/annotations/template_config';
 import {ViewPort} from 'core/src/compiler/viewport';
 import {StringMapWrapper, MapWrapper} from 'facade/src/collection';
 
+import {XHRMock} from 'mock/src/xhr_mock';
+
 export function main() {
   describe('integration tests', function() {
 
-    StringMapWrapper.forEach(
-      {"native" : ShadowDomNative, "emulated" : ShadowDomEmulated}, (strategy, name) => {
+    StringMapWrapper.forEach({
+        "native" : new NativeShadowDomStrategy(),
+        "emulated" : new EmulatedShadowDomStrategy()
+      },
+      (strategy, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
         var compiler;
 
         beforeEach( () => {
-          compiler = new Compiler(dynamicChangeDetection, null,
-            new TestDirectiveMetadataReader(strategy),
-            new Parser(new Lexer()), new CompilerCache());
+          compiler = new Compiler(dynamicChangeDetection,
+            new TemplateLoader(new XHRMock()),
+            new DirectiveMetadataReader(),
+            new Parser(new Lexer()),
+            new CompilerCache(),
+            strategy
+          );
         });
 
         function compile(template, assertions) {
@@ -173,18 +185,6 @@ export function main() {
   });
 }
 
-class TestDirectiveMetadataReader extends DirectiveMetadataReader {
-  shadowDomStrategy;
-
-  constructor(shadowDomStrategy) {
-    this.shadowDomStrategy = shadowDomStrategy;
-  }
-
-  parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
-    return this.shadowDomStrategy;
-  }
-}
-
 @Template({
   selector: '[manual]'
 })
@@ -297,6 +297,7 @@ class InnerInnerComponent {
 
 
 @Component({
+  selector: 'my-comp',
   template: new TemplateConfig({
     directives: [MultipleContentTagsComponent, ManualTemplateDirective,
       ConditionalContentComponent, OuterWithIndirectNestedComponent, OuterComponent]

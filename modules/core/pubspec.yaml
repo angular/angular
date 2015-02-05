@@ -14,4 +14,6 @@ dependencies:
 dev_dependencies:
   test_lib:
     path: ../test_lib
+  mock:
+    path: ../mock
   guinness: ">=0.1.16 <0.2.0"
