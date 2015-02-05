@@ -70,23 +70,6 @@ export function main() {
       });
     });
 
-    it('should use the shadow dom strategy to process the template', (done) => {
-      // TODO(vicb) test in Dart when the bug is fixed
-      // https://code.google.com/p/dart/issues/detail?id=18249
-      if (IS_DARTIUM) {
-        done();
-        return;
-      }
-      var templateHtml = 'processed template';
-      var compiler = createCompiler((parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-      }, new FakeShadowDomStrategy(templateHtml));
-      compiler.compile(MainComponent, null).then( (protoView) => {
-        expect(DOM.getInnerHTML(protoView.element)).toEqual('processed template');
-        done();
-      });
-    });
-
     it('should load nested components', (done) => {
       var mainEl = el('<div></div>');
       var compiler = createCompiler( (parent, current, control) => {
@@ -242,17 +225,5 @@ class MockStep extends CompileStep {
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     this.processClosure(parent, current, control);
-  }
-}
-
-class FakeShadowDomStrategy extends NativeShadowDomStrategy {
-  templateHtml: string;
-  constructor(templateHtml: string) {
-    super();
-    this.templateHtml = templateHtml;
-  }
-
-  processTemplate(template: Element, cmpMetadata: DirectiveMetadata) {
-    DOM.setInnerHTML(template, this.templateHtml);
   }
 }

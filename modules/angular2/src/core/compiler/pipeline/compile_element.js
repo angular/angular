@@ -39,6 +39,8 @@ export class CompileElement {
   inheritedElementBinder:ElementBinder;
   distanceToParentInjector:number;
   compileChildren: boolean;
+  ignoreBindings: boolean;
+
   constructor(element:Element) {
     this.element = element;
     this._attrs = null;
@@ -64,6 +66,8 @@ export class CompileElement {
     this.inheritedElementBinder = null;
     this.distanceToParentInjector = 0;
     this.compileChildren = true;
+    // set to true to ignore all the bindings on the element
+    this.ignoreBindings = false;
   }
 
   refreshAttrs() {

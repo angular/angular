@@ -14,7 +14,8 @@ import {Template, Decorator, Component} from 'angular2/src/core/annotations/anno
 export function main() {
   describe('ElementBindingMarker', () => {
 
-    function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings, directives}={}) {
+    function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings,
+      directives, ignoreBindings}={}) {
       var reader = new DirectiveMetadataReader();
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
@@ -30,6 +31,9 @@ export function main() {
             if (isPresent(eventBindings)) {
               current.eventBindings = eventBindings;
             }
+            if (isPresent(ignoreBindings)) {
+              current.ignoreBindings = ignoreBindings;
+            }
             if (isPresent(directives)) {
               for (var i=0; i<directives.length; i++) {
                 current.addDirective(reader.read(directives[i]));
@@ -41,6 +45,14 @@ export function main() {
 
     it('should not mark empty elements', () => {
       var results = createPipeline().process(el('<div></div>'));
+      assertBinding(results[0], false);
+    });
+
+    it('should not mark elements when ignoreBindings is true', () => {
+      var textNodeBindings = MapWrapper.create();
+      MapWrapper.set(textNodeBindings, 0, 'expr');
+      var results = createPipeline({textNodeBindings: textNodeBindings,
+        ignoreBindings: true}).process(el('<div></div>'));
       assertBinding(results[0], false);
     });
 

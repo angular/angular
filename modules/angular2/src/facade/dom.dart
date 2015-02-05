@@ -103,6 +103,12 @@ class DOM {
     el.setAttribute(attrName, attrValue);
     return el;
   }
+  static StyleElement createStyleElement(String css, [HtmlDocument doc = null]) {
+    if (doc == null) doc = document;
+    var el = doc.createElement("STYLE");
+    el.text = css;
+    return el;
+  }
   static clone(Node node) => node.clone(true);
   static bool hasProperty(Element element, String name) =>
       new JsObject.fromBrowserObject(element).hasProperty(name);

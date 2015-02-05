@@ -3,14 +3,23 @@ import {PropertyBindingParser} from 'angular2/src/core/compiler/pipeline/propert
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
 import {DOM} from 'angular2/src/facade/dom';
 import {MapWrapper} from 'angular2/src/facade/collection';
-
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
+import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {Lexer, Parser} from 'angular2/change_detection';
 
 export function main() {
   describe('PropertyBindingParser', () => {
-    function createPipeline() {
-      return new CompilePipeline([new PropertyBindingParser(new Parser(new Lexer()), null)]);
+    function createPipeline(ignoreBindings = false) {
+      return new CompilePipeline([
+        new MockStep((parent, current, control) => { current.ignoreBindings = ignoreBindings; }),
+        new PropertyBindingParser(new Parser(new Lexer()), null)]);
     }
+
+    it('should not parse bindings when ignoreBindings is true', () => {
+      var results = createPipeline(true).process(el('<div [a]="b"></div>'));
+      expect(results[0].propertyBindings).toBe(null);
+    });
 
     it('should detect [] syntax', () => {
       var results = createPipeline().process(el('<div [a]="b"></div>'));
@@ -68,4 +77,15 @@ export function main() {
       expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
     });
   });
+}
+
+class MockStep extends CompileStep {
+  processClosure:Function;
+  constructor(process) {
+    super();
+    this.processClosure = process;
+  }
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    this.processClosure(parent, current, control);
+  }
 }

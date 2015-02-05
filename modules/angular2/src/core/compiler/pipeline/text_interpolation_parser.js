@@ -23,7 +23,7 @@ export class TextInterpolationParser extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    if (!current.compileChildren) {
+    if (!current.compileChildren || current.ignoreBindings) {
       return;
     }
     var element = current.element;

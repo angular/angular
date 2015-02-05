@@ -120,7 +120,6 @@ export class Compiler {
   }
 
   _compileTemplate(template: Element, cmpMetadata): Promise<ProtoView> {
-    this._shadowDomStrategy.processTemplate(template, cmpMetadata);
     var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
     var compileElements = pipeline.process(template);
     var protoView = compileElements[0].inheritedProtoView;
