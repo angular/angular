@@ -1,2 +1,2 @@
-export * from './src/model';
-export * from './src/decorators';
+export * from './src/forms/model';
+export * from './src/forms/decorators';

@@ -1,5 +1,5 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'test_lib/test_lib';
-import {ControlGroup, Control} from 'forms/forms';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'angular2/test_lib';
+import {ControlGroup, Control} from 'angular2/forms';
 
 export function main() {
   describe("ControlGroup", () => {
