@@ -79,6 +79,10 @@ export class Parser {
     return new ASTWithSource(new Interpolation(strings, expressions), input, location);
   }
 
+  wrapLiteralPrimitive(input:string, location:any):ASTWithSource {
+    return new ASTWithSource(new LiteralPrimitive(input), input, location);
+  }
+
 }
 
 class _ParseAST {

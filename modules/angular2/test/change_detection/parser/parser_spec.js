@@ -543,6 +543,12 @@ export function main() {
         expect(ast.expressions[1].name).toEqual('b');
       });
     });
+
+    describe('wrapLiteralPrimitive', () => {
+      it('should wrap a literal primitive', () => {
+        expect(createParser().wrapLiteralPrimitive("foo", null).eval(null)).toEqual("foo");
+      });
+    });
   });
 }
 

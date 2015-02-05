@@ -73,7 +73,7 @@ export function main() {
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
-          }), new ElementBinderBuilder()
+          }), new ElementBinderBuilder(parser, null)
       ]);
     }
 
@@ -310,6 +310,18 @@ export function main() {
       changeDetector.detectChanges();
 
       expect(view.elementInjectors[1].get(SomeDecoratorDirectiveWithBinding).decorProp).toBe('a');
+    });
+
+    it('should bind to string literals', () => {
+      var directives = [SomeDecoratorDirectiveWithBinding];
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives);
+      var pipeline = createPipeline({directives: directives, protoElementInjector: protoElementInjector});
+      var results = pipeline.process(el('<div viewroot directives boundprop1="foo"></div>'));
+      var pv = results[0].inheritedProtoView;
+      instantiateView(pv);
+      changeDetector.detectChanges();
+
+      expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWithBinding).decorProp).toEqual('foo');
     });
 
     describe('errors', () => {

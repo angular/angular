@@ -86,6 +86,13 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
+  _parser:Parser;
+  _compilationUnit:any;
+  constructor(parser:Parser, compilationUnit:any) {
+    this._parser = parser;
+    this._compilationUnit = compilationUnit;
+  }
+
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var elementBinder = null;
     if (current.hasBindings) {
@@ -149,13 +156,19 @@ export class ElementBinderBuilder extends CompileStep {
       var directive = ListWrapper.get(directives, directiveIndex);
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
+      var _this = this;
       StringMapWrapper.forEach(annotation.bind, function (dirProp, elProp) {
         var expression = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
         if (isBlank(expression)) {
-          throw new BaseException("No element binding found for property '" + elProp
+          var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
+          if (isPresent(attributeValue)) {
+            expression = _this._parser.wrapLiteralPrimitive(attributeValue, _this._compilationUnit);
+          } else {
+            throw new BaseException("No element binding found for property '" + elProp
             + "' which is required by directive '" + stringify(directive.type) + "'");
+          }
         }
         var len = dirProp.length;
         var dirBindingName = dirProp;

@@ -65,14 +65,23 @@ export function main() {
       });
 
       it('should consume directive watch expression change.', (done) => {
-        compiler.compile(MyComp, el('<div my-dir [elprop]="ctxProp"></div>')).then((pv) => {
+        var tpl = 
+          '<div>' +
+            '<div my-dir [elprop]="ctxProp"></div>' +
+            '<div my-dir elprop="Hi there!"></div>' +
+            '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
+            '<div my-dir elprop="One more {{ctxProp}}"></div>' +
+          '</div>'
+        compiler.compile(MyComp, el(tpl)).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
           cd.detectChanges();
 
-          var elInj = view.elementInjectors[0];
-          expect(elInj.get(MyDir).dirProp).toEqual('Hello World!');
+          expect(view.elementInjectors[0].get(MyDir).dirProp).toEqual('Hello World!');
+          expect(view.elementInjectors[1].get(MyDir).dirProp).toEqual('Hi there!');
+          expect(view.elementInjectors[2].get(MyDir).dirProp).toEqual('Hi there!');
+          expect(view.elementInjectors[3].get(MyDir).dirProp).toEqual('One more Hello World!');
           done();
         });
       });
