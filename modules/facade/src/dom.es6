@@ -121,6 +121,9 @@ export class DOM {
   static addClass(element:Element, classname:string) {
     element.classList.add(classname);
   }
+  static removeClass(element:Element, classname:string) {
+    element.classList.remove(classname);
+  }
   static hasClass(element:Element, classname:string) {
     return element.classList.contains(classname);
   }

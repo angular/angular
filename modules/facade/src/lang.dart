@@ -62,6 +62,10 @@ class StringWrapper {
     return s.replaceAll(from, replace);
   }
 
+  static startsWith(String s, String start) {
+    return s.startsWith(start);
+  }
+
   static String substring(String s, int start, [int end]) {
     return s.substring(start, end);
   }
