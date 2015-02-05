@@ -56,6 +56,10 @@ module.exports = function(gulp, plugins, config) {
         if (line.match(/Unused import/)) {
           return;
         }
+        if (line.match(/\[info\]/)) {
+          // Ignore [info] warnings
+          return;
+        }
         if (line.match(/\[hint\]/)) {
           hintCount++;
         } else {
