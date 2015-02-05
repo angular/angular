@@ -1,14 +1,14 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
-  el, queryView, dispatchEvent} from 'test_lib/test_lib';
+  el, queryView, dispatchEvent} from 'angular2/test_lib';
 
-import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'change_detection/change_detection';
-import {Compiler, CompilerCache} from 'core/src/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/src/compiler/directive_metadata_reader';
-import {Injector} from 'di/di';
-import {DOM} from 'facade/src/dom';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {Injector} from 'angular2/di';
+import {DOM} from 'angular2/src/facade/dom';
 
-import {Component, TemplateConfig} from 'core/core';
-import {ControlDecorator, ControlGroupDecorator, Control, ControlGroup} from 'forms/forms';
+import {Component, TemplateConfig} from 'angular2/core';
+import {ControlDecorator, ControlGroupDecorator, Control, ControlGroup} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {

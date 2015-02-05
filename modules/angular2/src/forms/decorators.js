@@ -1,7 +1,7 @@
-import {Decorator, NgElement, Ancestor} from 'core/core';
-import {DOM} from 'facade/src/dom';
-import {isPresent} from 'facade/src/lang';
-import {ListWrapper} from 'facade/src/collection';
+import {Decorator, NgElement, Ancestor} from 'angular2/core';
+import {DOM} from 'angular2/src/facade/dom';
+import {isPresent} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
 
 @Decorator({

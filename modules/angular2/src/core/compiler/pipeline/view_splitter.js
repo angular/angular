@@ -7,9 +7,9 @@ import {Parser} from 'angular2/change_detection';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {StringWrapper} from 'facade/src/lang';
+import {StringWrapper} from 'angular2/src/facade/lang';
 
-import {$BANG} from 'change_detection/src/parser/lexer';
+import {$BANG} from 'angular2/src/change_detection/parser/lexer';
 
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:

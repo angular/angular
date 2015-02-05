@@ -1,4 +1,4 @@
-import {StringMapWrapper} from 'facade/src/collection';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 export class Control {
   value:any;
