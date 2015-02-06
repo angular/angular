@@ -5,11 +5,11 @@ import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './int
 export class AbstractChangeDetector extends ChangeDetector {
   children:List;
   parent:ChangeDetector;
-  status:string;
+  mode:string;
 
   constructor() {
     this.children = [];
-    this.status = CHECK_ALWAYS;
+    this.mode = CHECK_ALWAYS;
   }
 
   addChild(cd:ChangeDetector) {
