@@ -76,7 +76,7 @@ export function main() {
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
-          }), new ElementBinderBuilder(parser, null)
+          }), new ElementBinderBuilder(parser)
       ]);
     }
 

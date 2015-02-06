@@ -14,7 +14,7 @@ export function main() {
       return new CompilePipeline([
         new MockStep((parent, current, control) => { current.ignoreBindings = ignoreBindings; }),
         new IgnoreChildrenStep(),
-        new TextInterpolationParser(new Parser(new Lexer()), null)
+        new TextInterpolationParser(new Parser(new Lexer()))
       ]);
     }
 

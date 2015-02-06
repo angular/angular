@@ -114,13 +114,15 @@ export class SelectorMatcher {
   /**
    * Add an object that can be found later on by calling `match`.
    * @param cssSelector A css selector
-   * @param selectable An opaque object that will be given to the callback of the `match` function
+   * @param callbackCtxt An opaque object that will be given to the callback of the `match` function
    */
-  addSelectable(cssSelector:CssSelector, selectable) {
+  addSelectable(cssSelector:CssSelector, callbackCtxt) {
     var matcher = this;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
+    var selectable = new SelectorContext(cssSelector, callbackCtxt);
+
 
     if (isPresent(element)) {
       var isTerminal = attrs.length === 0 && classNames.length === 0;
@@ -228,8 +230,10 @@ export class SelectorMatcher {
     if (isBlank(selectables)) {
       return;
     }
+    var selectable;
     for (var index=0; index<selectables.length; index++) {
-      matchedCallback(selectables[index]);
+      selectable = selectables[index];
+      matchedCallback(selectable.selector, selectable.cbContext);
     }
   }
 
@@ -245,5 +249,17 @@ export class SelectorMatcher {
     // TODO(perf): don't pass the whole selector into the recursion,
     // but only the not processed parts
     nestedSelector.match(cssSelector, matchedCallback);
+  }
+}
+
+
+// Store context to pass back selector and context when a selector is matched
+class SelectorContext {
+  selector:CssSelector;
+  cbContext; // callback context
+
+  constructor(selector:CssSelector, cbContext) {
+    this.selector = selector;
+    this.cbContext = cbContext;
   }
 }

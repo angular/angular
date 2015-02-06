@@ -29,11 +29,9 @@ var BIND_NAME_REGEXP = RegExpWrapper.create(
  */
 export class PropertyBindingParser extends CompileStep {
   _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  constructor(parser:Parser) {
     super();
     this._parser = parser;
-    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -42,12 +40,13 @@ export class PropertyBindingParser extends CompileStep {
     }
 
     var attrs = current.attrs();
+    var desc = current.elementDescription;
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
       if (isPresent(bindParts)) {
         if (isPresent(bindParts[1])) {
           // match: bind-prop
-          current.addPropertyBinding(bindParts[4], this._parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[4], this._parseBinding(attrValue, desc));
         } else if (isPresent(bindParts[2]) || isPresent(bindParts[7])) {
           // match: var-name / var-name="iden" / #name / #name="iden"
           var identifier = (isPresent(bindParts[4]) && bindParts[4] !== '') ?
@@ -56,16 +55,16 @@ export class PropertyBindingParser extends CompileStep {
           current.addVariableBinding(identifier, value);
         } else if (isPresent(bindParts[3])) {
           // match: on-prop
-          current.addEventBinding(bindParts[4], this._parseAction(attrValue));
+          current.addEventBinding(bindParts[4], this._parseAction(attrValue, desc));
         } else if (isPresent(bindParts[5])) {
           // match: [prop]
-          current.addPropertyBinding(bindParts[5], this._parseBinding(attrValue));
+          current.addPropertyBinding(bindParts[5], this._parseBinding(attrValue, desc));
         } else if (isPresent(bindParts[6])) {
           // match: (prop)
-          current.addEventBinding(bindParts[6], this._parseBinding(attrValue));
+          current.addEventBinding(bindParts[6], this._parseBinding(attrValue, desc));
         }
       } else {
-        var ast = this._parseInterpolation(attrValue);
+        var ast = this._parseInterpolation(attrValue, desc);
         if (isPresent(ast)) {
           current.addPropertyBinding(attrName, ast);
         }
@@ -73,15 +72,15 @@ export class PropertyBindingParser extends CompileStep {
     });
   }
 
-  _parseInterpolation(input:string):AST {
-    return this._parser.parseInterpolation(input, this._compilationUnit);
+  _parseInterpolation(input:string, location:string):AST {
+    return this._parser.parseInterpolation(input, location);
   }
 
-  _parseBinding(input:string):AST {
-    return this._parser.parseBinding(input, this._compilationUnit);
+  _parseBinding(input:string, location:string):AST {
+    return this._parser.parseBinding(input, location);
   }
 
-  _parseAction(input:string):AST {
-    return this._parser.parseAction(input, this._compilationUnit);
+  _parseAction(input:string, location:string):AST {
+    return this._parser.parseAction(input, location);
   }
 }

@@ -15,11 +15,9 @@ import {CompileControl} from './compile_control';
  */
 export class TextInterpolationParser extends CompileStep {
   _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  constructor(parser:Parser) {
     super();
     this._parser = parser;
-    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -37,7 +35,7 @@ export class TextInterpolationParser extends CompileStep {
   }
 
   _parseTextNode(pipelineElement, node, nodeIndex) {
-    var ast = this._parser.parseInterpolation(DOM.nodeValue(node), this._compilationUnit);
+    var ast = this._parser.parseInterpolation(DOM.nodeValue(node), pipelineElement.elementDescription);
     if (isPresent(ast)) {
       DOM.setText(node, ' ');
       pipelineElement.addTextNodeBinding(nodeIndex, ast);
