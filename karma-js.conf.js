@@ -11,7 +11,7 @@ module.exports = function(config) {
       // Sources and specs.
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'modules/**', included: false},
-      {pattern: 'tools/transpiler/**', included: false},
+      {pattern: 'tools/transpiler/spec/**', included: false},
 
       'node_modules/traceur/bin/traceur-runtime.js',
       'traceur-runtime-patch.js',
@@ -33,8 +33,8 @@ module.exports = function(config) {
     preprocessors: {
       'modules/**/*.js': ['traceur'],
       'modules/**/*.es6': ['traceur'],
-      'tools/transpiler/**/*.js': ['traceur'],
-      'tools/transpiler/**/*.es6': ['traceur'],
+      'tools/transpiler/spec/**/*.js': ['traceur'],
+      'tools/transpiler/spec/**/*.es6': ['traceur'],
     },
 
     traceurPreprocessor: {
