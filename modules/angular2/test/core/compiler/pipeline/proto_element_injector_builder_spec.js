@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/facade/dom';
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'angular2/src/core/compiler/pipeline/proto_element_injector_builder';
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
@@ -21,6 +21,11 @@ export function main() {
       protoView = new ProtoView(null, null, null);
     });
 
+    // Create consts for an elements with a var- so that we can fake parsing the var into
+    // the CompileElement's variableBindings without actually doing any parsing.
+    var ELEMENT_WITH_VAR = el('<div var-name></div>');
+    var DIRECTIVE_ELEMENT_WITH_VAR = el('<div var-name directives></div>');
+
     function createPipeline(directives = null) {
       if (isBlank(directives)) {
         directives = [];
@@ -30,12 +35,20 @@ export function main() {
         if (isPresent(current.element.getAttribute('viewroot'))) {
           current.isViewRoot = true;
         }
+
         if (isPresent(current.element.getAttribute('directives'))) {
           for (var i=0; i<directives.length; i++) {
             var dirMetadata = reader.read(directives[i]);
             current.addDirective(dirMetadata);
           }
         }
+
+        // Check only for the hard-coded var- attribute from ELEMENT_WITH_VAR test element.
+        if (isPresent(current.element.getAttribute('var-name'))) {
+          current.variableBindings = MapWrapper.create();
+          MapWrapper.set(current.variableBindings, '\$implicit', 'name');
+        }
+
         current.inheritedProtoView = protoView;
       }), protoElementInjectorBuilder]);
     }
@@ -44,9 +57,14 @@ export function main() {
       return protoElementInjectorBuilder.findArgsFor(protoElementInjector);
     }
 
-    it('should not create a ProtoElementInjector for elements without directives', () => {
+    it('should not create a ProtoElementInjector for elements without directives or vars', () => {
       var results = createPipeline().process(el('<div></div>'));
       expect(results[0].inheritedProtoElementInjector).toBe(null);
+    });
+
+    it('should create a ProtoElementInjector for elements with a variable binding', () => {
+      var results = createPipeline().process(ELEMENT_WITH_VAR);
+      expect(results[0].inheritedProtoElementInjector).toBeAnInstanceOf(ProtoElementInjector);
     });
 
     it('should create a ProtoElementInjector for elements directives', () => {
@@ -57,7 +75,22 @@ export function main() {
       expect(boundDirectives).toEqual(directives);
     });
 
-    it('should mark ProtoElementInjector for elements with component directives and use the ComponentDirective as first binding', () => {
+    it('should flag the ProtoElementInjector for exporting the component instance when a' +
+        'component has a var- declaration', () => {
+      var results = createPipeline([SomeComponentDirective]).process(DIRECTIVE_ELEMENT_WITH_VAR);
+      expect(results[0].inheritedProtoElementInjector.exportComponent).toBe(true);
+      expect(results[0].inheritedProtoElementInjector.exportElement).toBe(false);
+    });
+
+    it('should flag the ProtoElementInjector for exporting the element when a' +
+        'non-component element has a var- declaration', () => {
+      var results = createPipeline([SomeComponentDirective]).process(ELEMENT_WITH_VAR);
+      expect(results[0].inheritedProtoElementInjector.exportComponent).toBe(false);
+      expect(results[0].inheritedProtoElementInjector.exportElement).toBe(true);
+    });
+
+    it('should mark ProtoElementInjector for elements with component directives and use the ' +
+        'ComponentDirective as first binding', () => {
       var directives = [SomeDecoratorDirective, SomeComponentDirective];
       var results = createPipeline(directives).process(el('<div directives></div>'));
       var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);

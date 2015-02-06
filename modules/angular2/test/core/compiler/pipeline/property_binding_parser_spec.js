@@ -34,10 +34,24 @@ export function main() {
       expect(MapWrapper.get(results[0].variableBindings, 'b')).toEqual('a');
     });
 
-    it('should not allow var- syntax on non template elements', () => {
-      expect( () => {
-        createPipeline().process(el('<div var-a="b"></div>'))
-      }).toThrowError('var-* is only allowed on <template> elements!');
+    it('should store variable binding for a non-template element', () => {
+      var results = createPipeline().process(el('<p var-george="washington"></p>'));
+      expect(MapWrapper.get(results[0].variableBindings, 'washington')).toEqual('george');
+    });
+
+    it('should store variable binding for a non-template element using shorthand syntax', () => {
+      var results = createPipeline().process(el('<p #george="washington"></p>'));
+      expect(MapWrapper.get(results[0].variableBindings, 'washington')).toEqual('george');
+    });
+
+    it('should store a variable binding with an implicit value', () => {
+      var results = createPipeline().process(el('<p var-george></p>'));
+      expect(MapWrapper.get(results[0].variableBindings, '\$implicit')).toEqual('george');
+    });
+
+    it('should store a variable binding with an implicit value using shorthand syntax', () => {
+      var results = createPipeline().process(el('<p #george></p>'));
+      expect(MapWrapper.get(results[0].variableBindings, '\$implicit')).toEqual('george');
     });
 
     it('should detect () syntax', () => {
