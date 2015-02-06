@@ -1,5 +1,5 @@
-import {ABSTRACT, CONST, normalizeBlank} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
+import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {TemplateConfig} from './template_config';
 
 @ABSTRACT()
@@ -29,6 +29,10 @@ export class Directive {
     this.implementsTypes = implementsTypes;
     this.bind = bind;
     this.lifecycle = lifecycle;
+  }
+
+  hasLifecycleHook(hook:string):boolean {
+    return isPresent(this.lifecycle) ? ListWrapper.contains(this.lifecycle, hook) : false;
   }
 }
 
@@ -133,4 +137,5 @@ export class Template extends Directive {
   }
 }
 
-export var onDestroy = "onDestroy";
+export const onDestroy = "onDestroy";
+export const onChange = "onChange";

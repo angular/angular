@@ -1,10 +1,9 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
-import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, Decorator, Template} from 'angular2/src/core/annotations/annotations';
-import {OnChange} from 'angular2/core';
+import {Component, Decorator, Template, Directive, onChange} from 'angular2/src/core/annotations/annotations';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -546,7 +545,9 @@ export function main() {
           var pv = new ProtoView(el('<div class="ng-binding"></div>'),
             new DynamicProtoChangeDetector(), null);
 
-          pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
+          pv.bindElement(new ProtoElementInjector(null, 0, [
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+          ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'), false);
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'), false);
           createViewAndChangeDetector(pv);
@@ -563,7 +564,9 @@ export function main() {
           var pv = new ProtoView(el('<div class="ng-binding"></div>'),
             new DynamicProtoChangeDetector(), null);
 
-          pv.bindElement(new ProtoElementInjector(null, 0, [DirectiveImplementingOnChange]));
+          pv.bindElement(new ProtoElementInjector(null, 0, [
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+          ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'), false);
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'), false);
           createViewAndChangeDetector(pv);
@@ -616,7 +619,7 @@ class SomeDirective {
   }
 }
 
-class DirectiveImplementingOnChange extends OnChange {
+class DirectiveImplementingOnChange {
   a;
   b;
   c;
