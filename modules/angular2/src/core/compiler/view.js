@@ -12,7 +12,6 @@ import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular
 import {Injector} from 'angular2/di';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {ViewPort} from './viewport';
-import {OnChange} from './interfaces';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
@@ -211,7 +210,9 @@ export class View {
 
   _notifyDirectiveAboutChanges(groupMemento, records:List) {
     var dir = groupMemento.directive(this.elementInjectors);
-    if (dir instanceof OnChange) {
+    var binding = groupMemento.directiveBinding(this.elementInjectors);
+
+    if (binding.callOnChange) {
       dir.onChange(this._collectChanges(records));
     }
   }
@@ -552,7 +553,7 @@ export class DirectivePropertyMemento {
 
   invoke(record:ChangeRecord, elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    var directive = elementInjector.getAtIndex(this._directiveIndex);
+    var directive = elementInjector.getDirectiveAtIndex(this._directiveIndex);
     this._setter(directive, record.currentValue);
   }
 }
@@ -581,7 +582,12 @@ class DirectivePropertyGroupMemento {
 
   directive(elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    return elementInjector.getAtIndex(this._directiveIndex);
+    return elementInjector.getDirectiveAtIndex(this._directiveIndex);
+  }
+
+  directiveBinding(elementInjectors:List<ElementInjector>) {
+    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
+    return elementInjector.getDirectiveBindingAtIndex(this._directiveIndex);
   }
 }
 

@@ -1,4 +1,4 @@
-import {Template} from 'angular2/src/core/annotations/annotations';
+ import {Template, onChange} from 'angular2/src/core/annotations/annotations';
 import {OnChange} from 'angular2/src/core/compiler/interfaces';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {View} from 'angular2/src/core/compiler/view';
@@ -7,6 +7,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 @Template({
   selector: '[foreach][in]',
+  lifecycle: [onChange],
   bind: {
     'in': 'iterable[]'
   }

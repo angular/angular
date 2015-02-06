@@ -4,12 +4,11 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter} from 'angular2/src/core/annotations/events';
-import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {Directive} from 'angular2/src/core/annotations/annotations'
+import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -123,18 +122,19 @@ export class DirectiveDependency extends Dependency {
 
 export class DirectiveBinding extends Binding {
   callOnDestroy:boolean;
+  callOnChange:boolean;
+  onCheck:boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, callOnDestroy:boolean) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
-    this.callOnDestroy = callOnDestroy;
+    this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
+    this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
+    //this.onCheck = isPresent(annotation) && annotation.hasLifecycleHook(onCheck);
   }
 
   static createFromBinding(b:Binding, annotation:Directive):Binding {
     var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
-    var callOnDestroy = isPresent(annotation) && isPresent(annotation.lifecycle) ?
-      ListWrapper.contains(annotation.lifecycle, onDestroy) :
-      false;
-    return new DirectiveBinding(b.key, b.factory, deps, b.providedAsPromise, callOnDestroy);
+    return new DirectiveBinding(b.key, b.factory, deps, b.providedAsPromise, annotation);
   }
 
   static createFromType(type:Type, annotation:Directive):Binding {
@@ -567,7 +567,7 @@ export class ElementInjector extends TreeNode {
     return _undefined;
   }
 
-  getAtIndex(index:int) {
+  getDirectiveAtIndex(index:int) {
     if (index == 0) return this._obj0;
     if (index == 1) return this._obj1;
     if (index == 2) return this._obj2;
@@ -578,6 +578,21 @@ export class ElementInjector extends TreeNode {
     if (index == 7) return this._obj7;
     if (index == 8) return this._obj8;
     if (index == 9) return this._obj9;
+    throw new OutOfBoundsAccess(index);
+  }
+
+  getDirectiveBindingAtIndex(index:int) {
+    var p = this._proto;
+    if (index == 0) return p._binding0;
+    if (index == 1) return p._binding1;
+    if (index == 2) return p._binding2;
+    if (index == 3) return p._binding3;
+    if (index == 4) return p._binding4;
+    if (index == 5) return p._binding5;
+    if (index == 6) return p._binding6;
+    if (index == 7) return p._binding7;
+    if (index == 8) return p._binding8;
+    if (index == 9) return p._binding9;
     throw new OutOfBoundsAccess(index);
   }
 

@@ -330,14 +330,25 @@ export function main() {
         expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should allow for direct access using getAtIndex", function () {
+      it("should allow for direct access using getDirectiveAtIndex", function () {
         var inj = injector([
           DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
         ]);
-        expect(inj.getAtIndex(0)).toBeAnInstanceOf(SimpleDirective);
-        expect(() => inj.getAtIndex(-1)).toThrowError(
+        expect(inj.getDirectiveAtIndex(0)).toBeAnInstanceOf(SimpleDirective);
+        expect(() => inj.getDirectiveAtIndex(-1)).toThrowError(
           'Index -1 is out-of-bounds.');
-        expect(() => inj.getAtIndex(10)).toThrowError(
+        expect(() => inj.getDirectiveAtIndex(10)).toThrowError(
+          'Index 10 is out-of-bounds.');
+      });
+
+      it("should allow for direct access using getBindingAtIndex", function () {
+        var inj = injector([
+          DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
+        ]);
+        expect(inj.getDirectiveBindingAtIndex(0)).toBeAnInstanceOf(DirectiveBinding);
+        expect(() => inj.getDirectiveBindingAtIndex(-1)).toThrowError(
+          'Index -1 is out-of-bounds.');
+        expect(() => inj.getDirectiveBindingAtIndex(10)).toThrowError(
           'Index 10 is out-of-bounds.');
       });
 
