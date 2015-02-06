@@ -139,6 +139,15 @@ export class DOM {
   static hasClass(element:Element, classname:string) {
     return element.classList.contains(classname);
   }
+  static setStyle(element:Element, stylename:string, stylevalue:string) {
+    element.style[stylename] = stylevalue;
+  }
+  static removeStyle(element:Element, stylename:string) {
+    element.style[stylename] = null;
+  }
+  static getStyle(element:Element, stylename:string) {
+    return element.style[stylename];
+  }
   static tagName(element:Element):string {
     return element.tagName;
   }
