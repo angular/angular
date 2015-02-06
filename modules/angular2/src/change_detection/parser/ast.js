@@ -36,6 +36,7 @@ export class EmptyExpr extends AST {
 export class Structural extends AST {
   value:AST;
   constructor(value:AST) {
+    super();
     this.value = value;
   }
 
@@ -64,6 +65,7 @@ export class ImplicitReceiver extends AST {
 export class Chain extends AST {
   expressions:List;
   constructor(expressions:List) {
+    super();
     this.expressions = expressions;
   }
 
@@ -86,6 +88,7 @@ export class Conditional extends AST {
   trueExp:AST;
   falseExp:AST;
   constructor(condition:AST, trueExp:AST, falseExp:AST){
+    super();
     this.condition = condition;
     this.trueExp = trueExp;
     this.falseExp = falseExp;
@@ -110,6 +113,7 @@ export class AccessMember extends AST {
   getter:Function;
   setter:Function;
   constructor(receiver:AST, name:string, getter:Function, setter:Function) {
+    super();
     this.receiver = receiver;
     this.name = name;
     this.getter = getter;
@@ -155,6 +159,7 @@ export class KeyedAccess extends AST {
   obj:AST;
   key:AST;
   constructor(obj:AST, key:AST) {
+    super();
     this.obj = obj;
     this.key = key;
   }
@@ -187,6 +192,7 @@ export class Formatter extends AST {
   args:List<AST>;
   allArgs:List<AST>;
   constructor(exp:AST, name:string, args:List) {
+    super();
     this.exp = exp;
     this.name = name;
     this.args = args;
@@ -201,6 +207,7 @@ export class Formatter extends AST {
 export class LiteralPrimitive extends AST {
   value;
   constructor(value) {
+    super();
     this.value = value;
   }
 
@@ -216,6 +223,7 @@ export class LiteralPrimitive extends AST {
 export class LiteralArray extends AST {
   expressions:List;
   constructor(expressions:List) {
+    super();
     this.expressions = expressions;
   }
 
@@ -232,6 +240,7 @@ export class LiteralMap extends AST {
   keys:List;
   values:List;
   constructor(keys:List, values:List) {
+    super();
     this.keys = keys;
     this.values = values;
   }
@@ -253,6 +262,7 @@ export class Interpolation extends AST {
   strings:List;
   expressions:List;
   constructor(strings:List, expressions:List) {
+    super();
     this.strings = strings;
     this.expressions = expressions;
   }
@@ -271,6 +281,7 @@ export class Binary extends AST {
   left:AST;
   right:AST;
   constructor(operation:string, left:AST, right:AST) {
+    super();
     this.operation = operation;
     this.left = left;
     this.right = right;
@@ -310,6 +321,7 @@ export class Binary extends AST {
 export class PrefixNot extends AST {
   expression:AST;
   constructor(expression:AST) {
+    super();
     this.expression = expression;
   }
 
@@ -326,6 +338,7 @@ export class Assignment extends AST {
   target:AST;
   value:AST;
   constructor(target:AST, value:AST) {
+    super();
     this.target = target;
     this.value = value;
   }
@@ -345,6 +358,7 @@ export class MethodCall extends AST {
   args:List;
   name:string;
   constructor(receiver:AST, name:string, fn:Function, args:List) {
+    super();
     this.receiver = receiver;
     this.fn = fn;
     this.args = args;
@@ -375,6 +389,7 @@ export class FunctionCall extends AST {
   target:AST;
   args:List;
   constructor(target:AST, args:List) {
+    super();
     this.target = target;
     this.args = args;
   }
@@ -397,6 +412,7 @@ export class ASTWithSource extends AST {
   source:string;
   location:string;
   constructor(ast:AST, source:string, location:string) {
+    super();
     this.source = source;
     this.location = location;
     this.ast = ast;
@@ -429,6 +445,7 @@ export class TemplateBinding {
   name:string;
   expression:ASTWithSource;
   constructor(key:string, keyIsVar:boolean, name:string, expression:ASTWithSource) {
+    super();
     this.key = key;
     this.keyIsVar = keyIsVar;
     // only either name or expression will be filled.

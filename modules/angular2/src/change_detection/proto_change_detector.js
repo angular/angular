@@ -104,6 +104,7 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _recordBuilder:ProtoRecordBuilder;
 
   constructor() {
+    super();
     this._records = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
@@ -131,6 +132,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
   _recordBuilder:ProtoRecordBuilder;
 
   constructor() {
+    super();
     this._factory = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }

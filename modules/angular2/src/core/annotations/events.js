@@ -9,6 +9,7 @@ export class EventEmitter extends DependencyAnnotation {
   eventName: string;
   @CONST()
   constructor(eventName) {
+    super();
     this.eventName = eventName;
   }
 }

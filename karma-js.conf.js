@@ -14,7 +14,6 @@ module.exports = function(config) {
       {pattern: 'tools/transpiler/spec/**', included: false},
 
       'node_modules/traceur/bin/traceur-runtime.js',
-      'traceur-runtime-patch.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'node_modules/systemjs/dist/system.src.js',

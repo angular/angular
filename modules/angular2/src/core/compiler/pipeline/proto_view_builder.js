@@ -25,6 +25,7 @@ export class ProtoViewBuilder extends CompileStep {
   changeDetection:ChangeDetection;
   _shadowDomStrategy:ShadowDomStrategy;
   constructor(changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
+    super();
     this._shadowDomStrategy = shadowDomStrategy;
     this.changeDetection = changeDetection;
   }

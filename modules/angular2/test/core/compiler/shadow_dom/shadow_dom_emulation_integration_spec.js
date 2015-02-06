@@ -189,6 +189,7 @@ class TestDirectiveMetadataReader extends DirectiveMetadataReader {
   shadowDomStrategy;
 
   constructor(shadowDomStrategy) {
+    super();
     this.shadowDomStrategy = shadowDomStrategy;
   }
 

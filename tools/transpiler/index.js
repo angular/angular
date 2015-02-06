@@ -10,6 +10,7 @@ var TRACEUR_PATH = traceur.RUNTIME_PATH.replace('traceur-runtime.js', 'traceur.j
 var SELF_SOURCE_REGEX = /transpiler\/src/;
 var SELF_COMPILE_OPTIONS = {
   modules: 'register',
+  memberVariables: false,
   moduleName: true,
   script: false // parse as a module
 };
@@ -74,6 +75,12 @@ function reloadCompiler() {
     }
     return m;
   };
+
+  useRttsAssertModuleForConvertingTypesToExpressions();
+  supportSuperCallsInEs6Patch();
+  convertTypesToExpressionsInEs6Patch();
+  removeNonStaticFieldDeclarationsInEs6Patch();
+  disableGetterSetterAssertionPatch();
 }
 
 function loadModule(filepath, transpile) {
@@ -105,4 +112,106 @@ function extend(source, props) {
     res[prop] = props[prop];
   }
   return res;
+}
+
+// TODO(tbosch): remove when traceur is fixed.
+// see https://github.com/google/traceur-compiler/issues/1700
+function supportSuperCallsInEs6Patch() {
+  var traceurVersion = System.map['traceur'];
+  var ParseTreeMapWriter = System.get(traceurVersion+'/src/outputgeneration/ParseTreeMapWriter').ParseTreeMapWriter;
+  var _enterBranch = ParseTreeMapWriter.prototype.enterBranch;
+  ParseTreeMapWriter.prototype.enterBranch = function(location) {
+    if (!location.start) {
+      // This would throw...
+      return;
+    }
+    return _enterBranch.apply(this, arguments);
+  }
+}
+
+// TODO(tbosch): Remove when traceur is fixed.
+// see https://github.com/google/traceur-compiler/issues/1699
+function convertTypesToExpressionsInEs6Patch() {
+  var traceurVersion = System.map['traceur'];
+  var TypeToExpressionTransformer = System.get(traceurVersion+'/src/codegeneration/TypeToExpressionTransformer').TypeToExpressionTransformer;
+  var PureES6Transformer = System.get(traceurVersion+'/src/codegeneration/PureES6Transformer').PureES6Transformer;
+  var UniqueIdentifierGenerator = System.get(traceurVersion+'/src/codegeneration/UniqueIdentifierGenerator').UniqueIdentifierGenerator;
+
+  var _transform = PureES6Transformer.prototype.transform;
+  PureES6Transformer.prototype.transform = function() {
+    if (!this._patched) {
+      this._patched = true;
+      this.treeTransformers_.splice(0,0, function(tree) {
+        return new TypeToExpressionTransformer(new UniqueIdentifierGenerator(), this.reporter_).transformAny(tree);
+      });
+    }
+    return _transform.apply(this, arguments);
+  };
+}
+
+// TODO(tbosch): Don't write field declarations in classes when we output to ES6.
+// This just patches the writer and does not support moving initializers to the constructor.
+// See src/codegeneration/ClassTransformer.js for how to support initializers as well.
+// see https://github.com/google/traceur-compiler/issues/1708
+function removeNonStaticFieldDeclarationsInEs6Patch() {
+  var traceurVersion = System.map['traceur'];
+  var ParseTreeWriter = System.get(traceurVersion+'/src/outputgeneration/ParseTreeWriter').ParseTreeWriter;
+  var options = System.get(traceurVersion + "/src/Options.js").options;
+  var _visitPropertyVariableDeclaration = ParseTreeWriter.prototype.visitPropertyVariableDeclaration;
+  ParseTreeWriter.prototype.visitPropertyVariableDeclaration = function() {
+    if (options.outputLanguage !== 'es6') {
+      return _visitPropertyVariableDeclaration.apply(this, arguments);
+    }
+  };
+}
+
+// TODO(tbosch): Disable getter/setters for assertions until traceur has a flag
+// that allows to disable them while keeping assertions and member fields enabled.
+// see https://github.com/google/traceur-compiler/issues/1625
+// Why:
+// - traceur uses field names based on numbers, which can lead to collisions when creating a subclass in a separate compiler run.
+// - this rename of fields makes debugging via the repl harder (e.g. via DevTools console)
+// - this rename can break JSON conversion of instances
+function disableGetterSetterAssertionPatch() {
+  var traceurVersion = System.map['traceur'];
+  var MemberVariableTransformer = System.get(traceurVersion+'/src/codegeneration/MemberVariableTransformer').MemberVariableTransformer;
+  var AnonBlock = System.get(traceurVersion+'/src/syntax/trees/ParseTrees.js').AnonBlock;
+  MemberVariableTransformer.prototype.transformPropertyVariableDeclaration = function(tree) {
+    return new AnonBlock(tree.location, []);
+  }
+}
+
+// TODO(tbosch): Get all types from `assert` module and not from `$traceurRuntime`.
+// With this a transpile to ES6 does no more include the `$traceurRuntime`.
+// see https://github.com/google/traceur-compiler/issues/1706
+function useRttsAssertModuleForConvertingTypesToExpressions() {
+  var traceurVersion = System.map['traceur'];
+  var original = System.get(traceurVersion+'/src/codegeneration/TypeToExpressionTransformer').TypeToExpressionTransformer;
+  var patch = System.get('transpiler/src/patch/TypeToExpressionTransformer').TypeToExpressionTransformer;
+  for (var prop in patch.prototype) {
+    original.prototype[prop] = patch.prototype[prop];
+  }
+
+  var TypeAssertionTransformer = System.get(traceurVersion+'/src/codegeneration/TypeAssertionTransformer').TypeAssertionTransformer;
+  var createIdentifierExpression = System.get(traceurVersion+'/src/codegeneration/ParseTreeFactory').createIdentifierExpression;
+  var parseExpression = System.get(traceurVersion+'/src/codegeneration/PlaceholderParser.js').parseExpression;
+  TypeAssertionTransformer.prototype.transformBindingElementParameter_ = function(element, typeAnnotation) {
+    // Copied from https://github.com/google/traceur-compiler/commits/master/src/codegeneration/TypeAssertionTransformer.js
+    if (!element.binding.isPattern()) {
+      if (typeAnnotation) {
+        this.paramTypes_.atLeastOneParameterTyped = true;
+      } else {
+        // PATCH start
+        typeAnnotation = parseExpression(["assert.type.any"]);
+        // PATCH end
+      }
+
+      this.paramTypes_.arguments.push(
+        createIdentifierExpression(element.binding.identifierToken),
+        typeAnnotation);
+      return;
+    }
+
+    // NYI
+  }
 }

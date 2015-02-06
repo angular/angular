@@ -30,6 +30,7 @@ import {ShadowDomStrategy} from '../shadow_dom_strategy';
 export class DirectiveParser extends CompileStep {
   _selectorMatcher:SelectorMatcher;
   constructor(directives:List<DirectiveMetadata>) {
+    super();
     this._selectorMatcher = new SelectorMatcher();
     for (var i=0; i<directives.length; i++) {
       var directiveMetadata = directives[i];

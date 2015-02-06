@@ -60,8 +60,7 @@ function setupReflector() {
   });
 
   reflector.registerType(Compiler, {
-    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy)
-      => new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy),
+    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy) => new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy),
     'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader],
                    [Parser], [CompilerCache], [ShadowDomStrategy]],
     'annotations': []

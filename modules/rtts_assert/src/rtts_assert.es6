@@ -1,3 +1,5 @@
+var _global = typeof window === 'object' ? window : global;
+
 // TODO(vojta):
 // - extract into multiple files
 // - different error types
@@ -11,7 +13,32 @@ function argPositionName(i) {
   return POSITION_NAME[position] || (position + 'th');
 }
 
-var primitives = $traceurRuntime.type;
+var primitives;
+var genericType;
+
+if (typeof $traceurRuntime === 'object') {
+  primitives = $traceurRuntime.type;
+  genericType = $traceurRuntime.genericType;
+} else {
+  // Allow to work without traceur runtime as well!
+  primitives = {
+    any: {name: 'any'},
+    boolean: {name: 'boolean'},
+    number: {name: 'number'},
+    string: {name: 'string'},
+    symbol: {name: 'symbol'},
+    void: {name: 'void'}
+  };
+  genericType = function(type, args) {
+    return {
+      type: type,
+      args: args
+    }
+  }
+}
+Object.keys(primitives).forEach(function(name) {
+  primitives[name].__assertName = name;
+});
 
 export function proxy(){
 }
@@ -81,6 +108,11 @@ function prettyPrint(value) {
 }
 
 function isType(value, T, errors) {
+  if (T && T.type) {
+    // needed for generics.
+    // TODO(tbosch): read out T.args and do assertions based on them as well!
+    T = T.type;
+  }
   if (T === primitives.void) {
     return typeof value === 'undefined';
   }
@@ -198,33 +230,25 @@ function returnType(actual, T) {
   return actual;
 }
 
+// `int` is not a valid JS type, and traceur will leave
+// it untouched. However, we want to be able to use it,
+// so we provide it as a global
+var intType = _global['int'] = define('int', function(value) {
+  return typeof value === 'number' && value%1 === 0;
+});
 
 // TODO(vojta): define these with DSL?
-var string = define('string', function(value) {
+var string = type.string = define('string', function(value) {
   return typeof value === 'string';
 });
 
-// function string() {}
-// string.assert = function(value) {
-//   return typeof value === 'string';
-// };
-
-var boolean = define('boolean', function(value) {
+var boolean = type.boolean = define('boolean', function(value) {
   return typeof value === 'boolean';
 });
-// function boolean() {}
-// boolean.assert = function(value) {
-//   return typeof value === 'boolean';
-// };
 
-var number = define('number', function(value) {
+var number = type.number = define('number', function(value) {
   return typeof value === 'number';
 });
-// function number() {}
-// number.assert = function(value) {
-//   return typeof value === 'number';
-// };
-
 
 function arrayOf(...types) {
   return assert.define('array of ' + types.map(prettyPrint).join('/'), function(value) {
@@ -320,6 +344,10 @@ function assert(value) {
 
 // throw if no type provided
 assert.type = type;
+for (var prop in primitives) {
+  assert.type[prop] = primitives[prop];
+}
+assert.genericType = genericType;
 
 // throw if odd number of args
 assert.argumentTypes = assertArgumentTypes;
@@ -334,6 +362,7 @@ assert.fail = fail;
 assert.string = string;
 assert.number = number;
 assert.boolean = boolean;
+assert.int = intType;
 
 // custom types
 assert.arrayOf = arrayOf;

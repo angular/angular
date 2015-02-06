@@ -8,6 +8,7 @@ import {DependencyAnnotation} from 'angular2/di';
 export class Parent extends DependencyAnnotation {
   @CONST()
   constructor() {
+    super();
   }
 }
 
@@ -18,5 +19,6 @@ export class Parent extends DependencyAnnotation {
 export class Ancestor extends DependencyAnnotation {
   @CONST()
   constructor() {
+    super();
   }
 }

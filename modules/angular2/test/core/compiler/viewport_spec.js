@@ -2,7 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM, Node} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/di';
 import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
@@ -33,7 +33,7 @@ class AttachableChangeDetector {
 @IMPLEMENTS(View)
 class HydrateAwareFakeView {
   isHydrated: boolean;
-  nodes: List<Nodes>;
+  nodes: List<Node>;
   changeDetector: ChangeDetector;
   rootElementInjectors;
   constructor(isHydrated) {

@@ -8,6 +8,7 @@ export class AbstractChangeDetector extends ChangeDetector {
   mode:string;
 
   constructor() {
+    super();
     this.children = [];
     this.mode = CHECK_ALWAYS;
   }

@@ -604,6 +604,7 @@ class TestDispatcher extends ChangeDispatcher {
   onChange:Function;
 
   constructor() {
+    super();
     this.log = null;
     this.loggedValues = null;
     this.onChange = (_, __) => {};

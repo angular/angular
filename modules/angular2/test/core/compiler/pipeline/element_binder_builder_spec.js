@@ -412,6 +412,7 @@ class Context {
 class MockStep extends CompileStep {
   processClosure:Function;
   constructor(process) {
+    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {

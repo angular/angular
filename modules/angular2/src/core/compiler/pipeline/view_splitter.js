@@ -36,6 +36,7 @@ export class ViewSplitter extends CompileStep {
   _parser:Parser;
   _compilationUnit:any;
   constructor(parser:Parser, compilationUnit:any) {
+    super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }

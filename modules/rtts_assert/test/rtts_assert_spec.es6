@@ -165,7 +165,6 @@ describe('primitive value check', function() {
 });
 
 
-
 // ## Describing more complex types
 //
 // Often, a simple type check using `instanceof` or `typeof` is not enough.
@@ -370,11 +369,39 @@ describe('Traceur', function() {
         .toThrowError('Expected to return an instance of void, got null!');
     });
   });
+
+  // Note: `int` is not part of JS types, but rtts_assert exposes a global
+  // so that it can be used as well.
+  describe('int', function() {
+
+    it('should pass', function() {
+      var x:int = 10;
+    });
+
+    it('should fail', function() {
+      expect(() => {
+        var x:int = 'ok';
+      }).toThrowError('Expected an instance of int, got "ok"!');
+    });
+
+    it('should fail', function() {
+      expect(() => {
+        var x:int = 12.3;
+      }).toThrowError('Expected an instance of int, got 12.3!');
+    });
+
+  });
+
+  describe('generics', function() {
+
+    it('should pass', function() {
+      var list:Array<string> = [];
+    });
+
+    // TODO(tbosch): add assertions based on generics to rtts_assert
+
+  });
+
 });
-
-
-// <center><small>
-// This documentation was generated from [assert.spec.js](https://github.com/vojtajina/assert/blob/master/test/assert.spec.js) using [Docco](http://jashkenas.github.io/docco/).
-// </small></center>
 
 }

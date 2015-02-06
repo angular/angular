@@ -18,6 +18,7 @@ export class EmulatedShadowDomStrategy extends ShadowDomStrategy {
   _styleHost: Element;
 
   constructor(styleHost: Element = null) {
+    super();
     if (isBlank(styleHost)) {
       styleHost = DOM.defaultDoc().head;
     }

@@ -89,6 +89,7 @@ export class ControlGroupDirective extends ControlGroupDirectiveBase {
   _directives:List<ControlNameDirective>;
 
   constructor() {
+    super();
     this._directives = ListWrapper.create();
   }
 
@@ -121,6 +122,7 @@ export class NewControlGroupDirective extends ControlGroupDirectiveBase {
   _directives:List<ControlNameDirective>;
 
   constructor() {
+    super();
     this._directives = ListWrapper.create();
   }
 

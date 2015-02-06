@@ -16,6 +16,7 @@ export class Foreach extends OnChange {
   viewPort: ViewPort;
   iterable;
   constructor(viewPort: ViewPort) {
+    super();
     this.viewPort = viewPort;
   }
   onChange(changes) {

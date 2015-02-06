@@ -640,6 +640,7 @@ export class ElementInjector extends TreeNode {
 class OutOfBoundsAccess extends Error {
   message:string;
   constructor(index) {
+    super();
     this.message = `Index ${index} is out-of-bounds.`;
   }
 

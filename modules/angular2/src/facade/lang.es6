@@ -18,7 +18,6 @@ export class CONST {}
 export class ABSTRACT {}
 export class IMPLEMENTS {}
 
-
 export function isPresent(obj):boolean {
   return obj !== undefined && obj !== null;
 }
@@ -103,6 +102,7 @@ export class StringJoiner {
 
 export class NumberParseError extends Error {
   constructor(message) {
+    super();
     this.message = message;
   }
 

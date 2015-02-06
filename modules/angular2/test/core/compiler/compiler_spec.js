@@ -237,6 +237,7 @@ class TestableCompiler extends Compiler {
 class MockStep extends CompileStep {
   processClosure:Function;
   constructor(process) {
+    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -247,6 +248,7 @@ class MockStep extends CompileStep {
 class FakeShadowDomStrategy extends NativeShadowDomStrategy {
   templateHtml: string;
   constructor(templateHtml: string) {
+    super();
     this.templateHtml = templateHtml;
   }
 

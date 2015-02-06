@@ -15,6 +15,7 @@ import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
+import {CompileStep} from './pipeline/compile_step';
 
 /**
  * Cache that stores the ProtoView of the template of a component.

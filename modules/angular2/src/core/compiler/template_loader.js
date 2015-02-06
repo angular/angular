@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {TemplateElement, DOM} from 'angular2/src/facade/dom';
+import {TemplateElement, DOM, Element} from 'angular2/src/facade/dom';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
