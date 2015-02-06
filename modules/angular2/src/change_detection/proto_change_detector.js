@@ -53,9 +53,9 @@ export class ProtoRecord {
   contextIndex:number;
   selfIndex:number;
   bindingMemento:any;
-  groupMemento:any;
+  directiveMemento:any;
   lastInBinding:boolean;
-  lastInGroup:boolean;
+  lastInDirective:boolean;
   expressionAsString:string;
 
   constructor(mode:number,
@@ -66,10 +66,10 @@ export class ProtoRecord {
               contextIndex:number,
               selfIndex:number,
               bindingMemento:any,
-              groupMemento:any,
+              directiveMemento:any,
               expressionAsString:string,
               lastInBinding:boolean,
-              lastInGroup:boolean) {
+              lastInDirective:boolean) {
 
     this.mode = mode;
     this.name = name;
@@ -79,9 +79,9 @@ export class ProtoRecord {
     this.contextIndex = contextIndex;
     this.selfIndex = selfIndex;
     this.bindingMemento = bindingMemento;
-    this.groupMemento = groupMemento;
+    this.directiveMemento = directiveMemento;
     this.lastInBinding = lastInBinding;
-    this.lastInGroup = lastInGroup;
+    this.lastInDirective = lastInDirective;
     this.expressionAsString = expressionAsString;
   }
 
@@ -93,7 +93,7 @@ export class ProtoRecord {
 }
 
 export class ProtoChangeDetector  {
-  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false){}
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false){}
   instantiate(dispatcher:any, formatters:Map):ChangeDetector{
     return null;
   }
@@ -108,8 +108,8 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, groupMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
   }
 
   instantiate(dispatcher:any, formatters:Map) {
@@ -135,8 +135,8 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, groupMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
   }
 
   instantiate(dispatcher:any, formatters:Map) {
@@ -161,19 +161,19 @@ class ProtoRecordBuilder {
     this.records = [];
   }
 
-  addAst(ast:AST, bindingMemento:any, groupMemento:any = null, structural:boolean = false) {
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
     if (structural) ast = new Structural(ast);
 
     var last = ListWrapper.last(this.records);
-    if (isPresent(last) && last.groupMemento == groupMemento) {
-      last.lastInGroup = false;
+    if (isPresent(last) && last.directiveMemento == directiveMemento) {
+      last.lastInDirective = false;
     }
 
-    var pr = _ConvertAstIntoProtoRecords.convert(ast, bindingMemento, groupMemento, this.records.length);
+    var pr = _ConvertAstIntoProtoRecords.convert(ast, bindingMemento, directiveMemento, this.records.length);
     if (! ListWrapper.isEmpty(pr)) {
       var last = ListWrapper.last(pr);
       last.lastInBinding = true;
-      last.lastInGroup = true;
+      last.lastInDirective = true;
 
       this.records = ListWrapper.concat(this.records, pr);
     }
@@ -183,20 +183,20 @@ class ProtoRecordBuilder {
 class _ConvertAstIntoProtoRecords {
   protoRecords:List;
   bindingMemento:any;
-  groupMemento:any;
+  directiveMemento:any;
   contextIndex:number;
   expressionAsString:string;
 
-  constructor(bindingMemento:any, groupMemento:any, contextIndex:number, expressionAsString:string) {
+  constructor(bindingMemento:any, directiveMemento:any, contextIndex:number, expressionAsString:string) {
     this.protoRecords = [];
     this.bindingMemento = bindingMemento;
-    this.groupMemento = groupMemento;
+    this.directiveMemento = directiveMemento;
     this.contextIndex = contextIndex;
     this.expressionAsString = expressionAsString;
   }
 
-  static convert(ast:AST, bindingMemento:any, groupMemento:any, contextIndex:number) {
-    var c = new _ConvertAstIntoProtoRecords(bindingMemento, groupMemento, contextIndex, ast.toString());
+  static convert(ast:AST, bindingMemento:any, directiveMemento:any, contextIndex:number) {
+    var c = new _ConvertAstIntoProtoRecords(bindingMemento, directiveMemento, contextIndex, ast.toString());
     ast.visit(c);
     return c.protoRecords;
   }
@@ -292,7 +292,7 @@ class _ConvertAstIntoProtoRecords {
     var selfIndex = ++ this.contextIndex;
     ListWrapper.push(this.protoRecords,
       new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, selfIndex,
-        this.bindingMemento, this.groupMemento, this.expressionAsString, false, false));
+        this.bindingMemento, this.directiveMemento, this.expressionAsString, false, false));
     return selfIndex;
   }
 }

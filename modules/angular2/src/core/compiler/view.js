@@ -195,10 +195,10 @@ export class View {
     this._dehydrateContext();
   }
 
-  onRecordChange(groupMemento, records:List) {
+  onRecordChange(directiveMemento, records:List) {
     this._invokeMementos(records);
-    if (groupMemento instanceof DirectivePropertyGroupMemento) {
-      this._notifyDirectiveAboutChanges(groupMemento, records);
+    if (directiveMemento instanceof DirectiveMemento) {
+      this._notifyDirectiveAboutChanges(directiveMemento, records);
     }
   }
 
@@ -208,9 +208,9 @@ export class View {
     }
   }
 
-  _notifyDirectiveAboutChanges(groupMemento, records:List) {
-    var dir = groupMemento.directive(this.elementInjectors);
-    var binding = groupMemento.directiveBinding(this.elementInjectors);
+  _notifyDirectiveAboutChanges(directiveMemento, records:List) {
+    var dir = directiveMemento.directive(this.elementInjectors);
+    var binding = directiveMemento.directiveBinding(this.elementInjectors);
 
     if (binding.callOnChange) {
       dir.onChange(this._collectChanges(records));
@@ -220,13 +220,12 @@ export class View {
     // dispatch to element injector or text nodes based on context
   _invokeMementoFor(record:ChangeRecord) {
     var memento = record.bindingMemento;
-    if (memento instanceof DirectivePropertyMemento) {
-      // we know that it is DirectivePropertyMemento
-      var directiveMemento:DirectivePropertyMemento = memento;
+    if (memento instanceof DirectiveBindingMemento) {
+      var directiveMemento:DirectiveBindingMemento = memento;
       directiveMemento.invoke(record, this.elementInjectors);
 
-    } else if (memento instanceof ElementPropertyMemento) {
-      var elementMemento:ElementPropertyMemento = memento;
+    } else if (memento instanceof ElementBindingMemento) {
+      var elementMemento:ElementBindingMemento = memento;
       elementMemento.invoke(record, this.bindElements);
 
     } else {
@@ -451,7 +450,7 @@ export class ProtoView {
     }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
     var memento = this.textNodesWithBindingCount++;
-    this.protoChangeDetector.addAst(expression, memento, memento);
+    this.protoChangeDetector.addAst(expression, memento);
   }
 
   /**
@@ -463,8 +462,8 @@ export class ProtoView {
       elBinder.hasElementPropertyBindings = true;
       this.elementsWithBindingCount++;
     }
-    var memento = new ElementPropertyMemento(this.elementsWithBindingCount-1, setterName, setter);
-    this.protoChangeDetector.addAst(expression, memento, memento);
+    var memento = new ElementBindingMemento(this.elementsWithBindingCount-1, setterName, setter);
+    this.protoChangeDetector.addAst(expression, memento);
   }
 
   /**
@@ -488,14 +487,14 @@ export class ProtoView {
     setter:SetterFn,
     isContentWatch: boolean) {
 
-    var expMemento = new DirectivePropertyMemento(
+    var bindingMemento = new DirectiveBindingMemento(
       this.elementBinders.length-1,
       directiveIndex,
       setterName,
       setter
     );
-    var groupMemento = DirectivePropertyGroupMemento.get(expMemento);
-    this.protoChangeDetector.addAst(expression, expMemento, groupMemento, isContentWatch);
+    var directiveMemento = DirectiveMemento.get(bindingMemento);
+    this.protoChangeDetector.addAst(expression, bindingMemento, directiveMemento, isContentWatch);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
@@ -519,7 +518,7 @@ export class ProtoView {
   }
 }
 
-export class ElementPropertyMemento {
+export class ElementBindingMemento {
   _elementIndex:int;
   _setterName:string;
   _setter:SetterFn;
@@ -535,7 +534,7 @@ export class ElementPropertyMemento {
   }
 }
 
-export class DirectivePropertyMemento {
+export class DirectiveBindingMemento {
   _elementInjectorIndex:int;
   _directiveIndex:int;
   _setterName:string;
@@ -558,9 +557,9 @@ export class DirectivePropertyMemento {
   }
 }
 
-var _groups = MapWrapper.create();
+var _directiveMementos = MapWrapper.create();
 
-class DirectivePropertyGroupMemento {
+class DirectiveMemento {
   _elementInjectorIndex:number;
   _directiveIndex:number;
 
@@ -569,15 +568,15 @@ class DirectivePropertyGroupMemento {
     this._directiveIndex = directiveIndex;
   }
 
-  static get(memento:DirectivePropertyMemento) {
+  static get(memento:DirectiveBindingMemento) {
     var elementInjectorIndex = memento._elementInjectorIndex;
     var directiveIndex = memento._directiveIndex;
     var id = elementInjectorIndex * 100 + directiveIndex;
 
-    if (!MapWrapper.contains(_groups, id)) {
-      MapWrapper.set(_groups, id, new DirectivePropertyGroupMemento(elementInjectorIndex, directiveIndex));
+    if (!MapWrapper.contains(_directiveMementos, id)) {
+      MapWrapper.set(_directiveMementos, id, new DirectiveMemento(elementInjectorIndex, directiveIndex));
     }
-    return MapWrapper.get(_groups, id);
+    return MapWrapper.get(_directiveMementos, id);
   }
 
   directive(elementInjectors:List<ElementInjector>) {
