@@ -9,8 +9,11 @@ import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler}
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 import {NgIf, NgRepeat} from 'angular2/directives';
 import {App, setupReflectorForApp} from './app';
@@ -169,9 +172,11 @@ export function setupReflectorForAngular() {
   });
 
   reflector.registerType(Compiler, {
-    'factory': (changeDetection, templateLoader, reader, parser, compilerCache) => new Compiler(changeDetection, templateLoader, reader, parser, compilerCache),
-    'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
-    'annotations': []
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
+                   [CompilerCache], [ShadowDomStrategy]],
+    "annotations": []
   });
 
   reflector.registerType(CompilerCache, {
@@ -187,9 +192,15 @@ export function setupReflectorForAngular() {
   });
 
   reflector.registerType(TemplateLoader, {
-    'factory': () => new TemplateLoader(),
-    'parameters': [],
-    'annotations': []
+    "factory": (xhr) => new TemplateLoader(xhr),
+    "parameters": [[XHR]],
+    "annotations": []
+  });
+
+  reflector.registerType(XHR, {
+    "factory": () => new XHRImpl(),
+    "parameters": [],
+    "annotations": []
   });
 
   reflector.registerType(DirectiveMetadataReader, {
@@ -209,4 +220,11 @@ export function setupReflectorForAngular() {
     "parameters": [[ChangeDetector]],
     "annotations": []
   });
+
+  reflector.registerType(ShadowDomStrategy, {
+    "factory": () => new NativeShadowDomStrategy(),
+    "parameters": [],
+    "annotations": []
+  });
+
 }
