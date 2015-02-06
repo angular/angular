@@ -106,11 +106,17 @@ export class CompileElement {
     MapWrapper.set(this.propertyBindings, property, expression);
   }
 
-  addVariableBinding(directiveName:string, templateName:string) {
+  addVariableBinding(variableName:string, variableValue:string) {
     if (isBlank(this.variableBindings)) {
       this.variableBindings = MapWrapper.create();
     }
-    MapWrapper.set(this.variableBindings, templateName, directiveName);
+
+    // Store the variable map from value to variable, reflecting how it will be used later by
+    // View. When a local is set to the view, a lookup for the variable name will take place keyed
+    // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
+    // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
+    // it.
+    MapWrapper.set(this.variableBindings, variableValue, variableName);
   }
 
   addEventBinding(eventName:string, expression:AST) {
