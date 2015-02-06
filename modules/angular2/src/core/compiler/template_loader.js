@@ -22,13 +22,13 @@ export class TemplateLoader {
     this._cache = StringMapWrapper.create();
   }
 
-  load(cmpMetadata: DirectiveMetadata):Promise<Element> {
+  // TODO(vicb): union type: return an Element or a Promise<Element>
+  load(cmpMetadata: DirectiveMetadata) {
     var annotation:Component = cmpMetadata.annotation;
     var tplConfig:TemplateConfig = annotation.template;
 
     if (isPresent(tplConfig.inline)) {
-      var template = DOM.createTemplate(tplConfig.inline);
-      return PromiseWrapper.resolve(template);
+      return DOM.createTemplate(tplConfig.inline);
     }
 
     if (isPresent(tplConfig.url)) {

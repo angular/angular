@@ -86,15 +86,17 @@ export class Compiler {
   }
 
   compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
-    return this._compile(this._reader.read(component), templateRoot);
+    var protoView = this._compile(this._reader.read(component), templateRoot);
+    return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
 
+  // TODO(vicb): union type return ProtoView or Promise<ProtoView>
   _compile(cmpMetadata: DirectiveMetadata, templateRoot:Element = null) {
-    var pvCached = this._compilerCache.get(cmpMetadata.type);
-    if (isPresent(pvCached)) {
+    var protoView = this._compilerCache.get(cmpMetadata.type);
+    if (isPresent(protoView)) {
       // The component has already been compiled into a ProtoView,
       // returns a resolved Promise.
-      return PromiseWrapper.resolve(pvCached);
+      return protoView;
     }
 
     var pvPromise = MapWrapper.get(this._compiling, cmpMetadata.type);
@@ -105,21 +107,22 @@ export class Compiler {
       return pvPromise;
     }
 
-    var tplPromise = isBlank(templateRoot) ?
-        this._templateLoader.load(cmpMetadata) :
-        PromiseWrapper.resolve(templateRoot);
+    var template = isBlank(templateRoot) ? this._templateLoader.load(cmpMetadata) : templateRoot;
 
-    pvPromise = PromiseWrapper.then(tplPromise,
-      (el) => this._compileTemplate(el, cmpMetadata),
-      (_) => { throw new BaseException(`Failed to load the template for ${stringify(cmpMetadata.type)}`) }
-    );
+    if (PromiseWrapper.isPromise(template)) {
+      pvPromise = PromiseWrapper.then(template,
+        (el) => this._compileTemplate(el, cmpMetadata),
+        (_) => { throw new BaseException(`Failed to load the template for ${stringify(cmpMetadata.type)}`); }
+      );
+      MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
+      return pvPromise;
+    }
 
-    MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
-
-    return pvPromise;
+    return this._compileTemplate(template, cmpMetadata);
   }
 
-  _compileTemplate(template: Element, cmpMetadata): Promise<ProtoView> {
+  // TODO(vicb): union type return ProtoView or Promise<ProtoView>
+  _compileTemplate(template: Element, cmpMetadata) {
     var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
     var compileElements = pipeline.process(template);
     var protoView = compileElements[0].inheritedProtoView;
@@ -130,27 +133,38 @@ export class Compiler {
     MapWrapper.delete(this._compiling, cmpMetadata.type);
 
     // Compile all the components from the template
-    var componentPromises = [];
+    var nestedPVPromises = [];
     for (var i = 0; i < compileElements.length; i++) {
       var ce = compileElements[i];
       if (isPresent(ce.componentDirective)) {
-        var componentPromise = this._compileNestedProtoView(ce);
-        ListWrapper.push(componentPromises, componentPromise);
+        this._compileNestedProtoView(ce, nestedPVPromises);
       }
     }
 
-    // The protoView is resolved after all the components in the template have been compiled.
-    return PromiseWrapper.then(PromiseWrapper.all(componentPromises),
-      (_) => protoView,
-      (e) => { throw new BaseException(`${e} -> Failed to compile ${stringify(cmpMetadata.type)}`) }
-    );
+    if (nestedPVPromises.length > 0) {
+      // Returns ProtoView Promise when there are any asynchronous nested ProtoViews.
+      // The promise will resolved after nested ProtoViews are compiled.
+      return PromiseWrapper.then(PromiseWrapper.all(nestedPVPromises),
+        (_) => protoView,
+        (e) => { throw new BaseException(`${e.message} -> Failed to compile ${stringify(cmpMetadata.type)}`); }
+      );
+    }
+
+    // When there is no asynchronous nested ProtoViews, return the ProtoView
+    return protoView;
   }
 
-  _compileNestedProtoView(ce: CompileElement):Promise<ProtoView> {
-    var pvPromise = this._compile(ce.componentDirective);
-    pvPromise.then(function(protoView) {
+  _compileNestedProtoView(ce: CompileElement, promises: List<Promise>)
+  {
+    var protoView = this._compile(ce.componentDirective);
+
+    if (PromiseWrapper.isPromise(protoView)) {
+      ListWrapper.push(promises, protoView);
+      protoView.then(function (protoView) {
+        ce.inheritedElementBinder.nestedProtoView = protoView;
+      });
+    } else {
       ce.inheritedElementBinder.nestedProtoView = protoView;
-    });
-    return pvPromise;
+    }
   }
 }

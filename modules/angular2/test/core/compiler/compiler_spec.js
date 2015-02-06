@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
 import {DOM, Element, TemplateElement} from 'angular2/src/facade/dom';
-import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank} from 'angular2/src/facade/lang';
+import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -27,154 +27,201 @@ export function main() {
       reader = new DirectiveMetadataReader();
     });
 
-    function createCompiler(processClosure, strategy:ShadowDomStrategy = null, xhr: XHRMock = null) {
-      var steps = [new MockStep(processClosure)];
-      if (isBlank(strategy)) {
-        strategy = new NativeShadowDomStrategy();
-      }
-      if (isBlank(xhr)) {
-        xhr = new XHRMock();
-      }
-      return new TestableCompiler(reader, steps, strategy, xhr);
-    }
+    var syncTemplateLoader = new FakeTemplateLoader();
+    syncTemplateLoader.forceSync();
+    var asyncTemplateLoader = new FakeTemplateLoader();
+    asyncTemplateLoader.forceAsync();
 
-    it('should run the steps and return the ProtoView of the root element', (done) => {
-      var rootProtoView = new ProtoView(null, null, null);
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = rootProtoView;
-      });
-      compiler.compile(MainComponent, el('<div></div>')).then( (protoView) => {
-        expect(protoView).toBe(rootProtoView);
-        done();
-      });
-    });
+    StringMapWrapper.forEach({
+      '(sync TemplateLoader)': syncTemplateLoader,
+      '(async TemplateLoader)': asyncTemplateLoader
+    }, (templateLoader, name) => {
 
-    it('should use the given element', (done) => {
-      var element = el('<div></div>');
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-      });
-      compiler.compile(MainComponent, element).then( (protoView) => {
-        expect(protoView.element).toBe(element);
-        done();
-      });
-    });
+      describe(name, () => {
 
-    it('should use the inline template if no element is given explicitly', (done) => {
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-      });
-      compiler.compile(MainComponent, null).then( (protoView) => {
-        expect(DOM.getInnerHTML(protoView.element)).toEqual('inline component');
-        done();
-      });
-    });
-
-    it('should load nested components', (done) => {
-      var mainEl = el('<div></div>');
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-        current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
-        if (current.element === mainEl) {
-          current.componentDirective = reader.read(NestedComponent);
+        function createCompiler(processClosure) {
+          var steps = [new MockStep(processClosure)];
+          return new TestableCompiler(reader, steps, templateLoader);
         }
-      });
-      compiler.compile(MainComponent, mainEl).then( (protoView) => {
-        var nestedView = protoView.elementBinders[0].nestedProtoView;
-        expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
-        done();
-      });
-    });
 
-    it('should cache compiled components', (done) => {
-      var element = el('<div></div>');
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-      });
-      var firstProtoView;
-      compiler.compile(MainComponent, element).then( (protoView) => {
-        firstProtoView = protoView;
-        return compiler.compile(MainComponent, element);
-      }).then( (protoView) => {
-        expect(firstProtoView).toBe(protoView);
-        done();
-      });
-    });
-
-    it('should re-use components being compiled', (done) => {
-      var nestedElBinders = [];
-      var mainEl = el('<div><div class="nested"></div><div class="nested"></div></div>');
-      var compiler = createCompiler( (parent, current, control) => {
-        if (DOM.hasClass(current.element, 'nested')) {
-          current.inheritedProtoView = new ProtoView(current.element, null, null);
-          current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
-          current.componentDirective = reader.read(NestedComponent);
-          ListWrapper.push(nestedElBinders, current.inheritedElementBinder);
-        }
-      });
-      compiler.compile(MainComponent, mainEl).then( (protoView) => {
-        expect(nestedElBinders[0].nestedProtoView).toBe(nestedElBinders[1].nestedProtoView);
-        done();
-      });
-    });
-
-    it('should allow recursive components', (done) => {
-      var compiler = createCompiler( (parent, current, control) => {
-        current.inheritedProtoView = new ProtoView(current.element, null, null);
-        current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
-        current.componentDirective = reader.read(RecursiveComponent);
-      });
-      compiler.compile(RecursiveComponent, null).then( (protoView) => {
-        expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
-        done();
-      });
-    });
-
-    describe('XHR', () => {
-      it('should load template via xhr', (done) => {
-        var xhr = new XHRMock();
-        xhr.expect('/parent', 'xhr');
-
-        var compiler = createCompiler((parent, current, control) => {
-          current.inheritedProtoView = new ProtoView(current.element, null, null);
-        }, null, xhr);
-
-        compiler.compile(XHRParentComponent).then( (protoView) => {
-          expect(DOM.getInnerHTML(protoView.element)).toEqual('xhr');
-          done();
+        it('should run the steps and return the ProtoView of the root element', (done) => {
+          var rootProtoView = new ProtoView(null, null, null);
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = rootProtoView;
+          });
+          compiler.compile(MainComponent, el('<div></div>')).then( (protoView) => {
+            expect(protoView).toBe(rootProtoView);
+            done();
+          });
         });
 
-        xhr.flush();
-      });
-
-      it('should return a rejected promise when loading a template fails', (done) => {
-        var xhr = new XHRMock();
-        xhr.expect('/parent', null);
-
-        var compiler = createCompiler((parent, current, control) => {}, null, xhr);
-
-        PromiseWrapper.then(compiler.compile(XHRParentComponent),
-          function(_) { throw 'Failure expected'; },
-          function(e) {
-            expect(e.message).toEqual('Failed to load the template for XHRParentComponent');
+        it('should use the given element', (done) => {
+          var element = el('<div></div>');
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = new ProtoView(current.element, null, null);
+          });
+          compiler.compile(MainComponent, element).then( (protoView) => {
+            expect(protoView.element).toBe(element);
             done();
-          }
-        );
+          });
+        });
 
-        xhr.flush();
+        it('should use the inline template if no element is given explicitly', (done) => {
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = new ProtoView(current.element, null, null);
+          });
+          compiler.compile(MainComponent, null).then( (protoView) => {
+            expect(DOM.getInnerHTML(protoView.element)).toEqual('inline component');
+            done();
+          });
+        });
+
+        it('should load nested components', (done) => {
+          var mainEl = el('<div></div>');
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = new ProtoView(current.element, null, null);
+            current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+            if (current.element === mainEl) {
+              current.componentDirective = reader.read(NestedComponent);
+            }
+          });
+          compiler.compile(MainComponent, mainEl).then( (protoView) => {
+            var nestedView = protoView.elementBinders[0].nestedProtoView;
+            expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
+            done();
+          });
+        });
+
+        it('should cache compiled components', (done) => {
+          var element = el('<div></div>');
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = new ProtoView(current.element, null, null);
+          });
+          var firstProtoView;
+          compiler.compile(MainComponent, element).then( (protoView) => {
+            firstProtoView = protoView;
+            return compiler.compile(MainComponent, element);
+          }).then( (protoView) => {
+            expect(firstProtoView).toBe(protoView);
+            done();
+          });
+        });
+
+        it('should re-use components being compiled', (done) => {
+          var nestedElBinders = [];
+          var mainEl = el('<div><div class="nested"></div><div class="nested"></div></div>');
+          var compiler = createCompiler( (parent, current, control) => {
+            if (DOM.hasClass(current.element, 'nested')) {
+              current.inheritedProtoView = new ProtoView(current.element, null, null);
+              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+              current.componentDirective = reader.read(NestedComponent);
+              ListWrapper.push(nestedElBinders, current.inheritedElementBinder);
+            }
+          });
+          compiler.compile(MainComponent, mainEl).then( (protoView) => {
+            expect(nestedElBinders[0].nestedProtoView).toBe(nestedElBinders[1].nestedProtoView);
+            done();
+          });
+        });
+
+        it('should allow recursive components', (done) => {
+          var compiler = createCompiler( (parent, current, control) => {
+            current.inheritedProtoView = new ProtoView(current.element, null, null);
+            current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+            current.componentDirective = reader.read(RecursiveComponent);
+          });
+          compiler.compile(RecursiveComponent, null).then( (protoView) => {
+            expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
+            done();
+          });
+        });
       });
     });
+
+    describe('(mixed async, sync TemplateLoader)', () => {
+      function createCompiler(processClosure, templateLoader: TemplateLoader) {
+        var steps = [new MockStep(processClosure)];
+        return new TestableCompiler(reader, steps, templateLoader);
+      }
+
+      function createNestedComponentSpec(name, loader: TemplateLoader, error:string = null) {
+        it(`should load nested components ${name}`, (done) => {
+
+          var compiler = createCompiler((parent, current, control) => {
+            if (DOM.hasClass(current.element, 'parent')) {
+              current.componentDirective = reader.read(NestedComponent);
+              current.inheritedProtoView = parent.inheritedProtoView;
+              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+            } else {
+              current.inheritedProtoView = new ProtoView(current.element, null, null);
+            }
+          }, loader);
+
+          PromiseWrapper.then(compiler.compile(ParentComponent),
+            function(protoView) {
+              var nestedView = protoView.elementBinders[0].nestedProtoView;
+              expect(error).toBeNull();
+              expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
+              done();
+            },
+            function(compileError) {
+              expect(compileError.message).toEqual(error);
+              done();
+            }
+          );
+        });
+      }
+
+      var loader = new FakeTemplateLoader();
+      loader.setSync(ParentComponent);
+      loader.setSync(NestedComponent);
+      createNestedComponentSpec('(sync -> sync)', loader);
+
+      loader = new FakeTemplateLoader();
+      loader.setAsync(ParentComponent);
+      loader.setSync(NestedComponent);
+      createNestedComponentSpec('(async -> sync)', loader);
+
+      loader = new FakeTemplateLoader();
+      loader.setSync(ParentComponent);
+      loader.setAsync(NestedComponent);
+      createNestedComponentSpec('(sync -> async)', loader);
+
+      loader = new FakeTemplateLoader();
+      loader.setAsync(ParentComponent);
+      loader.setAsync(NestedComponent);
+      createNestedComponentSpec('(async -> async)', loader);
+
+      loader = new FakeTemplateLoader();
+      loader.setError(ParentComponent);
+      loader.setSync(NestedComponent);
+      createNestedComponentSpec('(error -> sync)', loader,
+        'Failed to load the template for ParentComponent');
+
+      // TODO(vicb): Check why errors this fails with Dart
+      // TODO(vicb): The Promise is rejected with the correct error but an exc is thrown before
+      //loader = new FakeTemplateLoader();
+      //loader.setSync(ParentComponent);
+      //loader.setError(NestedComponent);
+      //createNestedComponentSpec('(sync -> error)', loader,
+      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+      //
+      //loader = new FakeTemplateLoader();
+      //loader.setAsync(ParentComponent);
+      //loader.setError(NestedComponent);
+      //createNestedComponentSpec('(async -> error)', loader,
+      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+
+    });
   });
-
 }
-
 
 @Component({
   template: new TemplateConfig({
-    url: '/parent'
+    inline: '<div class="parent"></div>'
   })
 })
-class XHRParentComponent {}
+class ParentComponent {}
 
 @Component({
   template: new TemplateConfig({
@@ -201,14 +248,9 @@ class RecursiveComponent {}
 class TestableCompiler extends Compiler {
   steps:List;
 
-  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, strategy:ShadowDomStrategy,
-    xhr: XHRMock) {
-    super(dynamicChangeDetection,
-          new TemplateLoader(xhr),
-          reader,
-          new Parser(new Lexer()),
-          new CompilerCache(),
-          strategy);
+  constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, loader: TemplateLoader) {
+    super(dynamicChangeDetection, loader, reader, new Parser(new Lexer()), new CompilerCache(),
+          new NativeShadowDomStrategy());
     this.steps = steps;
   }
 
@@ -225,5 +267,72 @@ class MockStep extends CompileStep {
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     this.processClosure(parent, current, control);
+  }
+}
+
+class FakeTemplateLoader extends TemplateLoader {
+  _forceSync: boolean;
+  _forceAsync: boolean;
+  _syncCmp: List<Type>;
+  _asyncCmp: List<Type>;
+  _errorCmp: List<Type>;
+
+  constructor() {
+    super (new XHRMock());
+    this._forceSync = false;
+    this._forceAsync = false;
+    this._syncCmp = [];
+    this._asyncCmp = [];
+    this._errorCmp = [];
+  }
+
+  forceSync() {
+    this._forceSync = true;
+    this._forceAsync = false;
+  }
+
+  forceAsync() {
+    this._forceAsync = true;
+    this._forceSync = false;
+  }
+
+  setSync(component: Type) {
+    ListWrapper.push(this._syncCmp, component);
+  }
+
+  setAsync(component: Type) {
+    ListWrapper.push(this._asyncCmp, component);
+  }
+
+  setError(component: Type) {
+    ListWrapper.push(this._errorCmp, component);
+  }
+
+  load(cmpMetadata: DirectiveMetadata) {
+    var annotation:Component = cmpMetadata.annotation;
+    var tplConfig:TemplateConfig = annotation.template;
+
+    if (isBlank(tplConfig.inline)) {
+      throw 'The component must define an inline template';
+    }
+
+    var template = DOM.createTemplate(tplConfig.inline);
+
+    if (ListWrapper.contains(this._errorCmp, cmpMetadata.type)) {
+      return PromiseWrapper.reject('Fail to load');
+    }
+
+    if (ListWrapper.contains(this._syncCmp, cmpMetadata.type)) {
+      return template;
+    }
+
+    if (ListWrapper.contains(this._asyncCmp, cmpMetadata.type)) {
+      return PromiseWrapper.resolve(template);
+    }
+
+    if (this._forceSync) return template;
+    if (this._forceAsync) return PromiseWrapper.resolve(template);
+
+    throw `No template configured for ${stringify(cmpMetadata.type)}`;
   }
 }

@@ -39,4 +39,8 @@ export class PromiseWrapper {
   static setTimeout(fn:Function, millis:int) {
     window.setTimeout(fn, millis);
   }
+
+  static isPromise(maybePromise):boolean {
+    return maybePromise instanceof Promise;
+  }
 }
