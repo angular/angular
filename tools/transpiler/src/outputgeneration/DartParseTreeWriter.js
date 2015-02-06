@@ -99,9 +99,15 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   visitTemplateLiteralPortion(tree) {
-    this.writeRaw_(tree.value.toString().replace(/('|")/g, "\\$&"));
+    this.writeRaw_(tree.value.toString()
+      .replace(/('|")/g, "\\$&")
+      .replace(/([^\\])\$/g, "$1\\\$")
+      .replace(/^\$/, '\\\$'));
   }
 
+  visitLiteralExpression(tree) {
+    this.write_(('' + tree.literalToken).replace(/([^\\])\$/g, "$1\\\$"));
+  }
 
   // FUNCTIONS
   // - remove the "function" keyword
