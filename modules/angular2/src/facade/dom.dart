@@ -120,6 +120,16 @@ class DOM {
   static bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 
+  static setStyle(Element element, String stylename, String stylevalue) {
+      element.style.setProperty(stylename, stylevalue);
+  }
+  static removeStyle(Element element, String stylename) {
+      element.style.removeProperty(stylename);
+  }
+  static getStyle(Element element, String stylename) {
+      return element.style.getPropertyValue(stylename);
+  }
+
   static String tagName(Element element) => element.tagName;
 
   static Map<String, String> attributeMap(Element element) =>

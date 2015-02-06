@@ -1,4 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, stringify} from 'angular2/src/facade/lang';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, stringify} from 'angular2/src/facade/lang';
 import {Element, DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -16,6 +16,8 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
+var DOT_REGEXP = RegExpWrapper.create('\\.');
+
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
@@ -31,6 +33,29 @@ function classSetterFactory(className:string) {
       }
     };
     StringMapWrapper.set(classSettersCache, className, setterFn);
+  }
+
+  return setterFn;
+}
+
+const STYLE_PREFIX = 'style.';
+var styleSettersCache = StringMapWrapper.create();
+
+function styleSetterFactory(styleName:string, stylesuffix:string) {
+  var cacheKey = styleName + stylesuffix;
+  var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
+
+  if (isBlank(setterFn)) {
+    setterFn = function(element:Element, value) {
+      var valAsStr;
+      if (isPresent(value)) {
+        valAsStr = stringify(value);
+        DOM.setStyle(element, styleName, valAsStr + stylesuffix);
+      } else {
+        DOM.removeStyle(element, styleName);
+      }
+    };
+    StringMapWrapper.set(classSettersCache, cacheKey, setterFn);
   }
 
   return setterFn;
@@ -92,10 +117,14 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      var setterFn;
-      
+      var setterFn, styleParts, styleSuffix;
+
       if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
+      } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
+        styleParts = StringWrapper.split(property, DOT_REGEXP);
+        styleSuffix = styleParts.length > 2 ?  ListWrapper.get(styleParts, 2) : '';
+        setterFn = styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
       } else if (DOM.hasProperty(compileElement.element, property)) {
         setterFn = reflector.setter(property);
       }
