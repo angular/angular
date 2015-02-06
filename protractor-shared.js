@@ -10,7 +10,7 @@ var config = exports.config = {
   onPrepare: function() {
     browser.ignoreSynchronization = true;
     var _get = browser.get;
-    var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 5000 : 2000;
+    var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 7000 : 3000;
     browser.get = function() {
       var result = _get.apply(this, arguments);
       browser.sleep(sleepInterval);

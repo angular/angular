@@ -1,7 +1,6 @@
 library random_data;
 
 import 'common.dart';
-import 'package:fixnum/fixnum.dart';
 
 List<Offering> generateOfferings(int count) =>
   new List.generate(count, generateOffering);
@@ -34,7 +33,7 @@ Opportunity generateOpportunity(int seed) {
 
 Account generateAccount(int seed) {
   return new Account()
-    ..accountId = new Int64(seed);
+    ..accountId = seed;
 }
 
 String generateName(int seed) {

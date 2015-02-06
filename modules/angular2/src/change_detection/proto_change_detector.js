@@ -360,7 +360,7 @@ function _operationToFunction(operation:string):Function {
 }
 
 function s(v) {
-  return isPresent(v) ? '' + v : '';
+  return isPresent(v) ? `${v}` : '';
 }
 
 function _interpolationFn(strings:List) {

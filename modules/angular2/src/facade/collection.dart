@@ -71,7 +71,7 @@ class StringMapWrapper {
 }
 
 class ListWrapper {
-  static List clone(List l) => new List.from(l);
+  static List clone(Iterable l) => new List.from(l);
   static List create() => new List();
   static List createFixedSize(int size) => new List(size);
   static get(List m, int k) => m[k];
@@ -136,6 +136,9 @@ class ListWrapper {
       if (a[i] != b[i]) return false;
     }
     return true;
+  }
+  static List slice(List l, int from, int to) {
+    return l.sublist(from, to);
   }
 }
 

@@ -2,7 +2,6 @@ library common.stuff;
 
 import 'dart:async';
 import 'dart:collection';
-import 'package:fixnum/fixnum.dart';
 import 'package:observe/observe.dart';
 
 const ITEMS = 1000;
@@ -204,8 +203,8 @@ class Opportunity extends RawEntity {
 }
 
 class Account extends RawEntity {
-  Int64 get accountId => this['accountId'];
-  set accountId(Int64 val) {
+  int get accountId => this['accountId'];
+  set accountId(int val) {
     this['accountId'] = val;
   }
 }

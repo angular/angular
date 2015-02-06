@@ -1,8 +1,8 @@
 var perfUtil = require('../../angular2/e2e_test/perf_util');
 
-describe('ng-dart1.x naive infinite scroll benchmark', function () {
+describe('ng2 naive infinite scroll benchmark', function () {
 
-  var URL = 'benchmarks_external/src/naive_infinite_scroll/index.html';
+  var URL = 'benchmarks/src/naive_infinite_scroll/index.html';
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
@@ -11,17 +11,17 @@ describe('ng-dart1.x naive infinite scroll benchmark', function () {
         appSize, function() {
       perfUtil.runBenchmark({
         url: URL,
-        id: 'ng1-dart1.x.naive_infinite_scroll',
+        id: 'ng2.naive_infinite_scroll',
         work: function() {
           browser.executeScript(
               'document.querySelector("scroll-app /deep/ #reset-btn").click()');
           browser.executeScript(
               'document.querySelector("scroll-app /deep/ #run-btn").click()');
-          var s = 1000;
-          if (appSize > 4) {
-            s = s + appSize * 100;
-          }
-          browser.sleep(s);
+          browser.wait(() => {
+            return $('#done').getText().then(
+              function() { return true; },
+              function() { return false; });
+            }, 10000);
         },
         params: [{
           name: 'appSize', value: appSize

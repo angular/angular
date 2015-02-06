@@ -176,6 +176,9 @@ export class ListWrapper {
     }
     return true;
   }
+  static slice(l:List, from:int, to:int):List {
+    return l.slice(from, to);
+  }
 }
 
 export function isListLikeIterable(obj):boolean {
