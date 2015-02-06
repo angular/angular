@@ -436,7 +436,9 @@ gulp.task('test.dart/ci', function (done) {
 });
 gulp.task('test.transpiler.unittest', function (done) {
   return gulp.src('tools/transpiler/unittest/**/*.js')
-      .pipe(jasmine())
+      .pipe(jasmine({
+        includeStackTrace: true
+      }))
 });
 gulp.task('ci', function(done) {
   runSequence(
