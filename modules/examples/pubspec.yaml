@@ -8,6 +8,9 @@ dependencies:
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"
 transformers:
+  - angular2:
+      entry_point: web/src/hello_world/index.dart
+      html_entry_point: web/src/hello_world/index.html
   - $dart2js:
       minify: true
       commandLineOptions: [--trust-type-annotations, --trust-primitives, --dump-info]

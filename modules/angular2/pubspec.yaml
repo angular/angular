@@ -3,6 +3,10 @@ version: 2.0.0-alpha.1
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  analyzer: '0.22.4'
+  barback: '0.15.2+2'
+  code_transformers: '0.2.5'
+  html5lib: '0.12.0'
   stack_trace: '1.1.1'
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"
