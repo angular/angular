@@ -1,6 +1,8 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/facade/dom';
+import {Type, isPresent, BaseException} from 'angular2/src/facade/lang';
+import {assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection,
@@ -50,7 +52,6 @@ export function main() {
 
       it('should consume text node changes', (done) => {
         tplResolver.setTemplate(MyComp, new Template({inline: '<div>{{ctxProp}}</div>'}));
-
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
           ctx.ctxProp = 'Hello World!';
@@ -365,6 +366,60 @@ export function main() {
         })
       });
     });
+
+    // TODO support these tests with DART e.g. with Promise.catch (JS) transpiled to Future.catchError (DART)
+    if (assertionsEnabled() && isJsObject({})) {
+
+      function expectCompileError(inlineTpl, errMessage, done) {
+        tplResolver.setTemplate(MyComp, new Template({inline: inlineTpl}));
+        compiler.compile(MyComp).then(() => {
+          throw new BaseException("Test failure: should not have come here as an exception was expected");
+        },(err) => {
+          expect(err.message).toBe(errMessage);
+          done();
+        });
+      }
+
+      it('should raise an error if no directive is registered for an unsupported DOM property', (done) => {
+        expectCompileError(
+          '<div [some-prop]="foo"></div>',
+          'Missing directive to handle \'some-prop\' in MyComp: <div [some-prop]="foo">',
+          done
+        );
+      });
+
+      it('should raise an error if no directive is registered for a template with template bindings', (done) => {
+        expectCompileError(
+          '<div><div template="if: foo"></div></div>',
+          'Missing directive to handle \'if\' in <div template="if: foo">',
+          done
+        );
+      });
+
+      it('should raise an error for missing template directive (1)', (done) => {
+        expectCompileError(
+          '<div><template foo></template></div>',
+          'Missing directive to handle: <template foo>',
+          done
+        );
+      });
+
+      it('should raise an error for missing template directive (2)', (done) => {
+        expectCompileError(
+          '<div><template *if="condition"></template></div>',
+          'Missing directive to handle: <template *if="condition">',
+          done
+        );
+      });
+
+      it('should raise an error for missing template directive (3)', (done) => {
+        expectCompileError(
+          '<div *if="condition"></div>',
+          'Missing directive to handle \'if\' in MyComp: <div *if="condition">',
+          done
+        );
+      });
+    }
   });
 }
 
@@ -470,6 +525,19 @@ class CompWithAncestor {
   myAncestor: SomeDirective;
   constructor(@Ancestor() someComp: SomeDirective) {
     this.myAncestor = someComp;
+  }
+}
+
+@Component({
+  selector: '[child-cmp2]',
+  componentServices: [MyService]
+})
+class ChildComp2 {
+  ctxProp:string;
+  dirProp:string;
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
+    this.dirProp = null;
   }
 }
 

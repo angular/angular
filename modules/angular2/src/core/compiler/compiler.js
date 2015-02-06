@@ -17,6 +17,7 @@ import {Template} from '../annotations/template';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {CompileStep} from './pipeline/compile_step';
 
+
 /**
  * Cache that stores the ProtoView of the template of a component.
  * Used to prevent duplicate work and resolve cyclic dependencies.
@@ -134,7 +135,15 @@ export class Compiler {
   // TODO(vicb): union type return ProtoView or Promise<ProtoView>
   _compileTemplate(template: Template, tplElement: Element, component: Type) {
     var pipeline = new CompilePipeline(this.createSteps(component, template));
-    var compileElements = pipeline.process(tplElement);
+    var compilationCtxtDescription = stringify(this._reader.read(component).type);
+    var compileElements;
+
+    try {
+      compileElements = pipeline.process(tplElement, compilationCtxtDescription);
+    } catch(ex) {
+      return PromiseWrapper.reject(ex);
+    }
+
     var protoView = compileElements[0].inheritedProtoView;
 
     // Populate the cache before compiling the nested components,

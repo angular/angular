@@ -9,6 +9,8 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
+import {$BANG} from 'angular2/src/change_detection/parser/lexer';
+
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
  * For `<template>` elements:
@@ -32,14 +34,35 @@ import {StringWrapper} from 'angular2/src/facade/lang';
  */
 export class ViewSplitter extends CompileStep {
   _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  constructor(parser:Parser) {
     super();
     this._parser = parser;
-    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    var attrs = current.attrs();
+    var templateBindings = MapWrapper.get(attrs, 'template');
+    var hasTemplateBinding = isPresent(templateBindings);
+
+    // look for template shortcuts such as !if="condition" and treat them as template="if condition"
+    MapWrapper.forEach(attrs, (attrValue, attrName) => {
+      if (StringWrapper.charCodeAt(attrName, 0) == $BANG) {
+        var key = StringWrapper.substring(attrName, 1);  // remove the bang
+        if (hasTemplateBinding) {
+          // 2nd template binding detected
+          throw new BaseException(`Only one template directive per element is allowed: ` +
+              `${templateBindings} and ${key} cannot be used simultaneously ` +
+              `in ${current.elementDescription}`);
+        } else {
+          if (isBlank(parent)) {
+            throw new BaseException(`Template directives cannot be used on root components in ${current.elementDescription}`);
+          }
+          templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
+          hasTemplateBinding = true;
+        }
+      }
+    });
+
     if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
@@ -49,6 +72,9 @@ export class ViewSplitter extends CompileStep {
           var currentElement:TemplateElement = current.element;
           var viewRootElement:TemplateElement = viewRoot.element;
           this._moveChildNodes(DOM.content(currentElement), DOM.content(viewRootElement));
+          // viewRoot is a doesn't appear in the original template, so we associate
+          // the current element description to get a more meaninful message in case of error
+          viewRoot.elementDescription = current.elementDescription;
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
         }
@@ -64,7 +90,8 @@ export class ViewSplitter extends CompileStep {
             if (hasTemplateBinding) {
               // 2nd template binding detected
               throw new BaseException(`Only one template directive per element is allowed: ` +
-                  `${templateBindings} and ${key} cannot be used simultaneously!`);
+                `${templateBindings} and ${key} cannot be used simultaneously ` +
+                `in ${current.elementDescription}`);
             } else {
               templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
               hasTemplateBinding = true;
@@ -74,6 +101,9 @@ export class ViewSplitter extends CompileStep {
 
         if (hasTemplateBinding) {
           var newParent = new CompileElement(DOM.createTemplate(''));
+          // newParent doesn't appear in the original template, so we associate
+          // the current element description to get a more meaninful message in case of error
+          newParent.elementDescription = current.elementDescription;
           current.isViewRoot = true;
           this._parseTemplateBindings(templateBindings, newParent);
           this._addParentElement(current.element, newParent.element);
@@ -99,7 +129,7 @@ export class ViewSplitter extends CompileStep {
   }
 
   _parseTemplateBindings(templateBindings:string, compileElement:CompileElement) {
-    var bindings = this._parser.parseTemplateBindings(templateBindings, this._compilationUnit);
+    var bindings = this._parser.parseTemplateBindings(templateBindings, compileElement.elementDescription);
     for (var i=0; i<bindings.length; i++) {
       var binding = bindings[i];
       if (binding.keyIsVar) {
