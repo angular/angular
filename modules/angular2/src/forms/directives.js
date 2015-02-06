@@ -4,6 +4,11 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
 
+class ControlGroupDirectiveBase {
+  addDirective(directive):void {}
+  findControl(name:string):Control { return null; }
+}
+
 export class ControlDirectiveBase {
   _groupDecorator:ControlGroupDirectiveBase;
   _el:NgElement;
@@ -48,11 +53,6 @@ export class ControlDirectiveBase {
   }
 }
 
-class ControlGroupDirectiveBase {
-  addDirective(c:ControlNameDirective):void {}
-  findControl(name:string):Control {}
-}
-
 
 @Decorator({
   selector: '[control-name]',
@@ -61,13 +61,9 @@ class ControlGroupDirectiveBase {
   }
 })
 export class ControlNameDirective extends ControlDirectiveBase {
-  _groupDecorator:ControlGroupDirective;
-  _el:NgElement;
-  _controlName:String;
-
   constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement) {
-  super(groupDecorator, el);
-}
+    super(groupDecorator, el);
+  }
 }
 
 @Decorator({
@@ -77,13 +73,9 @@ export class ControlNameDirective extends ControlDirectiveBase {
   }
 })
 export class ControlDirective extends ControlDirectiveBase {
-  _groupDecorator:ControlGroupDirective;
-  _el:NgElement;
-  _controlName:String;
-
   constructor(@Ancestor() groupDecorator:NewControlGroupDirective, el:NgElement) {
-  super(groupDecorator, el);
-}
+    super(groupDecorator, el);
+  }
 }
 
 @Decorator({
