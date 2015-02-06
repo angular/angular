@@ -416,7 +416,6 @@ export class ProtoView {
       // view might get dehydrated, in between the event queuing up and
       // firing.
       if (view.hydrated()) {
-        // HACK
         MapWrapper.set(locals, `$event`, event);
         var context = new ContextWithVariableBindings(view.context, locals);
         expr.eval(context);
