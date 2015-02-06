@@ -150,6 +150,16 @@ export class View {
       var elementInjector = this.elementInjectors[i];
       if (isPresent(elementInjector)) {
         elementInjector.instantiateDirectives(appInjector, shadowDomAppInjector, this.preBuiltObjects[i]);
+
+        // The exporting of $implicit is a special case. Since multiple elements will all export
+        // the different values as $implicit, directly assign $implicit bindings to the variable
+        // name.
+        var exportImplicitName = elementInjector.getExportImplicitName();
+        if (elementInjector.isExportingComponent()) {
+          this.context.set(exportImplicitName, elementInjector.getComponent());
+        } else if (elementInjector.isExportingElement()) {
+          this.context.set(exportImplicitName, elementInjector.getNgElement().domElement);
+        }
       }
 
       if (isPresent(componentDirective)) {

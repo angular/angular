@@ -211,10 +211,22 @@ export class ProtoElementInjector  {
   index:int;
   view:View;
   distanceToParent:number;
+
+  /** Whether the element is exported as $implicit. */
+  exportElement:boolean;
+
+  /** Whether the component instance is exported as $implicit. */
+  exportComponent:boolean;
+
+  /** The variable name that will be set to $implicit for the element. */
+  exportImplicitName:string;
+
   constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false, distanceToParent:number = 0) {
     this.parent = parent;
     this.index = index;
     this.distanceToParent = distanceToParent;
+    this.exportComponent = false;
+    this.exportElement = false;
 
     this._binding0IsComponent = firstBindingIsComponent;
     this._binding0 = null; this._keyId0 = null;
@@ -403,6 +415,11 @@ export class ElementInjector extends TreeNode {
 
   forElement(el):boolean {
     return this._preBuiltObjects.element.domElement === el;
+  }
+
+  /** Gets the NgElement associated with this ElementInjector */
+  getNgElement() {
+    return this._preBuiltObjects.element;
   }
 
   getComponent() {
@@ -602,6 +619,21 @@ export class ElementInjector extends TreeNode {
 
   hasEventEmitter(eventName: string) {
     return this._proto.hasEventEmitter(eventName);
+  }
+
+  /** Gets whether this element is exporting a component instance as $implicit. */
+  isExportingComponent() {
+    return this._proto.exportComponent;
+  }
+
+  /** Gets whether this element is exporting its element as $implicit. */
+  isExportingElement() {
+    return this._proto.exportElement;
+  }
+
+  /** Get the name to which this element's $implicit is to be assigned. */
+  getExportImplicitName() {
+    return this._proto.exportImplicitName;
   }
 }
 

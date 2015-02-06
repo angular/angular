@@ -133,6 +133,62 @@ export function main() {
           done();
         });
       });
+
+      it('should assign the component instance to a var-', (done) => {
+        compiler.compile(MyComp, el('<p><child-cmp var-alice></child-cmp></p>')).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+
+          done();
+        })
+      });
+
+      it('should assign two component instances each with a var-', (done) => {
+        var element = el('<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>');
+
+        compiler.compile(MyComp, element).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+          expect(view.contextWithLocals.get('bob')).toBeAnInstanceOf(ChildComp);
+          expect(view.contextWithLocals.get('alice')).not.toBe(view.contextWithLocals.get('bob'));
+
+          done();
+        })
+      });
+
+      it('should assign the component instance to a var- with shorthand syntax', (done) => {
+        compiler.compile(MyComp, el('<child-cmp #alice></child-cmp>')).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+
+          done();
+        })
+      });
+
+      it('should assign the element instance to a user-defined variable', (done) => {
+        // How is this supposed to work?
+        var element = el('<p></p>');
+        var div = el('<div var-alice></div>');
+        DOM.appendChild(div, el('<i>Hello</i>'));
+        DOM.appendChild(element, div);
+
+        compiler.compile(MyComp, element).then((pv) => {
+          createView(pv);
+          expect(view.contextWithLocals).not.toBe(null);
+
+          var value = view.contextWithLocals.get('alice');
+          expect(value).not.toBe(null);
+          expect(value.tagName).toEqual('DIV');
+
+          done();
+        })
+      });
     });
   });
 }

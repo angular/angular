@@ -1,5 +1,5 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {Key} from 'angular2/di';
 import {ProtoElementInjector, ComponentKeyMetaData, DirectiveBinding} from '../element_injector';
@@ -39,7 +39,10 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     // but after the directives as we rely on that order
     // in the element_binder_builder.
 
-    if (injectorBindings.length > 0) {
+    // Create a protoElementInjector for any element that either has bindings *or* has one
+    // or more var- defined. Elements with a var- defined need a their own element injector
+    // so that, when hydrating, $implicit can be set to the element.
+    if (injectorBindings.length > 0 || isPresent(current.variableBindings)) {
       var protoView = current.inheritedProtoView;
       var hasComponent = isPresent(current.componentDirective);
 
@@ -48,6 +51,18 @@ export class ProtoElementInjectorBuilder extends CompileStep {
         hasComponent, distanceToParentInjector
       );
       current.distanceToParentInjector = 0;
+
+      // Template directives are treated differently than other element with var- definitions.
+      if (isPresent(current.variableBindings) && !isPresent(current.templateDirective)) {
+        current.inheritedProtoElementInjector.exportComponent = hasComponent;
+        current.inheritedProtoElementInjector.exportElement = !hasComponent;
+
+        // experiment
+        var exportImplicitName = MapWrapper.get(current.variableBindings, '\$implicit');
+        if (isPresent(exportImplicitName)) {
+          current.inheritedProtoElementInjector.exportImplicitName = exportImplicitName;
+        }
+      }
 
     } else {
       current.inheritedProtoElementInjector = parentProtoElementInjector;
