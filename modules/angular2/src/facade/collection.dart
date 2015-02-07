@@ -110,6 +110,7 @@ class ListWrapper {
       list.remove(items[i]);
     }
   }
+  static removeLast(List list) => list.removeLast();
   static bool remove(List list, item) => list.remove(item);
   static void clear(List l) {
     l.clear();

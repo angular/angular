@@ -92,6 +92,8 @@ export class ViewPort {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var view = this.detach(atIndex);
     view.dehydrate();
+    // TODO(rado): this needs to be delayed until after any pending animations.
+    this.defaultProtoView.returnToPool(view);
     // view is intentionally not returned to the client.
   }
 

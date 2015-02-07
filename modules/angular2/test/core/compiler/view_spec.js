@@ -31,6 +31,13 @@ class FakeViewPort {
   }
 }
 
+@proxy
+@IMPLEMENTS(View)
+class FakeView {
+  noSuchMethod(i) {
+    super.noSuchMethod(i);
+  }
+}
 
 export function main() {
   describe('view', function() {
@@ -67,6 +74,14 @@ export function main() {
 
         view.dehydrate();
         expect(view.hydrated()).toBe(false);
+      });
+
+      it('should use the view pool to reuse views', () => {
+        var pv = new ProtoView(el('<div id="1"></div>'), new DynamicProtoChangeDetector(), null);
+        var fakeView = new FakeView();
+        pv.returnToPool(fakeView);
+
+        expect(pv.instantiate(null)).toBe(fakeView);
       });
     });
 

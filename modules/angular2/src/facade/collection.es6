@@ -149,6 +149,9 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
+  static removeLast(list:List) {
+    return list.pop();
+  }
   static remove(list, el): boolean {
     var index = list.indexOf(el);
     if (index > -1) {

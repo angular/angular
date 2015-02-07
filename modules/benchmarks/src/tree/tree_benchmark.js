@@ -43,7 +43,7 @@ function setupReflector() {
       },
       template: new TemplateConfig({
           directives: [TreeComponent, NgIf],
-          inline: `<span>{{data.value}}<span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+          inline: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
       })
     })]
   });

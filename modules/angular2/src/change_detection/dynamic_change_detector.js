@@ -39,14 +39,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.formatters = formatters;
 
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
-    ListWrapper.fill(this.values, uninitialized);
-
     this.changes = ListWrapper.createFixedSize(protoRecords.length + 1);
 
     this.protos = protoRecords;
   }
 
   setContext(context:any) {
+    ListWrapper.fill(this.values, uninitialized);
     this.values[0] = context;
   }
 

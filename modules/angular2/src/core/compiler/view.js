@@ -15,11 +15,16 @@ import {ViewPort} from './viewport';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
+import {ViewPool} from './view_pool';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
 // TODO(tbosch): Cannot use `const` because of Dart.
 var NO_FORMATTERS = MapWrapper.create();
+
+// TODO(rado): make this configurable/smarter.
+var VIEW_POOL_CAPACITY = 10000;
+var VIEW_POOL_PREFILL = 0;
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
@@ -268,6 +273,7 @@ export class ProtoView {
   rootBindingOffset:int;
   isTemplateElement:boolean;
   shadowDomStrategy: ShadowDomStrategy;
+  _viewPool: ViewPool;
   constructor(
       template:Element,
       protoChangeDetector:ProtoChangeDetector,
@@ -284,10 +290,23 @@ export class ProtoView {
       ? 1 : 0;
     this.isTemplateElement = this.element instanceof TemplateElement;
     this.shadowDomStrategy = shadowDomStrategy;
+    this._viewPool = new ViewPool(VIEW_POOL_CAPACITY);
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
   instantiate(hostElementInjector: ElementInjector):View {
+    if (this._viewPool.length() == 0) this._preFillPool(hostElementInjector);
+    var view = this._viewPool.pop();
+    return isPresent(view) ? view : this._instantiate(hostElementInjector);
+  }
+
+  _preFillPool(hostElementInjector: ElementInjector) {
+    for (var i = 0; i < VIEW_POOL_PREFILL; i++) {
+      this._viewPool.push(this._instantiate(hostElementInjector));
+    }
+  }
+
+  _instantiate(hostElementInjector: ElementInjector): View {
     var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
     var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
@@ -407,6 +426,10 @@ export class ProtoView {
       viewPorts, preBuiltObjects, componentChildViews);
 
     return view;
+  }
+
+  returnToPool(view: View) {
+    this._viewPool.push(view);
   }
 
   static _addNativeEventListener(element: Element, eventName: string, expr: AST, view: View) {
