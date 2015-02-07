@@ -1,7 +1,7 @@
-import {TemplateConfig, Component, Decorator, NgElement, Ancestor} from 'angular2/core';
+import {TemplateConfig, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
 import {DOM} from 'angular2/src/facade/dom';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
 
 class ControlGroupDirectiveBase {
@@ -9,72 +9,125 @@ class ControlGroupDirectiveBase {
   findControl(name:string):Control { return null; }
 }
 
-export class ControlDirectiveBase {
-  _groupDecorator:ControlGroupDirectiveBase;
-  _el:NgElement;
-  _controlName:string;
+@CONST()
+export class ControlValueAccessor {
+  readValue(el){}
+  writeValue(el, value):void {}
+}
 
-  constructor(groupDecorator, el:NgElement)  {
-    this._groupDecorator = groupDecorator;
-    this._el = el;
-    DOM.on(el.domElement, "change", (_) => this._updateControl());
+@CONST()
+class DefaultControlValueAccessor extends ControlValueAccessor {
+  constructor() {
+    super();
   }
 
-  set controlName(name:string) {
-    this._controlName = name;
-    this._groupDecorator.addDirective(this);
-    this._updateDOM();
+  readValue(el) {
+    return el.value;
   }
 
-  get controlName() {
-    return this._controlName;
+  writeValue(el, value):void {
+    el.value = value;
+  }
+}
+
+@CONST()
+class CheckboxControlValueAccessor extends ControlValueAccessor {
+  constructor() {
+    super();
   }
 
-  //TODO:vsavkin: Remove it once change detection lifecycle callbacks are available
-  isInitialized():boolean {
-    return isPresent(this._controlName);
+  readValue(el):boolean {
+    return el.checked;
   }
 
-  _updateDOM() {
-    // remove it once all DOM write go through a queue
-    if (this.isInitialized()) {
-      var inputElement:any = this._el.domElement;
-      inputElement.value = this._control().value;
-    }
+  writeValue(el, value:boolean):void {
+    el.checked = value;
   }
+}
 
-  _updateControl() {
-    var inputElement:any = this._el.domElement;
-    this._control().value = inputElement.value;
-  }
+var controlValueAccessors = {
+  "checkbox" : new CheckboxControlValueAccessor(),
+  "text" : new DefaultControlValueAccessor()
+};
 
-  _control() {
-    return this._groupDecorator.findControl(this._controlName);
+function controlValueAccessorFor(controlType:string):ControlValueAccessor {
+  var accessor = StringMapWrapper.get(controlValueAccessors, controlType);
+  if (isPresent(accessor)) {
+    return accessor;
+  } else {
+    return StringMapWrapper.get(controlValueAccessors, "text");
   }
 }
 
 
+export class ControlDirectiveBase {
+  _groupDecorator:ControlGroupDirectiveBase;
+  _el:NgElement;
+
+  controlName:string;
+  type:string;
+  valueAccessor:ControlValueAccessor;
+
+  constructor(groupDecorator, el:NgElement)  {
+    this._groupDecorator = groupDecorator;
+    this._el = el;
+  }
+
+  _initialize() {
+    if (isBlank(this.valueAccessor)) {
+      this.valueAccessor = controlValueAccessorFor(this.type);
+    }
+    this._groupDecorator.addDirective(this);
+    this._updateDomValue();
+    DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
+  }
+
+  _updateDomValue() {
+    this.valueAccessor.writeValue(this._el.domElement, this._control().value);
+  }
+
+  _updateControlValue() {
+    this._control().value = this.valueAccessor.readValue(this._el.domElement);
+  }
+
+  _control() {
+    return this._groupDecorator.findControl(this.controlName);
+  }
+}
+
 @Decorator({
+  lifecycle: [onChange],
   selector: '[control-name]',
   bind: {
-    'control-name' : 'controlName'
+    'control-name' : 'controlName',
+    'type' : 'type'
   }
 })
 export class ControlNameDirective extends ControlDirectiveBase {
   constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement) {
     super(groupDecorator, el);
   }
+
+  onChange(_) {
+    this._initialize();
+  }
 }
 
 @Decorator({
+  lifecycle: [onChange],
   selector: '[control]',
   bind: {
-    'control' : 'controlName'
+    'control' : 'controlName',
+    'type' : 'type'
   }
 })
 export class ControlDirective extends ControlDirectiveBase {
   constructor(@Ancestor() groupDecorator:NewControlGroupDirective, el:NgElement) {
     super(groupDecorator, el);
+  }
+
+  onChange(_) {
+    this._initialize();
   }
 }
 
@@ -95,7 +148,7 @@ export class ControlGroupDirective extends ControlGroupDirectiveBase {
 
   set controlGroup(controlGroup:ControlGroup) {
     this._controlGroup = controlGroup;
-    ListWrapper.forEach(this._directives, (cd) => cd._updateDOM());
+    ListWrapper.forEach(this._directives, (cd) => cd._updateDomValue());
   }
 
   addDirective(c:ControlNameDirective) {
@@ -144,10 +197,8 @@ export class NewControlGroupDirective extends ControlGroupDirectiveBase {
 
   _createControlGroup():ControlGroup {
     var controls = ListWrapper.reduce(this._directives, (memo, cd) => {
-      if (cd.isInitialized()) {
-        var initControlValue = this._initData[cd.controlName];
-        memo[cd.controlName] = new Control(initControlValue);
-      }
+      var initControlValue = this._initData[cd.controlName];
+      memo[cd.controlName] = new Control(initControlValue);
       return memo;
     }, {});
     return new ControlGroup(controls);
@@ -157,3 +208,8 @@ export class NewControlGroupDirective extends ControlGroupDirectiveBase {
     return this._controlGroup.value;
   }
 }
+
+export var FormDirectives = [
+  ControlGroupDirective, ControlNameDirective,
+  ControlDirective, NewControlGroupDirective
+];

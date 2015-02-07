@@ -8,9 +8,10 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {Injector} from 'angular2/di';
 import {DOM} from 'angular2/src/facade/dom';
 
-import {Component, TemplateConfig} from 'angular2/core';
-import {ControlDirective, ControlNameDirective, ControlGroupDirective, NewControlGroupDirective,
-  Control, ControlGroup} from 'angular2/forms';
+import {Component, Decorator, TemplateConfig} from 'angular2/core';
+import {ControlGroupDirective, ControlNameDirective,
+  ControlDirective, NewControlGroupDirective,
+  Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
 
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
@@ -36,11 +37,6 @@ export function main() {
     });
   }
 
-  function formComponent(view) {
-    // TODO: vsavkin remove when view variables work
-    return view.elementInjectors[0].getComponent();
-  }
-
   describe("integration tests", () => {
     it("should initialize DOM elements with the given form object", (done) => {
       var ctx = new MyComp(new ControlGroup({
@@ -48,7 +44,7 @@ export function main() {
       }));
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -65,7 +61,7 @@ export function main() {
       var ctx = new MyComp(form);
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -86,7 +82,7 @@ export function main() {
       var ctx = new MyComp(form);
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -108,7 +104,7 @@ export function main() {
       }), "one");
 
       var t = `<div [control-group]="form">
-                <input [control-name]="name">
+                <input type="text" [control-name]="name">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -123,11 +119,51 @@ export function main() {
       });
     });
 
+    describe("different control types", () => {
+      it("should support type=checkbox", (done) => {
+        var ctx = new MyComp(new ControlGroup({"checkbox": new Control(true)}));
+
+        var t = `<div [control-group]="form">
+                  <input type="checkbox" control-name="checkbox">
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.checked).toBe(true);
+
+          input.checked = false;
+          dispatchEvent(input, "change");
+
+          expect(ctx.form.value).toEqual({"checkbox" : false});
+          done();
+        });
+      });
+
+      it("should support custom value accessors", (done) => {
+        var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
+
+        var t = `<div [control-group]="form">
+                  <input type="text" control-name="name" wrapped-value>
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("!aa!");
+
+          input.value = "!bb!";
+          dispatchEvent(input, "change");
+
+          expect(ctx.form.value).toEqual({"name" : "bb"});
+          done();
+        });
+      });
+    });
+
     describe("declarative forms", () => {
       it("should initialize dom elements", (done) => {
         var t = `<div [new-control-group]="{'login': 'loginValue', 'password':'passValue'}">
-                  <input id="login" [control]="'login'">
-                  <input id="password" [control]="'password'">
+                  <input type="text" id="login" control="login">
+                  <input type="password" id="password" control="password">
                 </div>`;
 
         compile(MyComp, t, new MyComp(), (view) => {
@@ -142,8 +178,8 @@ export function main() {
       });
 
       it("should update the control group values on DOM change", (done) => {
-        var t = `<div [new-control-group]="{'login': 'loginValue'}">
-                  <input [control]="'login'">
+        var t = `<div #form [new-control-group]="{'login': 'loginValue'}">
+                  <input type="text" control="login">
                 </div>`;
 
         compile(MyComp, t, new MyComp(), (view) => {
@@ -152,7 +188,8 @@ export function main() {
           input.value = "updatedValue";
           dispatchEvent(input, "change");
 
-          expect(formComponent(view).value).toEqual({'login': 'updatedValue'});
+          var form = view.contextWithLocals.get("form");
+          expect(form.value).toEqual({'login': 'updatedValue'});
           done();
         });
       });
@@ -166,7 +203,7 @@ export function main() {
   template: new TemplateConfig({
     inline: "",
     directives: [ControlGroupDirective, ControlNameDirective,
-      ControlDirective, NewControlGroupDirective]
+      ControlDirective, NewControlGroupDirective, WrappedValue]
   })
 })
 class MyComp {
@@ -176,5 +213,24 @@ class MyComp {
   constructor(form = null, name = null) {
     this.form = form;
     this.name = name;
+  }
+}
+
+class WrappedValueAccessor extends ControlValueAccessor {
+  readValue(el){
+    return el.value.substring(1, el.value.length - 1);
+  }
+
+  writeValue(el, value):void {
+    el.value = `!${value}!`;
+  }
+}
+
+@Decorator({
+  selector:'[wrapped-value]'
+})
+class WrappedValue {
+  constructor(cd:ControlNameDirective) {
+    cd.valueAccessor = new WrappedValueAccessor();
   }
 }
