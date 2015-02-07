@@ -34,7 +34,7 @@ function gulpTraceur(options, resolveModuleName) {
 
       if (sourceMap) {
         var sourceMapFile = cloneFile(file, {
-          path: file.path.replace(/\.js$/, '.map'),
+          path: file.path.replace(/\.\w+$/, '.map'),
           contents: JSON.stringify(sourceMap)
         });
 

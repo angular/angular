@@ -17,6 +17,7 @@ var rundartpackage = require('./tools/build/rundartpackage');
 var multicopy = require('./tools/build/multicopy');
 var karma = require('karma').server;
 var minimist = require('minimist');
+var es5build = require('./tools/build/es5build');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
@@ -67,8 +68,14 @@ var CONFIG = {
   dest: {
     js: {
       all: 'dist/js',
-      dev: 'dist/js/dev',
-      prod: 'dist/js/prod',
+      dev: {
+        es6: 'dist/js/dev/es6',
+        es5: 'dist/js/dev/es5'
+      },
+      prod: {
+        es6: 'dist/js/prod/es6',
+        es5: 'dist/js/prod/es5'
+      },
       dart2js: 'dist/js/dart2js'
     },
     dart: 'dist/dart',
@@ -131,10 +138,12 @@ var CONFIG = {
       js: {
         dev: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
           typeAssertionModule: 'rtts_assert/rtts_assert',
-          typeAssertions: true
+          typeAssertions: true,
+          outputLanguage: 'es6'
         }),
         prod: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
-          typeAssertions: false
+          typeAssertions: false,
+          outputLanguage: 'es6'
         })
       },
       dart: {
@@ -212,12 +221,12 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 
 gulp.task('build/deps.js.dev', deps(gulp, gulpPlugins, {
   src: CONFIG.deps.js,
-  dest: CONFIG.dest.js.dev
+  dest: CONFIG.dest.js.dev.es5
 }));
 
 gulp.task('build/deps.js.prod', deps(gulp, gulpPlugins, {
   src: CONFIG.deps.js,
-  dest: CONFIG.dest.js.prod
+  dest: CONFIG.dest.js.prod.es5
 }));
 
 gulp.task('build/deps.js.dart2js', deps(gulp, gulpPlugins, {
@@ -228,23 +237,49 @@ gulp.task('build/deps.js.dart2js', deps(gulp, gulpPlugins, {
 // ------------
 // transpile
 
-gulp.task('build/transpile.js.dev', transpile(gulp, gulpPlugins, {
+gulp.task('build/transpile.js.dev.es6', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.js,
   copy: CONFIG.transpile.copy.js,
-  dest: CONFIG.dest.js.dev,
-  outputExt: 'js',
+  dest: CONFIG.dest.js.dev.es6,
+  outputExt: 'es6',
   options: CONFIG.transpile.options.js.dev,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
-gulp.task('build/transpile.js.prod', transpile(gulp, gulpPlugins, {
+gulp.task('build/transpile.js.dev.es5', es5build({
+  src: CONFIG.dest.js.dev.es6,
+  dest: CONFIG.dest.js.dev.es5,
+  modules: 'instantiate'
+}));
+
+gulp.task('build/transpile.js.dev', function() {
+  return runSequence(
+    'build/transpile.js.dev.es6',
+    'build/transpile.js.dev.es5'
+  );
+});
+
+gulp.task('build/transpile.js.prod.es6', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.js,
   copy: CONFIG.transpile.copy.js,
-  dest: CONFIG.dest.js.prod,
-  outputExt: 'js',
+  dest: CONFIG.dest.js.prod.es6,
+  outputExt: 'es6',
   options: CONFIG.transpile.options.js.prod,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
+
+gulp.task('build/transpile.js.prod.es5', es5build({
+  src: CONFIG.dest.js.prod.es6,
+  dest: CONFIG.dest.js.prod.es5,
+  modules: 'instantiate'
+}));
+
+gulp.task('build/transpile.js.prod', function() {
+  return runSequence(
+    'build/transpile.js.prod.es6',
+    'build/transpile.js.prod.es5'
+  );
+});
 
 gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.dart,
@@ -278,14 +313,14 @@ gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
 
 gulp.task('build/html.js.dev', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.js,
-  dest: CONFIG.dest.js.dev,
+  dest: CONFIG.dest.js.dev.es5,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
 }));
 
 gulp.task('build/html.js.prod', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.js,
-  dest: CONFIG.dest.js.prod,
+  dest: CONFIG.dest.js.prod.es5,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
 }));
@@ -354,12 +389,12 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.dev,
+  path: CONFIG.dest.js.dev.es5,
   port: 8000
 }));
 
 gulp.task('serve.js.prod', jsserve(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.prod,
+  path: CONFIG.dest.js.prod.es5,
   port: 8001
 }));
 

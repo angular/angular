@@ -4,6 +4,7 @@ var fs = require('fs');
 var glob = require('glob');
 var path = require('path');
 var traceur = require('traceur');
+var assert = require('assert');
 
 exports.RUNTIME_PATH = traceur.RUNTIME_PATH;
 var TRACEUR_PATH = traceur.RUNTIME_PATH.replace('traceur-runtime.js', 'traceur.js');
@@ -55,6 +56,11 @@ exports.compile = function compile(options, paths, source) {
     result.sourceMap = JSON.parse(sourceMapString);
   }
 
+  if (localOptions.outputLanguage === 'es6' && source.indexOf('$traceurRuntime') === -1) {
+    assert(result.js.indexOf('$traceurRuntime') === -1,
+      'Transpile to ES6 must not add references to $traceurRuntime, '
+        + inputPath + ' is transpiled to:\n' + result.js);
+  }
   return result;
 };
 
