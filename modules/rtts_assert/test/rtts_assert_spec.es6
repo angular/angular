@@ -10,8 +10,7 @@
 //   - [assert.structure](#assert-structure)
 // - [Integrating with Traceur](#integrating-with-traceur)
 
-import {assert} from 'rtts_assert/rtts_assert';
-
+// Note: `assert` gets automatically included by traceur!
 
 export function main() {
 
@@ -370,27 +369,6 @@ describe('Traceur', function() {
     });
   });
 
-  // Note: `int` is not part of JS types, but rtts_assert exposes a global
-  // so that it can be used as well.
-  describe('int', function() {
-
-    it('should pass', function() {
-      var x:int = 10;
-    });
-
-    it('should fail', function() {
-      expect(() => {
-        var x:int = 'ok';
-      }).toThrowError('Expected an instance of int, got "ok"!');
-    });
-
-    it('should fail', function() {
-      expect(() => {
-        var x:int = 12.3;
-      }).toThrowError('Expected an instance of int, got 12.3!');
-    });
-
-  });
 
   describe('generics', function() {
 

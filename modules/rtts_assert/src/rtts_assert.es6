@@ -230,13 +230,6 @@ function returnType(actual, T) {
   return actual;
 }
 
-// `int` is not a valid JS type, and traceur will leave
-// it untouched. However, we want to be able to use it,
-// so we provide it as a global
-var intType = _global['int'] = define('int', function(value) {
-  return typeof value === 'number' && value%1 === 0;
-});
-
 // TODO(vojta): define these with DSL?
 var string = type.string = define('string', function(value) {
   return typeof value === 'string';
@@ -362,7 +355,6 @@ assert.fail = fail;
 assert.string = string;
 assert.number = number;
 assert.boolean = boolean;
-assert.int = intType;
 
 // custom types
 assert.arrayOf = arrayOf;

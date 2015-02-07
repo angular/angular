@@ -166,8 +166,8 @@ export class ListWrapper {
   static isEmpty(list) {
     return list.length == 0;
   }
-  static fill(list:List, value, start:int = 0, end:int = undefined) {
-    list.fill(value, start, end);
+  static fill(list:List, value, start:int = 0, end:int = null) {
+    list.fill(value, start, end === null ? undefined: end);
   }
   static equals(a:List, b:List):boolean {
     if(a.length != b.length) return false;
