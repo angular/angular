@@ -12,9 +12,9 @@ const mockDirective = '''
     library angular2.src.core.annotations.annotations_dart;
 
     const class Directive {
-      final String selector;
+      final context;
 
-      const Directive({this.selector});
+      const Directive({this.context});
     }''';
 
 final htmlEntryPointContent = """

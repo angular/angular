@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:collection' show Queue;
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/java_core.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/resolver.dart';
 import 'package:html5lib/dom.dart' as dom;
@@ -347,9 +348,7 @@ class _BootstrapFileBuilder {
 import 'package:angular2/src/reflection/reflection.dart' show reflector;
 ${importsBuffer}
 main() {
-/* NOTE(tjblasi): Breaks function until we have "annotations" generated correctly.
 $initializersBuffer;
-*/
 i0.main();
 }
 ''';
@@ -399,6 +398,15 @@ i0.main();
     return mapFunc != null ? ctor.parameters.map(mapFunc).join(', ') : '';
   }
 
+  String _writeAnnotationsProperty(ClassDeclaration node, Map<LibraryElement, String> libraryPrefixes) {
+    var writer = new PrintStringWriter();
+    writer.print('const [');
+    var visitor = new _AnnotationsTransformVisitor(writer, libraryPrefixes);
+    node.metadata.forEach((m) => m.accept(visitor));
+    writer.print(']');
+    return writer.toString();
+  }
+
   _writeInitializer(_InitializerData data,
       Map<LibraryElement, String> libraryPrefixes, StringBuffer buffer) {
     final annotationElement = data.annotation.element;
@@ -411,24 +419,14 @@ i0.main();
       _logger.error('Unsupported annotation type. '
           'Only constructors are supported as Directives.');
     }
-    var node = data.element.node;
+    var node = element.node;
     if (node is! ClassDeclaration) {
       _logger.error(
           'Unsupported annotation type. Only class declarations are supported as Directives.');
     }
-    final AstNode annotation =
-        node.metadata.firstWhere((m) => m.elementAnnotation == data.annotation);
-    var annotationString = annotation.toSource().replaceFirst('@', 'const ');
 
-    final metaPrefix = libraryPrefixes[annotationElement.library];
-    var elementString;
     if (element is ClassElement) {
-      elementString =
-          '${libraryPrefixes[data.element.library]}.${element.name}';
-      if (element.constructors.length != 1) {
-        _logger.error(
-            'We expect exactly one constructor for the annotated class.');
-      }
+      var elementString = '${libraryPrefixes[data.element.library]}.${element.name}';
       final ConstructorElement ctor = element.constructors[0];
       if (buffer.isEmpty) {
         buffer.write('reflector');
@@ -438,11 +436,91 @@ i0.main();
         ..writeln('..registerType(${elementString}, {')
         ..write('"factory": (${_parameterList(ctor, libraryPrefixes)}) => '
             'new ${elementString}(${_parameterList(ctor, libraryPrefixes, withTypes: false)}),\n'
-            '"parameters": const [const [${_parameterList(ctor, libraryPrefixes, withNames: false)}]]\n'
+            '"parameters": const [const [${_parameterList(ctor, libraryPrefixes, withNames: false)}]],\n'
+            '"annotations": ${_writeAnnotationsProperty(node, libraryPrefixes)}\n'
             '})');
     } else {
-      _logger.error('Initializers can only be applied to classes.');
+      _logger.error('Directives can only be applied to classes.');
     }
+  }
+}
+
+class _TransformVisitor extends ToSourceVisitor {
+
+  final PrintWriter _writer;
+  final Map<LibraryElement, String> _libraryPrefixes;
+
+  _TransformVisitor(PrintWriter writer, this._libraryPrefixes)
+  : this._writer = writer, super(writer);
+
+  /// Safely visit the given node.
+  /// @param node the node to be visited
+  void _visitNode(AstNode node) {
+    if (node != null) {
+      node.accept(this);
+    }
+  }
+
+  String _getPrefixDot(LibraryElement lib) {
+    var prefix = null;
+    if (lib != null && !lib.isInSdk) {
+      prefix = _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}');
+    }
+    return prefix == null ? '' : '${prefix}.';
+  }
+
+  /**
+   * Safely visit the given node, printing the prefix before the node if it is non-`null`.
+   *
+   * @param prefix the prefix to be printed if there is a node to visit
+   * @param node the node to be visited
+   */
+  void _visitNodeWithPrefix(String prefix, AstNode node) {
+    if (node != null) {
+      _writer.print(prefix);
+      node.accept(this);
+    }
+  }
+
+  /**
+   * Safely visit the given node, printing the suffix after the node if it is non-`null`.
+   *
+   * @param suffix the suffix to be printed if there is a node to visit
+   * @param node the node to be visited
+   */
+  void _visitNodeWithSuffix(AstNode node, String suffix) {
+    if (node != null) {
+      node.accept(this);
+      _writer.print(suffix);
+    }
+  }
+
+  @override
+  Object visitSimpleIdentifier(SimpleIdentifier node) {
+    if (node.bestElement is ClassElementImpl) {
+      _writer
+        ..print(_getPrefixDot(node.bestElement.library))
+        ..print(node.token.lexeme);
+    } else {
+      return super.visitSimpleIdentifier(node);
+    }
+    return null;
+  }
+}
+
+class _AnnotationsTransformVisitor extends _TransformVisitor {
+
+  _AnnotationsTransformVisitor(PrintWriter writer, libraryPrefixes)
+  : super(writer, libraryPrefixes);
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    _writer.print('const ');
+    _visitNode(node.name);
+//     TODO(tjblasi): Do we need to handle named constructors for annotations?
+//    _visitNodeWithPrefix(".", node.constructorName);
+    _visitNode(node.arguments);
+    return null;
   }
 }
 
