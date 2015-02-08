@@ -417,6 +417,15 @@ microsyntax for `foreach`.
 </ul>
 ```
 
+Finally, we can pull the `foreach` selector into the attribute key and prefix it with `!`.
+
+```
+<ul>
+  <li !foreach="var person in people; var i=index">{{i}}. {{item}}<li>
+</ul>
+```
+
+
 The format is intentionally defined freely, so that developers of directives can build expressive microsyntax for
 their directives. Following describes a more formal definition.
 
