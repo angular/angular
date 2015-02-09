@@ -14,6 +14,7 @@ var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var rundartpackage = require('./tools/build/rundartpackage');
+var multicopy = require('./tools/build/multicopy');
 var karma = require('karma').server;
 var minimist = require('minimist');
 
@@ -177,6 +178,9 @@ var CONFIG = {
   pubspec: {
     src: 'modules/*/pubspec.yaml'
   },
+  license: {
+    src: 'LICENSE'
+  },
   formatDart: {
     packageName: 'dart_style',
     args: ['dart_style:format', '-w', 'dist/dart']
@@ -292,6 +296,25 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart,
   scriptsPerFolder: CONFIG.html.scriptsPerFolder.dart
 }));
+
+// ------------
+// license
+
+gulp.task('build/license.js.dev', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.license.src,
+  dest: CONFIG.dest.js.dev
+}));
+
+gulp.task('build/license.js.prod', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.license.src,
+  dest: CONFIG.dest.js.prod
+}));
+
+gulp.task('build/license.dart', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.license.src,
+  dest: CONFIG.dest.dart
+}));
+
 
 // ------------
 // pubspec
@@ -454,6 +477,7 @@ gulp.task('build.dart', function() {
   return runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
+    'build/license.dart',
     'build/pubbuild.dart',
     'build/analyze.dart',
     'build/format.dart'
@@ -462,13 +486,15 @@ gulp.task('build.dart', function() {
 
 gulp.task('build.js.dev', function() {
   return runSequence(
-    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev']
+    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev'],
+    'build/license.js.dev'    
   );
 });
 
 gulp.task('build.js.prod', function() {
   return runSequence(
-    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod']
+    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
+    'build/license.js.prod'
   );
 });
 
