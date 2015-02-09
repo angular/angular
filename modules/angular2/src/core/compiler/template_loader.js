@@ -31,21 +31,47 @@ export class TemplateLoader {
       return PromiseWrapper.resolve(template);
     }
 
+    if (isPresent(tplConfig.url) && isPresent(tplConfig.cssUrl)) {
+      return Promise.all([
+        this.buildUrl(tplConfig.url),
+        this.buildUrl(tplConfig.cssUrl)
+      ])
+      .then((props) => {
+        // if I had .spread this would be one line
+        var html = props[0];
+        var style = props[1];
+        return this.createTemplateWithCss(html, style);
+      });
+    }
+
     if (isPresent(tplConfig.url)) {
-      var url = tplConfig.url;
-      var promise = StringMapWrapper.get(this._cache, url);
+      return this.buildUrl(tplConfig.url).then(DOM.createTemplate);
+    }
 
-      if (isBlank(promise)) {
-        promise = this._xhr.get(url).then(function (html) {
-          var template = DOM.createTemplate(html);
-          return template;
-        });
-        StringMapWrapper.set(this._cache, url, promise);
-      }
-
-      return promise;
+    if (isPresent(tplConfig.cssUrl)) {
+      return this.buildUrl(tplConfig.cssUrl).then(DOM.createStyleElement);
     }
 
     throw new BaseException(`No template configured for component ${stringify(cmpMetadata.type)}`);
   }
+  buildUrl(url):Promise {
+    var promise = StringMapWrapper.get(this._cache, url);
+
+    if (isBlank(promise)) {
+      promise = this._xhr.get(url)
+      StringMapWrapper.set(this._cache, url, promise);
+    }
+
+    return promise;
+  }
+  createTemplateWithCss(html, css) {
+    var style = DOM.createStyleElement(css);
+
+    var d = DOM.createElement('div');
+    DOM.setInnerHTML(d, html);
+    DOM.insertBefore(d.firstChild, style);
+
+    return DOM.createTemplate(d.innerHTML);
+  }
+
 }
