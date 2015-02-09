@@ -373,27 +373,39 @@ i0.main();
     buffer.writeln(' as $prefix;');
   }
 
-  String _writeAnnotationsProperty(ClassDeclaration node, Map<LibraryElement, String> libraryPrefixes) {
-    var writer = new PrintStringWriter();
-    var visitor = new _AnnotationsTransformVisitor(writer, libraryPrefixes);
-    node.accept(visitor);
-    return writer.toString();
-  }
-
-  String _writeFactoryProperty(ConstructorDeclaration ctor,
+  String _writeAnnotationsProp(ClassElement el,
       Map<LibraryElement, String> libraryPrefixes) {
     var writer = new PrintStringWriter();
-    var visitor = new _FactoryTransformVisitor(writer, libraryPrefixes);
-    ctor.accept(visitor);
+    var visitor = new _AnnotationsTransformVisitor(writer, libraryPrefixes);
+    el.node.accept(visitor);
     return writer.toString();
   }
 
-  String _writeParametersProperty(ConstructorDeclaration ctor,
+  String _writeFactoryProp(ConstructorElement ctor,
+      Map<LibraryElement, String> libraryPrefixes) {
+    if (ctor.node == null) {
+      // This occurs when the class does not declare a constructor.
+      var prefix = _getPrefixDot(libraryPrefixes, ctor.type.element.library);
+      return '() => new ${prefix}${ctor.enclosingElement.displayName}()';
+    } else {
+      var writer = new PrintStringWriter();
+      var visitor = new _FactoryTransformVisitor(writer, libraryPrefixes);
+      ctor.node.accept(visitor);
+      return writer.toString();
+    }
+  }
+
+  String _writeParametersProp(ConstructorElement ctor,
                                   Map<LibraryElement, String> libraryPrefixes) {
-    var writer = new PrintStringWriter();
-    var visitor = new _ParameterTransformVisitor(writer, libraryPrefixes);
-    ctor.accept(visitor);
-    return writer.toString();
+    if (ctor.node == null) {
+      // This occurs when the class does not declare a constructor.
+      return 'const [const []]';
+    } else {
+      var writer = new PrintStringWriter();
+      var visitor = new _ParameterTransformVisitor(writer, libraryPrefixes);
+      ctor.node.accept(visitor);
+      return writer.toString();
+    }
   }
 
   _writeInitializer(_InitializerData data,
@@ -408,14 +420,17 @@ i0.main();
     if (element is! ClassElement) {
       _logger.error('Directives can only be applied to classes.');
     }
-    var node = element.node;
-    if (node is! ClassDeclaration) {
-      _logger.error(
-          'Unsupported annotation type. Only class declarations are supported as Directives.');
+    if (element.node is! ClassDeclaration) {
+      _logger.error('Unsupported annotation type. '
+          'Only class declarations are supported as Directives.');
+    }
+    final ConstructorElement ctor = element.unnamedConstructor;
+    if (ctor == null) {
+      _logger.error('No default constructor found for ${element.name}');
+      return;
     }
 
     var elementString = '${libraryPrefixes[data.element.library]}.${element.name}';
-    final ConstructorElement ctor = element.constructors[0];
 
     if (buffer.isEmpty) {
       buffer.write('reflector');
@@ -424,11 +439,20 @@ i0.main();
     buffer
       ..writeln()
       ..writeln('..registerType(${elementString}, {')
-      ..write('"factory": ${_writeFactoryProperty(ctor.node, libraryPrefixes)},\n'
-          '"parameters": ${_writeParametersProperty(ctor.node, libraryPrefixes)},\n'
-          '"annotations": ${_writeAnnotationsProperty(node, libraryPrefixes)}\n'
+      ..write('"factory": ${_writeFactoryProp(ctor, libraryPrefixes)},\n'
+          '"parameters": ${_writeParametersProp(ctor, libraryPrefixes)},\n'
+          '"annotations": ${_writeAnnotationsProp(element, libraryPrefixes)}\n'
           '})');
   }
+}
+
+String _getPrefixDot(Map<LibraryElement, String> libraryPrefixes,
+                     LibraryElement lib) {
+  var prefix = null;
+  if (lib != null && !lib.isInSdk) {
+    prefix = libraryPrefixes.putIfAbsent(lib, () => 'i${libraryPrefixes.length}');
+  }
+  return prefix == null ? '' : '${prefix}.';
 }
 
 /// Visitor providing common methods for concrete implementations.
@@ -448,14 +472,6 @@ abstract class _TransformVisitor extends ToSourceVisitor {
     if (node != null) {
       node.accept(this);
     }
-  }
-
-  String _getPrefixDot(LibraryElement lib) {
-    var prefix = null;
-    if (lib != null && !lib.isInSdk) {
-      prefix = _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}');
-    }
-    return prefix == null ? '' : '${prefix}.';
   }
 
   /**
@@ -490,7 +506,7 @@ abstract class _TransformVisitor extends ToSourceVisitor {
     if (node.bestElement is ClassElementImpl ||
         node.bestElement is PropertyAccessorElement) {
       _writer
-        ..print(_getPrefixDot(node.bestElement.library))
+        ..print(_getPrefixDot(_libraryPrefixes, node.bestElement.library))
         ..print(node.token.lexeme);
     } else {
       return super.visitSimpleIdentifier(node);
@@ -513,8 +529,8 @@ class _CtorTransformVisitor extends _TransformVisitor {
   Object _visitNormalFormalParameter(NormalFormalParameter node) {
     if (_withParameterTypes) {
       var paramType = node.element.type;
-      _writer.print('${_getPrefixDot(paramType.element.library)}'
-      '${paramType.displayName}');
+      var prefix = _getPrefixDot(_libraryPrefixes, paramType.element.library);
+      _writer.print('${prefix}${paramType.displayName}');
       if (_withParameterNames) {
         _visitNodeWithPrefix(' ', node.identifier);
       }

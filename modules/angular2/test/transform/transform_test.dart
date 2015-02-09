@@ -232,4 +232,51 @@ main() {
         }
         '''.replaceAll('  ', '')
   }, []);
+
+  testPhases('Synthetic Constructor', [[transform]], {
+      'a|web/index.html': '''
+        <html><head></head><body>
+          <script type="application/dart" src="index.dart"></script>
+        </body></html>
+    '''.replaceAll('  ', ''),
+      'a|web/index.dart': '''
+        library web_foo;
+
+        import 'bar.dart';
+
+        void main() {
+          new Component2();
+        }
+    ''',
+      'a|web/bar.dart': '''
+      library bar;
+
+      import 'package:angular2/src/core/annotations/annotations.dart';
+      import 'package:example/initialize.dart';
+      import 'package:test_initializers/common.dart';
+
+      @Directive(context: 'soup')
+      class Component2 {
+      }
+
+    ''',
+      'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
+  }, {
+      'a|web/index.bootstrap.dart': '''
+        import 'package:angular2/src/reflection/reflection.dart' show reflector;
+        import 'index.dart' as i0;
+        import 'bar.dart' as i1;
+        import 'package:angular2/src/core/annotations/annotations.dart' as i2;
+
+        main() {
+          reflector
+            ..registerType(i1.Component2, {
+              "factory": () => new i1.Component2(),
+              "parameters": const [const []],
+              "annotations": const [const i2.Directive(context: 'soup')]
+            });
+          i0.main();
+        }
+        '''.replaceAll('  ', '')
+  }, []);
 }
