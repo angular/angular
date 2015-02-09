@@ -40,6 +40,9 @@ export class StringMapWrapper {
     // http://jsperf.com/ng2-object-create-null
     return { };
   }
+  static contains(map, key) {
+    return map.hasOwnProperty(key);
+  }
   static get(map, key) {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }

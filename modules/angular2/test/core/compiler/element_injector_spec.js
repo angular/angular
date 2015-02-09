@@ -410,7 +410,7 @@ export function main() {
       });
 
       it('should return viewPort', function () {
-        var viewPort = new ViewPort(null, null, null, null);
+        var viewPort = new ViewPort(null, null, null, null, null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null, null));
 
         expect(inj.get(ViewPort)).toEqual(viewPort);

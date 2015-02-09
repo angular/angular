@@ -5,6 +5,7 @@ import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {EventManager} from 'angular2/src/core/events/event_manager';
 
 export class ViewPort {
   parentView: View;
@@ -12,12 +13,13 @@ export class ViewPort {
   defaultProtoView: ProtoView;
   _views: List<View>;
   _lightDom: any;
+  _eventManager: EventManager;
   elementInjector: ElementInjector;
   appInjector: Injector;
   hostElementInjector: ElementInjector;
 
   constructor(parentView: View, templateElement: Element, defaultProtoView: ProtoView,
-      elementInjector: ElementInjector, lightDom = null) {
+      elementInjector: ElementInjector, eventManager: EventManager, lightDom = null) {
     this.parentView = parentView;
     this.templateElement = templateElement;
     this.defaultProtoView = defaultProtoView;
@@ -28,6 +30,7 @@ export class ViewPort {
     this._views = [];
     this.appInjector = null;
     this.hostElementInjector = null;
+    this._eventManager = eventManager;
   }
 
   hydrate(appInjector: Injector, hostElementInjector: ElementInjector) {
@@ -70,7 +73,7 @@ export class ViewPort {
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated view port');
     // TODO(rado): replace with viewFactory.
-    var newView = this.defaultProtoView.instantiate(this.hostElementInjector);
+    var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
     return this.insert(newView, atIndex);
   }

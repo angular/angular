@@ -60,6 +60,7 @@ class MapWrapper {
 // TODO: how to export StringMap=Map as a type?
 class StringMapWrapper {
   static HashMap create() => new HashMap();
+  static bool contains(Map map, key) => map.containsKey(key);
   static get(Map map, key) => map[key];
   static void set(Map map, key, value) {
     map[key] = value;

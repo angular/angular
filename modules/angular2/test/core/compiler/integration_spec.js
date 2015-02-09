@@ -37,7 +37,7 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(null);
+        view = pv.instantiate(null, null);
         view.hydrate(new Injector([]), null, ctx);
         cd = view.changeDetector;
       }
@@ -66,7 +66,7 @@ export function main() {
       });
 
       it('should consume directive watch expression change.', (done) => {
-        var tpl = 
+        var tpl =
           '<div>' +
             '<div my-dir [elprop]="ctxProp"></div>' +
             '<div my-dir elprop="Hi there!"></div>' +

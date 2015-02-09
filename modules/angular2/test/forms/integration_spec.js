@@ -30,7 +30,7 @@ export function main() {
       new NativeShadowDomStrategy());
 
     compiler.compile(componentType, el(template)).then((pv) => {
-      var view = pv.instantiate(null);
+      var view = pv.instantiate(null, null);
       view.hydrate(new Injector([]), null, context);
       detectChanges(view);
       callback(view);

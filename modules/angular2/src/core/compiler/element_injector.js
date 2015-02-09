@@ -497,8 +497,7 @@ export class ElementInjector extends TreeNode {
     if (isPresent(this._eventCallbacks)) {
       var callback = MapWrapper.get(this._eventCallbacks, dep.eventEmitterName);
       if (isPresent(callback)) {
-        var locals = MapWrapper.create();
-        return ProtoView.buildInnerCallback(callback, view, locals);
+        return ProtoView.buildInnerCallback(callback, view);
       }
     }
     return (_) => {};

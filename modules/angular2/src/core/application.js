@@ -15,6 +15,8 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
+import {EventManager} from 'angular2/src/core/events/event_manager';
+import {HammerGesturesPlugin} from 'angular2/src/core/events/hammer_gestures';
 
 var _rootInjector: Injector;
 
@@ -58,7 +60,7 @@ function _injectorBindings(appComponentType) {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, strategy) => {
+        appComponentAnnotatedType, strategy, eventManager) => {
         return compiler.compile(appComponentAnnotatedType.type, null).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
@@ -67,18 +69,22 @@ function _injectorBindings(appComponentType) {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null);
+          var view = appProtoView.instantiate(null, eventManager);
           view.hydrate(injector, null, new Object());
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          ShadowDomStrategy]),
+          ShadowDomStrategy, EventManager]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
-      bind(LifeCycle).toFactory(() => new LifeCycle(null, assertionsEnabled()),[])
+      bind(LifeCycle).toFactory(() => new LifeCycle(null, assertionsEnabled()),[]),
+      bind(EventManager).toFactory((zone) => {
+        var plugins = [new HammerGesturesPlugin()];
+        return new EventManager(plugins, zone);
+      }, [VmTurnZone]),
   ];
 }
 
@@ -106,12 +112,12 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
-    var appInjector = _createAppInjector(appComponentType, bindings);
+    var appInjector = _createAppInjector(appComponentType, bindings, zone);
 
     PromiseWrapper.then(appInjector.asyncGet(appViewToken),
       (rootView) => {
         // retrieve life cycle: may have already been created if injected in root component
-        var lc=appInjector.get(LifeCycle); 
+        var lc=appInjector.get(LifeCycle);
         lc.registerWith(zone, rootView.changeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
@@ -126,10 +132,11 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List): Injector {
+function _createAppInjector(appComponentType: Type, bindings: List, zone: VmTurnZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
       _injectorBindings(appComponentType);
+  ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
   return _rootInjector.createChild(mergedBindings);
 }

@@ -16,6 +16,7 @@ import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {ViewPool} from './view_pool';
+import {EventManager} from 'angular2/src/core/events/event_manager';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -294,19 +295,19 @@ export class ProtoView {
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
-  instantiate(hostElementInjector: ElementInjector):View {
-    if (this._viewPool.length() == 0) this._preFillPool(hostElementInjector);
+  instantiate(hostElementInjector: ElementInjector, eventManager: EventManager):View {
+    if (this._viewPool.length() == 0) this._preFillPool(hostElementInjector, eventManager);
     var view = this._viewPool.pop();
-    return isPresent(view) ? view : this._instantiate(hostElementInjector);
+    return isPresent(view) ? view : this._instantiate(hostElementInjector, eventManager);
   }
 
-  _preFillPool(hostElementInjector: ElementInjector) {
+  _preFillPool(hostElementInjector: ElementInjector, eventManager: EventManager) {
     for (var i = 0; i < VIEW_POOL_PREFILL; i++) {
-      this._viewPool.push(this._instantiate(hostElementInjector));
+      this._viewPool.push(this._instantiate(hostElementInjector, eventManager));
     }
   }
 
-  _instantiate(hostElementInjector: ElementInjector): View {
+  _instantiate(hostElementInjector: ElementInjector, eventManager: EventManager): View {
     var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
     var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
@@ -387,7 +388,7 @@ export class ProtoView {
       var bindingPropagationConfig = null;
       if (isPresent(binder.componentDirective)) {
         var strategy = this.shadowDomStrategy;
-        var childView = binder.nestedProtoView.instantiate(elementInjector);
+        var childView = binder.nestedProtoView.instantiate(elementInjector, eventManager);
         view.changeDetector.addChild(childView.changeDetector);
 
         lightDom = strategy.constructLightDom(view, childView, element);
@@ -402,7 +403,8 @@ export class ProtoView {
       var viewPort = null;
       if (isPresent(binder.templateDirective)) {
         var destLightDom = this._directParentElementLightDom(protoElementInjector, preBuiltObjects);
-        viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector, destLightDom);
+        viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector,
+          eventManager, destLightDom);
         ListWrapper.push(viewPorts, viewPort);
       }
 
@@ -416,7 +418,8 @@ export class ProtoView {
       if (isPresent(binder.events)) {
         MapWrapper.forEach(binder.events, (expr, eventName) => {
           if (isBlank(elementInjector) || !elementInjector.hasEventEmitter(eventName)) {
-            ProtoView._addNativeEventListener(element, eventName, expr, view);
+            var handler = ProtoView.buildInnerCallback(expr, view);
+            eventManager.addEventListener(element, eventName, handler);
           }
         });
       }
@@ -432,24 +435,15 @@ export class ProtoView {
     this._viewPool.push(view);
   }
 
-  static _addNativeEventListener(element: Element, eventName: string, expr: AST, view: View) {
+  static buildInnerCallback(expr:AST, view:View) {
     var locals = MapWrapper.create();
-    var innerCallback = ProtoView.buildInnerCallback(expr, view, locals);
-    DOM.on(element, eventName, (event) => {
-      if (event.target === element) {
-        innerCallback(event);
-      }
-    });
-  }
-
-  static buildInnerCallback(expr:AST, view:View, locals: Map) {
     return (event) => {
       // Most of the time the event will be fired only when the view is
       // in the live document.  However, in a rare circumstance the
       // view might get dehydrated, in between the event queuing up and
       // firing.
       if (view.hydrated()) {
-        MapWrapper.set(locals, `$event`, event);
+        MapWrapper.set(locals, '$event', event);
         var context = new ContextWithVariableBindings(view.context, locals);
         expr.eval(context);
       }

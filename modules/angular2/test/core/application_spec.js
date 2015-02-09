@@ -131,7 +131,7 @@ export function main() {
       });
     });
 
-    it("should make the provided binings available to the application component", (done) => {
+    it("should make the provided bindings available to the application component", (done) => {
       var injectorPromise = bootstrap(HelloRootCmp3, [
         testBindings,
         bind("appBinding").toValue("BoundValue")
