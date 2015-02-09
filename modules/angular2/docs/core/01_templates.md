@@ -378,7 +378,7 @@ of the templates occurs. One such example is foreach.
 </form>
 <ul>
   <template foreach #person [in]="people" #i="index">
-    <li>{{i}}. {{item}}<li>
+    <li>{{i}}. {{person}}<li>
   </template>
 </ul>
 ```
@@ -394,7 +394,7 @@ syntax is preferable.
 
 ```
 <ul>
-  <li template="foreach; #person; in=people; #i=index;">{{i}}. {{item}}<li>
+  <li template="foreach; #person; in=people; #i=index;">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -404,7 +404,7 @@ which allows us to further shorten the text.
 
 ```
 <ul>
-  <li template="foreach #person in people #i=index">{{i}}. {{item}}<li>
+  <li template="foreach #person in people #i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -413,7 +413,7 @@ microsyntax for `foreach`.
 
 ```
 <ul>
-  <li template="foreach: var person in people; var i=index">{{i}}. {{item}}<li>
+  <li template="foreach: var person in people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
