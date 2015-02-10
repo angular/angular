@@ -1,7 +1,7 @@
 {
-  "name": "rtts-assert",
+  "name": "angular2",
   "version": "2.0.0-alpha.1",
-  "description": "A type assertion library for Traceur.",
+  "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "contributors": {
@@ -15,6 +15,10 @@
     "Yegor Jbanov": "yjbanov@google.com"
   },
   "license": "Apache-2.0",
+  "dependencies": {
+    "zone": "0.4.*",
+    "rtts-assert": "2.0.0-alpha.1"
+  },
   "devDependencies": {
     "yargs": "2.3.*",
     "gulp-sourcemaps": "1.3.*",

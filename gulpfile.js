@@ -157,6 +157,16 @@ var CONFIG = {
       cjs: CJS_COMPILER_OPTIONS
     }
   },
+  copy: {
+    js: ['modules/**/README.md', 'modules/**/package.json'],
+    dart: []
+  },
+  multicopy: {
+    src: {
+      dart: ['LICENSE'],
+      js: ['LICENSE', 'tools/build/es5build.js']
+    }
+  },
   html: {
     src: {
       js: ['modules/*/src/**/*.html'],
@@ -186,9 +196,6 @@ var CONFIG = {
   },
   pubspec: {
     src: 'modules/*/pubspec.yaml'
-  },
-  license: {
-    src: 'LICENSE'
   },
   formatDart: {
     packageName: 'dart_style',
@@ -333,20 +340,33 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
 }));
 
 // ------------
-// license
+// copy
 
-gulp.task('build/license.js.dev', multicopy(gulp, gulpPlugins, {
-  src: CONFIG.license.src,
-  dest: CONFIG.dest.js.dev
+gulp.task('build/copy.js.dev', function() {
+  return gulp.src(CONFIG.copy.js)
+    .pipe(gulp.dest(CONFIG.dest.js.dev.es6));
+});
+
+gulp.task('build/copy.js.prod', function() {
+  return gulp.src(CONFIG.copy.js)
+    .pipe(gulp.dest(CONFIG.dest.js.prod.es6));
+});
+
+// ------------
+// multicopy
+
+gulp.task('build/multicopy.js.dev', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.multicopy.src.js,
+  dest: CONFIG.dest.js.dev.es6
 }));
 
-gulp.task('build/license.js.prod', multicopy(gulp, gulpPlugins, {
-  src: CONFIG.license.src,
-  dest: CONFIG.dest.js.prod
+gulp.task('build/multicopy.js.prod', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.multicopy.src.js,
+  dest: CONFIG.dest.js.prod.es6
 }));
 
-gulp.task('build/license.dart', multicopy(gulp, gulpPlugins, {
-  src: CONFIG.license.src,
+gulp.task('build/multicopy.dart', multicopy(gulp, gulpPlugins, {
+  src: CONFIG.multicopy.src.dart,
   dest: CONFIG.dest.dart
 }));
 
@@ -512,7 +532,7 @@ gulp.task('build.dart', function() {
   return runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
-    'build/license.dart',
+    'build/multicopy.dart',
     'build/pubbuild.dart',
     'build/analyze.dart',
     'build/format.dart'
@@ -521,15 +541,15 @@ gulp.task('build.dart', function() {
 
 gulp.task('build.js.dev', function() {
   return runSequence(
-    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev'],
-    'build/license.js.dev'    
+    ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev'],
+    'build/multicopy.js.dev'
   );
 });
 
 gulp.task('build.js.prod', function() {
   return runSequence(
-    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod'],
-    'build/license.js.prod'
+    ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod', 'build/copy.js.prod'],
+    'build/multicopy.js.prod'
   );
 });
 

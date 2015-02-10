@@ -7,10 +7,13 @@ var fs = require('fs');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
-    var content = fs.readFileSync(config.src);
-    getSubdirs(config.dest).forEach(function(subDir) {
-      var destFile = path.join(config.dest, subDir, path.basename(config.src));
-      fs.writeFileSync(destFile, content);
+    var subDirs = getSubdirs(config.dest);
+    config.src.forEach(function(srcFile) {
+      var content = fs.readFileSync(srcFile);
+      subDirs.forEach(function(subDir) {
+        var destFile = path.join(config.dest, subDir, path.basename(srcFile));
+        fs.writeFileSync(destFile, content);
+      });
     });
   };
 };
