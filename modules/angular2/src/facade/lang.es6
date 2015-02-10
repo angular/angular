@@ -1,5 +1,3 @@
-export {proxy} from 'rtts_assert/rtts_assert';
-
 var _global = typeof window === 'undefined' ? global : window;
 export {_global as global};
 

@@ -1,7 +1,7 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy} from 'angular2/test_lib';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
-import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {DOM, Node} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/di';

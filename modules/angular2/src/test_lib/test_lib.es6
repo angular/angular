@@ -1,5 +1,6 @@
 import {DOM} from 'angular2/src/facade/dom';
 
+export {proxy} from 'rtts_assert/rtts_assert';
 export var describe = window.describe;
 export var xdescribe = window.xdescribe;
 export var ddescribe = window.ddescribe;

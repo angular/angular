@@ -1,8 +1,8 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy} from 'angular2/test_lib';
 
 import {View} from 'angular2/src/core/compiler/view';
 import {ViewPool} from 'angular2/src/core/compiler/view_pool';
-import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 @proxy
 @IMPLEMENTS(View)
