@@ -380,7 +380,7 @@ export function main() {
             (view) => expectViewHasNoDirectiveInstances(view));
         });
 
-        it('should create shadow dom', () => {
+        it('should create shadow dom (Native Strategy)', () => {
           var subpv = new ProtoView(el('<span>hello shadow dom</span>'),
             new DynamicProtoChangeDetector(),
             null);
@@ -391,14 +391,14 @@ export function main() {
           expect(view.nodes[0].shadowRoot.childNodes[0].childNodes[0].nodeValue).toEqual('hello shadow dom');
         });
 
-        it('should use the provided shadow DOM strategy', () => {
+        it('should emulate shadow dom (Emulated Strategy)', () => {
           var subpv = new ProtoView(el('<span>hello shadow dom</span>'),
             new DynamicProtoChangeDetector(), null);
 
           var pv = new ProtoView(el('<cmp class="ng-binding"></cmp>'),
             new DynamicProtoChangeDetector(), new EmulatedShadowDomStrategy());
-          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeComponentWithEmulatedShadowDom], true));
-          binder.componentDirective = new DirectiveMetadataReader().read(SomeComponentWithEmulatedShadowDom);
+          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeComponent], true));
+          binder.componentDirective = new DirectiveMetadataReader().read(SomeComponent);
           binder.nestedProtoView = subpv;
 
           var view = createNestedView(pv);
@@ -656,12 +656,6 @@ class SomeComponent {
   constructor(service: SomeService) {
     this.service = service;
   }
-}
-
-@Component({
-  componentServices: []
-})
-class SomeComponentWithEmulatedShadowDom {
 }
 
 @Decorator({
