@@ -47,7 +47,7 @@ if (!module.parent) {
 
 function run(config) {
   var src = ['!node_modules', '!node_modules/**', './**/*.es6'];
-  gulp.src(src, {cwd: config.src})
+  return gulp.src(src, {cwd: config.src})
     .pipe(rename(function(file) {
       file.extname = file.extname.replace('.es6', '.js');
     }))

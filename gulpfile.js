@@ -253,16 +253,19 @@ gulp.task('build/transpile.js.dev.es6', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
-gulp.task('build/transpile.js.dev.es5', es5build({
-  src: CONFIG.dest.js.dev.es6,
-  dest: CONFIG.dest.js.dev.es5,
-  modules: 'instantiate'
-}));
+gulp.task('build/transpile.js.dev.es5', function() {
+  return es5build({
+    src: CONFIG.dest.js.dev.es6,
+    dest: CONFIG.dest.js.dev.es5,
+    modules: 'instantiate'
+  });
+});
 
-gulp.task('build/transpile.js.dev', function() {
-  return runSequence(
+gulp.task('build/transpile.js.dev', function(done) {
+  runSequence(
     'build/transpile.js.dev.es6',
-    'build/transpile.js.dev.es5'
+    'build/transpile.js.dev.es5',
+    done
   );
 });
 
@@ -275,16 +278,19 @@ gulp.task('build/transpile.js.prod.es6', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
-gulp.task('build/transpile.js.prod.es5', es5build({
-  src: CONFIG.dest.js.prod.es6,
-  dest: CONFIG.dest.js.prod.es5,
-  modules: 'instantiate'
-}));
+gulp.task('build/transpile.js.prod.es5', function() {
+  return es5build({
+    src: CONFIG.dest.js.prod.es6,
+    dest: CONFIG.dest.js.prod.es5,
+    modules: 'instantiate'
+  });
+});
 
-gulp.task('build/transpile.js.prod', function() {
-  return runSequence(
+gulp.task('build/transpile.js.prod', function(done) {
+  runSequence(
     'build/transpile.js.prod.es6',
-    'build/transpile.js.prod.es5'
+    'build/transpile.js.prod.es5',
+    done
   );
 });
 
@@ -344,11 +350,19 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
 
 gulp.task('build/copy.js.dev', function() {
   return gulp.src(CONFIG.copy.js)
+    .pipe(gulpPlugins.template({
+      'channel': 'dev',
+      'packageJson': require('./package.json')
+    }))
     .pipe(gulp.dest(CONFIG.dest.js.dev.es6));
 });
 
 gulp.task('build/copy.js.prod', function() {
   return gulp.src(CONFIG.copy.js)
+    .pipe(gulpPlugins.template({
+      'channel': 'prod',
+      'packageJson': require('./package.json')
+    }))
     .pipe(gulp.dest(CONFIG.dest.js.prod.es6));
 });
 
@@ -522,40 +536,45 @@ gulp.task('ci', function(done) {
   runSequence(
     'test.transpiler.unittest',
     'test.js/ci',
-    'test.dart/ci'
+    'test.dart/ci',
+    done
   );
 });
 
 // -----------------
 // orchestrated targets
-gulp.task('build.dart', function() {
-  return runSequence(
+gulp.task('build.dart', function(done) {
+  runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'build/pubspec.dart',
     'build/multicopy.dart',
     'build/pubbuild.dart',
     'build/analyze.dart',
-    'build/format.dart'
+    'build/format.dart',
+    done
   );
 });
 
-gulp.task('build.js.dev', function() {
-  return runSequence(
+gulp.task('build.js.dev', function(done) {
+  runSequence(
     ['build/deps.js.dev', 'build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev'],
-    'build/multicopy.js.dev'
+    'build/multicopy.js.dev',
+    done
   );
 });
 
-gulp.task('build.js.prod', function() {
-  return runSequence(
+gulp.task('build.js.prod', function(done) {
+  runSequence(
     ['build/deps.js.prod', 'build/transpile.js.prod', 'build/html.js.prod', 'build/copy.js.prod'],
-    'build/multicopy.js.prod'
+    'build/multicopy.js.prod',
+    done
   );
 });
 
-gulp.task('build.cjs', function() {
-  return runSequence(
-    ['build/transpile/tools.cjs', 'build/transpile/e2eTest.cjs']
+gulp.task('build.cjs', function(done) {
+  runSequence(
+    ['build/transpile/tools.cjs', 'build/transpile/e2eTest.cjs'],
+    done
   );
 });
 

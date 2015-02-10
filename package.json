@@ -1,17 +1,27 @@
 {
   "name": "angular",
-  "version": "0.0.0",
-  "description": "Angular",
+  "version": "2.0.0-alpha.5",
+  "description": "Angular 2 - a web framework for modern web apps",
+  "homepage": "https://github.com/angular/angular",
+  "bugs": "https://github.com/angular/angular/issues",
+  "contributors": {
+    "Alex Eagle": "alexeagle@google.com",
+    "Chirayu Krishnappa": "chirayu@google.com",
+    "Jeff Cross": "crossj@google.com",
+    "Misko Hevery": "misko@google.com",
+    "Rado Kirov": "radokirov@google.com",
+    "Tobias Bosch": "tbosch@google.com",
+    "Victor Savkin": "vsavkin@google.com",
+    "Yegor Jbanov": "yjbanov@google.com"
+  },
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
-  "bugs": "https://github.com/angular/angular/issues",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Tobias Bosch <tbosch@google.com>",
-  "license": "Apache-2.0",
   "dependencies": {
     "es6-module-loader": "^0.9.2",
     "systemjs": "^0.9.1",
@@ -22,9 +32,6 @@
     "node-uuid": "1.4.x"
   },
   "devDependencies": {
-    "yargs": "2.3.*",
-    "gulp-sourcemaps": "1.3.*",
-    "gulp-traceur": "0.16.*",
     "angular": "1.3.5",
     "bower": "^1.3.12",
     "canonical-path": "0.0.2",
@@ -36,11 +43,13 @@
     "gulp": "^3.8.8",
     "gulp-changed": "^1.0.0",
     "gulp-connect": "~1.0.5",
-    "gulp-ejs": "^0.3.1",
     "gulp-jasmine": "^1.0.1",
     "gulp-load-plugins": "^0.7.1",
     "gulp-rename": "^1.2.0",
     "gulp-shell": "^0.2.10",
+    "gulp-sourcemaps": "1.3.*",
+    "gulp-template": "^3.0.0",
+    "gulp-traceur": "0.16.*",
     "gulp-webserver": "^0.8.7",
     "karma": "^0.12.23",
     "karma-chrome-launcher": "^0.1.4",
@@ -55,6 +64,7 @@
     "q": "^1.0.1",
     "run-sequence": "^0.3.6",
     "sprintf-js": "1.0.*",
-    "through2": "^0.6.1"
+    "through2": "^0.6.1",
+    "yargs": "2.3.*"
   }
 }

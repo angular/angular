@@ -1,23 +1,16 @@
 {
-  "name": "angular2",
-  "version": "2.0.0-alpha.1",
+  "name": "angular",
+  "version": "<%= packageJson.version %>.<%= channel %>",
   "description": "Angular 2 - a web framework for modern web apps",
-  "homepage": "https://github.com/angular/angular",
-  "bugs": "https://github.com/angular/angular/issues",
-  "contributors": {
-    "Alex Eagle": "alexeagle@google.com",
-    "Chirayu Krishnappa": "chirayu@google.com",
-    "Jeff Cross": "crossj@google.com",
-    "Misko Hevery": "misko@google.com",
-    "Rado Kirov": "radokirov@google.com",
-    "Tobias Bosch": "tbosch@google.com",
-    "Victor Savkin": "vsavkin@google.com",
-    "Yegor Jbanov": "yjbanov@google.com"
-  },
-  "license": "Apache-2.0",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
   "dependencies": {
-    "zone": "0.4.*",
-    "rtts-assert": "2.0.0-alpha.1"
+    <% if (channel==='dev') { %>
+    "ng-rtts-assert": "<%= packageJson.version %>",
+    <% } %>
+    "zone.js": "0.4.*"
   },
   "devDependencies": {
     "yargs": "2.3.*",
