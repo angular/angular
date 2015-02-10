@@ -14,6 +14,7 @@ import 'package:path/path.dart' as path;
 
 import 'src/transform/html_transform.dart';
 import 'src/transform/options.dart';
+import 'src/transform/visitors.dart';
 
 export 'src/transform/options.dart';
 
@@ -113,7 +114,7 @@ class AngularTransformer extends Transformer {
 /// [_annotationClass] and reporting the resulting (element, annotation) pairs.
 class _AnnotationMatcher {
   /// Queue for annotations.
-  final initQueue = new Queue<_InitializerData>();
+  final initQueue = new Queue<_AnnotationMatch>();
   /// All the annotations we have seen for each element
   final _seenAnnotations = new Map<Element, Set<ElementAnnotation>>();
 
@@ -139,7 +140,7 @@ class _AnnotationMatcher {
           .contains(meta);
     }).forEach((ElementAnnotation meta) {
       _seenAnnotations[element].add(meta);
-      initQueue.addLast(new _InitializerData(element, meta));
+      initQueue.addLast(new _AnnotationMatch(element, meta));
       found = true;
     });
     return found;
@@ -283,35 +284,37 @@ class _BootstrapFileBuilder {
   }
 
   String _buildNewEntryPoint(LibraryElement entryLib) {
-    var importsBuffer = new StringBuffer();
-    var initializersBuffer = new StringBuffer();
     var libraryPrefixes = new Map<LibraryElement, String>();
 
     // Import the original entry point.
     libraryPrefixes[entryLib] = 'i0';
 
+    var initializersBuffer = new StringBuffer();
     while (_directiveInfo.initQueue.isNotEmpty) {
-      var next = _directiveInfo.initQueue.removeFirst();
-
-      libraryPrefixes.putIfAbsent(
-          next.element.library, () => 'i${libraryPrefixes.length}');
-      libraryPrefixes.putIfAbsent(
-          next.annotation.element.library, () => 'i${libraryPrefixes.length}');
-
-      _writeInitializer(next, libraryPrefixes, initializersBuffer);
+      _directiveInfo.initQueue.removeFirst().writeRegisterTypeCall(
+          libraryPrefixes, initializersBuffer);
     }
+
+    var outBuffer = new StringBuffer(
+        'import \'package:angular2/src/reflection/reflection.dart\' '
+        'show reflector;\n');
+    // Writing [libraryPrefixes] needs to happen last as prior steps build
+    // the map.
     libraryPrefixes
-        .forEach((lib, prefix) => _writeImport(lib, prefix, importsBuffer));
+        .forEach((lib, prefix) => _writeImport(lib, prefix, outBuffer));
 
     // TODO(jakemac): copyright and library declaration
-    return '''
-import 'package:angular2/src/reflection/reflection.dart' show reflector;
-${importsBuffer}
-main() {
-$initializersBuffer;
-i0.main();
-}
-''';
+    outBuffer
+      ..writeln()
+      ..writeln('main() {');
+    if (initializersBuffer.isNotEmpty) {
+      outBuffer.writeln('reflector${initializersBuffer};');
+    }
+    outBuffer
+      ..writeln('i0.main();')
+      ..writeln('}');
+
+    return outBuffer.toString();
   }
 
   _writeImport(LibraryElement lib, String prefix, StringBuffer buffer) {
@@ -332,57 +335,29 @@ i0.main();
     }
     buffer.writeln(' as $prefix;');
   }
+}
 
-  String _writeAnnotationsProp(ClassElement el,
-      Map<LibraryElement, String> libraryPrefixes) {
-    var writer = new PrintStringWriter();
-    var visitor = new _AnnotationsTransformVisitor(writer, libraryPrefixes);
-    el.node.accept(visitor);
-    return writer.toString();
-  }
+// Element/ElementAnnotation pair.
+class _AnnotationMatch {
+  final Element element;
+  final ElementAnnotation annotation;
 
-  String _writeFactoryProp(ConstructorElement ctor,
-      Map<LibraryElement, String> libraryPrefixes) {
-    if (ctor.node == null) {
-      // This occurs when the class does not declare a constructor.
-      var prefix = _getPrefixDot(libraryPrefixes, ctor.type.element.library);
-      return '() => new ${prefix}${ctor.enclosingElement.displayName}()';
-    } else {
-      var writer = new PrintStringWriter();
-      var visitor = new _FactoryTransformVisitor(writer, libraryPrefixes);
-      ctor.node.accept(visitor);
-      return writer.toString();
-    }
-  }
+  _AnnotationMatch(this.element, this.annotation);
 
-  String _writeParametersProp(ConstructorElement ctor,
-                                  Map<LibraryElement, String> libraryPrefixes) {
-    if (ctor.node == null) {
-      // This occurs when the class does not declare a constructor.
-      return 'const [const []]';
-    } else {
-      var writer = new PrintStringWriter();
-      var visitor = new _ParameterTransformVisitor(writer, libraryPrefixes);
-      ctor.node.accept(visitor);
-      return writer.toString();
-    }
-  }
-
-  _writeInitializer(_InitializerData data,
-      Map<LibraryElement, String> libraryPrefixes, StringBuffer buffer) {
-    final annotationElement = data.annotation.element;
-    final element = data.element;
-
-    if (annotationElement is! ConstructorElement) {
+  // Writes a cascaded `registerType` call into [buffer] for this match,
+  // ensuring that all imported classes and properties are properly prefixed.
+  // These prefixes are added to [libraryPrefixes].
+  writeRegisterTypeCall(Map<LibraryElement, String> libraryPrefixes, StringBuffer buffer) {
+    if (annotation.element is! ConstructorElement) {
       _logger.error('Unsupported annotation type. '
-          'Only constructors are supported as Directives.');
+      'Only constructors are supported as Directives.');
     }
     if (element is! ClassElement) {
       _logger.error('Directives can only be applied to classes.');
     }
     if (element.node is! ClassDeclaration) {
       _logger.error('Unsupported annotation type. '
-          'Only class declarations are supported as Directives.');
+      'Only class declarations are supported as Directives.');
     }
     final ConstructorElement ctor = element.unnamedConstructor;
     if (ctor == null) {
@@ -390,233 +365,11 @@ i0.main();
       return;
     }
 
-    var elementString = '${libraryPrefixes[data.element.library]}.${element.name}';
-
-    if (buffer.isEmpty) {
-      buffer.write('reflector');
-    }
-
-    buffer
-      ..writeln()
-      ..writeln('..registerType(${elementString}, {')
-      ..write('"factory": ${_writeFactoryProp(ctor, libraryPrefixes)},\n'
-          '"parameters": ${_writeParametersProp(ctor, libraryPrefixes)},\n'
-          '"annotations": ${_writeAnnotationsProp(element, libraryPrefixes)}\n'
-          '})');
+    buffer.write('\n..registerType('
+    '${codegenClassTypeString(element, libraryPrefixes)}, {\n'
+    '"factory": ${codegenFactoryProp(ctor, libraryPrefixes)},\n'
+    '"parameters": ${codegenParametersProp(ctor, libraryPrefixes)},\n'
+    '"annotations": ${codegenAnnotationsProp(element, libraryPrefixes)}\n'
+    '})');
   }
-}
-
-String _getPrefixDot(Map<LibraryElement, String> libraryPrefixes,
-                     LibraryElement lib) {
-  var prefix = null;
-  if (lib != null && !lib.isInSdk) {
-    prefix = libraryPrefixes.putIfAbsent(lib, () => 'i${libraryPrefixes.length}');
-  }
-  return prefix == null ? '' : '${prefix}.';
-}
-
-/// Visitor providing common methods for concrete implementations.
-abstract class _TransformVisitor extends ToSourceVisitor {
-
-  final PrintWriter _writer;
-
-  /// Map of [LibraryElement] to its associated prefix.
-  final Map<LibraryElement, String> _libraryPrefixes;
-
-  _TransformVisitor(PrintWriter writer, this._libraryPrefixes)
-  : this._writer = writer, super(writer);
-
-  /// Safely visit the given node.
-  /// @param node the node to be visited
-  void _visitNode(AstNode node) {
-    if (node != null) {
-      node.accept(this);
-    }
-  }
-
-  /**
-   * Safely visit the given node, printing the prefix before the node if it is non-`null`.
-   *
-   * @param prefix the prefix to be printed if there is a node to visit
-   * @param node the node to be visited
-   */
-  void _visitNodeWithPrefix(String prefix, AstNode node) {
-    if (node != null) {
-      _writer.print(prefix);
-      node.accept(this);
-    }
-  }
-
-  /**
-   * Safely visit the given node, printing the suffix after the node if it is non-`null`.
-   *
-   * @param suffix the suffix to be printed if there is a node to visit
-   * @param node the node to be visited
-   */
-  void _visitNodeWithSuffix(AstNode node, String suffix) {
-    if (node != null) {
-      node.accept(this);
-      _writer.print(suffix);
-    }
-  }
-
-  @override
-  Object visitSimpleIdentifier(SimpleIdentifier node) {
-    // Make sure the identifier is prefixed if necessary.
-    if (node.bestElement is ClassElementImpl ||
-        node.bestElement is PropertyAccessorElement) {
-      _writer
-        ..print(_getPrefixDot(_libraryPrefixes, node.bestElement.library))
-        ..print(node.token.lexeme);
-    } else {
-      return super.visitSimpleIdentifier(node);
-    }
-    return null;
-  }
-}
-
-/// SourceVisitor designed to accept [ConstructorDeclaration] nodes.
-class _CtorTransformVisitor extends _TransformVisitor {
-  bool _withParameterTypes = true;
-  bool _withParameterNames = true;
-
-  _CtorTransformVisitor(PrintWriter writer, libraryPrefixes)
-    : super(writer, libraryPrefixes);
-
-  /// If [_withParameterTypes] is true, this method outputs [node]'s type
-  /// (appropriately prefixed based on [_libraryPrefixes]. If
-  /// [_withParameterNames] is true, this method outputs [node]'s identifier.
-  Object _visitNormalFormalParameter(NormalFormalParameter node) {
-    if (_withParameterTypes) {
-      var paramType = node.element.type;
-      var prefix = _getPrefixDot(_libraryPrefixes, paramType.element.library);
-      _writer.print('${prefix}${paramType.displayName}');
-      if (_withParameterNames) {
-        _visitNodeWithPrefix(' ', node.identifier);
-      }
-    } else if (_withParameterNames) {
-      _visitNode(node.identifier);
-    }
-    return null;
-  }
-
-  @override
-  Object visitSimpleFormalParameter(SimpleFormalParameter node) {
-    return _visitNormalFormalParameter(node);
-  }
-
-  @override
-  Object visitFieldFormalParameter(FieldFormalParameter node) {
-    if (node.parameters != null) {
-      throw new Error('Parameters in ctor not supported '
-      '(${super.visitFormalParameterList(node)}');
-    }
-    return _visitNormalFormalParameter(node);
-  }
-
-  @override
-  Object visitDefaultFormalParameter(DefaultFormalParameter node) {
-    _visitNode(node.parameter);
-    return null;
-  }
-
-  @override
-  /// Overridden to avoid outputting grouping operators for default parameters.
-  Object visitFormalParameterList(FormalParameterList node) {
-    _writer.print('(');
-    NodeList<FormalParameter> parameters = node.parameters;
-    int size = parameters.length;
-    for (int i = 0; i < size; i++) {
-      if (i > 0) {
-        _writer.print(', ');
-      }
-      parameters[i].accept(this);
-    }
-    _writer.print(')');
-    return null;
-  }
-}
-
-/// ToSourceVisitor designed to print 'parameters' values for Angular2's
-/// [registerType] calls.
-class _ParameterTransformVisitor extends _CtorTransformVisitor {
-  _ParameterTransformVisitor(PrintWriter writer, libraryPrefixes)
-  : super(writer, libraryPrefixes);
-
-  @override
-  Object visitConstructorDeclaration(ConstructorDeclaration node) {
-    _withParameterNames = false;
-    _withParameterTypes = true;
-    _writer.print('const [const [');
-    _visitNode(node.parameters);
-    _writer.print(']]');
-    return null;
-  }
-
-  @override
-  Object visitFormalParameterList(FormalParameterList node) {
-    NodeList<FormalParameter> parameters = node.parameters;
-    int size = parameters.length;
-    for (int i = 0; i < size; i++) {
-      if (i > 0) {
-        _writer.print(', ');
-      }
-      parameters[i].accept(this);
-    }
-    return null;
-  }
-}
-
-/// ToSourceVisitor designed to print 'factory' values for Angular2's
-/// [registerType] calls.
-class _FactoryTransformVisitor extends _CtorTransformVisitor {
-  _FactoryTransformVisitor(PrintWriter writer, libraryPrefixes)
-    : super(writer, libraryPrefixes);
-
-  @override
-  Object visitConstructorDeclaration(ConstructorDeclaration node) {
-    _withParameterNames = true;
-    _withParameterTypes = true;
-    _visitNode(node.parameters);
-    _writer.print(' => new ');
-    _visitNode(node.returnType);
-    _visitNodeWithPrefix(".", node.name);
-    _withParameterTypes = false;
-    _visitNode(node.parameters);
-    return null;
-  }
-}
-
-/// ToSourceVisitor designed to print a [ClassDeclaration] node as a
-/// 'annotations' value for Angular2's [registerType] calls.
-class _AnnotationsTransformVisitor extends _TransformVisitor {
-
-  _AnnotationsTransformVisitor(PrintWriter writer, libraryPrefixes)
-  : super(writer, libraryPrefixes);
-
-  @override
-  Object visitClassDeclaration(ClassDeclaration node) {
-    _writer.print('const [');
-    node.metadata.forEach((m) => m.accept(this));
-    _writer.print(']');
-    return null;
-  }
-
-  @override
-  Object visitAnnotation(Annotation node) {
-    _writer.print('const ');
-    _visitNode(node.name);
-//     TODO(tjblasi): Do we need to handle named constructors for annotations?
-//    _visitNodeWithPrefix(".", node.constructorName);
-    _visitNode(node.arguments);
-    return null;
-  }
-}
-
-// Element/ElementAnnotation pair.
-class _InitializerData {
-  final Element element;
-  final ElementAnnotation annotation;
-
-  _InitializerData(this.element, this.annotation);
 }

@@ -109,15 +109,15 @@ main() {
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
-        import 'package:angular2/src/core/annotations/annotations.dart' as i2;
-        import 'foo.dart' as i3;
+        import 'foo.dart' as i2;
+        import 'package:angular2/src/core/annotations/annotations.dart' as i3;
 
         main() {
           reflector
             ..registerType(i1.Component2, {
-              "factory": (i3.MyContext c, String inValue) => new i1.Component2(c, inValue),
-              "parameters": const [const [i3.MyContext, String]],
-              "annotations": const [const i2.Directive(context: const i3.MyContext(i3.contextString))]
+              "factory": (i2.MyContext c, String inValue) => new i1.Component2(c, inValue),
+              "parameters": const [const [i2.MyContext, String]],
+              "annotations": const [const i3.Directive(context: const i2.MyContext(i2.contextString))]
             });
           i0.main();
         }
@@ -169,15 +169,15 @@ main() {
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
-        import 'package:angular2/src/core/annotations/annotations.dart' as i2;
-        import 'foo.dart' as i3;
+        import 'foo.dart' as i2;
+        import 'package:angular2/src/core/annotations/annotations.dart' as i3;
 
         main() {
           reflector
             ..registerType(i1.Component2, {
-              "factory": (i3.MyContext c) => new i1.Component2(c),
-              "parameters": const [const [i3.MyContext]],
-              "annotations": const [const i2.Directive(context: const [i3.MyContext])]
+              "factory": (i2.MyContext c) => new i1.Component2(c),
+              "parameters": const [const [i2.MyContext]],
+              "annotations": const [const i3.Directive(context: const [i2.MyContext])]
             });
           i0.main();
         }
