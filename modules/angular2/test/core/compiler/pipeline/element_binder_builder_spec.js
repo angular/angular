@@ -26,7 +26,7 @@ export function main() {
     var evalContext, view, changeDetector;
 
     function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
-    }={}) {
+      }={}) {
       var reflector = new DirectiveMetadataReader();
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
@@ -52,9 +52,6 @@ export function main() {
               });
               hasBinding = true;
             }
-            if (isPresent(protoElementInjector)) {
-              current.inheritedProtoElementInjector = protoElementInjector;
-            }
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
@@ -65,6 +62,13 @@ export function main() {
             if (hasBinding) {
               current.hasBindings = true;
               DOM.addClass(current.element, 'ng-binding');
+            }
+            if (isPresent(protoElementInjector) &&
+                (isPresent(current.element.getAttribute('text-binding')) ||
+                 isPresent(current.element.getAttribute('prop-binding')) ||
+                 isPresent(current.element.getAttribute('directives')) ||
+                 isPresent(current.element.getAttribute('event-binding')))) {
+              current.inheritedProtoElementInjector = protoElementInjector;
             }
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
@@ -114,12 +118,27 @@ export function main() {
       var directives = [SomeDecoratorDirective];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
 
-      var pipeline = createPipeline({protoElementInjector: protoElementInjector, directives: directives});
+      var pipeline = createPipeline({protoElementInjector: protoElementInjector,
+        directives: directives});
       var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].protoElementInjector).toBe(protoElementInjector);
     });
+
+    it('should not store the parent protoElementInjector', () => {
+      var directives = [SomeDecoratorDirective];
+      var eventBindings = MapWrapper.createFromStringMap({
+        'event1': '1+1'
+      });
+
+      var pipeline = createPipeline({directives: directives, eventBindings: eventBindings});
+      var results = pipeline.process(el('<div viewroot directives><div event-binding></div></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[1].protoElementInjector).toBeNull();
+    });
+
 
     it('should store the component directive', () => {
       var directives = [SomeComponentDirective];
