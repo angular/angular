@@ -261,6 +261,10 @@ export class ProtoElementInjector  {
     return new ElementInjector(this, parent, host, eventCallbacks);
   }
 
+  directParent(): ProtoElementInjector {
+    return this.distanceToParent < 2 ? this.parent : null;
+  }
+
   _createBinding(bindingOrType) {
     if (bindingOrType instanceof DirectiveBinding) {
       return bindingOrType;

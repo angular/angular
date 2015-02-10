@@ -77,6 +77,31 @@ export function main() {
           });
         });
 
+        it("should redistribute direct child viewports when the light dom changes", (done) => {
+          var temp = '<multiple-content-tags>' +
+            '<div><div template="manual" class="left">A</div></div>' +
+            '<div>B</div>' +
+            '</multiple-content-tags>';
+
+          compile(temp, (view, lc) => {
+            var dir = view.elementInjectors[1].get(ManualTemplateDirective);
+
+            expect(view.nodes).toHaveText('(, B)');
+
+            dir.show();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(, AB)');
+
+            dir.hide();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(, B)');
+
+            done();
+          });
+        });
+
         it("should redistribute when the light dom changes", (done) => {
           var temp = '<multiple-content-tags>' +
             '<div template="manual" class="left">A</div>' +
