@@ -401,7 +401,7 @@ export class ProtoView {
       // viewPorts
       var viewPort = null;
       if (isPresent(binder.templateDirective)) {
-        var destLightDom = this._parentElementLightDom(protoElementInjector, preBuiltObjects);
+        var destLightDom = this._directParentElementLightDom(protoElementInjector, preBuiltObjects);
         viewPort = new ViewPort(view, element, binder.nestedProtoView, elementInjector, destLightDom);
         ListWrapper.push(viewPorts, viewPort);
       }
@@ -456,8 +456,8 @@ export class ProtoView {
     }
   }
 
-  _parentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {
-    var p = protoElementInjector.parent;
+  _directParentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {
+    var p = protoElementInjector.directParent();
     return isPresent(p) ? preBuiltObjects[p.index].lightDom : null;
   }
 

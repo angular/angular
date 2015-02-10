@@ -153,6 +153,26 @@ export function main() {
     return shadow;
   }
 
+  describe("ProtoElementInjector", () => {
+    describe("direct parent", () => {
+      it("should return parent proto injector when distance is 1", () => {
+        var distance = 1;
+        var protoParent = new ProtoElementInjector(null, 0, []);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+        expect(protoChild.directParent()).toEqual(protoParent);
+      });
+
+      it("should return null otherwise", () => {
+        var distance = 2;
+        var protoParent = new ProtoElementInjector(null, 0, []);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+        expect(protoChild.directParent()).toEqual(null);
+      });
+    });
+  });
+
   describe("ElementInjector", function () {
     describe("instantiate", function () {
       it("should create an element injector", function () {
