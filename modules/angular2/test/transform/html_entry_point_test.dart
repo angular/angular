@@ -11,8 +11,8 @@ import 'common.dart';
 main() {
   useVMConfiguration();
 
-  var transform = new AngularTransformer(
-      'web/index.dart', 'web/index.bootstrap.dart', 'web/index.html');
+  var transform = new AngularTransformer(new TransformerOptions(
+      'web/index.dart', 'web/index.bootstrap.dart', 'web/index.html'));
 
   testPhases('Ensure bootstrap file is created & html entry point is patched', [
     [transform]
