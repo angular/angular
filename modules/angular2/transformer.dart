@@ -14,7 +14,7 @@ import 'package:path/path.dart' as path;
 
 import 'src/transform/html_transform.dart';
 import 'src/transform/options.dart';
-import 'src/transform/visitors.dart';
+import 'src/transform/codegen.dart';
 
 export 'src/transform/options.dart';
 
