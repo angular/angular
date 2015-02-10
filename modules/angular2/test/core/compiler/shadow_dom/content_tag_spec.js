@@ -1,5 +1,5 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
-import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el, proxy} from 'angular2/test_lib';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/facade/dom';
 import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
 import {NgElement} from 'angular2/src/core/dom/element';
