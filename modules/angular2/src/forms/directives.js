@@ -3,6 +3,7 @@ import {DOM} from 'angular2/src/facade/dom';
 import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
+import * as validators from './validators';
 
 class ControlGroupDirectiveBase {
   addDirective(directive):void {}
@@ -68,16 +69,25 @@ export class ControlDirectiveBase {
   type:string;
   valueAccessor:ControlValueAccessor;
 
+  validator:Function;
+
   constructor(groupDecorator, el:NgElement)  {
     this._groupDecorator = groupDecorator;
     this._el = el;
+    this.validator = validators.nullValidator;
   }
 
   _initialize() {
+    this._groupDecorator.addDirective(this);
+
+    if (isPresent(this.validator)) {
+      var c = this._control();
+      c.validator = validators.compose([c.validator, this.validator]);
+    }
+
     if (isBlank(this.valueAccessor)) {
       this.valueAccessor = controlValueAccessorFor(this.type);
     }
-    this._groupDecorator.addDirective(this);
     this._updateDomValue();
     DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
   }
@@ -87,7 +97,7 @@ export class ControlDirectiveBase {
   }
 
   _updateControlValue() {
-    this._control().value = this.valueAccessor.readValue(this._el.domElement);
+    this._control().updateValue(this.valueAccessor.readValue(this._el.domElement));
   }
 
   _control() {
@@ -204,6 +214,14 @@ export class NewControlGroupDirective extends ControlGroupDirectiveBase {
 
   get value() {
     return this._controlGroup.value;
+  }
+
+  get errors() {
+    return this._controlGroup.errors;
+  }
+
+  get valid() {
+    return this._controlGroup.valid;
   }
 }
 
