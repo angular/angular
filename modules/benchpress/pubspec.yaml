@@ -1,0 +1,16 @@
+name: benchpress
+version: <%= packageJson.version %>
+authors:
+<%= Object.keys(packageJson.contributors).map(function(name) {
+  return '- '+name+' <'+packageJson.contributors[name]+'>';
+}).join('\n') %>
+description: Benchpress - a framework for e2e performance tests
+homepage: <%= packageJson.homepage %>
+environment:
+  sdk: '>=1.4.0'
+dependencies:
+  stack_trace: '>=1.1.1 <2.0.0'
+  angular2:
+    path: ../angular2
+dev_dependencies:
+  guinness: ">=0.1.16 <0.2.0"

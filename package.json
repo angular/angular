@@ -29,7 +29,8 @@
     "which": "~1",
     "zone.js": "0.4.0",
     "googleapis": "1.0.x",
-    "node-uuid": "1.4.x"
+    "node-uuid": "1.4.x",
+    "selenium-webdriver": "2.x.x"
   },
   "devDependencies": {
     "temp": "^0.8.1",

@@ -43,6 +43,7 @@ module.exports = function(config) {
 
       // Local dependencies, transpiled from the source.
       '/packages/angular': 'http://localhost:9877/base/modules/angular',
+      '/packages/benchpress': 'http://localhost:9877/base/modules/benchpress',
       '/packages/core': 'http://localhost:9877/base/modules/core',
       '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection',
       '/packages/reflection': 'http://localhost:9877/base/modules/reflection',

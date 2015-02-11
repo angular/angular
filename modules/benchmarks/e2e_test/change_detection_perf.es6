@@ -6,7 +6,7 @@ describe('ng2 change detection benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log ng stats (dynamic)', function() {
+  it('should log ng stats (dynamic)', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#ng2ChangeDetectionDynamic'],
@@ -14,10 +14,10 @@ describe('ng2 change detection benchmark', function () {
       params: [{
         name: 'numberOfChecks', value: 900000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log ng stats (jit)', function() {
+  it('should log ng stats (jit)', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#ng2ChangeDetectionJit'],
@@ -25,10 +25,10 @@ describe('ng2 change detection benchmark', function () {
       params: [{
         name: 'numberOfChecks', value: 900000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log baseline stats', function() {
+  it('should log baseline stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineChangeDetection'],
@@ -36,7 +36,7 @@ describe('ng2 change detection benchmark', function () {
       params: [{
         name: 'numberOfChecks', value: 900000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

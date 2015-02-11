@@ -1,0 +1,21 @@
+{
+  "name": "angular-benchpress2",
+  "version": "<%= packageJson.version %>",
+  "description": "Angular-Benchpress - a framework for e2e performance tests",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
+  "dependencies": {
+    "rtts_assert": "<%= packageJson.version %>",
+    "angular2": "<%= packageJson.version %>.dev"
+  },
+  "devDependencies": {
+    "yargs": "2.3.*",
+    "gulp-sourcemaps": "1.3.*",
+    "gulp-traceur": "0.16.*",
+    "gulp": "^3.8.8",
+    "gulp-rename": "^1.2.0",
+    "through2": "^0.6.1"
+  }
+}

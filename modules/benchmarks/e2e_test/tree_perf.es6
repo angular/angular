@@ -6,7 +6,7 @@ describe('ng2 tree benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log the ng stats', function() {
+  it('should log the ng stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
@@ -14,10 +14,10 @@ describe('ng2 tree benchmark', function () {
       params: [{
         name: 'depth', value: 9, scale: 'log2'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log the baseline stats', function() {
+  it('should log the baseline stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
@@ -25,7 +25,7 @@ describe('ng2 tree benchmark', function () {
       params: [{
         name: 'depth', value: 9, scale: 'log2'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

@@ -6,7 +6,7 @@ describe('ng2 compiler benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log withBindings stats', function() {
+  it('should log withBindings stats', function(done) {
     perfUtil.runBenchmark({
       url: URL,
       id: 'ng2.compile.withBindings',
@@ -17,10 +17,10 @@ describe('ng2 compiler benchmark', function () {
         browser.executeScript('document.querySelector("#compileWithBindings").click()');
         browser.sleep(500);
       }
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log noBindings stats', function() {
+  it('should log noBindings stats', function(done) {
     perfUtil.runBenchmark({
       url: URL,
       id: 'ng2.compile.noBindings',
@@ -31,7 +31,7 @@ describe('ng2 compiler benchmark', function () {
         browser.executeScript('document.querySelector("#compileNoBindings").click()');
         browser.sleep(500);
       }
-    });
+    }).then(done, done.fail);
   });
 
 });

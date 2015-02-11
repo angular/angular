@@ -6,7 +6,7 @@ describe('ng1.x tree benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log the stats', function() {
+  it('should log the stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#destroyDom', '#createDom'],
@@ -14,7 +14,7 @@ describe('ng1.x tree benchmark', function () {
       params: [{
         name: 'depth', value: 9, scale: 'log2'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

@@ -6,7 +6,7 @@ describe('ng2 selector benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log parse stats', function() {
+  it('should log parse stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#parse'],
@@ -14,10 +14,10 @@ describe('ng2 selector benchmark', function () {
       params: [{
         name: 'selectors', value: 10000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log addSelectable stats', function() {
+  it('should log addSelectable stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#addSelectable'],
@@ -25,10 +25,10 @@ describe('ng2 selector benchmark', function () {
       params: [{
         name: 'selectors', value: 10000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log match stats', function() {
+  it('should log match stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#match'],
@@ -36,7 +36,7 @@ describe('ng2 selector benchmark', function () {
       params: [{
         name: 'selectors', value: 10000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

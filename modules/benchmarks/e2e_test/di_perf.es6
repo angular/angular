@@ -6,7 +6,7 @@ describe('ng2 di benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log the stats for getByToken', function() {
+  it('should log the stats for getByToken', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#getByToken'],
@@ -14,10 +14,10 @@ describe('ng2 di benchmark', function () {
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log the stats for getByKey', function() {
+  it('should log the stats for getByKey', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#getByKey'],
@@ -25,10 +25,10 @@ describe('ng2 di benchmark', function () {
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log the stats for getChild', function() {
+  it('should log the stats for getChild', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#getChild'],
@@ -36,10 +36,10 @@ describe('ng2 di benchmark', function () {
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log the stats for instantiate', function() {
+  it('should log the stats for instantiate', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#instantiate'],
@@ -47,7 +47,7 @@ describe('ng2 di benchmark', function () {
       params: [{
         name: 'iterations', value: 10000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

@@ -98,8 +98,7 @@ class ListWrapper {
     l.add(e);
   }
   static List concat(List a, List b) {
-    a.addAll(b);
-    return a;
+    return []..addAll(a)..addAll(b);
   }
   static bool isList(l) => l is List;
   static void insert(List l, int index, value) {

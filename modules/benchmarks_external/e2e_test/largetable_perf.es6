@@ -17,7 +17,7 @@ describe('ng1.x largetable benchmark', function () {
     'ngBindFilter',
     'interpolationFilter'
   ].forEach(function(benchmarkType) {
-    it('should log the stats with: ' + benchmarkType, function() {
+    it('should log the stats with: ' + benchmarkType, function(done) {
       perfUtil.runClickBenchmark({
         url: URL,
         buttons: ['#destroyDom', '#createDom'],
@@ -34,7 +34,7 @@ describe('ng1.x largetable benchmark', function () {
           name: 'benchmarkType',
           value: benchmarkType
         }]
-      });
+      }).then(done, done.fail);
     });
   });
 });
