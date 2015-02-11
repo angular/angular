@@ -262,7 +262,7 @@ class PushBasedComp {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp, SomeTemplate, PushBasedComp]
+    directives: [MyDir, [[ChildComp], SomeTemplate, PushBasedComp]]
   })
 })
 class MyComp {
@@ -305,4 +305,3 @@ class MyService {
     this.greeting = 'hello';
   }
 }
-
