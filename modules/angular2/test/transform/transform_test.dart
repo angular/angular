@@ -3,6 +3,7 @@ library angular2.test;
 import 'package:barback/barback.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:unittest/unittest.dart';
 import 'package:unittest/vm_config.dart';
 
@@ -10,6 +11,8 @@ import 'common.dart';
 
 main() {
   useVMConfiguration();
+
+  var formatter = new DartFormatter();
 
   var transform = new AngularTransformer(new TransformerOptions(
       'web/index.dart', 'web/index.bootstrap.dart', 'web/index.html'));
@@ -41,7 +44,7 @@ main() {
     // Mock out the Directive annotation.
     'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
   }, {
-    'a|web/index.bootstrap.dart': '''
+    'a|web/index.bootstrap.dart': formatter.format('''
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
@@ -56,7 +59,7 @@ main() {
             });
           i0.main();
         }
-        '''.replaceAll('  ', '')
+        ''')
   }, []);
 
   testPhases('Annotation with two injected dependencies', [[transform]], {
@@ -105,7 +108,7 @@ main() {
     ''',
     'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
   }, {
-    'a|web/index.bootstrap.dart': '''
+    'a|web/index.bootstrap.dart': formatter.format('''
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
@@ -121,7 +124,7 @@ main() {
             });
           i0.main();
         }
-        '''.replaceAll('  ', '')
+        ''')
   }, []);
 
   testPhases('Annotation with list of types', [[transform]], {
@@ -165,7 +168,7 @@ main() {
     ''',
       'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
   }, {
-      'a|web/index.bootstrap.dart': '''
+      'a|web/index.bootstrap.dart': formatter.format('''
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
@@ -181,7 +184,7 @@ main() {
             });
           i0.main();
         }
-        '''.replaceAll('  ', '')
+        ''')
   }, []);
 
   testPhases('Constructor with default value', [[transform]], {
@@ -215,7 +218,7 @@ main() {
     ''',
       'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
   }, {
-      'a|web/index.bootstrap.dart': '''
+      'a|web/index.bootstrap.dart': formatter.format('''
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
@@ -230,7 +233,7 @@ main() {
             });
           i0.main();
         }
-        '''.replaceAll('  ', '')
+        ''')
   }, []);
 
   testPhases('Synthetic Constructor', [[transform]], {
@@ -262,7 +265,7 @@ main() {
     ''',
       'angular2|lib/src/core/annotations/annotations.dart': mockDirective,
   }, {
-      'a|web/index.bootstrap.dart': '''
+      'a|web/index.bootstrap.dart': formatter.format('''
         import 'package:angular2/src/reflection/reflection.dart' show reflector;
         import 'index.dart' as i0;
         import 'bar.dart' as i1;
@@ -277,6 +280,6 @@ main() {
             });
           i0.main();
         }
-        '''.replaceAll('  ', '')
+        ''')
   }, []);
 }

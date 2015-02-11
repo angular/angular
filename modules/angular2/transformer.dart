@@ -10,6 +10,7 @@ import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/resolver.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 
 import 'src/transform/html_transform.dart';
@@ -314,7 +315,8 @@ class _BootstrapFileBuilder {
       ..writeln('i0.main();')
       ..writeln('}');
 
-    return outBuffer.toString();
+
+    return new DartFormatter().format(outBuffer.toString());
   }
 
   _writeImport(LibraryElement lib, String prefix, StringBuffer buffer) {
