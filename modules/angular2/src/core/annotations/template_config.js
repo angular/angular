@@ -3,6 +3,7 @@ import {List} from 'angular2/src/facade/collection';
 
 export class TemplateConfig {
   url:any; //string;
+  cssUrl:any; //string
   inline:any; //string;
   directives:any; //List<Type>;
   formatters:any; //List<Type>;
@@ -10,12 +11,14 @@ export class TemplateConfig {
   @CONST()
   constructor({
       url,
+      cssUrl,
       inline,
       directives,
       formatters,
       source
     }: {
       url: string,
+      cssUrl: string,
       inline: string,
       directives: List<Type>,
       formatters: List<Type>,
@@ -23,6 +26,7 @@ export class TemplateConfig {
     })
   {
     this.url = url;
+    this.cssUrl = cssUrl;
     this.inline = inline;
     this.directives = directives;
     this.formatters = formatters;

@@ -112,7 +112,12 @@ export class DOM {
   }
   static createStyleElement(css:string, doc=document):StyleElement {
     var style = doc.createElement('STYLE');
-    style.innerText = css;
+    style.type = 'text/css';
+    if (style.styleSheet){
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(doc.createTextNode(css));
+    }
     return style;
   }
   static clone(node:Node) {
