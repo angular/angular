@@ -16,7 +16,8 @@ import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Component, Decorator, Template} from 'angular2/core';
 import {ControlGroupDirective, ControlNameDirective,
   ControlDirective, NewControlGroupDirective,
-  Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
+  Control, ControlGroup, ControlValueAccessor,
+  RequiredValidatorDirective} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {
@@ -206,11 +207,37 @@ export function main() {
         });
       });
 
+      it("should support validators",(done) => {
+        var t = `<div #form [new-control-group]="{'login': 'loginValue'}">
+                  <input type="text" control="login" required>
+                </div>`;
+
+        compile(MyComp, t, new MyComp(), (view) => {
+          var form = view.contextWithLocals.get("form");
+          expect(form.valid).toEqual(true);
+
+          var input = queryView(view, "input");
+
+          input.value = "";
+          dispatchEvent(input, "change");
+
+          expect(form.valid).toEqual(false);
+          done();
+        });
+      });
     });
   });
 }
 
-@Component({selector: "my-comp"})
+@Component({
+  selector: "my-comp"
+})
+@Template({
+  inline: "",
+  directives: [ControlGroupDirective, ControlNameDirective,
+    ControlDirective, NewControlGroupDirective, RequiredValidatorDirective,
+    WrappedValue]
+})
 class MyComp {
   form:ControlGroup;
   name:string;
