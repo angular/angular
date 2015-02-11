@@ -1,5 +1,5 @@
 {
-  "name": "ng-rtts-assert",
+  "name": "rtts-assert",
   "version": "<%= packageJson.version %>",
   "description": "A run-time type assertion library for JavaScript",
   "homepage": "<%= packageJson.homepage %>",
