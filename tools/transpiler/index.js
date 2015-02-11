@@ -87,6 +87,7 @@ function reloadCompiler() {
   convertTypesToExpressionsInEs6Patch();
   removeNonStaticFieldDeclarationsInEs6Patch();
   disableGetterSetterAssertionPatch();
+  patchCommonJSModuleTransformerToSupportExportStar();
 }
 
 function loadModule(filepath, transpile) {
@@ -221,3 +222,29 @@ function useRttsAssertModuleForConvertingTypesToExpressions() {
     // NYI
   }
 }
+
+// TODO(tbosch): patch exports for CommonJS to support `export * from ...`
+// see https://github.com/google/traceur-compiler/issues/1042
+function patchCommonJSModuleTransformerToSupportExportStar() {
+  var traceurVersion = System.map['traceur'];
+  var CommonJsModuleTransformer = System.get(traceurVersion+'/src/codegeneration/CommonJsModuleTransformer').CommonJsModuleTransformer;
+  var parseStatement = System.get(traceurVersion+'/src/codegeneration/PlaceholderParser.js').parseStatement;
+  var prependStatements = System.get(traceurVersion+"/src/codegeneration/PrependStatements.js").prependStatements;
+
+  var _wrapModule = CommonJsModuleTransformer.prototype.wrapModule;
+  CommonJsModuleTransformer.prototype.wrapModule = function(statements) {
+    if (this.hasStarExports()) {
+      var last = statements[statements.length - 1];
+      statements = statements.slice(0, -1);
+      var exportObject = last.expression;
+      if (exportObject.propertyNameAndValues) {
+        throw new Error('Don\'t support export * with named exports right now...');
+      }
+      statements.push(parseStatement(['module.exports = ', ';'], exportObject));
+      return statements;
+    } else {
+      return _wrapModule.apply(this, arguments);
+    }
+  }
+}
+

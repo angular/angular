@@ -1,3 +1,5 @@
+import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+
 export var window = frames.window;
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
@@ -9,8 +11,6 @@ export var StyleElement = window.HTMLStyleElement;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
-
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 export class DOM {
   static query(selector) {

@@ -9,6 +9,7 @@ var deps = require('./tools/build/deps');
 var transpile = require('./tools/build/transpile');
 var html = require('./tools/build/html');
 var pubspec = require('./tools/build/pubspec');
+var linknodemodules = require('./tools/build/linknodemodules');
 var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
@@ -30,18 +31,6 @@ var _COMPILER_CONFIG_JS_DEFAULT = {
   script: false, // parse as a module
   memberVariables: true, // parse class fields
   modules: 'instantiate'
-};
-
-var CJS_COMPILER_OPTIONS = {
-  sourceMaps: true,
-  annotations: false, // parse annotations
-  types: false, // parse types
-  // TODO(tbosch): Right now, traceur generates imports that
-  // rely on absolute paths. This is why we are not using this...
-  script: true, // parse as a script
-  memberVariables: false, // parse class fields
-  typeAssertions: false,
-  modules: null // not needed
 };
 
 var _HTLM_DEFAULT_SCRIPTS_JS = [
@@ -76,14 +65,10 @@ var CONFIG = {
         es6: 'dist/js/prod/es6',
         es5: 'dist/js/prod/es5'
       },
+      cjs: 'dist/js/cjs',
       dart2js: 'dist/js/dart2js'
     },
     dart: 'dist/dart',
-    cjs: {
-      all: 'dist/cjs',
-      tools: 'dist/cjs/tools',
-      e2eTest: 'dist/cjs/e2e_test'
-    },
     docs: 'dist/docs'
   },
   srcFolderInsertion: {
@@ -119,20 +104,12 @@ var CONFIG = {
   },
   transpile: {
     src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/**/e2e_test/**'],
-      dart: ['modules/**/*.js', '!modules/**/e2e_test/**'],
-      cjs: {
-        tools: ['tools/**/*.es6', '!tools/transpiler/**'],
-        e2eTest: ['modules/**/e2e_test/**/*.es6']
-      }
+      js: ['modules/**/*.js', 'modules/**/*.es6'],
+      dart: ['modules/**/*.js'],
     },
     copy: {
-      js: ['modules/**/*.es5', '!modules/**/e2e_test/**'],
+      js: ['modules/**/*.es5'],
       dart: ['modules/**/*.dart', '!modules/**/e2e_test/**'],
-      cjs: {
-        tools: ['tools/**/*.es5', '!tools/transpiler/**'],
-        e2eTest: ['modules/**/e2e_test/**/*.es5']
-      }
     },
     options: {
       js: {
@@ -144,6 +121,11 @@ var CONFIG = {
         prod: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
           typeAssertions: false,
           outputLanguage: 'es6'
+        }),
+        cjs: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
+          typeAssertionModule: 'rtts_assert/rtts_assert',
+          typeAssertions: true,
+          modules: 'commonjs'
         })
       },
       dart: {
@@ -153,8 +135,7 @@ var CONFIG = {
         script: false, // parse as a module
         memberVariables: true, // parse class fields
         outputLanguage: 'dart'
-      },
-      cjs: CJS_COMPILER_OPTIONS
+      }
     }
   },
   copy: {
@@ -212,10 +193,6 @@ gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
 
 gulp.task('build/clean.dart', clean(gulp, gulpPlugins, {
   path: CONFIG.dest.dart
-}));
-
-gulp.task('build/clean.cjs', clean(gulp, gulpPlugins, {
-  path: CONFIG.dest.cjs.all
 }));
 
 gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
@@ -294,6 +271,15 @@ gulp.task('build/transpile.js.prod', function(done) {
   );
 });
 
+gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
+  src: CONFIG.transpile.src.js.concat(['tools/benchp*/**/*.es6']),
+  copy: CONFIG.transpile.copy.js,
+  dest: CONFIG.dest.js.cjs,
+  outputExt: 'js',
+  options: CONFIG.transpile.options.js.cjs,
+  srcFolderInsertion: CONFIG.srcFolderInsertion.js
+}));
+
 gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.dart,
   copy: CONFIG.transpile.copy.dart,
@@ -301,24 +287,6 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   outputExt: 'dart',
   options: CONFIG.transpile.options.dart,
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
-}));
-
-gulp.task('build/transpile/tools.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.cjs.tools,
-  copy: CONFIG.transpile.copy.cjs.tools,
-  dest: CONFIG.dest.cjs.tools,
-  outputExt: 'js',
-  options: CONFIG.transpile.options.cjs,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js
-}));
-
-gulp.task('build/transpile/e2eTest.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.cjs.e2eTest,
-  copy: CONFIG.transpile.copy.cjs.e2eTest,
-  dest: CONFIG.dest.cjs.e2eTest,
-  outputExt: 'js',
-  options: CONFIG.transpile.options.cjs,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
 // ------------
@@ -392,6 +360,13 @@ gulp.task('build/pubspec.dart', pubspec(gulp, gulpPlugins, {
   src: CONFIG.pubspec.src,
   dest: CONFIG.dest.dart,
   command: DART_SDK.PUB
+}));
+
+// ------------
+// linknodemodules
+
+gulp.task('build/linknodemodules.js.cjs', linknodemodules(gulp, gulpPlugins, {
+  dir: CONFIG.dest.js.cjs
 }));
 
 // ------------
@@ -571,15 +546,16 @@ gulp.task('build.js.prod', function(done) {
   );
 });
 
-gulp.task('build.cjs', function(done) {
+gulp.task('build.js.cjs', function(done) {
   runSequence(
-    ['build/transpile/tools.cjs', 'build/transpile/e2eTest.cjs'],
+    'build/transpile.js.cjs',
+    'build/linknodemodules.js.cjs',
     done
-  );
+  );;
 });
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod']);
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
 
-gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.cjs', 'build/clean.docs']);
+gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
-gulp.task('build', ['build.js', 'build.dart', 'build.cjs']);
+gulp.task('build', ['build.js', 'build.dart']);

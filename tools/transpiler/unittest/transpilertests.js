@@ -1,4 +1,8 @@
 var compiler = require('../index');
+var temp = require('temp');
+var fs = require('fs');
+
+temp.track();
 
 var DEFAULT_OPTIONS = {
   sourceMaps: false,
@@ -153,6 +157,34 @@ describe('transpile to es6', function() {
       'Object.defineProperty(f, "parameters", {get: function() {\n'+
       '    return [[assert.type.string], []];\n'+
       '  }});\n');
+  });
+
+});
+
+describe('transpile to cjs', function() {
+  var options;
+
+  beforeEach(function() {
+    options = merge(DEFAULT_OPTIONS, {modules: 'commonjs'});
+  });
+
+  function compileAndWrite(input) {
+    var transpiledCode = compiler.compile(options, "test.js", input).js;
+    var tempFile = temp.openSync('ng2transpiler');
+    fs.writeSync(tempFile.fd, transpiledCode);
+    return tempFile.path;
+  }
+
+  it('should transpile export *', function() {
+    var file1 = compileAndWrite('export var a = 1');
+    var file2 = compileAndWrite('export * from "' + file1 + '"');
+    expect(require(file2).a).toBe(1);
+  });
+
+  it('should transpile export {name}', function() {
+    var file1 = compileAndWrite('export var a = 1');
+    var file2 = compileAndWrite('export {a} from "' + file1 + '"');
+    expect(require(file2).a).toBe(1);
   });
 
 });

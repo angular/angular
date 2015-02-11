@@ -1,4 +1,4 @@
-var benchpress = require('../../../../tools/benchpress/index.js');
+var benchpress = require('benchpress/index.js');
 describe('hello world', function () {
 
   afterEach(benchpress.verifyNoBrowserErrors);
