@@ -30,6 +30,21 @@ export class DirectiveMetadataReader {
 
   componentDirectivesMetadata(annotation:Component):List<Type> {
     var template = annotation.template;
-    return isPresent(template) && isPresent(template.directives) ? template.directives : [];
+    var result:List<Type> = ListWrapper.create();
+    if (isPresent(template) && isPresent(template.directives)) {
+      this._buildList(result, template.directives);
+    }
+    return result;
+  }
+
+  _buildList(out:List<Type>, tree:List<any>) {
+    for (var i = 0; i < tree.length; i++) {
+      var item = tree[i];
+      if (ListWrapper.isList(item)) {
+        this._buildList(out, item);
+      } else {
+        ListWrapper.push(out, item);
+      }
+    }
   }
 }

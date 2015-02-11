@@ -5,6 +5,7 @@ import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {CONST} from 'angular2/src/facade/lang';
+import {If, Foreach} from 'angular2/directives';
 
 
 @Decorator({
@@ -29,7 +30,13 @@ class ComponentWithoutDirectives {}
 })
 class ComponentWithDirectives {}
 
-
+@Component({
+  selector: 'withDirectivesTree',
+  template: new TemplateConfig({
+    directives: [[SomeDirective, [Foreach, If]], ComponentWithoutDirectives]
+  })
+})
+class ComponentWithDirectivesTree {}
 
 export function main() {
   describe("DirectiveMetadataReader", () => {
@@ -60,6 +67,11 @@ export function main() {
       it("should return a list of directives specified in the template config", () => {
         var cmp = reader.read(ComponentWithDirectives);
         expect(cmp.componentDirectives).toEqual([ComponentWithoutDirectives]);
+      });
+
+      it("should return a list of directives specified in the template config as a tree", () => {
+        var cmp = reader.read(ComponentWithDirectivesTree);
+        expect(cmp.componentDirectives).toEqual([SomeDirective, Foreach, If, ComponentWithoutDirectives]);
       });
     });
   });
