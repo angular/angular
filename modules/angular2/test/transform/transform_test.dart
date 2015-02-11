@@ -35,6 +35,15 @@ void _runTests() {
   // Each test has its own directory for inputs & an `expected` directory for
   // expected outputs.
   var tests = [
+    new TestConfig('Html entry point',
+        inputs: {
+      'a|web/index.html': 'common.html',
+      'a|web/index.dart': 'html_entry_point_files/index.dart',
+      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+    }, outputs: {
+      'a|web/index.html':
+          'html_entry_point_files/expected/index.html'
+    }),
     new TestConfig('Simple',
         inputs: {
       'a|web/index.html': 'common.html',
@@ -104,7 +113,12 @@ void _runTests() {
     });
     config.assetPathToExpectedOutputPath.forEach((key, value) {
       config.assetPathToExpectedOutputPath[key] = cache.putIfAbsent(
-          value, () => formatter.format(new File(value).readAsStringSync()));
+          value, () {
+            var code = new File(value).readAsStringSync();
+            return value.endsWith('dart')
+              ? formatter.format(code)
+              : code;
+          });
     });
     testPhases(config.name, [
       [transform]
