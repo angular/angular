@@ -1,4 +1,4 @@
-var perfUtil = require('../../angular2/e2e_test/perf_util');
+var perfUtil = require('angular2/e2e_test/perf_util');
 
 describe('ng2 element injector benchmark', function () {
 

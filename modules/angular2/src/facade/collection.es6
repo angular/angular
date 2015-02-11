@@ -1,8 +1,8 @@
-import {int, isJsObject} from 'angular2/src/facade/lang';
+import {int, isJsObject, global} from 'angular2/src/facade/lang';
 
-export var List = window.Array;
-export var Map = window.Map;
-export var Set = window.Set;
+export var List = global.Array;
+export var Map = global.Map;
+export var Set = global.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }

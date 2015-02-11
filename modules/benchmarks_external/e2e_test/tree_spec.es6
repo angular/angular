@@ -1,4 +1,4 @@
-var testUtil = require('../../angular2/e2e_test/test_util');
+var testUtil = require('angular2/e2e_test/test_util');
 
 describe('ng1.x tree benchmark', function () {
 
