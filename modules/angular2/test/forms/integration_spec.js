@@ -11,7 +11,8 @@ import {DOM} from 'angular2/src/facade/dom';
 import {Component, Decorator, TemplateConfig} from 'angular2/core';
 import {ControlGroupDirective, ControlNameDirective,
   ControlDirective, NewControlGroupDirective,
-  Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
+  Control, ControlGroup, ControlValueAccessor,
+  RequiredValidatorDirective} from 'angular2/forms';
 
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
@@ -194,6 +195,24 @@ export function main() {
         });
       });
 
+      it("should support validators",(done) => {
+        var t = `<div #form [new-control-group]="{'login': 'loginValue'}">
+                  <input type="text" control="login" required>
+                </div>`;
+
+        compile(MyComp, t, new MyComp(), (view) => {
+          var form = view.contextWithLocals.get("form");
+          expect(form.valid).toEqual(true);
+
+          var input = queryView(view, "input");
+
+          input.value = "";
+          dispatchEvent(input, "change");
+
+          expect(form.valid).toEqual(false);
+          done();
+        });
+      });
     });
   });
 }
@@ -203,7 +222,8 @@ export function main() {
   template: new TemplateConfig({
     inline: "",
     directives: [ControlGroupDirective, ControlNameDirective,
-      ControlDirective, NewControlGroupDirective, WrappedValue]
+      ControlDirective, NewControlGroupDirective, RequiredValidatorDirective,
+      WrappedValue]
   })
 })
 class MyComp {
