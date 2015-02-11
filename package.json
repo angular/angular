@@ -64,6 +64,7 @@
     "protractor": "1.6.x",
     "q": "^1.0.1",
     "run-sequence": "^0.3.6",
+    "source-map": "^0.3.0",
     "sprintf-js": "1.0.*",
     "through2": "^0.6.1",
     "yargs": "2.3.*"

@@ -243,5 +243,9 @@ export function assertionsEnabled():boolean {
 }
 
 export function print(obj) {
-  console.log(obj);
+  if (obj instanceof Error) {
+    console.log(obj.stack);
+  } else {
+    console.log(obj);
+  }
 }
