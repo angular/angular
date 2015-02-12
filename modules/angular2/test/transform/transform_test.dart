@@ -40,9 +40,9 @@ void _runTests() {
       'a|web/index.html': 'common.html',
       'a|web/index.dart': 'html_entry_point_files/index.dart',
       'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
-    }, outputs: {
-      'a|web/index.html':
-          'html_entry_point_files/expected/index.html'
+    },
+        outputs: {
+      'a|web/index.html': 'html_entry_point_files/expected/index.html'
     }),
     new TestConfig('Simple',
         inputs: {
@@ -112,13 +112,10 @@ void _runTests() {
           cache.putIfAbsent(value, () => new File(value).readAsStringSync());
     });
     config.assetPathToExpectedOutputPath.forEach((key, value) {
-      config.assetPathToExpectedOutputPath[key] = cache.putIfAbsent(
-          value, () {
-            var code = new File(value).readAsStringSync();
-            return value.endsWith('dart')
-              ? formatter.format(code)
-              : code;
-          });
+      config.assetPathToExpectedOutputPath[key] = cache.putIfAbsent(value, () {
+        var code = new File(value).readAsStringSync();
+        return value.endsWith('dart') ? formatter.format(code) : code;
+      });
     });
     testPhases(config.name, [
       [transform]

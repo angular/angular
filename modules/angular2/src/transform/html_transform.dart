@@ -8,7 +8,6 @@ import 'package:path/path.dart' as path;
 
 import 'options.dart';
 
-
 Future transformHtmlEntryPoint(
     TransformerOptions options, Transform transform) {
   // For now at least, [options.htmlEntryPoint], [options.entryPoint], and
@@ -32,7 +31,7 @@ Future transformHtmlEntryPoint(
   // Checks if the src of this script tag is pointing at `options.entryPoint`.
   bool _isEntryPointScript(dom.Element script) =>
       path.normalize(script.attributes['src']) ==
-      _relativeDartEntryPath(options.entryPoint);
+          _relativeDartEntryPath(options.entryPoint);
 
   return transform.primaryInput.readAsString().then((String html) {
     var found = false;
