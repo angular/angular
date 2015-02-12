@@ -3,7 +3,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angul
 import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, Decorator, Template, Directive, onChange} from 'angular2/src/core/annotations/annotations';
+import {Component, Decorator, Viewport, Directive, onChange} from 'angular2/src/core/annotations/annotations';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -13,14 +13,14 @@ import {DOM, Element} from 'angular2/src/facade/dom';
 import {int, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {View} from 'angular2/src/core/compiler/view';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 
 @proxy
-@IMPLEMENTS(ViewPort)
-class FakeViewPort {
+@IMPLEMENTS(ViewContainer)
+class FakeViewContainer {
   templateElement;
 
   constructor(templateElement) {
@@ -42,7 +42,7 @@ class FakeView {
 
 export function main() {
   describe('view', function() {
-    var parser, someComponentDirective, someTemplateDirective;
+    var parser, someComponentDirective, someViewportDirective;
 
     function createView(protoView, eventManager: EventManager = null) {
       var ctx = new MyEvaluationContext();
@@ -54,7 +54,7 @@ export function main() {
     beforeEach(() => {
       parser = new Parser(new Lexer());
       someComponentDirective = new DirectiveMetadataReader().read(SomeComponent);
-      someTemplateDirective = new DirectiveMetadataReader().read(SomeTemplate);
+      someViewportDirective = new DirectiveMetadataReader().read(SomeViewport);
     });
 
     describe('instantiated from protoView', () => {
@@ -409,30 +409,30 @@ export function main() {
       });
 
       describe('with template views', () => {
-        function createViewWithTemplate() {
+        function createViewWithViewport() {
           var templateProtoView = new ProtoView(
             el('<div id="1"></div>'), new DynamicProtoChangeDetector(), null);
           var pv = new ProtoView(el('<someTmpl class="ng-binding"></someTmpl>'),
             new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
-          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeTemplate]));
-          binder.templateDirective = someTemplateDirective;
+          var binder = pv.bindElement(new ProtoElementInjector(null, 0, [SomeViewport]));
+          binder.viewportDirective = someViewportDirective;
           binder.nestedProtoView = templateProtoView;
 
           return createView(pv);
         }
 
-        it('should create a viewPort for the template directive', () => {
-          var view = createViewWithTemplate();
+        it('should create a ViewContainer for the Viewport directive', () => {
+          var view = createViewWithViewport();
 
-          var tmplComp = view.rootElementInjectors[0].get(SomeTemplate);
-          expect(tmplComp.viewPort).not.toBe(null);
+          var tmplComp = view.rootElementInjectors[0].get(SomeViewport);
+          expect(tmplComp.viewContainer).not.toBe(null);
         });
 
-        it('dehydration should dehydrate viewports', () => {
-          var view = createViewWithTemplate();
+        it('dehydration should dehydrate viewcontainers', () => {
+          var view = createViewWithViewport();
 
-          var tmplComp = view.rootElementInjectors[0].get(SomeTemplate);
-          expect(tmplComp.viewPort.hydrated()).toBe(false);
+          var tmplComp = view.rootElementInjectors[0].get(SomeViewport);
+          expect(tmplComp.viewContainer.hydrated()).toBe(false);
         });
       });
 
@@ -671,13 +671,13 @@ class ServiceDependentDecorator {
   }
 }
 
-@Template({
+@Viewport({
   selector: 'someTmpl'
 })
-class SomeTemplate {
-  viewPort: ViewPort;
-  constructor(viewPort: ViewPort) {
-    this.viewPort = viewPort;
+class SomeViewport {
+  viewContainer: ViewContainer;
+  constructor(viewContainer: ViewContainer) {
+    this.viewContainer = viewContainer;
   }
 }
 

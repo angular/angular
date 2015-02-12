@@ -1,8 +1,8 @@
-import {Decorator, Template} from 'angular2/src/core/annotations/annotations';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {DOM} from 'angular2/src/facade/dom';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {Parent} from 'angular2/src/core/annotations/visibility';
 
@@ -40,89 +40,89 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
 export class Switch {
   _switchValue: any;
   _useDefault: boolean;
-  _valueViewPorts: Map;
-  _activeViewPorts: List;
+  _valueViewContainers: Map;
+  _activeViewContainers: List<ViewContainer>;
 
   constructor() {
-    this._valueViewPorts = MapWrapper.create();
-    this._activeViewPorts = ListWrapper.create();
+    this._valueViewContainers = MapWrapper.create();
+    this._activeViewContainers = ListWrapper.create();
     this._useDefault = false;
   }
 
   set value(value) {
-    // Remove the currently active viewports
-    this._removeAllActiveViewPorts();
+    // Empty the currently active ViewContainers
+    this._emptyAllActiveViewContainers();
 
-    // Add the viewports matching the value (with a fallback to default)
+    // Add the ViewContainers matching the value (with a fallback to default)
     this._useDefault = false;
-    var viewPorts = MapWrapper.get(this._valueViewPorts, value);
-    if (isBlank(viewPorts)) {
+    var containers = MapWrapper.get(this._valueViewContainers, value);
+    if (isBlank(containers)) {
       this._useDefault = true;
-      viewPorts = MapWrapper.get(this._valueViewPorts, _whenDefault);
+      containers = normalizeBlank(MapWrapper.get(this._valueViewContainers, _whenDefault));
     }
-    this._activateViewPorts(viewPorts);
+    this._activateViewContainers(containers);
 
     this._switchValue = value;
   }
 
-  _onWhenValueChanged(oldWhen, newWhen, viewPort: ViewPort) {
-    this._deregisterViewPort(oldWhen, viewPort);
-    this._registerViewPort(newWhen, viewPort);
+  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainer) {
+    this._deregisterViewContainer(oldWhen, viewContainer);
+    this._registerViewContainer(newWhen, viewContainer);
 
     if (oldWhen === this._switchValue) {
-      viewPort.remove();
-      ListWrapper.remove(this._activeViewPorts, viewPort);
+      viewContainer.remove();
+      ListWrapper.remove(this._activeViewContainers, viewContainer);
     } else if (newWhen === this._switchValue) {
       if (this._useDefault) {
         this._useDefault = false;
-        this._removeAllActiveViewPorts();
+        this._emptyAllActiveViewContainers();
       }
-      viewPort.create();
-      ListWrapper.push(this._activeViewPorts, viewPort);
+      viewContainer.create();
+      ListWrapper.push(this._activeViewContainers, viewContainer);
     }
 
-    // Switch to default when there is no more active viewports
-    if (this._activeViewPorts.length === 0 && !this._useDefault) {
+    // Switch to default when there is no more active ViewContainers
+    if (this._activeViewContainers.length === 0 && !this._useDefault) {
       this._useDefault = true;
-      this._activateViewPorts(MapWrapper.get(this._valueViewPorts, _whenDefault));
+      this._activateViewContainers(MapWrapper.get(this._valueViewContainers, _whenDefault));
     }
   }
 
-  _removeAllActiveViewPorts() {
-    var activeViewPorts = this._activeViewPorts;
-    for (var i = 0; i < activeViewPorts.length; i++) {
-      activeViewPorts[i].remove();
+  _emptyAllActiveViewContainers() {
+    var activeContainers = this._activeViewContainers;
+    for (var i = 0; i < activeContainers.length; i++) {
+      activeContainers[i].remove();
     }
-    this._activeViewPorts = ListWrapper.create();
+    this._activeViewContainers = ListWrapper.create();
   }
 
-  _activateViewPorts(viewPorts) {
-    // TODO(vicb): assert(this._activeViewPorts.length === 0);
-    if (isPresent(viewPorts)) {
-      for (var i = 0; i < viewPorts.length; i++) {
-        viewPorts[i].create();
+  _activateViewContainers(containers: List<ViewContainer>) {
+    // TODO(vicb): assert(this._activeViewContainers.length === 0);
+    if (isPresent(containers)) {
+      for (var i = 0; i < containers.length; i++) {
+        containers[i].create();
       }
-      this._activeViewPorts = viewPorts;
+      this._activeViewContainers = containers;
     }
   }
 
-  _registerViewPort(value, viewPort: ViewPort) {
-    var viewPorts = MapWrapper.get(this._valueViewPorts, value);
-    if (isBlank(viewPorts)) {
-      viewPorts = ListWrapper.create();
-      MapWrapper.set(this._valueViewPorts, value, viewPorts);
+  _registerViewContainer(value, container: ViewContainer) {
+    var containers = MapWrapper.get(this._valueViewContainers, value);
+    if (isBlank(containers)) {
+      containers = ListWrapper.create();
+      MapWrapper.set(this._valueViewContainers, value, containers);
     }
-    ListWrapper.push(viewPorts, viewPort);
+    ListWrapper.push(containers, container);
   }
 
-  _deregisterViewPort(value, viewPort: ViewPort) {
+  _deregisterViewContainer(value, container: ViewContainer) {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
-    var viewPorts = MapWrapper.get(this._valueViewPorts, value);
-    if (viewPorts.length == 1) {
-      MapWrapper.delete(this._valueViewPorts, value);
+    var containers = MapWrapper.get(this._valueViewContainers, value);
+    if (containers.length == 1) {
+      MapWrapper.delete(this._valueViewContainers, value);
     } else {
-      ListWrapper.remove(viewPorts, viewPort);
+      ListWrapper.remove(containers, container);
     }
   }
 }
@@ -142,7 +142,7 @@ export class Switch {
  * <template [switch-when]="'stringValue'">...</template>
  * ```
  */
-@Template({
+@Viewport({
   selector: '[switch-when]',
   bind: {
     'switch-when' : 'when'
@@ -151,17 +151,17 @@ export class Switch {
 export class SwitchWhen {
   _value: any;
   _switch: Switch;
-  _viewPort: ViewPort;
+  _viewContainer: ViewContainer;
 
-  constructor(el: NgElement, viewPort: ViewPort, @Parent() sswitch: Switch) {
+  constructor(el: NgElement, viewContainer: ViewContainer, @Parent() sswitch: Switch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
-    this._viewPort = viewPort;
+    this._viewContainer = viewContainer;
   }
 
   set when(value) {
-    this._switch._onWhenValueChanged(this._value, value, this._viewPort);
+    this._switch._onWhenValueChanged(this._value, value, this._viewContainer);
     this._value = value;
   }
 }
@@ -178,12 +178,12 @@ export class SwitchWhen {
  * <template [switch-default]>...</template>
  * ```
  */
-@Template({
+@Viewport({
   selector: '[switch-default]'
 })
 export class SwitchDefault {
-  constructor(viewPort: ViewPort, @Parent() sswitch: Switch) {
-    sswitch._registerViewPort(_whenDefault, viewPort);
+  constructor(viewContainer: ViewContainer, @Parent() sswitch: Switch) {
+    sswitch._registerViewContainer(_whenDefault, viewContainer);
   }
 }
 

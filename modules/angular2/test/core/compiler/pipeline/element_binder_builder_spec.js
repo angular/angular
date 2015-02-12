@@ -10,9 +10,7 @@ import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/annotations';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -150,12 +148,12 @@ export function main() {
     });
 
     it('should store the template directive', () => {
-      var directives = [SomeTemplateDirective];
+      var directives = [SomeViewportDirective];
       var pipeline = createPipeline({protoElementInjector: null, directives: directives});
       var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
-      expect(pv.elementBinders[0].templateDirective.type).toBe(SomeTemplateDirective);
+      expect(pv.elementBinders[0].viewportDirective.type).toBe(SomeViewportDirective);
     });
 
     it('should bind text nodes', () => {
@@ -283,7 +281,7 @@ export function main() {
         'boundprop3': 'prop3'
       });
       var directives = [SomeComponentDirectiveWithBinding,
-                        SomeTemplateDirectiveWithBinding,
+                        SomeViewportDirectiveWithBinding,
                         SomeDecoratorDirectiveWith2Bindings];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
       var pipeline = createPipeline({
@@ -304,7 +302,7 @@ export function main() {
 
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp).toBe('a');
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp2).toBe('b');
-      expect(view.elementInjectors[0].get(SomeTemplateDirectiveWithBinding).templProp).toBe('b');
+      expect(view.elementInjectors[0].get(SomeViewportDirectiveWithBinding).templProp).toBe('b');
       expect(view.elementInjectors[0].get(SomeComponentDirectiveWithBinding).compProp).toBe('c');
     });
 
@@ -389,14 +387,14 @@ class SomeDecoratorDirectiveWith2Bindings {
   }
 }
 
-@Template()
-class SomeTemplateDirective {
+@Viewport()
+class SomeViewportDirective {
 }
 
-@Template({
+@Viewport({
   bind: {'boundprop2': 'templProp'}
 })
-class SomeTemplateDirectiveWithBinding {
+class SomeViewportDirectiveWithBinding {
   templProp;
   constructor() {
     this.templProp = null;

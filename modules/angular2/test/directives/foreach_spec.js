@@ -9,10 +9,10 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Foreach} from 'angular2/src/directives/foreach';
 

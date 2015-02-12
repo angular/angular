@@ -9,7 +9,7 @@ import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_elemen
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {Viewport, Decorator, Component} from 'angular2/src/core/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {
@@ -90,7 +90,7 @@ export function main() {
 
     it('should mark elements with template directives', () => {
       var results = createPipeline({
-        directives: [SomeTemplateDirective]
+        directives: [SomeViewportDirective]
       }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
@@ -121,8 +121,8 @@ class MockStep extends CompileStep {
   }
 }
 
-@Template()
-class SomeTemplateDirective {}
+@Viewport()
+class SomeViewportDirective {}
 
 @Component()
 class SomeComponentDirective {}

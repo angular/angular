@@ -8,9 +8,7 @@ import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_elemen
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {DOM} from 'angular2/src/facade/dom';
 import {NativeShadowDomStrategy, ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/annotations';
+import {Component, Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Lexer, Parser} from 'angular2/change_detection';
@@ -25,8 +23,8 @@ export function main() {
         SomeDecorator,
         SomeDecoratorIgnoringChildren,
         SomeDecoratorWithBinding,
-        SomeTemplate,
-        SomeTemplate2,
+        SomeViewport,
+        SomeViewport2,
         SomeComponent,
         SomeComponent2
       ];
@@ -55,7 +53,7 @@ export function main() {
       var results = createPipeline().process(el('<div></div>'));
       expect(results[0].decoratorDirectives).toBe(null);
       expect(results[0].componentDirective).toBe(null);
-      expect(results[0].templateDirective).toBe(null);
+      expect(results[0].viewportDirective).toBe(null);
     });
 
     describe('component directives', () => {
@@ -105,10 +103,10 @@ export function main() {
       });
     });
 
-    describe('template directives', () => {
+    describe('viewport directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(el('<template some-templ></template>'));
-        expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
+        expect(results[0].viewportDirective).toEqual(reader.read(SomeViewport));
       });
 
       it('should detect them in property bindings', () => {
@@ -116,7 +114,7 @@ export function main() {
           'some-templ': 'someExpr'
         }});
         var results = pipeline.process(el('<template></template>'));
-        expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
+        expect(results[0].viewportDirective).toEqual(reader.read(SomeViewport));
       });
 
       it('should detect them in variable bindings', () => {
@@ -124,10 +122,10 @@ export function main() {
           'some-templ': 'someExpr'
         }});
         var results = pipeline.process(el('<template></template>'));
-        expect(results[0].templateDirective).toEqual(reader.read(SomeTemplate));
+        expect(results[0].viewportDirective).toEqual(reader.read(SomeViewport));
       });
 
-      it('should not allow multiple template directives on the same element', () => {
+      it('should not allow multiple viewport directives on the same element', () => {
         expect( () => {
           createPipeline().process(
             el('<template some-templ some-templ2></template>')
@@ -135,12 +133,12 @@ export function main() {
         }).toThrowError('Only one template directive per element is allowed!');
       });
 
-      it('should not allow template directives on non <template> elements', () => {
+      it('should not allow viewport directives on non <template> elements', () => {
         expect( () => {
           createPipeline().process(
             el('<div some-templ></div>')
           );
-        }).toThrowError('Template directives need to be placed on <template> elements or elements with template attribute!');
+        }).toThrowError('Viewport directives need to be placed on <template> elements or elements with template attribute!');
       });
     });
 
@@ -227,15 +225,15 @@ class SomeDecoratorIgnoringChildren {
 })
 class SomeDecoratorWithBinding {}
 
-@Template({
+@Viewport({
   selector: '[some-templ]'
 })
-class SomeTemplate {}
+class SomeViewport {}
 
-@Template({
+@Viewport({
   selector: '[some-templ2]'
 })
-class SomeTemplate2 {}
+class SomeViewport2 {}
 
 @Component({
   selector: '[some-comp]'
@@ -249,7 +247,7 @@ class SomeComponent2 {}
 
 @Component({
   template: new TemplateConfig({
-    directives: [SomeDecorator, SomeTemplate, SomeTemplate2, SomeComponent, SomeComponent2]
+    directives: [SomeDecorator, SomeViewport, SomeViewport2, SomeComponent, SomeComponent2]
   })
 })
 class MyComp {}

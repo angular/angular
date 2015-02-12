@@ -10,7 +10,7 @@ There are three different kinds of directives (described in mored detailed in la
 
 1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
 2. *Components*: Components have encapsulated view and can configure injectors.
-3. *Instantiator*: Is responsible for adding or removing child views in parent view. (i.e. foreach, if)
+3. *Viewport*: Is responsible for adding or removing child views in parent view. (i.e. foreach, if)
 
 
 
@@ -164,43 +164,43 @@ Example of usage:
 
 
 
-## Instantiator
+## Viewport
 
-Instantiator is a directive which can controll instantiation of child views which are then inserted into the DOM. (Examples are `if` and `foreach`.) 
+Viewport is a directive which can controll instantiation of child views which are then inserted into the DOM. (Examples are `if` and `foreach`.) 
 
-* Instantiators can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
-* Only one instantiator can be present per DOM template element.
-* The instantiator is is created over the `template` element. This is known as the `ViewPort`. 
-* Instantiator can insert child views into the `ViewPort`. The child views show up as siblings of the `ViewPort` in the DOM.
+* Viewports can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
+* Only one viewport can be present per DOM template element.
+* The viewport is is created over the `template` element. This is known as the `ViewContainer`. 
+* Viewport can insert child views into the `ViewContainer`. The child views show up as siblings of the `Viewport` in the DOM.
 
 >> TODO(misko): Relationship with Injection
 >> TODO(misko): Instantiator can not be injected into child Views
 
 
 ```
-@Instantiator({
+@Viewport({
   selector: '[if]',
   bind: {
     'if': 'condition'
   }
 })
 export class If {
-  viewPort: ViewPort;
+  viewContainer: ViewContainer;
   view: View;
 
-  constructor(viewPort: ViewPort) {
-    this.viewPort = viewPort;
-    this.view` = null;
+  constructor(viewContainer: ViewContainer) {
+    this.viewContainer = viewContainer;
+    this.view = null;
   }
 
   set condition(value) {
     if (value) {
-      if (this.view == null) {
-        this.view = this.viewPort.create();
+      if (this.view === null) {
+        this.view = this.viewContainer.create();
       }
     } else {
-      if (this.view != null) {
-        this.viewPort.remove(this.view);
+      if (this.view !== null) {
+        this.viewContainer.remove(this.view);
         this.view = null;
       }
     }

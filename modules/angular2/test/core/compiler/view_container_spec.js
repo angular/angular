@@ -1,6 +1,6 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy} from 'angular2/test_lib';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {DOM, Node} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -61,8 +61,8 @@ class HydrateAwareFakeView {
 }
 
 export function main() {
-  describe('viewport', () => {
-    var viewPort, parentView, protoView, dom, customViewWithOneNode,
+  describe('ViewContainer', () => {
+    var viewContainer, parentView, protoView, dom, customViewWithOneNode,
         customViewWithTwoNodes, elementInjector;
 
     beforeEach(() => {
@@ -71,19 +71,19 @@ export function main() {
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
       elementInjector = new ElementInjector(null, null, null, null);
-      viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector, null);
+      viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector, null);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
 
     describe('when dehydrated', () => {
       it('should throw if create is called', () => {
-        expect(() => viewPort.create()).toThrowError();
+        expect(() => viewContainer.create()).toThrowError();
       });
     });
 
     describe('when hydrated', () => {
-      function textInViewPort() {
+      function textInViewContainer() {
         var out = '';
         // skipping starting filler, insert-me and final filler.
         for (var i = 2; i < dom.childNodes.length - 1; i++) {
@@ -94,84 +94,84 @@ export function main() {
       }
 
       beforeEach(() => {
-        viewPort.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null);
         var fillerView = createView([el('<filler>filler</filler>')]);
-        viewPort.insert(fillerView);
+        viewContainer.insert(fillerView);
       });
 
       it('should create new views from protoView', () => {
-        viewPort.create();
-        expect(textInViewPort()).toEqual('filler hi');
-        expect(viewPort.length).toBe(2);
+        viewContainer.create();
+        expect(textInViewContainer()).toEqual('filler hi');
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should create new views from protoView at index', () => {
-        viewPort.create(0);
-        expect(textInViewPort()).toEqual('hi filler');
-        expect(viewPort.length).toBe(2);
+        viewContainer.create(0);
+        expect(textInViewContainer()).toEqual('hi filler');
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should insert new views at the end by default', () => {
-        viewPort.insert(customViewWithOneNode);
-        expect(textInViewPort()).toEqual('filler single');
-        expect(viewPort.get(1)).toBe(customViewWithOneNode);
-        expect(viewPort.length).toBe(2);
+        viewContainer.insert(customViewWithOneNode);
+        expect(textInViewContainer()).toEqual('filler single');
+        expect(viewContainer.get(1)).toBe(customViewWithOneNode);
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should insert new views at the given index', () => {
-        viewPort.insert(customViewWithOneNode, 0);
-        expect(textInViewPort()).toEqual('single filler');
-        expect(viewPort.get(0)).toBe(customViewWithOneNode);
-        expect(viewPort.length).toBe(2);
+        viewContainer.insert(customViewWithOneNode, 0);
+        expect(textInViewContainer()).toEqual('single filler');
+        expect(viewContainer.get(0)).toBe(customViewWithOneNode);
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should remove the last view by default', () => {
-        viewPort.insert(customViewWithOneNode);
+        viewContainer.insert(customViewWithOneNode);
 
-        viewPort.remove();
+        viewContainer.remove();
 
-        expect(textInViewPort()).toEqual('filler');
-        expect(viewPort.length).toBe(1);
+        expect(textInViewContainer()).toEqual('filler');
+        expect(viewContainer.length).toBe(1);
       });
 
       it('should remove the view at a given index', () => {
-        viewPort.insert(customViewWithOneNode);
-        viewPort.insert(customViewWithTwoNodes);
+        viewContainer.insert(customViewWithOneNode);
+        viewContainer.insert(customViewWithTwoNodes);
 
-        viewPort.remove(1);
+        viewContainer.remove(1);
 
-        expect(textInViewPort()).toEqual('filler one two');
-        expect(viewPort.get(1)).toBe(customViewWithTwoNodes);
-        expect(viewPort.length).toBe(2);
+        expect(textInViewContainer()).toEqual('filler one two');
+        expect(viewContainer.get(1)).toBe(customViewWithTwoNodes);
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should detach the last view by default', () => {
-        viewPort.insert(customViewWithOneNode);
-        expect(viewPort.length).toBe(2);
+        viewContainer.insert(customViewWithOneNode);
+        expect(viewContainer.length).toBe(2);
 
-        var detachedView = viewPort.detach();
+        var detachedView = viewContainer.detach();
 
         expect(detachedView).toBe(customViewWithOneNode);
-        expect(textInViewPort()).toEqual('filler');
-        expect(viewPort.length).toBe(1);
+        expect(textInViewContainer()).toEqual('filler');
+        expect(viewContainer.length).toBe(1);
       });
 
       it('should detach the view at a given index', () => {
-        viewPort.insert(customViewWithOneNode);
-        viewPort.insert(customViewWithTwoNodes);
-        expect(viewPort.length).toBe(3);
+        viewContainer.insert(customViewWithOneNode);
+        viewContainer.insert(customViewWithTwoNodes);
+        expect(viewContainer.length).toBe(3);
 
-        var detachedView = viewPort.detach(1);
+        var detachedView = viewContainer.detach(1);
         expect(detachedView).toBe(customViewWithOneNode);
-        expect(textInViewPort()).toEqual('filler one two');
-        expect(viewPort.length).toBe(2);
+        expect(textInViewContainer()).toEqual('filler one two');
+        expect(viewContainer.length).toBe(2);
       });
 
       it('should keep views hydration state during insert', () => {
         var hydratedView = new HydrateAwareFakeView(true);
         var dehydratedView = new HydrateAwareFakeView(false);
-        viewPort.insert(hydratedView);
-        viewPort.insert(dehydratedView);
+        viewContainer.insert(hydratedView);
+        viewContainer.insert(dehydratedView);
 
         expect(hydratedView.hydrated()).toBe(true);
         expect(dehydratedView.hydrated()).toBe(false);
@@ -179,8 +179,8 @@ export function main() {
 
       it('should dehydrate on remove', () => {
         var hydratedView = new HydrateAwareFakeView(true);
-        viewPort.insert(hydratedView);
-        viewPort.remove();
+        viewContainer.insert(hydratedView);
+        viewContainer.remove();
 
         expect(hydratedView.hydrated()).toBe(false);
       });
@@ -188,21 +188,21 @@ export function main() {
       it('should keep views hydration state during detach', () => {
         var hydratedView = new HydrateAwareFakeView(true);
         var dehydratedView = new HydrateAwareFakeView(false);
-        viewPort.insert(hydratedView);
-        viewPort.insert(dehydratedView);
+        viewContainer.insert(hydratedView);
+        viewContainer.insert(dehydratedView);
 
-        expect(viewPort.detach().hydrated()).toBe(false);
-        expect(viewPort.detach().hydrated()).toBe(true);
+        expect(viewContainer.detach().hydrated()).toBe(false);
+        expect(viewContainer.detach().hydrated()).toBe(true);
       });
 
       it('should support adding/removing views with more than one node', () => {
-        viewPort.insert(customViewWithTwoNodes);
-        viewPort.insert(customViewWithOneNode);
+        viewContainer.insert(customViewWithTwoNodes);
+        viewContainer.insert(customViewWithOneNode);
 
-        expect(textInViewPort()).toEqual('filler one two single');
+        expect(textInViewContainer()).toEqual('filler one two single');
 
-        viewPort.remove(1);
-        expect(textInViewPort()).toEqual('filler single');
+        viewContainer.remove(1);
+        expect(textInViewContainer()).toEqual('filler single');
       });
     });
 
@@ -210,7 +210,7 @@ export function main() {
       var fancyView;
       beforeEach(() => {
         var parser = new Parser(new Lexer());
-        viewPort.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
           new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
@@ -220,7 +220,7 @@ export function main() {
       });
 
       it('hydrating should update rootElementInjectors and parent change detector', () => {
-        viewPort.insert(fancyView);
+        viewContainer.insert(fancyView);
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(elementInjector));
 
@@ -228,12 +228,12 @@ export function main() {
       });
 
       it('dehydrating should update rootElementInjectors and parent change detector', () => {
-        viewPort.insert(fancyView);
-        viewPort.remove();
+        viewContainer.insert(fancyView);
+        viewContainer.remove();
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(null));
         expect(parentView.changeDetector.children.length).toBe(0);
-        expect(viewPort.length).toBe(0);
+        expect(viewContainer.length).toBe(0);
       });
     });
   });

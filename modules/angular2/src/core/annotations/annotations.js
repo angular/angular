@@ -111,7 +111,7 @@ export class Decorator extends Directive {
   }
 }
 
-export class Template extends Directive {
+export class Viewport extends Directive {
   @CONST()
   constructor({
       selector,

@@ -11,10 +11,10 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
-import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
 
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
@@ -262,7 +262,7 @@ class PushBasedComp {
 
 @Component({
   template: new TemplateConfig({
-    directives: [MyDir, [[ChildComp], SomeTemplate, PushBasedComp]]
+    directives: [MyDir, [[ChildComp], SomeViewport, PushBasedComp]]
   })
 })
 class MyComp {
@@ -289,13 +289,13 @@ class ChildComp {
   }
 }
 
-@Template({
+@Viewport({
   selector: '[some-tmplate]'
 })
-class SomeTemplate {
-  constructor(viewPort: ViewPort) {
-    viewPort.create().setLocal('some-tmpl', 'hello');
-    viewPort.create().setLocal('some-tmpl', 'again');
+class SomeViewport {
+  constructor(container: ViewContainer) {
+    container.create().setLocal('some-tmpl', 'hello');
+    container.create().setLocal('some-tmpl', 'again');
   }
 }
 

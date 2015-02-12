@@ -4,7 +4,7 @@ import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'angula
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Decorator - add behavior to existing elements.
-// - Template - allow for stamping out of a html template (not in this demo).
+// - Viewport - allow for stamping out of a html template (not in this demo).
 
 // @Component is AtScript syntax to annotate the HelloCmp class as an Angular
 // 2.0 component.
@@ -40,7 +40,7 @@ class HelloCmp {
 }
 
 // Decorators are light-weight. They don't allow for templates, or new
-// expression contexts (use @Component or @Template for those needs).
+// expression contexts (use @Component or @Viewport for those needs).
 @Decorator({
   selector: '[red]'
 })

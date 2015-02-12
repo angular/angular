@@ -2,13 +2,25 @@
 
 ## Overview
 
-This document explains the concept of a View. View is a core primitive used by angular to render the DOM tree. ViewPort is location in a View which can accept child Views. Views for a tree structure which mimics the DOM tree.
+This document explains the concept of a View. 
+A View is a core primitive used by angular to render the DOM tree. 
+A ViewPort is location in a View which can accept child Views.
+Every ViewPort has an associated ViewContainer than can contain any number of child Views.
+Views form a tree structure which mimics the DOM tree.
 
-* View is a core rendering construct. A running application is just a collection of Views which are nested in a tree like structure. The View tree is a simplified version of the DOM tree. A View can have a single DOM Element or large DOM structures. The key is that the DOM tree in the View can not undergo structural changes (only property changes).
-* Views represent a running instance of a DOM Template. This implies that while elements in a View can change properties, they can not change structurally. (Structural changes such as, adding or removing elements requires adding or removing child Views into ViewPorts.)
-* View can have zero or more ViewPorts. A ViewPort is a marker in the DOM which allows the insertion of child Views.
-* Views are created from a ProtoView. A ProtoView is a compiled DOM Template which is efficient at creating Views.
-* View contains a context object. The context represents the object instance against which all expressions are evaluated against.
+* View is a core rendering construct. A running application is just a collection of Views which are 
+  nested in a tree like structure. The View tree is a simplified version of the DOM tree. A View can 
+  have a single DOM Element or large DOM structures. The key is that the DOM tree in the View can 
+  not undergo structural changes (only property changes).
+* Views represent a running instance of a DOM Template. This implies that while elements in a View 
+  can change properties, they can not change structurally. (Structural changes such as, adding or 
+  removing elements requires adding or removing child Views into ViewContainers).
+* View can have zero or more ViewPorts. A ViewPort is a marker in the DOM which allows 
+  the insertion of child Views.
+* Views are created from a ProtoView. A ProtoView is a compiled DOM Template which is efficient at 
+  creating Views.
+* View contains a context object. The context represents the object instance against which all 
+  expressions are evaluated.
 * View contains a ChangeDetector for looking for detecting changes to the model.
 * View contains ElementInjector for creating Directives.
 
@@ -39,7 +51,10 @@ And assume following HTML Template:
 </div>
 ```
 
-The above template is compiled by the Compiler to create a ProtoView. The ProtoView is than used to create an instance of the View. The instantiation process involves cloning the above template and locating all of the elements which contain bindings and finally instantiating the Directives associated with the template. (See compilation for more details.)
+The above template is compiled by the Compiler to create a ProtoView. The ProtoView is than used to 
+create an instance of the View. The instantiation process involves cloning the above template and 
+locating all of the elements which contain bindings and finally instantiating the Directives 
+associated with the template. (See compilation for more details.)
 
 ```
 <div>                             | viewA(greeter)
@@ -66,12 +81,14 @@ Note:
 * View knows which expressions need to be watched.
 * View knows what needs to be updated if the watched expression changes.
 * All DOM elements are owned by single instance of the view.
-* The structure of the DOM can not change during runtime. To Allow structural changes to DOM we need to understand Composed View.
+* The structure of the DOM can not change during runtime. To Allow structural changes to DOM we need 
+  to understand Composed View.
 
 
 ## Composed View
 
-An important part of an application is to be able to change the DOM structure to render data for the user. In Angular this is done by inserting child views into the ViewPort.
+An important part of an application is to be able to change the DOM structure to render data for the 
+user. In Angular this is done by inserting child views into the ViewPort.
 
 Let's start with a Template such as:
 
@@ -106,10 +123,12 @@ The next step is to compose these two ProtoViews into actual view which is rende
 </ul>                   | viewA(SomeContexnt)
 ```
 
-*Step2:* Instantiate `Foreach` directive which will receive the `ViewPort`. (The ViewPort has reference to `protoViewA`).
+*Step2:* Instantiate `Foreach` directive which will receive the `ViewContainer`. (The ViewContainer 
+has a reference to `protoViewA`).
 
 
-*Step3:* As the `Foreach` unrolls it asks the `ViewPort` to instantiate `protoViewB` and insert it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that 
+*Step3:* As the `Foreach` unrolls it asks the `ViewContainer` to instantiate `protoViewB` and insert 
+it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that 
 
 ```
 <ul>                    | viewA(someContext)
@@ -119,7 +138,10 @@ The next step is to compose these two ProtoViews into actual view which is rende
 </ul>                   | viewA(lomeContexnt)
 ```
 
-*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `Foreach` the evaluation context for the `viewB0` and `viewB1` are `locals0` and `locals1` respectively. Locals allow the introduction of new local variables visible only within the scope of the View, and delegate any unknown references to the parent context.
+*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `Foreach` 
+the evaluation context for the `viewB0` and `viewB1` are `locals0` and `locals1` respectively. 
+Locals allow the introduction of new local variables visible only within the scope of the View, and 
+delegate any unknown references to the parent context.
 
 ```
 <ul>                    | viewA
@@ -129,11 +151,18 @@ The next step is to compose these two ProtoViews into actual view which is rende
 </ul>                   | viewA
 ```
 
-Each View can have zero or more ViewPorts. By inserting and removing child Views to and from the ViewPort, the application can mutate the DOM structure to any desirable state. A View contain individual nodes or complex DOM structure. The insertion points for the child Views, known as ViewPorts, contain a DOM element which acts as an anchor. The anchor is either a `template` or a `script` element depending on your browser. It is used to identify where the child Views will be inserted.
+Each View can have zero or more ViewPorts. By inserting and removing child Views to and from the 
+ViewContainers, the application can mutate the DOM structure to any desirable state. A View contain 
+individual nodes or complex DOM structure. The insertion points for the child Views, known as 
+ViewContainers, contain a DOM element which acts as an anchor. The anchor is either a `template` or 
+a `script` element depending on your browser. It is used to identify where the child Views will be 
+inserted.
 
 ## Component Views
 
-A View can also contain Components. Components contain Shadow DOM for encapsulating their internal rendering state. Unlike ViewPorts which can contain zero or more Views, the Component always contain exactly one Shadow View.
+A View can also contain Components. Components contain Shadow DOM for encapsulating their internal 
+rendering state. Unlike ViewPorts which can contain zero or more Views, the Component always contain 
+exactly one Shadow View.
 
 ```
 <div>                            | viewA
@@ -176,7 +205,8 @@ And assume following HTML Template:
 </div>                            | viewA(greeter)
 ```
 
-The above UI is built using a single View, and hence single context `greeter`. It can be expressed in this pseudo-code.
+The above UI is built using a single View, and hence single context `greeter`. It can be expressed 
+in this pseudo-code.
 
 ```
 var greeter = new Greeter();
@@ -185,14 +215,16 @@ var greeter = new Greeter();
 The View contains two bindings:
 
 1. `greeting`: This is bound to the `greeting` property on the `Greeter` instance.
-2. `name.value`: This poses a problem. There is no `name` property on `Greeter` instance. To solve this we wrap the `Greeter` instance in the `Local` instance like so:
+2. `name.value`: This poses a problem. There is no `name` property on `Greeter` instance. To solve 
+this we wrap the `Greeter` instance in the `Local` instance like so:
 ```
 var greeter = new Locals(new Greeter(), {name: ref_to_input_element })
 ```
 
 
-By wrapping the `Greeter` instance into the `Locals` we allow the view to introduce variables which are in addition to
-the `Greeter` instance. During the resolution of the expressions we first check the locals, and then `Greeter` instance.
+By wrapping the `Greeter` instance into the `Locals` we allow the view to introduce variables which 
+are in addition to the `Greeter` instance. During the resolution of the expressions we first check 
+the locals, and then `Greeter` instance.
 
 
 
@@ -201,9 +233,14 @@ the `Greeter` instance. During the resolution of the expressions we first check 
 Views transition through a particular set of states:
 
 1. View is created from the ProtoView.
-2. View can be attached to an existing ViewPort.
-3. Upon attaching View to the ViewPort the View needs to be hydrated. The hydration process involves instantiating all of the Directives associated with the current View.
-4. At this point the view is ready and renderable. Multiple changes can be delivered to the Directives from the ChangeDetection.
-5. At some point the View can be removed. At this point all of the directives are destroyed during the dehydration precess and the view becomes inactive.
-6. The View has to wait until it is detached from the DOM. The delay in detaching could be caused because an animation is animating the view away.
-7. After the View is detached from the DOM it is ready to be reused. The view reuse allows the application to be faster in subsequent renderings.
+2. View can be attached to an existing ViewContainer.
+3. Upon attaching View to the ViewContainer the View needs to be hydrated. The hydration process 
+   involves instantiating all of the Directives associated with the current View.
+4. At this point the view is ready and renderable. Multiple changes can be delivered to the 
+   Directives from the ChangeDetection.
+5. At some point the View can be removed. At this point all of the directives are destroyed during 
+   the dehydration process and the view becomes inactive.
+6. The View has to wait until it is detached from the DOM. The delay in detaching could be caused 
+   because an animation is animating the view away.
+7. After the View is detached from the DOM it is ready to be reused. The view reuse allows the 
+   application to be faster in subsequent renderings.

@@ -1,7 +1,7 @@
 import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
   from 'angular2/change_detection';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular2/angular2';
+import {bootstrap, Component, Viewport, TemplateConfig, ViewContainer, Compiler} from 'angular2/angular2';
 
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -50,8 +50,8 @@ function setupReflector() {
 
   reflector.registerType(NgIf, {
     'factory': (vp) => new NgIf(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
       selector: '[ng-if]',
       bind: {
         'ng-if': 'ngIf'
@@ -335,16 +335,16 @@ class AppComponent {
 
 // TODO: Move this into a reusable directive in the 'core' module!
 class NgIf {
-  _viewPort:ViewPort;
-  constructor(viewPort:ViewPort) {
-    this._viewPort = viewPort;
+  _viewContainer:ViewContainer;
+  constructor(viewContainer:ViewContainer) {
+    this._viewContainer = viewContainer;
   }
   set ngIf(value:boolean) {
-    if (this._viewPort.length > 0) {
-      this._viewPort.remove(0);
+    if (this._viewContainer.length > 0) {
+      this._viewContainer.remove(0);
     }
     if (value) {
-      this._viewPort.create();
+      this._viewContainer.create();
     }
   }
 }

@@ -22,7 +22,7 @@ const NG_BINDING_CLASS = 'ng-binding';
  * - CompileElement#eventBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
- * - CompileElement#templateDirective
+ * - CompileElement#viewportDirective
  */
 export class ElementBindingMarker extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -36,7 +36,7 @@ export class ElementBindingMarker extends CompileStep {
       (isPresent(current.variableBindings) && MapWrapper.size(current.variableBindings)>0) ||
       (isPresent(current.eventBindings) && MapWrapper.size(current.eventBindings)>0) ||
       (isPresent(current.decoratorDirectives) && current.decoratorDirectives.length > 0) ||
-      isPresent(current.templateDirective) ||
+      isPresent(current.viewportDirective) ||
       isPresent(current.componentDirective);
 
     if (hasBindings) {

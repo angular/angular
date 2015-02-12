@@ -78,7 +78,7 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
  * - CompileElement#eventBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
- * - CompileElement#templateDirective
+ * - CompileElement#viewportDirective
  *
  * Note: This actually only needs the CompileElements with the flags
  * `hasBindings` and `isViewRoot`,
@@ -105,7 +105,7 @@ export class ElementBinderBuilder extends CompileStep {
           current.inheritedProtoElementInjector : null;
 
       elementBinder = protoView.bindElement(currentProtoElementInjector,
-        current.componentDirective, current.templateDirective);
+        current.componentDirective, current.viewportDirective);
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
