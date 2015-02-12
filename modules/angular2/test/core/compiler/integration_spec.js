@@ -9,6 +9,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -36,7 +37,7 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(null);
+        view = pv.instantiate(null, null);
         view.hydrate(new Injector([]), null, ctx);
         cd = view.changeDetector;
       }
@@ -65,14 +66,23 @@ export function main() {
       });
 
       it('should consume directive watch expression change.', (done) => {
-        compiler.compile(MyComp, el('<div my-dir [elprop]="ctxProp"></div>')).then((pv) => {
+        var tpl =
+          '<div>' +
+            '<div my-dir [elprop]="ctxProp"></div>' +
+            '<div my-dir elprop="Hi there!"></div>' +
+            '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
+            '<div my-dir elprop="One more {{ctxProp}}"></div>' +
+          '</div>'
+        compiler.compile(MyComp, el(tpl)).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
           cd.detectChanges();
 
-          var elInj = view.elementInjectors[0];
-          expect(elInj.get(MyDir).dirProp).toEqual('Hello World!');
+          expect(view.elementInjectors[0].get(MyDir).dirProp).toEqual('Hello World!');
+          expect(view.elementInjectors[1].get(MyDir).dirProp).toEqual('Hi there!');
+          expect(view.elementInjectors[2].get(MyDir).dirProp).toEqual('Hi there!');
+          expect(view.elementInjectors[3].get(MyDir).dirProp).toEqual('One more Hello World!');
           done();
         });
       });
@@ -133,6 +143,82 @@ export function main() {
           done();
         });
       });
+
+      it('should assign the component instance to a var-', (done) => {
+        compiler.compile(MyComp, el('<p><child-cmp var-alice></child-cmp></p>')).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+
+          done();
+        })
+      });
+
+      it('should assign two component instances each with a var-', (done) => {
+        var element = el('<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>');
+
+        compiler.compile(MyComp, element).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+          expect(view.contextWithLocals.get('bob')).toBeAnInstanceOf(ChildComp);
+          expect(view.contextWithLocals.get('alice')).not.toBe(view.contextWithLocals.get('bob'));
+
+          done();
+        })
+      });
+
+      it('should assign the component instance to a var- with shorthand syntax', (done) => {
+        compiler.compile(MyComp, el('<child-cmp #alice></child-cmp>')).then((pv) => {
+          createView(pv);
+
+          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+
+          done();
+        })
+      });
+
+      it('should assign the element instance to a user-defined variable', (done) => {
+        // How is this supposed to work?
+        var element = el('<p></p>');
+        var div = el('<div var-alice></div>');
+        DOM.appendChild(div, el('<i>Hello</i>'));
+        DOM.appendChild(element, div);
+
+        compiler.compile(MyComp, element).then((pv) => {
+          createView(pv);
+          expect(view.contextWithLocals).not.toBe(null);
+
+          var value = view.contextWithLocals.get('alice');
+          expect(value).not.toBe(null);
+          expect(value.tagName).toEqual('DIV');
+
+          done();
+        })
+      });
+
+      it('should provide binding configuration config to the component', (done) => {
+        compiler.compile(MyComp, el('<push-cmp #cmp></push-cmp>')).then((pv) => {
+          createView(pv);
+
+          var cmp = view.contextWithLocals.get('cmp');
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
+
+          cmp.propagate();
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
+          done();
+        })
+      });
     });
   });
 }
@@ -149,8 +235,34 @@ class MyDir {
 }
 
 @Component({
+  selector: 'push-cmp',
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp, SomeTemplate]
+    inline: '{{field}}'
+  })
+})
+class PushBasedComp {
+  numberOfChecks:number;
+  bpc:BindingPropagationConfig;
+
+  constructor(bpc:BindingPropagationConfig) {
+    this.numberOfChecks = 0;
+    this.bpc = bpc;
+    bpc.shouldBePropagated();
+  }
+
+  get field(){
+    this.numberOfChecks++;
+    return "fixed";
+  }
+
+  propagate() {
+    this.bpc.shouldBePropagatedFromRoot();
+  }
+}
+
+@Component({
+  template: new TemplateConfig({
+    directives: [MyDir, [[ChildComp], SomeTemplate, PushBasedComp]]
   })
 })
 class MyComp {
@@ -193,4 +305,3 @@ class MyService {
     this.greeting = 'hello';
   }
 }
-

@@ -32,6 +32,7 @@ export class ProviderError extends Error {
   constructResolvingMessage:Function;
   message;
   constructor(key:Key, constructResolvingMessage:Function) {
+    super();
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
     this.message = this.constructResolvingMessage(this.keys);
@@ -87,6 +88,7 @@ export class InstantiationError extends ProviderError {
 export class InvalidBindingError extends Error {
   message:string;
   constructor(binding) {
+    super();
     this.message = `Invalid binding ${binding}`;
   }
 
@@ -98,6 +100,7 @@ export class InvalidBindingError extends Error {
 export class NoAnnotationError extends Error {
   message:string;
   constructor(typeOrFunc) {
+    super();
     this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}`;
   }
 

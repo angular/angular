@@ -5,11 +5,12 @@ import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './int
 export class AbstractChangeDetector extends ChangeDetector {
   children:List;
   parent:ChangeDetector;
-  status:string;
+  mode:string;
 
   constructor() {
+    super();
     this.children = [];
-    this.status = CHECK_ALWAYS;
+    this.mode = CHECK_ALWAYS;
   }
 
   addChild(cd:ChangeDetector) {
@@ -48,6 +49,14 @@ export class AbstractChangeDetector extends ChangeDetector {
     var children = this.children;
     for(var i = 0; i < children.length; ++i) {
       children[i]._detectChanges(throwOnChange);
+    }
+  }
+
+  markPathToRootAsCheckOnce() {
+    var c = this;
+    while(isPresent(c) && c.mode != DETACHED) {
+      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
+      c = c.parent;
     }
   }
 }

@@ -25,6 +25,7 @@ export class ProtoViewBuilder extends CompileStep {
   changeDetection:ChangeDetection;
   _shadowDomStrategy:ShadowDomStrategy;
   constructor(changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
+    super();
     this._shadowDomStrategy = shadowDomStrategy;
     this.changeDetection = changeDetection;
   }
@@ -40,6 +41,10 @@ export class ProtoViewBuilder extends CompileStep {
           throw new BaseException('Only one nested view per element is allowed');
         }
         parent.inheritedElementBinder.nestedProtoView = inheritedProtoView;
+
+        // When current is a view root, the variable bindings are set to the *nested* proto view.
+        // The root view conceptually signifies a new "block scope" (the nested view), to which
+        // the variables are bound.
         if (isPresent(parent.variableBindings)) {
           MapWrapper.forEach(parent.variableBindings, (mappedName, varName) => {
             inheritedProtoView.bindVariable(varName, mappedName);
@@ -49,6 +54,17 @@ export class ProtoViewBuilder extends CompileStep {
     } else if (isPresent(parent)) {
       inheritedProtoView = parent.inheritedProtoView;
     }
+
+    // The view's contextWithLocals needs to have a full set of variable names at construction time
+    // in order to prevent new variables from being set later in the lifecycle. Since we don't want
+    // to actually create variable bindings for the $implicit bindings, add to the
+    // protoContextLocals manually.
+    if (isPresent(current.variableBindings)) {
+      MapWrapper.forEach(current.variableBindings, (mappedName, varName) => {
+        MapWrapper.set(inheritedProtoView.protoContextLocals, mappedName, null);
+      });
+    }
+
     current.inheritedProtoView = inheritedProtoView;
   }
 }

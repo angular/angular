@@ -1,5 +1,5 @@
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {normalizeBlank, isPresent} from 'angular2/src/facade/lang';
+import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
 
 export class VmTurnZone {
   _outerZone;
@@ -17,7 +17,7 @@ export class VmTurnZone {
     this._onTurnDone = null;
     this._onErrorHandler = null;
 
-    this._outerZone = window.zone;
+    this._outerZone = global.zone;
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
   }
 

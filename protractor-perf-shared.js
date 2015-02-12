@@ -14,7 +14,9 @@ if (process.env.CLOUD_SECRET_PATH) {
   };
 }
 
-config.specs = ['dist/cjs/**/*_perf.js'];
+config.specs = ['dist/js/cjs/**/e2e_test/**/*_perf.js'];
+config.exclude = ['dist/js/cjs/**/node_modules/**'];
+
 config.jasmineNodeOpts.defaultTimeoutInterval = 80000;
 
 var runId = nodeUuid.v1();
@@ -32,8 +34,8 @@ config.params = {
     // forces a gc after every run
     forceGc: false,
     reporters: [
-      require('./dist/cjs/tools/benchpress/src/console_reporter.js'),
-      cloudReporterConfig ? require('./dist/cjs/tools/benchpress/src/cloud_reporter.js') : null,
+      require('./dist/js/cjs/benchpress/src/console_reporter.js'),
+      cloudReporterConfig ? require('./dist/js/cjs/benchpress/src/cloud_reporter.js') : null,
     ],
     cloudReporter: cloudReporterConfig,
     scaling: [{

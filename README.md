@@ -56,7 +56,7 @@ to the preprocessor and run the tests without exiting karma
 
 ### Performance tests
 
-1. `gulp build.cjs` (builds benchpress and tests into `dist/cjs` folder)
+1. `gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
 2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
 3. `protractor protractor-perf-js.conf.js`: JS performance tests
 4. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
@@ -71,7 +71,7 @@ They are all constructed via injection. For more information see the comments in
 source `modules/examples/src/hello_world/index.js`.
 
 You can build this example as either JS or Dart app:
-* (JS) `gulp serve.js.dev` and open `localhost:8000/examples/web/hello_world/` in Chrome.
+* (JS) `gulp serve.js.dev` and open `localhost:8000/examples/src/hello_world/` in Chrome.
 * (Dart) `gulp serve/examples.dart` and open `localhost:8080/hello_world` in Chrome (for dart2js) or Dartium (for Dart VM).
 
 ## Debug the transpiler

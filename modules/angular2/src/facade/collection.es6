@@ -1,8 +1,8 @@
-import {int, isJsObject} from 'angular2/src/facade/lang';
+import {int, isJsObject, global} from 'angular2/src/facade/lang';
 
-export var List = window.Array;
-export var Map = window.Map;
-export var Set = window.Set;
+export var List = global.Array;
+export var Map = global.Map;
+export var Set = global.Set;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
@@ -39,6 +39,9 @@ export class StringMapWrapper {
     // performance!
     // http://jsperf.com/ng2-object-create-null
     return { };
+  }
+  static contains(map, key) {
+    return map.hasOwnProperty(key);
   }
   static get(map, key) {
     return map.hasOwnProperty(key) ? map[key] : undefined;
@@ -149,6 +152,9 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
+  static removeLast(list:List) {
+    return list.pop();
+  }
   static remove(list, el): boolean {
     var index = list.indexOf(el);
     if (index > -1) {
@@ -166,8 +172,8 @@ export class ListWrapper {
   static isEmpty(list) {
     return list.length == 0;
   }
-  static fill(list:List, value, start:int = 0, end:int = undefined) {
-    list.fill(value, start, end);
+  static fill(list:List, value, start:int = 0, end:int = null) {
+    list.fill(value, start, end === null ? undefined: end);
   }
   static equals(a:List, b:List):boolean {
     if(a.length != b.length) return false;

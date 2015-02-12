@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {TemplateElement, DOM} from 'angular2/src/facade/dom';
+import {TemplateElement, DOM, Element} from 'angular2/src/facade/dom';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -22,13 +22,13 @@ export class TemplateLoader {
     this._cache = StringMapWrapper.create();
   }
 
-  load(cmpMetadata: DirectiveMetadata):Promise<Element> {
+  // TODO(vicb): union type: return an Element or a Promise<Element>
+  load(cmpMetadata: DirectiveMetadata) {
     var annotation:Component = cmpMetadata.annotation;
     var tplConfig:TemplateConfig = annotation.template;
 
     if (isPresent(tplConfig.inline)) {
-      var template = DOM.createTemplate(tplConfig.inline);
-      return PromiseWrapper.resolve(template);
+      return DOM.createTemplate(tplConfig.inline);
     }
 
     if (isPresent(tplConfig.url)) {

@@ -1,3 +1,5 @@
+import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+
 export var window = frames.window;
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
@@ -9,8 +11,6 @@ export var StyleElement = window.HTMLStyleElement;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
-
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 export class DOM {
   static query(selector) {
@@ -138,6 +138,15 @@ export class DOM {
   }
   static hasClass(element:Element, classname:string) {
     return element.classList.contains(classname);
+  }
+  static setStyle(element:Element, stylename:string, stylevalue:string) {
+    element.style[stylename] = stylevalue;
+  }
+  static removeStyle(element:Element, stylename:string) {
+    element.style[stylename] = null;
+  }
+  static getStyle(element:Element, stylename:string) {
+    return element.style[stylename];
   }
   static tagName(element:Element):string {
     return element.tagName;

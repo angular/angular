@@ -47,10 +47,10 @@ function _selfRecord(r:ProtoRecord, contextIndex:number, selfIndex:number):Proto
     contextIndex,
     selfIndex,
     r.bindingMemento,
-    r.groupMemento,
+    r.directiveMemento,
     r.expressionAsString,
     r.lastInBinding,
-    r.lastInGroup
+    r.lastInDirective
   );
 }
 
@@ -75,10 +75,10 @@ function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map) {
     contextIndex,
     selfIndex,
     r.bindingMemento,
-    r.groupMemento,
+    r.directiveMemento,
     r.expressionAsString,
     r.lastInBinding,
-    r.lastInGroup
+    r.lastInDirective
   );
 }
 

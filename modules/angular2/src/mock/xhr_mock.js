@@ -9,6 +9,7 @@ export class XHRMock extends XHR {
   _requests: List<Promise>;
 
   constructor() {
+    super();
     this._expectations = [];
     this._definitions = MapWrapper.create();
     this._requests = [];

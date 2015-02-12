@@ -19,15 +19,15 @@ export class ArrayChanges {
   _length:int;
   _linkedRecords:_DuplicateMap;
   _unlinkedRecords:_DuplicateMap;
-  _previousItHead:CollectionChangeRecord<V>;
-  _itHead:CollectionChangeRecord<V>;
-  _itTail:CollectionChangeRecord<V>;
-  _additionsHead:CollectionChangeRecord<V>;
-  _additionsTail:CollectionChangeRecord<V>;
-  _movesHead:CollectionChangeRecord<V>;
-  _movesTail:CollectionChangeRecord<V> ;
-  _removalsHead:CollectionChangeRecord<V>;
-  _removalsTail:CollectionChangeRecord<V>;
+  _previousItHead:CollectionChangeRecord;
+  _itHead:CollectionChangeRecord;
+  _itTail:CollectionChangeRecord;
+  _additionsHead:CollectionChangeRecord;
+  _additionsTail:CollectionChangeRecord;
+  _movesHead:CollectionChangeRecord;
+  _movesTail:CollectionChangeRecord;
+  _removalsHead:CollectionChangeRecord;
+  _removalsTail:CollectionChangeRecord;
 
   constructor() {
     this._collection = null;

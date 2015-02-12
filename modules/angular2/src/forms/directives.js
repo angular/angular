@@ -1,0 +1,215 @@
+import {TemplateConfig, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
+import {DOM} from 'angular2/src/facade/dom';
+import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {ControlGroup, Control} from './model';
+
+class ControlGroupDirectiveBase {
+  addDirective(directive):void {}
+  findControl(name:string):Control { return null; }
+}
+
+@CONST()
+export class ControlValueAccessor {
+  readValue(el){}
+  writeValue(el, value):void {}
+}
+
+@CONST()
+class DefaultControlValueAccessor extends ControlValueAccessor {
+  constructor() {
+    super();
+  }
+
+  readValue(el) {
+    return el.value;
+  }
+
+  writeValue(el, value):void {
+    el.value = value;
+  }
+}
+
+@CONST()
+class CheckboxControlValueAccessor extends ControlValueAccessor {
+  constructor() {
+    super();
+  }
+
+  readValue(el):boolean {
+    return el.checked;
+  }
+
+  writeValue(el, value:boolean):void {
+    el.checked = value;
+  }
+}
+
+var controlValueAccessors = {
+  "checkbox" : new CheckboxControlValueAccessor(),
+  "text" : new DefaultControlValueAccessor()
+};
+
+function controlValueAccessorFor(controlType:string):ControlValueAccessor {
+  var accessor = StringMapWrapper.get(controlValueAccessors, controlType);
+  if (isPresent(accessor)) {
+    return accessor;
+  } else {
+    return StringMapWrapper.get(controlValueAccessors, "text");
+  }
+}
+
+
+export class ControlDirectiveBase {
+  _groupDecorator:ControlGroupDirectiveBase;
+  _el:NgElement;
+
+  controlName:string;
+  type:string;
+  valueAccessor:ControlValueAccessor;
+
+  constructor(groupDecorator, el:NgElement)  {
+    this._groupDecorator = groupDecorator;
+    this._el = el;
+  }
+
+  _initialize() {
+    if (isBlank(this.valueAccessor)) {
+      this.valueAccessor = controlValueAccessorFor(this.type);
+    }
+    this._groupDecorator.addDirective(this);
+    this._updateDomValue();
+    DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
+  }
+
+  _updateDomValue() {
+    this.valueAccessor.writeValue(this._el.domElement, this._control().value);
+  }
+
+  _updateControlValue() {
+    this._control().value = this.valueAccessor.readValue(this._el.domElement);
+  }
+
+  _control() {
+    return this._groupDecorator.findControl(this.controlName);
+  }
+}
+
+@Decorator({
+  lifecycle: [onChange],
+  selector: '[control-name]',
+  bind: {
+    'control-name' : 'controlName',
+    'type' : 'type'
+  }
+})
+export class ControlNameDirective extends ControlDirectiveBase {
+  constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement) {
+    super(groupDecorator, el);
+  }
+
+  onChange(_) {
+    this._initialize();
+  }
+}
+
+@Decorator({
+  lifecycle: [onChange],
+  selector: '[control]',
+  bind: {
+    'control' : 'controlName',
+    'type' : 'type'
+  }
+})
+export class ControlDirective extends ControlDirectiveBase {
+  constructor(@Ancestor() groupDecorator:NewControlGroupDirective, el:NgElement) {
+    super(groupDecorator, el);
+  }
+
+  onChange(_) {
+    this._initialize();
+  }
+}
+
+@Decorator({
+  selector: '[control-group]',
+  bind: {
+    'control-group' : 'controlGroup'
+  }
+})
+export class ControlGroupDirective extends ControlGroupDirectiveBase {
+  _controlGroup:ControlGroup;
+  _directives:List<ControlNameDirective>;
+
+  constructor() {
+    super();
+    this._directives = ListWrapper.create();
+  }
+
+  set controlGroup(controlGroup:ControlGroup) {
+    this._controlGroup = controlGroup;
+    ListWrapper.forEach(this._directives, (cd) => cd._updateDomValue());
+  }
+
+  addDirective(c:ControlNameDirective) {
+    ListWrapper.push(this._directives, c);
+  }
+
+  findControl(name:string):Control {
+    return this._controlGroup.controls[name];
+  }
+}
+
+@Component({
+  selector: '[new-control-group]',
+  bind: {
+    'new-control-group' : 'initData'
+  },
+  template: new TemplateConfig({
+    inline: '<content>'
+  })
+})
+export class NewControlGroupDirective extends ControlGroupDirectiveBase {
+  _initData:any;
+  _controlGroup:ControlGroup;
+  _directives:List<ControlNameDirective>;
+
+  constructor() {
+    super();
+    this._directives = ListWrapper.create();
+  }
+
+  set initData(value) {
+    this._initData = value;
+  }
+
+  addDirective(c:ControlDirective) {
+    ListWrapper.push(this._directives, c);
+    this._controlGroup = null;
+  }
+
+  findControl(name:string):Control {
+    if (isBlank(this._controlGroup)) {
+      this._controlGroup = this._createControlGroup();
+    }
+    return this._controlGroup.controls[name];
+  }
+
+  _createControlGroup():ControlGroup {
+    var controls = ListWrapper.reduce(this._directives, (memo, cd) => {
+      var initControlValue = this._initData[cd.controlName];
+      memo[cd.controlName] = new Control(initControlValue);
+      return memo;
+    }, {});
+    return new ControlGroup(controls);
+  }
+
+  get value() {
+    return this._controlGroup.value;
+  }
+}
+
+export var FormDirectives = [
+  ControlGroupDirective, ControlNameDirective,
+  ControlDirective, NewControlGroupDirective
+];

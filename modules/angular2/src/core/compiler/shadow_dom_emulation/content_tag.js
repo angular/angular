@@ -10,7 +10,7 @@ var _scriptTemplate = DOM.createScriptTag('type', 'ng/content')
 
 class ContentStrategy {
   nodes: List<Node>;
-  insert(nodes:List<Nodes>){}
+  insert(nodes:List<Node>){}
 }
 
 /**
@@ -23,6 +23,7 @@ class RenderedContent extends ContentStrategy {
   endScript:Element;
 
   constructor(contentEl:Element) {
+    super();
     this._replaceContentElementWithScriptTags(contentEl);
     this.nodes = [];
   }
@@ -64,6 +65,7 @@ class IntermediateContent extends ContentStrategy {
   destinationLightDom:LightDom;
 
   constructor(destinationLightDom:LightDom) {
+    super();
     this.destinationLightDom = destinationLightDom;
     this.nodes = [];
   }

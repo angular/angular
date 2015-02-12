@@ -45,7 +45,7 @@ export const CHECK_ALWAYS="ALWAYS_CHECK";
 export const DETACHED="DETACHED";
 
 export class ChangeDispatcher {
-  onRecordChange(groupMemento, records:List<ChangeRecord>) {}
+  onRecordChange(directiveMemento, records:List<ChangeRecord>) {}
 }
 
 export class ChangeDetector {

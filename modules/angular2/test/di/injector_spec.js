@@ -262,6 +262,18 @@ export function main() {
         expect(engineFromChild).toBe(engineFromParent);
       });
 
+      it("should not use the child bindings when resolving the dependencies of a parent binding", function () {
+        var parent = new Injector([
+          Car, Engine
+        ]);
+        var child = parent.createChild([
+          bind(Engine).toClass(TurboEngine)
+        ]);
+
+        var carFromChild = child.get(Car);
+        expect(carFromChild.engine).toBeAnInstanceOf(Engine);
+      });
+
       it('should create new instance in a child injector', function () {
         var parent = new Injector([Engine]);
         var child = parent.createChild([

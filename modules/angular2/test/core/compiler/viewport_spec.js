@@ -2,7 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {ViewPort} from 'angular2/src/core/compiler/viewport';
 import {proxy, IMPLEMENTS} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM, Node} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/di';
 import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
@@ -33,7 +33,7 @@ class AttachableChangeDetector {
 @IMPLEMENTS(View)
 class HydrateAwareFakeView {
   isHydrated: boolean;
-  nodes: List<Nodes>;
+  nodes: List<Node>;
   changeDetector: ChangeDetector;
   rootElementInjectors;
   constructor(isHydrated) {
@@ -71,7 +71,7 @@ export function main() {
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
       elementInjector = new ElementInjector(null, null, null, null);
-      viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector);
+      viewPort = new ViewPort(parentView, insertionElement, protoView, elementInjector, null);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
@@ -216,7 +216,7 @@ export function main() {
           new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
-        fancyView = pv.instantiate(null);
+        fancyView = pv.instantiate(null, null);
       });
 
       it('hydrating should update rootElementInjectors and parent change detector', () => {

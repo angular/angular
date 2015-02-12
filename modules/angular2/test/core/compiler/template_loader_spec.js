@@ -23,13 +23,10 @@ export function main() {
       return new DirectiveMetadata(FakeComponent, component, null);
     }
 
-    it('should load inline templates', (done) => {
+    it('should load inline templates synchronously', () => {
       var template = 'inline template';
       var md = createMetadata({inline: template});
-      loader.load(md).then((el) => {
-        expect(el.content).toHaveText(template);
-        done();
-      });
+      expect(loader.load(md).content).toHaveText(template);
     });
 
     it('should load templates through XHR', (done) => {

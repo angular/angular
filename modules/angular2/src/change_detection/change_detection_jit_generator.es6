@@ -156,7 +156,7 @@ function notifyTemplate(index:number):string{
   return  `
 if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
   if(throwOnChange) ${UTIL}.throwOnChange(${PROTOS_ACCESSOR}[${index}], ${CHANGES_LOCAL}[0]);
-  ${DISPATCHER_ACCESSOR}.onRecordChange(${PROTOS_ACCESSOR}[${index}].groupMemento, ${CHANGES_LOCAL});
+  ${DISPATCHER_ACCESSOR}.onRecordChange(${PROTOS_ACCESSOR}[${index}].directiveMemento, ${CHANGES_LOCAL});
   ${CHANGES_LOCAL} = null;
 }
 `;
@@ -388,7 +388,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   genNotify(r):string{
-    return r.lastInGroup ? notifyTemplate(r.selfIndex - 1) : '';
+    return r.lastInDirective ? notifyTemplate(r.selfIndex - 1) : '';
   }
 
   genArgs(r:ProtoRecord):string {

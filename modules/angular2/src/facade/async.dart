@@ -20,6 +20,10 @@ class PromiseWrapper {
   static void setTimeout(fn(), int millis) {
     new Timer(new Duration(milliseconds: millis), fn);
   }
+
+  static bool isPromise(maybePromise) {
+    return maybePromise is Future;
+  }
 }
 
 class _Completer {

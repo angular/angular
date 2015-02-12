@@ -39,14 +39,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.formatters = formatters;
 
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
-    ListWrapper.fill(this.values, uninitialized);
-
     this.changes = ListWrapper.createFixedSize(protoRecords.length + 1);
 
     this.protos = protoRecords;
   }
 
   setContext(context:any) {
+    ListWrapper.fill(this.values, uninitialized);
     this.values[0] = context;
   }
 
@@ -54,22 +53,19 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var protos:List<ProtoRecord> = this.protos;
 
     var updatedRecords = null;
-    var currentGroup = null;
-
     for (var i = 0; i < protos.length; ++i) {
       var proto:ProtoRecord = protos[i];
       var change = this._check(proto);
 
       if (isPresent(change)) {
-        currentGroup = proto.groupMemento;
         var record = ChangeDetectionUtil.changeRecord(proto.bindingMemento, change);
         updatedRecords = ChangeDetectionUtil.addRecord(updatedRecords, record);
       }
 
-      if (proto.lastInGroup && isPresent(updatedRecords)) {
+      if (proto.lastInDirective && isPresent(updatedRecords)) {
         if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, updatedRecords[0]);
 
-        this.dispatcher.onRecordChange(currentGroup, updatedRecords);
+        this.dispatcher.onRecordChange(proto.directiveMemento, updatedRecords);
         updatedRecords = null;
       }
     }

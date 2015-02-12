@@ -1,12 +1,27 @@
-import {assert} from 'rtts_assert/rtts_assert';
 export {proxy} from 'rtts_assert/rtts_assert';
 
-export var Type = Function;
-export var Math = window.Math;
+var _global = typeof window === 'undefined' ? global : window;
+export {_global as global};
 
+export var Type = Function;
+export var Math = _global.Math;
+
+var assertionsEnabled_ = typeof assert !== 'undefined';
+
+var int;
 // global assert support, as Dart has it...
 // TODO: `assert` calls need to be removed in production code!
-window.assert = assert;
+if (assertionsEnabled_) {
+  _global.assert = assert;
+  // `int` is not a valid JS type
+  int = assert.define('int', function(value) {
+    return typeof value === 'number' && value%1 === 0;
+  });
+} else {
+  int = {};
+  _global.assert = function() {};
+}
+export {int};
 
 export class FIELD {
   constructor(definition) {
@@ -17,7 +32,6 @@ export class FIELD {
 export class CONST {}
 export class ABSTRACT {}
 export class IMPLEMENTS {}
-
 
 export function isPresent(obj):boolean {
   return obj !== undefined && obj !== null;
@@ -72,8 +86,8 @@ export class StringWrapper {
     return s.startsWith(start);
   }
 
-  static substring(s:string, start:int, end:int = undefined) {
-    return s.substring(start, end);
+  static substring(s:string, start:int, end:int = null) {
+    return s.substring(start, end === null ? undefined: end);
   }
 
   static replaceAllMapped(s:string, from:RegExp, cb:Function): string {
@@ -103,6 +117,7 @@ export class StringJoiner {
 
 export class NumberParseError extends Error {
   constructor(message) {
+    super();
     this.message = message;
   }
 
@@ -157,24 +172,24 @@ export class NumberWrapper {
   }
 }
 
-export function int() {};
-int.assert = function(value) {
-  return value == null || typeof value == 'number' && value === Math.floor(value);
+var RegExp;
+if (assertionsEnabled_) {
+  RegExp = assert.define('RegExp', function(obj) {
+    assert(obj).is(assert.structure({
+      single: _global.RegExp,
+      multiple: _global.RegExp
+    }));
+  });
+} else {
+  RegExp = {};
 }
-
-export var RegExp = assert.define('RegExp', function(obj) {
-  assert(obj).is(assert.structure({
-    single: window.RegExp,
-    multiple: window.RegExp
-  }));
-});
 
 export class RegExpWrapper {
   static create(regExpStr, flags:string = ''):RegExp {
     flags = flags.replace(/g/g, '');
     return {
-      multiple: new window.RegExp(regExpStr, flags + 'g'),
-      single: new window.RegExp(regExpStr, flags)
+      multiple: new _global.RegExp(regExpStr, flags + 'g'),
+      single: new _global.RegExp(regExpStr, flags)
     };
   }
   static firstMatch(regExp, input) {
@@ -224,14 +239,13 @@ export function isJsObject(o):boolean {
 }
 
 export function assertionsEnabled():boolean {
-  try {
-    var x:int = "string";
-    return false;
-  } catch (e) {
-    return true;
-  }
+  return assertionsEnabled_;
 }
 
 export function print(obj) {
-  console.log(obj);
+  if (obj instanceof Error) {
+    console.log(obj.stack);
+  } else {
+    console.log(obj);
+  }
 }

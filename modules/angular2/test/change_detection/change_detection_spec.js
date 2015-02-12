@@ -535,7 +535,7 @@ export function main() {
             var checkOnceChild = changeDetector(CHECK_ONCE, checkAlwaysChild);
             var checkedChild = changeDetector(CHECKED, checkOnceChild);
 
-            ChangeDetectionUtil.markPathToRootAsCheckOnce(checkedChild);
+            checkedChild.markPathToRootAsCheckOnce();
 
             expect(root.mode).toEqual(CHECK_ALWAYS);
             expect(disabled.mode).toEqual(DETACHED);
@@ -604,6 +604,7 @@ class TestDispatcher extends ChangeDispatcher {
   onChange:Function;
 
   constructor() {
+    super();
     this.log = null;
     this.loggedValues = null;
     this.onChange = (_, __) => {};

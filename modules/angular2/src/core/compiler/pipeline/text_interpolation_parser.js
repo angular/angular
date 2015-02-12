@@ -17,12 +17,13 @@ export class TextInterpolationParser extends CompileStep {
   _parser:Parser;
   _compilationUnit:any;
   constructor(parser:Parser, compilationUnit:any) {
+    super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    if (!current.compileChildren) {
+    if (!current.compileChildren || current.ignoreBindings) {
       return;
     }
     var element = current.element;

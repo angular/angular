@@ -1,6 +1,6 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type, RegExp;
+export 'dart:core' show Type, RegExp, print;
 import 'dart:math' as math;
 
 class Math {

@@ -62,6 +62,21 @@ export function main() {
       }));
     });
 
+    it('should mark variables in the proto view context locals', () => {
+      var element = el('<div viewroot><p var-binding></p></div>');
+
+      var results = createPipeline({
+        'var1': 'map1',
+        'var2': 'map2'
+      }).process(element);
+
+      var protoView = results[0].inheritedProtoView;
+      expect(protoView.protoContextLocals).toEqual(MapWrapper.createFromStringMap({
+        'map2': null,
+        'map1': null
+      }));
+    });
+
     describe('errors', () => {
 
       it('should not allow multiple nested ProtoViews for the same parent element', () => {
@@ -79,6 +94,7 @@ export function main() {
 class MockStep extends CompileStep {
   processClosure:Function;
   constructor(process) {
+    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {

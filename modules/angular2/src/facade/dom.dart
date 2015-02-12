@@ -103,6 +103,12 @@ class DOM {
     el.setAttribute(attrName, attrValue);
     return el;
   }
+  static StyleElement createStyleElement(String css, [HtmlDocument doc = null]) {
+    if (doc == null) doc = document;
+    var el = doc.createElement("STYLE");
+    el.text = css;
+    return el;
+  }
   static clone(Node node) => node.clone(true);
   static bool hasProperty(Element element, String name) =>
       new JsObject.fromBrowserObject(element).hasProperty(name);
@@ -119,6 +125,16 @@ class DOM {
   }
   static bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
+
+  static setStyle(Element element, String stylename, String stylevalue) {
+      element.style.setProperty(stylename, stylevalue);
+  }
+  static removeStyle(Element element, String stylename) {
+      element.style.removeProperty(stylename);
+  }
+  static getStyle(Element element, String stylename) {
+      return element.style.getPropertyValue(stylename);
+  }
 
   static String tagName(Element element) => element.tagName;
 

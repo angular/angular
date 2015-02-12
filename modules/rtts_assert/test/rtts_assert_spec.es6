@@ -10,8 +10,7 @@
 //   - [assert.structure](#assert-structure)
 // - [Integrating with Traceur](#integrating-with-traceur)
 
-import {assert} from 'rtts_assert/rtts_assert';
-
+// Note: `assert` gets automatically included by traceur!
 
 export function main() {
 
@@ -163,7 +162,6 @@ describe('primitive value check', function() {
     });
   });
 });
-
 
 
 // ## Describing more complex types
@@ -370,11 +368,18 @@ describe('Traceur', function() {
         .toThrowError('Expected to return an instance of void, got null!');
     });
   });
+
+
+  describe('generics', function() {
+
+    it('should pass', function() {
+      var list:Array<string> = [];
+    });
+
+    // TODO(tbosch): add assertions based on generics to rtts_assert
+
+  });
+
 });
-
-
-// <center><small>
-// This documentation was generated from [assert.spec.js](https://github.com/vojtajina/assert/blob/master/test/assert.spec.js) using [Docco](http://jashkenas.github.io/docco/).
-// </small></center>
 
 }

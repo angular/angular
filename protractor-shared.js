@@ -35,7 +35,8 @@ var POSSIBLE_CAPS = {
       'args': ['--js-flags=--expose-gc']
     },
     loggingPrefs: {
-      performance: 'ALL'
+      performance: 'ALL',
+      browser: 'ALL'
     }
   },
   ChromeDesktop: {
@@ -44,7 +45,8 @@ var POSSIBLE_CAPS = {
       'args': ['--js-flags=--expose-gc']
     },
     loggingPrefs: {
-      performance: 'ALL'
+      performance: 'ALL',
+      browser: 'ALL'
     }
   },
   ChromeAndroid: {
@@ -54,7 +56,8 @@ var POSSIBLE_CAPS = {
       'args': ['--js-flags=--expose-gc']
     },
     loggingPrefs: {
-      performance: 'ALL'
+      performance: 'ALL',
+      browser: 'ALL'
     }
   }
 };

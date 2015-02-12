@@ -1,0 +1,23 @@
+{
+  "name": "angular",
+  "version": "<%= packageJson.version %>.<%= channel %>",
+  "description": "Angular 2 - a web framework for modern web apps",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
+  "dependencies": {
+    <% if (channel==='dev') { %>
+    "rtts-assert": "<%= packageJson.version %>",
+    <% } %>
+    "zone.js": "0.4.*"
+  },
+  "devDependencies": {
+    "yargs": "2.3.*",
+    "gulp-sourcemaps": "1.3.*",
+    "gulp-traceur": "0.16.*",
+    "gulp": "^3.8.8",
+    "gulp-rename": "^1.2.0",
+    "through2": "^0.6.1"
+  }
+}
