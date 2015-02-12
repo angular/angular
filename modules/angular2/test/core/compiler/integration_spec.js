@@ -9,6 +9,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
 import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
@@ -198,6 +199,26 @@ export function main() {
           done();
         })
       });
+
+      it('should provide binding configuration config to the component', (done) => {
+        compiler.compile(MyComp, el('<push-cmp #cmp></push-cmp>')).then((pv) => {
+          createView(pv);
+
+          var cmp = view.contextWithLocals.get('cmp');
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
+
+          cmp.propagate();
+
+          cd.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
+          done();
+        })
+      });
     });
   });
 }
@@ -214,8 +235,34 @@ class MyDir {
 }
 
 @Component({
+  selector: 'push-cmp',
   template: new TemplateConfig({
-    directives: [MyDir, ChildComp, SomeTemplate]
+    inline: '{{field}}'
+  })
+})
+class PushBasedComp {
+  numberOfChecks:number;
+  bpc:BindingPropagationConfig;
+
+  constructor(bpc:BindingPropagationConfig) {
+    this.numberOfChecks = 0;
+    this.bpc = bpc;
+    bpc.shouldBePropagated();
+  }
+
+  get field(){
+    this.numberOfChecks++;
+    return "fixed";
+  }
+
+  propagate() {
+    this.bpc.shouldBePropagatedFromRoot();
+  }
+}
+
+@Component({
+  template: new TemplateConfig({
+    directives: [MyDir, ChildComp, SomeTemplate, PushBasedComp]
   })
 })
 class MyComp {
