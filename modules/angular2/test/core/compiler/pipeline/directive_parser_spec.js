@@ -9,7 +9,7 @@ import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_contro
 import {DOM} from 'angular2/src/facade/dom';
 import {NativeShadowDomStrategy, ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component, Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Template} from 'angular2/src/core/annotations/template';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Lexer, Parser} from 'angular2/change_detection';
 
@@ -235,19 +235,14 @@ class SomeViewport {}
 })
 class SomeViewport2 {}
 
-@Component({
-  selector: '[some-comp]'
-})
+@Component({selector: '[some-comp]'})
 class SomeComponent {}
 
-@Component({
-  selector: '[some-comp2]'
-})
+@Component({selector: '[some-comp2]'})
 class SomeComponent2 {}
 
-@Component({
-  template: new TemplateConfig({
+@Component()
+@Template({
     directives: [SomeDecorator, SomeViewport, SomeViewport2, SomeComponent, SomeComponent2]
-  })
 })
 class MyComp {}

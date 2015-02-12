@@ -1,20 +1,26 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 import {DOM} from 'angular2/src/facade/dom';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Template} from 'angular2/src/core/annotations/template';
+import {TemplateLoader} from 'angular2/core';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {Switch, SwitchWhen, SwitchDefault} from 'angular2/src/directives/switch';
 
 export function main() {
   describe('switch', () => {
-    var view, cd, compiler, component;
+    var view, cd, compiler, component, tplResolver;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
+      tplResolver = new FakeTemplateResolver();
+      compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+        new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache(),
+        new NativeShadowDomStrategy(), tplResolver);
     });
 
     function createView(pv) {
@@ -24,8 +30,13 @@ export function main() {
       cd = view.changeDetector;
     }
 
-    function compileWithTemplate(template) {
-      return compiler.compile(TestComponent, el(template));
+    function compileWithTemplate(html) {
+      var template = new Template({
+        inline: html,
+        directives: [Switch, SwitchWhen, SwitchDefault]
+      });
+      tplResolver.setTemplate(TestComponent, template);
+      return compiler.compile(TestComponent);
     }
 
     describe('switch value changes', () => {
@@ -143,13 +154,7 @@ export function main() {
   });
 }
 
-@Component({
-  selector: 'test-cmp',
-  template: new TemplateConfig({
-    inline: '',  // each test swaps with a custom template.
-    directives: [Switch, SwitchWhen, SwitchDefault]
-  })
-})
+@Component({selector: 'test-cmp'})
 class TestComponent {
   switchValue: any;
   when1: any;
@@ -159,5 +164,28 @@ class TestComponent {
     this.switchValue = null;
     this.when1 = null;
     this.when2 = null;
+  }
+}
+
+class FakeTemplateResolver extends TemplateResolver {
+  _cmpTemplates: Map;
+
+  constructor() {
+    super();
+    this._cmpTemplates = MapWrapper.create();
+  }
+
+  setTemplate(component: Type, template: Template) {
+    MapWrapper.set(this._cmpTemplates, component, template);
+  }
+
+  resolve(component: Type): Template {
+    var override = MapWrapper.get(this._cmpTemplates, component);
+
+    if (isPresent(override)) {
+      return override;
+    }
+
+    return super.resolve(component);
   }
 }

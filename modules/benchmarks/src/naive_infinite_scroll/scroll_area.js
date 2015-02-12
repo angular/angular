@@ -1,7 +1,7 @@
 import {int, FINAL} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {Component, Viewport, TemplateConfig, ViewContainer, Compiler}
+import {Component, Viewport, Template, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -67,23 +67,23 @@ export function setupReflectorForScrollArea() {
     'annotations': [
       new Component({
         selector: 'scroll-area',
-        template: new TemplateConfig({
-            directives: [ScrollItemComponent, Foreach],
-            inline: `
-              <div>
-                  <div id="scrollDiv"
-                       [style]="scrollDivStyle"
-                       on-scroll="onScroll($event)">
-                      <div id="padding"></div>
-                      <div id="inner">
-                          <scroll-item
-                              template="foreach #item in visibleItems"
-                              [offering]="item">
-                          </scroll-item>
-                      </div>
+      }),
+      new Template({
+        directives: [ScrollItemComponent, Foreach],
+        inline: `
+          <div>
+              <div id="scrollDiv"
+                   [style]="scrollDivStyle"
+                   on-scroll="onScroll($event)">
+                  <div id="padding"></div>
+                  <div id="inner">
+                      <scroll-item
+                          template="foreach #item in visibleItems"
+                          [offering]="item">
+                      </scroll-item>
                   </div>
-              </div>`
-        })
+              </div>
+          </div>`
       })
     ]
   });

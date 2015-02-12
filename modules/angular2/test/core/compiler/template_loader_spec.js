@@ -1,10 +1,15 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {Template} from 'angular2/src/core/annotations/template';
+
 import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Type, stringify, isPresent} from 'angular2/src/facade/lang';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
 
@@ -17,25 +22,16 @@ export function main() {
       loader = new TemplateLoader(xhr);
     });
 
-    function createMetadata({inline = null, url = null}={}) {
-      var config = new TemplateConfig({url: url, inline: inline});
-      var component = new Component({template: config});
-      return new DirectiveMetadata(FakeComponent, component, null);
-    }
-
     it('should load inline templates synchronously', () => {
-      var template = 'inline template';
-      var md = createMetadata({inline: template});
-      expect(loader.load(md).content).toHaveText(template);
+      var template = new Template({inline: 'inline template'});
+      expect(loader.load(template).content).toHaveText('inline template');
     });
 
     it('should load templates through XHR', (done) => {
-      var url = '/foo';
-      var template = 'xhr template';
-      xhr.expect(url, template);
-      var md = createMetadata({url: '/foo'});
-      loader.load(md).then((el) => {
-        expect(el.content).toHaveText(template);
+      xhr.expect('/foo', 'xhr template');
+      var template = new Template({url: '/foo'});
+      loader.load(template).then((el) => {
+        expect(el.content).toHaveText('xhr template');
         done();
       });
       xhr.flush();
@@ -43,34 +39,31 @@ export function main() {
 
     it('should cache template loaded through XHR', (done) => {
       var firstEl;
-      var url = '/foo';
-      var template = 'xhr template';
-      xhr.expect(url, template);
-      var md = createMetadata({url: '/foo'});
-      loader.load(md)
+      xhr.expect('/foo', 'xhr template');
+      var template = new Template({url: '/foo'});
+      loader.load(template)
         .then((el) => {
           firstEl = el;
-          return loader.load(md);
+          return loader.load(template);
         })
         .then((el) =>{
           expect(el).toBe(firstEl);
-          expect(el.content).toHaveText(template);
+          expect(el.content).toHaveText('xhr template');
           done();
         });
       xhr.flush();
     });
 
     it('should throw when no template is defined', () => {
-      var md = createMetadata();
-      expect(() => loader.load(md))
-        .toThrowError('No template configured for component FakeComponent');
+      var template =  new Template({inline: null, url: null});
+      expect(() => loader.load(template))
+        .toThrowError('Templates should have either their url or inline property set');
     });
 
     it('should return a rejected Promise when xhr loading fails', (done) => {
-      var url = '/foo';
-      xhr.expect(url, null);
-      var md = createMetadata({url: '/foo'});
-      PromiseWrapper.then(loader.load(md),
+      xhr.expect('/foo', null);
+      var template = new Template({url: '/foo'});
+      PromiseWrapper.then(loader.load(template),
         function(_) { throw 'Unexpected response'; },
         function(error) {
           expect(error).toEqual('Failed to load /foo');
@@ -83,5 +76,5 @@ export function main() {
   });
 }
 
-class FakeComponent {
+class SomeComponent {
 }

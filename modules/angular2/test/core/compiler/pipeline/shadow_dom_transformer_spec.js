@@ -14,7 +14,7 @@ export function main() {
   describe('ShadowDomTransformer', () => {
     function createPipeline(selector, strategy:ShadowDomStrategy, styleHost) {
       var component = new Component({selector: selector});
-      var meta = new DirectiveMetadata(null, component, null);
+      var meta = new DirectiveMetadata(null, component);
       var transformer = new ShadowDomTransformer(meta, strategy, styleHost);
       transformer.clearCache();
       return new CompilePipeline([transformer]);

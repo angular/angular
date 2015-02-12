@@ -6,16 +6,11 @@ import {DOM} from 'angular2/src/facade/dom';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Template} from 'angular2/src/core/annotations/template';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-@Component({
-  selector: 'hello-app',
-  template: new TemplateConfig({
-    inline: '{{greeting}} world!',
-    directives: []
-  })
-})
+@Component({selector: 'hello-app'})
+@Template({inline: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting:string;
   constructor() {
@@ -23,13 +18,8 @@ class HelloRootCmp {
   }
 }
 
-@Component({
-  selector: 'hello-app-2',
-  template: new TemplateConfig({
-    inline: '{{greeting}} world, again!',
-    directives: []
-  })
-})
+@Component({selector: 'hello-app-2'})
+@Template({inline: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting:string;
   constructor() {
@@ -37,13 +27,8 @@ class HelloRootCmp2 {
   }
 }
 
-@Component({
-  selector: 'hello-app',
-  template: new TemplateConfig({
-    inline: '',
-    directives: []
-  })
-})
+@Component({selector: 'hello-app'})
+@Template({inline: ''})
 class HelloRootCmp3 {
   appBinding;
 
@@ -52,13 +37,8 @@ class HelloRootCmp3 {
   }
 }
 
-@Component({
-  selector: 'hello-app',
-  template: new TemplateConfig({
-    inline: '',
-    directives: []
-  })
-})
+@Component({selector: 'hello-app'})
+@Template({inline: ''})
 class HelloRootCmp4 {
   lc;
 

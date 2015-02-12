@@ -405,9 +405,7 @@ class SomeViewportDirectiveWithBinding {
 class SomeComponentDirective {
 }
 
-@Component({
-  bind: {'boundprop3': 'compProp'}
-})
+@Component({bind: {'boundprop3': 'compProp'}})
 class SomeComponentDirectiveWithBinding {
   compProp;
   constructor() {

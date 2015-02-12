@@ -4,13 +4,14 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
-import {bootstrap, Component, Viewport, TemplateConfig, ViewContainer, Compiler}
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
@@ -172,10 +173,12 @@ export function setupReflectorForAngular() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
-      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+      resolver) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+        resolver),
     "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
-                   [CompilerCache], [ShadowDomStrategy]],
+                   [CompilerCache], [ShadowDomStrategy], [TemplateResolver]],
     "annotations": []
   });
 
@@ -194,6 +197,12 @@ export function setupReflectorForAngular() {
   reflector.registerType(TemplateLoader, {
     "factory": (xhr) => new TemplateLoader(xhr),
     "parameters": [[XHR]],
+    "annotations": []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    "factory": () => new TemplateResolver(),
+    "parameters": [],
     "annotations": []
   });
 

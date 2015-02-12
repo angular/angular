@@ -6,6 +6,7 @@ import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'angular2/change_detection';
 import {TemplateLoader} from './compiler/template_loader';
+import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -28,6 +29,7 @@ var _rootBindings = [
   Compiler,
   CompilerCache,
   TemplateLoader,
+  TemplateResolver,
   DirectiveMetadataReader,
   Parser,
   Lexer,
@@ -62,7 +64,7 @@ function _injectorBindings(appComponentType): List<Binding> {
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
         appComponentAnnotatedType, strategy, eventManager) => {
-        return compiler.compile(appComponentAnnotatedType.type, null).then(
+        return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
             appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'),

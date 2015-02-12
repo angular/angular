@@ -1,6 +1,6 @@
 import {int} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
-import {Component, Viewport, TemplateConfig, ViewContainer, Compiler}
+import {Component, Viewport, Template, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -51,55 +51,55 @@ export function setupReflectorForScrollItem() {
     'annotations': [
       new Component({
         selector: 'scroll-item',
-        template: new TemplateConfig({
-          directives: [
-            CompanyNameComponent,
-            OpportunityNameComponent,
-            OfferingNameComponent,
-            StageButtonsComponent,
-            AccountCellComponent,
-            FormattedCellComponent
-          ],
-          inline: `
-            <div [style]="itemStyle">
-                <company-name [company]="offering.company"
-                              [cell-width]="companyNameWidth">
-                </company-name>
-                <opportunity-name [opportunity]="offering.opportunity"
-                                  [cell-width]="opportunityNameWidth">
-                </opportunity-name>
-                <offering-name [offering]="offering"
-                               [cell-width]="offeringNameWidth">
-                </offering-name>
-                <account-cell [account]="offering.account"
-                              [cell-width]="accountCellWidth">
-                </account-cell>
-                <formatted-cell [value]="offering.basePoints"
-                                [cell-width]="basePointsWidth">
-                </formatted-cell>
-                <formatted-cell [value]="offering.kickerPoints"
-                                [cell-width]="kickerPointsWidth">
-                </formatted-cell>
-                <stage-buttons [offering]="offering"
-                               [cell-width]="stageButtonsWidth">
-                </stage-buttons>
-                <formatted-cell [value]="offering.bundles"
-                                [cell-width]="bundlesWidth">
-                </formatted-cell>
-                <formatted-cell [value]="offering.dueDate"
-                                [cell-width]="dueDateWidth">
-                </formatted-cell>
-                <formatted-cell [value]="offering.endDate"
-                                [cell-width]="endDateWidth">
-                </formatted-cell>
-                <formatted-cell [value]="offering.aatStatus"
-                                [cell-width]="aatStatusWidth">
-                </formatted-cell>
-            </div>`
-        }),
         bind: {
           'offering': 'offering'
         }
+      }),
+      new Template({
+        directives: [
+          CompanyNameComponent,
+          OpportunityNameComponent,
+          OfferingNameComponent,
+          StageButtonsComponent,
+          AccountCellComponent,
+          FormattedCellComponent
+        ],
+        inline: `
+          <div [style]="itemStyle">
+              <company-name [company]="offering.company"
+                            [cell-width]="companyNameWidth">
+              </company-name>
+              <opportunity-name [opportunity]="offering.opportunity"
+                                [cell-width]="opportunityNameWidth">
+              </opportunity-name>
+              <offering-name [offering]="offering"
+                             [cell-width]="offeringNameWidth">
+              </offering-name>
+              <account-cell [account]="offering.account"
+                            [cell-width]="accountCellWidth">
+              </account-cell>
+              <formatted-cell [value]="offering.basePoints"
+                              [cell-width]="basePointsWidth">
+              </formatted-cell>
+              <formatted-cell [value]="offering.kickerPoints"
+                              [cell-width]="kickerPointsWidth">
+              </formatted-cell>
+              <stage-buttons [offering]="offering"
+                             [cell-width]="stageButtonsWidth">
+              </stage-buttons>
+              <formatted-cell [value]="offering.bundles"
+                              [cell-width]="bundlesWidth">
+              </formatted-cell>
+              <formatted-cell [value]="offering.dueDate"
+                              [cell-width]="dueDateWidth">
+              </formatted-cell>
+              <formatted-cell [value]="offering.endDate"
+                              [cell-width]="endDateWidth">
+              </formatted-cell>
+              <formatted-cell [value]="offering.aatStatus"
+                              [cell-width]="aatStatusWidth">
+              </formatted-cell>
+          </div>`
       })
     ]
   });

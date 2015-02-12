@@ -11,8 +11,10 @@ import {CompilePipeline} from './pipeline/compile_pipeline';
 import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
+import {TemplateResolver} from './template_resolver';
 import {DirectiveMetadata} from './directive_metadata';
 import {Component} from '../annotations/annotations';
+import {Template} from '../annotations/template';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {CompileStep} from './pipeline/compile_step';
@@ -55,13 +57,15 @@ export class Compiler {
   _compiling:Map<Type, Promise>;
   _shadowDomStrategy: ShadowDomStrategy;
   _shadowDomDirectives: List<DirectiveMetadata>;
+  _templateResolver: TemplateResolver;
 
   constructor(changeDetection:ChangeDetection,
               templateLoader:TemplateLoader,
               reader: DirectiveMetadataReader,
               parser:Parser,
               cache:CompilerCache,
-              shadowDomStrategy: ShadowDomStrategy) {
+              shadowDomStrategy: ShadowDomStrategy,
+              templateResolver: TemplateResolver) {
     this._changeDetection = changeDetection;
     this._reader = reader;
     this._parser = parser;
@@ -74,32 +78,38 @@ export class Compiler {
     for (var i = 0; i < types.length; i++) {
       ListWrapper.push(this._shadowDomDirectives, reader.read(types[i]));
     }
+    this._templateResolver = templateResolver;
   }
 
-  createSteps(component:DirectiveMetadata):List<CompileStep> {
-    var directives = []
-    var cmpDirectives = ListWrapper.map(component.componentDirectives, (d) => this._reader.read(d));
-    directives = ListWrapper.concat(directives, cmpDirectives);
-    directives = ListWrapper.concat(directives, this._shadowDomDirectives);
-    return createDefaultSteps(this._changeDetection, this._parser, component, directives,
+  createSteps(component:Type, template: Template):List<CompileStep> {
+    // Merge directive metadata (from the template and from the shadow dom strategy)
+    var dirMetadata = [];
+    var tplMetadata = ListWrapper.map(this._flattenDirectives(template),
+      (d) => this._reader.read(d));
+    dirMetadata = ListWrapper.concat(dirMetadata, tplMetadata);
+    dirMetadata = ListWrapper.concat(dirMetadata, this._shadowDomDirectives);
+
+    var cmpMetadata = this._reader.read(component);
+
+    return createDefaultSteps(this._changeDetection, this._parser, cmpMetadata, dirMetadata,
       this._shadowDomStrategy);
   }
 
-  compile(component:Type, templateRoot:Element = null):Promise<ProtoView> {
-    var protoView = this._compile(this._reader.read(component), templateRoot);
+  compile(component: Type):Promise<ProtoView> {
+    var protoView = this._compile(component);
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
 
   // TODO(vicb): union type return ProtoView or Promise<ProtoView>
-  _compile(cmpMetadata: DirectiveMetadata, templateRoot:Element = null) {
-    var protoView = this._compilerCache.get(cmpMetadata.type);
+  _compile(component: Type) {
+    var protoView = this._compilerCache.get(component);
     if (isPresent(protoView)) {
       // The component has already been compiled into a ProtoView,
       // returns a resolved Promise.
       return protoView;
     }
 
-    var pvPromise = MapWrapper.get(this._compiling, cmpMetadata.type);
+    var pvPromise = MapWrapper.get(this._compiling, component);
     if (isPresent(pvPromise)) {
       // The component is already being compiled, attach to the existing Promise
       // instead of re-compiling the component.
@@ -107,30 +117,32 @@ export class Compiler {
       return pvPromise;
     }
 
-    var template = isBlank(templateRoot) ? this._templateLoader.load(cmpMetadata) : templateRoot;
+    var template = this._templateResolver.resolve(component);
 
-    if (PromiseWrapper.isPromise(template)) {
-      pvPromise = PromiseWrapper.then(template,
-        (el) => this._compileTemplate(el, cmpMetadata),
-        (_) => { throw new BaseException(`Failed to load the template for ${stringify(cmpMetadata.type)}`); }
+    var tplElement = this._templateLoader.load(template);
+
+    if (PromiseWrapper.isPromise(tplElement)) {
+      pvPromise = PromiseWrapper.then(tplElement,
+        (el) => this._compileTemplate(template, el, component),
+        (_) => { throw new BaseException(`Failed to load the template for ${stringify(component)}`); }
       );
-      MapWrapper.set(this._compiling, cmpMetadata.type, pvPromise);
+      MapWrapper.set(this._compiling, component, pvPromise);
       return pvPromise;
     }
 
-    return this._compileTemplate(template, cmpMetadata);
+    return this._compileTemplate(template, tplElement, component);
   }
 
   // TODO(vicb): union type return ProtoView or Promise<ProtoView>
-  _compileTemplate(template: Element, cmpMetadata) {
-    var pipeline = new CompilePipeline(this.createSteps(cmpMetadata));
-    var compileElements = pipeline.process(template);
+  _compileTemplate(template: Template, tplElement: Element, component: Type) {
+    var pipeline = new CompilePipeline(this.createSteps(component, template));
+    var compileElements = pipeline.process(tplElement);
     var protoView = compileElements[0].inheritedProtoView;
 
     // Populate the cache before compiling the nested components,
     // so that components can reference themselves in their template.
-    this._compilerCache.set(cmpMetadata.type, protoView);
-    MapWrapper.delete(this._compiling, cmpMetadata.type);
+    this._compilerCache.set(component, protoView);
+    MapWrapper.delete(this._compiling, component);
 
     // Compile all the components from the template
     var nestedPVPromises = [];
@@ -146,7 +158,7 @@ export class Compiler {
       // The promise will resolved after nested ProtoViews are compiled.
       return PromiseWrapper.then(PromiseWrapper.all(nestedPVPromises),
         (_) => protoView,
-        (e) => { throw new BaseException(`${e.message} -> Failed to compile ${stringify(cmpMetadata.type)}`); }
+        (e) => { throw new BaseException(`${e.message} -> Failed to compile ${stringify(component)}`); }
       );
     }
 
@@ -154,9 +166,8 @@ export class Compiler {
     return protoView;
   }
 
-  _compileNestedProtoView(ce: CompileElement, promises: List<Promise>)
-  {
-    var protoView = this._compile(ce.componentDirective);
+  _compileNestedProtoView(ce: CompileElement, promises: List<Promise>) {
+    var protoView = this._compile(ce.componentDirective.type);
 
     if (PromiseWrapper.isPromise(protoView)) {
       ListWrapper.push(promises, protoView);
@@ -167,4 +178,27 @@ export class Compiler {
       ce.inheritedElementBinder.nestedProtoView = protoView;
     }
   }
+
+  _flattenDirectives(template: Template):List<Type> {
+    if (isBlank(template.directives)) return [];
+
+    var directives = [];
+    this._flattenList(template.directives, directives);
+
+    return directives;
+  }
+
+  _flattenList(tree:List<any>, out:List<Type>) {
+    for (var i = 0; i < tree.length; i++) {
+      var item = tree[i];
+      if (ListWrapper.isList(item)) {
+        this._flattenList(item, out);
+      } else {
+        ListWrapper.push(out, item);
+      }
+    }
+  }
+
 }
+
+

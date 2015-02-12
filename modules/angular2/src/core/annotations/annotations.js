@@ -1,6 +1,5 @@
 import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {TemplateConfig} from './template_config';
 
 @ABSTRACT()
 export class Directive {
@@ -38,7 +37,6 @@ export class Directive {
 
 export class Component extends Directive {
   //TODO: vsavkin: uncomment it once the issue with defining fields in a sublass works
-  template:any; //TemplateConfig;
   lightDomServices:any; //List;
   shadowDomServices:any; //List;
   componentServices:any; //List;
@@ -48,7 +46,6 @@ export class Component extends Directive {
   constructor({
     selector,
     bind,
-    template,
     lightDomServices,
     shadowDomServices,
     componentServices,
@@ -57,7 +54,6 @@ export class Component extends Directive {
     }:{
       selector:String,
       bind:Object,
-      template:TemplateConfig,
       lightDomServices:List,
       shadowDomServices:List,
       componentServices:List,
@@ -73,7 +69,6 @@ export class Component extends Directive {
       lifecycle: lifecycle
     });
 
-    this.template = template;
     this.lightDomServices = lightDomServices;
     this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;

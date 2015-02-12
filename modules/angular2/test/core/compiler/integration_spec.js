@@ -1,6 +1,8 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/facade/dom';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -9,27 +11,27 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Template} from 'angular2/src/core/annotations/template';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
-import {MapWrapper} from 'angular2/src/facade/collection';
-
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
 
 export function main() {
   describe('integration tests', function() {
-    var compiler;
+    var compiler, tplResolver;
 
     beforeEach( () => {
+      tplResolver = new FakeTemplateResolver();
       compiler = new Compiler(dynamicChangeDetection,
-        new TemplateLoader(new XHRMock()),
+        new TemplateLoader(null),
         new DirectiveMetadataReader(),
         new Parser(new Lexer()),
         new CompilerCache(),
-        new NativeShadowDomStrategy()
+        new NativeShadowDomStrategy(),
+        tplResolver
       );
     });
 
@@ -43,7 +45,9 @@ export function main() {
       }
 
       it('should consume text node changes', (done) => {
-        compiler.compile(MyComp, el('<div>{{ctxProp}}</div>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div>{{ctxProp}}</div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
           ctx.ctxProp = 'Hello World!';
 
@@ -54,7 +58,9 @@ export function main() {
       });
 
       it('should consume element binding changes', (done) => {
-        compiler.compile(MyComp, el('<div [id]="ctxProp"></div>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div [id]="ctxProp"></div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
@@ -73,7 +79,9 @@ export function main() {
             '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
             '<div my-dir elprop="One more {{ctxProp}}"></div>' +
           '</div>'
-        compiler.compile(MyComp, el(tpl)).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: tpl, directives: [MyDir]}));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
@@ -88,7 +96,12 @@ export function main() {
       });
 
       it('should support nested components.', (done) => {
-        compiler.compile(MyComp, el('<child-cmp></child-cmp>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<child-cmp></child-cmp>',
+          directives: [ChildComp]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -100,7 +113,13 @@ export function main() {
 
       // GH issue 328 - https://github.com/angular/angular/issues/328
       it('should support different directive types on a single node', (done) => {
-        compiler.compile(MyComp, el('<child-cmp my-dir [elprop]="ctxProp"></child-cmp>')).then((pv) => {
+        tplResolver.setTemplate(MyComp,
+          new Template({
+            inline: '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>',
+            directives: [MyDir, ChildComp]
+          }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
@@ -115,7 +134,13 @@ export function main() {
       });
 
       it('should support template directives via `<template>` elements.', (done) => {
-        compiler.compile(MyComp, el('<div><template some-tmplate var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template></div>')).then((pv) => {
+        tplResolver.setTemplate(MyComp,
+          new Template({
+            inline: '<div><template some-viewport var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template></div>',
+            directives: [SomeViewport]
+          }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -130,7 +155,12 @@ export function main() {
       });
 
       it('should support template directives via `template` attribute.', (done) => {
-        compiler.compile(MyComp, el('<div><copy-me template="some-tmplate: var greeting=some-tmpl">{{greeting}}</copy-me></div>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<div><copy-me template="some-viewport: var greeting=some-tmpl">{{greeting}}</copy-me></div>',
+          directives: [SomeViewport]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           cd.detectChanges();
@@ -145,7 +175,12 @@ export function main() {
       });
 
       it('should assign the component instance to a var-', (done) => {
-        compiler.compile(MyComp, el('<p><child-cmp var-alice></child-cmp></p>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<p><child-cmp var-alice></child-cmp></p>',
+          directives: [ChildComp]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           expect(view.contextWithLocals).not.toBe(null);
@@ -156,9 +191,12 @@ export function main() {
       });
 
       it('should assign two component instances each with a var-', (done) => {
-        var element = el('<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>');
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>',
+          directives: [ChildComp]
+        }));
 
-        compiler.compile(MyComp, element).then((pv) => {
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           expect(view.contextWithLocals).not.toBe(null);
@@ -171,7 +209,12 @@ export function main() {
       });
 
       it('should assign the component instance to a var- with shorthand syntax', (done) => {
-        compiler.compile(MyComp, el('<child-cmp #alice></child-cmp>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<child-cmp #alice></child-cmp>',
+          directives: [ChildComp]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           expect(view.contextWithLocals).not.toBe(null);
@@ -182,13 +225,10 @@ export function main() {
       });
 
       it('should assign the element instance to a user-defined variable', (done) => {
-        // How is this supposed to work?
-        var element = el('<p></p>');
-        var div = el('<div var-alice></div>');
-        DOM.appendChild(div, el('<i>Hello</i>'));
-        DOM.appendChild(element, div);
+        tplResolver.setTemplate(MyComp,
+          new Template({inline: '<p><div var-alice><i>Hello</i></div></p>'}));
 
-        compiler.compile(MyComp, element).then((pv) => {
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
           expect(view.contextWithLocals).not.toBe(null);
 
@@ -201,7 +241,12 @@ export function main() {
       });
 
       it('should provide binding configuration config to the component', (done) => {
-        compiler.compile(MyComp, el('<push-cmp #cmp></push-cmp>')).then((pv) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<push-cmp #cmp></push-cmp>',
+          directives: [[[PushBasedComp]]]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
           var cmp = view.contextWithLocals.get('cmp');
@@ -234,12 +279,8 @@ class MyDir {
   }
 }
 
-@Component({
-  selector: 'push-cmp',
-  template: new TemplateConfig({
-    inline: '{{field}}'
-  })
-})
+@Component({selector: 'push-cmp'})
+@Template({inline: '{{field}}'})
 class PushBasedComp {
   numberOfChecks:number;
   bpc:BindingPropagationConfig;
@@ -260,11 +301,7 @@ class PushBasedComp {
   }
 }
 
-@Component({
-  template: new TemplateConfig({
-    directives: [MyDir, [[ChildComp], SomeViewport, PushBasedComp]]
-  })
-})
+@Component()
 class MyComp {
   ctxProp:string;
   constructor() {
@@ -274,11 +311,11 @@ class MyComp {
 
 @Component({
   selector: 'child-cmp',
-  componentServices: [MyService],
-  template: new TemplateConfig({
-    directives: [MyDir],
-    inline: '{{ctxProp}}'
-  })
+  componentServices: [MyService]
+})
+@Template({
+  directives: [MyDir],
+  inline: '{{ctxProp}}'
 })
 class ChildComp {
   ctxProp:string;
@@ -290,7 +327,7 @@ class ChildComp {
 }
 
 @Viewport({
-  selector: '[some-tmplate]'
+  selector: '[some-viewport]'
 })
 class SomeViewport {
   constructor(container: ViewContainer) {
@@ -303,5 +340,28 @@ class MyService {
   greeting:string;
   constructor() {
     this.greeting = 'hello';
+  }
+}
+
+class FakeTemplateResolver extends TemplateResolver {
+  _cmpTemplates: Map;
+
+  constructor() {
+    super();
+    this._cmpTemplates = MapWrapper.create();
+  }
+
+  setTemplate(component: Type, template: Template) {
+    MapWrapper.set(this._cmpTemplates, component, template);
+  }
+
+  resolve(component: Type): Template {
+    var override = MapWrapper.get(this._cmpTemplates, component);
+
+    if (isPresent(override)) {
+      return override;
+    }
+
+    return super.resolve(component);
   }
 }

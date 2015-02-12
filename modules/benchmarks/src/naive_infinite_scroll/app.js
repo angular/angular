@@ -1,7 +1,7 @@
 import {int, isPresent} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {bootstrap, Component, Viewport, TemplateConfig, ViewContainer, Compiler}
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -83,26 +83,23 @@ export function setupReflectorForApp() {
     'factory': () => { return new App(); },
     'parameters': [],
     'annotations': [
-      new Component({
-        selector: 'scroll-app',
-        template: new TemplateConfig({
-          directives: [ScrollAreaComponent, If, Foreach],
-          inline: `
-            <div>
-              <div style="display: flex">
-                <scroll-area id="testArea"></scroll-area>
-                <div style="padding-left: 20px">
-                  <button id="run-btn">Run</button>
-                  <button id="reset-btn">Reset</button>
-                </div>
+      new Component({selector: 'scroll-app'}),
+      new Template({
+        directives: [ScrollAreaComponent, If, Foreach],
+        inline: `
+          <div>
+            <div style="display: flex">
+              <scroll-area id="testArea"></scroll-area>
+              <div style="padding-left: 20px">
+                <button id="run-btn">Run</button>
+                <button id="reset-btn">Reset</button>
               </div>
-              <div template="if scrollAreas.length > 0">
-                <p>Following tables are only here to add weight to the UI:</p>
-                <scroll-area template="foreach #scrollArea in scrollAreas"></scroll-area>
-              </div>
-            </div>`
-        })
-      })
-    ]
+            </div>
+            <div template="if scrollAreas.length > 0">
+              <p>Following tables are only here to add weight to the UI:</p>
+              <scroll-area template="foreach #scrollArea in scrollAreas"></scroll-area>
+            </div>
+          </div>`
+      })]
   });
 }
