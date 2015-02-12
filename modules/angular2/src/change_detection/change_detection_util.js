@@ -214,12 +214,4 @@ export class ChangeDetectionUtil {
     }
     return updatedRecords;
   }
-
-  static markPathToRootAsCheckOnce(cd:ChangeDetector) {
-    var c = cd;
-    while(isPresent(c) && c.mode != DETACHED) {
-      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
-      c = c.parent;
-    }
-  }
 }
