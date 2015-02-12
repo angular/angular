@@ -18,12 +18,14 @@ import {Template} from 'angular2/src/core/annotations/template';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {NonBindable} from 'angular2/src/directives/non_bindable';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 export function main() {
   describe('non-bindable', () => {
-    var view, cd, compiler, component, tplResolver;
+    var view, cd, compiler, component, tplResolver, domQueue;
     beforeEach(() => {
+      domQueue = new DomOpQueue();
       var urlResolver = new UrlResolver();
       tplResolver = new MockTemplateResolver();
       compiler = new Compiler(
@@ -32,7 +34,7 @@ export function main() {
         new DirectiveMetadataReader(),
         new Parser(new Lexer()),
         new CompilerCache(),
-        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver), domQueue),
         tplResolver,
         new ComponentUrlMapper(),
         urlResolver,
@@ -42,7 +44,7 @@ export function main() {
 
     function createView(pv) {
       component = new TestComponent();
-      view = pv.instantiate(null, null, null);
+      view = pv.instantiate(null, null, domQueue, null);
       view.hydrate(new Injector([]), null, component);
       cd = view.changeDetector;
     }
@@ -56,11 +58,16 @@ export function main() {
       return compiler.compile(TestComponent);
     }
 
+    function tick() {
+      cd.detectChanges();
+      domQueue.run();
+    }
+
     it('should not interpolate children', (done) => {
       var template = '<div>{{text}}<span non-bindable>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
-        cd.detectChanges();
+        tick();
         expect(DOM.getText(view.nodes[0])).toEqual('foo{{text}}');
         done();
       });
@@ -70,7 +77,7 @@ export function main() {
       var template = '<div non-bindable><span id=child test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
-        cd.detectChanges();
+        tick();
         var span = DOM.querySelector(view.nodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
         done();
@@ -81,7 +88,7 @@ export function main() {
       var template = '<div><span id=child non-bindable test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
-        cd.detectChanges();
+        tick();
         var span = DOM.querySelector(view.nodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
         done();

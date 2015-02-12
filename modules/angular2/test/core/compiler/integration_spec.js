@@ -18,6 +18,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
@@ -31,16 +32,17 @@ import {reflector} from 'angular2/src/reflection/reflection';
 
 export function main() {
   describe('integration tests', function() {
-    var compiler, tplResolver;
+    var compiler, tplResolver, queue;
 
     function createCompiler(tplResolver, changedDetection) {
       var urlResolver = new UrlResolver();
+      queue = new DomOpQueue();
       return new Compiler(changedDetection,
         new TemplateLoader(null, null),
         new DirectiveMetadataReader(),
         new Parser(new Lexer()),
         new CompilerCache(),
-        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver), queue),
         tplResolver,
         new ComponentUrlMapper(),
         urlResolver,
@@ -57,9 +59,14 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(null, null, reflector);
+        view = pv.instantiate(null, null, queue, reflector);
         view.hydrate(new Injector([]), null, ctx);
         cd = view.changeDetector;
+      }
+
+      function tick() {
+        cd.detectChanges();
+        queue.run();
       }
 
       it('should consume text node changes', (done) => {
@@ -68,7 +75,7 @@ export function main() {
           createView(pv);
           ctx.ctxProp = 'Hello World!';
 
-          cd.detectChanges();
+          tick();
           expect(DOM.getInnerHTML(view.nodes[0])).toEqual('Hello World!');
           done();
         });
@@ -81,7 +88,7 @@ export function main() {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
-          cd.detectChanges();
+          tick();
 
           expect(view.nodes[0].id).toEqual('Hello World!');
           done();
@@ -155,7 +162,7 @@ export function main() {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
-          cd.detectChanges();
+          tick();
 
           expect(view.elementInjectors[0].get(MyDir).dirProp).toEqual('Hello World!');
           expect(view.elementInjectors[1].get(MyDir).dirProp).toEqual('Hi there!');
@@ -201,7 +208,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          cd.detectChanges();
+          tick();
 
           expect(view.nodes[0].shadowRoot.childNodes[0].nodeValue).toEqual('hello');
           done();
@@ -220,7 +227,7 @@ export function main() {
           createView(pv);
 
           ctx.ctxProp = 'Hello World!';
-          cd.detectChanges();
+          tick();
 
           var elInj = view.elementInjectors[0];
           expect(elInj.get(MyDir).dirProp).toEqual('Hello World!');
@@ -254,7 +261,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          cd.detectChanges();
+          tick();
 
           var childNodesOfWrapper = view.nodes[0].childNodes;
           // 1 template + 2 copies.
@@ -274,7 +281,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          cd.detectChanges();
+          tick();
 
           var childNodesOfWrapper = view.nodes[0].childNodes;
           // 1 template + 2 copies.

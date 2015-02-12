@@ -4,6 +4,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 @proxy
 @IMPLEMENTS(LightDom)
@@ -12,14 +13,25 @@ class DummyLightDom extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 var _script = `<script type="ng/content"></script>`;
 
 export function main() {
+  var domQueue;
+  beforeEach(() => {
+    domQueue = new DomOpQueue();
+  });
+
+  function tick() {
+    domQueue.run();
+  }
+
   describe('Content', function() {
     it("should insert the nodes", () => {
       var parent = el("<div><content></content></div>");
       var content = DOM.firstChild(parent);
 
-      var c = new Content(null, new NgElement(content));
+      var c = new Content(null, new NgElement(content), domQueue);
+      tick();
       c.insert([el("<a></a>"), el("<b></b>")])
 
+      tick();
       expect(DOM.getInnerHTML(parent)).toEqual(`${_script}<a></a><b></b>${_script}`);
     });
 
@@ -27,10 +39,12 @@ export function main() {
       var parent = el("<div><content></content></div>");
       var content = DOM.firstChild(parent);
 
-      var c = new Content(null, new NgElement(content));
+      var c = new Content(null, new NgElement(content), domQueue);
+      tick();
       c.insert([el("<a></a>")]);
       c.insert([el("<b></b>")]);
 
+      tick();
       expect(DOM.getInnerHTML(parent)).toEqual(`${_script}<b></b>${_script}`);
     });
 
@@ -38,10 +52,12 @@ export function main() {
       var parent = el("<div><content></content></div>");
       var content = DOM.firstChild(parent);
 
-      var c = new Content(null, new NgElement(content));
+      var c = new Content(null, new NgElement(content), domQueue);
+      tick();
       c.insert([el("<a></a>")]);
       c.insert([]);
 
+      tick();
       expect(DOM.getInnerHTML(parent)).toEqual(`${_script}${_script}`);
     });
   });

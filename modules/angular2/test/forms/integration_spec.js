@@ -15,6 +15,8 @@ import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Injector} from 'angular2/di';
 
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
+
 import {Component, Decorator, Template} from 'angular2/core';
 import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
   ControlValueAccessor, RequiredValidatorDirective} from 'angular2/forms';
@@ -24,11 +26,14 @@ import * as validators from 'angular2/src/forms/validators';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 export function main() {
+  var domQueue;
   function detectChanges(view) {
     view.changeDetector.detectChanges();
+    domQueue.run();
   }
 
   function compile(componentType, template, context, callback) {
+    domQueue = new DomOpQueue();
     var tplResolver = new MockTemplateResolver();
     var urlResolver = new UrlResolver();
 
@@ -37,7 +42,7 @@ export function main() {
       new DirectiveMetadataReader(),
       new Parser(new Lexer()),
       new CompilerCache(),
-      new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+      new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver), domQueue),
       tplResolver,
       new ComponentUrlMapper(),
       urlResolver,
@@ -50,7 +55,7 @@ export function main() {
     }));
 
     compiler.compile(componentType).then((pv) => {
-      var view = pv.instantiate(null, null, reflector);
+      var view = pv.instantiate(null, null, domQueue, reflector);
       view.hydrate(new Injector([]), null, context);
       detectChanges(view);
       callback(view);

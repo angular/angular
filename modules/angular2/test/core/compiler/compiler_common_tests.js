@@ -22,6 +22,7 @@ import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 export function runCompilerCommonTests() {
   describe('compiler', function() {
@@ -296,7 +297,7 @@ class TestableCompiler extends Compiler {
           reader,
           new Parser(new Lexer()),
           new CompilerCache(),
-          new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+          new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver), new DomOpQueue()),
           templateResolver,
           cmpUrlMapper,
           urlResolver,

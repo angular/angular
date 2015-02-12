@@ -12,6 +12,7 @@ import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -251,8 +252,8 @@ export function setupReflectorForAngular() {
   });
 
   reflector.registerType(NativeShadowDomStrategy, {
-    "factory": (styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
-    "parameters": [[StyleUrlResolver]],
+    "factory": (styleUrlResolver, q) => new NativeShadowDomStrategy(styleUrlResolver, q),
+    "parameters": [[StyleUrlResolver], [DomOpQueue]],
     "annotations": []
   });
 
@@ -264,6 +265,12 @@ export function setupReflectorForAngular() {
 
   reflector.registerType(UrlResolver, {
     "factory": () => new UrlResolver(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(DomOpQueue, {
+    "factory": () => new DomOpQueue(),
     "parameters": [],
     "annotations": []
   });

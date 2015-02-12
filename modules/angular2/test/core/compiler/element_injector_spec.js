@@ -434,7 +434,7 @@ export function main() {
       });
 
       it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null, null, null, null);
+        var viewContainer = new ViewContainer(null, null, null, null, null, null, null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
