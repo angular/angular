@@ -1,4 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, stringify} from 'angular2/src/facade/lang';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, isString, stringify} from 'angular2/src/facade/lang';
 import {Element, DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -81,6 +81,18 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   return setterFn;
 }
 
+const ROLE_ATTR = 'role';
+function roleSetter(element:Element, value) {
+  if (isString(value)) {
+    DOM.setAttribute(element, ROLE_ATTR, value);
+  } else {
+    DOM.removeAttribute(element, ROLE_ATTR);
+    if (isPresent(value)) {
+      throw new BaseException("Invalid role attribute, only string values are allowed, got '" + stringify(value) + "'");
+    }
+  }
+}
+
 /**
  * Creates the ElementBinders and adds watches to the
  * ProtoChangeDetector.
@@ -155,6 +167,8 @@ export class ElementBinderBuilder extends CompileStep {
 
       if (StringWrapper.startsWith(property, ARIA_PREFIX)) {
         setterFn = ariaSetterFactory(property);
+      } else if (StringWrapper.equals(property, ROLE_ATTR)) {
+        setterFn = roleSetter;
       } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
       } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
