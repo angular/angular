@@ -9,7 +9,7 @@ import {TemplateLoader} from './compiler/template_loader';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {DirectiveMetadata} from './compiler/directive_metadata';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -17,6 +17,7 @@ import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 import {HammerGesturesPlugin} from 'angular2/src/core/events/hammer_gestures';
+import {Binding} from 'angular2/src/di/binding';
 
 var _rootInjector: Injector;
 
@@ -40,7 +41,7 @@ export var appElementToken = new OpaqueToken('AppElement');
 export var appComponentAnnotatedTypeToken = new OpaqueToken('AppComponentAnnotatedType');
 export var appDocumentToken = new OpaqueToken('AppDocument');
 
-function _injectorBindings(appComponentType) {
+function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(appDocumentToken).toValue(DOM.defaultDoc()),
       bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
@@ -88,7 +89,7 @@ function _injectorBindings(appComponentType) {
   ];
 }
 
-function _createVmZone(givenReporter:Function){
+function _createVmZone(givenReporter:Function): VmTurnZone {
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
     print(`${exception}\n\n${longStackTrace}`);
@@ -104,7 +105,7 @@ function _createVmZone(givenReporter:Function){
 
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
-export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapErrorReporter=null) {
+export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, givenBootstrapErrorReporter: Function=null): Promise {
   var bootstrapProcess = PromiseWrapper.completer();
 
   var zone = _createVmZone(givenBootstrapErrorReporter);
@@ -132,7 +133,7 @@ export function bootstrap(appComponentType: Type, bindings=null, givenBootstrapE
   return bootstrapProcess.promise;
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List, zone: VmTurnZone): Injector {
+function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zone: VmTurnZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
