@@ -400,6 +400,11 @@ gulp.task('docs/watch', function() {
   return gulp.watch('docs/app/**/*', ['docs/app']);
 });
 
+gulp.task('tools/pub/transform.dart', function() {
+  return gulp.src('tools/pub/**')
+    .pipe(gulp.dest('dist/dart/angular2'));
+});
+
 var jasmine = require('gulp-jasmine');
 gulp.task('docs/test', function () {
   return gulp.src('docs/**/*.spec.js')
@@ -451,6 +456,7 @@ gulp.task('ci', function(done) {
 gulp.task('build.dart', function() {
   return runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
+    'tools/pub/transform.dart',
     'build/pubspec.dart',
     'build/pubbuild.dart',
     'build/analyze.dart',
