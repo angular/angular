@@ -27,6 +27,7 @@ import {ChangeRecord, ChangeDispatcher, ChangeDetector} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
+import {PipeRegistry} from './pipes/pipe_registry';
 
 import {coalesce} from './coalesce';
 
@@ -89,6 +90,7 @@ export class ProtoRecord {
   }
 }
 
+
 export class ProtoChangeDetector  {
   addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false){}
   instantiate(dispatcher:any, formatters:Map):ChangeDetector{
@@ -99,9 +101,11 @@ export class ProtoChangeDetector  {
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _records:List<ProtoRecord>;
   _recordBuilder:ProtoRecordBuilder;
+  _pipeRegistry:PipeRegistry;
 
-  constructor() {
+  constructor(pipeRegistry:PipeRegistry) {
     super();
+    this._pipeRegistry = pipeRegistry;
     this._records = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
@@ -112,7 +116,8 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
 
   instantiate(dispatcher:any, formatters:Map) {
     this._createRecordsIfNecessary();
-    return new DynamicChangeDetector(dispatcher, formatters, this._records);
+    return new DynamicChangeDetector(dispatcher, formatters,
+      this._pipeRegistry, this._records);
   }
 
   _createRecordsIfNecessary() {
@@ -127,9 +132,11 @@ var _jitProtoChangeDetectorClassCounter:number = 0;
 export class JitProtoChangeDetector extends ProtoChangeDetector {
   _factory:Function;
   _recordBuilder:ProtoRecordBuilder;
+  _pipeRegistry;
 
-  constructor() {
+  constructor(pipeRegistry) {
     super();
+    this._pipeRegistry = pipeRegistry;
     this._factory = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
@@ -140,7 +147,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
 
   instantiate(dispatcher:any, formatters:Map) {
     this._createFactoryIfNecessary();
-    return this._factory(dispatcher, formatters);
+    return this._factory(dispatcher, formatters, this._pipeRegistry);
   }
 
   _createFactoryIfNecessary() {

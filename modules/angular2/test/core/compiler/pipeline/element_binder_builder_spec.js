@@ -71,7 +71,7 @@ export function main() {
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
               current.inheritedProtoView = new ProtoView(current.element,
-                new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
+                new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -379,7 +379,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
+          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

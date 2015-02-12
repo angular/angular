@@ -44,7 +44,7 @@ export function setupReflector() {
   reflector.registerGetters({
     'scrollAreas': (o) => o.scrollAreas,
     'length': (o) => o.length,
-    'iterable': (o) => o.iterable,
+    'iterableChanges': (o) => o.iterableChanges,
     'scrollArea': (o) => o.scrollArea,
     'item': (o) => o.item,
     'visibleItems': (o) => o.visibleItems,
@@ -95,7 +95,7 @@ export function setupReflector() {
     'scrollArea': (o, v) => o.scrollArea = v,
     'item': (o, v) => o.item = v,
     'visibleItems': (o, v) => o.visibleItems = v,
-    'iterable': (o, v) => o.iterable = v,
+    'iterableChanges': (o, v) => o.iterableChanges = v,
     'width': (o, v) => o.width = v,
     'value': (o, v) => o.value = v,
     'company': (o, v) => o.company = v,
@@ -167,9 +167,8 @@ export function setupReflectorForAngular() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[foreach]',
-      lifecycle: [onChange],
       bind: {
-        'in': 'iterable[]'
+        'in': 'iterableChanges[]'
       }
     })]
   });

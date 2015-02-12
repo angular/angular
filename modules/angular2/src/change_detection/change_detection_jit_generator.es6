@@ -95,6 +95,7 @@ var PROTOS_ACCESSOR = "this.protos";
 var CHANGE_LOCAL = "change";
 var CHANGES_LOCAL = "changes";
 var TEMP_LOCAL = "temp";
+var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 
 function typeTemplate(type:string, cons:string, detectChanges:string, setContext:string):string {
   return `
@@ -102,18 +103,19 @@ ${cons}
 ${detectChanges}
 ${setContext};
 
-return function(dispatcher, formatters) {
-  return new ${type}(dispatcher, formatters, protos);
+return function(dispatcher, formatters, pipeRegistry) {
+  return new ${type}(dispatcher, formatters, pipeRegistry, protos);
 }
 `;
 }
 
 function constructorTemplate(type:string, fieldsDefinitions:string):string {
   return `
-var ${type} = function ${type}(dispatcher, formatters, protos) {
+var ${type} = function ${type}(dispatcher, formatters, pipeRegistry, protos) {
 ${ABSTRACT_CHANGE_DETECTOR}.call(this);
 ${DISPATCHER_ACCESSOR} = dispatcher;
 ${FORMATTERS_ACCESSOR} = formatters;
+${PIPE_REGISTRY_ACCESSOR} = pipeRegistry;
 ${PROTOS_ACCESSOR} = protos;
 ${fieldsDefinitions}
 }
@@ -162,14 +164,18 @@ if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
 `;
 }
 
-
-function structuralCheckTemplate(selfIndex:number, field:string, context:string, notify:string):string{
+function pipeCheckTemplate(context:string, pipe:string,
+                                  value:string, change:string, addRecord:string, notify:string):string{
   return `
-${CHANGE_LOCAL} = ${UTIL}.structuralCheck(${field}, ${context});
-if (${CHANGE_LOCAL}) {
-  ${CHANGES_LOCAL} = ${UTIL}.addRecord(${CHANGES_LOCAL},
-    ${UTIL}.changeRecord(${PROTOS_ACCESSOR}[${selfIndex}].bindingMemento, ${CHANGE_LOCAL}));
-  ${field} = ${CHANGE_LOCAL}.currentValue;
+if (${pipe} === ${UTIL}.unitialized() || !${pipe}.supports(${context})) {
+  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('[]', ${context});
+}
+
+${CHANGE_LOCAL} = ${pipe}.transform(${context});
+if (! ${UTIL}.noChangeMarker(${CHANGE_LOCAL})) {
+  ${value} = ${CHANGE_LOCAL};
+  ${change} = true;
+  ${addRecord}
 }
 ${notify}
 `;
@@ -235,6 +241,7 @@ export class ChangeDetectorJITGenerator {
   localNames:List<String>;
   changeNames:List<String>;
   fieldNames:List<String>;
+  pipeNames:List<String>;
 
   constructor(typeName:string, records:List<ProtoRecord>) {
     this.typeName = typeName;
@@ -243,6 +250,7 @@ export class ChangeDetectorJITGenerator {
     this.localNames = this.getLocalNames(records);
     this.changeNames = this.getChangeNames(this.localNames);
     this.fieldNames = this.getFieldNames(this.localNames);
+    this.pipeNames = this.getPipeNames(this.localNames);
   }
 
   getLocalNames(records:List<ProtoRecord>):List<String> {
@@ -262,6 +270,9 @@ export class ChangeDetectorJITGenerator {
     return localNames.map((n) => `this.${n}`);
   }
 
+  getPipeNames(localNames:List<String>):List<String> {
+    return localNames.map((n) => `this.${n}_pipe`);
+  }
 
   generate():Function {
     var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(), this.genSetContext());
@@ -269,7 +280,16 @@ export class ChangeDetectorJITGenerator {
   }
 
   genConstructor():string {
-    return constructorTemplate(this.typeName, fieldDefinitionsTemplate(this.fieldNames));
+    var fields = [];
+    fields = fields.concat(this.fieldNames);
+
+    this.records.forEach((r) => {
+      if (r.mode === RECORD_TYPE_STRUCTURAL_CHECK) {
+        fields.push(this.pipeNames[r.selfIndex]);
+      }
+    });
+
+    return constructorTemplate(this.typeName, fieldDefinitionsTemplate(fields));
   }
 
   genSetContext():string {
@@ -295,17 +315,24 @@ export class ChangeDetectorJITGenerator {
   }
 
   genRecord(r:ProtoRecord):string {
-    if (r.mode == RECORD_TYPE_STRUCTURAL_CHECK) {
-      return this.getStructuralCheck(r);
+    if (r.mode === RECORD_TYPE_STRUCTURAL_CHECK) {
+      return this.genPipeCheck (r);
     } else {
       return this.genReferenceCheck(r);
     }
   }
 
-  getStructuralCheck(r:ProtoRecord):string {
-    var field = this.fieldNames[r.selfIndex];
+  genPipeCheck(r:ProtoRecord):string {
     var context = this.localNames[r.contextIndex];
-    return structuralCheckTemplate(r.selfIndex - 1, field, context, this.genNotify(r));
+    var pipe = this.pipeNames[r.selfIndex];
+    var newValue = this.localNames[r.selfIndex];
+    var oldValue = this.fieldNames[r.selfIndex];
+    var change = this.changeNames[r.selfIndex];
+
+    var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
+    var notify = this.genNotify(r);
+
+    return pipeCheckTemplate(context, pipe, newValue, change, addRecord, notify);
   }
 
   genReferenceCheck(r:ProtoRecord):string {

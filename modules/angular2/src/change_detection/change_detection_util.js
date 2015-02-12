@@ -1,10 +1,9 @@
 import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
-import {ArrayChanges} from './array_changes';
-import {KeyValueChanges} from './keyvalue_changes';
 import {ProtoRecord} from './proto_change_detector';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
+import {NO_CHANGE} from './pipes/pipe';
 import {ChangeRecord, ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export var uninitialized = new Object();
@@ -85,10 +84,6 @@ function _changeRecord(bindingMemento, change) {
 
 var _singleElementList = [null];
 
-function _isBlank(val):boolean {
-  return isBlank(val) || val === uninitialized;
-}
-
 export class ChangeDetectionUtil {
   static unitialized() {
     return uninitialized;
@@ -149,32 +144,6 @@ export class ChangeDetectionUtil {
     return obj[args[0]];
   }
 
-  static structuralCheck(self, context) {
-    if (_isBlank(self) && _isBlank(context)) {
-      return null;
-    } else if (_isBlank(context)) {
-      return new SimpleChange(null, null);
-    }
-
-    if (_isBlank(self)) {
-      if (ArrayChanges.supports(context)) {
-        self = new ArrayChanges();
-      } else if (KeyValueChanges.supports(context)) {
-        self = new KeyValueChanges();
-      }
-    }
-
-    if (isBlank(self) || !self.supportsObj(context)) {
-      throw new BaseException(`Unsupported type (${context})`);
-    }
-
-    if (self.check(context)) {
-      return new SimpleChange(null, self); // TODO: don't wrap and return self instead
-    } else {
-      return null;
-    }
-  }
-
   static findContext(name:string, c){
     while (c instanceof ContextWithVariableBindings) {
       if (c.hasBinding(name)) {
@@ -183,6 +152,10 @@ export class ChangeDetectionUtil {
       c = c.parent;
     }
     return c;
+  }
+
+  static noChangeMarker(value):boolean {
+    return value === NO_CHANGE;
   }
 
   static throwOnChange(proto:ProtoRecord, change) {

@@ -14,7 +14,9 @@ import {
   looseIdentical,
 } from 'angular2/src/facade/lang';
 
-export class ArrayChanges {
+import {NO_CHANGE, Pipe} from './pipe';
+
+export class ArrayChanges extends Pipe {
   _collection;
   _length:int;
   _linkedRecords:_DuplicateMap;
@@ -30,6 +32,7 @@ export class ArrayChanges {
   _removalsTail:CollectionChangeRecord;
 
   constructor() {
+    super();
     this._collection = null;
     this._length = null;
     /// Keeps track of the used records at any point in time (during & across `_check()` calls)
@@ -48,12 +51,12 @@ export class ArrayChanges {
     this._removalsTail = null;
   }
 
-  static supports(obj):boolean {
+  static supportsObj(obj):boolean {
     return isListLikeIterable(obj);
   }
 
-  supportsObj(obj):boolean {
-    return ArrayChanges.supports(obj);
+  supports(obj):boolean {
+    return ArrayChanges.supportsObj(obj);
   }
 
   get collection() {
@@ -96,6 +99,14 @@ export class ArrayChanges {
     var record:CollectionChangeRecord;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
+    }
+  }
+
+  transform(collection){
+    if (this.check(collection)) {
+      return this;
+    } else {
+      return NO_CHANGE;
     }
   }
 

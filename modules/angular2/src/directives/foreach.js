@@ -1,5 +1,4 @@
-import {Viewport, onChange} from 'angular2/src/core/annotations/annotations';
-import {OnChange} from 'angular2/src/core/compiler/interfaces';
+import {Viewport} from 'angular2/src/core/annotations/annotations';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {View} from 'angular2/src/core/compiler/view';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
@@ -7,21 +6,19 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 @Viewport({
   selector: '[foreach][in]',
-  lifecycle: [onChange],
   bind: {
-    'in': 'iterable[]'
+    'in': 'iterableChanges[]'
   }
 })
-export class Foreach extends OnChange {
+export class Foreach  {
   viewContainer: ViewContainer;
-  iterable;
-  constructor(viewContainer: ViewContainer) {
+  constructor(viewContainer:ViewContainer) {
     super();
     this.viewContainer = viewContainer;
   }
-  onChange(changes) {
-    var iteratorChanges = changes['iterable'];
-    if (isBlank(iteratorChanges) || isBlank(iteratorChanges.currentValue)) {
+
+  set iterableChanges(changes) {
+    if (isBlank(changes)) {
       this.viewContainer.clear();
       return;
     }
@@ -29,17 +26,17 @@ export class Foreach extends OnChange {
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
     var recordViewTuples = [];
-    iteratorChanges.currentValue.forEachRemovedItem(
+    changes.forEachRemovedItem(
       (removedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(removedRecord, null))
     );
 
-    iteratorChanges.currentValue.forEachMovedItem(
+    changes.forEachMovedItem(
       (movedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(movedRecord, null))
     );
 
     var insertTuples = Foreach.bulkRemove(recordViewTuples, this.viewContainer);
 
-    iteratorChanges.currentValue.forEachAddedItem(
+    changes.forEachAddedItem(
       (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
     );
 

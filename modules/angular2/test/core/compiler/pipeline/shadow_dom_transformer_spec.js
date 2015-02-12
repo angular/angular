@@ -15,9 +15,9 @@ export function main() {
     function createPipeline(selector, strategy:ShadowDomStrategy, styleHost) {
       var component = new Component({selector: selector});
       var meta = new DirectiveMetadata(null, component);
-      var transformer = new ShadowDomTransformer(meta, strategy, styleHost);
-      transformer.clearCache();
-      return new CompilePipeline([transformer]);
+      var pipe = new ShadowDomTransformer(meta, strategy, styleHost);
+      pipe.clearCache();
+      return new CompilePipeline([pipe]);
     }
 
     it('it should set ignoreBindings to true for style elements', () => {
