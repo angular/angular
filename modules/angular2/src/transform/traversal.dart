@@ -1,4 +1,6 @@
 import 'package:analyzer/src/generated/element.dart';
+import 'package:path/path.dart' as path;
+
 import 'annotation_processor.dart';
 
 class ImportTraversal {
