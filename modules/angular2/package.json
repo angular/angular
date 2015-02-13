@@ -1,5 +1,5 @@
 {
-  "name": "angular",
+  "name": "angular2",
   "version": "<%= packageJson.version %>.<%= channel %>",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "<%= packageJson.homepage %>",

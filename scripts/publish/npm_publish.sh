@@ -10,7 +10,7 @@ function angular {
   CHANNEL=$1
   cd $ROOT_DIR/dist/js/$CHANNEL/es6/angular2
   rm -fr test
-  npm publish ./ --tag "ng2$CHANNEL"
+  npm publish ./ --tag "$CHANNEL"
 }
 
 function rttsAssert {
