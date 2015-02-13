@@ -13,7 +13,7 @@ function killServer () {
   kill $serverPid
 }
 
-./node_modules/.bin/gulp serve.js.prod serve.js.dart2js&
+./node_modules/.bin/gulp serve.js.prod&
 serverPid=$!
 
 trap killServer EXIT
@@ -22,4 +22,3 @@ trap killServer EXIT
 sleep 10
 
 ./node_modules/.bin/protractor protractor-e2e-js.conf.js --browsers=$E2E_BROWSERS
-./node_modules/.bin/protractor protractor-e2e-dart2js.conf.js --browsers=$E2E_BROWSERS

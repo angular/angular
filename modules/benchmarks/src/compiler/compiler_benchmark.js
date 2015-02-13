@@ -11,19 +11,18 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Template} from 'angular2/src/core/annotations/template';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-
-import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
     "factory": () => new BenchmarkComponent(),
     "parameters": [],
-    "annotations" : [new Component({template: new TemplateConfig({directives: [Dir0, Dir1, Dir2, Dir3, Dir4]})})]
+    "annotations" : [new Component()]
   });
 
   reflector.registerType(Dir0, {
@@ -83,37 +82,36 @@ export function main() {
   setupReflector();
   var reader = new DirectiveMetadataReader();
   var cache = new CompilerCache();
-  var compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(new XHRImpl()),
-    reader, new Parser(new Lexer()), cache, new NativeShadowDomStrategy());
-  var templateNoBindings = loadTemplate('templateNoBindings', count);
-  var templateWithBindings = loadTemplate('templateWithBindings', count);
+  var templateResolver = new FakeTemplateResolver();
+  var compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+    reader, new Parser(new Lexer()), cache, new NativeShadowDomStrategy(), templateResolver);
+  var templateNoBindings = createTemplateHtml('templateNoBindings', count);
+  var templateWithBindings = createTemplateHtml('templateWithBindings', count);
 
   function compileNoBindings() {
-    // Need to clone every time as the compiler might modify the template!
-    var cloned = DOM.clone(templateNoBindings);
+    templateResolver.setTemplateHtml(templateNoBindings);
     cache.clear();
-    compiler.compile(BenchmarkComponent, cloned);
+    compiler.compile(BenchmarkComponent);
   }
 
   function compileWithBindings() {
-    // Need to clone every time as the compiler might modify the template!
-    var cloned = DOM.clone(templateWithBindings);
+    templateResolver.setTemplateHtml(templateWithBindings);
     cache.clear();
-    compiler.compile(BenchmarkComponent, cloned);
+    compiler.compile(BenchmarkComponent);
   }
 
   bindAction('#compileNoBindings', compileNoBindings);
   bindAction('#compileWithBindings', compileWithBindings);
 }
 
-function loadTemplate(templateId, repeatCount) {
+function createTemplateHtml(templateId, repeatCount) {
   var template = DOM.querySelectorAll(document, `#${templateId}`)[0];
   var content = DOM.getInnerHTML(template);
   var result = '';
   for (var i=0; i<repeatCount; i++) {
     result += content;
   }
-  return DOM.createTemplate(result);
+  return result;
 }
 
 @Decorator({
@@ -164,10 +162,24 @@ class Dir4 {
   constructor(dir3:Dir3) {}
 }
 
-@Component({
-  template: new TemplateConfig({
-    directives: [Dir0, Dir1, Dir2, Dir3, Dir4]
-  })
-})
+@Component()
 class BenchmarkComponent {}
 
+class FakeTemplateResolver extends TemplateResolver {
+  _template: Template;
+
+  constructor() {
+    super();
+  }
+
+  setTemplateHtml(html: string) {
+    this._template = new Template({
+      inline: html,
+      directives: [Dir0, Dir1, Dir2, Dir3, Dir4]
+    });
+  }
+
+  resolve(component: Type): Template {
+    return this._template;
+  }
+}

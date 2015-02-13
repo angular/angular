@@ -1,29 +1,29 @@
-import {Template} from 'angular2/src/core/annotations/annotations';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {Viewport} from 'angular2/src/core/annotations/annotations';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {isBlank} from 'angular2/src/facade/lang';
 
-@Template({
+@Viewport({
   selector: '[if]',
   bind: {
     'if': 'condition'
   }
 })
 export class If {
-  viewPort: ViewPort;
+  viewContainer: ViewContainer;
   prevCondition: boolean;
 
-  constructor(viewPort: ViewPort) {
-    this.viewPort = viewPort;
+  constructor(viewContainer: ViewContainer) {
+    this.viewContainer = viewContainer;
     this.prevCondition = null;
   }
 
   set condition(newCondition) {
     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
       this.prevCondition = true;
-      this.viewPort.create();
+      this.viewContainer.create();
     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
       this.prevCondition = false;
-      this.viewPort.clear();
+      this.viewContainer.clear();
     }
   }
 }

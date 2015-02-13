@@ -6,7 +6,7 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
@@ -22,7 +22,7 @@ var _staticKeys;
 class StaticKeys {
   viewId:number;
   ngElementId:number;
-  viewPortId:number;
+  viewContainerId:number;
   destinationLightDomId:number;
   sourceLightDomId:number;
   bindingPropagationConfigId:number;
@@ -31,7 +31,7 @@ class StaticKeys {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
     this.viewId = Key.get(View).id;
     this.ngElementId = Key.get(NgElement).id;
-    this.viewPortId = Key.get(ViewPort).id;
+    this.viewContainerId = Key.get(ViewContainer).id;
     this.destinationLightDomId = Key.get(DestinationLightDom).id;
     this.sourceLightDomId = Key.get(SourceLightDom).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
@@ -152,14 +152,14 @@ export class DirectiveBinding extends Binding {
 export class PreBuiltObjects {
   view:View;
   element:NgElement;
-  viewPort:ViewPort;
+  viewContainer:ViewContainer;
   lightDom:LightDom;
   bindingPropagationConfig:BindingPropagationConfig;
-  constructor(view, element:NgElement, viewPort:ViewPort, lightDom:LightDom,
+  constructor(view, element:NgElement, viewContainer:ViewContainer, lightDom:LightDom,
               bindingPropagationConfig:BindingPropagationConfig) {
     this.view = view;
     this.element = element;
-    this.viewPort = viewPort;
+    this.viewContainer = viewContainer;
     this.lightDom = lightDom;
     this.bindingPropagationConfig = bindingPropagationConfig;
   }
@@ -557,7 +557,7 @@ export class ElementInjector extends TreeNode {
     var staticKeys = StaticKeys.instance();
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewPortId) return this._preBuiltObjects.viewPort;
+    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
     if (keyId === staticKeys.destinationLightDomId) {
       var p:ElementInjector = this.directParent();

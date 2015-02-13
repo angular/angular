@@ -2,9 +2,7 @@ import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection
 import {Element, DOM} from 'angular2/src/facade/dom';
 import {int, isBlank, isPresent, Type} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
-import {Decorator} from '../../annotations/annotations';
-import {Component} from '../../annotations/annotations';
-import {Template} from '../../annotations/annotations';
+import {Decorator, Component, Viewport} from '../../annotations/annotations';
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
@@ -29,7 +27,7 @@ export class CompileElement {
   /// Template name is how it is reffered to it in template
   variableBindings:Map;
   decoratorDirectives:List<DirectiveMetadata>;
-  templateDirective:DirectiveMetadata;
+  viewportDirective:DirectiveMetadata;
   componentDirective:DirectiveMetadata;
   _allDirectives:List<DirectiveMetadata>;
   isViewRoot:boolean;
@@ -50,7 +48,7 @@ export class CompileElement {
     this.eventBindings = null;
     this.variableBindings = null;
     this.decoratorDirectives = null;
-    this.templateDirective = null;
+    this.viewportDirective = null;
     this.componentDirective = null;
     this._allDirectives = null;
     this.isViewRoot = false;
@@ -141,8 +139,8 @@ export class CompileElement {
       if (!annotation.compileChildren) {
         this.compileChildren = false;
       }
-    } else if (annotation instanceof Template) {
-      this.templateDirective = directive;
+    } else if (annotation instanceof Viewport) {
+      this.viewportDirective = directive;
     } else if (annotation instanceof Component) {
       this.componentDirective = directive;
     }
@@ -156,8 +154,8 @@ export class CompileElement {
       if (isPresent(this.componentDirective)) {
         ListWrapper.push(directives, this.componentDirective);
       }
-      if (isPresent(this.templateDirective)) {
-        ListWrapper.push(directives, this.templateDirective);
+      if (isPresent(this.viewportDirective)) {
+        ListWrapper.push(directives, this.viewportDirective);
       }
       if (isPresent(this.decoratorDirectives)) {
         directives = ListWrapper.concat(directives, this.decoratorDirectives);

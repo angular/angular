@@ -17,7 +17,10 @@ import {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector}
     from './src/change_detection/proto_change_detector';
 
 export class ChangeDetection {
-  createProtoChangeDetector(name:string){}
+  createProtoChangeDetector(name:string):ProtoChangeDetector{
+    // TODO: this should be abstract, once supported in AtScript
+    return null;
+  }
 }
 
 export class DynamicChangeDetection extends ChangeDetection {

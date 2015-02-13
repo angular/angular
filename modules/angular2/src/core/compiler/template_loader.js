@@ -1,14 +1,11 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {TemplateElement, DOM, Element} from 'angular2/src/facade/dom';
+import {DOM, Element} from 'angular2/src/facade/dom';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
-import {Component} from 'angular2/src/core/annotations/annotations';
-
-import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-
 import {XHR} from './xhr/xhr';
+
+import {Template} from 'angular2/src/core/annotations/template';
 
 /**
  * Strategy to load component templates.
@@ -23,16 +20,13 @@ export class TemplateLoader {
   }
 
   // TODO(vicb): union type: return an Element or a Promise<Element>
-  load(cmpMetadata: DirectiveMetadata) {
-    var annotation:Component = cmpMetadata.annotation;
-    var tplConfig:TemplateConfig = annotation.template;
-
-    if (isPresent(tplConfig.inline)) {
-      return DOM.createTemplate(tplConfig.inline);
+  load(template: Template) {
+    if (isPresent(template.inline)) {
+      return DOM.createTemplate(template.inline);
     }
 
-    if (isPresent(tplConfig.url)) {
-      var url = tplConfig.url;
+    if (isPresent(template.url)) {
+      var url = template.url;
       var promise = StringMapWrapper.get(this._cache, url);
 
       if (isBlank(promise)) {
@@ -46,6 +40,6 @@ export class TemplateLoader {
       return promise;
     }
 
-    throw new BaseException(`No template configured for component ${stringify(cmpMetadata.type)}`);
+    throw new BaseException(`Templates should have either their url or inline property set`);
   }
 }

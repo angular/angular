@@ -1,6 +1,6 @@
 import *  as app from './index_common';
 
-import {Component, Decorator, TemplateConfig, NgElement} from 'angular2/angular2';
+import {Component, Decorator, Template, NgElement} from 'angular2/angular2';
 import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -8,6 +8,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
@@ -17,14 +18,16 @@ function setup() {
   reflector.registerType(app.HelloCmp, {
     "factory": (service) => new app.HelloCmp(service),
     "parameters": [[app.GreetingService]],
-    "annotations" : [new Component({
-      selector: 'hello-app',
-      componentServices: [app.GreetingService],
-      template: new TemplateConfig({
+    "annotations" : [
+      new Component({
+        selector: 'hello-app',
+        componentServices: [app.GreetingService]
+      }),
+      new Template({
         directives: [app.RedDec],
         inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-                 <button class="changeButton" (click)="changeGreeting()">change greeting</button>`})
-    })]
+                 <button class="changeButton" (click)="changeGreeting()">change greeting</button>`
+      })]
   });
 
   reflector.registerType(app.RedDec, {
@@ -40,10 +43,12 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
-      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+                resolver) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+        resolver),
     "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
-                   [CompilerCache], [ShadowDomStrategy]],
+                   [CompilerCache], [ShadowDomStrategy], [TemplateResolver]],
     "annotations": []
   });
 
@@ -62,6 +67,12 @@ function setup() {
   reflector.registerType(TemplateLoader, {
     "factory": (xhr) => new TemplateLoader(xhr),
     "parameters": [[XHR]],
+    "annotations": []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    "factory": () => new TemplateResolver(),
+    "parameters": [],
     "annotations": []
   });
 

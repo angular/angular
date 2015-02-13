@@ -1,4 +1,4 @@
-import {TemplateConfig, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
+import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
 import {DOM} from 'angular2/src/facade/dom';
 import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
@@ -164,11 +164,9 @@ export class ControlGroupDirective extends ControlGroupDirectiveBase {
   selector: '[new-control-group]',
   bind: {
     'new-control-group' : 'initData'
-  },
-  template: new TemplateConfig({
-    inline: '<content>'
-  })
+  }
 })
+@Template({inline: '<content>'})
 export class NewControlGroupDirective extends ControlGroupDirectiveBase {
   _initData:any;
   _controlGroup:ControlGroup;

@@ -1,13 +1,9 @@
-import {bootstrap, Component, TemplateConfig} from 'angular2/core';
+import {bootstrap, Component, Template} from 'angular2/core';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
-@Component({
-  selector: 'gestures-app',
-  template: new TemplateConfig({
-    url: 'template.html'
-  })
-})
+@Component({selector: 'gestures-app'})
+@Template({url: 'template.html'})
 class GesturesCmp {
   swipeDirection: string;
   pinchScale: number;

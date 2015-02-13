@@ -1,11 +1,12 @@
 import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
   from 'angular2/change_detection';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular2/angular2';
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler} from 'angular2/angular2';
 
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -24,34 +25,32 @@ function setupReflector() {
   reflector.registerType(AppComponent, {
     'factory': () => new AppComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'app',
-      template: new TemplateConfig({
+    'annotations' : [
+      new Component({selector: 'app'}),
+      new Template({
         directives: [TreeComponent],
         inline: `<tree [data]='initData'></tree>`
-      })
-    })]
+      })]
   });
 
   reflector.registerType(TreeComponent, {
     'factory': () => new TreeComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'tree',
-      bind: {
-        'data': 'data'
-      },
-      template: new TemplateConfig({
-          directives: [TreeComponent, NgIf],
-          inline: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
-      })
-    })]
+    'annotations' : [
+      new Component({
+        selector: 'tree',
+        bind: {'data': 'data'}
+      }),
+      new Template({
+        directives: [TreeComponent, NgIf],
+        inline: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+      })]
   });
 
   reflector.registerType(NgIf, {
     'factory': (vp) => new NgIf(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
       selector: '[ng-if]',
       bind: {
         'ng-if': 'ngIf'
@@ -60,9 +59,10 @@ function setupReflector() {
   });
 
   reflector.registerType(Compiler, {
-    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy) => new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy),
+    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy, resolver) =>
+      new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy, resolver),
     'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader],
-                   [Parser], [CompilerCache], [ShadowDomStrategy]],
+                   [Parser], [CompilerCache], [ShadowDomStrategy], [TemplateResolver]],
     'annotations': []
   });
 
@@ -81,6 +81,12 @@ function setupReflector() {
   reflector.registerType(TemplateLoader, {
     'factory': (xhr) => new TemplateLoader(xhr),
     'parameters': [[XHR]],
+    'annotations': []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    'factory': () => new TemplateResolver(),
+    'parameters': [],
     'annotations': []
   });
 
@@ -335,16 +341,16 @@ class AppComponent {
 
 // TODO: Move this into a reusable directive in the 'core' module!
 class NgIf {
-  _viewPort:ViewPort;
-  constructor(viewPort:ViewPort) {
-    this._viewPort = viewPort;
+  _viewContainer:ViewContainer;
+  constructor(viewContainer:ViewContainer) {
+    this._viewContainer = viewContainer;
   }
   set ngIf(value:boolean) {
-    if (this._viewPort.length > 0) {
-      this._viewPort.remove(0);
+    if (this._viewContainer.length > 0) {
+      this._viewContainer.remove(0);
     }
     if (value) {
-      this._viewPort.create();
+      this._viewContainer.create();
     }
   }
 }

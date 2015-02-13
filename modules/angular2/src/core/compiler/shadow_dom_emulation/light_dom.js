@@ -4,7 +4,7 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {View} from '../view';
 import {ElementInjector} from '../element_injector';
-import {ViewPort} from '../viewport';
+import {ViewContainer} from '../view_container';
 import {Content} from './content_tag';
 
 export class SourceLightDom {}
@@ -60,9 +60,9 @@ export class LightDom {
       if (ei.hasDirective(Content)) {
         ListWrapper.push(acc, ei.get(Content));
 
-      } else if (ei.hasPreBuiltObject(ViewPort)) {
-        var vp = ei.get(ViewPort);
-        ListWrapper.forEach(vp.contentTagContainers(), (view) => {
+      } else if (ei.hasPreBuiltObject(ViewContainer)) {
+        var vc = ei.get(ViewContainer);
+        ListWrapper.forEach(vc.contentTagContainers(), (view) => {
           this._collectAllContentTags(view, acc);
         });
       }
@@ -71,7 +71,7 @@ export class LightDom {
   }
 
   // Collects the nodes of the light DOM by merging:
-  // - nodes from enclosed ViewPorts,
+  // - nodes from enclosed ViewContainers,
   // - nodes from enclosed content tags,
   // - plain DOM nodes
   expandedDomNodes():List {
@@ -83,9 +83,9 @@ export class LightDom {
       var root = roots[i];
       var ei = root.injector;
 
-      if (isPresent(ei) && ei.hasPreBuiltObject(ViewPort)) {
-        var vp = root.injector.get(ViewPort);
-        res = ListWrapper.concat(res, vp.nodes());
+      if (isPresent(ei) && ei.hasPreBuiltObject(ViewContainer)) {
+        var vc = root.injector.get(ViewContainer);
+        res = ListWrapper.concat(res, vc.nodes());
 
       } else if (isPresent(ei) && ei.hasDirective(Content)) {
         var content = root.injector.get(Content);

@@ -7,7 +7,7 @@ import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 
-export class ViewPort {
+export class ViewContainer {
   parentView: View;
   templateElement: Element;
   defaultProtoView: ProtoView;
@@ -71,7 +71,7 @@ export class ViewPort {
   // to the methods below.
   create(atIndex=-1): View {
     if (!this.hydrated()) throw new BaseException(
-        'Cannot create views on a dehydrated view port');
+        'Cannot create views on a dehydrated ViewContainer');
     // TODO(rado): replace with viewFactory.
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
@@ -82,7 +82,7 @@ export class ViewPort {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
     if (isBlank(this._lightDom)) {
-      ViewPort.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
+      ViewContainer.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
     } else {
       this._lightDom.redistribute();
     }
@@ -109,7 +109,7 @@ export class ViewPort {
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     if (isBlank(this._lightDom)) {
-      ViewPort.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
+      ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
     } else {
       this._lightDom.redistribute();
     }

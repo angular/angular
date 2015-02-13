@@ -5,16 +5,19 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {Injector} from 'angular2/di';
-import {DOM} from 'angular2/src/facade/dom';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
-import {Component, Decorator, TemplateConfig} from 'angular2/core';
+import {Injector} from 'angular2/di';
+
+import {DOM} from 'angular2/src/facade/dom';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
+
+import {Component, Decorator, Template} from 'angular2/core';
 import {ControlGroupDirective, ControlNameDirective,
   ControlDirective, NewControlGroupDirective,
   Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
-
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
 
 export function main() {
   function detectChanges(view) {
@@ -22,14 +25,24 @@ export function main() {
   }
 
   function compile(componentType, template, context, callback) {
+    var tplResolver = new FakeTemplateResolver();
+
     var compiler = new Compiler(dynamicChangeDetection,
-      new TemplateLoader(new XHRMock()),
+      new TemplateLoader(null),
       new DirectiveMetadataReader(),
       new Parser(new Lexer()),
       new CompilerCache(),
-      new NativeShadowDomStrategy());
+      new NativeShadowDomStrategy(),
+      tplResolver
+    );
 
-    compiler.compile(componentType, el(template)).then((pv) => {
+    tplResolver.setTemplate(componentType, new Template({
+      inline: template,
+      directives: [ControlGroupDirective, ControlNameDirective, ControlDirective,
+        NewControlGroupDirective, WrappedValue]
+    }));
+
+    compiler.compile(componentType).then((pv) => {
       var view = pv.instantiate(null, null);
       view.hydrate(new Injector([]), null, context);
       detectChanges(view);
@@ -198,14 +211,7 @@ export function main() {
   });
 }
 
-@Component({
-  selector: "my-comp",
-  template: new TemplateConfig({
-    inline: "",
-    directives: [ControlGroupDirective, ControlNameDirective,
-      ControlDirective, NewControlGroupDirective, WrappedValue]
-  })
-})
+@Component({selector: "my-comp"})
 class MyComp {
   form:ControlGroup;
   name:string;
@@ -232,5 +238,28 @@ class WrappedValueAccessor extends ControlValueAccessor {
 class WrappedValue {
   constructor(cd:ControlNameDirective) {
     cd.valueAccessor = new WrappedValueAccessor();
+  }
+}
+
+class FakeTemplateResolver extends TemplateResolver {
+  _cmpTemplates: Map;
+
+  constructor() {
+    super();
+    this._cmpTemplates = MapWrapper.create();
+  }
+
+  setTemplate(component: Type, template: Template) {
+    MapWrapper.set(this._cmpTemplates, component, template);
+  }
+
+  resolve(component: Type): Template {
+    var override = MapWrapper.get(this._cmpTemplates, component);
+
+    if (isPresent(override)) {
+      return override;
+    }
+
+    return super.resolve(component);
   }
 }
