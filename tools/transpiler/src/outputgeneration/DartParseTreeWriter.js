@@ -62,6 +62,14 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.writeSpace_();
 
     this.visitAny(tree.name);
+
+    if (tree.initializer) {
+      this.writeSpace_();
+      this.write_(EQUAL);
+      this.writeSpace_();
+      this.visitAny(tree.initializer);
+    }
+
     this.write_(SEMI_COLON);
   }
 
