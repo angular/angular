@@ -148,6 +148,12 @@ class DOM {
     element.setAttribute(name, value);
   }
 
+  static void removeAttribute(Element element, String name) {
+      //there is no removeAttribute method as of now in Dart:
+      //https://code.google.com/p/dart/issues/detail?id=19934
+      element.attributes.remove(name);
+  }
+
   static Node templateAwareRoot(Element el) =>
       el is TemplateElement ? el.content : el;
 

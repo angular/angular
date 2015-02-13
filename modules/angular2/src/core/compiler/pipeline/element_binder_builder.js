@@ -18,6 +18,26 @@ import {CompileControl} from './compile_control';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
 
+const ARIA_PREFIX = 'aria-';
+var ariaSettersCache = StringMapWrapper.create();
+
+function ariaSetterFactory(attrName:string) {
+  var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
+
+  if (isBlank(setterFn)) {
+    setterFn = function(element:Element, value) {
+      if (isPresent(value)) {
+        DOM.setAttribute(element, attrName, stringify(value));
+      } else {
+        DOM.removeAttribute(element, attrName);
+      }
+    };
+    StringMapWrapper.set(ariaSettersCache, attrName, setterFn);
+  }
+
+  return setterFn;
+}
+
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
@@ -133,7 +153,9 @@ export class ElementBinderBuilder extends CompileStep {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       var setterFn, styleParts, styleSuffix;
 
-      if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
+      if (StringWrapper.startsWith(property, ARIA_PREFIX)) {
+        setterFn = ariaSetterFactory(property);
+      } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
       } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
         styleParts = StringWrapper.split(property, DOT_REGEXP);
