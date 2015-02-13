@@ -1,13 +1,16 @@
 #!/bin/bash
 
-set -e
+set -e -x
 
-AVAILABLE_DART_VERSION=$(curl "https://storage.googleapis.com/dart-archive/channels/$CHANNEL/release/latest/VERSION" | python -c \
+DART_CHANNEL=$1
+ARCH=$2
+
+AVAILABLE_DART_VERSION=$(curl "https://storage.googleapis.com/dart-archive/channels/${DART_CHANNEL}/release/latest/VERSION" | python -c \
     'import sys, json; print(json.loads(sys.stdin.read())["version"])')
 
-echo Fetch Dart channel: $CHANNEL
+echo Fetch Dart channel: ${DART_CHANNEL}
 
-URL_PREFIX=https://storage.googleapis.com/dart-archive/channels/$CHANNEL/release/latest
+URL_PREFIX=https://storage.googleapis.com/dart-archive/channels/${DART_CHANNEL}/release/latest
 DART_SDK_URL="$URL_PREFIX/sdk/dartsdk-$ARCH-release.zip"
 DARTIUM_URL="$URL_PREFIX/dartium/dartium-$ARCH-release.zip"
 

@@ -9,21 +9,20 @@ env:
   - LOGS_DIR=/tmp/angular-build/logs
   - ARCH=linux-x64
   matrix:
-  - CHANNEL=stable
-  - CHANNEL=dev
+  - MODE=js DART_CHANNEL=stable
+  - MODE=dart DART_CHANNEL=stable
+  - MODE=dart DART_CHANNEL=dev
 
 before_install:
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh
-- ./scripts/ci/install_dart.sh
+- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${ARCH}
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 before_script:
 - mkdir -p $LOGS_DIR
 script:
-- ./scripts/ci/build.sh
-- ./scripts/ci/test_unit.sh
-- ./scripts/ci/test_e2e.sh
+- ./scripts/ci/build_and_test.sh ${MODE}
 after_script:
 - ./scripts/ci/print-logs.sh

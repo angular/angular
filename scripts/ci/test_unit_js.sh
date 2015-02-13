@@ -7,4 +7,5 @@ SCRIPT_DIR=$(dirname $0)
 source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
-./node_modules/.bin/gulp ci --browsers=$KARMA_BROWSERS
+./node_modules/.bin/gulp test.transpiler.unittest
+./node_modules/.bin/gulp test.js/ci --browsers=$KARMA_BROWSERS
