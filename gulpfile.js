@@ -505,7 +505,7 @@ gulp.task('test.transpiler.unittest', function (done) {
   return gulp.src('tools/transpiler/unittest/**/*.js')
       .pipe(jasmine({
         includeStackTrace: true
-      }))
+      }));
 });
 gulp.task('ci', function(done) {
   runSequence(
@@ -551,7 +551,7 @@ gulp.task('build.js.cjs', function(done) {
     'build/transpile.js.cjs',
     'build/linknodemodules.js.cjs',
     done
-  );;
+  );
 });
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
