@@ -71,6 +71,24 @@ export function main() {
         });
       });
 
+      it('should consume binding to aria-* attributes', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div [aria-label]="ctxProp"></div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'Initial aria label';
+          cd.detectChanges();
+          expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('Initial aria label');
+
+          ctx.ctxProp = 'Changed aria label';
+          cd.detectChanges();
+          expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('Changed aria label');
+
+          done();
+        });
+      });
+
       it('should consume directive watch expression change.', (done) => {
         var tpl =
           '<div>' +

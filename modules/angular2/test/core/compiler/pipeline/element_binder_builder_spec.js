@@ -195,6 +195,52 @@ export function main() {
       expect(view.nodes[0].hidden).toEqual(false);
     });
 
+    it('should bind to aria-* attributes when exp evaluates to strings', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'aria-label': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 'some label';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('some label');
+
+      evalContext.prop1 = 'some other label';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('some other label');
+
+      evalContext.prop1 = null;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toBeNull();
+    });
+
+    it('should bind to aria-* attributes when exp evaluates to booleans', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'aria-busy': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = true;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-busy')).toEqual('true');
+
+      evalContext.prop1 = false;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-busy')).toEqual('false');
+    });
+
     it('should bind class with a dot', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
         'class.bar': 'prop1',
