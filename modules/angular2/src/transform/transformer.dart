@@ -7,14 +7,14 @@ import 'dart:async';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/resolver.dart';
 
-import 'src/transform/annotation_processor.dart';
-import 'src/transform/codegen.dart' as codegen;
-import 'src/transform/html_transform.dart';
-import 'src/transform/options.dart';
-import 'src/transform/resolvers.dart';
-import 'src/transform/traversal.dart';
+import 'annotation_processor.dart';
+import 'codegen.dart' as codegen;
+import 'html_transform.dart';
+import 'options.dart';
+import 'resolvers.dart';
+import 'traversal.dart';
 
-export 'src/transform/options.dart';
+export 'options.dart';
 
 /// Removes the mirror-based initialization logic and replaces it with static
 /// logic.
