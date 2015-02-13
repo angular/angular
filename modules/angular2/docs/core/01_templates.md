@@ -33,10 +33,12 @@ detail in following sections.
     <tr>
       <th>Text Interpolation</th>
       <td>
-`<div>{{exp}}</div>`
+```html
+<div>{{exp}}</div>
+```
 
 Example:
-```
+```html
 <div>
   Hello {{name}}!
   <br>
@@ -48,7 +50,7 @@ Example:
 `<div [text|index]=exp>`
 
 Example:
-```
+```html
 <div
   [text|0]=" 'Hello' + stringify(name) + '!' "
   [text|2]=" 'Goodbye' + stringify(name) + '!' ">
@@ -60,18 +62,26 @@ Example:
     <tr>
       <th>Property Interpolation</th>
       <td>
-`<div name="{{exp}}">`
+```html
+<div name="{{exp}}">
+```
 
 Example:
 
-`<div class="{{selected}}">`
+```html
+<div class="{{selected}}">`
+```
       </td>
       <td>
-`<div [name]="stringify(exp)">`
+```html
+<div [name]="stringify(exp)">
+```
 
 Example:
 
-`<div [class]="stringify(selected)">`
+```html
+<div [class]="stringify(selected)">
+```
       </td>
     </tr>
     <tr>
