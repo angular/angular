@@ -1,16 +1,45 @@
 import {window, Node} from 'angular2/src/facade/dom';
-import {Map} from 'angular2/src/facade/collection';
-import {Promise} from 'angular2/src/facade/async';
+import {Map, List} from 'angular2/src/facade/collection';
+// import {Promise} from 'angular2/src/facade/async';
 
 
 export class Testability {
+  _pendingCount: number;
+
+  _callbacks: List;
+
   constructor(rootView) {
     // Not sure if we need the root view. Leave it in for now instructionally.
+    this._pendingCount = 0;
+    this._callbacks = [];
   }
 
-  whenStable() {
+  increaseCount(delta: number) {
+    if (delta === null || delta === undefined) {
+      delta = 1;
+    }
+    this._numPending += delta;
+    if (this._numPending < 0) {
+      throw new Error('pending async requests below zero');
+    } else if (this._numPending == 0) {
+      this._runCallbacks();
+    }
+    return _numPending();
+  }
+
+  _runCallbacks() {
+    while (this._callbacks.length) {
+      this._callbacks.pop()();
+    }
+  }
+
+  whenStable(callback: Function) {
+    if (this._pendingCount === 0) {
+      callback();
+    } else {
+      this._callbacks.push(callback);
+    }
     // TODO - hook into the zone api.
-    return Promise.resolve('');
   }
 
   findBindings(using: Element, binding: string, exactMatch: boolean) {
@@ -30,8 +59,8 @@ export class PublicTestability {
     this._testability = testability;
   }
 
-  whenStable() {
-    return this._testability.whenStable();
+  whenStable(callback: Function) {
+    this._testability.whenStable(callback);
   }
 
   findBindings(using: Element, binding: string, exactMatch: boolean) {
