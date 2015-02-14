@@ -18,13 +18,19 @@ import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 import {HammerGesturesPlugin} from 'angular2/src/core/events/hammer_gestures';
+<<<<<<< HEAD
 import {Binding} from 'angular2/src/di/binding';
+=======
+import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+>>>>>>> WIP - testability service puts itself on console
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector)
+  bind(Reflector).toValue(reflector),
+  TestabilityRegistry
+  // bind(TestabilityRegistry).toValue(new TestabilityRegistry())
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -89,6 +95,11 @@ function _injectorBindings(appComponentType): List<Binding> {
       Lexer,
       ExceptionHandler,
       bind(XHR).toValue(new XHRImpl()),
+      bind(Testability).toAsyncFactory((registry, rootView, elem) => {
+        var testability = new Testability(rootView);
+        registry.registerApplication(elem, testability)
+        return testability;
+      }, [TestabilityRegistry, appViewToken, appElementToken]),
   ];
 }
 
@@ -117,6 +128,7 @@ export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, 
     // index.html and main.js are possible.
 
     var appInjector = _createAppInjector(appComponentType, bindings, zone);
+    appInjector.asyncGet(Testability);
 
     PromiseWrapper.then(appInjector.asyncGet(appViewToken),
       (rootView) => {
