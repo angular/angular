@@ -51,7 +51,7 @@ And assume following HTML Template:
 </div>
 ```
 
-The above template is compiled by the Compiler to create a ProtoView. The ProtoView is than used to 
+The above template is compiled by the Compiler to create a ProtoView. The ProtoView is then used to 
 create an instance of the View. The instantiation process involves cloning the above template and 
 locating all of the elements which contain bindings and finally instantiating the Directives 
 associated with the template. (See compilation for more details.)
@@ -81,7 +81,7 @@ Note:
 * View knows which expressions need to be watched.
 * View knows what needs to be updated if the watched expression changes.
 * All DOM elements are owned by single instance of the view.
-* The structure of the DOM can not change during runtime. To Allow structural changes to DOM we need 
+* The structure of the DOM can not change during runtime. To allow structural changes to the DOM we need 
   to understand Composed View.
 
 
@@ -107,27 +107,27 @@ During the compilation process the Compiler breaks the HTML template into these 
 and
 
 ```
-<ul>                    | protoViewA(SomeContexnt)
-  <template></template> | protoViewA(SomeContexnt): new ProtoViewPort(protoViewB)
-</ul>                   | protoViewA(SomeContexnt)
+<ul>                    | protoViewA(someContext)
+  <template></template> | protoViewA(someContext): new ProtoViewPort(protoViewB)
+</ul>                   | protoViewA(someContext)
 ```
 
 
-The next step is to compose these two ProtoViews into actual view which is rendered to the user.
+The next step is to compose these two ProtoViews into an actual view which is rendered to the user.
 
 *Step 1:* Instantiate `viewA`
 
 ```
-<ul>                    | viewA(SomeContexnt)
-  <template></template> | viewA(SomeContexnt): new Foreach(new ViewPort(protoViewB))
-</ul>                   | viewA(SomeContexnt)
+<ul>                    | viewA(someContext)
+  <template></template> | viewA(someContext): new Foreach(new ViewPort(protoViewB))
+</ul>                   | viewA(someContext)
 ```
 
 *Step2:* Instantiate `Foreach` directive which will receive the `ViewContainer`. (The ViewContainer 
 has a reference to `protoViewA`).
 
 
-*Step3:* As the `Foreach` unrolls it asks the `ViewContainer` to instantiate `protoViewB` and insert 
+*Step3:* As the `Foreach` directive unrolls it asks the `ViewContainer` to instantiate `protoViewB` and insert 
 it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that 
 
 ```
@@ -135,7 +135,7 @@ it after the `ViewPort` anchor. This is repeated for each `person` in `people`. 
   <template></template> | viewA(someContext): new Foreach(new ViewPort(protoViewB))
   <li>{{person}}</li>   | viewB0(locals0(someContext))
   <li>{{person}}</li>   | viewB1(locals0(someContext))
-</ul>                   | viewA(lomeContexnt)
+</ul>                   | viewA(someContext)
 ```
 
 *Step4:* All of the bindings in the child Views are updated. Notice that in the case of `Foreach` 
@@ -152,8 +152,8 @@ delegate any unknown references to the parent context.
 ```
 
 Each View can have zero or more ViewPorts. By inserting and removing child Views to and from the 
-ViewContainers, the application can mutate the DOM structure to any desirable state. A View contain 
-individual nodes or complex DOM structure. The insertion points for the child Views, known as 
+ViewContainers, the application can mutate the DOM structure to any desirable state. A View may contain 
+individual nodes or a complex DOM structure. The insertion points for the child Views, known as 
 ViewContainers, contain a DOM element which acts as an anchor. The anchor is either a `template` or 
 a `script` element depending on your browser. It is used to identify where the child Views will be 
 inserted.
@@ -161,7 +161,7 @@ inserted.
 ## Component Views
 
 A View can also contain Components. Components contain Shadow DOM for encapsulating their internal 
-rendering state. Unlike ViewPorts which can contain zero or more Views, the Component always contain 
+rendering state. Unlike ViewPorts which can contain zero or more Views, the Component always contains 
 exactly one Shadow View.
 
 ```
@@ -177,10 +177,10 @@ exactly one Shadow View.
 
 ## Evaluation Context
 
-Each View as a context for evaluating its expressions. There are two kinds of contexts:
+Each View acts as a context for evaluating its expressions. There are two kinds of contexts:
 
 1. A component controller instance and
-2. a Locals context for introducing Local variables into the View.
+2. a `Locals` context for introducing local variables into the View.
 
 Let's assume following component:
 
@@ -194,7 +194,7 @@ class Greeter {
 }
 ```
 
-And assume following HTML Template:
+And assume the following HTML Template:
 
 ```
 <div>                             | viewA(greeter)
@@ -205,7 +205,7 @@ And assume following HTML Template:
 </div>                            | viewA(greeter)
 ```
 
-The above UI is built using a single View, and hence single context `greeter`. It can be expressed 
+The above UI is built using a single View, and hence a single context `greeter`. It can be expressed 
 in this pseudo-code.
 
 ```
@@ -215,7 +215,7 @@ var greeter = new Greeter();
 The View contains two bindings:
 
 1. `greeting`: This is bound to the `greeting` property on the `Greeter` instance.
-2. `name.value`: This poses a problem. There is no `name` property on `Greeter` instance. To solve 
+2. `name.value`: This poses a problem. There is no `name` property on the `Greeter` instance. To solve 
 this we wrap the `Greeter` instance in the `Local` instance like so:
 ```
 var greeter = new Locals(new Greeter(), {name: ref_to_input_element })
@@ -224,7 +224,7 @@ var greeter = new Locals(new Greeter(), {name: ref_to_input_element })
 
 By wrapping the `Greeter` instance into the `Locals` we allow the view to introduce variables which 
 are in addition to the `Greeter` instance. During the resolution of the expressions we first check 
-the locals, and then `Greeter` instance.
+the locals, and then the `Greeter` instance.
 
 
 
