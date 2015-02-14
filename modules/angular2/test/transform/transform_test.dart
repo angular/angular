@@ -13,6 +13,8 @@ import 'common.dart';
 main() {
   useVMConfiguration();
 
+  // TODO(kegluneq): Add a test for generating multiple annotations.
+
   group('Annotation tests:', _runTests);
 }
 
