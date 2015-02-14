@@ -46,8 +46,11 @@ class SlowApp {
   doHttp() {
     this.httpStatus = _STATUS.PENDING;
     // TODO(juliemr): have an actual server attached to this serving.
-    var promise = this._xhr.get('http://localhost:8081/slowcall');
-    promise.then((response) => this.timeoutStatus = _STATUS.DONE);
+    // gulp serve.js.dev is using 'gulp connect' plugin. Figure out if we can
+    // add something there - if not, this should get moved to another
+    // serving system.
+    var promise = this._xhr.get('/slowcall');
+    promise.then((response) => this.httpStatus = _STATUS.DONE);
   }
 }
 
