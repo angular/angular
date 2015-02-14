@@ -367,7 +367,13 @@ class _AnnotationsTransformVisitor extends _TransformVisitor {
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
     _writer.print('const [');
-    node.metadata.forEach((m) => m.accept(this));
+    var size = node.metadata.length;
+    for (var i = 0; i < size; ++i) {
+      if (i > 0) {
+        _writer.print(', ');
+      }
+      node.metadata[i].accept(this);
+    }
     _writer.print(']');
     return null;
   }

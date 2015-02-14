@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 library initialize.test.build.common;
 
+// TODO(kegluneq): Remove this and use the actual Directive def'n.
 // Simple mock of Directive.
 class Directive {
   final context;
