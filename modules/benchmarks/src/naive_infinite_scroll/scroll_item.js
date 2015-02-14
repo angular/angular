@@ -65,7 +65,7 @@ export function setupReflectorForScrollItem() {
           FormattedCellComponent
         ],
         inline: `
-          <div [style]="itemStyle">
+          <div class="row" [style]="itemStyle">
               <company-name [company]="offering.company"
                             [cell-width]="companyNameWidth">
               </company-name>

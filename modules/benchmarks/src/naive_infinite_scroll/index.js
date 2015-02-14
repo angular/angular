@@ -4,8 +4,9 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
-import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
-    from 'angular2/angular2';
+import {
+  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange
+}  from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -166,6 +167,7 @@ export function setupReflectorForAngular() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[foreach]',
+      lifecycle: [onChange],
       bind: {
         'in': 'iterable[]'
       }
