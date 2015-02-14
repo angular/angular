@@ -4,16 +4,16 @@ Templates are markup which is added to HTML to declarativly describe how the app
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
-The design of template syntax has these properties:
+The design of the template syntax has these properties:
 
-* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity wether the value should be
+* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
 * All events and their statements are easily identifiable.
 * All places of DOM instantiation are easily identifiable.
-* All places of variable declaration is esily identifiable.
+* All places of variable declaration is easily identifiable.
 
-The above properties guarantee that the templates are easy to parse by tools (such as IDEs) and reason about by people.
-At no point is it necessary to understand which directives are active and what are their symantics in order to reason
+The above properties guarantee that the templates are easily to be parsed by tools (such as IDEs) and reasoned about by people.
+At no point is it necessary to understand which directives are active and what are their semantics in order to reason
 about the template runtime characteristics.
 
 
@@ -21,7 +21,7 @@ about the template runtime characteristics.
 ## Summary
 
 Below is a summary of the kinds of syntaxes which Angular templating supports. The syntaxes are explained in more
-detail in following sections.
+detail in the following sections.
 
 <table>
   <thead>
@@ -222,7 +222,7 @@ Example:
 
 ## Property Binding
 
-Binding application model data to the UI, is the most common kinds of bindings in an Angular application. The bindings
+Binding application model data to the UI is the most common kind of bindings in an Angular application. The bindings
 are always in the form of `property-name` which is assigned an `expression`. The generic form is:
 
 <table>
@@ -253,21 +253,21 @@ its value.
 
 Key points:
 * The binding is to the element property not the element attribute.
-* To prevent custom element from accidentaly reading the literal `expression` on the title element, the attribute name
-  is escaped. In our case the `title` is escaped to `[title]` through the addition of squre brackets `[]`.
+* To prevent custom element from accidentally reading the literal `expression` on the title element, the attribute name
+  is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
 * A binding value (in this case `user.firstName` will always be an expression, never a string literal)
 
 NOTE: Unlike Angular v1, Angular v2 binds to properties of elements rather than attributes of elements. This is
-done to better support custom elements, and allow binding for values other than strings.
+done to better support custom elements, and to allow binding for values other than strings.
 
-NOTE: Some editors/server side pre-processors may have trouble generating `[]` arround the attribute name. For this
+NOTE: Some editors/server side pre-processors may have trouble generating `[]` around the attribute name. For this
 reason Angular also supports a canonical version which is prefixed using `bind-`.
 
 
 
 ### String Interpolation
 
-Property bindings are the only data bindings which angular supports, but for convenience Angular supports interpolation
+Property bindings are the only data bindings which Angular supports, but for convenience Angular supports an interpolation
 syntax which is just a short hand for the data binding syntax.
 
 ```
@@ -280,7 +280,7 @@ is a short hand for:
 <span [text|0]=" 'Hello ' + stringify(name) + '!' ">_</span>
 ```
 
-The above says to bind `'Hello ' + stringify(name) + '!'` expression to the zero-th child of the `span`'s `text`
+The above says to bind the `'Hello ' + stringify(name) + '!'` expression to the zero-th child of the `span`'s `text`
 property. The index is necessary in case there are more than one text nodes, or if the text node we wish to bind to
 is not the first one.
 
@@ -302,7 +302,7 @@ keeping `null` and `undefined` as empty strings.
 
 
 
-## Local Varibles
+## Local Variables
 
 
 
@@ -311,7 +311,7 @@ keeping `null` and `undefined` as empty strings.
 
 Data binding allows updating the DOM's properties, but it does not allow for changing of the DOM structure. To change
 DOM structure we need the ability to define child templates, and then instantiate these templates into Views. The
-Views can than be inserted and removed as needed to change the DOM structure.
+Views than can be inserted and removed as needed to change the DOM structure.
 
 <table>
   <tr>
@@ -347,7 +347,7 @@ Where:
   templates which have more than one root DOM node.
 * `instantiating-directive` is required for templates. The instantiating directive is responsible for deciding when
   and in which order should child views be inserted into this location. An instantiating directive usually has one or
-  more bindings and can be represnted as either `instantiating-directive-bindings` or
+  more bindings and can be represented as either `instantiating-directive-bindings` or
   `instantiating-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
 
 
@@ -355,33 +355,33 @@ Example of conditionally included template:
 
 ```
 Hello {{user}}!
-<div template="if: isAdimnistrator">
+<div template="if: isAdministrator">
   ...administrator menu here...
 </div>
 ```
 
-In the above example the `if` instantiator determins if the child view (an instance of the child template) should be
-inserted into ther root view. The `if` makes this decision based on if the `isAdimnistrator` binding is true.
+In the above example the `if` instantiator determines whether the child view (an instance of the child template) should be
+inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
 
-The above example is in the shart form, for better clarity let's rewrite it in the canonical form, which is functionaly
+The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
 identical.
 
 ```
 Hello {{user}}!
-<template [if]="isAdimnistrator">
+<template [if]="isAdministrator">
   <div>
     ...administrator menu here...
   </div>
 </template>
 ```
 
-NOTE: Only Instantiator directives can be placed on the template element. (Decorators, and Components are not allowed.)
+NOTE: Only Instantiator directives can be placed on the template element. (Decorators and Components are not allowed.)
 
 
 ### Template Microsyntax
 
 Often times it is necessary to encode a lot of different bindings into a template to control how the instantiation
-of the templates occurs. One such example is foreach.
+of the templates occurs. One such example is `foreach`.
 
 ```
 <form #foo=form>
@@ -408,7 +408,7 @@ syntax is preferable.
 </ul>
 ```
 
-Notice how each key value pair is translated to `key=value;` statement in the `template` attribute. This makes the
+Notice how each key value pair is translated to a `key=value;` statement in the `template` attribute. This makes the
 repeat syntax a much shorter, but we can do better. Turns out that most punctuation is optional in the short version
 which allows us to further shorten the text.
 
@@ -427,8 +427,8 @@ microsyntax for `foreach`.
 </ul>
 ```
 
-The format is intentionally defined freely, so that developers of directives can build expressive microsyntax for
-their directives. Following describes a more formal definition.
+The format is intentionally defined freely, so that developers of directives can build an expressive microsyntax for
+their directives. The following code describes a more formal definition.
 
 ```
 expression: ...                     // as defined in Expressions section
@@ -441,14 +441,14 @@ microsyntax: ([[key|keyExpression|varExport][;|,]?)*
 ```
 
 Where
-* `expression` is an angular expression as defined in section: Expressions
+* `expression` is an Angular expression as defined in section: Expressions
 * `local` is a local identifier for local variables.
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
-* `keyExpression` is an property name to which the epression will be bound to.
-* `varExport` allows exporting of directive internal state as variables for further binding. If no `internal` name
-  is specified than the exporting is to an implicit variable.
-* `microsyntax` allows you to build simple microsyntax which can still clearly identify which expressions bind to
+* `keyExpression` is an property name to which the expression will be bound to.
+* `varExport` allows exporting of a directive internal state as variable for further binding. If no `internal` name
+  is specified, the exporting is to an implicit variable.
+* `microsyntax` allows you to build a simple microsyntax which can still clearly identify which expressions bind to
   which properties as well as which variables are exported for binding.
 
 
@@ -527,7 +527,7 @@ have different semantics.
 
 ### Expressions
 
-Expressions can be used to bind to a properties only. Expressions represent how data should be projected to the View.
+Expressions can be used to bind to properties only. Expressions represent how data should be projected to the View.
 Expressions should not have any side effects and should be idempotent. Examples of where expressions can be used in
 Angular are:
 ```
@@ -537,19 +537,19 @@ Angular are:
 <div template="if: expression">...</div>
 ```
 
-Expressions are simplified version of expression in the language in which you are writing your application. (i.e. 
+Expressions are a simplified version of an expression in the language in which you are writing your application. (i.e. 
 expressions follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike expressions in the 
-language, binding expressions behave differently in following ways:
+language, binding expressions behave differently in the following ways:
 
 * *Must be defined*: Unlike Angular v1, Angular v2 will throw an error on dereferencing fields which are not defined. 
-  For example: `user.name` will throw an error if `user` is defined but it does not have `name` property. If the `name` 
-  property is not known, it must be declared and set to some value such as empty string, `null` (or `undefined` in JS). 
+  For example: `user.name` will throw an error if `user` is defined but it does not have a `name` property. If the `name` 
+  property is not known, it must be declared and set to some value such as an empty string, `null` (or `undefined` in JS). 
   This is done to allow early detection of errors in the templates. 
-* *Safe dereference*: Expressions `user.name` where `user` is null will throw `NullPointerException` in the language. 
+* *Safe dereference*: Expression `user.name` where `user` is `null` will throw a `NullPointerException` in the language. 
   In contrast Angular will silently ignore `null` on `user`. This is done because Views often have to wait for the data
   to arrive from the backend and many fields will be `null` until the data arrives. Safe dereference is so common in the
-  Views, that we have made it the default.
-* *Single expression*: An expression must be a single statemnet. (i.e. no `;`)
+  Views that we have made it the default.
+* *Single expression*: An expression must be a single statement. (i.e. no `;`)
 * *No assignments*: Binding expressions can not contain assignments.
 * *No keywords*: Binding expressions can not contain keywords such as: `var`, `if`, and so on.
 * *Formatters*: Angular expressions can be piped through formatters to further transform the binding value. 
@@ -567,8 +567,8 @@ class Greeter {
 * `name` : Will result in the value of the `name` property on the `Greeter` class.
 * `name.length`: Will result in either the length of the `name` string or `undefined` (`null` in Dart) if `name` 
   property is `null` or `undefined`. Example of: safe dereference.
-* `foo`: Will thrown on error because `foo` is not declared on the `Greeter` class. Example of: Must be defined
-* `name=1`: Not allowed because fo assignment.
+* `foo`: Will throw an error because `foo` is not declared on the `Greeter` class. Example of: Must be defined
+* `name=1`: Not allowed because of assignment.
 * `name; name.length`: Not allowed because of multiple statements.
 
 
@@ -584,10 +584,10 @@ Examples of where statements can be used in Angular are:
 
 Statements are similar to statements in the language in which you are writing your application. (i.e.
 statements follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike statements in the
-language, binding expressions behave differently in following ways:
+language, binding expressions behave differently in the following ways:
 
 * *Unsafe dereference*: Expressions `user.verify()` where `user` is `null` will throw `NullPointerException` in the
-  language as well as in statements. (In contrast to Safe dereference in Angular expressions.) While angular protects
+  language as well as in statements. (In contrast to Safe dereference in Angular expressions.) While Angular protects
   you from null dereferencing in expressions due to lazy loading of data, no such protection is required for statements,
   and doing so would make it harder to detect typos in statements.
 * *Multiple statements OK*: Statements can be composed from more than one statement. (i.e. no `doA(); doB()`)
