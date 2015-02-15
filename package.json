@@ -38,7 +38,7 @@
     "canonical-path": "0.0.2",
     "del": "~1",
     "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.9",
+    "dgeni-packages": "^0.10.10",
     "event-stream": "^3.1.5",
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
