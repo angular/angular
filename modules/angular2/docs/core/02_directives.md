@@ -60,7 +60,7 @@ The simplest kind of directive is a decorator. Directives are usefull for encaps
 
 * Multiple decorators can be placed on a single element.
 * Decorators do not introduce new evaluation context.
-* Decorators are registered througt the `@Decorator` meta-data annotation.
+* Decorators are registered through the `@Decorator` meta-data annotation.
 
 Here is a trivial example of a tooltip decorator. The directive will log a tooltip into the console on every time mouse enters a region:
 
@@ -71,7 +71,7 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
     tooltip: 'text'      //  - DOM element tooltip property should be 
   },                     //    mapped to the directive text property.
   event: {               // List which events need to be mapped.
-    mouseover: 'show'    //  - Invoke the show() method ever time 
+    mouseover: 'show'    //  - Invoke the show() method every time 
   }                      //    the mouseover event is fired.
 })
 class Form {             // Directive controller class, instantiated
@@ -98,7 +98,7 @@ Notice that data binding will work with this decorator with no further effort as
 
 ## Components
 
-Component is a directive which uses shadow DOM to create encapsulate visual behavior. Components are tipically used to create UI widgets or to break up the application into smaller components.
+Component is a directive which uses shadow DOM to create encapsulate visual behavior. Components are typically used to create UI widgets or to break up the application into smaller components.
 
 * Only one component can be present per DOM element.
 * Component's CSS selectors usually trigger on element names. (Best practice)
@@ -264,7 +264,7 @@ Injecting other directives into directives follows a similar mechanism as inject
 
 There are five kinds of visibilities:
 
-* (no annotation): Inject a directives only if it is on the current element. 
+* (no annotation): Inject dependant directives only if they are on the current element. 
 * `@ancestor`: Inject a directive if it is at any element above the current element.
 * `@parent`: Inject a directive which is direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)

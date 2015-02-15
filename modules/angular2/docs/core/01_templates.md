@@ -223,11 +223,7 @@ Example:
 
 ## Property Binding
 
-<<<<<<< HEAD
 Binding application model data to the UI is the most common kind of bindings in an Angular application. The bindings
-=======
-Binding application model data to the UI is the most common type of binding in an Angular application. The bindings
->>>>>>> upstream/pr/666
 are always in the form of `property-name` which is assigned an `expression`. The generic form is:
 
 <table>
@@ -258,11 +254,7 @@ its value.
 
 Key points:
 * The binding is to the element property not the element attribute.
-<<<<<<< HEAD
 * To prevent custom element from accidentally reading the literal `expression` on the title element, the attribute name
-=======
-* To prevent a custom element from accidentally reading the literal `expression` on the title element, the attribute name
->>>>>>> upstream/pr/666
   is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
 * A binding value (in this case `user.firstName` will always be an expression, never a string literal)
 
