@@ -23,6 +23,7 @@ about the template runtime characteristics.
 Below is a summary of the kinds of syntaxes which Angular templating supports. The syntaxes are explained in more
 detail in following sections.
 
+
 <table>
   <thead>
     <tr>
@@ -33,186 +34,186 @@ detail in following sections.
     <tr>
       <th>Text Interpolation</th>
       <td>
-```html
-<div>{{exp}}</div>
-```
+<pre>
+&lt;div&gt;{{exp}}&lt;/div&gt;
+</pre>
 
 Example:
-```html
-<div>
+<pre>
+&lt;div&gt;
   Hello {{name}}!
-  <br>
+  &lt;br&gt;
   Goodbye {{name}}!
-</div>
-```
+&lt;/div&gt;
+</pre>
       </td>
       <td>
-`<div [text|index]=exp>`
+<pre>&lt;div [text|index]=exp&gt;</pre>
 
 Example:
-```html
-<div
-  [text|0]=" 'Hello' + stringify(name) + '!' "
-  [text|2]=" 'Goodbye' + stringify(name) + '!' ">
-  _<b>x</b>_
-</div>
-```
+<pre>
+&lt;div
+  [text|0]=&quot; 'Hello' + stringify(name) + '!' &quot;
+  [text|2]=&quot; 'Goodbye' + stringify(name) + '!' &quot;&gt;
+  _&lt;b&gt;x&lt;/b&gt;_
+&lt;/div&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Property Interpolation</th>
       <td>
-```html
-<div name="{{exp}}">
-```
+<pre>
+&lt;div name=&quot;{{exp}}&quot;&gt;
+</pre>
 
 Example:
 
-```html
-<div class="{{selected}}">`
-```
+<pre>
+&lt;div class=&quot;{{selected}}&quot;&gt;
+</pre>
       </td>
       <td>
-```html
-<div [name]="stringify(exp)">
-```
+<pre>
+&lt;div [name]=&quot;stringify(exp)&quot;&gt;
+</pre>
 
 Example:
 
-```html
-<div [class]="stringify(selected)">
-```
+<pre>
+&lt;div [class]=&quot;stringify(selected)&quot;&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Property binding</th>
       <td>
-`<div [prop]="exp">`
+<pre>&lt;div [prop]=&quot;exp&quot;&gt;</pre>
 
 Example:
 
-`<div [hidden]="true">`
+<pre>&lt;div [hidden]=&quot;true&quot;&gt;</pre>
       </td>
       <td>
-`<div bind-prop="exp">`
+<pre>&lt;div bind-prop=&quot;exp&quot;&gt;</pre>
 
 Example:
 
-`<div bind-hidden="true">`
+<pre>&lt;div bind-hidden=&quot;true&quot;&gt;</pre>
       </td>
     </tr>
     <tr>
       <th>Event binding (non-bubbling)</th>
       <td>
-`<div (event)="statement">`
+<pre>&lt;div (event)=&quot;statement&quot;&gt;</pre>
 
 Example:
 
-`<div (click)="doX()">`
+<pre>&lt;div (click)=&quot;doX()&quot;&gt;</pre>
       </td>
       <td>
-`<div on-event="statement">`
+<pre>&lt;div on-event=&quot;statement&quot;&gt;</pre>
 
 Example:
 
-`<div on-click="doX()">`
+<pre>&lt;div on-click=&quot;doX()&quot;&gt;</pre>
       </td>
     </tr>
     <tr>
       <th>Event binding (bubbling)</th>
       <td>
-`<div (^event)="statement">`
+<pre>&lt;div (^event)=&quot;statement&quot;&gt;</pre>
 
 Example:
 
-`<div (^mouseover)="hlite()">`
+<pre>&lt;div (^mouseover)=&quot;hlite()&quot;&gt;</pre>
       </td>
       <td>
-`<div on-bubble-event="statement">`
+<pre>&lt;div on-bubble-event=&quot;statement&quot;&gt;</pre>
 
 Example:
 
-`<div on-bubble-mouseover="hlite()">`
+<pre>&lt;div on-bubble-mouseover=&quot;hlite()&quot;&gt;</pre>
       </td>
     </tr>
     <tr>
       <th>Declare reference</th>
       <td>
-`<div #symbol>`
+<pre>&lt;div #symbol&gt;</pre>
 
 Example:
 
-```
-<video #player>
-<button (click)="player.play()">play</button>
-```
+<pre>
+&lt;video #player&gt;
+&lt;button (click)=&quot;player.play()&quot;&gt;play&lt;/button&gt;
+</pre>
       </td>
       <td>
-`<div def="symbol">`
+<pre>&lt;div def=&quot;symbol&quot;&gt;</pre>
 
 Example:
 
-```
-<video def="player">
-<button on-click="player.play()">play</button>
-```
+<pre>
+&lt;video def=&quot;player&quot;&gt;
+&lt;button on-click=&quot;player.play()&quot;&gt;play&lt;/button&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Inline Template</th>
       <td>
-`<div template="...">...</div>`
+<pre>&lt;div template=&quot;...&quot;&gt;...&lt;/div&gt;</pre>
 
 Example:
 
-```
-<ul>
-  <li template="foreach: #item in items">
+<pre>
+&lt;ul&gt;
+  &lt;li template=&quot;foreach: #item in items&quot;&gt;
     {{item}}
-  </li>
-</ul>
-```
+  &lt;/li&gt;
+&lt;/ul&gt;
+</pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>&lt;template&gt;...&lt;/template&gt;</pre>
 
 Example:
-```
-<ul>
-  <template def-foreach:"item"
-            bind-foreach-in="items">
-    <li>
+<pre>
+&lt;ul&gt;
+  &lt;template def-foreach:&quot;item&quot;
+            bind-foreach-in=&quot;items&quot;&gt;
+    &lt;li&gt;
       {{item}}
-    </li>
-  </template>
-</ul>
-```
+    &lt;/li&gt;
+  &lt;/template&gt;
+&lt;/ul&gt;
+</pre>
       </td>
     </tr>
     <tr>
       <th>Explicit Template</th>
       <td>
-`<template>...</template>`
+<pre>&lt;template&gt;...&lt;/template&gt;</pre>
 
 Example:
 
-```
-<template #foreach="item"
-          [foreach-in]="items">
+<pre>
+&lt;template #foreach=&quot;item&quot;
+          [foreach-in]=&quot;items&quot;&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
+</pre>
       </td>
       <td>
-`<template>...</template>`
+<pre>&lt;template&gt;...&lt;/template&gt;</pre>
 
 Example:
-```
-<template def-foreach="item"
-          bind-foreach-in="items">
+<pre>
+&lt;template def-foreach=&quot;item&quot;
+          bind-foreach-in=&quot;items&quot;&gt;
   _some_content_to_repeat_
-</template>
-```
+&lt;/template&gt;
+</pre>
       </td>
     </tr>
   </tbody>
@@ -228,13 +229,14 @@ are always in the form of `property-name` which is assigned an `expression`. The
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element [some-property]="expression">`</td>
+    <td><pre>&lt;some-element [some-property]=&quot;expression&quot;&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element bind-some-property="expression">`</td>
+    <td><pre>&lt;some-element bind-some-property=&quot;expression&quot;&gt;</pre></td>
   </tr>
 </table>
+
 
 
 Where:
@@ -317,28 +319,29 @@ Views can than be inserted and removed as needed to change the DOM structure.
   <tr>
     <th>Short form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <some-element template="instantiating-directive-microsyntax">child template</some-element>
-</element>
-```
+&lt;element&gt;
+  &lt;some-element template=&quot;instantiating-directive-microsyntax&quot;&gt;child template&lt;/some-element&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
   <tr>
     <th>Canonical form</th>
     <td>
-```
+<pre>
 parent template
-<element>
-  <template instantiating-directive-bindings>
-    <some-element>child template</some-element>
-  </template>
-</element>
-```
+&lt;element&gt;
+  &lt;template instantiating-directive-bindings&gt;
+    &lt;some-element&gt;child template&lt;/some-element&gt;
+  &lt;/template&gt;
+&lt;/element&gt;
+</pre>
     </td>
   </tr>
 </table>
+
 
 Where:
 * `template` defines a child template and designates the anchor where Views (instances of the template) will be
@@ -466,11 +469,11 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (some-event)="statement">`</td>
+    <td><pre>&lt;some-element (some-event)=&quot;statement&quot;&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-some-event=&quot;statement&quot;&gt;</pre></td>
   </tr>
 </table>
 
@@ -487,11 +490,11 @@ bellow.
 <table>
   <tr>
     <th>Short form</th>
-    <td>`<some-element (^some-event)="statement">`</td>
+    <td><pre>&lt;some-element (^some-event)=&quot;statement&quot;&gt;</pre></td>
   </tr>
   <tr>
     <th>Canonical form</th>
-    <td>`<some-element on-bubble-some-event="statement">`</td>
+    <td><pre>&lt;some-element on-bubble-some-event=&quot;statement&quot;&gt;</pre></td>
   </tr>
 </table>
 
