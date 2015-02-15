@@ -1,19 +1,19 @@
 # Templates
 
-Templates are markup which is added to HTML to declarativly describe how the application model should be
+Templates are markup which is added to HTML to declaratively describe how the application model should be
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of template syntax has these properties:
 
-* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity wether the value should be
+* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
 * All events and their statements are easily identifiable.
 * All places of DOM instantiation are easily identifiable.
-* All places of variable declaration is esily identifiable.
+* All places of variable declaration is easily identifiable.
 
 The above properties guarantee that the templates are easy to parse by tools (such as IDEs) and reason about by people.
-At no point is it necessary to understand which directives are active and what are their symantics in order to reason
+At no point is it necessary to understand which directives are active and what are their semantics in order to reason
 about the template runtime characteristics.
 
 
@@ -260,7 +260,7 @@ Key points:
 NOTE: Unlike Angular v1, Angular v2 binds to properties of elements rather than attributes of elements. This is
 done to better support custom elements, and allow binding for values other than strings.
 
-NOTE: Some editors/server side pre-processors may have trouble generating `[]` arround the attribute name. For this
+NOTE: Some editors/server side pre-processors may have trouble generating `[]` around the attribute name. For this
 reason Angular also supports a canonical version which is prefixed using `bind-`.
 
 
@@ -360,10 +360,10 @@ Hello {{user}}!
 </div>
 ```
 
-In the above example the `if` instantiator determins if the child view (an instance of the child template) should be
+In the above example the `if` instantiator determines if the child view (an instance of the child template) should be
 inserted into ther root view. The `if` makes this decision based on if the `isAdimnistrator` binding is true.
 
-The above example is in the shart form, for better clarity let's rewrite it in the canonical form, which is functionaly
+The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
 identical.
 
 ```
