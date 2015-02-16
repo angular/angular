@@ -15,7 +15,7 @@ If you don't already have `npm`, get it by installing [node.js](http://nodejs.or
 3. `npm install -g protractor` (you might need to prefix this command with `sudo`)
 4. `webdriver-manager update`
 5. If you plan to use Dart:
-  1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
+  1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/) - Includes the `pub` command line tool. This repository requires `pub` in version `>=1.4.0`
   2. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
   3. Get the pub packages you need: `pub get`
 6. `gulp build`
