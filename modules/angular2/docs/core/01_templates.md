@@ -1,19 +1,19 @@
 # Templates
 
-Templates are markup which is added to HTML to declarativly describe how the application model should be
+Templates are markup which is added to HTML to declaratively describe how the application model should be
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of template syntax has these properties:
-
-* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity wether the value should be
+ 
+* All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
 * All events and their statements are easily identifiable.
 * All places of DOM instantiation are easily identifiable.
-* All places of variable declaration is esily identifiable.
+* All places of variable declaration are easily identifiable.
 
 The above properties guarantee that the templates are easy to parse by tools (such as IDEs) and reason about by people.
-At no point is it necessary to understand which directives are active and what are their symantics in order to reason
+At no point is it necessary to understand which directives are active or what their semantics are in order to reason
 about the template runtime characteristics.
 
 
@@ -222,7 +222,7 @@ Example:
 
 ## Property Binding
 
-Binding application model data to the UI, is the most common kinds of bindings in an Angular application. The bindings
+Binding application model data to the UI is the most common type of binding in an Angular application. The bindings
 are always in the form of `property-name` which is assigned an `expression`. The generic form is:
 
 <table>
@@ -253,8 +253,8 @@ its value.
 
 Key points:
 * The binding is to the element property not the element attribute.
-* To prevent custom element from accidentaly reading the literal `expression` on the title element, the attribute name
-  is escaped. In our case the `title` is escaped to `[title]` through the addition of squre brackets `[]`.
+* To prevent a custom element from accidentally reading the literal `expression` on the title element, the attribute name
+  is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
 * A binding value (in this case `user.firstName` will always be an expression, never a string literal)
 
 NOTE: Unlike Angular v1, Angular v2 binds to properties of elements rather than attributes of elements. This is
@@ -302,7 +302,7 @@ keeping `null` and `undefined` as empty strings.
 
 
 
-## Local Varibles
+## Local Variables
 
 
 
@@ -346,8 +346,8 @@ Where:
   a template, or explicitly with `<template>` element. Explicit declaration is longer, but it allows for having
   templates which have more than one root DOM node.
 * `instantiating-directive` is required for templates. The instantiating directive is responsible for deciding when
-  and in which order should child views be inserted into this location. An instantiating directive usually has one or
-  more bindings and can be represnted as either `instantiating-directive-bindings` or
+  and in which order the child views should be inserted into this location. An instantiating directive usually has one or
+  more bindings and can be represented as either `instantiating-directive-bindings` or
   `instantiating-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
 
 
@@ -355,20 +355,20 @@ Example of conditionally included template:
 
 ```
 Hello {{user}}!
-<div template="if: isAdimnistrator">
+<div template="if: isAdministrator">
   ...administrator menu here...
 </div>
 ```
 
-In the above example the `if` instantiator determins if the child view (an instance of the child template) should be
-inserted into ther root view. The `if` makes this decision based on if the `isAdimnistrator` binding is true.
+In the above example the `if` instantiator determines if the child view (an instance of the child template) should be
+inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
 
-The above example is in the shart form, for better clarity let's rewrite it in the canonical form, which is functionaly
+The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
 identical.
 
 ```
 Hello {{user}}!
-<template [if]="isAdimnistrator">
+<template [if]="isAdministrator">
   <div>
     ...administrator menu here...
   </div>
@@ -395,11 +395,11 @@ of the templates occurs. One such example is foreach.
 
 Where:
 * `foreach` triggers the foreach directive.
-* `[in]="people"` binds to an iterable object to the `foreach` controller.
+* `[in]="people"` binds an iterable object to the `foreach` controller.
 * `#person` exports the implicit `foreach` item.
 * `#i=index` exports item index as `i`.
 
-The above example is explicit but quite wordy, for this reason in most situations a short hand version of the
+The above example is explicit but quite wordy. For this reason in most situations a short hand version of the
 syntax is preferable.
 
 ```
@@ -445,7 +445,7 @@ Where
 * `local` is a local identifier for local variables.
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
-* `keyExpression` is an property name to which the epression will be bound to.
+* `keyExpression` is an property name to which the expression will be bound to.
 * `varExport` allows exporting of directive internal state as variables for further binding. If no `internal` name
   is specified than the exporting is to an implicit variable.
 * `microsyntax` allows you to build simple microsyntax which can still clearly identify which expressions bind to
@@ -475,12 +475,12 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 </table>
 
 Where:
-* `some-element` Any element which can generate DOM events (or has angular directive which generates the event).
+* `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
 * `some-event` (escaped with `()` or `bind-`) is the name of the event `some-event`. In this case the
   dash-case is converted into camel-case `someEvent`.
 * `statement` is a valid statement (as defined in section below).
 
-By default angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
+By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
 events (as in the case of clicking on any child) use the bubble option (`(^event)` or `on-bubble-event`) as shown
 bellow.
 
@@ -508,13 +508,13 @@ class Example {
 <button (click)="submit()">Submit</button>
 ```
 
-In the above example, when clicking on the submit button angular will invoke the `submit` method on the surounding
+In the above example, when clicking on the submit button angular will invoke the `submit` method on the surrounding
 component's controller.
 
 
 NOTE: Unlike Angular v1, Angular v2 treats event bindings as core constructs not as directives. This means that there
 is no need to create a event directive for each kind of event. This makes it possible for Angular v2 to easily
-bind to custom events of Custom Elements, whos event names are not known ahead of time.
+bind to custom events of Custom Elements, whose event names are not known ahead of time.
 
 
 
@@ -527,7 +527,7 @@ have different semantics.
 
 ### Expressions
 
-Expressions can be used to bind to a properties only. Expressions represent how data should be projected to the View.
+Expressions can be used to bind to properties only. Expressions represent how data should be projected to the View.
 Expressions should not have any side effects and should be idempotent. Examples of where expressions can be used in
 Angular are:
 ```
@@ -549,7 +549,7 @@ language, binding expressions behave differently in following ways:
   In contrast Angular will silently ignore `null` on `user`. This is done because Views often have to wait for the data
   to arrive from the backend and many fields will be `null` until the data arrives. Safe dereference is so common in the
   Views, that we have made it the default.
-* *Single expression*: An expression must be a single statemnet. (i.e. no `;`)
+* *Single expression*: An expression must be a single statement. (i.e. no `;`)
 * *No assignments*: Binding expressions can not contain assignments.
 * *No keywords*: Binding expressions can not contain keywords such as: `var`, `if`, and so on.
 * *Formatters*: Angular expressions can be piped through formatters to further transform the binding value. 
@@ -568,7 +568,7 @@ class Greeter {
 * `name.length`: Will result in either the length of the `name` string or `undefined` (`null` in Dart) if `name` 
   property is `null` or `undefined`. Example of: safe dereference.
 * `foo`: Will thrown on error because `foo` is not declared on the `Greeter` class. Example of: Must be defined
-* `name=1`: Not allowed because fo assignment.
+* `name=1`: Not allowed because of assignment.
 * `name; name.length`: Not allowed because of multiple statements.
 
 
