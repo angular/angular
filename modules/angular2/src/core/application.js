@@ -24,16 +24,6 @@ var _rootInjector: Injector;
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
   bind(Reflector).toValue(reflector),
-  bind(ChangeDetection).toValue(dynamicChangeDetection),
-  Compiler,
-  CompilerCache,
-  TemplateLoader,
-  TemplateResolver,
-  DirectiveMetadataReader,
-  Parser,
-  Lexer,
-  bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()),
-  bind(XHR).toValue(new XHRImpl()),
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -87,6 +77,16 @@ function _injectorBindings(appComponentType): List<Binding> {
         var plugins = [new HammerGesturesPlugin()];
         return new EventManager(plugins, zone);
       }, [VmTurnZone]),
+      bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()),
+      Compiler,
+      CompilerCache,
+      TemplateResolver,
+      bind(ChangeDetection).toValue(dynamicChangeDetection),
+      TemplateLoader,
+      DirectiveMetadataReader,
+      Parser,
+      Lexer,
+      bind(XHR).toValue(new XHRImpl()),
   ];
 }
 
