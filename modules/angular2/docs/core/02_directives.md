@@ -116,10 +116,9 @@ Example of a component:
     'title': 'title',             |  - title mapped to component title
     'open': 'open'                |  - open mapped to component title
   },                              |
-  template: new TemplateConfig({  | Define template to be used with component
-    url: 'pane.html',             |  - URL of template HTML
-    cssUrl: 'pane.css'            |  - URL of CSS to be used with the component
-  })                              |
+})                                |
+@Template({                       | Template annotation
+  url: 'pane.html'                |  - URL of template HTML
 })                                |
 class Pane {                      | Component controller class
   title:string;                   |  - title property 
@@ -231,12 +230,12 @@ class MyService {}                   | Assume a service which needs to be inject
                                      | into a directive.
                                      |
 @Component({                         | Assume a top level application component which 
-  selector: 'my-app',                | configures the service, template and the 
-  componentServices: [MyService],    | directive into which we wish to inject the 
-  template: new TemplateConfig({     | service.
-    url: 'my_app.html',              |
-    directives: [House]              |
-  })                                 |
+  selector: 'my-app',                | configures the services to be injected.
+  componentServices: [MyService]     | 
+})                                   |
+@Template({                          | Assume we have a template that needs to be
+  url: 'my_app.html',                | configured with directives to be injected.
+  directives: [House]                | 
 })                                   |
 class MyApp {}                       |
                                      |
