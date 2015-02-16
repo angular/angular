@@ -1,5 +1,6 @@
 import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
   from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
 import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler} from 'angular2/angular2';
 
@@ -114,9 +115,15 @@ function setupReflector() {
     'annotations': []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(LifeCycle, {
-    "factory": (cd) => new LifeCycle(cd),
-    "parameters": [[ChangeDetector]],
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler, ChangeDetector]],
     "annotations": []
   });
 

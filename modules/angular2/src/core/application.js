@@ -73,7 +73,7 @@ function _injectorBindings(appComponentType): List<Binding> {
           [appViewToken]),
       bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
           [appViewToken]),
-      bind(LifeCycle).toFactory(() => new LifeCycle(null, assertionsEnabled()),[]),
+      bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
       bind(EventManager).toFactory((zone) => {
         var plugins = [new HammerGesturesPlugin()];
         return new EventManager(plugins, zone);
