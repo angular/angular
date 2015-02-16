@@ -6,6 +6,7 @@ import {isPresent, Type} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -53,7 +54,7 @@ export function main() {
           compiler.compile(MyComp)
             .then(createView)
             .then((view) => {
-              var lc = new LifeCycle(view.changeDetector, false);
+              var lc = new LifeCycle(new ExceptionHandler(), view.changeDetector, false);
               assertions(view, lc);
             });
         }

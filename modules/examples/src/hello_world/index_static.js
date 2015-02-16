@@ -2,6 +2,7 @@ import *  as app from './index_common';
 
 import {Component, Decorator, Template, NgElement} from 'angular2/angular2';
 import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -94,9 +95,15 @@ function setup() {
     "annotations": []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(LifeCycle, {
-    "factory": (cd) => new LifeCycle(cd),
-    "parameters": [[ChangeDetector]],
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler, ChangeDetector]],
     "annotations": []
   });
 
