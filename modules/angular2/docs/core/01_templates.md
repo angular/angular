@@ -1,19 +1,20 @@
 # Templates
 
-Templates are markup which is added to HTML to declarativly describe how the application model should be
+Templates are markup which is added to HTML to declaratively describe how the application model should be
 projected to DOM as well as which DOM events should invoke which methods on the controller. Templates contain
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of the template syntax has these properties:
+ 
 
 * All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
 * All events and their statements are easily identifiable.
 * All places of DOM instantiation are easily identifiable.
-* All places of variable declaration is easily identifiable.
+* All places of variable declaration are easily identifiable.
 
-The above properties guarantee that the templates are easily to be parsed by tools (such as IDEs) and reasoned about by people.
-At no point is it necessary to understand which directives are active and what are their semantics in order to reason
+The above properties guarantee that the templates are easy to parse by tools (such as IDEs) and reason about by people.
+At no point is it necessary to understand which directives are active or what their semantics are in order to reason
 about the template runtime characteristics.
 
 
@@ -222,7 +223,11 @@ Example:
 
 ## Property Binding
 
+<<<<<<< HEAD
 Binding application model data to the UI is the most common kind of bindings in an Angular application. The bindings
+=======
+Binding application model data to the UI is the most common type of binding in an Angular application. The bindings
+>>>>>>> upstream/pr/666
 are always in the form of `property-name` which is assigned an `expression`. The generic form is:
 
 <table>
@@ -253,7 +258,11 @@ its value.
 
 Key points:
 * The binding is to the element property not the element attribute.
+<<<<<<< HEAD
 * To prevent custom element from accidentally reading the literal `expression` on the title element, the attribute name
+=======
+* To prevent a custom element from accidentally reading the literal `expression` on the title element, the attribute name
+>>>>>>> upstream/pr/666
   is escaped. In our case the `title` is escaped to `[title]` through the addition of square brackets `[]`.
 * A binding value (in this case `user.firstName` will always be an expression, never a string literal)
 
@@ -345,10 +354,10 @@ Where:
   inserted. The template can be defined implicitly with `template` attribute, which turns the current element into
   a template, or explicitly with `<template>` element. Explicit declaration is longer, but it allows for having
   templates which have more than one root DOM node.
-* `instantiating-directive` is required for templates. The instantiating directive is responsible for deciding when
-  and in which order should child views be inserted into this location. An instantiating directive usually has one or
-  more bindings and can be represented as either `instantiating-directive-bindings` or
-  `instantiating-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
+* `viewport` is required for templates. The Viewport directive is responsible for deciding when
+  and in which order should child views be inserted into this location. An Viewport directive usually has one or
+  more bindings and can be represented as either `viewport-directive-bindings` or
+  `viewport-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
 
 
 Example of conditionally included template:
@@ -360,7 +369,7 @@ Hello {{user}}!
 </div>
 ```
 
-In the above example the `if` instantiator determines whether the child view (an instance of the child template) should be
+In the above example the `if` Viewport determines whether the child view (an instance of the child template) should be
 inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
 
 The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
@@ -375,7 +384,7 @@ Hello {{user}}!
 </template>
 ```
 
-NOTE: Only Instantiator directives can be placed on the template element. (Decorators and Components are not allowed.)
+NOTE: Only Viewport directives can be placed on the template element. (Decorators and Components are not allowed.)
 
 
 ### Template Microsyntax
@@ -395,11 +404,11 @@ of the templates occurs. One such example is `foreach`.
 
 Where:
 * `foreach` triggers the foreach directive.
-* `[in]="people"` binds to an iterable object to the `foreach` controller.
+* `[in]="people"` binds an iterable object to the `foreach` controller.
 * `#person` exports the implicit `foreach` item.
 * `#i=index` exports item index as `i`.
 
-The above example is explicit but quite wordy, for this reason in most situations a short hand version of the
+The above example is explicit but quite wordy. For this reason in most situations a short hand version of the
 syntax is preferable.
 
 ```
@@ -446,7 +455,7 @@ Where
 * `internal` is an internal variable which the directive exports for binding.
 * `key` is an attribute name usually only used to trigger a specific directive.
 * `keyExpression` is an property name to which the expression will be bound to.
-* `varExport` allows exporting of a directive internal state as variable for further binding. If no `internal` name
+* `varExport` allows exporting of directive internal state as variables for further binding. If no `internal` name
   is specified, the exporting is to an implicit variable.
 * `microsyntax` allows you to build a simple microsyntax which can still clearly identify which expressions bind to
   which properties as well as which variables are exported for binding.
@@ -475,12 +484,12 @@ Binding events allows wiring events from DOM (or other components) to the Angula
 </table>
 
 Where:
-* `some-element` Any element which can generate DOM events (or has angular directive which generates the event).
+* `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
 * `some-event` (escaped with `()` or `bind-`) is the name of the event `some-event`. In this case the
   dash-case is converted into camel-case `someEvent`.
 * `statement` is a valid statement (as defined in section below).
 
-By default angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
+By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
 events (as in the case of clicking on any child) use the bubble option (`(^event)` or `on-bubble-event`) as shown
 bellow.
 
@@ -508,13 +517,13 @@ class Example {
 <button (click)="submit()">Submit</button>
 ```
 
-In the above example, when clicking on the submit button angular will invoke the `submit` method on the surounding
+In the above example, when clicking on the submit button angular will invoke the `submit` method on the surrounding
 component's controller.
 
 
 NOTE: Unlike Angular v1, Angular v2 treats event bindings as core constructs not as directives. This means that there
 is no need to create a event directive for each kind of event. This makes it possible for Angular v2 to easily
-bind to custom events of Custom Elements, whos event names are not known ahead of time.
+bind to custom events of Custom Elements, whose event names are not known ahead of time.
 
 
 
