@@ -5,6 +5,7 @@ import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'angular2/change_detection';
+import {ExceptionHandler} from './exception_handler';
 import {TemplateLoader} from './compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
@@ -23,7 +24,7 @@ var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector),
+  bind(Reflector).toValue(reflector)
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -86,6 +87,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       DirectiveMetadataReader,
       Parser,
       Lexer,
+      ExceptionHandler,
       bind(XHR).toValue(new XHRImpl()),
   ];
 }
