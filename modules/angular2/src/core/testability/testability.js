@@ -18,13 +18,13 @@ export class Testability {
     if (delta === null || delta === undefined) {
       delta = 1;
     }
-    this._numPending += delta;
-    if (this._numPending < 0) {
+    this._pendingCount += delta;
+    if (this._pendingCount < 0) {
       throw new Error('pending async requests below zero');
-    } else if (this._numPending == 0) {
+    } else if (this._pendingCount == 0) {
       this._runCallbacks();
     }
-    return _numPending();
+    return this._pendingCount;
   }
 
   _runCallbacks() {
@@ -91,7 +91,6 @@ export class TestabilityRegistry {
   }
 
   registerApplication(token, testability) {
-    console.log('register application');
     this._applications.set(token, testability);
   }
 

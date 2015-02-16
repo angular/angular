@@ -2,12 +2,13 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from '
 import {bootstrap, appDocumentToken, appElementToken}
     from 'angular2/src/core/application';
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM, window} from 'angular2/src/facade/dom';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
 import {Template} from 'angular2/src/core/annotations/template';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {PublicTestability, Testability} from 'angular2/src/core/testability/testability';
 
 @Component({selector: 'hello-app'})
 @Template({inline: '{{greeting}} world!'})
@@ -129,6 +130,24 @@ export function main() {
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp4).lc).toBe(injector.get(LifeCycle));
         done();
+      });
+    });
+
+    it('should register each application with the testability registry', (done) => {
+      // TODO(juliemr): make this test more about what goes in to the registry
+      // and less about the window?
+      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
+      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
+      PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
+        expect(window.angular).toBeDefined();
+        PromiseWrapper.all([injectors[0].asyncGet(Testability),
+            injectors[1].asyncGet(Testability)]).then((testabilities) => {
+          expect(window.angular.getTestability(el))
+              .toEqual(new PublicTestability(testabilities[0]));
+          expect(window.angular.getTestability(el2))
+              .toEqual(new PublicTestability(testabilities[1]));
+          done();
+        });
       });
     });
   });
