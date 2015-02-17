@@ -1,5 +1,4 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
-import {List} from 'angular2/src/facade/collection';
 
 export class Template {
   url:any; //string;

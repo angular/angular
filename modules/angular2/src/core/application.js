@@ -8,7 +8,6 @@ import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetecti
 import {TemplateLoader} from './compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
-import {DirectiveMetadata} from './compiler/directive_metadata';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';

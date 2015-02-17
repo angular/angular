@@ -9,7 +9,6 @@ import {Component, Viewport} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {ShadowDomStrategy} from '../shadow_dom_strategy';
 
 /**
  * Parses the directives on a single element. Assumes ViewSplitter has already created

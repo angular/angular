@@ -23,14 +23,11 @@ import {
   PrefixNot
   } from './parser/ast';
 
-import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {ChangeRecord, ChangeDispatcher, ChangeDetector} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 
-import {ArrayChanges} from './array_changes';
-import {KeyValueChanges} from './keyvalue_changes';
 import {coalesce} from './coalesce';
 
 export const RECORD_TYPE_SELF = 0;
