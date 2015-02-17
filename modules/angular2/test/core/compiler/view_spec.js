@@ -705,7 +705,7 @@ class MyEvaluationContext {
   callMe;
   constructor() {
     this.foo = 'bar';
-  };
+  }
 }
 
 class TestProtoElementInjector extends ProtoElementInjector {
