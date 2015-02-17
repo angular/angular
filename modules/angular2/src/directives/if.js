@@ -5,7 +5,7 @@ import {isBlank} from 'angular2/src/facade/lang';
 @Viewport({
   selector: '[if]',
   bind: {
-    'if': 'condition'
+    'condition': 'if'
   }
 })
 export class If {

@@ -99,7 +99,7 @@ export class ControlDirectiveBase {
   lifecycle: [onChange],
   selector: '[control-name]',
   bind: {
-    'control-name' : 'controlName',
+    'controlName' : 'control-name',
     'type' : 'type'
   }
 })
@@ -117,7 +117,7 @@ export class ControlNameDirective extends ControlDirectiveBase {
   lifecycle: [onChange],
   selector: '[control]',
   bind: {
-    'control' : 'controlName',
+    'controlName' : 'control',
     'type' : 'type'
   }
 })
@@ -134,7 +134,7 @@ export class ControlDirective extends ControlDirectiveBase {
 @Decorator({
   selector: '[control-group]',
   bind: {
-    'control-group' : 'controlGroup'
+    'controlGroup' : 'control-group'
   }
 })
 export class ControlGroupDirective extends ControlGroupDirectiveBase {
@@ -163,7 +163,7 @@ export class ControlGroupDirective extends ControlGroupDirectiveBase {
 @Component({
   selector: '[new-control-group]',
   bind: {
-    'new-control-group' : 'initData'
+    'initData' : 'new-control-group'
   }
 })
 @Template({inline: '<content>'})

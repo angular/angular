@@ -7,7 +7,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 @Viewport({
   selector: '[foreach][in]',
   bind: {
-    'in': 'iterableChanges[]'
+    'iterableChanges[]': 'in'
   }
 })
 export class Foreach  {

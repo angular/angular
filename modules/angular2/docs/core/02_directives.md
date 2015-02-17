@@ -68,7 +68,7 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
 @Decorator({
   selector: '[tooltip]', // CSS Selector which triggers the decorator
   bind: {                // List which properties need to be bound
-    tooltip: 'text'      //  - DOM element tooltip property should be 
+    text: 'tooltip'      //  - DOM element tooltip property should be 
   },                     //    mapped to the directive text property.
   event: {               // List which events need to be mapped.
     mouseover: 'show'    //  - Invoke the show() method every time 
@@ -180,7 +180,7 @@ Viewport is a directive which can control instantiation of child views which are
 @Viewport({
   selector: '[if]',
   bind: {
-    'if': 'condition'
+    'condition': 'if'
   }
 })
 export class If {

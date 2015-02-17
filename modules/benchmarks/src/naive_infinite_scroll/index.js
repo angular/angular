@@ -158,7 +158,7 @@ export function setupReflectorForAngular() {
     'annotations' : [new Viewport({
       selector: '[if]',
       bind: {
-        'if': 'condition'
+        'condition': 'if'
       }
     })]
   });
@@ -169,7 +169,7 @@ export function setupReflectorForAngular() {
     'annotations' : [new Viewport({
       selector: '[foreach]',
       bind: {
-        'in': 'iterableChanges[]'
+        'iterableChanges[]': 'in'
       }
     })]
   });
