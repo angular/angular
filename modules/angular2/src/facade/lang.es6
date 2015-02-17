@@ -1,4 +1,4 @@
-var _global = typeof window === 'undefined' ? global : window;
+var _global: _Global = typeof window === 'undefined' ? global : window;
 export {_global as global};
 
 export var Type = Function;
@@ -22,6 +22,7 @@ if (assertionsEnabled_) {
 export {int};
 
 export class FIELD {
+  definition: string;
   constructor(definition) {
     this.definition = definition;
   }
@@ -100,6 +101,7 @@ export class StringWrapper {
 }
 
 export class StringJoiner {
+    parts: string[];
   constructor() {
     this.parts = [];
   }
@@ -114,6 +116,7 @@ export class StringJoiner {
 }
 
 export class NumberParseError extends Error {
+  message: string;
   constructor(message) {
     super();
     this.message = message;
