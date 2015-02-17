@@ -54,12 +54,25 @@ the transpiler is reloaded. With that it is possible to make changes
 to the preprocessor and run the tests without exiting karma
 (just touch a test file that you would like to run).
 
+### E2e tests
+
+1. `gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
+2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
+3. `protractor protractor-js.conf.js`: JS e2e tests
+4. `protractor protractor-dart2js.conf.js`: Dart2JS e2e tests
+
+Angular specific command line options when running protractor:
+`protractor protractor-{js|dart2js}-conf.js --ng-help`
+
 ### Performance tests
 
 1. `gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
 2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
-3. `protractor protractor-perf-js.conf.js`: JS performance tests
-4. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
+3. `protractor protractor-js.conf.js --benchmark`: JS performance tests
+4. `protractor protractor-dart2js.conf.js --benchmark`: Dart2JS performance tests
+
+Angular specific command line options when running protractor (e.g. force gc, ...):
+`protractor protractor-{js|dart2js}-conf.js --ng-help`
 
 ### Examples
 

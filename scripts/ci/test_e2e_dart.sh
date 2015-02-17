@@ -21,4 +21,4 @@ trap killServer EXIT
 # wait for server to come up!
 sleep 10
 
-./node_modules/.bin/protractor protractor-e2e-dart2js.conf.js --browsers=$E2E_BROWSERS
+./node_modules/.bin/protractor protractor-dart2js.conf.js --browsers=$E2E_BROWSERS
