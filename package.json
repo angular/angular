@@ -62,7 +62,7 @@
     "merge": "^1.2.0",
     "minimatch": "^2.0.1",
     "minimist": "1.1.x",
-    "protractor": "1.6.x",
+    "protractor": "1.7.x",
     "q": "^1.0.1",
     "run-sequence": "^0.3.6",
     "source-map": "^0.3.0",

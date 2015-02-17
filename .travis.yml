@@ -9,7 +9,7 @@ env:
   - LOGS_DIR=/tmp/angular-build/logs
   - ARCH=linux-x64
   matrix:
-  - MODE=js DART_CHANNEL=stable
+  - MODE=js DART_CHANNEL=dev
 # Dissabled until Dart v1.9 hits stable
 #  - MODE=dart DART_CHANNEL=stable
   - MODE=dart DART_CHANNEL=dev
