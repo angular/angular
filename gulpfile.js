@@ -1,6 +1,8 @@
+var autoprefixer = require('gulp-autoprefixer');
 var format = require('gulp-clang-format');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
+var sass = require('gulp-sass');
 var shell = require('gulp-shell');
 var runSequence = require('run-sequence');
 var madge = require('madge');
@@ -152,7 +154,7 @@ var CONFIG = {
         src: ['modules/**/*.css'],
         pipes: {}
       }
-    },
+    }
   },
   multicopy: {
     js: {
@@ -697,3 +699,23 @@ gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.
 gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
 gulp.task('build', ['build.js', 'build.dart']);
+
+
+// ------------
+// angular material testing rules
+gulp.task('build/css.js.dev', function() {
+  return gulp.src('modules/*/src/**/*.scss')
+      .pipe(sass())
+      .pipe(autoprefixer())
+      .pipe(gulp.dest(CONFIG.dest.js.dev.es5));
+});
+
+// TODO: this target is temporary until we find a way to use the SASS transformer
+gulp.task('build/css.dart', function() {
+  return gulp.src('dist/dart/angular2_material/lib/src/**/*.scss')
+      .pipe(sass())
+      .pipe(autoprefixer())
+      .pipe(gulp.dest('dist/dart/angular2_material/lib/src'));
+});
+
+gulp.task('build.material', ['build.js.dev', 'build/css.js.dev']);

@@ -10,6 +10,8 @@ class Math {
     return math.pow(x, exponent);
   }
 
+  static num max(num a, num b) => math.max(a, b);
+
   static num min(num a, num b) => math.min(a, b);
 
   static num floor(num a) => a.floor();

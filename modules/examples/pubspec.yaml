@@ -3,10 +3,13 @@ environment:
   sdk: '>=1.4.0'
 dependencies:
   angular2: '^<%= packageJson.version %>'
+  angular2_material: '^<%= packageJson.version %>'
   browser: '>=0.10.0 <0.11.0'
 dependency_overrides:
   angular2:
     path: ../angular2
+  angular2_material:
+    path: ../angular2_material
 dev_dependencies:
   guinness: ">=0.1.17 <0.2.0"
   benchpress:
@@ -16,7 +19,7 @@ transformers:
       entry_points: web/src/hello_world/index_common.dart
       reflection_entry_points: web/src/hello_world/index.dart
   - $dart2js:
-      minify: true
-      commandLineOptions: [--trust-type-annotations, --trust-primitives, --dump-info]
+      minify: false
+      #commandLineOptions: [--trust-type-annotations, --trust-primitives, --dump-info]
       #commandLineOptions: [--trust-type-annotations, --dump-info]
-      #commandLineOptions: [--dump-info]
+      commandLineOptions: [--dump-info]

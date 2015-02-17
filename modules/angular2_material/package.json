@@ -1,0 +1,17 @@
+{
+  "name": "angular2_material",
+  "version": "<%= packageJson.version %>",
+  "description": "Google material design components for Angular 2",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
+  "dependencies": {
+    "angular2": "<%= packageJson.version %>",
+    "traceur": "<%= packageJson.dependencies.traceur %>",
+    "rtts_assert": "<%= packageJson.version %>",
+    "rx": "<%= packageJson.dependencies['rx'] %>",
+    "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
+  },
+  "devDependencies": <%= JSON.stringify(packageJson.devDependencies) %>
+}

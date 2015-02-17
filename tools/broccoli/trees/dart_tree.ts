@@ -132,7 +132,7 @@ function getDocsTree() {
   var mdTree = stew.rename(modulesFunnel(['**/*.dart.md']),
                            relativePath => relativePath.replace(/\.dart\.md$/, '.md'));
   // Copy all assets, ignore .js. and .dart. (handled above).
-  var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css'],
+  var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
                            ['**/*.js.md', '**/*.dart.md']);
   return mergeTrees([licenses, mdTree, docs]);
 }

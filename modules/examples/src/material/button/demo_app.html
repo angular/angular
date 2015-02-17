@@ -1,0 +1,81 @@
+<style>
+  section {
+    background: #f7f7f7;
+    border-radius: 3px;
+    text-align: center;
+    margin: 1em;
+    position: relative !important;
+    padding-bottom: 10px;
+  }
+  section [md-button]:not(.md-fab) {
+    min-width: 10em;
+  }
+  section [md-button] {
+    display: inline-block;
+    margin: 1em;
+    line-height: 25px;
+  }
+.label {
+  position: absolute;
+  bottom: 5px;
+  left: 7px;
+  color: #ccc;
+  font-size: 14px;
+}
+</style>
+
+<h1>Button demo</h1>
+
+<p>
+  You just clicked: <span>{{previousClick}}</span>
+</p>
+
+<section>
+  <form (^submit)="submit('form submit')">
+    <button md-button>SUBMIT</button>
+    <button>Native button</button>
+  </form>
+
+  <span class="label">form submit</span>
+</section>
+
+<section>
+  <span class="label">Regular button</span>
+
+  <button md-button (^click)="click('button')">BUTTON</button>
+
+  <button md-button class="md-primary" (^click)="click('primary')">PRIMARY</button>
+  <button md-button disabled="disabled" (^click)="click('disabled')">DISABLED</button>
+  <button md-button class="md-accent" (^click)="click('accent')">ACCENT</button>
+  <button md-button class="md-warn" (^click)="click('warn')">WARN</button>
+</section>
+
+<section>
+  <span class="label">Raised button</span>
+  <button md-button class="md-raised" (^click)="click('raised')">BUTTON</button>
+  <button md-button class="md-raised md-primary" (^click)="click('raised primary')">PRIMARY</button>
+  <button md-button class="md-raised" disabled="disabled" (^click)="click('raised disabled')">DISABLED</button>
+  <button md-button class="md-raised md-accent" (^click)="click('raised accent')">ACCENT</button>
+  <button md-button class="md-raised md-warn" (^click)="click('raised warn')">WARN</button>
+</section>
+<section>
+  <span class="label">Fab button</span>
+  <button md-button class="md-fab" (^click)="click('fab')">BTN</button>
+  <button md-button class="md-fab md-primary" (^click)="click('fab primary')">PRMY</button>
+  <button md-button class="md-fab" disabled="disabled" (^click)="click('fab disabled')">DIS</button>
+  <button md-button class="md-fab md-accent" (^click)="click('fab accent')">ACC</button>
+  <button md-button class="md-fab md-warn" (^click)="click('fab warn')">WRN</button>
+</section>
+<section>
+  <span class="label">Anchor / hyperlink</span>
+  <a md-button href="http://google.com" target="_blank">HREF</a>
+  <a md-button href="http://google.com" disabled>DISABLED HREF</a>
+  <a md-button class="md-raised" target="_blank" href="http://google.com">RAISED HREF</a>
+</section>
+
+
+<p template="for #item of items">
+  Repeated button:
+  <button md-button tabindex="-1" (^click)="increment()">{{action}}</button>
+  {{clickCount}}
+</p>
