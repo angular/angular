@@ -369,7 +369,7 @@ class _ParseAST {
   }
 
   parsePrimary() {
-    var result: any;
+    var value;
     if (this.optionalCharacter($LPAREN)) {
       var result = this.parseFormatter();
       this.expectCharacter($RPAREN);
@@ -399,12 +399,12 @@ class _ParseAST {
       return this.parseAccessMemberOrMethodCall(_implicitReceiver);
 
     } else if (this.next.isNumber()) {
-      var value = this.next.toNumber();
+      value = this.next.toNumber();
       this.advance();
       return new LiteralPrimitive(value);
 
     } else if (this.next.isString()) {
-      var value = this.next.toString();
+      value = this.next.toString();
       this.advance();
       return new LiteralPrimitive(value);
 
