@@ -535,7 +535,7 @@ export class ProtoView {
       shadowDomStrategy: ShadowDomStrategy
   ): ProtoView {
 
-    DOM.addClass(insertionElement, 'ng-binding');
+    DOM.addClass(insertionElement, NG_BINDING_CLASS);
     var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
