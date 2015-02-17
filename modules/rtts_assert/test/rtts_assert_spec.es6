@@ -12,6 +12,8 @@
 
 // Note: `assert` gets automatically included by traceur!
 
+class Type {}
+
 export function main() {
 
 // ## Basic Type Check
@@ -21,8 +23,8 @@ export function main() {
 // Most of the time, you will use it with Traceur.
 // Jump to the [Traceur section](#integrating-with-traceur) to see an example of that.
 describe('basic type check', function() {
+  // class Type {}
 
-  class Type {}
 
   it('should pass', function() {
     assert.type(new Type(), Type);
@@ -50,7 +52,7 @@ describe('basic type check', function() {
 // define custom checks using `assert.define()`.
 describe('custom check', function() {
 
-  class Type {}
+  // class Type {}
 
   // the basic check can just return true/false, without specifying any reason
   it('should pass when returns true', function() {
@@ -176,7 +178,7 @@ describe('define', function() {
   //
   // In this example, being a type of Type means being a either a function or object.
   it('should define assert for an existing type', function() {
-    class Type {}
+    // class Type {}
 
     assert.define(Type, function(value) {
       assert(value).is(Function, Object);
