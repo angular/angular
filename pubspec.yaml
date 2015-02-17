@@ -2,6 +2,7 @@ name: angular
 environment:
   sdk: '>=1.4.0'
 dependencies:
+  stack_trace: '>=1.1.1 <1.2.0'
 
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"
