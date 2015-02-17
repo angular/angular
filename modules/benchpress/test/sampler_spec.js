@@ -1,13 +1,13 @@
 import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import { isBlank, isPresent, BaseException, stringify } from 'angular2/src/facade/lang';
+import { isBlank, isPresent, BaseException, stringify, Date, DateWrapper } from 'angular2/src/facade/lang';
 import { ListWrapper, List } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 
 import {
   Sampler, WebDriverAdapter, WebDriverExtension,
   Validator, Metric, Reporter, Browser,
-  bind, Injector, Options
+  bind, Injector, Options, MeasureValues
 } from 'benchpress/benchpress';
 
 export function main() {
@@ -26,6 +26,7 @@ export function main() {
       prepare,
       execute
     } = {}) {
+      var time = 1000;
       if (isBlank(metric)) {
         metric = new MockMetric([]);
       }
@@ -44,7 +45,8 @@ export function main() {
         bind(WebDriverAdapter).toValue(driver),
         bind(WebDriverExtension).toValue(driverExtension),
         bind(Options.EXECUTE).toValue(execute),
-        bind(Validator).toValue(validator)
+        bind(Validator).toValue(validator),
+        bind(Sampler.TIME).toValue( () => DateWrapper.fromMillis(time++) )
       ]);
       if (isPresent(prepare)) {
         ListWrapper.push(bindings, bind(Options.PREPARE).toValue(prepare));
@@ -181,8 +183,8 @@ export function main() {
       });
       sampler.sample().then( (state) => {
         expect(state.completeSample.length).toBe(2);
-        expect(state.completeSample[0]).toEqual({'script': 10});
-        expect(state.completeSample[1]).toEqual({'script': 20});
+        expect(state.completeSample[0]).toEqual(mv(0, 1000, {'script': 10}));
+        expect(state.completeSample[1]).toEqual(mv(1, 1001, {'script': 20}));
         done();
       });
     });
@@ -206,10 +208,10 @@ export function main() {
 
         expect(log.length).toBe(2);
         expect(log[0]).toEqual(
-          ['validate', [{'script': 0}], null]
+          ['validate', [mv(0, 1000, {'script': 0})], null]
         );
         expect(log[1]).toEqual(
-          ['validate', [{'script': 0}, {'script': 1}], validSample]
+          ['validate', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample]
         );
 
         done();
@@ -234,13 +236,13 @@ export function main() {
         // ]);
         expect(log.length).toBe(3);
         expect(log[0]).toEqual(
-          ['reportMeasureValues', 0, {'script': 0}]
+          ['reportMeasureValues', mv(0, 1000, {'script': 0})]
         );
         expect(log[1]).toEqual(
-          ['reportMeasureValues', 1, {'script': 1}]
+          ['reportMeasureValues', mv(1, 1001, {'script': 1})]
         );
         expect(log[2]).toEqual(
-          ['reportSample', [{'script': 0}, {'script': 1}], validSample]
+          ['reportSample', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample]
         );
 
         done();
@@ -248,6 +250,10 @@ export function main() {
     });
 
   });
+}
+
+function mv(runIndex, time, values) {
+  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
 }
 
 function createCountingValidator(count, validSample = null, log = null) {
@@ -315,7 +321,7 @@ class MockValidator extends Validator {
     }
     this._log = log;
   }
-  validate(completeSample:List<Object>):List<Object> {
+  validate(completeSample:List<MeasureValues>):List<MeasureValues> {
     var stableSample = isPresent(this._validate) ? this._validate(completeSample) : completeSample;
     ListWrapper.push(this._log, ['validate', completeSample, stableSample]);
     return stableSample;
@@ -353,8 +359,8 @@ class MockReporter extends Reporter {
     }
     this._log = log;
   }
-  reportMeasureValues(index, values):Promise {
-    ListWrapper.push(this._log, ['reportMeasureValues', index, values]);
+  reportMeasureValues(values):Promise {
+    ListWrapper.push(this._log, ['reportMeasureValues', values]);
     return PromiseWrapper.resolve(null);
   }
   reportSample(completeSample, validSample):Promise {

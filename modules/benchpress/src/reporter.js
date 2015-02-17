@@ -5,16 +5,18 @@ import {
   ABSTRACT, BaseException
 } from 'angular2/src/facade/lang';
 
+import { MeasureValues } from './measure_values';
+
 /**
  * A reporter reports measure values and the valid sample.
  */
 @ABSTRACT()
 export class Reporter {
-  reportMeasureValues(index:number, values:any):Promise {
+  reportMeasureValues(values:MeasureValues):Promise {
     throw new BaseException('NYI');
   }
 
-  reportSample(completeSample:List, validSample:List):Promise {
+  reportSample(completeSample:List<MeasureValues>, validSample:List<MeasureValues>):Promise {
     throw new BaseException('NYI');
   }
 }
