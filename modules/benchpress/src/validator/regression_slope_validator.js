@@ -3,6 +3,7 @@ import { bind, OpaqueToken } from 'angular2/di';
 
 import { Validator } from '../validator';
 import { Statistic } from '../statistic';
+import { MeasureValues } from '../measure_values';
 
 /**
  * A validator that checks the regression slope of a specific metric.
@@ -32,7 +33,7 @@ export class RegressionSlopeValidator extends Validator {
     };
   }
 
-  validate(completeSample:List<any>):List<any> {
+  validate(completeSample:List<MeasureValues>):List<MeasureValues> {
     if (completeSample.length >= this._sampleSize) {
       var latestSample =
         ListWrapper.slice(completeSample, completeSample.length - this._sampleSize, completeSample.length);
@@ -42,7 +43,7 @@ export class RegressionSlopeValidator extends Validator {
         // For now, we only use the array index as x value.
         // TODO(tbosch): think about whether we should use time here instead
         ListWrapper.push(xValues, i);
-        ListWrapper.push(yValues, latestSample[i][this._metric]);
+        ListWrapper.push(yValues, latestSample[i].values[this._metric]);
       }
       var regressionSlope = Statistic.calculateRegressionSlope(
         xValues, Statistic.calculateMean(xValues),
