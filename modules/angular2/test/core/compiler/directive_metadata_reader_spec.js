@@ -1,11 +1,7 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {CONST} from 'angular2/src/facade/lang';
-import {If, Foreach} from 'angular2/directives';
 
 
 @Decorator({selector: 'someDecorator'})

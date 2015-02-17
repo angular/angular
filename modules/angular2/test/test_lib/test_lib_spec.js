@@ -1,6 +1,5 @@
 import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach, proxy} from 'angular2/test_lib';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
 import {IMPLEMENTS, Date, DateWrapper} from 'angular2/src/facade/lang';
 
 class TestObj {

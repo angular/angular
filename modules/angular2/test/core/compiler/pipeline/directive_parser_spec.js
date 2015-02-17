@@ -6,8 +6,6 @@ import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipel
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step';
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
-import {DOM} from 'angular2/src/facade/dom';
-import {NativeShadowDomStrategy, ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component, Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';

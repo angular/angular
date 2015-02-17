@@ -10,7 +10,6 @@ import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
 import {Injector} from 'angular2/di';
 
-import {DOM} from 'angular2/src/facade/dom';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent} from 'angular2/src/facade/lang';
 

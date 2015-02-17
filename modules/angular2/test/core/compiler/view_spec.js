@@ -6,7 +6,6 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {Component, Decorator, Viewport, Directive, onChange} from 'angular2/src/core/annotations/annotations';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
-import {Template} from 'angular2/src/core/annotations/template';
 import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM, Element} from 'angular2/src/facade/dom';

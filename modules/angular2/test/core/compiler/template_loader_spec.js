@@ -1,15 +1,11 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Type, stringify, isPresent} from 'angular2/src/facade/lang';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
 

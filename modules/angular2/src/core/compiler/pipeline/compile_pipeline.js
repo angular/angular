@@ -4,7 +4,6 @@ import {Element, Node, DOM} from 'angular2/src/facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
-import {DirectiveMetadata} from '../directive_metadata';
 
 /**
  * CompilePipeline for executing CompileSteps recursively for

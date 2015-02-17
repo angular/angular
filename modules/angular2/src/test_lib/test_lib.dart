@@ -6,7 +6,6 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
 import 'package:angular2/src/reflection/reflection.dart';
-import 'package:angular2/src/facade/dom.dart';
 import 'package:angular2/src/reflection/reflection_capabilities.dart';
 import 'package:collection/equality.dart';
 
