@@ -13,7 +13,7 @@ export var expect = window.expect;
 export var IS_DARTIUM = false;
 
 // To make testing consistent between dart and js
-window.print = function(msg) {
+window.print = function(msg=null) {
   if (window.dump) {
     window.dump(msg);
   } else {

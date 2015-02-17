@@ -220,7 +220,7 @@ export class SelectorMatcher {
     }
   }
 
-  _matchTerminal(map:Map<string,string> = null, name, matchedCallback) {
+  _matchTerminal(map:Map<string,string> = null, name=null, matchedCallback=null) {
     if (isBlank(map) || isBlank(name)) {
       return;
     }
@@ -233,7 +233,7 @@ export class SelectorMatcher {
     }
   }
 
-  _matchPartial(map:Map<string,string> = null, name, cssSelector, matchedCallback) {
+  _matchPartial(map:Map<string,string> = null, name=null, cssSelector=null, matchedCallback=null) {
     if (isBlank(map) || isBlank(name)) {
       return;
     }
