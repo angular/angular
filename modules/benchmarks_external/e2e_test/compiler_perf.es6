@@ -6,7 +6,7 @@ describe('ng1.x compiler benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log withBinding stats', function() {
+  it('should log withBinding stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#compileWithBindings'],
@@ -14,10 +14,10 @@ describe('ng1.x compiler benchmark', function () {
       params: [{
         name: 'elements', value: 150, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log noBindings stats', function() {
+  it('should log noBindings stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#compileNoBindings'],
@@ -25,7 +25,7 @@ describe('ng1.x compiler benchmark', function () {
       params: [{
         name: 'elements', value: 150, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

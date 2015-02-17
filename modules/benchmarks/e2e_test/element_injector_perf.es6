@@ -6,7 +6,7 @@ describe('ng2 element injector benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log the stats for instantiate', function() {
+  it('should log the stats for instantiate', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#instantiate'],
@@ -14,10 +14,10 @@ describe('ng2 element injector benchmark', function () {
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
-  it('should log the stats for instantiateDirectives', function() {
+  it('should log the stats for instantiateDirectives', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#instantiateDirectives'],
@@ -25,7 +25,7 @@ describe('ng2 element injector benchmark', function () {
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }]
-    });
+    }).then(done, done.fail);
   });
 
 });

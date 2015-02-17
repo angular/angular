@@ -8,7 +8,7 @@ describe('ng2 naive infinite scroll benchmark', function () {
 
   [1, 2, 4].forEach(function(appSize) {
     it('should run scroll benchmark and collect stats for appSize = ' +
-        appSize, function() {
+        appSize, function(done) {
       perfUtil.runBenchmark({
         url: URL,
         id: 'ng2.naive_infinite_scroll',
@@ -30,7 +30,7 @@ describe('ng2 naive infinite scroll benchmark', function () {
         }, {
           name: 'scrollIncrement', value: 40
         }]
-      });
+      }).then(done, done.fail);
     });
   });
 

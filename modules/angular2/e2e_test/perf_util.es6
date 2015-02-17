@@ -1,10 +1,10 @@
-var benchpress = require('benchpress/index.js');
-var webdriver = require('protractor/node_modules/selenium-webdriver');
+var testUtil = require('./test_util');
+var benchpress = require('benchpress/benchpress');
 
 module.exports = {
   runClickBenchmark: runClickBenchmark,
   runBenchmark: runBenchmark,
-  verifyNoBrowserErrors: benchpress.verifyNoBrowserErrors
+  verifyNoBrowserErrors: testUtil.verifyNoBrowserErrors
 };
 
 function runClickBenchmark(config) {
@@ -16,27 +16,29 @@ function runClickBenchmark(config) {
       button.click();
     });
   }
-  runBenchmark(config);
+  return runBenchmark(config);
 }
 
 function runBenchmark(config) {
-  var globalParams = browser.params;
-  getScaleFactor(globalParams.benchmark.scaling).then(function(scaleFactor) {
-    var params = config.params.map(function(param) {
-      return {
-        name: param.name, value: applyScaleFactor(param.value, scaleFactor, param.scale)
-      }
+  return getScaleFactor(browser.params.benchmark.scaling).then(function(scaleFactor) {
+    var description = {};
+    var urlParams = [];
+    config.params.forEach(function(param) {
+      var name = param.name;
+      var value = applyScaleFactor(param.value, scaleFactor, param.scale);
+      urlParams.push(name + '=' + value);
+      description[name] = value;
     });
-    var benchmarkConfig = Object.create(globalParams.benchmark);
-    benchmarkConfig.id = globalParams.lang+'.'+config.id;
-    benchmarkConfig.params = params;
-    benchmarkConfig.scaleFactor = scaleFactor;
-
-    var url = encodeURI(config.url + '?' + params.map(function(param) {
-      return param.name + '=' + param.value;
-    }).join('&'));
+    var url = encodeURI(config.url + '?' + urlParams.join('&'));
     browser.get(url);
-    benchpress.runBenchmark(benchmarkConfig, config.work);
+    return benchpressRunner.sample({
+      id: config.id,
+      execute: config.work,
+      prepare: config.prepare,
+      bindings: [
+        benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue(description)
+      ]
+    });
   });
 }
 

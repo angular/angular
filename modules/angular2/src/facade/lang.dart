@@ -2,6 +2,7 @@ library angular.core.facade.lang;
 
 export 'dart:core' show Type, RegExp, print;
 import 'dart:math' as math;
+import 'dart:convert' as convert;
 
 class Math {
   static final _random = new math.Random();
@@ -175,4 +176,10 @@ bool assertionsEnabled() {
   } catch (e) {
     return true;
   }
+}
+
+// Can't be all uppercase as our transpiler would think it is a special directive...
+class Json {
+  static parse(String s) => convert.JSON.decode(s);
+  static stringify(data) => convert.JSON.encode(data);
 }

@@ -1,7 +1,7 @@
-var benchpress = require('benchpress/index.js');
+var testUtil = require('angular2/e2e_test/test_util');
 describe('hello world', function () {
 
-  afterEach(benchpress.verifyNoBrowserErrors);
+  afterEach(testUtil.verifyNoBrowserErrors);
 
   describe('static reflection', function() {
     var URL = 'examples/src/hello_world/index_static.html';

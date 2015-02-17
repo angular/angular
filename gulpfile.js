@@ -272,7 +272,7 @@ gulp.task('build/transpile.js.prod', function(done) {
 });
 
 gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.js.concat(['tools/benchp*/**/*.es6']),
+  src: CONFIG.transpile.src.js,
   copy: CONFIG.transpile.copy.js,
   dest: CONFIG.dest.js.cjs,
   outputExt: 'js',

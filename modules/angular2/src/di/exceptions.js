@@ -1,6 +1,5 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {stringify} from 'angular2/src/facade/lang';
-import {Key} from './key';
 
 function findFirstClosedCycle(keys:List) {
   var res = [];
@@ -31,14 +30,16 @@ export class ProviderError extends Error {
   keys:List;
   constructResolvingMessage:Function;
   message;
-  constructor(key:Key, constructResolvingMessage:Function) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  constructor(key, constructResolvingMessage:Function) {
     super();
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
     this.message = this.constructResolvingMessage(this.keys);
   }
 
-  addKey(key:Key) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  addKey(key) {
     ListWrapper.push(this.keys, key);
     this.message = this.constructResolvingMessage(this.keys);
   }
@@ -49,7 +50,8 @@ export class ProviderError extends Error {
 }
 
 export class NoProviderError extends ProviderError {
-  constructor(key:Key) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  constructor(key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `No provider for ${first}!${constructResolvingPath(keys)}`;
@@ -58,7 +60,8 @@ export class NoProviderError extends ProviderError {
 }
 
 export class AsyncBindingError extends ProviderError {
-  constructor(key:Key) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  constructor(key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Cannot instantiate ${first} synchronously. ` +
@@ -68,7 +71,8 @@ export class AsyncBindingError extends ProviderError {
 }
 
 export class CyclicDependencyError extends ProviderError {
-  constructor(key:Key) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  constructor(key) {
     super(key, function (keys:List) {
       return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
     });
@@ -76,7 +80,8 @@ export class CyclicDependencyError extends ProviderError {
 }
 
 export class InstantiationError extends ProviderError {
-  constructor(originalException, key:Key) {
+  // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
+  constructor(originalException, key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +

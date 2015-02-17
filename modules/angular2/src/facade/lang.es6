@@ -247,3 +247,6 @@ export function print(obj) {
     console.log(obj);
   }
 }
+
+// Can't be all uppercase as our transpiler would think it is a special directive...
+export var Json = _global.JSON;

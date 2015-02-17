@@ -1,7 +1,16 @@
-var config = exports.config = require('./protractor-perf-shared.js').config;
+var data = module.exports = require('./protractor-perf-shared.js');
+var config = data.config;
+
 config.baseUrl = 'http://localhost:8001/';
-config.params.lang = 'js';
 
 // TODO: remove exclusion when JS verison of scrolling benchmark is available
 config.exclude = config.exclude || [];
 config.exclude.push('dist/js/cjs/benchmarks_external/e2e_test/naive_infinite_scroll_perf.js');
+
+data.createBenchpressRunner({
+  forceGc: false,
+  lang: 'js',
+  test: false,
+  sampleSize: 20
+});
+

@@ -166,6 +166,9 @@ export class DOM {
   static setAttribute(element:Element, name:string, value:string) {
     element.setAttribute(name, value);
   }
+  static removeAttribute(element:Element, attribute:string) {
+    return element.removeAttribute(attribute);
+  }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;
   }
