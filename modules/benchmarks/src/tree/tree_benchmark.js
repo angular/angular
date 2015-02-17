@@ -54,7 +54,7 @@ function setupReflector() {
     'annotations' : [new Viewport({
       selector: '[ng-if]',
       bind: {
-        'ng-if': 'ngIf'
+        'ngIf': 'ng-if'
       }
     })]
   });

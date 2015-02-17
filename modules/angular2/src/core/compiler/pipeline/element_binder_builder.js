@@ -196,7 +196,7 @@ export class ElementBinderBuilder extends CompileStep {
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
       var _this = this;
-      StringMapWrapper.forEach(annotation.bind, function (dirProp, elProp) {
+      StringMapWrapper.forEach(annotation.bind, function (elProp, dirProp) {
         var expression = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;

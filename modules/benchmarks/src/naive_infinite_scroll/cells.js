@@ -104,7 +104,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'company-name',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'company': 'company'
         }
       }),
@@ -122,7 +122,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'opportunity-name',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'opportunity': 'opportunity'
         }
       }),
@@ -140,7 +140,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'offering-name',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'offering': 'offering'
         }
       }),
@@ -158,7 +158,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'stage-buttons',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'offering': 'offering'
         }
       }),
@@ -184,7 +184,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'account-cell',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'account': 'account'
         }
       }),
@@ -207,7 +207,7 @@ export function setupReflectorForCells() {
       new Component({
         selector: 'formatted-cell',
         bind: {
-          'cell-width': 'width',
+          'width': 'cell-width',
           'value': 'value'
         }
       }),

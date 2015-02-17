@@ -33,7 +33,7 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
 @Decorator({
   selector: '[switch]',
   bind: {
-    'switch': 'value'
+    'value': 'switch'
   }
 })
 export class Switch {
@@ -144,7 +144,7 @@ export class Switch {
 @Viewport({
   selector: '[switch-when]',
   bind: {
-    'switch-when' : 'when'
+    'when' : 'switch-when'
   }
 })
 export class SwitchWhen {

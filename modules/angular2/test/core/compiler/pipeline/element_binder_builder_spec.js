@@ -448,7 +448,7 @@ class SomeDecoratorDirective {
 }
 
 @Decorator({
-  bind: {'boundprop1': 'decorProp'}
+  bind: {'decorProp': 'boundprop1'}
 })
 class SomeDecoratorDirectiveWithBinding {
   decorProp;
@@ -461,8 +461,8 @@ class SomeDecoratorDirectiveWithBinding {
 
 @Decorator({
   bind: {
-    'boundprop1': 'decorProp',
-    'boundprop2': 'decorProp2'
+    'decorProp': 'boundprop1',
+    'decorProp2': 'boundprop2'
   }
 })
 class SomeDecoratorDirectiveWith2Bindings {
@@ -479,7 +479,7 @@ class SomeViewportDirective {
 }
 
 @Viewport({
-  bind: {'boundprop2': 'templProp'}
+  bind: {'templProp': 'boundprop2'}
 })
 class SomeViewportDirectiveWithBinding {
   templProp;
@@ -492,7 +492,7 @@ class SomeViewportDirectiveWithBinding {
 class SomeComponentDirective {
 }
 
-@Component({bind: {'boundprop3': 'compProp'}})
+@Component({bind: {'compProp': 'boundprop3'}})
 class SomeComponentDirectiveWithBinding {
   compProp;
   constructor() {

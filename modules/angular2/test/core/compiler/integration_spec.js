@@ -288,7 +288,7 @@ export function main() {
 
 @Decorator({
   selector: '[my-dir]',
-  bind: {'elprop':'dirProp'}
+  bind: {'dirProp':'elprop'}
 })
 class MyDir {
   dirProp:string;
