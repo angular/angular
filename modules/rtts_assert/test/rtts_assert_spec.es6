@@ -1,3 +1,7 @@
+/// <reference path="../../../typings/mocha/mocha.d.ts" />
+/// <reference path="../../../typings/chai/chai.d.ts" />
+
+
 // # Assert.js
 // A run-time type assertion library for JavaScript. Designed to be used with [Traceur](https://github.com/google/traceur-compiler).
 
