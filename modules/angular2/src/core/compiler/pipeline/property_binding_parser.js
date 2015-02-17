@@ -2,7 +2,7 @@ import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/fac
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {TemplateElement} from 'angular2/src/facade/dom';
 
-import {Parser, AST, ExpressionWithSource} from 'angular2/change_detection';
+import {Parser, AST} from 'angular2/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';

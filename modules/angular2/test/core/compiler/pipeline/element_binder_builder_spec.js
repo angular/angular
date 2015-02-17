@@ -11,12 +11,11 @@ import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_contro
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
+import {ProtoView} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
-  } from 'angular2/change_detection';
+import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector} from 'angular2/change_detection';
 import {Injector} from 'angular2/di';
 
 export function main() {

@@ -8,7 +8,7 @@ import {Parser, ProtoChangeDetector} from 'angular2/change_detection';
 
 import {Component, Directive} from '../../annotations/annotations';
 import {DirectiveMetadata} from '../directive_metadata';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from '../view';
+import {ProtoView} from '../view';
 import {ProtoElementInjector} from '../element_injector';
 import {ElementBinder} from '../element_binder';
 
