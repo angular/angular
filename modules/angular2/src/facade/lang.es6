@@ -3,6 +3,7 @@ export {_global as global};
 
 export var Type = Function;
 export var Math = _global.Math;
+export var Date = _global.Date;
 
 var assertionsEnabled_ = typeof assert !== 'undefined';
 
@@ -250,3 +251,12 @@ export function print(obj) {
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
 export var Json = _global.JSON;
+
+export class DateWrapper {
+  static fromMillis(ms) {
+    return new Date(ms);
+  }
+  static now() {
+    return new Date();
+  }
+}
