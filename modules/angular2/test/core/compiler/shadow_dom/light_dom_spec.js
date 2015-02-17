@@ -3,12 +3,10 @@ import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/facade/dom';
 import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
-import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {ProtoRecordRange} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(ElementInjector)

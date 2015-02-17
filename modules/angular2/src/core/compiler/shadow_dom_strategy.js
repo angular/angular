@@ -4,7 +4,6 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {View} from './view';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
-import {DirectiveMetadata} from './directive_metadata';
 
 export class ShadowDomStrategy {
   attachTemplate(el:Element, view:View){}

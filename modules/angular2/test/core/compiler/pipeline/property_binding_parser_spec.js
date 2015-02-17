@@ -1,7 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {PropertyBindingParser} from 'angular2/src/core/compiler/pipeline/property_binding_parser';
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
-import {DOM} from 'angular2/src/facade/dom';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'

@@ -5,7 +5,6 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
-import {reflector} from 'angular2/src/reflection/reflection';
 import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
@@ -13,7 +12,6 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWi
 
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
-import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
 
 export function main() {
