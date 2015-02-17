@@ -32,6 +32,7 @@ import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} f
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
 import {EXPORT_STAR, NAMED_EXPORT} from 'traceur/src/syntax/trees/ParseTreeType';
+import {typeMapping} from '../type_mapping';
 
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -221,14 +222,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   normalizeType_(typeName) {
-    switch (typeName) {
-      case 'number': return 'num';
-      case 'boolean': return 'bool';
-      case 'string': return 'String';
-      case 'any': return 'dynamic';
-      case 'Promise': return 'Future';
-      default: return typeName;
-    }
+    return typeMapping[typeName] || typeName;
   }
 
   // FUNCTION/METHOD ARGUMENTS
