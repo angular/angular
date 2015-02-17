@@ -13,7 +13,7 @@ export class Metric {
   /**
    * Starts measuring
    */
-  beginMeasure():Promise {
+  beginMeasure():Promise<any> {
     throw new BaseException('NYI');
   }
 

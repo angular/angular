@@ -30,7 +30,7 @@ export class Key {
 }
 
 export class KeyRegistry {
-  _allKeys:Map;
+  _allKeys:Map<any,any>;
   constructor() {
     this._allKeys = MapWrapper.create();
   }

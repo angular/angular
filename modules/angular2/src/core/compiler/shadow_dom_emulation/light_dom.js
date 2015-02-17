@@ -74,7 +74,7 @@ export class LightDom {
   // - nodes from enclosed ViewContainers,
   // - nodes from enclosed content tags,
   // - plain DOM nodes
-  expandedDomNodes():List {
+  expandedDomNodes():List<any>{
     var res = [];
 
     var roots = this._roots();

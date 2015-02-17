@@ -16,7 +16,7 @@ export class CompilePipeline {
     this._control = new CompileControl(steps);
   }
 
-  process(rootElement:Element):List {
+  process(rootElement:Element):List<any> {
     var results = ListWrapper.create();
     this._process(results, null, new CompileElement(rootElement));
     return results;

@@ -18,9 +18,9 @@ export class Directive {
     }:{
       selector:string,
       bind:any,
-      lightDomServices:List,
-      implementsTypes:List,
-      lifecycle:List
+      lightDomServices:List<any>,
+      implementsTypes:List<any>,
+      lifecycle:List<any>
     }={})
   {
     this.selector = selector;
@@ -54,11 +54,11 @@ export class Component extends Directive {
     }:{
       selector:String,
       bind:Object,
-      lightDomServices:List,
-      shadowDomServices:List,
-      componentServices:List,
-      implementsTypes:List,
-      lifecycle:List
+      lightDomServices:List<any>,
+      shadowDomServices:List<any>,
+      componentServices:List<any>,
+      implementsTypes:List<any>,
+      lifecycle:List<any>
     }={})
   {
     super({
@@ -89,9 +89,9 @@ export class Decorator extends Directive {
     }:{
       selector:string,
       bind:any,
-      lightDomServices:List,
-      implementsTypes:List,
-      lifecycle:List,
+      lightDomServices:List<any>,
+      implementsTypes:List<any>,
+      lifecycle:List<any>,
       compileChildren:boolean
     }={})
   {
@@ -117,9 +117,9 @@ export class Viewport extends Directive {
     }:{
       selector:string,
       bind:any,
-      lightDomServices:List,
-      implementsTypes:List,
-      lifecycle:List
+      lightDomServices:List<any>,
+      implementsTypes:List<any>,
+      lifecycle:List<any>
     }={})
   {
     super({

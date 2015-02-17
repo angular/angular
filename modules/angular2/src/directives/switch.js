@@ -40,7 +40,7 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
 export class Switch {
   _switchValue: any;
   _useDefault: boolean;
-  _valueViewContainers: Map;
+  _valueViewContainers: Map<any,any>;
   _activeViewContainers: List<ViewContainer>;
 
   constructor() {

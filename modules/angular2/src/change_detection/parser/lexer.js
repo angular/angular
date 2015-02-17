@@ -10,7 +10,7 @@ export const TOKEN_TYPE_NUMBER     = 6;
 
 export class Lexer {
   text:string;
-  tokenize(text:string):List {
+  tokenize(text:string):List<any> {
     var scanner = new _Scanner(text);
     var tokens = [];
     var token = scanner.scanToken();

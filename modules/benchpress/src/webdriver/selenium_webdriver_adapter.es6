@@ -21,19 +21,19 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     return completer.promise;
   }
 
-  waitFor(callback):Promise {
+  waitFor(callback):Promise<any> {
     return this._convertPromise(this._driver.controlFlow().execute(callback));
   }
 
-  executeScript(script:string):Promise {
+  executeScript(script:string):Promise<any> {
     return this._convertPromise(this._driver.executeScript(script));
   }
 
-  capabilities():Promise {
+  capabilities():Promise<any> {
     return this._convertPromise(this._driver.getCapabilities());
   }
 
-  logs(type:string):Promise {
+  logs(type:string):Promise<any> {
     // Needed as selenium-webdriver does not forward
     // performance logs in the correct way via manage().logs
     return this._convertPromise(this._driver.schedule(

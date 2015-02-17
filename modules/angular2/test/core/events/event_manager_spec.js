@@ -47,7 +47,7 @@ export function main() {
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
   _supports: List<string>;
-  _eventHandlers: Map;
+  _eventHandlers: Map<any,any>;
   constructor(supports: List<string>) {
     super();
     this._supports = supports;

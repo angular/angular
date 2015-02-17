@@ -3,7 +3,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {
-  children:List;
+  children:List<any>;
   parent:ChangeDetector;
   mode:string;
 

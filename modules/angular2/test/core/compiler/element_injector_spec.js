@@ -98,7 +98,7 @@ class DirectiveWithDestroy {
 export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null, null);
 
-  function humanize(tree, names:List) {
+  function humanize(tree, names:List<any>) {
     var lookupName = (item) =>
       ListWrapper.last(
         ListWrapper.find(names, (pair) => pair[0] === item));

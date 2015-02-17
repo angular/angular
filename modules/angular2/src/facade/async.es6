@@ -4,20 +4,24 @@ import {List} from 'angular2/src/facade/collection';
 export var Promise = global.Promise;
 
 export class PromiseWrapper {
-  static resolve(obj):Promise {
+  //static resolve<T>(obj:T):Promise<T> {
+  static resolve(obj:any):Promise<any> {
     return Promise.resolve(obj);
   }
 
-  static reject(obj):Promise {
+  //static reject<T>(obj:T):Promise<T> {
+  static reject(obj:any):Promise<any> {
     return Promise.reject(obj);
   }
 
-  static all(promises:List):Promise {
+  //static all<T>(promises:List<Promise<T>>):Promise<T[]> {
+  static all(promises:List<any>):Promise<any> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
 
-  static then(promise:Promise, success:Function, rejection:Function):Promise {
+  //static then<TResult>(promise: Promise<TResult>, success: (value: any) => TResult | Promise<TResult>, rejection: (reason: any) => TResult | Promise<TResult>): Promise<TResult> {
+  static then(promise: Promise<any>, success: Function, rejection: Function): Promise<any> {
     return promise.then(success, rejection);
   }
 

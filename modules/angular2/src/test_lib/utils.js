@@ -3,7 +3,7 @@ import {DOM} from 'angular2/src/facade/dom';
 import {isPresent} from 'angular2/src/facade/lang';
 
 export class Log {
-  _result:List;
+  _result:List<any>;
 
   constructor() {
     this._result = [];

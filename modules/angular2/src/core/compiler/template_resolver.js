@@ -7,7 +7,7 @@ import {reflector} from 'angular2/src/reflection/reflection';
 
 
 export class TemplateResolver {
-  _cache: Map;
+  _cache: Map<any,any>;
 
   constructor() {
     this._cache = MapWrapper.create();

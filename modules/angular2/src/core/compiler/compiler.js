@@ -24,7 +24,7 @@ import {CompileStep} from './pipeline/compile_step';
  * Used to prevent duplicate work and resolve cyclic dependencies.
  */
 export class CompilerCache {
-  _cache:Map;
+  _cache: Map<Type, ProtoView>;
   constructor() {
     this._cache = MapWrapper.create();
   }
@@ -54,7 +54,7 @@ export class Compiler {
   _compilerCache:CompilerCache;
   _changeDetection:ChangeDetection;
   _templateLoader:TemplateLoader;
-  _compiling:Map<Type, Promise>;
+  _compiling: Map<Type, Promise<ProtoView>>;
   _shadowDomStrategy: ShadowDomStrategy;
   _shadowDomDirectives: List<DirectiveMetadata>;
   _templateResolver: TemplateResolver;
@@ -166,7 +166,7 @@ export class Compiler {
     return protoView;
   }
 
-  _compileNestedProtoView(ce: CompileElement, promises: List<Promise>) {
+  _compileNestedProtoView(ce: CompileElement, promises: List<Promise<any>>) {
     var protoView = this._compile(ce.componentDirective.type);
 
     if (PromiseWrapper.isPromise(protoView)) {

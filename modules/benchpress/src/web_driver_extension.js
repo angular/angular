@@ -9,19 +9,19 @@ import { List } from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class WebDriverExtension {
-  gc():Promise {
+  gc():Promise<any> {
     throw new BaseException('NYI');
   }
 
-  timeStamp(name:string, names:List<String>):Promise {
+  timeStamp(name:string, names:List<String>):Promise<any> {
     throw new BaseException('NYI');
   }
 
-  timeBegin(name):Promise {
+  timeBegin(name):Promise<any> {
     throw new BaseException('NYI');
   }
 
-  timeEnd(name, restart:boolean):Promise {
+  timeEnd(name, restart:boolean):Promise<any> {
     throw new BaseException('NYI');
   }
 
@@ -34,7 +34,7 @@ export class WebDriverExtension {
    *
    * Based on [Chrome Trace Event Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog():Promise<List> {
+  readPerfLog():Promise<List<any>> {
     throw new BaseException('NYI');
   }
 }

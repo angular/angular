@@ -8,16 +8,16 @@ import { BaseException, ABSTRACT } from 'angular2/src/facade/lang';
  */
 @ABSTRACT()
 export class WebDriverAdapter {
-  waitFor(callback:Function):Promise {
+  waitFor(callback:Function):Promise<any> {
     throw new BaseException('NYI');
   }
-  executeScript(script:string):Promise {
+  executeScript(script:string):Promise<any> {
     throw new BaseException('NYI');
   }
-  capabilities():Promise {
+  capabilities():Promise<any> {
     throw new BaseException('NYI');
   }
-  logs(type:string):Promise {
+  logs(type:string):Promise<any> {
     throw new BaseException('NYI');
   }
 }

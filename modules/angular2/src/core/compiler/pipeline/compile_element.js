@@ -16,16 +16,16 @@ import {AST} from 'angular2/change_detection';
  */
 export class CompileElement {
   element:Element;
-  _attrs:Map;
-  _classList:List;
-  textNodeBindings:Map;
-  propertyBindings:Map;
-  eventBindings:Map;
+  _attrs:Map<any,any>;
+  _classList:List<any>;
+  textNodeBindings:Map<any,any>;
+  propertyBindings:Map<any,any>;
+  eventBindings:Map<any,any>;
 
   /// Store directive name to template name mapping.
   /// Directive name is what the directive exports the variable as
   /// Template name is how it is reffered to it in template
-  variableBindings:Map;
+  variableBindings:Map<any,any>;
   decoratorDirectives:List<DirectiveMetadata>;
   viewportDirective:DirectiveMetadata;
   componentDirective:DirectiveMetadata;

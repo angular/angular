@@ -63,8 +63,8 @@ export class ImplicitReceiver extends AST {
  * Multiple expressions separated by a semicolon.
  */
 export class Chain extends AST {
-  expressions:List;
-  constructor(expressions:List) {
+  expressions:List<any>;
+  constructor(expressions:List<any>) {
     super();
     this.expressions = expressions;
   }
@@ -191,7 +191,7 @@ export class Formatter extends AST {
   name:string;
   args:List<AST>;
   allArgs:List<AST>;
-  constructor(exp:AST, name:string, args:List) {
+  constructor(exp:AST, name:string, args:List<any>) {
     super();
     this.exp = exp;
     this.name = name;
@@ -221,8 +221,8 @@ export class LiteralPrimitive extends AST {
 }
 
 export class LiteralArray extends AST {
-  expressions:List;
-  constructor(expressions:List) {
+  expressions:List<any>;
+  constructor(expressions:List<any>) {
     super();
     this.expressions = expressions;
   }
@@ -237,9 +237,9 @@ export class LiteralArray extends AST {
 }
 
 export class LiteralMap extends AST {
-  keys:List;
-  values:List;
-  constructor(keys:List, values:List) {
+  keys:List<any>;
+  values:List<any>;
+  constructor(keys:List<any>, values:List<any>) {
     super();
     this.keys = keys;
     this.values = values;
@@ -259,15 +259,15 @@ export class LiteralMap extends AST {
 }
 
 export class Interpolation extends AST {
-  strings:List;
-  expressions:List;
-  constructor(strings:List, expressions:List) {
+  strings:List<any>;
+  expressions:List<any>;
+  constructor(strings:List<any>, expressions:List<any>) {
     super();
     this.strings = strings;
     this.expressions = expressions;
   }
 
-  eval(context) {
+  eval(context): any {
     throw new BaseException("evaluating an Interpolation is not supported");
   }
 
@@ -355,9 +355,9 @@ export class Assignment extends AST {
 export class MethodCall extends AST {
   receiver:AST;
   fn:Function;
-  args:List;
+  args:List<any>;
   name:string;
-  constructor(receiver:AST, name:string, fn:Function, args:List) {
+  constructor(receiver:AST, name:string, fn:Function, args:List<any>) {
     super();
     this.receiver = receiver;
     this.fn = fn;
@@ -387,8 +387,8 @@ export class MethodCall extends AST {
 
 export class FunctionCall extends AST {
   target:AST;
-  args:List;
-  constructor(target:AST, args:List) {
+  args:List<any>;
+  constructor(target:AST, args:List<any>) {
     super();
     this.target = target;
     this.args = args;
@@ -474,7 +474,7 @@ export class AstVisitor {
 }
 
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];
-function evalList(context, exps:List){
+function evalList(context, exps:List<any>){
   var length = exps.length;
   var result = _evalListCache[length];
   for (var i = 0; i < length; i++) {

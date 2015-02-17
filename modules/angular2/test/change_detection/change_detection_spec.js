@@ -599,8 +599,8 @@ class TestData {
 }
 
 class TestDispatcher extends ChangeDispatcher {
-  log:List;
-  loggedValues:List;
+  log:List<any>;
+  loggedValues:List<any>;
   onChange:Function;
 
   constructor() {
@@ -620,7 +620,7 @@ class TestDispatcher extends ChangeDispatcher {
     ListWrapper.push(this.loggedValues, value);
   }
 
-  onRecordChange(group, updates:List) {
+  onRecordChange(group, updates:List<any>) {
     var value = updates[0].change.currentValue;
     var memento = updates[0].bindingMemento;
     ListWrapper.push(this.log, memento + '=' + this._asString(value));

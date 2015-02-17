@@ -9,8 +9,8 @@ export class Dependency {
   key:Key;
   asPromise:boolean;
   lazy:boolean;
-  properties:List;
-  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List) {
+  properties:List<any>;
+  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List<any>) {
     this.key = key;
     this.asPromise = asPromise;
     this.lazy = lazy;
@@ -21,10 +21,10 @@ export class Dependency {
 export class Binding {
   key:Key;
   factory:Function;
-  dependencies:List;
+  dependencies:List<any>;
   providedAsPromise:boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean) {
+  constructor(key:Key, factory:Function, dependencies:List<any>, providedAsPromise:boolean) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;
@@ -60,7 +60,7 @@ export class BindingBuilder {
     );
   }
 
-  toFactory(factoryFunction:Function, dependencies:List = null):Binding {
+  toFactory(factoryFunction:Function, dependencies:List<any> = null):Binding {
     return new Binding(
       Key.get(this.token),
       factoryFunction,
@@ -69,7 +69,7 @@ export class BindingBuilder {
     );
   }
 
-  toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
+  toAsyncFactory(factoryFunction:Function, dependencies:List<any> = null):Binding {
     return new Binding(
       Key.get(this.token),
       factoryFunction,
@@ -78,14 +78,14 @@ export class BindingBuilder {
     );
   }
 
-  _constructDependencies(factoryFunction:Function, dependencies:List) {
+  _constructDependencies(factoryFunction:Function, dependencies:List<any>) {
     return isBlank(dependencies) ?
       _dependenciesFor(factoryFunction) :
       ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false, []));
   }
 }
 
-function _dependenciesFor(typeOrFunc):List {
+function _dependenciesFor(typeOrFunc):List<any> {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (ListWrapper.any(params, (p) => isBlank(p))) throw new NoAnnotationError(typeOrFunc);

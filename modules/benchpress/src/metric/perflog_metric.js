@@ -16,7 +16,7 @@ export class PerflogMetric extends Metric {
   static get SET_TIMEOUT() { return _SET_TIMEOUT; }
 
   _driverExtension:WebDriverExtension;
-  _remainingEvents:List;
+  _remainingEvents:List<any>;
   _measureCount:int;
   _setTimeout:Function;
 
@@ -39,7 +39,7 @@ export class PerflogMetric extends Metric {
     };
   }
 
-  beginMeasure():Promise {
+  beginMeasure():Promise<any> {
     return this._driverExtension.timeBegin(this._markName(this._measureCount++));
   }
 

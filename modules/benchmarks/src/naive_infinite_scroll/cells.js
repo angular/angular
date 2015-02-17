@@ -10,7 +10,7 @@ import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST}
 import {Foreach} from 'angular2/directives';
 
 export class HasStyle {
-  style:Map;
+  style:Map<any,any>;
 
   constructor() {
     this.style = MapWrapper.create();
@@ -36,7 +36,7 @@ export class OfferingNameComponent extends HasStyle {
 export class Stage {
   name:string;
   isDisabled:boolean;
-  style:Map;
+  style:Map<any,any>;
   apply:Function;
 }
 

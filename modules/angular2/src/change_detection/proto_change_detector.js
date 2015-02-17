@@ -48,8 +48,8 @@ export class ProtoRecord {
   mode:number;
   name:string;
   funcOrValue:any;
-  args:List;
-  fixedArgs:List;
+  args:List<any>;
+  fixedArgs:List<any>;
   contextIndex:number;
   selfIndex:number;
   bindingMemento:any;
@@ -61,8 +61,8 @@ export class ProtoRecord {
   constructor(mode:number,
               name:string,
               funcOrValue,
-              args:List,
-              fixedArgs:List,
+              args:List<any>,
+              fixedArgs:List<any>,
               contextIndex:number,
               selfIndex:number,
               bindingMemento:any,
@@ -94,7 +94,7 @@ export class ProtoRecord {
 
 export class ProtoChangeDetector  {
   addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false){}
-  instantiate(dispatcher:any, formatters:Map):ChangeDetector{
+  instantiate(dispatcher:any, formatters:Map<any,any>):ChangeDetector{
     return null;
   }
 }
@@ -113,7 +113,7 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any, formatters:Map<any,any>) {
     this._createRecordsIfNecessary();
     return new DynamicChangeDetector(dispatcher, formatters, this._records);
   }
@@ -141,7 +141,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any, formatters:Map<any,any>) {
     this._createFactoryIfNecessary();
     return this._factory(dispatcher, formatters);
   }
@@ -183,7 +183,7 @@ class ProtoRecordBuilder {
 }
 
 class _ConvertAstIntoProtoRecords {
-  protoRecords:List;
+  protoRecords:List<any>;
   bindingMemento:any;
   directiveMemento:any;
   contextIndex:number;
@@ -282,7 +282,7 @@ class _ConvertAstIntoProtoRecords {
       ChangeDetectionUtil.keyedAccess, [key], null, obj);
   }
 
-  _visitAll(asts:List) {
+  _visitAll(asts:List<any>) {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
@@ -316,7 +316,7 @@ function _arrayFn(length:number):Function {
   }
 }
 
-function _mapPrimitiveName(keys:List) {
+function _mapPrimitiveName(keys:List<any>) {
   var stringifiedKeys = ListWrapper.join(
     ListWrapper.map(keys, (k) => isString(k) ? `"${k}"` : `${k}`),
     ", ");
@@ -365,7 +365,7 @@ function s(v) {
   return isPresent(v) ? `${v}` : '';
 }
 
-function _interpolationFn(strings:List) {
+function _interpolationFn(strings:List<any>) {
   var length = strings.length;
   var c0 = length > 0 ? strings[0] : null;
   var c1 = length > 1 ? strings[1] : null;

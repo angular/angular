@@ -63,7 +63,7 @@ function _findMatching(r:ProtoRecord, rs:List<ProtoRecord>){
   );
 }
 
-function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map) {
+function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map<any,any>) {
   var args = ListWrapper.map(r.args, (a) => _map(indexMap, a));
   var contextIndex = _map(indexMap, r.contextIndex);
   return new ProtoRecord(
@@ -82,7 +82,7 @@ function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map) {
   );
 }
 
-function _map(indexMap:Map, value:number) {
+function _map(indexMap:Map<any,any>, value:number) {
   var r = MapWrapper.get(indexMap, value)
   return isPresent(r) ? r : value;
 }

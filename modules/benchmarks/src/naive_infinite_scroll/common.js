@@ -71,7 +71,7 @@ export class CustomDate {
 
 export class RawEntity {
 
-  _data:Map;
+  _data:Map<any,any>;
 
   constructor() {
     this._data = MapWrapper.create();

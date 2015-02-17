@@ -12,7 +12,7 @@ export function main() {
       xhr = new XHRMock();
     });
 
-    function expectResponse(request: Promise, url: string, response: string, done = null) {
+    function expectResponse(request: Promise<any>, url: string, response: string, done = null) {
       function onResponse(text: string) {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;

@@ -17,8 +17,8 @@ var _SELECTOR_REGEXP =
  */
 export class CssSelector {
   element:string;
-  classNames:List;
-  attrs:List;
+  classNames:List<any>;
+  attrs:List<any>;
   static parse(selector:string):CssSelector {
     var cssSelector = new CssSelector();
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
@@ -94,12 +94,12 @@ export class CssSelector {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  _elementMap:Map;
-  _elementPartialMap:Map;
-  _classMap:Map;
-  _classPartialMap:Map;
-  _attrValueMap:Map;
-  _attrValuePartialMap:Map;
+  _elementMap:Map<any,any>;
+  _elementPartialMap:Map<any,any>;
+  _classMap:Map<any,any>;
+  _classPartialMap:Map<any,any>;
+  _attrValueMap:Map<any,any>;
+  _attrValuePartialMap:Map<any,any>;
   constructor() {
     this._elementMap = MapWrapper.create();
     this._elementPartialMap = MapWrapper.create();

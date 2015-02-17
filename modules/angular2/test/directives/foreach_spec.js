@@ -237,7 +237,7 @@ class TestComponent {
 }
 
 class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map;
+  _cmpTemplates: Map<any,any>;
 
   constructor() {
     super();

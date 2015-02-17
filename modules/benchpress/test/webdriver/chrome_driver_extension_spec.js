@@ -231,8 +231,8 @@ function endEvent(type, time, args = null) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  _log:List;
-  _perfRecords:List;
+  _log:List<any>;
+  _perfRecords:List<any>;
   constructor(log, perfRecords) {
     super();
     this._log = log;

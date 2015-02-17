@@ -27,12 +27,12 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('window.gc()');
   }
 
-  timeBegin(name:string):Promise {
+  timeBegin(name:string):Promise<any> {
     // Note: Can't use console.time / console.timeEnd as it does not show up in the perf log!
     return this._driver.executeScript(`console.timeStamp('begin_${name}');`);
   }
 
-  timeEnd(name:string, restartName:string = null):Promise {
+  timeEnd(name:string, restartName:string = null):Promise<any> {
     // Note: Can't use console.time / console.timeEnd as it does not show up in the perf log!
     var script = `console.timeStamp('end_${name}');`;
     if (isPresent(restartName)) {

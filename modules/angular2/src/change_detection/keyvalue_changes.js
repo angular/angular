@@ -3,7 +3,7 @@ import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {stringify, looseIdentical, isJsObject} from 'angular2/src/facade/lang';
 
 export class KeyValueChanges {
-  _records:Map;
+  _records:Map<any,any>;
 
   _mapHead:KVChangeRecord;
   _previousMapHead:KVChangeRecord;

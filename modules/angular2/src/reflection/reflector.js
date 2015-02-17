@@ -4,10 +4,10 @@ import {SetterFn, GetterFn, MethodFn} from './types';
 export {SetterFn, GetterFn, MethodFn} from './types';
 
 export class Reflector {
-  _typeInfo:Map;
-  _getters:Map;
-  _setters:Map;
-  _methods:Map;
+  _typeInfo:Map<any,any>;
+  _getters:Map<any,any>;
+  _setters:Map<any,any>;
+  _methods:Map<any,any>;
   reflectionCapabilities:any;
 
   constructor(reflectionCapabilities) {
@@ -42,7 +42,7 @@ export class Reflector {
     }
   }
 
-  parameters(typeOfFunc):List {
+  parameters(typeOfFunc):List<any> {
     if(MapWrapper.contains(this._typeInfo, typeOfFunc)) {
       return MapWrapper.get(this._typeInfo, typeOfFunc)["parameters"];
     } else {
@@ -50,7 +50,7 @@ export class Reflector {
     }
   }
 
-  annotations(typeOfFunc):List {
+  annotations(typeOfFunc):List<any> {
     if(MapWrapper.contains(this._typeInfo, typeOfFunc)) {
       return MapWrapper.get(this._typeInfo, typeOfFunc)["annotations"];
     } else {
@@ -83,6 +83,6 @@ export class Reflector {
   }
 }
 
-function _mergeMaps(target:Map, config) {
+function _mergeMaps(target:Map<any,any>, config) {
   StringMapWrapper.forEach(config, (v, k) => MapWrapper.set(target, k, v));
 }

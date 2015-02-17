@@ -92,7 +92,7 @@ class _ParseAST {
   reflector:Reflector;
   parseAction:boolean;
   index:int;
-  constructor(input:string, location:any, tokens:List, reflector:Reflector, parseAction:boolean) {
+  constructor(input:string, location:any, tokens:List<any>, reflector:Reflector, parseAction:boolean) {
     this.input = input;
     this.location = location;
     this.tokens = tokens;
@@ -369,6 +369,7 @@ class _ParseAST {
   }
 
   parsePrimary() {
+    var result: any;
     if (this.optionalCharacter($LPAREN)) {
       var result = this.parseFormatter();
       this.expectCharacter($RPAREN);
@@ -415,7 +416,7 @@ class _ParseAST {
     }
   }
 
-  parseExpressionList(terminator:int):List {
+  parseExpressionList(terminator:int):List<any> {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {

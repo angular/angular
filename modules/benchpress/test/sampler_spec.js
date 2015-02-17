@@ -269,7 +269,7 @@ function createCountingMetric(log = null) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  _log:List;
+  _log:List<any>;
   _waitFor:Function;
   constructor(log = null, waitFor = null) {
     super();
@@ -279,7 +279,7 @@ class MockDriverAdapter extends WebDriverAdapter {
     this._log = log;
     this._waitFor = waitFor;
   }
-  waitFor(callback:Function):Promise {
+  waitFor(callback:Function):Promise<any> {
     if (isPresent(this._waitFor)) {
       return this._waitFor(callback);
     } else {
@@ -290,7 +290,7 @@ class MockDriverAdapter extends WebDriverAdapter {
 
 
 class MockDriverExtension extends WebDriverExtension {
-  _log:List;
+  _log:List<any>;
   constructor(log = null) {
     super();
     if (isBlank(log)) {
@@ -298,7 +298,7 @@ class MockDriverExtension extends WebDriverExtension {
     }
     this._log = log;
   }
-  gc():Promise {
+  gc():Promise<any> {
     ListWrapper.push(this._log, ['gc']);
     return PromiseWrapper.resolve(null);
   }
@@ -306,7 +306,7 @@ class MockDriverExtension extends WebDriverExtension {
 
 class MockValidator extends Validator {
   _validate:Function;
-  _log:List;
+  _log:List<any>;
   constructor(log = null, validate = null) {
     super();
     this._validate = validate;
@@ -324,7 +324,7 @@ class MockValidator extends Validator {
 
 class MockMetric extends Metric {
   _endMeasure:Function;
-  _log:List;
+  _log:List<any>;
   constructor(log = null, endMeasure = null) {
     super();
     this._endMeasure = endMeasure;
@@ -345,7 +345,7 @@ class MockMetric extends Metric {
 }
 
 class MockReporter extends Reporter {
-  _log:List;
+  _log:List<any>;
   constructor(log = null) {
     super();
     if (isBlank(log)) {
@@ -353,11 +353,11 @@ class MockReporter extends Reporter {
     }
     this._log = log;
   }
-  reportMeasureValues(index, values):Promise {
+  reportMeasureValues(index, values):Promise<any> {
     ListWrapper.push(this._log, ['reportMeasureValues', index, values]);
     return PromiseWrapper.resolve(null);
   }
-  reportSample(completeSample, validSample):Promise {
+  reportSample(completeSample, validSample):Promise<any> {
     ListWrapper.push(this._log, ['reportSample', completeSample, validSample]);
     return PromiseWrapper.resolve(null);
   }

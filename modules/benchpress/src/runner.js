@@ -17,9 +17,9 @@ import { Options } from './sample_options';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  _defaultBindings:List;
+  _defaultBindings:List<any>;
 
-  constructor(defaultBindings:List = null) {
+  constructor(defaultBindings:List<any> = null) {
     if (isBlank(defaultBindings)) {
       defaultBindings = [];
     }

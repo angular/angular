@@ -5,16 +5,16 @@ export var Map = global.Map;
 export var Set = global.Set;
 
 export class MapWrapper {
-  static create():Map { return new Map(); }
-  static clone(m:Map):Map { return new Map(m); }
-  static createFromStringMap(stringMap):Map {
+  static create():Map<any,any> { return new Map(); }
+  static clone(m:Map<any,any>):Map<any,any> { return new Map(m); }
+  static createFromStringMap(stringMap):Map<any,any> {
     var result = MapWrapper.create();
     for (var prop in stringMap) {
       MapWrapper.set(result, prop, stringMap[prop]);
     }
     return result;
   }
-  static createFromPairs(pairs:List):Map {return new Map(pairs);}
+  static createFromPairs(pairs:List<any>):Map<any,any> {return new Map(pairs);}
   static get(m, k) { return m.get(k); }
   static set(m, k, v) { m.set(k,v); }
   static contains(m, k) { return  m.has(k); }
@@ -83,11 +83,11 @@ export class StringMapWrapper {
 }
 
 export class ListWrapper {
-  static create():List { return new List(); }
-  static createFixedSize(size):List { return new List(size); }
+  static create():List<any> { return new List(); }
+  static createFixedSize(size):List<any> { return new List(size); }
   static get(m, k) { return m[k]; }
   static set(m, k, v) { m[k] = v; }
-  static clone(array:List) {
+  static clone(array:List<any>) {
     return array.slice(0);
   }
   static map(array, fn) {
@@ -109,25 +109,25 @@ export class ListWrapper {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
-  static find(list:List, pred:Function) {
+  static find(list:List<any>, pred:Function) {
     for (var i = 0 ; i < list.length; ++i) {
       if (pred(list[i])) return list[i];
     }
     return null;
   }
-  static reduce(list:List, fn:Function, init) {
+  static reduce(list:List<any>, fn:Function, init) {
     return list.reduce(fn, init);
   }
   static filter(array, pred:Function) {
     return array.filter(pred);
   }
-  static any(list:List, pred:Function) {
+  static any(list:List<any>, pred:Function) {
     for (var i = 0 ; i < list.length; ++i) {
       if (pred(list[i])) return true;
     }
     return false;
   }
-  static contains(list:List, el) {
+  static contains(list:List<any>, el) {
     return list.indexOf(el) !== -1;
   }
   static reversed(array) {
@@ -152,7 +152,7 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
-  static removeLast(list:List) {
+  static removeLast(list:List<any>) {
     return list.pop();
   }
   static remove(list, el): boolean {
@@ -172,17 +172,17 @@ export class ListWrapper {
   static isEmpty(list) {
     return list.length == 0;
   }
-  static fill(list:List, value, start:int = 0, end:int = null) {
+  static fill(list:List<any>, value, start:int = 0, end:int = null) {
     list.fill(value, start, end === null ? undefined: end);
   }
-  static equals(a:List, b:List):boolean {
+  static equals(a:List<any>, b:List<any>):boolean {
     if(a.length != b.length) return false;
     for (var i = 0; i < a.length; ++i) {
       if (a[i] !== b[i]) return false;
     }
     return true;
   }
-  static slice(l:List, from:int, to:int):List {
+  static slice(l:List<any>, from:int, to:int):List<any> {
     return l.slice(from, to);
   }
 }
@@ -201,6 +201,8 @@ export function iterateListLike(obj, fn:Function) {
 }
 
 export class SetWrapper {
-  static createFromList(lst:List) { return new Set(lst); }
-  static has(s:Set, key):boolean { return s.has(key); }
+  //static createFromList<T>(lst:List<T>): Set<T> { return new Set<T>(lst); }
+  static createFromList(lst:List<any>): Set<any> { return new Set(lst); }
+  //static has<T>(s:Set<T>, key:T):boolean { return s.has(key); }
+  static has(s:Set<any>, key:any):boolean { return s.has(key); }
 }

@@ -202,19 +202,19 @@ if (${TEMP_LOCAL} instanceof ContextWithVariableBindings) {
 `;
 }
 
-function localDefinitionsTemplate(names:List):string {
+function localDefinitionsTemplate(names:List<any>):string {
   return names.map((n) => `var ${n};`).join("\n");
 }
 
-function changeDefinitionsTemplate(names:List):string {
+function changeDefinitionsTemplate(names:List<any>):string {
   return names.map((n) => `var ${n} = false;`).join("\n");
 }
 
-function fieldDefinitionsTemplate(names:List):string {
+function fieldDefinitionsTemplate(names:List<any>):string {
   return names.map((n) => `${n} = ${UTIL}.unitialized();`).join("\n");
 }
 
-function ifChangedGuardTemplate(changeNames:List, body:string):string {
+function ifChangedGuardTemplate(changeNames:List<any>, body:string):string {
   var cond = changeNames.join(" || ");
   return `
 if (${cond}) {

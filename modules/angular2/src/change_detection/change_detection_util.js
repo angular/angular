@@ -121,7 +121,7 @@ export class ChangeDetectionUtil {
   static operation_logical_or(left, right)             {return left || right;}
   static cond(cond, trueVal, falseVal)                 {return cond ? trueVal : falseVal;}
 
-  static mapFn(keys:List) {
+  static mapFn(keys:List<any>) {
     function buildMap(values) {
       var res = StringMapWrapper.create();
       for(var i = 0; i < keys.length; ++i) {
@@ -201,7 +201,7 @@ export class ChangeDetectionUtil {
     return _changeRecord(memento, _simpleChange(previousValue, currentValue));
   }
 
-  static addRecord(updatedRecords:List, changeRecord:ChangeRecord):List {
+  static addRecord(updatedRecords:List<any>, changeRecord:ChangeRecord):List<any> {
     if (isBlank(updatedRecords)) {
       updatedRecords = _singleElementList;
       updatedRecords[0] = changeRecord;

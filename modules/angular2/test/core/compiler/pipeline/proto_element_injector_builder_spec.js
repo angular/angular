@@ -166,7 +166,7 @@ export function main() {
 
 
 class TestableProtoElementInjectorBuilder extends ProtoElementInjectorBuilder {
-  debugObjects:List;
+  debugObjects:List<any>;
 
   constructor() {
     super();

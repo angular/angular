@@ -229,7 +229,7 @@ class NestedComponent {}
 class RecursiveComponent {}
 
 class TestableCompiler extends Compiler {
-  steps:List;
+  steps:List<any>;
 
   constructor(reader:DirectiveMetadataReader, steps:List<CompileStep>, loader: TemplateLoader,
     resolver: TemplateResolver) {
@@ -276,7 +276,7 @@ class FakeTemplateLoader extends TemplateLoader {
 class FakeTemplateResolver extends TemplateResolver {
   _forceSync: boolean;
   _forceAsync: boolean;
-  _cmpTemplates: Map;
+  _cmpTemplates: Map<any,any>;
   _syncCmp: List<Type>;
   _asyncCmp: List<Type>;
   _errorCmp: List<Type>;

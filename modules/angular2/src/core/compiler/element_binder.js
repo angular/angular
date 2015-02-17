@@ -12,7 +12,7 @@ export class ElementBinder {
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
   nestedProtoView: ProtoView;
-  events:Map;
+  events:Map<any, any>;
   constructor(
     protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata,
     viewportDirective:DirectiveMetadata) {

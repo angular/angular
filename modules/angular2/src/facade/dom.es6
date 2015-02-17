@@ -54,7 +54,7 @@ export class DOM {
   static childNodes(el):NodeList {
     return el.childNodes;
   }
-  static childNodesAsList(el):List {
+  static childNodesAsList(el):List<any> {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
     for (var i=0; i<childNodes.length; i++) {
@@ -127,7 +127,7 @@ export class DOM {
   static getElementsByTagName(element:Element, name:string) {
     return element.getElementsByTagName(name);
   }
-  static classList(element:Element):List {
+  static classList(element:Element):List<any> {
     return Array.prototype.slice.call(element.classList, 0);
   }
   static addClass(element:Element, classname:string) {

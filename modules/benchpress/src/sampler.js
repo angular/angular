@@ -103,10 +103,10 @@ export class Sampler {
 }
 
 export class SampleState {
-  completeSample:List;
-  validSample:List;
+  completeSample:List<any>;
+  validSample:List<any>;
 
-  constructor(completeSample: List, validSample: List) {
+  constructor(completeSample: List<any>, validSample: List<any>) {
     this.completeSample = completeSample;
     this.validSample = validSample;
   }

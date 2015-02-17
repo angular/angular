@@ -9,8 +9,8 @@ import {Key} from './key';
 var _constructing = new Object();
 
 class _Waiting {
-  promise:Promise;
-  constructor(promise:Promise) {
+    promise: Promise<any>;
+  constructor(promise: Promise<any>) {
     this.promise = promise;
   }
 }
@@ -20,13 +20,13 @@ function _isWaiting(obj):boolean {
 
 
 export class Injector {
-  _bindings:List;
-  _instances:List;
+  _bindings:List<any>;
+  _instances:List<any>;
   _parent:Injector;
   _defaultBindings:boolean;
   _asyncStrategy: _AsyncInjectorStrategy;
   _syncStrategy:_SyncInjectorStrategy;
-  constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
+  constructor(bindings:List<any>, {parent=null, defaultBindings=false}={}) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
@@ -45,18 +45,18 @@ export class Injector {
     return this._getByKey(Key.get(token), true, false);
   }
 
-  createChild(bindings:List):Injector {
+  createChild(bindings:List<any>):Injector {
     return new Injector(bindings, {parent: this});
   }
 
 
-  _createListOfBindings(flattenBindings):List {
+  _createListOfBindings(flattenBindings):List<any> {
     var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
     MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
     return bindings;
   }
 
-  _createInstances():List {
+  _createInstances():List<any> {
     return ListWrapper.createFixedSize(Key.numberOfKeys + 1);
   }
 
@@ -79,7 +79,7 @@ export class Injector {
     throw new NoProviderError(key);
   }
 
-  _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List {
+  _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List<any> {
     try {
       var getDependency = d => this._getByKey(d.key, forceAsync || d.asPromise, d.lazy);
       return ListWrapper.map(binding.dependencies, getDependency);
@@ -156,7 +156,7 @@ class _SyncInjectorStrategy {
     return this._createInstance(key, binding, deps);
   }
 
-  _createInstance(key:Key, binding:Binding, deps:List) {
+  _createInstance(key:Key, binding:Binding, deps:List<any>) {
     try {
       var instance = FunctionWrapper.apply(binding.factory, deps);
       this.injector._setInstance(key, instance);
@@ -212,12 +212,12 @@ class _AsyncInjectorStrategy {
     return promise;
   }
 
-  _errorHandler(key:Key, e):Promise {
+  _errorHandler(key: Key, e): Promise<any> {
     if (e instanceof ProviderError) e.addKey(key);
     return PromiseWrapper.reject(e);
   }
 
-  _findOrCreate(key:Key, binding:Binding, deps:List) {
+  _findOrCreate(key:Key, binding:Binding, deps:List<any>) {
     try {
       var instance = this.injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
@@ -235,7 +235,7 @@ class _AsyncInjectorStrategy {
 }
 
 
-function _flattenBindings(bindings:List, res:Map) {
+function _flattenBindings(bindings:List<any>, res:Map<any, any>) {
   ListWrapper.forEach(bindings, function (b) {
     if (b instanceof Binding) {
       MapWrapper.set(res, b.key.id, b);

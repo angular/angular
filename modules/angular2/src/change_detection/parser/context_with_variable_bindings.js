@@ -4,9 +4,9 @@ import {BaseException} from 'angular2/src/facade/lang';
 export class ContextWithVariableBindings {
   parent:any;
   /// varBindings' keys are read-only. adding/removing keys is not supported.
-  varBindings:Map;
+  varBindings:Map<any,any>;
 
-  constructor(parent:any, varBindings:Map) {
+  constructor(parent:any, varBindings:Map<any,any>) {
     this.parent = parent;
     this.varBindings = varBindings;
   }

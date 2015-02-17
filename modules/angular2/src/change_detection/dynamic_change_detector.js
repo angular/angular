@@ -28,12 +28,12 @@ import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './ex
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
-  formatters:Map;
-  values:List;
-  changes:List;
+  formatters:Map<any,any>;
+  values:List<any>;
+  changes:List<any>;
   protos:List<ProtoRecord>;
 
-  constructor(dispatcher:any, formatters:Map, protoRecords:List<ProtoRecord>) {
+  constructor(dispatcher:any, formatters:Map<any,any>, protoRecords:List<ProtoRecord>) {
     super();
     this.dispatcher = dispatcher;
     this.formatters = formatters;

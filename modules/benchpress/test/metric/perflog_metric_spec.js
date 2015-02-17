@@ -298,25 +298,25 @@ function endEvent(type, time, args = null) {
 }
 
 class MockDriverExtension extends WebDriverExtension {
-  _perfLogs:List;
-  _commandLog:List;
+  _perfLogs:List<any>;
+  _commandLog:List<any>;
   constructor(perfLogs, commandLog) {
     super();
     this._perfLogs = perfLogs;
     this._commandLog = commandLog;
   }
 
-  timeBegin(name):Promise {
+  timeBegin(name):Promise<any> {
     ListWrapper.push(this._commandLog, ['timeBegin', name]);
     return PromiseWrapper.resolve(null);
   }
 
-  timeEnd(name, restartName):Promise {
+  timeEnd(name, restartName):Promise<any> {
     ListWrapper.push(this._commandLog, ['timeEnd', name, restartName]);
     return PromiseWrapper.resolve(null);
   }
 
-  readPerfLog():Promise {
+  readPerfLog():Promise<any> {
     ListWrapper.push(this._commandLog, 'readPerfLog');
     if (this._perfLogs.length > 0) {
       var next = this._perfLogs[0];

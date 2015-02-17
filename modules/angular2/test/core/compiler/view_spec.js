@@ -712,7 +712,7 @@ class TestProtoElementInjector extends ProtoElementInjector {
   parentElementInjector: ElementInjector;
   hostElementInjector: ElementInjector;
 
-  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false) {
+  constructor(parent:ProtoElementInjector, index:int, bindings:List<any>, firstBindingIsComponent:boolean = false) {
     super(parent, index, bindings, firstBindingIsComponent);
   }
 

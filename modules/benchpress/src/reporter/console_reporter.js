@@ -45,7 +45,7 @@ export class ConsoleReporter extends Reporter {
   }
 
   _columnWidth:number;
-  _metricNames:List;
+  _metricNames:List<any>;
   _print:Function;
 
   constructor(columnWidth, sampleDescription, print) {
@@ -72,7 +72,7 @@ export class ConsoleReporter extends Reporter {
     this._printStringRow(this._metricNames.map( (_) => '' ), '-');
   }
 
-  reportMeasureValues(index:number, measuredValues:any):Promise {
+  reportMeasureValues(index:number, measuredValues:any):Promise<any> {
     var formattedValues = ListWrapper.map(this._metricNames, (metricName) => {
       var value = measuredValues[metricName];
       return ConsoleReporter._formatNum(value);
@@ -81,7 +81,7 @@ export class ConsoleReporter extends Reporter {
     return PromiseWrapper.resolve(null);
   }
 
-  reportSample(completeSample:List, validSample:List):Promise {
+  reportSample(completeSample:List<any>, validSample:List<any>):Promise<any> {
     this._printStringRow(this._metricNames.map( (_) => '' ), '=');
     this._printStringRow(
       ListWrapper.map(this._metricNames, (metricName) => {

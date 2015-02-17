@@ -48,7 +48,7 @@ export class View {
   context: any;
   contextWithLocals:ContextWithVariableBindings;
 
-  constructor(proto:ProtoView, nodes:List<Node>, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map) {
+  constructor(proto:ProtoView, nodes:List<Node>, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map<any,any>) {
     this.proto = proto;
     this.nodes = nodes;
     this.changeDetector = protoChangeDetector.instantiate(this, NO_FORMATTERS);
@@ -65,8 +65,8 @@ export class View {
       : null;
   }
 
-  init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List,
-    viewContainers:List, preBuiltObjects:List, componentChildViews:List) {
+  init(elementInjectors:List<any>, rootElementInjectors:List<any>, textNodes: List<any>, bindElements:List<any>,
+    viewContainers:List<any>, preBuiltObjects:List<any>, componentChildViews:List<any>) {
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.textNodes = textNodes;
@@ -212,20 +212,20 @@ export class View {
     this._dehydrateContext();
   }
 
-  onRecordChange(directiveMemento, records:List) {
+  onRecordChange(directiveMemento, records:List<any>) {
     this._invokeMementos(records);
     if (directiveMemento instanceof DirectiveMemento) {
       this._notifyDirectiveAboutChanges(directiveMemento, records);
     }
   }
 
-  _invokeMementos(records:List) {
+  _invokeMementos(records:List<any>) {
     for(var i = 0; i < records.length; ++i) {
       this._invokeMementoFor(records[i]);
     }
   }
 
-  _notifyDirectiveAboutChanges(directiveMemento, records:List) {
+  _notifyDirectiveAboutChanges(directiveMemento, records:List<any>) {
     var dir = directiveMemento.directive(this.elementInjectors);
     var binding = directiveMemento.directiveBinding(this.elementInjectors);
 
@@ -252,7 +252,7 @@ export class View {
     }
   }
 
-  _collectChanges(records:List) {
+  _collectChanges(records:List<any>) {
     var changes = StringMapWrapper.create();
     for(var i = 0; i < records.length; ++i) {
       var record = records[i];
@@ -267,8 +267,8 @@ export class ProtoView {
   element:Element;
   elementBinders:List<ElementBinder>;
   protoChangeDetector:ProtoChangeDetector;
-  variableBindings: Map;
-  protoContextLocals:Map;
+  variableBindings: Map<any, any>;
+  protoContextLocals:Map<any,any>;
   textNodesWithBindingCount:int;
   elementsWithBindingCount:int;
   instantiateInPlace:boolean;
@@ -451,7 +451,7 @@ export class ProtoView {
     }
   }
 
-  _directParentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List):LightDom {
+  _directParentElementLightDom(protoElementInjector:ProtoElementInjector, preBuiltObjects:List<any>):LightDom {
     var p = protoElementInjector.directParent();
     return isPresent(p) ? preBuiltObjects[p.index].lightDom : null;
   }

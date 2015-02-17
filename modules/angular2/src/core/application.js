@@ -107,7 +107,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
 
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
-export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, givenBootstrapErrorReporter: Function=null): Promise {
+export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, givenBootstrapErrorReporter: Function=null): Promise<any> {
   var bootstrapProcess = PromiseWrapper.completer();
 
   var zone = _createVmZone(givenBootstrapErrorReporter);

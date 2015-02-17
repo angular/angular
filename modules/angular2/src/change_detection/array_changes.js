@@ -591,7 +591,7 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map:Map;
+  map:Map<any,any>;
   constructor() {
     this.map = MapWrapper.create();
   }

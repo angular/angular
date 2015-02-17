@@ -113,7 +113,7 @@ class MockSampler extends Sampler {
   constructor() {
     super();
   }
-  sample():Promise {
+  sample():Promise<any> {
     return PromiseWrapper.resolve(23);
   }
 }

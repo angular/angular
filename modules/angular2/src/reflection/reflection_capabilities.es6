@@ -38,7 +38,7 @@ export class ReflectionCapabilities {
       ListWrapper.createFixedSize(typeOfFunc.length);
   }
 
-  annotations(typeOfFunc):List {
+  annotations(typeOfFunc):List<any> {
     return isPresent(typeOfFunc.annotations) ? typeOfFunc.annotations : [];
   }
 

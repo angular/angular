@@ -91,7 +91,7 @@ export class DirectiveDependency extends Dependency {
   depth:int;
   eventEmitterName:string;
 
-  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int, eventEmitterName: string) {
+  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List<any>, depth:int, eventEmitterName: string) {
     super(key, asPromise, lazy, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
@@ -125,7 +125,7 @@ export class DirectiveBinding extends Binding {
   callOnChange:boolean;
   onCheck:boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
+  constructor(key:Key, factory:Function, dependencies:List<any>, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
     this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
@@ -221,7 +221,7 @@ export class ProtoElementInjector  {
   /** The variable name that will be set to $implicit for the element. */
   exportImplicitName:string;
 
-  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false, distanceToParent:number = 0) {
+  constructor(parent:ProtoElementInjector, index:int, bindings:List<any>, firstBindingIsComponent:boolean = false, distanceToParent:number = 0) {
     this.parent = parent;
     this.index = index;
     this.distanceToParent = distanceToParent;
@@ -312,7 +312,7 @@ export class ElementInjector extends TreeNode {
   _preBuiltObjects;
   _constructionCounter;
   _eventCallbacks;
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, eventCallbacks: Map) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, eventCallbacks: Map<any,any>) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');

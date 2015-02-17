@@ -10,11 +10,11 @@ import {
  */
 @ABSTRACT()
 export class Reporter {
-  reportMeasureValues(index:number, values:any):Promise {
+  reportMeasureValues(index:number, values:any):Promise<any> {
     throw new BaseException('NYI');
   }
 
-  reportSample(completeSample:List, validSample:List):Promise {
+  reportSample(completeSample:List<any>, validSample:List<any>):Promise<any> {
     throw new BaseException('NYI');
   }
 }
