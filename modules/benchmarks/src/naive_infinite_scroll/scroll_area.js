@@ -1,4 +1,4 @@
-import {int, FINAL} from 'angular2/src/facade/lang';
+import {int} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {Component, Viewport, Template, ViewContainer, Compiler}

@@ -2,7 +2,7 @@ import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/te
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { Json, perfRecords, isBlank } from 'angular2/src/facade/lang';
+import { Json, isBlank } from 'angular2/src/facade/lang';
 
 import {
   WebDriverExtension, ChromeDriverExtension,

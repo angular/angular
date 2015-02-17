@@ -4,7 +4,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
+import {Parser, Lexer, dynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';

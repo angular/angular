@@ -8,7 +8,6 @@ import {LightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_do
 import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {ProtoRecordRange} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(ElementInjector)

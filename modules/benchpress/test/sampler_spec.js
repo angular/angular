@@ -6,7 +6,7 @@ import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 
 import {
   Sampler, WebDriverAdapter, WebDriverExtension,
-  Validator, Metric, Reporter, Browser,
+  Validator, Metric, Reporter,
   bind, Injector, Options
 } from 'benchpress/benchpress';
 

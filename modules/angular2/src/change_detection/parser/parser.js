@@ -9,7 +9,6 @@ import {
   ImplicitReceiver,
   AccessMember,
   LiteralPrimitive,
-  Expression,
   Binary,
   PrefixNot,
   Conditional,
@@ -22,7 +21,6 @@ import {
   Interpolation,
   MethodCall,
   FunctionCall,
-  TemplateBindings,
   TemplateBinding,
   ASTWithSource
   } from './ast';
