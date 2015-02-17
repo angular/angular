@@ -29,7 +29,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .processor(require('./processors/processModuleDocs'))
 .processor(require('./processors/processClassDocs'))
 .processor(require('./processors/generateNavigationDoc'))
-
+.processor(require('./processors/extractTitleFromGuides'))
 
 // Configure the log service
 .config(function(log) {
