@@ -1,6 +1,6 @@
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
-export var window: any = frames.window;
+export var window: Window = frames.window;
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
 export var NodeList = window.NodeList;
@@ -97,8 +97,8 @@ export class DOM {
   static setText(el, value:string) {
     el.textContent = value;
   }
-  static createTemplate(html) {
-    var t = document.createElement('template');
+  static createTemplate(html): HTMLTemplateElement {
+    var t: any = document.createElement('template');
     t.innerHTML = html;
     return t;
   }

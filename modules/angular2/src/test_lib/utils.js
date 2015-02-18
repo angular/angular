@@ -38,6 +38,7 @@ export function dispatchEvent(element, eventType) {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
 }
 
-export function el(html) {
-  return DOM.firstChild(DOM.createTemplate(html).content);
+export function el(html): HTMLElement {
+    var result: any = DOM.firstChild(DOM.createTemplate(html).content);
+    return result;
 }
