@@ -430,11 +430,15 @@ export function main() {
 
     describe('errors', () => {
 
-      it('should throw if there is no element property bindings for a directive property binding', () => {
-        var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirectiveWithBinding]});
-        expect( () => {
-          pipeline.process(el('<div viewroot prop-binding directives>'));
-        }).toThrowError("No element binding found for property 'boundprop1' which is required by directive 'SomeDecoratorDirectiveWithBinding'");
+      it('should not throw any errors if there is no element property bindings for a directive ' +
+          'property binding', () => {
+        var pipeline = createPipeline({
+          propertyBindings: MapWrapper.create(),
+          directives: [SomeDecoratorDirectiveWithBinding]
+        });
+
+        // If processing throws an error, this test will fail.
+        pipeline.process(el('<div viewroot prop-binding directives>'));
       });
 
     });

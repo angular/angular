@@ -204,22 +204,24 @@ export class ElementBinderBuilder extends CompileStep {
           var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
           if (isPresent(attributeValue)) {
             expression = _this._parser.wrapLiteralPrimitive(attributeValue, _this._compilationUnit);
-          } else {
-            throw new BaseException("No element binding found for property '" + elProp
-            + "' which is required by directive '" + stringify(directive.type) + "'");
           }
         }
-        var len = dirProp.length;
-        var dirBindingName = dirProp;
-        var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
-        if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
-        protoView.bindDirectiveProperty(
-          directiveIndex,
-          expression,
-          dirBindingName,
-          reflector.setter(dirBindingName),
-          isContentWatch
-        );
+
+        // Bindings are optional, so this binding only needs to be set up if an expression is given.
+        if (isPresent(expression)) {
+          var len = dirProp.length;
+          var dirBindingName = dirProp;
+          var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
+          if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
+
+          protoView.bindDirectiveProperty(
+            directiveIndex,
+            expression,
+            dirBindingName,
+            reflector.setter(dirBindingName),
+            isContentWatch
+          );
+        }
       });
     }
   }

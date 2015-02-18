@@ -151,6 +151,20 @@ export function main() {
         });
       });
 
+      it('should support directives where a binding attribute is not given', function(done) {
+        tplResolver.setTemplate(MyComp,
+          new Template({
+            // No attribute "el-prop" specified.
+            inline: '<p my-dir></p>',
+            directives: [MyDir]
+          }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+          done();
+        });
+      });
+
       it('should support template directives via `<template>` elements.', (done) => {
         tplResolver.setTemplate(MyComp,
           new Template({
