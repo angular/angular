@@ -3,7 +3,7 @@ import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/coll
 import {ContextWithVariableBindings} from "./context_with_variable_bindings";
 
 export class AST {
-  eval(context) {
+  eval(context): any {
     throw new BaseException("Not supported");
   }
 
@@ -24,7 +24,7 @@ export class AST {
 }
 
 export class EmptyExpr extends AST {
-  eval(context) {
+  eval(context): any {
     return null;
   }
 
@@ -40,7 +40,7 @@ export class Structural extends AST {
     this.value = value;
   }
 
-  eval(context) {
+  eval(context): any {
     return this.value.eval(context);
   }
 
@@ -50,7 +50,7 @@ export class Structural extends AST {
 }
 
 export class ImplicitReceiver extends AST {
-  eval(context) {
+  eval(context): any {
     return context;
   }
 
@@ -69,7 +69,7 @@ export class Chain extends AST {
     this.expressions = expressions;
   }
 
-  eval(context) {
+  eval(context): any {
     var result;
     for (var i = 0; i < this.expressions.length; i++) {
       var last = this.expressions[i].eval(context);
@@ -94,7 +94,7 @@ export class Conditional extends AST {
     this.falseExp = falseExp;
   }
 
-  eval(context) {
+  eval(context): any {
     if(this.condition.eval(context)) {
       return this.trueExp.eval(context);
     } else {
@@ -120,7 +120,7 @@ export class AccessMember extends AST {
     this.setter = setter;
   }
 
-  eval(context) {
+  eval(context): any {
     var evaluatedContext = this.receiver.eval(context);
 
     while (evaluatedContext instanceof ContextWithVariableBindings) {
@@ -164,7 +164,7 @@ export class KeyedAccess extends AST {
     this.key = key;
   }
 
-  eval(context) {
+  eval(context): any {
     var obj = this.obj.eval(context);
     var key = this.key.eval(context);
     return obj[key];
@@ -211,7 +211,7 @@ export class LiteralPrimitive extends AST {
     this.value = value;
   }
 
-  eval(context) {
+  eval(context): any {
     return this.value;
   }
 
@@ -227,7 +227,7 @@ export class LiteralArray extends AST {
     this.expressions = expressions;
   }
 
-  eval(context) {
+  eval(context): any {
     return ListWrapper.map(this.expressions, (e) => e.eval(context));
   }
 
@@ -245,7 +245,7 @@ export class LiteralMap extends AST {
     this.values = values;
   }
 
-  eval(context) {
+  eval(context): any {
     var res = StringMapWrapper.create();
     for(var i = 0; i < this.keys.length; ++i) {
       StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context));
@@ -287,7 +287,7 @@ export class Binary extends AST {
     this.right = right;
   }
 
-  eval(context) {
+  eval(context): any {
     var left = this.left.eval(context);
     switch (this.operation) {
       case '&&': return left && this.right.eval(context);
@@ -325,7 +325,7 @@ export class PrefixNot extends AST {
     this.expression = expression;
   }
 
-  eval(context) {
+  eval(context): any {
     return !this.expression.eval(context);
   }
 
@@ -343,7 +343,7 @@ export class Assignment extends AST {
     this.value = value;
   }
 
-  eval(context) {
+  eval(context): any {
     return this.target.assign(context, this.value.eval(context));
   }
 
@@ -365,7 +365,7 @@ export class MethodCall extends AST {
     this.name = name;
   }
 
-  eval(context) {
+  eval(context): any {
     var evaluatedContext = this.receiver.eval(context);
     var evaluatedArgs = evalList(context, this.args);
 
@@ -394,7 +394,7 @@ export class FunctionCall extends AST {
     this.args = args;
   }
 
-  eval(context) {
+  eval(context): any {
     var obj = this.target.eval(context);
     if (! (obj instanceof Function)) {
       throw new BaseException(`${obj} is not a function`);
@@ -418,7 +418,7 @@ export class ASTWithSource extends AST {
     this.ast = ast;
   }
 
-  eval(context) {
+  eval(context): any {
     return this.ast.eval(context);
   }
 
@@ -445,7 +445,6 @@ export class TemplateBinding {
   name:string;
   expression:ASTWithSource;
   constructor(key:string, keyIsVar:boolean, name:string, expression:ASTWithSource) {
-    super();
     this.key = key;
     this.keyIsVar = keyIsVar;
     // only either name or expression will be filled.
