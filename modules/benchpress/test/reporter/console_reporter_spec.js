@@ -13,7 +13,7 @@ export function main() {
     var reporter;
     var log;
 
-    function createReporter({columnWidth, sampleId, descriptions, metrics}) {
+    function createReporter({columnWidth = undefined, sampleId = undefined, descriptions = undefined, metrics = undefined}) {
       log = [];
       if (isBlank(descriptions)) {
         descriptions = [];
