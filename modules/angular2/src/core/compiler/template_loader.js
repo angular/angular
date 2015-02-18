@@ -1,6 +1,6 @@
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {DOM, Element} from 'angular2/src/facade/dom';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 
 import {XHR} from './xhr/xhr';
 
@@ -11,7 +11,7 @@ import {Template} from 'angular2/src/core/annotations/template';
  */
 export class TemplateLoader {
   _xhr: XHR;
-  _cache;
+  _cache: StringMap;
 
   constructor(xhr: XHR) {
     this._xhr = xhr;

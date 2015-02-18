@@ -1,6 +1,6 @@
 import { isPresent, isBlank, Date, DateWrapper } from 'angular2/src/facade/lang';
 import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
-import { StringMapWrapper, List, ListWrapper } from 'angular2/src/facade/collection';
+import { StringMapWrapper, StringMap, List, ListWrapper } from 'angular2/src/facade/collection';
 import { bind, OpaqueToken } from 'angular2/di';
 
 import { Metric } from './metric';
@@ -95,7 +95,7 @@ export class Sampler {
       .then( (measureValues) => this._report(lastState, measureValues) );
   }
 
-  _report(state:SampleState, metricValues:any):Promise<SampleState> {
+  _report(state:SampleState, metricValues:StringMap):Promise<SampleState> {
     var measureValues = new MeasureValues(state.completeSample.length, this._time(), metricValues);
     var completeSample = ListWrapper.concat(state.completeSample, [measureValues]);
     var validSample = this._validator.validate(completeSample);

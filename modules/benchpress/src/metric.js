@@ -4,6 +4,7 @@ import {
 import {
   ABSTRACT, BaseException
 } from 'angular2/src/facade/lang';
+import { StringMap } from 'angular2/src/facade/collection';
 
 /**
  * A metric is measures values
@@ -22,7 +23,7 @@ export class Metric {
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart:boolean):Promise<any> {
+  endMeasure(restart:boolean):Promise<StringMap> {
     throw new BaseException('NYI');
   }
 
@@ -30,7 +31,7 @@ export class Metric {
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe():any {
+  describe():StringMap {
     throw new BaseException('NYI');
   }
 }

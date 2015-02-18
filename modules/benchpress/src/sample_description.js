@@ -1,4 +1,4 @@
-import { StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
+import { StringMapWrapper, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { bind, OpaqueToken } from 'angular2/di';
 import { Sampler } from './sampler';
 import { Validator } from './validator';
@@ -13,10 +13,10 @@ export class SampleDescription {
   static get BINDINGS() { return _BINDINGS; }
 
   id:string;
-  description:any;
-  metrics:any;
+  description:StringMap;
+  metrics:StringMap;
 
-  constructor(id, descriptions, metrics) {
+  constructor(id, descriptions:List<StringMap>, metrics:StringMap) {
     this.id = id;
     this.metrics = metrics;
     this.description = {};
