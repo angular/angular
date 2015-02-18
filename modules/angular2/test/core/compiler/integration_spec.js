@@ -16,6 +16,7 @@ import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propa
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
+import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
@@ -296,6 +297,43 @@ export function main() {
           done();
         })
       });
+
+      it('should create a component that injects a @Parent', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<some-directive><cmp-with-parent #child></cmp-with-parent></some-directive>',
+          directives: [SomeDirective, CompWithParent]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          var childComponent = view.contextWithLocals.get('child');
+          expect(childComponent.myParent).toBeAnInstanceOf(SomeDirective);
+
+          done();
+        })
+      });
+
+      it('should create a component that injects an @Ancestor', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: `
+            <some-directive>
+              <p>
+                <cmp-with-ancestor #child></cmp-with-ancestor>
+              </p>
+            </some-directive>`,
+          directives: [SomeDirective, CompWithAncestor]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          var childComponent = view.contextWithLocals.get('child');
+          expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
+
+          done();
+        })
+      });
     });
   });
 }
@@ -355,6 +393,39 @@ class ChildComp {
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
     this.dirProp = null;
+  }
+}
+
+@Decorator({
+  selector: 'some-directive'
+})
+class SomeDirective { }
+
+@Component({
+  selector: 'cmp-with-parent'
+})
+@Template({
+  inline: '<p>Component with an injected parent</p>',
+  directives: [SomeDirective]
+})
+class CompWithParent {
+  myParent: SomeDirective;
+  constructor(@Parent() someComp: SomeDirective) {
+    this.myParent = someComp;
+  }
+}
+
+@Component({
+  selector: 'cmp-with-ancestor'
+})
+@Template({
+  inline: '<p>Component with an injected ancestor</p>',
+  directives: [SomeDirective]
+})
+class CompWithAncestor {
+  myAncestor: SomeDirective;
+  constructor(@Ancestor() someComp: SomeDirective) {
+    this.myAncestor = someComp;
   }
 }
 
