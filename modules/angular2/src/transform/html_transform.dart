@@ -1,4 +1,4 @@
-library angular2.transformer;
+library angular2.src.transform;
 
 import 'dart:async';
 import 'package:barback/barback.dart';

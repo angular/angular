@@ -1,4 +1,4 @@
-library angular2.test;
+library angular2.test.transform;
 
 import 'dart:io';
 import 'package:barback/barback.dart';

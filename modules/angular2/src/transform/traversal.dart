@@ -1,3 +1,5 @@
+library angular2.src.transform;
+
 import 'package:analyzer/src/generated/element.dart';
 import 'package:path/path.dart' as path;
 

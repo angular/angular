@@ -1,7 +1,4 @@
-// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-library angular2.transformer;
+library angular2.src.transform;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
@@ -60,9 +57,12 @@ class AngularTransformer extends Transformer {
             .error('New entry point file $newEntryPointId already exists.');
       } else {
         return _resolvers.get(transform).then((resolver) {
-          new _BootstrapFileBuilder(resolver, transform,
-              transform.primaryInput.id, newEntryPointId).run();
-          resolver.release();
+          try {
+            new _BootstrapFileBuilder(resolver, transform,
+                transform.primaryInput.id, newEntryPointId).run();
+          } finally {
+            resolver.release();
+          }
         });
       }
     });
@@ -93,7 +93,7 @@ class _BootstrapFileBuilder {
     new ImportTraversal(_directiveInfo).traverse(entryLib);
 
     var context = new codegen.Context(logger: _transform.logger);
-    _directiveInfo.initQueue
+    _directiveInfo.matchQueue
         .forEach((entry) => context.directiveRegistry.register(entry));
 
     _transform.addOutput(new Asset.fromString(_newEntryPoint, codegen
