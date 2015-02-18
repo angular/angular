@@ -148,7 +148,6 @@ export function main() {
     });
 
     it('should not gc if the flag is not set', (done) => {
-      var workCount = 0;
       var log = [];
       createSampler({
         metric: createCountingMetric(),

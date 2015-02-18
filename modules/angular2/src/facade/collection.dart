@@ -138,6 +138,9 @@ class ListWrapper {
   static List slice(List l, int from, int to) {
     return l.sublist(from, to);
   }
+  static void sort(List l, compareFn(a,b)) {
+    l.sort(compareFn);
+  }
 }
 
 bool isListLikeIterable(obj) => obj is Iterable;

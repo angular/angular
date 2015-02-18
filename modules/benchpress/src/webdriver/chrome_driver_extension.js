@@ -1,16 +1,13 @@
 import { bind } from 'angular2/di';
-import { ListWrapper } from 'angular2/src/facade/collection';
+import { ListWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
 import {
-  Json, isPresent, isBlank, RegExpWrapper, StringWrapper
+  Json, isPresent, isBlank, RegExpWrapper, StringWrapper, BaseException, NumberWrapper
 } from 'angular2/src/facade/lang';
 
 import { WebDriverExtension } from '../web_driver_extension';
 import { WebDriverAdapter } from '../web_driver_adapter';
 import { Promise } from 'angular2/src/facade/async';
 
-
-var BEGIN_MARK_RE = RegExpWrapper.create('begin_(.*)');
-var END_MARK_RE = RegExpWrapper.create('end_(.*)');
 
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
@@ -28,15 +25,13 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   timeBegin(name:string):Promise {
-    // Note: Can't use console.time / console.timeEnd as it does not show up in the perf log!
-    return this._driver.executeScript(`console.timeStamp('begin_${name}');`);
+    return this._driver.executeScript(`console.time('${name}');`);
   }
 
   timeEnd(name:string, restartName:string = null):Promise {
-    // Note: Can't use console.time / console.timeEnd as it does not show up in the perf log!
-    var script = `console.timeStamp('end_${name}');`;
+    var script = `console.timeEnd('${name}');`;
     if (isPresent(restartName)) {
-      script += `console.timeStamp('begin_${restartName}');`
+      script += `console.time('${restartName}');`
     }
     return this._driver.executeScript(script);
   }
@@ -47,100 +42,81 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('1+1')
       .then( (_) => this._driver.logs('performance') )
       .then( (entries) => {
-        var records = [];
+        var events = [];
         ListWrapper.forEach(entries, function(entry) {
           var message = Json.parse(entry['message'])['message'];
-          if (StringWrapper.equals(message['method'], 'Timeline.eventRecorded')) {
-            ListWrapper.push(records, message['params']['record']);
+          if (StringWrapper.equals(message['method'], 'Tracing.dataCollected')) {
+            ListWrapper.push(events, message['params']);
+          }
+          if (StringWrapper.equals(message['method'], 'Tracing.bufferUsage')) {
+            throw new BaseException('The DevTools trace buffer filled during the test!');
           }
         });
-        return this._convertPerfRecordsToEvents(records);
+        return this._convertPerfRecordsToEvents(events);
       });
   }
 
-  _convertPerfRecordsToEvents(records, events = null) {
-    if (isBlank(events)) {
-      events = [];
+  _convertPerfRecordsToEvents(chromeEvents, normalizedEvents = null) {
+    if (isBlank(normalizedEvents)) {
+      normalizedEvents = [];
     }
-    records.forEach( (record) => {
-      var endEvent = null;
-      var type = record['type'];
-      var data = record['data'];
-      var startTime = record['startTime'];
-      var endTime = record['endTime'];
-
-      if (StringWrapper.equals(type, 'FunctionCall') &&
-        (isBlank(data) || !StringWrapper.equals(data['scriptName'], 'InjectedScript'))) {
-        ListWrapper.push(events, {
-          'name': 'script',
-          'ts': startTime,
-          'ph': 'B'
-        });
-        endEvent = {
-          'name': 'script',
-          'ts': endTime,
-          'ph': 'E',
-          'args': null
+    chromeEvents.forEach( (event) => {
+      var cat = event['cat'];
+      var name = event['name'];
+      var args = event['args'];
+      if (StringWrapper.equals(cat, 'disabled-by-default-devtools.timeline')) {
+        if (StringWrapper.equals(name, 'FunctionCall') &&
+          (isBlank(args) || isBlank(args['data']) || !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
+          ListWrapper.push(normalizedEvents, normalizeEvent(event, {
+            'name': 'script'
+          }));
+        } else if (StringWrapper.equals(name, 'RecalculateStyles') ||
+          StringWrapper.equals(name, 'Layout') ||
+          StringWrapper.equals(name, 'UpdateLayerTree') ||
+          StringWrapper.equals(name, 'Paint') ||
+          StringWrapper.equals(name, 'Rasterize') ||
+          StringWrapper.equals(name, 'CompositeLayers')) {
+          ListWrapper.push(normalizedEvents, normalizeEvent(event, {
+            'name': 'render'
+          }));
+        } else if (StringWrapper.equals(name, 'GCEvent')) {
+          ListWrapper.push(normalizedEvents, normalizeEvent(event, {
+            'name': 'gc',
+            'args': {
+              'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] : args['usedHeapSizeBefore']
+            }
+          }));
         }
-      } else if (StringWrapper.equals(type, 'TimeStamp')) {
-        var name = data['message'];
-        var ph;
-        var match = RegExpWrapper.firstMatch(BEGIN_MARK_RE, name);
-        if (isPresent(match)) {
-          ph = 'b';
-        } else {
-          match = RegExpWrapper.firstMatch(END_MARK_RE, name);
-          if (isPresent(match)) {
-            ph = 'e';
-          }
-        }
-        if (isPresent(ph)) {
-          ListWrapper.push(events, {
-            'name': match[1],
-            'ph': ph
-          });
-        }
-      } else if (StringWrapper.equals(type, 'RecalculateStyles') ||
-        StringWrapper.equals(type, 'Layout') ||
-        StringWrapper.equals(type, 'UpdateLayerTree') ||
-        StringWrapper.equals(type, 'Paint') ||
-        StringWrapper.equals(type, 'Rasterize') ||
-        StringWrapper.equals(type, 'CompositeLayers')) {
-        ListWrapper.push(events, {
-          'name': 'render',
-          'ts': startTime,
-          'ph': 'B'
-        });
-        endEvent = {
-          'name': 'render',
-          'ts': endTime,
-          'ph': 'E',
-          'args': null
-        }
-      } else if (StringWrapper.equals(type, 'GCEvent')) {
-        ListWrapper.push(events, {
-          'name': 'gc',
-          'ts': startTime,
-          'ph': 'B'
-        });
-        endEvent = {
-          'name': 'gc',
-          'ts': endTime,
-          'ph': 'E',
-          'args': {
-            'amount': data['usedHeapSizeDelta']
-          }
-        };
-      }
-      if (isPresent(record['children'])) {
-        this._convertPerfRecordsToEvents(record['children'], events);
-      }
-      if (isPresent(endEvent)) {
-        ListWrapper.push(events, endEvent);
+      } else if (StringWrapper.equals(cat, 'blink.console')) {
+        ListWrapper.push(normalizedEvents, normalizeEvent(event, {
+          'name': name
+        }));
       }
     });
-    return events;
+    return normalizedEvents;
   }
+}
+
+function normalizeEvent(chromeEvent, data) {
+  var ph = chromeEvent['ph'];
+  if (StringWrapper.equals(ph, 'S')) {
+    ph = 'b';
+  } else if (StringWrapper.equals(ph, 'F')) {
+    ph = 'e';
+  }
+  var result = {
+    'pid': chromeEvent['pid'],
+    'ph': ph,
+    'cat': 'timeline',
+    'ts': chromeEvent['ts'] / 1000
+  };
+  if (chromeEvent['ph'] === 'X') {
+    result['dur'] = chromeEvent['dur'] / 1000;
+  }
+  StringMapWrapper.forEach(data, (value, prop) => {
+    result[prop] = value;
+  });
+  return result;
 }
 
 var _BINDINGS = [

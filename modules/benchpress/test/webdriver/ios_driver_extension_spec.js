@@ -1,23 +1,21 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { Json, isBlank } from 'angular2/src/facade/lang';
+import { Json, isBlank, isPresent } from 'angular2/src/facade/lang';
 
 import {
-  WebDriverExtension, ChromeDriverExtension,
+  WebDriverExtension, IOsDriverExtension,
   WebDriverAdapter, Injector, bind
 } from 'benchpress/benchpress';
 
 import { TraceEventFactory } from '../trace_event_factory';
 
 export function main() {
-  describe('chrome driver extension', () => {
+  describe('ios driver extension', () => {
     var log;
     var extension;
 
-    var blinkEvents = new TraceEventFactory('blink.console', 'pid0');
-    var chromeTimelineEvents = new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(perfRecords = null) {
@@ -26,7 +24,7 @@ export function main() {
       }
       log = [];
       extension = new Injector([
-        ChromeDriverExtension.BINDINGS,
+        IOsDriverExtension.BINDINGS,
         bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
       ]).get(WebDriverExtension);
       return extension;
@@ -72,23 +70,13 @@ export function main() {
         });
       });
 
-      it('should normalize times to ms and forward ph and pid event properties', (done) => {
+      it('should report FunctionCall records as "script"', (done) => {
         createExtension([
-          chromeTimelineEvents.complete('FunctionCall', 1100, 5500, null)
+          durationRecord('FunctionCall', 1, 5)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
-            normEvents.complete('script', 1.1, 5.5, null),
-          ]);
-          done();
-        });
-      });
-
-      it('should report FunctionCall events as "script"', (done) => {
-        createExtension([
-          chromeTimelineEvents.start('FunctionCall', 0)
-        ]).readPerfLog().then( (events) => {
-          expect(events).toEqual([
-            normEvents.start('script', 0),
+            normEvents.start('script', 1),
+            normEvents.end('script', 5)
           ]);
           done();
         });
@@ -96,19 +84,19 @@ export function main() {
 
       it('should ignore FunctionCalls from webdriver', (done) => {
         createExtension([
-          chromeTimelineEvents.start('FunctionCall', 0, {'data': {'scriptName': 'InjectedScript'}})
+          internalScriptRecord(1, 5)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([]);
           done();
         });
       });
 
-      it('should report begin timestamps', (done) => {
+      it('should report begin time', (done) => {
         createExtension([
-          blinkEvents.create('S', 'someName', 1000)
+          timeBeginRecord('someName', 12)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
-            normEvents.markStart('someName', 1.0)
+            normEvents.markStart('someName', 12)
           ]);
           done();
         });
@@ -116,10 +104,10 @@ export function main() {
 
       it('should report end timestamps', (done) => {
         createExtension([
-          blinkEvents.create('F', 'someName', 1000)
+          timeEndRecord('someName', 12)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
-            normEvents.markEnd('someName', 1.0)
+            normEvents.markEnd('someName', 12)
           ]);
           done();
         });
@@ -127,29 +115,43 @@ export function main() {
 
       it('should report gc', (done) => {
         createExtension([
-          chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
-          chromeTimelineEvents.end('GCEvent', 2000, {'usedHeapSizeAfter': 0}),
+          gcRecord(1, 3, 21)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
-            normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
-            normEvents.end('gc', 2.0, {'usedHeapSize': 0}),
+            normEvents.start('gc', 1, {'usedHeapSize': 0}),
+            normEvents.end('gc', 3, {'usedHeapSize': -21}),
           ]);
           done();
         });
       });
 
       ['RecalculateStyles', 'Layout', 'UpdateLayerTree', 'Paint', 'Rasterize', 'CompositeLayers'].forEach( (recordType) => {
-        it(`should report ${recordType} as "render"`, (done) => {
+        it(`should report ${recordType}`, (done) => {
           createExtension([
-            chromeTimelineEvents.start(recordType, 1234),
-            chromeTimelineEvents.end(recordType, 2345)
+            durationRecord(recordType, 0, 1)
           ]).readPerfLog().then( (events) => {
             expect(events).toEqual([
-              normEvents.start('render', 1.234),
-              normEvents.end('render', 2.345),
+              normEvents.start('render', 0),
+              normEvents.end('render', 1),
             ]);
             done();
           });
+        });
+      });
+
+
+      it('should walk children', (done) => {
+        createExtension([
+          durationRecord('FunctionCall', 1, 5, [
+            timeBeginRecord('someName', 2)
+          ])
+        ]).readPerfLog().then( (events) => {
+          expect(events).toEqual([
+            normEvents.start('script', 1),
+            normEvents.markStart('someName', 2),
+            normEvents.end('script', 5)
+          ]);
+          done();
         });
       });
 
@@ -158,13 +160,67 @@ export function main() {
   });
 }
 
+function timeBeginRecord(name, time) {
+  return {
+    'type': 'Time',
+    'startTime': time,
+    'data': {
+      'message': name
+    }
+  };
+}
+
+function timeEndRecord(name, time) {
+  return {
+    'type': 'TimeEnd',
+    'startTime': time,
+    'data': {
+      'message': name
+    }
+  };
+}
+
+function durationRecord(type, startTime, endTime, children = null) {
+  if (isBlank(children)) {
+    children = [];
+  }
+  return {
+    'type': type,
+    'startTime': startTime,
+    'endTime': endTime,
+    'children': children
+  };
+}
+
+function internalScriptRecord(startTime, endTime) {
+  return {
+    'type': 'FunctionCall',
+    'startTime': startTime,
+    'endTime': endTime,
+    'data': {
+      'scriptName': 'InjectedScript'
+    }
+  };
+}
+
+function gcRecord(startTime, endTime, gcAmount) {
+  return {
+    'type': 'GCEvent',
+    'startTime': startTime,
+    'endTime': endTime,
+    'data': {
+      'usedHeapSizeDelta': gcAmount
+    }
+  };
+}
+
 class MockDriverAdapter extends WebDriverAdapter {
   _log:List;
-  _events:List;
-  constructor(log, events) {
+  _perfRecords:List;
+  constructor(log, perfRecords) {
     super();
     this._log = log;
-    this._events = events;
+    this._perfRecords = perfRecords;
   }
 
   executeScript(script) {
@@ -175,12 +231,14 @@ class MockDriverAdapter extends WebDriverAdapter {
   logs(type) {
     ListWrapper.push(this._log, ['logs', type]);
     if (type === 'performance') {
-      return PromiseWrapper.resolve(this._events.map(function(event) {
+      return PromiseWrapper.resolve(this._perfRecords.map(function(record) {
         return {
           'message': Json.stringify({
             'message': {
-              'method': 'Tracing.dataCollected',
-              'params': event
+              'method': 'Timeline.eventRecorded',
+              'params': {
+                'record': record
+              }
             }
           })
         };

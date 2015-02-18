@@ -185,6 +185,10 @@ export class ListWrapper {
   static slice(l:List, from:int, to:int):List {
     return l.slice(from, to);
   }
+  static sort(l:List, compareFn:Function) {
+    l.sort(compareFn);
+    return l;
+  }
 }
 
 export function isListLikeIterable(obj):boolean {

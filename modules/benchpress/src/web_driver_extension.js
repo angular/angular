@@ -13,10 +13,6 @@ export class WebDriverExtension {
     throw new BaseException('NYI');
   }
 
-  timeStamp(name:string, names:List<String>):Promise {
-    throw new BaseException('NYI');
-  }
-
   timeBegin(name):Promise {
     throw new BaseException('NYI');
   }
@@ -27,10 +23,12 @@ export class WebDriverExtension {
 
   /**
    * Format:
-   * - name: event name, e.g. 'script', 'gc', ...
-   * - ph: phase: 'B' (begin), 'E' (end), 'b' (nestable start), 'e' (nestable end)
-   * - ts: timestamp, e.g. 12345
-   * - args: arguments, e.g. {someArg: 1}
+   * - cat: category of the event
+   * - name: event name: 'script', 'gc', 'render', ...
+   * - ph: phase: 'B' (begin), 'E' (end), 'b' (nestable start), 'e' (nestable end), 'X' (Complete event)
+   * - ts: timestamp in ms, e.g. 12345
+   * - pid: process id
+   * - args: arguments, e.g. {heapSize: 1234}
    *
    * Based on [Chrome Trace Event Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/

@@ -35,7 +35,10 @@ var BROWSER_CAPS = {
     browserName: 'chrome',
     chromeOptions: {
       'binary': process.env.DARTIUM,
-      'args': ['--js-flags=--expose-gc']
+      'args': ['--js-flags=--expose-gc'],
+      'perfLoggingPrefs': {
+        'traceCategories': 'blink.console,disabled-by-default-devtools.timeline'
+      }
     },
     loggingPrefs: {
       performance: 'ALL',
@@ -45,7 +48,10 @@ var BROWSER_CAPS = {
   ChromeDesktop: {
     browserName: 'chrome',
     chromeOptions: {
-      'args': ['--js-flags=--expose-gc']
+      'args': ['--js-flags=--expose-gc'],
+      'perfLoggingPrefs': {
+        'traceCategories': 'blink.console,disabled-by-default-devtools.timeline'
+      }
     },
     loggingPrefs: {
       performance: 'ALL',
@@ -56,8 +62,32 @@ var BROWSER_CAPS = {
     browserName: 'chrome',
     chromeOptions: {
       androidPackage: 'com.android.chrome',
-      'args': ['--js-flags=--expose-gc']
+      'args': ['--js-flags=--expose-gc'],
+      'perfLoggingPrefs': {
+        'traceCategories': 'blink.console,disabled-by-default-devtools.timeline'
+      }
     },
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
+  IPhoneSimulator: {
+    browserName: 'MobileSafari',
+    simulator: true,
+    CFBundleName: 'Safari',
+    device: 'iphone',
+    instruments: 'true',
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
+  IPadNative: {
+    browserName: 'MobileSafari',
+    simulator: false,
+    CFBundleName: 'Safari',
+    device: 'ipad',
     loggingPrefs: {
       performance: 'ALL',
       browser: 'ALL'
@@ -145,7 +175,13 @@ exports.createBenchpressRunner = function(options) {
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
       'lang': options.lang,
       'runId': runId
-    })
+    }),
+    // TODO(tbosch): Make the ChromeDriverExtension configurable based on the
+    // capabilities. Should support the case where we test against
+    // ios and chrome at the same time!
+    benchpress.bind(benchpress.WebDriverExtension).toFactory(function(adapter) {
+      return new benchpress.ChromeDriverExtension(adapter);
+    }, [benchpress.WebDriverAdapter])
   ];
   if (argv['benchmark']) {
     bindings.push(benchpress.RegressionSlopeValidator.BINDINGS);

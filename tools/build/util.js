@@ -51,7 +51,7 @@ function filterByFile(pathMapping, folder) {
 function insertSrcFolder(plugins, srcFolderInsertion) {
   return plugins.rename(function(file) {
     var folder = file.dirname;
-    var srcDir = filterByFile(srcFolderInsertion, folder);
+    var srcDir = filterByFile(srcFolderInsertion, path.join(folder, file.basename));
     if (srcDir) {
       var folderParts = file.dirname.split(path.sep);
       folder = [folderParts[0], srcDir].concat(folderParts.slice(1)).join(path.sep);
