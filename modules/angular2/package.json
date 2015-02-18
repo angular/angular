@@ -8,7 +8,7 @@
   "license": "<%= packageJson.license %>",
   "dependencies": {
     <% if (channel==='dev') { %>
-    "rtts-assert": "<%= packageJson.version %>",
+    "rtts_assert": "<%= packageJson.version %>",
     <% } %>
     "zone.js": "0.4.*"
   },

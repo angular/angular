@@ -1,5 +1,5 @@
 {
-  "name": "rtts-assert",
+  "name": "rtts_assert",
   "version": "<%= packageJson.version %>",
   "description": "A run-time type assertion library for JavaScript",
   "homepage": "<%= packageJson.homepage %>",
