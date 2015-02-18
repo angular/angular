@@ -349,7 +349,7 @@ export class ElementInjector extends TreeNode {
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
 
-    var p = this._proto;
+    var p: any = this._proto;
 
     if (isPresent(p._binding0) && p._binding0.callOnDestroy) {this._obj0.onDestroy();}
     if (isPresent(p._binding1) && p._binding1.callOnDestroy) {this._obj1.onDestroy();}
