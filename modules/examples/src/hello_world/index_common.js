@@ -29,7 +29,7 @@ import {bootstrap, Component, Decorator, Template, NgElement} from 'angular2/ang
   // misspelled).
   directives: [RedDec]
 })
-class HelloCmp {
+export class HelloCmp {
   greeting: string;
   constructor(service: GreetingService) {
     this.greeting = service.greeting;
@@ -44,7 +44,7 @@ class HelloCmp {
 @Decorator({
   selector: '[red]'
 })
-class RedDec {
+export class RedDec {
   // NgElement is always injectable and it wraps the element on which the
   // directive was found by the compiler.
   constructor(el: NgElement) {
@@ -53,7 +53,7 @@ class RedDec {
 }
 
 // A service used by the HelloCmp component.
-class GreetingService {
+export class GreetingService {
   greeting:string;
   constructor() {
     this.greeting = 'hello';
