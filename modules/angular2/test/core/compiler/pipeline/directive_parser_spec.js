@@ -30,7 +30,7 @@ export function main() {
       ];
     });
 
-    function createPipeline({propertyBindings, variableBindings}={}) {
+    function createPipeline({propertyBindings, variableBindings}) {
       var parser = new Parser(new Lexer());
       var annotatedDirectives = ListWrapper.create();
       for (var i=0; i<directives.length; i++) {

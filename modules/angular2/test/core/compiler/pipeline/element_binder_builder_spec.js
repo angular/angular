@@ -23,7 +23,7 @@ export function main() {
     var evalContext, view, changeDetector;
 
     function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
-      }={}) {
+      }) {
       var reflector = new DirectiveMetadataReader();
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
