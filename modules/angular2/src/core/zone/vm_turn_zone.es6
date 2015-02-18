@@ -1,9 +1,11 @@
+/// <reference path="../../../../../typings/zone/zone.d.ts" />
+
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
 
 export class VmTurnZone {
-  _outerZone;
-  _innerZone;
+  _outerZone: Zone;
+  _innerZone: Zone;
 
   _onTurnStart:Function;
   _onTurnDone:Function;
@@ -14,7 +16,7 @@ export class VmTurnZone {
   constructor({enableLongStackTrace}) {
     this._nestedRunCounter = 0;
     this._onTurnStart = null;
-    this._onTurnDone = null;
+    this._onTurnDone = null; VmTurnZone
     this._onErrorHandler = null;
 
     this._outerZone = global.zone;

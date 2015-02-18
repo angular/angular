@@ -6,7 +6,7 @@ import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 export function main() {
   describe("VmTurnZone", () => {
-    var log, zone;
+    var log, zone: VmTurnZone;
 
     beforeEach(() => {
       log = new Log();
