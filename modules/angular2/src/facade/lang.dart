@@ -59,6 +59,10 @@ class StringWrapper {
     return s == s2;
   }
 
+  static String replace(String s, Pattern from, String replace) {
+    return s.replaceFirst(from, replace);
+  }
+
   static String replaceAll(String s, RegExp from, String replace) {
     return s.replaceAll(from, replace);
   }

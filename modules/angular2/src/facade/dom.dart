@@ -4,6 +4,8 @@ import 'dart:html';
 import 'dart:js' show JsObject, context;
 
 export 'dart:html' show
+  CssRule,
+  CssKeyframesRule,
   document,
   DocumentFragment,
   Element,
@@ -96,6 +98,9 @@ class DOM {
     if (doc == null) doc = document;
     return doc.createElement(tagName);
   }
+  static createTextNode(String text, [HtmlDocument doc = null]) {
+    return new Text(text);
+  }
   static createScriptTag(String attrName, String attrValue,
       [HtmlDocument doc = null]) {
     if (doc == null) doc = document;
@@ -163,4 +168,11 @@ class DOM {
   static HtmlDocument defaultDoc() => document;
   static bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
+}
+
+class CSSRuleWrapper {
+  static isPageRule(CssRule rule) => rule is CssPageRule;
+  static isStyleRule(CssRule rule) => rule is CssStyleRule;
+  static isMediaRule(CssRule rule) => rule is CssMediaRule;
+  static isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
 }

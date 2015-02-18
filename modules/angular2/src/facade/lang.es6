@@ -77,6 +77,14 @@ export class StringWrapper {
     return s === s2;
   }
 
+  static replace(s:string, from , replace:string): string {
+    if (typeof(from) === "string") {
+      return s.replace(from, replace);
+    } else {
+      return s.replace(from.single, replace);
+    }
+  }
+
   static replaceAll(s:string, from:RegExp, replace:string):string {
     return s.replace(from.multiple, replace);
   }
@@ -91,6 +99,9 @@ export class StringWrapper {
 
   static replaceAllMapped(s:string, from:RegExp, cb:Function): string {
     return s.replace(from.multiple, function(...matches) {
+      // Remove offset & string from the result array
+      matches.splice(-2, 2);
+      // The callback receives match, p1, ..., pn
       return cb(matches);
     });
   }
@@ -171,7 +182,7 @@ export class NumberWrapper {
   }
 }
 
-var RegExp;
+export var RegExp;
 if (assertionsEnabled_) {
   RegExp = assert.define('RegExp', function(obj) {
     assert(obj).is(assert.structure({
