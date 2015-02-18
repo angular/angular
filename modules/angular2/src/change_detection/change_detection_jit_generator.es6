@@ -232,9 +232,9 @@ function addSimpleChangeRecordTemplate(protoIndex:number, oldValue:string, newVa
 export class ChangeDetectorJITGenerator {
   typeName:string;
   records:List<ProtoRecord>;
-  localNames:List<String>;
-  changeNames:List<String>;
-  fieldNames:List<String>;
+  localNames:List<string>;
+  changeNames:List<string>;
+  fieldNames:List<string>;
 
   constructor(typeName:string, records:List<ProtoRecord>) {
     this.typeName = typeName;
@@ -245,7 +245,7 @@ export class ChangeDetectorJITGenerator {
     this.fieldNames = this.getFieldNames(this.localNames);
   }
 
-  getLocalNames(records:List<ProtoRecord>):List<String> {
+  getLocalNames(records:List<ProtoRecord>):List<string> {
     var index = 0;
     var names = records.map((r) => {
       var sanitizedName = r.name.replace(new RegExp("\\W", "g"), '');
@@ -254,11 +254,11 @@ export class ChangeDetectorJITGenerator {
     return ["context"].concat(names);
   }
 
-  getChangeNames(localNames:List<String>):List<String> {
+  getChangeNames(localNames:List<string>):List<string> {
     return localNames.map((n) => `change_${n}`);
   }
 
-  getFieldNames(localNames:List<String>):List<String> {
+  getFieldNames(localNames:List<string>):List<string> {
     return localNames.map((n) => `this.${n}`);
   }
 
