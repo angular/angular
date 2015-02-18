@@ -15,7 +15,7 @@ export function main() {
   describe('ElementBindingMarker', () => {
 
     function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings,
-      directives, ignoreBindings}) {
+      directives, ignoreBindings}: any = {}) {
       var reader = new DirectiveMetadataReader();
       return new CompilePipeline([
         new MockStep((parent, current, control) => {

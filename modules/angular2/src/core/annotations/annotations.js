@@ -15,13 +15,14 @@ export class Directive {
       lightDomServices,
       implementsTypes,
       lifecycle
-    }:{
-      selector:string,
-      bind:any,
-      lightDomServices:List<any>,
-      implementsTypes:List<any>,
-      lifecycle:List<any>
-    })
+    }: any/*{
+      // should be
+      selector?:string,
+      bind?:any,
+      lightDomServices?:List<any>,
+      implementsTypes?:List<any>,
+      lifecycle?:List<any>
+    }*/ = {})
   {
     this.selector = selector;
     this.lightDomServices = lightDomServices;
@@ -51,15 +52,16 @@ export class Component extends Directive {
     componentServices,
     implementsTypes,
     lifecycle
-    }:{
-      selector:String,
-      bind:Object,
-      lightDomServices:List<any>,
-      shadowDomServices:List<any>,
-      componentServices:List<any>,
-      implementsTypes:List<any>,
-      lifecycle:List<any>
-    })
+    }:any /*{
+      // should be
+      selector?:string,
+      bind?:Object,
+      lightDomServices?:List<any>,
+      shadowDomServices?:List<any>,
+      componentServices?:List<any>,
+      implementsTypes?:List<any>,
+      lifecycle?:List<any>
+    }*/ = {})
   {
     super({
       selector: selector,
@@ -86,14 +88,15 @@ export class Decorator extends Directive {
       implementsTypes,
       lifecycle,
       compileChildren = true,
-    }:{
-      selector:string,
-      bind:any,
-      lightDomServices:List<any>,
-      implementsTypes:List<any>,
-      lifecycle:List<any>,
-      compileChildren:boolean
-    })
+    }: any/*{
+      // should be
+      selector?:string,
+      bind?:any,
+      lightDomServices?:List<any>,
+      implementsTypes?:List<any>,
+      lifecycle?:List<any>,
+      compileChildren?:boolean
+    }*/ = {})
   {
     this.compileChildren = compileChildren;
     super({
@@ -114,13 +117,14 @@ export class Viewport extends Directive {
       lightDomServices,
       implementsTypes,
       lifecycle
-    }:{
-      selector:string,
-      bind:any,
-      lightDomServices:List<any>,
-      implementsTypes:List<any>,
-      lifecycle:List<any>
-    })
+    }: any/*{
+      // should be
+      selector?:string,
+      bind?:any,
+      lightDomServices?:List<any>,
+      implementsTypes?:List<any>,
+      lifecycle?:List<any>
+    }*/ = {})
   {
     super({
         selector: selector,

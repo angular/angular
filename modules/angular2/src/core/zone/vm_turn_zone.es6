@@ -23,7 +23,7 @@ export class VmTurnZone {
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
   }
 
-  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler}) {
+  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler}: any = {}) {
     this._onTurnStart = normalizeBlank(onTurnStart);
     this._onTurnDone = normalizeBlank(onTurnDone);
     this._onErrorHandler = normalizeBlank(onErrorHandler);
