@@ -1,5 +1,5 @@
-import {Component, TemplateConfig, bootstrap, Foreach} from 'angular2/angular2';
-import {bind} from 'angular2/di';
+import {Component, Template, bootstrap, Foreach} from 'angular2/angular2';
+// import {bind} from 'angular2/di';
 // TODO(juliemr): Is this legit? Should we be using XHR directly?
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 
@@ -15,10 +15,10 @@ const _SUPER_DELAY = 60 * 60 * 1000; // 1 hour
 
 @Component({
   selector: 'slow-app',
-  componentServices: [],
-  template: new TemplateConfig({
-    url: 'slow.html'
-  })
+  componentServices: []
+})
+@Template({
+  url: 'slow.html'
 })
 class SlowApp {
   _xhr: XHR;
@@ -55,12 +55,12 @@ class SlowApp {
 }
 
 @Component({
-  selector: 'secondary-app',
-  template: new TemplateConfig({
-    inline: `<h4>A separate Angular2 app</h4>
-             <button (click)="startLongTimeout()">Super slow timeout</button>
-             <span>{{timeoutStatus}}</span>`
-  })
+  selector: 'secondary-app'
+})
+@Template({
+  inline: `<h4>A separate Angular2 app</h4>
+           <button (click)="startLongTimeout()">Super slow timeout</button>
+           <span>{{timeoutStatus}}</span>`
 })
 class SecondaryApp {
   timeoutStatus: string;
