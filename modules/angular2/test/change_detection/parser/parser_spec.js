@@ -27,7 +27,7 @@ class TestData {
 }
 
 export function main() {
-  function td(a = 0, b = 0, fnReturnValue = "constant") {
+  function td(a:any = 0, b: any = 0, fnReturnValue: any = "constant") {
     return new TestData(a, b, fnReturnValue);
   }
 
