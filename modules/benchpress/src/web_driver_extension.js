@@ -13,7 +13,7 @@ export class WebDriverExtension {
     throw new BaseException('NYI');
   }
 
-  timeStamp(name:string, names:List<String>):Promise<any> {
+  timeStamp(name:string, names:List<string>):Promise<any> {
     throw new BaseException('NYI');
   }
 

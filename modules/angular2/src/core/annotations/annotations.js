@@ -52,7 +52,7 @@ export class Component extends Directive {
     implementsTypes,
     lifecycle
     }:{
-      selector:String,
+      selector:string,
       bind:Object,
       lightDomServices:List<any>,
       shadowDomServices:List<any>,
