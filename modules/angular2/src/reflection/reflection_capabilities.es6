@@ -32,7 +32,7 @@ export class ReflectionCapabilities {
     throw new Error("Factory cannot take more than 10 arguments");
   }
 
-  parameters(typeOfFunc):List<List> {
+  parameters(typeOfFunc):List<List<any>> {
     return isPresent(typeOfFunc.parameters) ?
       typeOfFunc.parameters :
       ListWrapper.createFixedSize(typeOfFunc.length);

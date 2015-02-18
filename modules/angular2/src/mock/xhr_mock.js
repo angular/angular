@@ -6,7 +6,7 @@ import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 export class XHRMock extends XHR {
   _expectations: List<_Expectation>;
   _definitions: Map<any,any>;
-  _requests: List<Promise>;
+  _requests: List<Promise<any>>;
 
   constructor() {
     super();
