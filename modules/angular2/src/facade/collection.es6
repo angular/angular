@@ -3,6 +3,7 @@ import {int, isJsObject, global} from 'angular2/src/facade/lang';
 export var List = global.Array;
 export var Map = global.Map;
 export var Set = global.Set;
+export var StringMap = global.Object;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
@@ -29,7 +30,6 @@ export class MapWrapper {
   static values(m) { return m.values(); }
 }
 
-// TODO: cannot export StringMap as a type as Dart does not support renaming types...
 /**
  * Wraps Javascript Objects
  */

@@ -57,7 +57,6 @@ class MapWrapper {
   static Iterable values(Map m) => m.values;
 }
 
-// TODO: how to export StringMap=Map as a type?
 class StringMapWrapper {
   static HashMap create() => new HashMap();
   static bool contains(Map map, key) => map.containsKey(key);

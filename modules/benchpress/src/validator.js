@@ -1,4 +1,4 @@
-import { List } from 'angular2/src/facade/collection';
+import { List, StringMap } from 'angular2/src/facade/collection';
 import {
   ABSTRACT, BaseException
 } from 'angular2/src/facade/lang';
@@ -23,7 +23,7 @@ export class Validator {
    * Returns a Map that describes the properties of the validator
    * (e.g. sample size, ...)
    */
-  describe():any {
+  describe():StringMap {
     throw new BaseException('NYI');
   }
 }

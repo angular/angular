@@ -1,6 +1,6 @@
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 import { isPresent, isBlank, int, BaseException, StringWrapper } from 'angular2/src/facade/lang';
-import { ListWrapper } from 'angular2/src/facade/collection';
+import { ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { bind, OpaqueToken } from 'angular2/di';
 
 import { WebDriverExtension } from '../web_driver_extension';
@@ -28,7 +28,7 @@ export class PerflogMetric extends Metric {
     this._setTimeout = setTimeout;
   }
 
-  describe() {
+  describe():StringMap {
     return {
       'script': 'script execution time in ms',
       'render': 'render time in ms',
