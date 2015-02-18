@@ -38,7 +38,7 @@ export class Sampler {
     driver: WebDriverAdapter,
     driverExtension: WebDriverExtension, metric: Metric, reporter: Reporter,
     validator: Validator, prepare: Function, execute: Function
-  }={}) {
+  }) {
     this._driver = driver;
     this._driverExtension = driverExtension;
     this._metric = metric;

@@ -25,7 +25,7 @@ export function main() {
       forceGc,
       prepare,
       execute
-    } = {}) {
+    }) {
       if (isBlank(metric)) {
         metric = new MockMetric([]);
       }

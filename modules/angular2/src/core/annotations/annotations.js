@@ -21,7 +21,7 @@ export class Directive {
       lightDomServices:List<any>,
       implementsTypes:List<any>,
       lifecycle:List<any>
-    }={})
+    })
   {
     this.selector = selector;
     this.lightDomServices = lightDomServices;
@@ -59,7 +59,7 @@ export class Component extends Directive {
       componentServices:List<any>,
       implementsTypes:List<any>,
       lifecycle:List<any>
-    }={})
+    })
   {
     super({
       selector: selector,
@@ -93,7 +93,7 @@ export class Decorator extends Directive {
       implementsTypes:List<any>,
       lifecycle:List<any>,
       compileChildren:boolean
-    }={})
+    })
   {
     this.compileChildren = compileChildren;
     super({
@@ -120,7 +120,7 @@ export class Viewport extends Directive {
       lightDomServices:List<any>,
       implementsTypes:List<any>,
       lifecycle:List<any>
-    }={})
+    })
   {
     super({
         selector: selector,
