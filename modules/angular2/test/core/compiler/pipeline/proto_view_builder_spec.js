@@ -8,7 +8,6 @@ import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_elemen
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {DOM} from 'angular2/src/facade/dom';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {

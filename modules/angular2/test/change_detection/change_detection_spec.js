@@ -5,7 +5,6 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
-import {arrayChangesAsString, kvChangesAsString} from './util';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
   PipeRegistry, NO_CHANGE,

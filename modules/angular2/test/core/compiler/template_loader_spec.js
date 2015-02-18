@@ -5,7 +5,6 @@ import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {Template} from 'angular2/src/core/annotations/template';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {Type, stringify, isPresent} from 'angular2/src/facade/lang';
 
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
 
