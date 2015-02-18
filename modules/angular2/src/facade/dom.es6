@@ -11,6 +11,8 @@ export var StyleElement = window.HTMLStyleElement;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
+export var CssRule = window.CSSRule;
+export var CssKeyframesRule = window.CSSKeyframesRule;
 
 export class DOM {
   static query(selector) {
@@ -129,6 +131,9 @@ export class DOM {
   static createElement(tagName, doc=document) {
     return doc.createElement(tagName);
   }
+  static createTextNode(text: string, doc=document) {
+    return doc.createTextNode(text);
+  }
   static createScriptTag(attrName:string, attrValue:string, doc=document) {
     var el = doc.createElement("SCRIPT");
     el.setAttribute(attrName, attrValue);
@@ -213,5 +218,20 @@ export class DOM {
   }
   static isElementNode(node:Node):boolean {
     return node.nodeType === Node.ELEMENT_NODE;
+  }
+}
+
+export class CSSRuleWrapper {
+  static isPageRule(rule) {
+    return rule.type === CSSRule.PAGE_RULE;
+  }
+  static isStyleRule(rule) {
+    return rule.type === CSSRule.STYLE_RULE;
+  }
+  static isMediaRule(rule) {
+    return rule.type === CSSRule.MEDIA_RULE;
+  }
+  static isKeyframesRule(rule) {
+    return rule.type === CSSRule.KEYFRAMES_RULE;
   }
 }
