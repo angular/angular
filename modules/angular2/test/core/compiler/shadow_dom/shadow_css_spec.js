@@ -6,9 +6,9 @@ import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 export function main() {
   describe('ShadowCss', function() {
 
-    function s(css: string, tag:string) {
+    function s(css: string, contentAttr:string, hostAttr:string = '') {
       var shadowCss = new ShadowCss();
-      var shim = shadowCss.shimCssText(css, tag);
+      var shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
       var nlRegexp = RegExpWrapper.create('\\n');
       return StringWrapper.replaceAll(shim, nlRegexp, '');
     }
@@ -65,14 +65,14 @@ export function main() {
     });
 
     it('should handle :host', () => {
-      expect(s(':host {}', 'a')).toEqual('a {}');
-      expect(s(':host(.x,.y) {}', 'a')).toEqual('a.x, a.y {}');
-      expect(s(':host(.x,.y) > .z {}', 'a')).toEqual('a.x > .z, a.y > .z {}');
+      expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
+      expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
+      expect(s(':host(.x,.y) > .z {}', 'a', 'a-host')).toEqual('[a-host].x > .z, [a-host].y > .z {}');
     });
 
     it('should handle :host-context', () => {
-      expect(s(':host-context(.x) {}', 'a')).toEqual('a.x, .x a {}');
-      expect(s(':host-context(.x) > .y {}', 'a')).toEqual('a.x > .y, .x a > .y {}');
+      expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('[a-host].x, .x [a-host] {}');
+      expect(s(':host-context(.x) > .y {}', 'a', 'a-host')).toEqual('[a-host].x > .y, .x [a-host] > .y {}');
     });
 
     it('should support polyfill-next-selector', () => {
@@ -92,11 +92,11 @@ export function main() {
     });
 
     it('should support polyfill-rule', () => {
-      var css = s("polyfill-rule {content: ':host.foo .bar';background: blue;}", 'a');
-      expect(css).toEqual('a.foo .bar {background: blue;}');
+      var css = s("polyfill-rule {content: ':host.foo .bar';background: blue;}", 'a', 'a-host');
+      expect(css).toEqual('[a-host].foo .bar {background: blue;}');
 
-      css = s('polyfill-rule {content: ":host.foo .bar";background: blue;}', 'a');
-      expect(css).toEqual('a.foo .bar {background: blue;}');
+      css = s('polyfill-rule {content: ":host.foo .bar";background: blue;}', 'a', 'a-host');
+      expect(css).toEqual('[a-host].foo .bar {background: blue;}');
     });
 
     it('should handle ::shadow', () => {
