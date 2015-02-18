@@ -62,7 +62,8 @@ to the preprocessor and run the tests without exiting karma
 4. `protractor protractor-dart2js.conf.js`: Dart2JS e2e tests
 
 Angular specific command line options when running protractor:
-`protractor protractor-{js|dart2js}-conf.js --ng-help`
+  - `protractor protractor-{js|dart2js}-conf.js --ng-help`
+  - `protractor protractor-js.conf.js --spec tree`
 
 ### Performance tests
 
