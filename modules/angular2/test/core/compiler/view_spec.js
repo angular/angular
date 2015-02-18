@@ -9,7 +9,7 @@ import {Lexer, Parser, DynamicProtoChangeDetector,
 import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM, Element} from 'angular2/src/facade/dom';
-import {int, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';

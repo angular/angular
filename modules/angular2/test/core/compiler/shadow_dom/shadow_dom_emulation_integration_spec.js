@@ -1,6 +1,5 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/facade/dom';
 import {StringMapWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {isPresent, Type} from 'angular2/src/facade/lang';
 

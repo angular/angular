@@ -1,6 +1,5 @@
 import { StringMapWrapper, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { bind, OpaqueToken } from 'angular2/di';
-import { Sampler } from './sampler';
 import { Validator } from './validator';
 import { Metric } from './metric';
 import { Options } from './sample_options';

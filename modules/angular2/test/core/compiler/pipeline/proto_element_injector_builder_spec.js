@@ -1,6 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'angular2/src/core/compiler/pipeline/proto_element_injector_builder';

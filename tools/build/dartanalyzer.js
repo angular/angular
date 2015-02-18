@@ -54,11 +54,14 @@ module.exports = function(gulp, plugins, config) {
           return;
         }
         if (line.match(/Unused import/)) {
-          return;
-        }
-        if (line.match(/\[info\]/)) {
-          // Ignore [info] warnings
-          return;
+          if (line.match(/_analyzer\.dart/)) {
+            return;
+          }
+
+          //TODO: remove this work-around once #704 is fixed
+          if (line.match(/\/test\/core\/compiler\/view_.*spec\.dart/)) {
+            return;
+          }
         }
         if (line.match(/\[hint\]/)) {
           hintCount++;
