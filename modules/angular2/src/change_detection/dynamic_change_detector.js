@@ -5,8 +5,6 @@ import {ContextWithVariableBindings} from './parser/context_with_variable_bindin
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
 
-import {ArrayChanges} from './array_changes';
-import {KeyValueChanges} from './keyvalue_changes';
 
 import {
   ProtoRecord,
@@ -23,7 +21,6 @@ import {
   ProtoChangeDetector
   } from './proto_change_detector';
 
-import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
 export class DynamicChangeDetector extends AbstractChangeDetector {

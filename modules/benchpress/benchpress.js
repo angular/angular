@@ -12,5 +12,6 @@ export { PerflogMetric } from './src/metric/perflog_metric';
 export { ChromeDriverExtension } from './src/webdriver/chrome_driver_extension';
 export { Runner } from './src/runner';
 export { Options } from './src/sample_options';
+export { MeasureValues } from './src/measure_values';
 
 export { bind, Injector, OpaqueToken } from 'angular2/di';

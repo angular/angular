@@ -8,7 +8,6 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {ProtoView} from 'angular2/src/core/compiler/view';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';

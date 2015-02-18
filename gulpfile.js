@@ -516,11 +516,17 @@ gulp.task('ci', function(done) {
   );
 });
 
+gulp.task('tests/transform.dart', function() {
+  return gulp.src('modules/angular2/test/transform/**')
+    .pipe(gulp.dest('dist/dart/angular2/test/transform'));
+});
+
 // -----------------
 // orchestrated targets
 gulp.task('build.dart', function(done) {
   runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
+    'tests/transform.dart',
     'build/pubspec.dart',
     'build/multicopy.dart',
     'build/pubbuild.dart',

@@ -7,6 +7,7 @@ import { bind, OpaqueToken } from 'angular2/di';
 import { Statistic } from '../statistic';
 import { Reporter } from '../reporter';
 import { SampleDescription } from '../sample_description';
+import { MeasureValues } from '../measure_values';
 
 /**
  * A reporter for the console
@@ -72,20 +73,20 @@ export class ConsoleReporter extends Reporter {
     this._printStringRow(this._metricNames.map( (_) => '' ), '-');
   }
 
-  reportMeasureValues(index:number, measuredValues:any):Promise {
+  reportMeasureValues(measureValues:MeasureValues):Promise {
     var formattedValues = ListWrapper.map(this._metricNames, (metricName) => {
-      var value = measuredValues[metricName];
+      var value = measureValues.values[metricName];
       return ConsoleReporter._formatNum(value);
     });
     this._printStringRow(formattedValues);
     return PromiseWrapper.resolve(null);
   }
 
-  reportSample(completeSample:List, validSample:List):Promise {
+  reportSample(completeSample:List<MeasureValues>, validSample:List<MeasureValues>):Promise {
     this._printStringRow(this._metricNames.map( (_) => '' ), '=');
     this._printStringRow(
       ListWrapper.map(this._metricNames, (metricName) => {
-        var sample = ListWrapper.map(validSample, (measuredValues) => measuredValues[metricName]);
+        var sample = ListWrapper.map(validSample, (measureValues) => measureValues.values[metricName]);
         var mean = Statistic.calculateMean(sample);
         var cv = Statistic.calculateCoefficientOfVariation(sample, mean);
         return `${ConsoleReporter._formatNum(mean)}\u00B1${Math.floor(cv)}%`;

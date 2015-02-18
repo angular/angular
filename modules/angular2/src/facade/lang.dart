@@ -1,6 +1,6 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type, RegExp, print;
+export 'dart:core' show Type, RegExp, print, DateTime;
 import 'dart:math' as math;
 import 'dart:convert' as convert;
 
@@ -182,4 +182,13 @@ bool assertionsEnabled() {
 class Json {
   static parse(String s) => convert.JSON.decode(s);
   static stringify(data) => convert.JSON.encode(data);
+}
+
+class DateWrapper {
+  static fromMillis(int ms) {
+    return new DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+  static now() {
+    return new DateTime.now();
+  }
 }

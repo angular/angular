@@ -1,6 +1,5 @@
 import {isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {DOM, Element} from 'angular2/src/facade/dom';
 import {CompileElement} from './compile_element';
 import {CompileStep} from './compile_step';
 

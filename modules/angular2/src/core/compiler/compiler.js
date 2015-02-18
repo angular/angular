@@ -13,9 +13,7 @@ import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {TemplateResolver} from './template_resolver';
 import {DirectiveMetadata} from './directive_metadata';
-import {Component} from '../annotations/annotations';
 import {Template} from '../annotations/template';
-import {Content} from './shadow_dom_emulation/content_tag';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {CompileStep} from './pipeline/compile_step';
 

@@ -29,60 +29,74 @@ detail in the following sections.
     <tr>
       <th>Description</th><th>Short</th><th>Canonical</th>
     </tr>
-  <thead>
+  </thead>
   <tbody>
     <tr>
       <th>Text Interpolation</th>
       <td>
-```html
+<pre>
+```
 <div>{{exp}}</div>
 ```
+</pre>
 
 Example:
-```html
+<pre>
+```
 <div>
   Hello {{name}}!
   <br>
   Goodbye {{name}}!
 </div>
 ```
+</pre>
       </td>
       <td>
 `<div [text|index]=exp>`
 
 Example:
-```html
+<pre>
+```
 <div
   [text|0]=" 'Hello' + stringify(name) + '!' "
   [text|2]=" 'Goodbye' + stringify(name) + '!' ">
   _<b>x</b>_
 </div>
 ```
+</pre>
       </td>
     </tr>
     <tr>
       <th>Property Interpolation</th>
       <td>
-```html
+<pre>
+```
 <div name="{{exp}}">
 ```
+</pre>
 
 Example:
 
-```html
+<pre>
+```
 <div class="{{selected}}">`
 ```
+</pre>
       </td>
       <td>
-```html
+<pre>
+```
 <div [name]="stringify(exp)">
 ```
+</pre>
 
 Example:
 
-```html
+<pre>
+```
 <div [class]="stringify(selected)">
 ```
+</pre>
       </td>
     </tr>
     <tr>
@@ -143,20 +157,24 @@ Example:
 
 Example:
 
+<pre>
 ```
 <video #player>
 <button (click)="player.play()">play</button>
 ```
+</pre>
       </td>
       <td>
 `<div def="symbol">`
 
 Example:
 
+<pre>
 ```
 <video def="player">
 <button on-click="player.play()">play</button>
 ```
+</pre>
       </td>
     </tr>
     <tr>
@@ -166,6 +184,7 @@ Example:
 
 Example:
 
+<pre>
 ```
 <ul>
   <li template="foreach: #item in items">
@@ -173,11 +192,13 @@ Example:
   </li>
 </ul>
 ```
+</pre>
       </td>
       <td>
 `<template>...</template>`
 
 Example:
+<pre>
 ```
 <ul>
   <template def-foreach:"item"
@@ -188,6 +209,7 @@ Example:
   </template>
 </ul>
 ```
+</pre>
       </td>
     </tr>
     <tr>
@@ -197,23 +219,27 @@ Example:
 
 Example:
 
+<pre>
 ```
 <template #foreach="item"
           [foreach-in]="items">
   _some_content_to_repeat_
 </template>
 ```
+</pre>
       </td>
       <td>
 `<template>...</template>`
 
 Example:
+<pre>
 ```
 <template def-foreach="item"
           bind-foreach-in="items">
   _some_content_to_repeat_
 </template>
 ```
+</pre>
       </td>
     </tr>
   </tbody>
@@ -538,22 +564,22 @@ Angular are:
 <div template="if: expression">...</div>
 ```
 
-Expressions are a simplified version of an expression in the language in which you are writing your application. (i.e. 
-expressions follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike expressions in the 
-language, binding expressions behave differently in the following ways:
+Expressions are simplified version of expression in the language in which you are writing your application. (i.e.
+expressions follow JS syntax and semantics in JS and Dart syntax and semantics in Dart). Unlike expressions in the
+language, binding expressions behave differently in following ways:
 
-* *Must be defined*: Unlike Angular v1, Angular v2 will throw an error on dereferencing fields which are not defined. 
-  For example: `user.name` will throw an error if `user` is defined but it does not have a `name` property. If the `name` 
-  property is not known, it must be declared and set to some value such as an empty string, `null` (or `undefined` in JS). 
-  This is done to allow early detection of errors in the templates. 
-* *Safe dereference*: Expression `user.name` where `user` is `null` will throw a `NullPointerException` in the language. 
+* *Must be defined*: Unlike Angular v1, Angular v2 will throw an error on dereferencing fields which are not defined.
+  For example: `user.name` will throw an error if `user` is defined but it does not have `name` property. If the `name`
+  property is not known, it must be declared and set to some value such as empty string, `null` (or `undefined` in JS).
+  This is done to allow early detection of errors in the templates.
+* *Safe dereference*: Expressions `user.name` where `user` is null will throw `NullPointerException` in the language.
   In contrast Angular will silently ignore `null` on `user`. This is done because Views often have to wait for the data
   to arrive from the backend and many fields will be `null` until the data arrives. Safe dereference is so common in the
   Views that we have made it the default.
 * *Single expression*: An expression must be a single statement. (i.e. no `;`)
 * *No assignments*: Binding expressions can not contain assignments.
 * *No keywords*: Binding expressions can not contain keywords such as: `var`, `if`, and so on.
-* *Formatters*: Angular expressions can be piped through formatters to further transform the binding value. 
+* *Formatters*: Angular expressions can be piped through formatters to further transform the binding value.
   (See: Formatters)
 
 Examples of some expressions and their behavior:
@@ -566,7 +592,7 @@ class Greeter {
 ```
 
 * `name` : Will result in the value of the `name` property on the `Greeter` class.
-* `name.length`: Will result in either the length of the `name` string or `undefined` (`null` in Dart) if `name` 
+* `name.length`: Will result in either the length of the `name` string or `undefined` (`null` in Dart) if `name`
   property is `null` or `undefined`. Example of: safe dereference.
 * `foo`: Will throw an error because `foo` is not declared on the `Greeter` class. Example of: Must be defined
 * `name=1`: Not allowed because of assignment.
