@@ -18,16 +18,25 @@ export class Template {
       source,
       locale,
       device
-    }: {
-      url: string,
-      inline: string,
-      directives: List<Type>,
-      formatters: List<Type>,
-      source: List<Template>,
-      locale: string,
-      device: string
-    })
-  {
+    }: any) {
+
+  //constructor( {
+  //    url,
+  //    inline,
+  //    directives,
+  //    formatters,
+  //    source,
+  //    locale,
+  //    device
+  //}: {
+		//  url?: string,
+		//  inline?: string,
+		//  directives?: List<Type>,
+		//  formatters?: List<Type>,
+		//  source?: List<Template>,
+		//  locale?: string,
+		//  device?: string
+	 // })
     this.url = url;
     this.inline = inline;
     this.directives = directives;
