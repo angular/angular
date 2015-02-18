@@ -1,3 +1,5 @@
+/// <reference path="../../../typings/selenium-webdriver/selenium-webdriver.d.ts" />
+
 var webdriver = require('selenium-webdriver');
 
 module.exports = {

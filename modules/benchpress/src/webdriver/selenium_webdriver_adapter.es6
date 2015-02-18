@@ -1,3 +1,5 @@
+/// <reference path="../../../../typings/selenium-webdriver/selenium-webdriver.d.ts" />
+
 import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
 import { bind } from 'angular2/di';
 import { WebDriverAdapter } from '../web_driver_adapter';
