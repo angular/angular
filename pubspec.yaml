@@ -1,6 +1,6 @@
 name: angular
 environment:
-  sdk: '>=1.4.0'
+  sdk: '>=1.9.0-dev.8.0 <2.0.0'
 dependencies:
   stack_trace: '>=1.1.1 <1.2.0'
 
