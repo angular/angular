@@ -1,3 +1,5 @@
+library angular2.src.transform;
+
 import 'dart:collection' show Queue;
 import 'package:analyzer/src/generated/element.dart';
 
@@ -5,7 +7,7 @@ import 'package:analyzer/src/generated/element.dart';
 /// [_annotationClass] and reporting the resulting (element, annotation) pairs.
 class AnnotationMatcher {
   /// Queue for annotations.
-  final initQueue = new Queue<AnnotationMatch>();
+  final matchQueue = new Queue<AnnotationMatch>();
   /// All the annotations we have seen for each element
   final _seenAnnotations = new Map<Element, Set<ElementAnnotation>>();
 
@@ -16,7 +18,7 @@ class AnnotationMatcher {
 
   /// Records all [_annotationClass] annotations and the [element]s they apply to.
   /// Returns [true] if 1) [element] is annotated with [_annotationClass] and
-  /// 2) ([element], [_annotationClass]) has been seen previously.
+  /// 2) ([element], [_annotationClass]) has not been seen previously.
   bool processAnnotations(ClassElement element) {
     var found = false;
     element.metadata.where((ElementAnnotation meta) {
@@ -31,7 +33,7 @@ class AnnotationMatcher {
           .contains(meta);
     }).forEach((ElementAnnotation meta) {
       _seenAnnotations[element].add(meta);
-      initQueue.addLast(new AnnotationMatch(element, meta));
+      matchQueue.addLast(new AnnotationMatch(element, meta));
       found = true;
     });
     return found;

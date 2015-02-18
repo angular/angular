@@ -1,4 +1,4 @@
-library angular2.transformer;
+library angular2.src.transform;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
@@ -17,6 +17,8 @@ class Context {
   final Map<LibraryElement, String> _libraryPrefixes;
 
   DirectiveRegistry _directiveRegistry;
+  /// Generates [registerType] calls for all [register]ed [AnnotationMatch]
+  /// objects.
   DirectiveRegistry get directiveRegistry => _directiveRegistry;
 
   Context({TransformLogger logger})
@@ -26,11 +28,8 @@ class Context {
   }
 
   void error(String errorString) {
-    if (_logger != null) {
-      _logger.error(errorString);
-    } else {
-      throw new Error(errorString);
-    }
+    if (_logger == null) throw new Error(errorString);
+    _logger.error(errorString);
   }
 
   /// If elements in [lib] should be prefixed in our generated code, returns
@@ -38,21 +37,22 @@ class Context {
   /// library will use the same prefix.
   /// If [lib] does not need a prefix, returns the empty string.
   String _getPrefixDot(LibraryElement lib) {
-    var prefix = lib != null && !lib.isInSdk
-        ? _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}')
-        : null;
-    return prefix == null ? '' : '${prefix}.';
+    if (lib == null || lib.isInSdk) return '';
+    var prefix =
+        _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}');
+    return '${prefix}.';
   }
 }
 
+/// Object which [register]s [AnnotationMatch] objects for code generation.
 abstract class DirectiveRegistry {
   // Adds [entry] to the `registerType` calls which will be generated.
   void register(AnnotationMatch entry);
 }
 
-const _reflectorImport =
-    'import \'package:angular2/src/reflection/reflection.dart\' '
-    'show reflector;';
+const _reflectorImport = '''
+import 'package:angular2/src/reflection/reflection.dart' show reflector;
+''';
 
 /// Default implementation to map from [LibraryElement] to [AssetId]. This
 /// assumes that [el.source] has a getter called [assetId].
@@ -102,6 +102,8 @@ _codegenImport(Context context, AssetId libraryId, AssetId entryPoint) {
   }
 }
 
+// TODO(https://github.com/kegluneq/angular/issues/4): Remove calls to
+// Element#node.
 class _DirectiveRegistryImpl implements DirectiveRegistry {
   final Context _context;
   final StringBuffer _buffer = new StringBuffer();
@@ -197,20 +199,15 @@ abstract class _TransformVisitor extends ToSourceVisitor {
       : this._writer = writer,
         super(writer);
 
-  /// Safely visit the given node.
-  /// @param node the node to be visited
+  /// Safely visit [node].
   void _visitNode(AstNode node) {
     if (node != null) {
       node.accept(this);
     }
   }
 
-  /**
-   * Safely visit the given node, printing the prefix before the node if it is non-`null`.
-   *
-   * @param prefix the prefix to be printed if there is a node to visit
-   * @param node the node to be visited
-   */
+  /// If [node] is null does nothing. Otherwise, prints [prefix], then
+  /// visits [node].
   void _visitNodeWithPrefix(String prefix, AstNode node) {
     if (node != null) {
       _writer.print(prefix);
@@ -218,12 +215,8 @@ abstract class _TransformVisitor extends ToSourceVisitor {
     }
   }
 
-  /**
-   * Safely visit the given node, printing the suffix after the node if it is non-`null`.
-   *
-   * @param suffix the suffix to be printed if there is a node to visit
-   * @param node the node to be visited
-   */
+  /// If [node] is null does nothing. Otherwise, visits [node], then prints
+  /// [suffix].
   void _visitNodeWithSuffix(AstNode node, String suffix) {
     if (node != null) {
       node.accept(this);

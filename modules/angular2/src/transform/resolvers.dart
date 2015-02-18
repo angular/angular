@@ -1,3 +1,5 @@
+library angular2.src.transform;
+
 import 'package:code_transformers/resolver.dart';
 
 Resolvers createResolvers() {
