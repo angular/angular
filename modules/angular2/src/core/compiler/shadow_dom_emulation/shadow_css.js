@@ -153,18 +153,22 @@ export class ShadowCss {
   * Shim a style element with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   */
-  shimStyle(style: StyleElement, selector: string): string {
+  shimStyle(style: StyleElement, selector: string, hostSelector: string = ''): string {
     var cssText = DOM.getText(style);
-    return this.shimCssText(cssText, selector);
+    return this.shimCssText(cssText, selector, hostSelector);
   }
 
   /*
   * Shim some cssText with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
+  *
+  * When strictStyling is true:
+  * - selector is the attribute added to all elements inside the host,
+  * - hostSelector is the attribute added to the host itself.
   */
-  shimCssText(cssText: string, selector: string): string {
+  shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
     cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector);
+    return this._scopeCssText(cssText, selector, hostSelector);
   }
 
   _insertDirectives(cssText: string): string {
@@ -226,7 +230,7 @@ export class ShadowCss {
    *
    *  scopeName .foo { ... }
   */
-  _scopeCssText(cssText: string, scopeSelector: string): string {
+  _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
 
     var unscoped = this._extractUnscopedRulesFromCssText(cssText);
     cssText = this._insertPolyfillHostInCssText(cssText);
@@ -235,7 +239,7 @@ export class ShadowCss {
     cssText = this._convertShadowDOMSelectors(cssText);
     if (isPresent(scopeSelector)) {
       _withCssRules(cssText, (rules) => {
-        cssText = this._scopeRules(rules, scopeSelector);
+        cssText = this._scopeRules(rules, scopeSelector, hostSelector);
       });
     }
     cssText = cssText + '\n' + unscoped;
@@ -344,18 +348,18 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
-  _scopeRules(cssRules, scopeSelector: string): string {
+  _scopeRules(cssRules, scopeSelector: string, hostSelector: string): string {
     var cssText = '';
     if (isPresent(cssRules)) {
       for (var i = 0; i < cssRules.length; i++) {
         var rule = cssRules[i];
         if (CSSRuleWrapper.isStyleRule(rule) || CSSRuleWrapper.isPageRule(rule)) {
-          cssText += this._scopeSelector(rule.selectorText, scopeSelector,
+          cssText += this._scopeSelector(rule.selectorText, scopeSelector, hostSelector,
             this.strictStyling) + ' {\n';
           cssText += this._propertiesFromRule(rule) + '\n}\n\n';
         } else if (CSSRuleWrapper.isMediaRule(rule)) {
           cssText += '@media ' + rule.media.mediaText + ' {\n';
-          cssText += this._scopeRules(rule.cssRules, scopeSelector);
+          cssText += this._scopeRules(rule.cssRules, scopeSelector, hostSelector);
           cssText += '\n}\n\n';
         } else {
           // KEYFRAMES_RULE in IE throws when we query cssText
@@ -388,7 +392,8 @@ export class ShadowCss {
     return cssText;
   }
 
-  _scopeSelector(selector: string, scopeSelector: string, strict: boolean): string {
+  _scopeSelector(selector: string, scopeSelector: string, hostSelector: string,
+      strict: boolean): string {
     var r = [], parts = selector.split(',');
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
@@ -396,7 +401,7 @@ export class ShadowCss {
       if (this._selectorNeedsScoping(p, scopeSelector)) {
         p = strict && !StringWrapper.contains(p, _polyfillHostNoCombinator) ?
             this._applyStrictSelectorScope(p, scopeSelector) :
-            this._applySelectorScope(p, scopeSelector);
+            this._applySelectorScope(p, scopeSelector, hostSelector);
       }
       ListWrapper.push(r, p);
     }
@@ -416,16 +421,17 @@ export class ShadowCss {
     return RegExpWrapper.create('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
   }
 
-  _applySelectorScope(selector: string, scopeSelector: string): string {
+  _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
     // Difference from webcomponentsjs: scopeSelector could not be an array
-    return this._applySimpleSelectorScope(selector, scopeSelector);
+    return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
   // scope via name and [is=name]
-  _applySimpleSelectorScope(selector: string, scopeSelector: string): string {
+  _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
     if (isPresent(RegExpWrapper.firstMatch(_polyfillHostRe, selector))) {
-      selector = StringWrapper.replace(selector, _polyfillHostNoCombinator, scopeSelector);
-      return StringWrapper.replaceAll(selector, _polyfillHostRe, scopeSelector + ' ');
+      var replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
+      selector = StringWrapper.replace(selector, _polyfillHostNoCombinator, replaceBy);
+      return StringWrapper.replaceAll(selector, _polyfillHostRe, replaceBy + ' ');
     } else {
       return scopeSelector + ' ' + selector;
     }
