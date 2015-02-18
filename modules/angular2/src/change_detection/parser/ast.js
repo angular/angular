@@ -41,7 +41,7 @@ export class Structural extends AST {
   }
 
   eval(context) {
-    return value.eval(context);
+    return this.value.eval(context);
   }
 
   visit(visitor) {
