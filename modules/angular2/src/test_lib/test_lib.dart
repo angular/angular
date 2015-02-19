@@ -1,7 +1,7 @@
 library test_lib.test_lib;
 
 import 'package:guinness/guinness_html.dart' as gns;
-export 'package:guinness/guinness_html.dart';
+export 'package:guinness/guinness_html.dart' hide Expect, expect, NotExpect, beforeEach, it, iit;
 import 'package:unittest/unittest.dart' hide expect;
 import 'dart:mirrors';
 import 'dart:async';
