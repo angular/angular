@@ -18,9 +18,8 @@ import {
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_INVOKE_FORMATTER,
   RECORD_TYPE_STRUCTURAL_CHECK,
-  RECORD_TYPE_INTERPOLATE,
-  ProtoChangeDetector
-  } from './proto_change_detector';
+  RECORD_TYPE_INTERPOLATE
+  } from './proto_record';
 
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
