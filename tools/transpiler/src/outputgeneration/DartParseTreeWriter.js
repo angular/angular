@@ -16,6 +16,7 @@ import {
   OPEN_PAREN,
   OBJECT_PATTERN,
   OPEN_SQUARE,
+  PERIOD,
   SEMI_COLON,
   STAR,
   STATIC,
@@ -271,6 +272,11 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     } else {
       typeNameNode = typeAnnotation;
       args = [];
+    }
+
+    if (typeNameNode.moduleName && typeNameNode.moduleName.name && typeNameNode.moduleName.name.value) {
+      this.write_(typeNameNode.moduleName.name.value);
+      this.write_(PERIOD);
     }
 
     // TODO(vojta): Figure out why `typeNameNode` has different structure when used with a variable.
