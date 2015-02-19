@@ -42,6 +42,18 @@ export class DOM {
   static getOuterHTML(el) {
     return el.outerHTML;
   }
+  static nodeName(node:Node):string {
+    return node.nodeName;
+  }
+  static nodeValue(node:Node):string {
+    return node.nodeValue;
+  }
+  static type(node:Element):string {
+    return node.type;
+  }
+  static content(node:TemplateElement):Node {
+    return node.content;
+  }
   static firstChild(el):Node {
     return el.firstChild;
   }
@@ -96,6 +108,18 @@ export class DOM {
   // TODO(vicb): removed Element type because it does not support StyleElement
   static setText(el, value:string) {
     el.textContent = value;
+  }
+  static getValue(el: Element) {
+    return el.value;
+  }
+  static setValue(el: Element, value:string) {
+    el.value = value;
+  }
+  static getChecked(el: Element) {
+    return el.checked;
+  }
+  static setChecked(el: Element, value:boolean) {
+    el.checked = value;
   }
   static createTemplate(html) {
     var t = document.createElement('template');
@@ -180,5 +204,14 @@ export class DOM {
   }
   static elementMatches(n, selector:string):boolean {
     return n instanceof Element && n.matches(selector);
+  }
+  static isTemplateElement(el:any):boolean {
+    return el instanceof TemplateElement;
+  }
+  static isTextNode(node:Node):boolean {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+  static isElementNode(node:Node):boolean {
+    return node.nodeType === Node.ELEMENT_NODE;
   }
 }

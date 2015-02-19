@@ -45,12 +45,12 @@ export class ViewSplitter extends CompileStep {
     if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
-      if (current.element instanceof TemplateElement) {
+      if (DOM.isTemplateElement(current.element)) {
         if (!current.isViewRoot) {
           var viewRoot = new CompileElement(DOM.createTemplate(''));
           var currentElement:TemplateElement = current.element;
           var viewRootElement:TemplateElement = viewRoot.element;
-          this._moveChildNodes(currentElement.content, viewRootElement.content);
+          this._moveChildNodes(DOM.content(currentElement), DOM.content(viewRootElement));
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
         }
@@ -81,15 +81,17 @@ export class ViewSplitter extends CompileStep {
           this._addParentElement(current.element, newParent.element);
 
           control.addParent(newParent);
-          current.element.remove();
+          DOM.remove(current.element);
         }
       }
     }
   }
 
   _moveChildNodes(source, target) {
-    while (isPresent(source.firstChild)) {
-      DOM.appendChild(target, source.firstChild);
+    var next = DOM.firstChild(source);
+    while (isPresent(next)) {
+      DOM.appendChild(target, next);
+      next = DOM.firstChild(source);
     }
   }
 
@@ -107,7 +109,7 @@ export class ViewSplitter extends CompileStep {
       } else if (isPresent(binding.expression)) {
         compileElement.addPropertyBinding(binding.key, binding.expression);
       } else {
-        compileElement.element.setAttribute(binding.key, '');
+        DOM.setAttribute(compileElement.element, binding.key, '');
       }
     }
   }

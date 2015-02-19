@@ -22,11 +22,11 @@ class DefaultControlValueAccessor extends ControlValueAccessor {
   }
 
   readValue(el) {
-    return el.value;
+    return DOM.getValue(el);
   }
 
   writeValue(el, value):void {
-    el.value = value;
+    DOM.setValue(el,value);
   }
 }
 
@@ -37,11 +37,11 @@ class CheckboxControlValueAccessor extends ControlValueAccessor {
   }
 
   readValue(el):boolean {
-    return el.checked;
+    return DOM.getChecked(el);
   }
 
   writeValue(el, value:boolean):void {
-    el.checked = value;
+    DOM.setChecked(el, value);
   }
 }
 

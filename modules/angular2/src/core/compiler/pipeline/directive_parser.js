@@ -1,6 +1,6 @@
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
-import {TemplateElement} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/facade/dom';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
@@ -44,7 +44,7 @@ export class DirectiveParser extends CompileStep {
     var classList = current.classList();
 
     var cssSelector = new CssSelector();
-    cssSelector.setElement(current.element.nodeName);
+    cssSelector.setElement(DOM.nodeName(current.element));
     for (var i=0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
@@ -66,7 +66,7 @@ export class DirectiveParser extends CompileStep {
     }
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
     // only be present on <template> elements any more!
-    var isTemplateElement = current.element instanceof TemplateElement;
+    var isTemplateElement = DOM.isTemplateElement(current.element);
     this._selectorMatcher.match(cssSelector, (directive) => {
       if (directive.annotation instanceof Viewport) {
         if (!isTemplateElement) {
