@@ -5,10 +5,10 @@ import 'index.dart' as i2;
 
 main() {
   reflector
-    ..registerType(i0.Component, {
-      "factory": () => new i0.Component(),
+    ..registerType(i0.MyComponent, {
+      "factory": () => new i0.MyComponent(),
       "parameters": const [const []],
-      "annotations": const [const i1.Directive(context: 'soup')]
+      "annotations": const [const i1.Component(selector: '[soup]')]
     });
   i2.main();
 }

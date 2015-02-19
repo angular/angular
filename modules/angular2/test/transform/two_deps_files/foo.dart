@@ -1,8 +1,8 @@
 library foo;
 
-const contextString = 'soup';
+const preDefinedSelector = 'soup';
 
 class MyContext {
-  final String s;
-  const MyContext(this.s);
+  final String selector;
+  const MyContext(this.selector);
 }

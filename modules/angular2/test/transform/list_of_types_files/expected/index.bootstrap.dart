@@ -6,10 +6,12 @@ import 'index.dart' as i3;
 
 main() {
   reflector
-    ..registerType(i0.Component, {
-      "factory": (i1.MyContext c) => new i0.Component(c),
+    ..registerType(i0.MyComponent, {
+      "factory": (i1.MyContext c) => new i0.MyComponent(c),
       "parameters": const [const [i1.MyContext]],
-      "annotations": const [const i2.Directive(context: const [i1.MyContext])]
+      "annotations": const [
+        const i2.Component(componentServices: const [i1.MyContext])
+      ]
     });
   i3.main();
 }

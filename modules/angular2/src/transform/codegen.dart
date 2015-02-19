@@ -225,6 +225,14 @@ abstract class _TransformVisitor extends ToSourceVisitor {
   }
 
   @override
+  Object visitPrefixedIdentifier(PrefixedIdentifier node) {
+    // We add our own prefixes in [visitSimpleIdentifier], discard any used in
+    // the original source.
+    _visitNode(node.identifier);
+    return null;
+  }
+
+  @override
   Object visitSimpleIdentifier(SimpleIdentifier node) {
     // Make sure the identifier is prefixed if necessary.
     if (node.bestElement is ClassElementImpl ||
@@ -281,6 +289,7 @@ class _CtorTransformVisitor extends _TransformVisitor {
   @override
   Object visitDefaultFormalParameter(DefaultFormalParameter node) {
     _visitNode(node.parameter);
+    // Ignore the declared default value.
     return null;
   }
 

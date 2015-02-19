@@ -1,4 +1,4 @@
-library angular2.test.transform;
+library angular2.test;
 
 import 'dart:io';
 import 'package:barback/barback.dart';
@@ -7,8 +7,6 @@ import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:unittest/unittest.dart';
 import 'package:unittest/vm_config.dart';
-
-import 'common.dart';
 
 main() {
   useVMConfiguration();
@@ -41,7 +39,8 @@ void _runTests() {
         inputs: {
       'a|web/index.html': 'common.html',
       'a|web/index.dart': 'html_entry_point_files/index.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart'
     },
         outputs: {
       'a|web/index.html': 'html_entry_point_files/expected/index.html'
@@ -51,7 +50,8 @@ void _runTests() {
       'a|web/index.html': 'common.html',
       'a|web/index.dart': 'simple_annotation_files/index.dart',
       'a|web/bar.dart': 'simple_annotation_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -63,7 +63,8 @@ void _runTests() {
       'a|web/index.dart': 'two_deps_files/index.dart',
       'a|web/foo.dart': 'two_deps_files/foo.dart',
       'a|web/bar.dart': 'two_deps_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -75,29 +76,20 @@ void _runTests() {
       'a|web/index.dart': 'list_of_types_files/index.dart',
       'a|web/foo.dart': 'list_of_types_files/foo.dart',
       'a|web/bar.dart': 'list_of_types_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
           'list_of_types_files/expected/index.bootstrap.dart'
-    }),
-    new TestConfig('Component ctor with default value',
-        inputs: {
-      'a|web/index.html': 'common.html',
-      'a|web/index.dart': 'ctor_with_default_value_files/index.dart',
-      'a|web/bar.dart': 'ctor_with_default_value_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
-    },
-        outputs: {
-      'a|web/index.bootstrap.dart':
-          'ctor_with_default_value_files/expected/index.bootstrap.dart'
     }),
     new TestConfig('Component with synthetic Constructor',
         inputs: {
       'a|web/index.html': 'common.html',
       'a|web/index.dart': 'synthetic_ctor_files/index.dart',
       'a|web/bar.dart': 'synthetic_ctor_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart': 'common.dart'
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
