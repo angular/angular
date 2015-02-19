@@ -2,6 +2,7 @@ import {window, Node} from 'angular2/src/facade/dom';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {StringWrapper} from 'angular2/src/facade/lang';
 import {View, DirectiveBindingMemento, ElementBindingMemento} from 'angular2/src/core/compiler/view';
+import {GetTestability} from 'angular2/src/core/testability/get_testability';
 
 /**
  * The Testability service provides testing hooks that can be accessed from
@@ -106,44 +107,13 @@ export class Testability {
   }
 }
 
-
-export class PublicTestability {
-  _testabililty: Testability;
-
-  constructor(testability: Testability) {
-    this._testability = testability;
-  }
-
-  whenStable(callback: Function) {
-    this._testability.whenStable(callback);
-  }
-
-  findBindings(using: Element, binding: string, exactMatch: boolean) {
-    return this._testability.findBindings(using, binding, exactMatch);
-  }
-
-  findModels(using: Element, binding: string, exactMatch: boolean) {
-    return this._testability.findModels(using, binding, exactMatch);
-  }
-}
-
 export class TestabilityRegistry {
   _applications: Map;
 
   constructor() {
-    var self = this; // Necessary for functions added to window?
     this._applications = new Map();
-    window.angular = {
-      // TODO - pull this out, and dartify it.
-      getTestability: function(elem: Node): PublicTestability {
-        var testability = self._findTestabilityInTree(elem);
-        if (testability == null) {
-          throw new Error('Could not find testability for element.');
-        }
-        return new PublicTestability(testability);
-      },
-      resumeBootstrap: function() {}
-    };
+
+    GetTestability.addToWindow(this);
   }
 
   registerApplication(token, testability) {
