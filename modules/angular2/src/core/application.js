@@ -26,6 +26,7 @@ var _rootInjector: Injector;
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
   bind(Reflector).toValue(reflector),
+  // TODO(juliemr): can we just switch this?
   // TestabilityRegistry
   bind(TestabilityRegistry).toValue(new TestabilityRegistry())
 ];

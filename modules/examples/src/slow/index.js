@@ -74,7 +74,52 @@ class SecondaryApp {
   }
 }
 
+@Component({
+  selector: 'bound-app'
+})
+@Template({
+  inline: `<div>
+             <span>{{foo}}</span>
+             <span [title]="bar">With Title</span>
+             <div>
+               <span>{{yyy}} and {{zzz}}</span>
+             </div>
+             <nested-component></nested-component>
+           </div>`,
+  directives: [NestedComponent]
+})
+class BoundApp {
+  foo;
+  bar;
+  yyy;
+  zzz;
+
+  constructor() {
+    this.foo = 'Foo';
+    this.bar = 'Bar';
+    this.yyy = 'YYY';
+    this.zzz = 'ZZZ';
+  }
+}
+
+@Component({
+  selector: 'nested-component',
+})
+@Template({
+  inline: `<div>
+             <span>{{qux}}</span>
+           </div>`
+})
+class NestedComponent {
+  qux;
+
+  constructor() {
+    this.qux = 'Qux';
+  }
+}
+
 export function main() {
   bootstrap(SlowApp);
   bootstrap(SecondaryApp);
+  bootstrap(BoundApp);
 }

@@ -1,15 +1,17 @@
 import {window, Node} from 'angular2/src/facade/dom';
 import {Map, List} from 'angular2/src/facade/collection';
+import {View, DirectiveBindingMemento, ElementBindingMemento} from 'angular2/src/core/compiler/view';
 // import {Promise} from 'angular2/src/facade/async';
 
 
 export class Testability {
   _pendingCount: number;
-
   _callbacks: List;
+  _rootView: View;
 
   constructor(rootView) {
     // Not sure if we need the root view. Leave it in for now instructionally.
+    this._rootView = rootView;
     this._pendingCount = 0;
     this._callbacks = [];
   }
@@ -43,6 +45,38 @@ export class Testability {
   }
 
   findBindings(using: Element, binding: string, exactMatch: boolean) {
+    console.log('listing bindings');
+    // TODO(juliemr): this is total experimentation right now.
+    // TODO(juliemr): need to do this for component child views as we go down.
+
+    function printBindingsFromView(view) {
+      var protos = view.changeDetector.protos;
+      for (var i = 0; i < protos.length; ++i) {
+        var memento = protos[i].bindingMemento;
+        var elem = null;
+        if (memento instanceof DirectiveBindingMemento) {
+          console.log('DirectiveBindingMemento');
+          continue;
+        } else if (memento instanceof ElementBindingMemento) {
+          // TODO - can we do this without accessing the private variable?
+          elem = view.bindElements[memento._elementIndex];
+        } else {
+          // we know it refers to _textNodes.
+          elem = view.textNodes[memento].parentElement;
+        }
+        console.log(protos[i].name + ' :')
+        console.log(elem);
+      }
+
+      for (var j = 0; j < view.componentChildViews.length; ++j) {
+        printBindingsFromView(view.componentChildViews[j]);
+      }
+    }
+
+    printBindingsFromView(this._rootView);
+
+
+    return this._rootView;
     // TODO - figure out where element info gets stored and follow the tree.
   }
 
