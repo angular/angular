@@ -1,25 +1,25 @@
-import {View, ProtoView} from './view';
+import * as viewModule from './view';
 import {DOM, Node, Element} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
-import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 
 export class ViewContainer {
-  parentView: View;
+  parentView: viewModule.View;
   templateElement: Element;
-  defaultProtoView: ProtoView;
-  _views: List<View>;
+  defaultProtoView: viewModule.ProtoView;
+  _views: List<viewModule.View>;
   _lightDom: any;
   _eventManager: EventManager;
-  elementInjector: ElementInjector;
+  elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
-  hostElementInjector: ElementInjector;
+  hostElementInjector: eiModule.ElementInjector;
 
-  constructor(parentView: View, templateElement: Element, defaultProtoView: ProtoView,
-      elementInjector: ElementInjector, eventManager: EventManager, lightDom = null) {
+  constructor(parentView: viewModule.View, templateElement: Element, defaultProtoView: viewModule.ProtoView,
+      elementInjector: eiModule.ElementInjector, eventManager: EventManager, lightDom = null) {
     this.parentView = parentView;
     this.templateElement = templateElement;
     this.defaultProtoView = defaultProtoView;
@@ -33,7 +33,7 @@ export class ViewContainer {
     this._eventManager = eventManager;
   }
 
-  hydrate(appInjector: Injector, hostElementInjector: ElementInjector) {
+  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
     this.appInjector = appInjector;
     this.hostElementInjector = hostElementInjector;
   }
@@ -50,7 +50,7 @@ export class ViewContainer {
     }
   }
 
-  get(index: number): View {
+  get(index: number): viewModule.View {
     return this._views[index];
   }
 
@@ -69,7 +69,7 @@ export class ViewContainer {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex=-1): View {
+  create(atIndex=-1): viewModule.View {
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
     // TODO(rado): replace with viewFactory.
@@ -78,7 +78,7 @@ export class ViewContainer {
     return this.insert(newView, atIndex);
   }
 
-  insert(view, atIndex=-1): View {
+  insert(view, atIndex=-1): viewModule.View {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
     if (isBlank(this._lightDom)) {
@@ -104,7 +104,7 @@ export class ViewContainer {
    * The method can be used together with insert to implement a view move, i.e.
    * moving the dom nodes while the directives in the view stay intact.
    */
-  detach(atIndex=-1): View {
+  detach(atIndex=-1): viewModule.View {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
