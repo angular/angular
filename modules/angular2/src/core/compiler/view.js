@@ -1,4 +1,4 @@
-import {DOM, Element, Node, Text, DocumentFragment, TemplateElement} from 'angular2/src/facade/dom';
+import {DOM, Element, Node, Text, DocumentFragment} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
   from 'angular2/change_detection';
@@ -289,7 +289,7 @@ export class ProtoView {
     this.instantiateInPlace = false;
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS))
       ? 1 : 0;
-    this.isTemplateElement = this.element instanceof TemplateElement;
+    this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.shadowDomStrategy = shadowDomStrategy;
     this._viewPool = new ViewPool(VIEW_POOL_CAPACITY);
   }
@@ -311,7 +311,7 @@ export class ProtoView {
     var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
     var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
-      elementsWithBindingsDynamic = DOM.querySelectorAll(rootElementClone.content, NG_BINDING_CLASS_SELECTOR);
+      elementsWithBindingsDynamic = DOM.querySelectorAll(DOM.content(rootElementClone), NG_BINDING_CLASS_SELECTOR);
     } else {
       elementsWithBindingsDynamic= DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
     }
@@ -323,7 +323,7 @@ export class ProtoView {
 
     var viewNodes;
     if (this.isTemplateElement) {
-      var childNode = DOM.firstChild(rootElementClone.content);
+      var childNode = DOM.firstChild(DOM.content(rootElementClone));
       viewNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in ProtoView
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
       while(childNode != null) {
