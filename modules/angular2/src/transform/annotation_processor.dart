@@ -1,7 +1,10 @@
 library angular2.src.transform;
 
 import 'dart:collection' show Queue;
+import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+
+import 'resolvers.dart';
 
 /// Provides a mechanism for checking an element for the provided
 /// [_annotationClass] and reporting the resulting (element, annotation) pairs.
@@ -11,18 +14,19 @@ class AnnotationMatcher {
   /// All the annotations we have seen for each element
   final _seenAnnotations = new Map<Element, Set<ElementAnnotation>>();
 
-  /// The class we are searching for to populate [initQueue].
-  final ClassElement _annotationClass;
+  /// The classes we are searching for to populate [matchQueue].
+  final Set<ClassElement> _annotationClasses;
 
-  AnnotationMatcher(this._annotationClass);
+  AnnotationMatcher(this._annotationClasses);
 
   /// Records all [_annotationClass] annotations and the [element]s they apply to.
-  /// Returns [true] if 1) [element] is annotated with [_annotationClass] and
-  /// 2) ([element], [_annotationClass]) has not been seen previously.
-  bool processAnnotations(ClassElement element) {
-    var found = false;
+  /// Returns
+  List<AnnotationMatch> processAnnotations(ClassElement element) {
+    // Finding the node corresponding to [element] can be very expensive.
+    ClassDeclaration cachedNode = null;
+
+    var result = <AnnotationMatch>[];
     element.metadata.where((ElementAnnotation meta) {
-      // Only process [_annotationClass]s.
       // TODO(tjblasi): Make this recognize non-ConstructorElement annotations.
       return meta.element is ConstructorElement &&
           _isAnnotationMatch(meta.element.returnType);
@@ -32,29 +36,36 @@ class AnnotationMatcher {
           .putIfAbsent(element, () => new Set<ElementAnnotation>())
           .contains(meta);
     }).forEach((ElementAnnotation meta) {
+      if (cachedNode == null) {
+        cachedNode = element.node;
+      }
+
+      var match = new AnnotationMatch(cachedNode, meta);
       _seenAnnotations[element].add(meta);
-      matchQueue.addLast(new AnnotationMatch(element, meta));
-      found = true;
+      matchQueue.addLast(match);
+      result.add(match);
     });
-    return found;
+    return result;
   }
 
   /// Whether [type], its superclass, or one of its interfaces matches [_annotationClass].
   bool _isAnnotationMatch(InterfaceType type) {
-    if (type == null || type.element == null) return false;
-    if (type.element.type == _annotationClass.type) return true;
-    if (_isAnnotationMatch(type.superclass)) return true;
-    for (var interface in type.interfaces) {
-      if (_isAnnotationMatch(interface)) return true;
-    }
-    return false;
+    return _annotationClasses.any((el) => isAnnotationMatch(type, el));
   }
 }
 
-// Element/ElementAnnotation pair.
+/// [ConstructorElement] / [ElementAnnotation] pair, where the Constructor
 class AnnotationMatch {
-  final Element element;
+  /// The resolved element corresponding to [node].
+  final ClassElement element;
+
+  /// The Ast node corresponding to the class definition.
+  final ClassDeclaration node;
+
+  /// The resolved element for the matched annotation.
   final ElementAnnotation annotation;
 
-  AnnotationMatch(this.element, this.annotation);
+  AnnotationMatch(ClassDeclaration node, this.annotation)
+      : node = node,
+        element = node.element;
 }

@@ -10,9 +10,7 @@ main() {
       "factory":
           (i1.MyContext c, String inValue) => new i0.MyComponent(c, inValue),
       "parameters": const [const [i1.MyContext, String]],
-      "annotations": const [
-        const i2.Component(selector: i1.preDefinedSelector)
-      ]
+      "annotations": const [const i2.Component(selector: i1.preDefinedSelector)]
     });
   i3.main();
 }

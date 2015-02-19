@@ -17,7 +17,7 @@ main() {
 }
 
 var formatter = new DartFormatter();
-var transform = new AngularTransformer(new TransformerOptions(
+var transform = new AngularTransformer(new TransformerOptions('web/index.dart',
     'web/index.dart', 'web/index.bootstrap.dart', 'web/index.html'));
 
 class TestConfig {
@@ -40,7 +40,8 @@ void _runTests() {
       'a|web/index.html': 'common.html',
       'a|web/index.dart': 'html_entry_point_files/index.dart',
       'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart'
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
     },
         outputs: {
       'a|web/index.html': 'html_entry_point_files/expected/index.html'
@@ -51,7 +52,8 @@ void _runTests() {
       'a|web/index.dart': 'simple_annotation_files/index.dart',
       'a|web/bar.dart': 'simple_annotation_files/bar.dart',
       'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart'
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -64,7 +66,8 @@ void _runTests() {
       'a|web/foo.dart': 'two_deps_files/foo.dart',
       'a|web/bar.dart': 'two_deps_files/bar.dart',
       'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart'
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -77,7 +80,8 @@ void _runTests() {
       'a|web/foo.dart': 'list_of_types_files/foo.dart',
       'a|web/bar.dart': 'list_of_types_files/bar.dart',
       'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart'
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -89,12 +93,28 @@ void _runTests() {
       'a|web/index.dart': 'synthetic_ctor_files/index.dart',
       'a|web/bar.dart': 'synthetic_ctor_files/bar.dart',
       'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart'
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
           'synthetic_ctor_files/expected/index.bootstrap.dart'
-    })
+    }),
+    new TestConfig('Component with two annotations',
+        inputs: {
+      'a|web/index.html': 'common.html',
+      'a|web/index.dart': 'two_annotations_files/index.dart',
+      'a|web/bar.dart': 'two_annotations_files/bar.dart',
+      'angular2|lib/src/core/annotations/annotations.dart':
+          '../../lib/src/core/annotations/annotations.dart',
+      'angular2|lib/src/core/annotations/template.dart':
+          '../../lib/src/core/annotations/template.dart',
+      'angular2|lib/src/core/application.dart': 'common.dart'
+    },
+        outputs: {
+      'a|web/index.bootstrap.dart':
+          'two_annotations_files/expected/index.bootstrap.dart'
+    }),
   ];
 
   var cache = {};

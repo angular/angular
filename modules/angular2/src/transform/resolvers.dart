@@ -1,5 +1,7 @@
 library angular2.src.transform;
 
+import 'package:barback/barback.dart';
+import 'package:analyzer/src/generated/element.dart';
 import 'package:code_transformers/resolver.dart';
 
 Resolvers createResolvers() {
@@ -42,4 +44,88 @@ Resolvers createResolvers() {
             class HtmlElement {}
             ''',
   });
+}
+
+const bootstrapMethodName = 'bootstrap';
+
+/// Provides resolved [Elements] for well-known Angular2 symbols.
+class Angular2Types {
+  static Map<Resolver, Angular2Types> _cache = {};
+  static final _annotationsLibAssetId =
+      new AssetId('angular2', 'lib/src/core/annotations/annotations.dart');
+  static final _applicationLibAssetId =
+      new AssetId('angular2', 'lib/src/core/application.dart');
+  static final _templateLibAssetId =
+      new AssetId('angular2', 'lib/src/core/annotations/template.dart');
+
+  final Resolver _resolver;
+  FunctionElement _bootstrapMethod;
+
+  Angular2Types._internal(this._resolver);
+
+  factory Angular2Types(Resolver resolver) {
+    return _cache.putIfAbsent(
+        resolver, () => new Angular2Types._internal(resolver));
+  }
+
+  LibraryElement get annotationsLib =>
+      _resolver.getLibrary(_annotationsLibAssetId);
+
+  ClassElement get directiveAnnotation =>
+      _getTypeSafe(annotationsLib, 'Directive');
+
+  ClassElement get componentAnnotation =>
+      _getTypeSafe(annotationsLib, 'Component');
+
+  ClassElement get decoratorAnnotation =>
+      _getTypeSafe(annotationsLib, 'Decorator');
+
+  LibraryElement get templateLib => _resolver.getLibrary(_templateLibAssetId);
+
+  ClassElement get templateAnnotation => _getTypeSafe(templateLib, 'Template');
+
+  LibraryElement get applicationLib =>
+      _resolver.getLibrary(_applicationLibAssetId);
+
+  FunctionElement get bootstrapMethod {
+    if (_bootstrapMethod == null) {
+      _bootstrapMethod = applicationLib.definingCompilationUnit.functions
+          .firstWhere((FunctionElement el) => el.name == bootstrapMethodName,
+              orElse: () => null);
+    }
+    return _bootstrapMethod;
+  }
+
+  /// Gets the type named [name] in library [lib]. Returns `null` if [lib] is
+  /// `null` or [name] cannot be found in [lib].
+  ClassElement _getTypeSafe(LibraryElement lib, String name) {
+    if (lib == null) return null;
+    return lib.getType(name);
+  }
+
+  /// Whether [clazz] is annotated as a [Component].
+  bool isComponent(ClassElement clazz) =>
+      hasAnnotation(clazz, componentAnnotation);
+}
+
+/// Whether [type], its superclass, or one of its interfaces matches [target].
+bool isAnnotationMatch(InterfaceType type, ClassElement target) {
+  if (type == null || type.element == null) return false;
+  if (type.element.type == target.type) return true;
+  if (isAnnotationMatch(type.superclass, target)) return true;
+  for (var interface in type.interfaces) {
+    if (isAnnotationMatch(interface, target)) return true;
+  }
+  return false;
+}
+
+/// Determines whether [clazz] has at least one annotation that `is` a
+/// [metaClazz].
+bool hasAnnotation(ClassElement clazz, ClassElement metaClazz) {
+  if (clazz == null || metaClazz == null) return false;
+  return clazz.metadata.firstWhere((ElementAnnotation meta) {
+// TODO(kegluneq): Make this recognize non-ConstructorElement annotations.
+    return meta.element is ConstructorElement &&
+        isAnnotationMatch(meta.element.returnType, metaClazz);
+  }, orElse: () => null) != null;
 }
