@@ -3,8 +3,8 @@ library bar;
 import 'package:angular2/src/core/annotations/annotations.dart';
 import 'foo.dart';
 
-@Directive(context: const [MyContext])
-class Component {
+@Component(componentServices: const [MyContext])
+class MyComponent {
   final MyContext c;
-  Component(this.c);
+  MyComponent(this.c);
 }
