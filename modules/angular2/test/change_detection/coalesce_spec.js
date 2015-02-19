@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import {coalesce} from 'angular2/src/change_detection/coalesce';
-import {RECORD_TYPE_SELF, ProtoRecord} from 'angular2/src/change_detection/proto_change_detector';
+import {RECORD_TYPE_SELF, ProtoRecord} from 'angular2/src/change_detection/proto_record';
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false) {

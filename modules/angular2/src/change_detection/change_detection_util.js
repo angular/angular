@@ -1,7 +1,7 @@
 import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
-import {ProtoRecord} from './proto_change_detector';
+import {ProtoRecord} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
 import {NO_CHANGE} from './pipes/pipe';
 import {ChangeRecord, ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';

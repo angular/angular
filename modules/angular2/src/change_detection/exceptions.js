@@ -1,4 +1,4 @@
-import {ProtoRecord} from './proto_change_detector';
+import {ProtoRecord} from './proto_record';
 
 export class ExpressionChangedAfterItHasBeenChecked extends Error {
   message:string;
