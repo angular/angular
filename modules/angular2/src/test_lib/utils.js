@@ -39,5 +39,5 @@ export function dispatchEvent(element, eventType) {
 }
 
 export function el(html) {
-  return DOM.firstChild(DOM.createTemplate(html).content);
+  return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
 }
