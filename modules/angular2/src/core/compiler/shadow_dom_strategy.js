@@ -1,16 +1,21 @@
 import {Type, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {DOM, Element} from 'angular2/src/facade/dom';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
+
 import {View} from './view';
+
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
+import {ShimComponent, ShimEmulatedComponent, ShimNativeComponent} from './shadow_dom_emulation/shim_component';
 
 export class ShadowDomStrategy {
   attachTemplate(el:Element, view:View){}
   constructLightDom(lightDomView:View, shadowDomView:View, el:Element){}
   polyfillDirectives():List<Type>{ return null; }
-  shim(): boolean { return false; }
   extractStyles(): boolean { return false; }
+  getShimComponent(component: Type): ShimComponent {
+    return null;
+  }
 }
 
 export class EmulatedShadowDomStrategy extends ShadowDomStrategy {
@@ -31,12 +36,12 @@ export class EmulatedShadowDomStrategy extends ShadowDomStrategy {
     return [Content];
   }
 
-  shim(): boolean {
+  extractStyles(): boolean {
     return true;
   }
 
-  extractStyles(): boolean {
-    return true;
+  getShimComponent(component: Type): ShimComponent {
+    return new ShimEmulatedComponent(component);
   }
 }
 
@@ -57,12 +62,12 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     return [];
   }
 
-  shim(): boolean {
+  extractStyles(): boolean {
     return false;
   }
 
-  extractStyles(): boolean {
-    return false;
+  getShimComponent(component: Type): ShimComponent {
+    return new ShimNativeComponent(component);
   }
 }
 

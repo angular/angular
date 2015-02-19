@@ -535,12 +535,15 @@ export class ProtoView {
   ): ProtoView {
 
     DOM.addClass(insertionElement, NG_BINDING_CLASS);
+    var cmpType = rootComponentAnnotatedType.type;
     var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(
-        new ProtoElementInjector(null, 0, [rootComponentAnnotatedType.type], true));
+        new ProtoElementInjector(null, 0, [cmpType], true));
     binder.componentDirective = rootComponentAnnotatedType;
     binder.nestedProtoView = protoView;
+    var shimComponent = shadowDomStrategy.getShimComponent(cmpType);
+    shimComponent.shimHostElement(insertionElement);
     return rootProtoView;
   }
 }
