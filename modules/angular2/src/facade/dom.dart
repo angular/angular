@@ -195,3 +195,10 @@ class CSSRuleWrapper {
   static isMediaRule(CssRule rule) => rule is CssMediaRule;
   static isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
 }
+
+class CSSRuleWrapper {
+  static isPageRule(CssRule rule) => rule is CssPageRule;
+  static isStyleRule(CssRule rule) => rule is CssStyleRule;
+  static isMediaRule(CssRule rule) => rule is CssMediaRule;
+  static isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
+}

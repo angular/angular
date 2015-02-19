@@ -235,3 +235,18 @@ export class CSSRuleWrapper {
     return rule.type === CSSRule.KEYFRAMES_RULE;
   }
 }
+
+export class CSSRuleWrapper {
+  static isPageRule(rule) {
+    return rule.type === CSSRule.PAGE_RULE;
+  }
+  static isStyleRule(rule) {
+    return rule.type === CSSRule.STYLE_RULE;
+  }
+  static isMediaRule(rule) {
+    return rule.type === CSSRule.MEDIA_RULE;
+  }
+  static isKeyframesRule(rule) {
+    return rule.type === CSSRule.KEYFRAMES_RULE;
+  }
+}
