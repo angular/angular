@@ -41,9 +41,7 @@ var _eventNames = {
 
 
 export class HammerGesturesPluginCommon extends EventManagerPlugin {
-  constructor() {
-    super();
-  }
+  constructor() { super(); }
 
   supports(eventName: string): boolean {
     eventName = eventName.toLowerCase();

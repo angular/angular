@@ -20,23 +20,23 @@ import {
   RECORD_TYPE_STRUCTURAL_CHECK,
   RECORD_TYPE_INTERPOLATE,
   ProtoChangeDetector
-  } from './proto_change_detector';
+} from './proto_change_detector';
 
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
-  dispatcher:any;
-  formatters:Map;
+  dispatcher: any;
+  formatters: Map;
   pipeRegistry;
 
-  values:List;
-  changes:List;
-  pipes:List;
-  prevContexts:List;
+  values: List;
+  changes: List;
+  pipes: List;
+  prevContexts: List;
 
-  protos:List<ProtoRecord>;
+  protos: List<ProtoRecord>;
 
-  constructor(dispatcher:any, formatters:Map, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>) {
+  constructor(dispatcher: any, formatters: Map, pipeRegistry: PipeRegistry, protoRecords: List<ProtoRecord>) {
     super();
     this.dispatcher = dispatcher;
     this.formatters = formatters;
@@ -50,7 +50,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.protos = protoRecords;
   }
 
-  setContext(context:any) {
+  setContext(context: any) {
     ListWrapper.fill(this.values, uninitialized);
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.pipes, null);
@@ -58,12 +58,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.values[0] = context;
   }
 
-  detectChangesInRecords(throwOnChange:boolean) {
-    var protos:List<ProtoRecord> = this.protos;
+  detectChangesInRecords(throwOnChange: boolean) {
+    var protos: List<ProtoRecord> = this.protos;
 
     var updatedRecords = null;
     for (var i = 0; i < protos.length; ++i) {
-      var proto:ProtoRecord = protos[i];
+      var proto: ProtoRecord = protos[i];
       var change = this._check(proto);
 
       if (isPresent(change)) {
@@ -80,7 +80,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _check(proto:ProtoRecord) {
+  _check(proto: ProtoRecord) {
     try {
       if (proto.mode == RECORD_TYPE_STRUCTURAL_CHECK) {
         return this._pipeCheck(proto);
@@ -92,7 +92,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _referenceCheck(proto:ProtoRecord) {
+  _referenceCheck(proto: ProtoRecord) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
@@ -116,7 +116,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _calculateCurrValue(proto:ProtoRecord) {
+  _calculateCurrValue(proto: ProtoRecord) {
     switch (proto.mode) {
       case RECORD_TYPE_SELF:
         return this._readContext(proto);
@@ -130,13 +130,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         if (c instanceof ContextWithVariableBindings) {
           return c.get(proto.name);
         } else {
-          var propertyGetter:Function = proto.funcOrValue;
+          var propertyGetter: Function = proto.funcOrValue;
           return propertyGetter(c);
         }
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
-        var methodInvoker:Function = proto.funcOrValue;
+        var methodInvoker: Function = proto.funcOrValue;
         return methodInvoker(this._readContext(proto), this._readArgs(proto));
 
       case RECORD_TYPE_KEYED_ACCESS:
@@ -159,12 +159,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _pipeCheck(proto:ProtoRecord) {
+  _pipeCheck(proto: ProtoRecord) {
     var context = this._readContext(proto);
     var pipe = this._pipeFor(proto, context);
 
     var newValue = pipe.transform(context);
-    if (! ChangeDetectionUtil.noChangeMarker(newValue)) {
+    if (!ChangeDetectionUtil.noChangeMarker(newValue)) {
       this._writeSelf(proto, newValue);
       this._setChanged(proto, true);
 
@@ -180,7 +180,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _pipeFor(proto:ProtoRecord, context) {
+  _pipeFor(proto: ProtoRecord, context) {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe) && storedPipe.supports(context)) {
       return storedPipe;
@@ -191,37 +191,25 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _readContext(proto:ProtoRecord) {
-    return this.values[proto.contextIndex];
-  }
+  _readContext(proto: ProtoRecord) { return this.values[proto.contextIndex]; }
 
-  _readSelf(proto:ProtoRecord) {
-    return this.values[proto.selfIndex];
-  }
+  _readSelf(proto: ProtoRecord) { return this.values[proto.selfIndex]; }
 
-  _writeSelf(proto:ProtoRecord, value) {
-    this.values[proto.selfIndex] = value;
-  }
+  _writeSelf(proto: ProtoRecord, value) { this.values[proto.selfIndex] = value; }
 
-  _readPipe(proto:ProtoRecord) {
-    return this.pipes[proto.selfIndex];
-  }
+  _readPipe(proto: ProtoRecord) { return this.pipes[proto.selfIndex]; }
 
-  _writePipe(proto:ProtoRecord, value) {
-    this.pipes[proto.selfIndex] = value;
-  }
+  _writePipe(proto: ProtoRecord, value) { this.pipes[proto.selfIndex] = value; }
 
-  _setChanged(proto:ProtoRecord, value:boolean) {
-    this.changes[proto.selfIndex] = value;
-  }
+  _setChanged(proto: ProtoRecord, value: boolean) { this.changes[proto.selfIndex] = value; }
 
-  _pureFuncAndArgsDidNotChange(proto:ProtoRecord):boolean {
+  _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
     return proto.isPureFunction() && !this._argsChanged(proto);
   }
 
-  _argsChanged(proto:ProtoRecord):boolean {
+  _argsChanged(proto: ProtoRecord): boolean {
     var args = proto.args;
-    for(var i = 0; i < args.length; ++i) {
+    for (var i = 0; i < args.length; ++i) {
       if (this.changes[args[i]]) {
         return true;
       }
@@ -229,7 +217,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     return false;
   }
 
-  _readArgs(proto:ProtoRecord) {
+  _readArgs(proto: ProtoRecord) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {

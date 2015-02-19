@@ -22,23 +22,17 @@ import {CompileStep} from './pipeline/compile_step';
  * Used to prevent duplicate work and resolve cyclic dependencies.
  */
 export class CompilerCache {
-  _cache:Map;
-  constructor() {
-    this._cache = MapWrapper.create();
-  }
+  _cache: Map;
+  constructor() { this._cache = MapWrapper.create(); }
 
-  set(component:Type, protoView:ProtoView) {
-    MapWrapper.set(this._cache, component, protoView);
-  }
+  set(component: Type, protoView: ProtoView) { MapWrapper.set(this._cache, component, protoView); }
 
-  get(component:Type):ProtoView {
+  get(component: Type): ProtoView {
     var result = MapWrapper.get(this._cache, component);
     return normalizeBlank(result);
   }
 
-  clear() {
-    MapWrapper.clear(this._cache);
-  }
+  clear() { MapWrapper.clear(this._cache); }
 }
 
 /**
@@ -48,21 +42,17 @@ export class CompilerCache {
  */
 export class Compiler {
   _reader: DirectiveMetadataReader;
-  _parser:Parser;
-  _compilerCache:CompilerCache;
-  _changeDetection:ChangeDetection;
-  _templateLoader:TemplateLoader;
-  _compiling:Map<Type, Promise>;
+  _parser: Parser;
+  _compilerCache: CompilerCache;
+  _changeDetection: ChangeDetection;
+  _templateLoader: TemplateLoader;
+  _compiling: Map<Type, Promise>;
   _shadowDomStrategy: ShadowDomStrategy;
   _shadowDomDirectives: List<DirectiveMetadata>;
   _templateResolver: TemplateResolver;
 
-  constructor(changeDetection:ChangeDetection,
-              templateLoader:TemplateLoader,
-              reader: DirectiveMetadataReader,
-              parser:Parser,
-              cache:CompilerCache,
-              shadowDomStrategy: ShadowDomStrategy,
+  constructor(changeDetection: ChangeDetection, templateLoader: TemplateLoader, reader: DirectiveMetadataReader,
+              parser: Parser, cache: CompilerCache, shadowDomStrategy: ShadowDomStrategy,
               templateResolver: TemplateResolver) {
     this._changeDetection = changeDetection;
     this._reader = reader;
@@ -79,21 +69,19 @@ export class Compiler {
     this._templateResolver = templateResolver;
   }
 
-  createSteps(component:Type, template: Template):List<CompileStep> {
+  createSteps(component: Type, template: Template): List<CompileStep> {
     // Merge directive metadata (from the template and from the shadow dom strategy)
     var dirMetadata = [];
-    var tplMetadata = ListWrapper.map(this._flattenDirectives(template),
-      (d) => this._reader.read(d));
+    var tplMetadata = ListWrapper.map(this._flattenDirectives(template), (d) => this._reader.read(d));
     dirMetadata = ListWrapper.concat(dirMetadata, tplMetadata);
     dirMetadata = ListWrapper.concat(dirMetadata, this._shadowDomDirectives);
 
     var cmpMetadata = this._reader.read(component);
 
-    return createDefaultSteps(this._changeDetection, this._parser, cmpMetadata, dirMetadata,
-      this._shadowDomStrategy);
+    return createDefaultSteps(this._changeDetection, this._parser, cmpMetadata, dirMetadata, this._shadowDomStrategy);
   }
 
-  compile(component: Type):Promise<ProtoView> {
+  compile(component: Type): Promise<ProtoView> {
     var protoView = this._compile(component);
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
@@ -120,10 +108,9 @@ export class Compiler {
     var tplElement = this._templateLoader.load(template);
 
     if (PromiseWrapper.isPromise(tplElement)) {
-      pvPromise = PromiseWrapper.then(tplElement,
-        (el) => this._compileTemplate(template, el, component),
-        (_) => { throw new BaseException(`Failed to load the template for ${stringify(component)}`); }
-      );
+      pvPromise = PromiseWrapper.then(tplElement, (el) => this._compileTemplate(template, el, component), (_) => {
+        throw new BaseException(`Failed to load the template for ${stringify(component)}`);
+      });
       MapWrapper.set(this._compiling, component, pvPromise);
       return pvPromise;
     }
@@ -154,10 +141,9 @@ export class Compiler {
     if (nestedPVPromises.length > 0) {
       // Returns ProtoView Promise when there are any asynchronous nested ProtoViews.
       // The promise will resolved after nested ProtoViews are compiled.
-      return PromiseWrapper.then(PromiseWrapper.all(nestedPVPromises),
-        (_) => protoView,
-        (e) => { throw new BaseException(`${e.message} -> Failed to compile ${stringify(component)}`); }
-      );
+      return PromiseWrapper.then(PromiseWrapper.all(nestedPVPromises), (_) => protoView, (e) => {
+        throw new BaseException(`${e.message} -> Failed to compile ${stringify(component)}`);
+      });
     }
 
     // When there is no asynchronous nested ProtoViews, return the ProtoView
@@ -169,15 +155,13 @@ export class Compiler {
 
     if (PromiseWrapper.isPromise(protoView)) {
       ListWrapper.push(promises, protoView);
-      protoView.then(function (protoView) {
-        ce.inheritedElementBinder.nestedProtoView = protoView;
-      });
+      protoView.then(function(protoView) { ce.inheritedElementBinder.nestedProtoView = protoView; });
     } else {
       ce.inheritedElementBinder.nestedProtoView = protoView;
     }
   }
 
-  _flattenDirectives(template: Template):List<Type> {
+  _flattenDirectives(template: Template): List<Type> {
     if (isBlank(template.directives)) return [];
 
     var directives = [];
@@ -186,7 +170,7 @@ export class Compiler {
     return directives;
   }
 
-  _flattenList(tree:List<any>, out:List<Type>) {
+  _flattenList(tree: List<any>, out: List<Type>) {
     for (var i = 0; i < tree.length; i++) {
       var item = tree[i];
       if (ListWrapper.isList(item)) {
@@ -196,7 +180,4 @@ export class Compiler {
       }
     }
   }
-
 }
-
-

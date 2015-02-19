@@ -26,7 +26,7 @@ export class ShadowDomTransformer extends CompileStep {
     this._lastInsertedStyle = null;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     // May be remove the styles
     if (DOM.tagName(current.element) == 'STYLE') {
       current.ignoreBindings = true;
@@ -50,16 +50,14 @@ export class ShadowDomTransformer extends CompileStep {
       if (this._strategy.shim()) {
         try {
           DOM.setAttribute(current.element, this._selector, '');
-        } catch(e) {
+        } catch (e) {
           // TODO(vicb): for now only simple selector (tag name) are supported
         }
       }
     }
   }
 
-  clearCache() {
-    _cssCache = StringMapWrapper.create();
-  }
+  clearCache() { _cssCache = StringMapWrapper.create(); }
 
   _insertStyle(el: Element, css: string) {
     var style = DOM.createStyleElement(css);
@@ -76,4 +74,3 @@ export class ShadowDomTransformer extends CompileStep {
     this._lastInsertedStyle = style;
   }
 }
-

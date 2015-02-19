@@ -9,9 +9,7 @@ import {reflector} from 'angular2/src/reflection/reflection';
 export class TemplateResolver {
   _cache: Map;
 
-  constructor() {
-    this._cache = MapWrapper.create();
-  }
+  constructor() { this._cache = MapWrapper.create(); }
 
   resolve(component: Type): Template {
     var template = MapWrapper.get(this._cache, component);

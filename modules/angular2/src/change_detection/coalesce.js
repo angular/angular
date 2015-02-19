@@ -12,7 +12,7 @@ import {RECORD_TYPE_SELF, ProtoRecord} from './proto_change_detector';
  * Records that are last in bindings CANNOT be removed, and instead are
  * replaced with very cheap SELF records.
  */
-export function coalesce(records:List<ProtoRecord>):List<ProtoRecord> {
+export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
   var res = ListWrapper.create();
   var indexMap = MapWrapper.create();
 
@@ -37,52 +37,23 @@ export function coalesce(records:List<ProtoRecord>):List<ProtoRecord> {
   return res;
 }
 
-function _selfRecord(r:ProtoRecord, contextIndex:number, selfIndex:number):ProtoRecord {
-  return new ProtoRecord(
-    RECORD_TYPE_SELF,
-    "self",
-    null,
-    [],
-    r.fixedArgs,
-    contextIndex,
-    selfIndex,
-    r.bindingMemento,
-    r.directiveMemento,
-    r.expressionAsString,
-    r.lastInBinding,
-    r.lastInDirective
-  );
+function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): ProtoRecord {
+  return new ProtoRecord(RECORD_TYPE_SELF, "self", null, [], r.fixedArgs, contextIndex, selfIndex, r.bindingMemento,
+                         r.directiveMemento, r.expressionAsString, r.lastInBinding, r.lastInDirective);
 }
 
-function _findMatching(r:ProtoRecord, rs:List<ProtoRecord>){
-  return ListWrapper.find(rs, (rr) =>
-    rr.mode === r.mode &&
-    rr.funcOrValue === r.funcOrValue &&
-    rr.contextIndex === r.contextIndex &&
-    ListWrapper.equals(rr.args, r.args)
-  );
+function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
+  return ListWrapper.find(rs, (rr) => rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
+                                      rr.contextIndex === r.contextIndex && ListWrapper.equals(rr.args, r.args));
 }
 
-function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map) {
+function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map) {
   var args = ListWrapper.map(r.args, (a) => _map(indexMap, a));
   var contextIndex = _map(indexMap, r.contextIndex);
-  return new ProtoRecord(
-    r.mode,
-    r.name,
-    r.funcOrValue,
-    args,
-    r.fixedArgs,
-    contextIndex,
-    selfIndex,
-    r.bindingMemento,
-    r.directiveMemento,
-    r.expressionAsString,
-    r.lastInBinding,
-    r.lastInDirective
-  );
+  return new ProtoRecord(r.mode, r.name, r.funcOrValue, args, r.fixedArgs, contextIndex, selfIndex, r.bindingMemento,
+                         r.directiveMemento, r.expressionAsString, r.lastInBinding, r.lastInDirective);
 }
 
-function _map(indexMap:Map, value:number) {
-  var r = MapWrapper.get(indexMap, value)
-  return isPresent(r) ? r : value;
+function _map(indexMap: Map, value: number) {
+  var r = MapWrapper.get(indexMap, value) return isPresent(r) ? r : value;
 }

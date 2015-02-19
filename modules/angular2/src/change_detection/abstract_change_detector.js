@@ -3,9 +3,9 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {
-  children:List;
-  parent:ChangeDetector;
-  mode:string;
+  children: List;
+  parent: ChangeDetector;
+  mode: string;
 
   constructor() {
     super();
@@ -13,28 +13,20 @@ export class AbstractChangeDetector extends ChangeDetector {
     this.mode = CHECK_ALWAYS;
   }
 
-  addChild(cd:ChangeDetector) {
+  addChild(cd: ChangeDetector) {
     ListWrapper.push(this.children, cd);
     cd.parent = this;
   }
 
-  removeChild(cd:ChangeDetector) {
-    ListWrapper.remove(this.children, cd);
-  }
+  removeChild(cd: ChangeDetector) { ListWrapper.remove(this.children, cd); }
 
-  remove() {
-    this.parent.removeChild(this);
-  }
+  remove() { this.parent.removeChild(this); }
 
-  detectChanges() {
-    this._detectChanges(false);
-  }
+  detectChanges() { this._detectChanges(false); }
 
-  checkNoChanges() {
-    this._detectChanges(true);
-  }
+  checkNoChanges() { this._detectChanges(true); }
 
-  _detectChanges(throwOnChange:boolean) {
+  _detectChanges(throwOnChange: boolean) {
     if (this.mode === DETACHED || this.mode === CHECKED) return;
 
     this.detectChangesInRecords(throwOnChange);
@@ -43,18 +35,18 @@ export class AbstractChangeDetector extends ChangeDetector {
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
-  detectChangesInRecords(throwOnChange:boolean){}
+  detectChangesInRecords(throwOnChange: boolean) {}
 
-  _detectChangesInChildren(throwOnChange:boolean) {
+  _detectChangesInChildren(throwOnChange: boolean) {
     var children = this.children;
-    for(var i = 0; i < children.length; ++i) {
+    for (var i = 0; i < children.length; ++i) {
       children[i]._detectChanges(throwOnChange);
     }
   }
 
   markPathToRootAsCheckOnce() {
     var c = this;
-    while(isPresent(c) && c.mode != DETACHED) {
+    while (isPresent(c) && c.mode != DETACHED) {
       if (c.mode === CHECKED) c.mode = CHECK_ONCE;
       c = c.parent;
     }

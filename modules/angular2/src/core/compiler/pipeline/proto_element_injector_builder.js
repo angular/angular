@@ -30,7 +30,7 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     return new ProtoElementInjector(parent, index, directives, firstBindingIsComponent, distance);
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var distanceToParentInjector = this._getDistanceToParentInjector(parent, current);
     var parentProtoElementInjector = this._getParentProtoElementInjector(parent, current);
     var injectorBindings = ListWrapper.map(current.getAllDirectives(), this._createBinding);
@@ -45,10 +45,9 @@ export class ProtoElementInjectorBuilder extends CompileStep {
       var protoView = current.inheritedProtoView;
       var hasComponent = isPresent(current.componentDirective);
 
-      current.inheritedProtoElementInjector = this.internalCreateProtoElementInjector(
-        parentProtoElementInjector, protoView.elementBinders.length, injectorBindings,
-        hasComponent, distanceToParentInjector
-      );
+      current.inheritedProtoElementInjector =
+          this.internalCreateProtoElementInjector(parentProtoElementInjector, protoView.elementBinders.length,
+                                                  injectorBindings, hasComponent, distanceToParentInjector);
       current.distanceToParentInjector = 0;
 
       // Viewport directives are treated differently than other element with var- definitions.
@@ -69,9 +68,7 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     }
   }
 
-  _getDistanceToParentInjector(parent, current) {
-    return isPresent(parent) ? parent.distanceToParentInjector + 1 : 0;
-  }
+  _getDistanceToParentInjector(parent, current) { return isPresent(parent) ? parent.distanceToParentInjector + 1 : 0; }
 
   _getParentProtoElementInjector(parent, current) {
     if (isPresent(parent) && !current.isViewRoot) {
@@ -80,7 +77,7 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     return null;
   }
 
-  _createBinding(d:DirectiveMetadata): DirectiveBinding {
+  _createBinding(d: DirectiveMetadata): DirectiveBinding {
     return DirectiveBinding.createFromType(d.type, d.annotation);
   }
 }

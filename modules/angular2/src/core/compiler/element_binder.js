@@ -4,16 +4,15 @@ import {List, Map} from 'angular2/src/facade/collection';
 import {ProtoView} from './view';
 
 export class ElementBinder {
-  protoElementInjector:ProtoElementInjector;
-  componentDirective:DirectiveMetadata;
-  viewportDirective:DirectiveMetadata;
-  textNodeIndices:List<int>;
-  hasElementPropertyBindings:boolean;
+  protoElementInjector: ProtoElementInjector;
+  componentDirective: DirectiveMetadata;
+  viewportDirective: DirectiveMetadata;
+  textNodeIndices: List<int>;
+  hasElementPropertyBindings: boolean;
   nestedProtoView: ProtoView;
-  events:Map;
-  constructor(
-    protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata,
-    viewportDirective:DirectiveMetadata) {
+  events: Map;
+  constructor(protoElementInjector: ProtoElementInjector, componentDirective: DirectiveMetadata,
+              viewportDirective: DirectiveMetadata) {
     this.protoElementInjector = protoElementInjector;
     this.componentDirective = componentDirective;
     this.viewportDirective = viewportDirective;

@@ -1,4 +1,14 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, isString, stringify} from 'angular2/src/facade/lang';
+import {
+  int,
+  isPresent,
+  isBlank,
+  Type,
+  BaseException,
+  StringWrapper,
+  RegExpWrapper,
+  isString,
+  stringify
+} from 'angular2/src/facade/lang';
 import {Element, DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -17,11 +27,11 @@ var DOT_REGEXP = RegExpWrapper.create('\\.');
 const ARIA_PREFIX = 'aria-';
 var ariaSettersCache = StringMapWrapper.create();
 
-function ariaSetterFactory(attrName:string) {
+function ariaSetterFactory(attrName: string) {
   var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element: Element, value) {
       if (isPresent(value)) {
         DOM.setAttribute(element, attrName, stringify(value));
       } else {
@@ -37,11 +47,11 @@ function ariaSetterFactory(attrName:string) {
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
-function classSetterFactory(className:string) {
+function classSetterFactory(className: string) {
   var setterFn = StringMapWrapper.get(classSettersCache, className);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element: Element, value) {
       if (value) {
         DOM.addClass(element, className);
       } else {
@@ -57,12 +67,12 @@ function classSetterFactory(className:string) {
 const STYLE_PREFIX = 'style.';
 var styleSettersCache = StringMapWrapper.create();
 
-function styleSetterFactory(styleName:string, stylesuffix:string) {
+function styleSetterFactory(styleName: string, stylesuffix: string) {
   var cacheKey = styleName + stylesuffix;
   var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element: Element, value) {
       var valAsStr;
       if (isPresent(value)) {
         valAsStr = stringify(value);
@@ -78,7 +88,7 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
 }
 
 const ROLE_ATTR = 'role';
-function roleSetter(element:Element, value) {
+function roleSetter(element: Element, value) {
   if (isString(value)) {
     DOM.setAttribute(element, ROLE_ATTR, value);
   } else {
@@ -114,26 +124,25 @@ function roleSetter(element:Element, value) {
  * with the flag `isViewRoot`.
  */
 export class ElementBinderBuilder extends CompileStep {
-  _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  _parser: Parser;
+  _compilationUnit: any;
+  constructor(parser: Parser, compilationUnit: any) {
     super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var elementBinder = null;
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
-      var protoInjectorWasBuilt = isBlank(parent) ? true :
-          current.inheritedProtoElementInjector !== parent.inheritedProtoElementInjector;
+      var protoInjectorWasBuilt =
+          isBlank(parent) ? true : current.inheritedProtoElementInjector !== parent.inheritedProtoElementInjector;
 
-      var currentProtoElementInjector = protoInjectorWasBuilt ?
-          current.inheritedProtoElementInjector : null;
+      var currentProtoElementInjector = protoInjectorWasBuilt ? current.inheritedProtoElementInjector : null;
 
-      elementBinder = protoView.bindElement(currentProtoElementInjector,
-        current.componentDirective, current.viewportDirective);
+      elementBinder =
+          protoView.bindElement(currentProtoElementInjector, current.componentDirective, current.viewportDirective);
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
@@ -152,9 +161,8 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _bindTextNodes(protoView, compileElement) {
-    MapWrapper.forEach(compileElement.textNodeBindings, (expression, indexInParent) => {
-      protoView.bindTextNode(indexInParent, expression);
-    });
+    MapWrapper.forEach(compileElement.textNodeBindings,
+                       (expression, indexInParent) => { protoView.bindTextNode(indexInParent, expression); });
   }
 
   _bindElementProperties(protoView, compileElement) {
@@ -169,7 +177,7 @@ export class ElementBinderBuilder extends CompileStep {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
       } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
         styleParts = StringWrapper.split(property, DOT_REGEXP);
-        styleSuffix = styleParts.length > 2 ?  ListWrapper.get(styleParts, 2) : '';
+        styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
         setterFn = styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
       } else if (DOM.hasProperty(compileElement.element, property)) {
         setterFn = reflector.setter(property);
@@ -182,13 +190,11 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _bindEvents(protoView, compileElement) {
-    MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
-      protoView.bindEvent(eventName,  expression);
-    });
+    MapWrapper.forEach(compileElement.eventBindings,
+                       (expression, eventName) => { protoView.bindEvent(eventName, expression); });
   }
 
-  _bindDirectiveProperties(directives: List<DirectiveMetadata>,
-                           compileElement: CompileElement) {
+  _bindDirectiveProperties(directives: List<DirectiveMetadata>, compileElement: CompileElement) {
     var protoView = compileElement.inheritedProtoView;
 
     for (var directiveIndex = 0; directiveIndex < directives.length; directiveIndex++) {
@@ -196,10 +202,9 @@ export class ElementBinderBuilder extends CompileStep {
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
       var _this = this;
-      StringMapWrapper.forEach(annotation.bind, function (elProp, dirProp) {
-        var expression = isPresent(compileElement.propertyBindings) ?
-          MapWrapper.get(compileElement.propertyBindings, elProp) :
-            null;
+      StringMapWrapper.forEach(annotation.bind, function(elProp, dirProp) {
+        var expression =
+            isPresent(compileElement.propertyBindings) ? MapWrapper.get(compileElement.propertyBindings, elProp) : null;
         if (isBlank(expression)) {
           var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
           if (isPresent(attributeValue)) {
@@ -214,13 +219,8 @@ export class ElementBinderBuilder extends CompileStep {
           var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
           if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
 
-          protoView.bindDirectiveProperty(
-            directiveIndex,
-            expression,
-            dirBindingName,
-            reflector.setter(dirBindingName),
-            isContentWatch
-          );
+          protoView.bindDirectiveProperty(directiveIndex, expression, dirBindingName, reflector.setter(dirBindingName),
+                                          isContentWatch);
         }
       });
     }

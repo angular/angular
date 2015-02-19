@@ -26,43 +26,37 @@ import {CompileControl} from './compile_control';
  *   in the variable bindings)
  */
 export class DirectiveParser extends CompileStep {
-  _selectorMatcher:SelectorMatcher;
-  constructor(directives:List<DirectiveMetadata>) {
+  _selectorMatcher: SelectorMatcher;
+  constructor(directives: List<DirectiveMetadata>) {
     super();
     this._selectorMatcher = new SelectorMatcher();
-    for (var i=0; i<directives.length; i++) {
+    for (var i = 0; i < directives.length; i++) {
       var directiveMetadata = directives[i];
-      this._selectorMatcher.addSelectable(
-        CssSelector.parse(directiveMetadata.annotation.selector),
-        directiveMetadata
-      );
+      this._selectorMatcher.addSelectable(CssSelector.parse(directiveMetadata.annotation.selector), directiveMetadata);
     }
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var classList = current.classList();
 
     var cssSelector = new CssSelector();
     cssSelector.setElement(current.element.nodeName);
-    for (var i=0; i < classList.length; i++) {
+    for (var i = 0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       if (isBlank(current.propertyBindings) ||
-        isPresent(current.propertyBindings) && !MapWrapper.contains(current.propertyBindings, attrName)) {
+          isPresent(current.propertyBindings) && !MapWrapper.contains(current.propertyBindings, attrName)) {
         cssSelector.addAttribute(attrName, attrValue);
       }
     });
     if (isPresent(current.propertyBindings)) {
-      MapWrapper.forEach(current.propertyBindings, (expression, prop) => {
-        cssSelector.addAttribute(prop, expression.source);
-      });
+      MapWrapper.forEach(current.propertyBindings,
+                         (expression, prop) => { cssSelector.addAttribute(prop, expression.source); });
     }
     if (isPresent(current.variableBindings)) {
-      MapWrapper.forEach(current.variableBindings, (value, name) => {
-        cssSelector.addAttribute(name, value);
-      });
+      MapWrapper.forEach(current.variableBindings, (value, name) => { cssSelector.addAttribute(name, value); });
     }
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
     // only be present on <template> elements any more!
@@ -70,7 +64,8 @@ export class DirectiveParser extends CompileStep {
     this._selectorMatcher.match(cssSelector, (directive) => {
       if (directive.annotation instanceof Viewport) {
         if (!isTemplateElement) {
-          throw new BaseException('Viewport directives need to be placed on <template> elements or elements with template attribute!');
+          throw new BaseException(
+              'Viewport directives need to be placed on <template> elements or elements with template attribute!');
         } else if (isPresent(current.viewportDirective)) {
           throw new BaseException('Only one template directive per element is allowed!');
         }

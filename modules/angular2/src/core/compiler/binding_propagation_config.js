@@ -1,25 +1,15 @@
 import {ChangeDetector, CHECK_ONCE, DETACHED, CHECK_ALWAYS} from 'angular2/change_detection';
 
 export class BindingPropagationConfig {
-  _cd:ChangeDetector;
+  _cd: ChangeDetector;
 
-  constructor(cd:ChangeDetector) {
-    this._cd = cd;
-  }
+  constructor(cd: ChangeDetector) { this._cd = cd; }
 
-  shouldBePropagated() {
-    this._cd.mode = CHECK_ONCE;
-  }
+  shouldBePropagated() { this._cd.mode = CHECK_ONCE; }
 
-  shouldBePropagatedFromRoot() {
-    this._cd.markPathToRootAsCheckOnce();
-  }
+  shouldBePropagatedFromRoot() { this._cd.markPathToRootAsCheckOnce(); }
 
-  shouldNotPropagate() {
-    this._cd.mode = DETACHED;
-  }
+  shouldNotPropagate() { this._cd.mode = DETACHED; }
 
-  shouldAlwaysPropagate() {
-    this._cd.mode = CHECK_ALWAYS;
-  }
+  shouldAlwaysPropagate() { this._cd.mode = CHECK_ALWAYS; }
 }

@@ -14,21 +14,21 @@ import {CompileControl} from './compile_control';
  * - CompileElement#textNodeBindings
  */
 export class TextInterpolationParser extends CompileStep {
-  _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  _parser: Parser;
+  _compilationUnit: any;
+  constructor(parser: Parser, compilationUnit: any) {
     super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     if (!current.compileChildren || current.ignoreBindings) {
       return;
     }
     var element = current.element;
     var childNodes = DOM.templateAwareRoot(element).childNodes;
-    for (var i=0; i<childNodes.length; i++) {
+    for (var i = 0; i < childNodes.length; i++) {
       var node = childNodes[i];
       if (node.nodeType === Node.TEXT_NODE) {
         this._parseTextNode(current, node, i);

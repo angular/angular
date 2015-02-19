@@ -22,20 +22,19 @@ import {ShadowDomStrategy} from '../shadow_dom_strategy';
  * - CompileElement#isViewRoot
  */
 export class ProtoViewBuilder extends CompileStep {
-  changeDetection:ChangeDetection;
-  _shadowDomStrategy:ShadowDomStrategy;
-  constructor(changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
+  changeDetection: ChangeDetection;
+  _shadowDomStrategy: ShadowDomStrategy;
+  constructor(changeDetection: ChangeDetection, shadowDomStrategy: ShadowDomStrategy) {
     super();
     this._shadowDomStrategy = shadowDomStrategy;
     this.changeDetection = changeDetection;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var inheritedProtoView = null;
     if (current.isViewRoot) {
       var protoChangeDetector = this.changeDetection.createProtoChangeDetector('dummy');
-      inheritedProtoView = new ProtoView(current.element, protoChangeDetector,
-        this._shadowDomStrategy);
+      inheritedProtoView = new ProtoView(current.element, protoChangeDetector, this._shadowDomStrategy);
       if (isPresent(parent)) {
         if (isPresent(parent.inheritedElementBinder.nestedProtoView)) {
           throw new BaseException('Only one nested view per element is allowed');
@@ -46,9 +45,8 @@ export class ProtoViewBuilder extends CompileStep {
         // The root view conceptually signifies a new "block scope" (the nested view), to which
         // the variables are bound.
         if (isPresent(parent.variableBindings)) {
-          MapWrapper.forEach(parent.variableBindings, (mappedName, varName) => {
-            inheritedProtoView.bindVariable(varName, mappedName);
-          });
+          MapWrapper.forEach(parent.variableBindings,
+                             (mappedName, varName) => { inheritedProtoView.bindVariable(varName, mappedName); });
         }
       }
     } else if (isPresent(parent)) {

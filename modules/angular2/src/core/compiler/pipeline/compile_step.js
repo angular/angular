@@ -6,5 +6,5 @@ import {CompileControl} from './compile_control';
  * Is guaranteed to be called in depth first order
  */
 export class CompileStep {
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {}
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {}
 }

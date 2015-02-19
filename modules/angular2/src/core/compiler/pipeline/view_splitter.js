@@ -33,23 +33,23 @@ import {$BANG} from 'angular2/src/change_detection/parser/lexer';
  * - CompileElement#propertyBindings
  */
 export class ViewSplitter extends CompileStep {
-  _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  _parser: Parser;
+  _compilationUnit: any;
+  constructor(parser: Parser, compilationUnit: any) {
     super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
       if (current.element instanceof TemplateElement) {
         if (!current.isViewRoot) {
           var viewRoot = new CompileElement(DOM.createTemplate(''));
-          var currentElement:TemplateElement = current.element;
-          var viewRootElement:TemplateElement = viewRoot.element;
+          var currentElement: TemplateElement = current.element;
+          var viewRootElement: TemplateElement = viewRoot.element;
           this._moveChildNodes(currentElement.content, viewRootElement.content);
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
@@ -65,8 +65,7 @@ export class ViewSplitter extends CompileStep {
             var key = StringWrapper.substring(attrName, 1);  // remove the bang
             if (hasTemplateBinding) {
               // 2nd template binding detected
-              throw new BaseException(`Only one template directive per element is allowed: ` +
-                  `${templateBindings} and ${key} cannot be used simultaneously!`);
+              throw new BaseException(`Only one template directive per element is allowed: ` + `${templateBindings} and ${key} cannot be used simultaneously!`);
             } else {
               templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
               hasTemplateBinding = true;
@@ -98,9 +97,9 @@ export class ViewSplitter extends CompileStep {
     DOM.appendChild(newParentElement, currentElement);
   }
 
-  _parseTemplateBindings(templateBindings:string, compileElement:CompileElement) {
+  _parseTemplateBindings(templateBindings: string, compileElement: CompileElement) {
     var bindings = this._parser.parseTemplateBindings(templateBindings, this._compilationUnit);
-    for (var i=0; i<bindings.length; i++) {
+    for (var i = 0; i < bindings.length; i++) {
       var binding = bindings[i];
       if (binding.keyIsVar) {
         compileElement.addVariableBinding(binding.key, binding.name);

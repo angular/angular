@@ -15,31 +15,31 @@ import {AST} from 'angular2/change_detection';
  * by the CompileSteps starting out with the pure HTMLElement.
  */
 export class CompileElement {
-  element:Element;
-  _attrs:Map;
-  _classList:List;
-  textNodeBindings:Map;
-  propertyBindings:Map;
-  eventBindings:Map;
+  element: Element;
+  _attrs: Map;
+  _classList: List;
+  textNodeBindings: Map;
+  propertyBindings: Map;
+  eventBindings: Map;
 
   /// Store directive name to template name mapping.
   /// Directive name is what the directive exports the variable as
   /// Template name is how it is reffered to it in template
-  variableBindings:Map;
-  decoratorDirectives:List<DirectiveMetadata>;
-  viewportDirective:DirectiveMetadata;
-  componentDirective:DirectiveMetadata;
-  _allDirectives:List<DirectiveMetadata>;
-  isViewRoot:boolean;
-  hasBindings:boolean;
-  inheritedProtoView:ProtoView;
-  inheritedProtoElementInjector:ProtoElementInjector;
-  inheritedElementBinder:ElementBinder;
-  distanceToParentInjector:number;
+  variableBindings: Map;
+  decoratorDirectives: List<DirectiveMetadata>;
+  viewportDirective: DirectiveMetadata;
+  componentDirective: DirectiveMetadata;
+  _allDirectives: List<DirectiveMetadata>;
+  isViewRoot: boolean;
+  hasBindings: boolean;
+  inheritedProtoView: ProtoView;
+  inheritedProtoElementInjector: ProtoElementInjector;
+  inheritedElementBinder: ElementBinder;
+  distanceToParentInjector: number;
   compileChildren: boolean;
   ignoreBindings: boolean;
 
-  constructor(element:Element) {
+  constructor(element: Element) {
     this.element = element;
     this._attrs = null;
     this._classList = null;
@@ -68,22 +68,18 @@ export class CompileElement {
     this.ignoreBindings = false;
   }
 
-  refreshAttrs() {
-    this._attrs = null;
-  }
+  refreshAttrs() { this._attrs = null; }
 
-  attrs():Map<string,string> {
+  attrs(): Map<string, string> {
     if (isBlank(this._attrs)) {
       this._attrs = DOM.attributeMap(this.element);
     }
     return this._attrs;
   }
 
-  refreshClassList() {
-    this._classList = null;
-  }
+  refreshClassList() { this._classList = null; }
 
-  classList():List<string> {
+  classList(): List<string> {
     if (isBlank(this._classList)) {
       this._classList = ListWrapper.create();
       var elClassList = DOM.classList(this.element);
@@ -94,21 +90,21 @@ export class CompileElement {
     return this._classList;
   }
 
-  addTextNodeBinding(indexInParent:int, expression:AST) {
+  addTextNodeBinding(indexInParent: int, expression: AST) {
     if (isBlank(this.textNodeBindings)) {
       this.textNodeBindings = MapWrapper.create();
     }
     MapWrapper.set(this.textNodeBindings, indexInParent, expression);
   }
 
-  addPropertyBinding(property:string, expression:AST) {
+  addPropertyBinding(property: string, expression: AST) {
     if (isBlank(this.propertyBindings)) {
       this.propertyBindings = MapWrapper.create();
     }
     MapWrapper.set(this.propertyBindings, property, expression);
   }
 
-  addVariableBinding(variableName:string, variableValue:string) {
+  addVariableBinding(variableName: string, variableValue: string) {
     if (isBlank(this.variableBindings)) {
       this.variableBindings = MapWrapper.create();
     }
@@ -121,14 +117,14 @@ export class CompileElement {
     MapWrapper.set(this.variableBindings, variableValue, variableName);
   }
 
-  addEventBinding(eventName:string, expression:AST) {
+  addEventBinding(eventName: string, expression: AST) {
     if (isBlank(this.eventBindings)) {
       this.eventBindings = MapWrapper.create();
     }
     MapWrapper.set(this.eventBindings, eventName, expression);
   }
 
-  addDirective(directive:DirectiveMetadata) {
+  addDirective(directive: DirectiveMetadata) {
     var annotation = directive.annotation;
     this._allDirectives = null;
     if (annotation instanceof Decorator) {

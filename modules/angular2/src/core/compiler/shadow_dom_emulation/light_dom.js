@@ -12,8 +12,8 @@ export class DestinationLightDom {}
 
 
 class _Root {
-  node:Node;
-  injector:ElementInjector;
+  node: Node;
+  injector: ElementInjector;
 
   constructor(node, injector) {
     this.node = node;
@@ -25,14 +25,14 @@ class _Root {
 // once interfaces are supported
 export class LightDom {
   // The light DOM of the element is enclosed inside the lightDomView
-  lightDomView:View;
+  lightDomView: View;
   // The shadow DOM
-  shadowDomView:View;
+  shadowDomView: View;
   // The nodes of the light DOM
-  nodes:List<Node>;
-  roots:List<_Root>;
+  nodes: List<Node>;
+  roots: List<_Root>;
 
-  constructor(lightDomView:View, shadowDomView:View, element:Element) {
+  constructor(lightDomView: View, shadowDomView: View, element: Element) {
     this.lightDomView = lightDomView;
     this.shadowDomView = shadowDomView;
     this.nodes = DOM.childNodesAsList(element);
@@ -46,12 +46,10 @@ export class LightDom {
     }
   }
 
-  contentTags(): List<Content> {
-    return this._collectAllContentTags(this.shadowDomView, []);
-  }
+  contentTags(): List<Content> { return this._collectAllContentTags(this.shadowDomView, []); }
 
   // Collects the Content directives from the view and all its child views
-  _collectAllContentTags(view: View, acc:List<Content>):List<Content> {
+  _collectAllContentTags(view: View, acc: List<Content>): List<Content> {
     var eis = view.elementInjectors;
     for (var i = 0; i < eis.length; ++i) {
       var ei = eis[i];
@@ -62,9 +60,7 @@ export class LightDom {
 
       } else if (ei.hasPreBuiltObject(ViewContainer)) {
         var vc = ei.get(ViewContainer);
-        ListWrapper.forEach(vc.contentTagContainers(), (view) => {
-          this._collectAllContentTags(view, acc);
-        });
+        ListWrapper.forEach(vc.contentTagContainers(), (view) => { this._collectAllContentTags(view, acc); });
       }
     }
     return acc;
@@ -74,12 +70,11 @@ export class LightDom {
   // - nodes from enclosed ViewContainers,
   // - nodes from enclosed content tags,
   // - plain DOM nodes
-  expandedDomNodes():List {
+  expandedDomNodes(): List {
     var res = [];
 
     var roots = this._roots();
     for (var i = 0; i < roots.length; ++i) {
-
       var root = roots[i];
       var ei = root.injector;
 
@@ -104,15 +99,15 @@ export class LightDom {
     if (isPresent(this.roots)) return this.roots;
 
     var viewInj = this.lightDomView.elementInjectors;
-    this.roots = ListWrapper.map(this.nodes, (n) =>
-      new _Root(n, ListWrapper.find(viewInj, (inj) => inj.forElement(n))));
+    this.roots =
+        ListWrapper.map(this.nodes, (n) => new _Root(n, ListWrapper.find(viewInj, (inj) => inj.forElement(n))));
 
     return this.roots;
   }
 }
 
 // Projects the light DOM into the shadow DOM
-function redistributeNodes(contents:List<Content>, nodes:List<Node>) {
+function redistributeNodes(contents: List<Content>, nodes: List<Node>) {
   for (var i = 0; i < contents.length; ++i) {
     var content = contents[i];
     var select = content.select;

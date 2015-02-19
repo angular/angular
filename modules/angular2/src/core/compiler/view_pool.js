@@ -9,9 +9,7 @@ export class ViewPool {
     this._capacity = capacity;
   }
 
-  pop(): View {
-    return ListWrapper.isEmpty(this._views) ? null : ListWrapper.removeLast(this._views);
-  }
+  pop(): View { return ListWrapper.isEmpty(this._views) ? null : ListWrapper.removeLast(this._views); }
 
   push(view: View) {
     if (this._views.length < this._capacity) {
@@ -19,8 +17,5 @@ export class ViewPool {
     }
   }
 
-  length() {
-    return this._views.length;
-  }
+  length() { return this._views.length; }
 }
-

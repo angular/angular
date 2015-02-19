@@ -8,9 +8,9 @@ import {CompileStep} from './compile_step';
  * Right now it only allows to add a parent element.
  */
 export class CompileControl {
-  _steps:List<CompileStep>;
-  _currentStepIndex:number;
-  _parent:CompileElement;
+  _steps: List<CompileStep>;
+  _currentStepIndex: number;
+  _parent: CompileElement;
   _results;
   _additionalChildren;
   constructor(steps) {
@@ -22,12 +22,12 @@ export class CompileControl {
   }
 
   // only public so that it can be used by compile_pipeline
-  internalProcess(results, startStepIndex, parent:CompileElement, current:CompileElement) {
+  internalProcess(results, startStepIndex, parent: CompileElement, current: CompileElement) {
     this._results = results;
     var previousStepIndex = this._currentStepIndex;
     var previousParent = this._parent;
 
-    for (var i=startStepIndex; i<this._steps.length; i++) {
+    for (var i = startStepIndex; i < this._steps.length; i++) {
       var step = this._steps[i];
       this._parent = parent;
       this._currentStepIndex = i;
@@ -44,12 +44,12 @@ export class CompileControl {
     return localAdditionalChildren;
   }
 
-  addParent(newElement:CompileElement) {
-    this.internalProcess(this._results, this._currentStepIndex+1, this._parent, newElement);
+  addParent(newElement: CompileElement) {
+    this.internalProcess(this._results, this._currentStepIndex + 1, this._parent, newElement);
     this._parent = newElement;
   }
 
-  addChild(element:CompileElement) {
+  addChild(element: CompileElement) {
     if (isBlank(this._additionalChildren)) {
       this._additionalChildren = ListWrapper.create();
     }

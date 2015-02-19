@@ -1,11 +1,7 @@
 export class OpaqueToken {
-  _desc:string;
+  _desc: string;
 
-  constructor(desc:string){
-    this._desc = `Token(${desc})`;
-  }
+  constructor(desc: string) { this._desc = `Token(${desc})`; }
 
-  toString() {
-    return this._desc;
-  }
+  toString() { return this._desc; }
 }

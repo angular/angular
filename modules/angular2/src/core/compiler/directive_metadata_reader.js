@@ -4,10 +4,10 @@ import {DirectiveMetadata} from './directive_metadata';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 export class DirectiveMetadataReader {
-  read(type:Type):DirectiveMetadata {
+  read(type: Type): DirectiveMetadata {
     var annotations = reflector.annotations(type);
     if (isPresent(annotations)) {
-      for (var i=0; i<annotations.length; i++) {
+      for (var i = 0; i < annotations.length; i++) {
         var annotation = annotations[i];
 
         if (annotation instanceof Directive) {
@@ -17,5 +17,4 @@ export class DirectiveMetadataReader {
     }
     throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
   }
-
 }
