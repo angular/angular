@@ -9,9 +9,10 @@ import {ElementBindingMarker} from './element_binding_marker';
 import {ProtoViewBuilder} from './proto_view_builder';
 import {ProtoElementInjectorBuilder} from './proto_element_injector_builder';
 import {ElementBinderBuilder} from './element_binder_builder';
-import {ShadowDomTransformer} from './shadow_dom_transformer';
+import {ShimShadowCss} from './shim_shadow_css';
+import {ShimShadowDom} from './shim_shadow_dom';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {stringify} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/facade/dom';
 
@@ -31,8 +32,8 @@ export function createDefaultSteps(
 
   var steps = [new ViewSplitter(parser, compilationUnit)];
 
-  if (!(shadowDomStrategy instanceof NativeShadowDomStrategy)) {
-    var step = new ShadowDomTransformer(compiledComponent, shadowDomStrategy, DOM.defaultDoc().head);
+  if (shadowDomStrategy instanceof EmulatedShadowDomStrategy) {
+    var step = new ShimShadowCss(compiledComponent, shadowDomStrategy, DOM.defaultDoc().head);
     ListWrapper.push(steps, step);
   }
 
@@ -45,6 +46,11 @@ export function createDefaultSteps(
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder(parser, compilationUnit)
   ]);
+
+  if (shadowDomStrategy instanceof EmulatedShadowDomStrategy) {
+    var step = new ShimShadowDom(compiledComponent, shadowDomStrategy);
+    ListWrapper.push(steps, step);
+  }
 
   return steps;
 }
