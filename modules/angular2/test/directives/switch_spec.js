@@ -8,7 +8,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {TemplateAnnotation, Template} from 'angular2/src/core/annotations/template';
 import {TemplateLoader} from 'angular2/core';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {Switch, SwitchWhen, SwitchDefault} from 'angular2/src/directives/switch';
@@ -31,7 +31,7 @@ export function main() {
     }
 
     function compileWithTemplate(html) {
-      var template = new Template({
+      var template = new TemplateAnnotation({
         inline: html,
         directives: [Switch, SwitchWhen, SwitchDefault]
       });
@@ -175,11 +175,11 @@ class FakeTemplateResolver extends TemplateResolver {
     this._cmpTemplates = MapWrapper.create();
   }
 
-  setTemplate(component: Type, template: Template) {
+  setTemplate(component: Type, template: TemplateAnnotation) {
     MapWrapper.set(this._cmpTemplates, component, template);
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     var override = MapWrapper.get(this._cmpTemplates, component);
 
     if (isPresent(override)) {

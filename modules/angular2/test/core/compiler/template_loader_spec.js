@@ -4,8 +4,8 @@ import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {ComponentAnnotation} from 'angular2/src/core/annotations/annotations';
+import {TemplateAnnotation} from 'angular2/src/core/annotations/template';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {Type, stringify, isPresent} from 'angular2/src/facade/lang';
@@ -23,13 +23,13 @@ export function main() {
     });
 
     it('should load inline templates synchronously', () => {
-      var template = new Template({inline: 'inline template'});
+      var template = new TemplateAnnotation({inline: 'inline template'});
       expect(loader.load(template).content).toHaveText('inline template');
     });
 
     it('should load templates through XHR', (done) => {
       xhr.expect('/foo', 'xhr template');
-      var template = new Template({url: '/foo'});
+      var template = new TemplateAnnotation({url: '/foo'});
       loader.load(template).then((el) => {
         expect(el.content).toHaveText('xhr template');
         done();
@@ -40,7 +40,7 @@ export function main() {
     it('should cache template loaded through XHR', (done) => {
       var firstEl;
       xhr.expect('/foo', 'xhr template');
-      var template = new Template({url: '/foo'});
+      var template = new TemplateAnnotation({url: '/foo'});
       loader.load(template)
         .then((el) => {
           firstEl = el;
@@ -55,14 +55,14 @@ export function main() {
     });
 
     it('should throw when no template is defined', () => {
-      var template =  new Template({inline: null, url: null});
+      var template =  new TemplateAnnotation({inline: null, url: null});
       expect(() => loader.load(template))
         .toThrowError('Templates should have either their url or inline property set');
     });
 
     it('should return a rejected Promise when xhr loading fails', (done) => {
       xhr.expect('/foo', null);
-      var template = new Template({url: '/foo'});
+      var template = new TemplateAnnotation({url: '/foo'});
       PromiseWrapper.then(loader.load(template),
         function(_) { throw 'Unexpected response'; },
         function(error) {

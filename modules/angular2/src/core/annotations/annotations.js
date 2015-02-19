@@ -1,8 +1,8 @@
-import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
+import {ABSTRACT, CONST, normalizeBlank, isPresent, addAnnotation} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 
 @ABSTRACT()
-export class Directive {
+export class DirectiveAnnotation {
   selector:any; //string;
   bind:any;
   lightDomServices:any; //List;
@@ -36,7 +36,11 @@ export class Directive {
   }
 }
 
-export class Component extends Directive {
+export function Directive(arg = undefined) {
+    return c => addAnnotation(c, new DirectiveAnnotation(arg));
+}
+
+export class ComponentAnnotation extends DirectiveAnnotation {
   //TODO: vsavkin: uncomment it once the issue with defining fields in a sublass works
   lightDomServices:any; //List;
   shadowDomServices:any; //List;
@@ -78,7 +82,11 @@ export class Component extends Directive {
   }
 }
 
-export class Decorator extends Directive {
+export function Component(arg = undefined) {
+    return c => addAnnotation(c, new ComponentAnnotation(arg));
+}
+
+export class DecoratorAnnotation extends DirectiveAnnotation {
   compileChildren: boolean;
   @CONST()
   constructor({
@@ -109,7 +117,11 @@ export class Decorator extends Directive {
   }
 }
 
-export class Viewport extends Directive {
+export function Decorator(arg = undefined) {
+    return c => addAnnotation(c, new DecoratorAnnotation(arg));
+}
+
+export class ViewportAnnotation extends DirectiveAnnotation {
   @CONST()
   constructor({
       selector,
@@ -134,6 +146,10 @@ export class Viewport extends Directive {
         lifecycle: lifecycle
     });
   }
+}
+
+export function Viewport(arg = undefined) {
+    return c => addAnnotation(c, new ViewportAnnotation(arg));
 }
 
 export const onDestroy = "onDestroy";

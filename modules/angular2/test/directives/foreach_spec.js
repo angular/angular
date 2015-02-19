@@ -13,8 +13,8 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
-import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {Component} from 'angular2/src/core/annotations/annotations';
+import {TemplateAnnotation} from 'angular2/src/core/annotations/template';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {Foreach} from 'angular2/src/directives/foreach';
@@ -37,7 +37,7 @@ export function main() {
     }
 
     function compileWithTemplate(html) {
-      var template = new Template({
+      var template = new TemplateAnnotation({
         inline: html,
         directives: [Foreach]
       });
@@ -244,11 +244,11 @@ class FakeTemplateResolver extends TemplateResolver {
     this._cmpTemplates = MapWrapper.create();
   }
 
-  setTemplate(component: Type, template: Template) {
+  setTemplate(component: Type, template: TemplateAnnotation) {
     MapWrapper.set(this._cmpTemplates, component, template);
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     var override = MapWrapper.get(this._cmpTemplates, component);
 
     if (isPresent(override)) {

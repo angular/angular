@@ -5,7 +5,7 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {XHR} from './xhr/xhr';
 
-import {Template} from 'angular2/src/core/annotations/template';
+import {TemplateAnnotation} from 'angular2/src/core/annotations/template';
 
 /**
  * Strategy to load component templates.
@@ -20,7 +20,7 @@ export class TemplateLoader {
   }
 
   // TODO(vicb): union type: return an Element or a Promise<Element>
-  load(template: Template) {
+  load(template: TemplateAnnotation) {
     if (isPresent(template.inline)) {
       return DOM.createTemplate(template.inline);
     }

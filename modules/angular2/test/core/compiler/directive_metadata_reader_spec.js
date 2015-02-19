@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {DecoratorAnnotation, Decorator, ComponentAnnotation, Component, ViewportAnnotation, Viewport} from 'angular2/src/core/annotations/annotations';
+import {TemplateAnnotation} from 'angular2/src/core/annotations/template';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {CONST} from 'angular2/src/facade/lang';
@@ -31,19 +31,19 @@ export function main() {
     it('should read out the Decorator annotation', () => {
       var directiveMetadata = reader.read(SomeDecorator);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeDecorator, new Decorator({selector: 'someDecorator'})));
+        new DirectiveMetadata(SomeDecorator, new DecoratorAnnotation({selector: 'someDecorator'})));
     });
 
     it('should read out the Viewport annotation', () => {
       var directiveMetadata = reader.read(SomeViewport);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeViewport, new Viewport({selector: 'someViewport'})));
+        new DirectiveMetadata(SomeViewport, new ViewportAnnotation({selector: 'someViewport'})));
     });
 
     it('should read out the Component annotation', () => {
       var directiveMetadata = reader.read(SomeComponent);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeComponent, new Component({selector: 'someComponent'})));
+        new DirectiveMetadata(SomeComponent, new ComponentAnnotation({selector: 'someComponent'})));
     });
 
     it('should throw if not matching annotation is found', () => {

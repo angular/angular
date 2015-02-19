@@ -2,7 +2,7 @@ import {describe, beforeEach, expect, it, iit, ddescribe, el} from 'angular2/tes
 
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
 import {ShadowDomTransformer} from 'angular2/src/core/compiler/pipeline/shadow_dom_transformer';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {ComponentAnnotation} from 'angular2/src/core/annotations/annotations';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {shimCssText} from 'angular2/src/core/compiler/shadow_dom_emulation/shim_css';
@@ -13,7 +13,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 export function main() {
   describe('ShadowDomTransformer', () => {
     function createPipeline(selector, strategy:ShadowDomStrategy, styleHost) {
-      var component = new Component({selector: selector});
+      var component = new ComponentAnnotation({selector: selector});
       var meta = new DirectiveMetadata(null, component);
       var transformer = new ShadowDomTransformer(meta, strategy, styleHost);
       transformer.clearCache();

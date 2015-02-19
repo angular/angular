@@ -1,4 +1,4 @@
-import {Template} from 'angular2/src/core/annotations/template';
+import {TemplateAnnotation, Template} from 'angular2/src/core/annotations/template';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
@@ -13,7 +13,7 @@ export class TemplateResolver {
     this._cache = MapWrapper.create();
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     var template = MapWrapper.get(this._cache, component);
 
     if (isBlank(template)) {
@@ -28,7 +28,7 @@ export class TemplateResolver {
     var annotations = reflector.annotations(component);
     for (var i = 0; i < annotations.length; i++) {
       var annotation = annotations[i];
-      if (annotation instanceof Template) {
+      if (annotation instanceof TemplateAnnotation) {
         return annotation;
       }
     }

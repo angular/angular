@@ -1,5 +1,5 @@
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {Directive} from '../annotations/annotations';
+import {DirectiveAnnotation} from '../annotations/annotations';
 import {DirectiveMetadata} from './directive_metadata';
 import {reflector} from 'angular2/src/reflection/reflection';
 
@@ -10,7 +10,7 @@ export class DirectiveMetadataReader {
       for (var i=0; i<annotations.length; i++) {
         var annotation = annotations[i];
 
-        if (annotation instanceof Directive) {
+        if (annotation instanceof DirectiveAnnotation) {
           return new DirectiveMetadata(type, annotation);
         }
       }

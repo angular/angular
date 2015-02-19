@@ -1,7 +1,7 @@
 import {int, isPresent} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
+import {bootstrap, ComponentAnnotation, ViewportAnnotation, TemplateAnnotation, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -83,8 +83,8 @@ export function setupReflectorForApp() {
     'factory': () => { return new App(); },
     'parameters': [],
     'annotations': [
-      new Component({selector: 'scroll-app'}),
-      new Template({
+      new ComponentAnnotation({selector: 'scroll-app'}),
+      new TemplateAnnotation({
         directives: [ScrollAreaComponent, If, Foreach],
         inline: `
           <div>

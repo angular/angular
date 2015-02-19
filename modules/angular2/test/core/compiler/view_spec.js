@@ -3,7 +3,7 @@ import {ProtoView} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, Decorator, Viewport, Directive, onChange} from 'angular2/src/core/annotations/annotations';
+import {Component, DecoratorAnnotation, Decorator, Viewport, DirectiveAnnotation, onChange} from 'angular2/src/core/annotations/annotations';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
 import {Template} from 'angular2/src/core/annotations/template';
@@ -562,7 +562,7 @@ export function main() {
             new DynamicProtoChangeDetector(), null);
 
           pv.bindElement(new ProtoElementInjector(null, 0, [
-            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new DirectiveAnnotation({lifecycle: [onChange]}))
           ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'), false);
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'), false);
@@ -581,7 +581,7 @@ export function main() {
             new DynamicProtoChangeDetector(), null);
 
           pv.bindElement(new ProtoElementInjector(null, 0, [
-            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new DirectiveAnnotation({lifecycle: [onChange]}))
           ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'), false);
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'), false);

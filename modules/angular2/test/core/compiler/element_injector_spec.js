@@ -11,7 +11,7 @@ import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
-import {Directive} from 'angular2/src/core/annotations/annotations';
+import {DirectiveAnnotation} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 @proxy
@@ -386,7 +386,7 @@ export function main() {
 
       it("should call onDestroy on directives subscribed to this event", function () {
         var inj = injector([
-          DirectiveBinding.createFromType(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}))
+          DirectiveBinding.createFromType(DirectiveWithDestroy, new DirectiveAnnotation({lifecycle: [onDestroy]}))
         ]);
         var destroy = inj.get(DirectiveWithDestroy);
         inj.clearDirectives();

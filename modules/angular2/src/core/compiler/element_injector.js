@@ -8,7 +8,7 @@ import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
+import {DirectiveAnnotation, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -125,19 +125,19 @@ export class DirectiveBinding extends Binding {
   callOnChange:boolean;
   onCheck:boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List<any>, providedAsPromise:boolean, annotation:Directive) {
+  constructor(key:Key, factory:Function, dependencies:List<any>, providedAsPromise:boolean, annotation:DirectiveAnnotation) {
     super(key, factory, dependencies, providedAsPromise);
     this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
     //this.onCheck = isPresent(annotation) && annotation.hasLifecycleHook(onCheck);
   }
 
-  static createFromBinding(b:Binding, annotation:Directive):Binding {
+  static createFromBinding(b:Binding, annotation:DirectiveAnnotation):Binding {
     var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
     return new DirectiveBinding(b.key, b.factory, deps, b.providedAsPromise, annotation);
   }
 
-  static createFromType(type:Type, annotation:Directive):Binding {
+  static createFromType(type:Type, annotation:DirectiveAnnotation):Binding {
     var binding = bind(type).toClass(type);
     return DirectiveBinding.createFromBinding(binding, annotation);
   }

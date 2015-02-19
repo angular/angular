@@ -1,7 +1,7 @@
 import {int} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {Component, Viewport, Template, ViewContainer, Compiler}
+import {ComponentAnnotation, ViewportAnnotation, TemplateAnnotation, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -65,10 +65,10 @@ export function setupReflectorForScrollArea() {
     'factory': () => new ScrollAreaComponent(),
     'parameters': [],
     'annotations': [
-      new Component({
+      new ComponentAnnotation({
         selector: 'scroll-area',
       }),
-      new Template({
+      new TemplateAnnotation({
         directives: [ScrollItemComponent, Foreach],
         inline: `
           <div>

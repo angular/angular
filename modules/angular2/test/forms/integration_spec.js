@@ -14,7 +14,7 @@ import {DOM} from 'angular2/src/facade/dom';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent} from 'angular2/src/facade/lang';
 
-import {Component, Decorator, Template} from 'angular2/core';
+import {Component, Decorator, TemplateAnnotation} from 'angular2/core';
 import {ControlGroupDirective, ControlNameDirective,
   ControlDirective, NewControlGroupDirective,
   Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
@@ -36,7 +36,7 @@ export function main() {
       tplResolver
     );
 
-    tplResolver.setTemplate(componentType, new Template({
+    tplResolver.setTemplate(componentType, new TemplateAnnotation({
       inline: template,
       directives: [ControlGroupDirective, ControlNameDirective, ControlDirective,
         NewControlGroupDirective, WrappedValue]
@@ -249,11 +249,11 @@ class FakeTemplateResolver extends TemplateResolver {
     this._cmpTemplates = MapWrapper.create();
   }
 
-  setTemplate(component: Type, template: Template) {
+  setTemplate(component: Type, template: TemplateAnnotation) {
     MapWrapper.set(this._cmpTemplates, component, template);
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     var override = MapWrapper.get(this._cmpTemplates, component);
 
     if (isPresent(override)) {

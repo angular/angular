@@ -5,7 +5,7 @@ import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
 import {DirectiveMetadata} from '../directive_metadata';
-import {Component, Viewport} from '../../annotations/annotations';
+import {ComponentAnnotation, ViewportAnnotation} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
@@ -69,7 +69,7 @@ export class DirectiveParser extends CompileStep {
     // only be present on <template> elements any more!
     var isTemplateElement = current.element instanceof TemplateElement;
     this._selectorMatcher.match(cssSelector, (directive) => {
-      if (directive.annotation instanceof Viewport) {
+      if (directive.annotation instanceof ViewportAnnotation) {
         if (!isTemplateElement) {
           throw new BaseException('Viewport directives need to be placed on <template> elements or elements with template attribute!');
         } else if (isPresent(current.viewportDirective)) {
@@ -77,7 +77,7 @@ export class DirectiveParser extends CompileStep {
         }
       } else if (isTemplateElement) {
         throw new BaseException('Only template directives are allowed on <template> elements!');
-      } else if ((directive.annotation instanceof Component) && isPresent(current.componentDirective)) {
+      } else if ((directive.annotation instanceof ComponentAnnotation) && isPresent(current.componentDirective)) {
         throw new BaseException('Only one component directive per element is allowed!');
       }
       current.addDirective(directive);

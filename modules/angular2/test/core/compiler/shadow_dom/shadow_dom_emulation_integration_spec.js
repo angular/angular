@@ -16,8 +16,8 @@ import {ShadowDomStrategy,
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
-import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {Decorator, ComponentAnnotation, Component, Viewport} from 'angular2/src/core/annotations/annotations';
+import {TemplateAnnotation, Template} from 'angular2/src/core/annotations/template';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
@@ -46,7 +46,7 @@ export function main() {
         });
 
         function compile(template, directives: List<Type>, assertions) {
-          tplResolver.setTemplate(MyComp, new Template({
+          tplResolver.setTemplate(MyComp, new TemplateAnnotation({
             inline: template,
             directives: directives
           }));
@@ -224,7 +224,7 @@ class TestDirectiveMetadataReader extends DirectiveMetadataReader {
     this.shadowDomStrategy = shadowDomStrategy;
   }
 
-  parseShadowDomStrategy(annotation:Component):ShadowDomStrategy{
+  parseShadowDomStrategy(annotation:ComponentAnnotation):ShadowDomStrategy{
     return this.shadowDomStrategy;
   }
 }
@@ -277,7 +277,7 @@ class MultipleContentTagsComponent {
 
 
 @Component({selector: 'conditional-content'})
-@Template({
+ @Template({
   inline: '<div>(<div template="auto: cond"><content select=".left"></content></div>, <content></content>)</div>',
   directives: [AutoViewportDirective]
 })
@@ -346,11 +346,11 @@ class FakeTemplateResolver extends TemplateResolver {
     this._cmpTemplates = MapWrapper.create();
   }
 
-  setTemplate(component: Type, template: Template) {
+  setTemplate(component: Type, template: TemplateAnnotation) {
     MapWrapper.set(this._cmpTemplates, component, template);
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     var override = MapWrapper.get(this._cmpTemplates, component);
 
     if (isPresent(override)) {

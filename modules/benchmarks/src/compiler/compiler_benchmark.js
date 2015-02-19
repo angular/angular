@@ -9,9 +9,9 @@ import {Parser, Lexer, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {ComponentAnnotation, Component} from 'angular2/src/core/annotations/annotations';
+import {DecoratorAnnotation, Decorator} from 'angular2/src/core/annotations/annotations';
+import {TemplateAnnotation} from 'angular2/src/core/annotations/template';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
@@ -22,37 +22,37 @@ function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
     "factory": () => new BenchmarkComponent(),
     "parameters": [],
-    "annotations" : [new Component()]
+    "annotations" : [new ComponentAnnotation()]
   });
 
   reflector.registerType(Dir0, {
     "factory": () => new Dir0(),
     "parameters": [],
-    "annotations" : [new Decorator({selector: '[dir0]', bind: {'attr0': 'prop'}})]
+    "annotations" : [new DecoratorAnnotation({selector: '[dir0]', bind: {'attr0': 'prop'}})]
   });
 
   reflector.registerType(Dir1, {
     "factory": (dir0) => new Dir1(dir0),
     "parameters": [[Dir0]],
-    "annotations" : [new Decorator({selector: '[dir1]', bind: {'attr1': 'prop'}})]
+    "annotations" : [new DecoratorAnnotation({selector: '[dir1]', bind: {'attr1': 'prop'}})]
   });
 
   reflector.registerType(Dir2, {
     "factory": (dir1) => new Dir2(dir1),
     "parameters": [[Dir1]],
-    "annotations" : [new Decorator({selector: '[dir2]', bind: {'attr2': 'prop'}})]
+    "annotations" : [new DecoratorAnnotation({selector: '[dir2]', bind: {'attr2': 'prop'}})]
   });
 
   reflector.registerType(Dir3, {
     "factory": (dir2) => new Dir3(dir2),
     "parameters": [[Dir2]],
-    "annotations" : [new Decorator({selector: '[dir3]', bind: {'attr3': 'prop'}})]
+    "annotations" : [new DecoratorAnnotation({selector: '[dir3]', bind: {'attr3': 'prop'}})]
   });
 
   reflector.registerType(Dir4, {
     "factory": (dir3) => new Dir4(dir3),
     "parameters": [[Dir3]],
-    "annotations" : [new Decorator({selector: '[dir4]', bind: {'attr4': 'prop'}})]
+    "annotations" : [new DecoratorAnnotation({selector: '[dir4]', bind: {'attr4': 'prop'}})]
   });
 
   reflector.registerGetters({
@@ -166,20 +166,20 @@ class Dir4 {
 class BenchmarkComponent {}
 
 class FakeTemplateResolver extends TemplateResolver {
-  _template: Template;
+  _template: TemplateAnnotation;
 
   constructor() {
     super();
   }
 
   setTemplateHtml(html: string) {
-    this._template = new Template({
+    this._template = new TemplateAnnotation({
       inline: html,
       directives: [Dir0, Dir1, Dir2, Dir3, Dir4]
     });
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): TemplateAnnotation {
     return this._template;
   }
 }

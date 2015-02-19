@@ -5,7 +5,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
 import {
-  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange
+  bootstrap, Component, ViewportAnnotation, Template, ViewContainer, Compiler, onChange
 }  from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -154,7 +154,7 @@ export function setupReflectorForAngular() {
   reflector.registerType(If, {
     'factory': (vp) => new If(vp),
     'parameters': [[ViewContainer]],
-    'annotations' : [new Viewport({
+    'annotations' : [new ViewportAnnotation({
       selector: '[if]',
       bind: {
         'if': 'condition'
@@ -165,7 +165,7 @@ export function setupReflectorForAngular() {
   reflector.registerType(Foreach, {
     'factory': (vp) => new Foreach(vp),
     'parameters': [[ViewContainer]],
-    'annotations' : [new Viewport({
+    'annotations' : [new ViewportAnnotation({
       selector: '[foreach]',
       lifecycle: [onChange],
       bind: {
