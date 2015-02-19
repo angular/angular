@@ -1,9 +1,9 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {stringify} from 'angular2/src/facade/lang';
 
-function findFirstClosedCycle(keys:List) {
+function findFirstClosedCycle(keys: List) {
   var res = [];
-  for(var i = 0; i < keys.length; ++i) {
+  for (var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
       ListWrapper.push(res, keys[i]);
       return res;
@@ -14,7 +14,7 @@ function findFirstClosedCycle(keys:List) {
   return res;
 }
 
-function constructResolvingPath(keys:List) {
+function constructResolvingPath(keys: List) {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
@@ -27,11 +27,11 @@ function constructResolvingPath(keys:List) {
 export class KeyMetadataError extends Error {}
 
 export class ProviderError extends Error {
-  keys:List;
-  constructResolvingMessage:Function;
+  keys: List;
+  constructResolvingMessage: Function;
   message;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(key, constructResolvingMessage:Function) {
+  constructor(key, constructResolvingMessage: Function) {
     super();
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -44,9 +44,7 @@ export class ProviderError extends Error {
     this.message = this.constructResolvingMessage(this.keys);
   }
 
-  toString() {
-    return this.message;
-  }
+  toString() { return this.message; }
 }
 
 export class NoProviderError extends ProviderError {
@@ -64,8 +62,7 @@ export class AsyncBindingError extends ProviderError {
   constructor(key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Cannot instantiate ${first} synchronously. ` +
-        `It is provided as a promise!${constructResolvingPath(keys)}`;
+      return `Cannot instantiate ${first} synchronously. ` + `It is provided as a promise!${constructResolvingPath(keys)}`;
     });
   }
 }
@@ -84,32 +81,27 @@ export class InstantiationError extends ProviderError {
   constructor(originalException, key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
-        ` ORIGINAL ERROR: ${originalException}`;
+      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` + ` ORIGINAL ERROR: ${originalException}`;
     });
   }
 }
 
 export class InvalidBindingError extends Error {
-  message:string;
+  message: string;
   constructor(binding) {
     super();
     this.message = `Invalid binding ${binding}`;
   }
 
-  toString() {
-    return this.message;
-  }
+  toString() { return this.message; }
 }
 
 export class NoAnnotationError extends Error {
-  message:string;
+  message: string;
   constructor(typeOrFunc) {
     super();
     this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}`;
   }
 
-  toString() {
-    return this.message;
-  }
+  toString() { return this.message; }
 }

@@ -10,18 +10,16 @@ import {CompileStep} from './compile_step';
  * all elements in a template.
  */
 export class CompilePipeline {
-  _control:CompileControl;
-  constructor(steps:List<CompileStep>) {
-    this._control = new CompileControl(steps);
-  }
+  _control: CompileControl;
+  constructor(steps: List<CompileStep>) { this._control = new CompileControl(steps); }
 
-  process(rootElement:Element):List {
+  process(rootElement: Element): List {
     var results = ListWrapper.create();
     this._process(results, null, new CompileElement(rootElement));
     return results;
   }
 
-  _process(results, parent:CompileElement, current:CompileElement) {
+  _process(results, parent: CompileElement, current: CompileElement) {
     var additionalChildren = this._control.internalProcess(results, 0, parent, current);
 
     if (current.compileChildren) {
@@ -38,7 +36,7 @@ export class CompilePipeline {
     }
 
     if (isPresent(additionalChildren)) {
-      for (var i=0; i<additionalChildren.length; i++) {
+      for (var i = 0; i < additionalChildren.length; i++) {
         this._process(results, current, additionalChildren[i]);
       }
     }

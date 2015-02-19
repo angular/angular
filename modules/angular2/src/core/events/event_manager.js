@@ -25,9 +25,7 @@ export class EventManager {
     }
   }
 
-  getZone(): VmTurnZone {
-    return this._zone;
-  }
+  getZone(): VmTurnZone { return this._zone; }
 
   _findPluginFor(eventName: string): EventManagerPlugin {
     var plugins = this._plugins;
@@ -44,9 +42,7 @@ export class EventManager {
     this._zone.runOutsideAngular(() => {
       DOM.on(element, eventName, (event) => {
         if (event.target === element) {
-          this._zone.run(function() {
-            handler(event);
-          });
+          this._zone.run(function() { handler(event); });
         }
       });
     });
@@ -56,11 +52,7 @@ export class EventManager {
 export class EventManagerPlugin {
   manager: EventManager;
 
-  supports(eventName: string): boolean {
-    return false;
-  }
+  supports(eventName: string): boolean { return false; }
 
-  addEventListener(element: Element, eventName: string, handler: Function) {
-    throw "not implemented";
-  }
+  addEventListener(element: Element, eventName: string, handler: Function) { throw "not implemented"; }
 }

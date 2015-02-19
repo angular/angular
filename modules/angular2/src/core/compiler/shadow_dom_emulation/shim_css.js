@@ -50,40 +50,39 @@ export class CssShim {
     return this.scopeRules(rules);
   }
 
-  convertColonHost(css: string):string {
+  convertColonHost(css: string): string {
     css = StringWrapper.replaceAll(css, _HOST_RE, _HOST_TOKEN);
 
-    var partReplacer = function(host, part, suffix) {
-      part = StringWrapper.replaceAll(part, _HOST_TOKEN_RE, '');
-      return `${host}${part}${suffix}`;
-    }
-
-    return StringWrapper.replaceAllMapped(css, _COLON_HOST_RE, function(m) {
-      var base = _HOST_TOKEN;
-      var inParens = m[2];
-      var rest = m[3];
-
-      if (isPresent(inParens)) {
-        var srcParts = inParens.split(',');
-        var dstParts = [];
-
-        for (var i = 0; i < srcParts.length; i++) {
-          var part = srcParts[i].trim();
-          if (part.length > 0) {
-            ListWrapper.push(dstParts, partReplacer(base, part, rest));
-          }
+    var partReplacer =
+        function(host, part, suffix) {
+          part = StringWrapper.replaceAll(part, _HOST_TOKEN_RE, '');
+          return `${host}${part}${suffix}`;
         }
 
-        return ListWrapper.join(dstParts, ',');
-      } else {
-        return `${base}${rest}`;
-      }
-    });
+        return StringWrapper.replaceAllMapped(css, _COLON_HOST_RE, function(m) {
+          var base = _HOST_TOKEN;
+          var inParens = m[2];
+          var rest = m[3];
+
+          if (isPresent(inParens)) {
+            var srcParts = inParens.split(',');
+            var dstParts = [];
+
+            for (var i = 0; i < srcParts.length; i++) {
+              var part = srcParts[i].trim();
+              if (part.length > 0) {
+                ListWrapper.push(dstParts, partReplacer(base, part, rest));
+              }
+            }
+
+            return ListWrapper.join(dstParts, ',');
+          } else {
+            return `${base}${rest}`;
+          }
+        });
   }
 
-  cssToRules(css: string): List<_Rule> {
-    return new _Parser(css).parse();
-  }
+  cssToRules(css: string): List<_Rule> { return new _Parser(css).parse(); }
 
   scopeRules(rules: List<_Rule>): string {
     var scopedRules = [];
@@ -91,25 +90,20 @@ export class CssShim {
 
     for (var i = 0; i < rules.length; i++) {
       var rule = rules[i];
-      if (isPresent(prevRule) &&
-          prevRule.selectorText == _POLYFILL_NON_STRICT) {
+      if (isPresent(prevRule) && prevRule.selectorText == _POLYFILL_NON_STRICT) {
         ListWrapper.push(scopedRules, this.scopeNonStrictMode(rule));
 
-      } else if (isPresent(prevRule) &&
-                 prevRule.selectorText == _POLYFILL_UNSCOPED_NEXT_SELECTOR) {
+      } else if (isPresent(prevRule) && prevRule.selectorText == _POLYFILL_UNSCOPED_NEXT_SELECTOR) {
         var content = this.extractContent(prevRule);
         var r = new _Rule(content, rule.body, null);
         ListWrapper.push(scopedRules, this.ruleToString(r));
 
-      } else if (isPresent(prevRule) &&
-                 prevRule.selectorText == _POLYFILL_NEXT_SELECTOR) {
-
+      } else if (isPresent(prevRule) && prevRule.selectorText == _POLYFILL_NEXT_SELECTOR) {
         var content = this.extractContent(prevRule);
         var r = new _Rule(content, rule.body, null);
         ListWrapper.push(scopedRules, this.scopeStrictMode(r))
 
-      } else if (rule.selectorText != _POLYFILL_NON_STRICT &&
-                 rule.selectorText != _POLYFILL_UNSCOPED_NEXT_SELECTOR &&
+      } else if (rule.selectorText != _POLYFILL_NON_STRICT && rule.selectorText != _POLYFILL_UNSCOPED_NEXT_SELECTOR &&
                  rule.selectorText != _POLYFILL_NEXT_SELECTOR) {
         ListWrapper.push(scopedRules, this.scopeStrictMode(rule));
       }
@@ -124,9 +118,7 @@ export class CssShim {
     return isPresent(match) ? match[1] : '';
   }
 
-  ruleToString(rule: _Rule): string {
-    return `${rule.selectorText} ${rule.body}`;
-  }
+  ruleToString(rule: _Rule): string { return `${rule.selectorText} ${rule.body}`; }
 
   scopeStrictMode(rule: _Rule): string {
     if (rule.hasNestedRules()) {
@@ -205,9 +197,8 @@ export class CssShim {
   }
 
   insertAttrSuffixIntoSelectorPart(p: string): string {
-    var shouldInsert = p.length > 0 &&
-                       !ListWrapper.contains(_SELECTOR_SPLITS, p) &&
-                       !StringWrapper.contains(p, this._attr);
+    var shouldInsert =
+        p.length > 0 && !ListWrapper.contains(_SELECTOR_SPLITS, p) && !StringWrapper.contains(p, this._attr);
     return shouldInsert ? this.insertAttr(p) : p;
   }
 
@@ -221,9 +212,7 @@ export class CssShim {
   }
 
   handleIsSelector(selector: string) {
-    return StringWrapper.replaceAllMapped(selector, _IS_SELECTORS, function(m) {
-      return m[1];
-    });
+    return StringWrapper.replaceAllMapped(selector, _IS_SELECTORS, function(m) { return m[1]; });
   }
 }
 
@@ -276,25 +265,17 @@ class _Lexer {
     return _EOF_TOKEN;
   }
 
-  isSelector(v: int): boolean {
-    return !this.isBodyStart(v) && v !== _$EOF;
-  }
+  isSelector(v: int): boolean { return !this.isBodyStart(v) && v !== _$EOF; }
 
-  isBodyStart(v: int): boolean {
-    return v === _$LBRACE;
-  }
+  isBodyStart(v: int): boolean { return v === _$LBRACE; }
 
-  isBodyEnd(v: int): boolean {
-    return v === _$RBRACE;
-  }
+  isBodyEnd(v: int): boolean { return v === _$RBRACE; }
 
   isMedia(v: int): boolean {
-    return v === 64; // @ -> 64
+    return v === 64;  // @ -> 64
   }
 
-  isWhitespace(v: int): boolean {
-    return (v >= _$TAB && v <= _$SPACE) || (v == _$NBSP)
-  }
+  isWhitespace(v: int): boolean { return (v >= _$TAB && v <= _$SPACE) || (v == _$NBSP) }
 
   skipWhitespace() {
     while (this.isWhitespace(this.peek)) {
@@ -335,7 +316,7 @@ class _Lexer {
       this.advance();
     }
     var media = StringWrapper.substring(this.input, start, this.index);
-    this.advance(); // skip "{"
+    this.advance();  // skip "{"
     return new _Token(media, 'media');
   }
 
@@ -405,13 +386,9 @@ class _Parser {
     }
   }
 
-  getNext(): _Token {
-    return this.tokens[this.currentIndex + 1];
-  }
+  getNext(): _Token { return this.tokens[this.currentIndex + 1]; }
 
-  getCurrent(): _Token {
-    return this.tokens[this.currentIndex];
-  }
+  getCurrent(): _Token { return this.tokens[this.currentIndex]; }
 }
 
 export class _Rule {
@@ -425,7 +402,5 @@ export class _Rule {
     this.rules = rules;
   }
 
-  hasNestedRules() {
-    return isPresent(this.rules);
-  }
+  hasNestedRules() { return isPresent(this.rules); }
 }

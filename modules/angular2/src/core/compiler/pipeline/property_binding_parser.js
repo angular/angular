@@ -16,8 +16,7 @@ import {CompileControl} from './compile_control';
 // Group 6 = identifier inside parenthesis
 // Group 7 = "#"
 // Group 8 = identifier after "#"
-var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+)');
+var BIND_NAME_REGEXP = RegExpWrapper.create('^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+)');
 
 /**
  * Parses the property bindings on a single element.
@@ -28,15 +27,15 @@ var BIND_NAME_REGEXP = RegExpWrapper.create(
  * - CompileElement#variableBindings
  */
 export class PropertyBindingParser extends CompileStep {
-  _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  _parser: Parser;
+  _compilationUnit: any;
+  constructor(parser: Parser, compilationUnit: any) {
     super();
     this._parser = parser;
     this._compilationUnit = compilationUnit;
   }
 
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     if (current.ignoreBindings) {
       return;
     }
@@ -50,8 +49,7 @@ export class PropertyBindingParser extends CompileStep {
           current.addPropertyBinding(bindParts[4], this._parseBinding(attrValue));
         } else if (isPresent(bindParts[2]) || isPresent(bindParts[7])) {
           // match: var-name / var-name="iden" / #name / #name="iden"
-          var identifier = (isPresent(bindParts[4]) && bindParts[4] !== '') ?
-              bindParts[4] : bindParts[8];
+          var identifier = (isPresent(bindParts[4]) && bindParts[4] !== '') ? bindParts[4] : bindParts[8];
           var value = attrValue == '' ? '\$implicit' : attrValue;
           current.addVariableBinding(identifier, value);
         } else if (isPresent(bindParts[3])) {
@@ -73,15 +71,9 @@ export class PropertyBindingParser extends CompileStep {
     });
   }
 
-  _parseInterpolation(input:string):AST {
-    return this._parser.parseInterpolation(input, this._compilationUnit);
-  }
+  _parseInterpolation(input: string): AST { return this._parser.parseInterpolation(input, this._compilationUnit); }
 
-  _parseBinding(input:string):AST {
-    return this._parser.parseBinding(input, this._compilationUnit);
-  }
+  _parseBinding(input: string): AST { return this._parser.parseBinding(input, this._compilationUnit); }
 
-  _parseAction(input:string):AST {
-    return this._parser.parseAction(input, this._compilationUnit);
-  }
+  _parseAction(input: string): AST { return this._parser.parseAction(input, this._compilationUnit); }
 }

@@ -29,7 +29,7 @@ export class TemplateLoader {
       var promise = StringMapWrapper.get(this._cache, url);
 
       if (isBlank(promise)) {
-        promise = this._xhr.get(url).then(function (html) {
+        promise = this._xhr.get(url).then(function(html) {
           var template = DOM.createTemplate(html);
           return template;
         });

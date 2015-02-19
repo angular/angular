@@ -20,13 +20,9 @@ import {DOM} from 'angular2/src/facade/dom';
  * Takes in an HTMLElement and produces the ProtoViews,
  * ProtoElementInjectors and ElementBinders in the end.
  */
-export function createDefaultSteps(
-    changeDetection:ChangeDetection,
-    parser:Parser,
-    compiledComponent: DirectiveMetadata,
-    directives: List<DirectiveMetadata>,
-    shadowDomStrategy: ShadowDomStrategy) {
-
+export function createDefaultSteps(changeDetection: ChangeDetection, parser: Parser,
+                                   compiledComponent: DirectiveMetadata, directives: List<DirectiveMetadata>,
+                                   shadowDomStrategy: ShadowDomStrategy) {
   var compilationUnit = stringify(compiledComponent.type);
 
   var steps = [new ViewSplitter(parser, compilationUnit)];
@@ -36,7 +32,7 @@ export function createDefaultSteps(
     ListWrapper.push(steps, step);
   }
 
-  steps = ListWrapper.concat(steps,[
+  steps = ListWrapper.concat(steps, [
     new PropertyBindingParser(parser, compilationUnit),
     new DirectiveParser(directives),
     new TextInterpolationParser(parser, compilationUnit),

@@ -6,11 +6,11 @@ import {Inject, InjectLazy, InjectPromise, DependencyAnnotation} from './annotat
 import {NoAnnotationError} from './exceptions';
 
 export class Dependency {
-  key:Key;
-  asPromise:boolean;
-  lazy:boolean;
-  properties:List;
-  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List) {
+  key: Key;
+  asPromise: boolean;
+  lazy: boolean;
+  properties: List;
+  constructor(key: Key, asPromise: boolean, lazy: boolean, properties: List) {
     this.key = key;
     this.asPromise = asPromise;
     this.lazy = lazy;
@@ -19,12 +19,12 @@ export class Dependency {
 }
 
 export class Binding {
-  key:Key;
-  factory:Function;
-  dependencies:List;
-  providedAsPromise:boolean;
+  key: Key;
+  factory: Function;
+  dependencies: List;
+  providedAsPromise: boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean) {
+  constructor(key: Key, factory: Function, dependencies: List, providedAsPromise: boolean) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;
@@ -32,60 +32,37 @@ export class Binding {
   }
 }
 
-export function bind(token):BindingBuilder {
+export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
 }
 
 export class BindingBuilder {
   token;
-  constructor(token) {
-    this.token = token;
+  constructor(token) { this.token = token; }
+
+  toClass(type: Type): Binding {
+    return new Binding(Key.get(this.token), reflector.factory(type), _dependenciesFor(type), false);
   }
 
-  toClass(type:Type):Binding {
-    return new Binding(
-      Key.get(this.token),
-      reflector.factory(type),
-      _dependenciesFor(type),
-      false
-    );
+  toValue(value): Binding { return new Binding(Key.get(this.token), () => value, [], false); }
+
+  toFactory(factoryFunction: Function, dependencies: List = null): Binding {
+    return new Binding(Key.get(this.token), factoryFunction, this._constructDependencies(factoryFunction, dependencies),
+                       false);
   }
 
-  toValue(value):Binding {
-    return new Binding(
-      Key.get(this.token),
-      () => value,
-      [],
-      false
-    );
+  toAsyncFactory(factoryFunction: Function, dependencies: List = null): Binding {
+    return new Binding(Key.get(this.token), factoryFunction, this._constructDependencies(factoryFunction, dependencies),
+                       true);
   }
 
-  toFactory(factoryFunction:Function, dependencies:List = null):Binding {
-    return new Binding(
-      Key.get(this.token),
-      factoryFunction,
-      this._constructDependencies(factoryFunction, dependencies),
-      false
-    );
-  }
-
-  toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
-    return new Binding(
-      Key.get(this.token),
-      factoryFunction,
-      this._constructDependencies(factoryFunction, dependencies),
-      true
-    );
-  }
-
-  _constructDependencies(factoryFunction:Function, dependencies:List) {
-    return isBlank(dependencies) ?
-      _dependenciesFor(factoryFunction) :
-      ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false, []));
+  _constructDependencies(factoryFunction: Function, dependencies: List) {
+    return isBlank(dependencies) ? _dependenciesFor(factoryFunction) :
+                                   ListWrapper.map(dependencies, (t) => new Dependency(Key.get(t), false, false, []));
   }
 }
 
-function _dependenciesFor(typeOrFunc):List {
+function _dependenciesFor(typeOrFunc): List {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (ListWrapper.any(params, (p) => isBlank(p))) throw new NoAnnotationError(typeOrFunc);
@@ -123,6 +100,6 @@ function _extractToken(typeOrFunc, annotations) {
   }
 }
 
-function _createDependency(token, asPromise, lazy, depProps):Dependency {
+function _createDependency(token, asPromise, lazy, depProps): Dependency {
   return new Dependency(Key.get(token), asPromise, lazy, depProps);
 }

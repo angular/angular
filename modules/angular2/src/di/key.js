@@ -4,15 +4,15 @@ import {FIELD, int, isPresent} from 'angular2/src/facade/lang';
 
 export class Key {
   token;
-  id:int;
-  metadata:any;
-  constructor(token, id:int) {
+  id: int;
+  metadata: any;
+  constructor(token, id: int) {
     this.token = token;
     this.id = id;
     this.metadata = null;
   }
 
-  static setMetadata(key:Key, metadata):Key {
+  static setMetadata(key: Key, metadata): Key {
     if (isPresent(key.metadata) && key.metadata !== metadata) {
       throw new KeyMetadataError();
     }
@@ -20,22 +20,16 @@ export class Key {
     return key;
   }
 
-  static get(token):Key {
-    return _globalKeyRegistry.get(token);
-  }
+  static get(token): Key { return _globalKeyRegistry.get(token); }
 
-  static get numberOfKeys():int {
-    return _globalKeyRegistry.numberOfKeys;
-  }
+  static get numberOfKeys(): int { return _globalKeyRegistry.numberOfKeys; }
 }
 
 export class KeyRegistry {
-  _allKeys:Map;
-  constructor() {
-    this._allKeys = MapWrapper.create();
-  }
+  _allKeys: Map;
+  constructor() { this._allKeys = MapWrapper.create(); }
 
-  get(token):Key {
+  get(token): Key {
     if (token instanceof Key) return token;
 
     if (MapWrapper.contains(this._allKeys, token)) {
@@ -47,9 +41,7 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys():int {
-    return MapWrapper.size(this._allKeys);
-  }
+  get numberOfKeys(): int { return MapWrapper.size(this._allKeys); }
 }
 
 var _globalKeyRegistry = new KeyRegistry();
