@@ -28,7 +28,7 @@ class Context {
   }
 
   void error(String errorString) {
-    if (_logger == null) throw new Error(errorString);
+    if (_logger == null) throw new CodegenError(errorString);
     _logger.error(errorString);
   }
 
@@ -41,6 +41,16 @@ class Context {
     var prefix =
         _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}');
     return '${prefix}.';
+  }
+}
+
+class CodegenError extends Error {
+  final String message;
+  CodegenError(this.message);
+
+  @override
+  String toString() {
+    return 'Error generating Angular2 code: ${Error.safeToString(message)}';
   }
 }
 
@@ -107,6 +117,7 @@ _codegenImport(Context context, AssetId libraryId, AssetId entryPoint) {
 class _DirectiveRegistryImpl implements DirectiveRegistry {
   final Context _context;
   final StringBuffer _buffer = new StringBuffer();
+  final Set<ClassDeclaration> _seen = new Set();
 
   _DirectiveRegistryImpl(this._context);
 
@@ -117,6 +128,9 @@ class _DirectiveRegistryImpl implements DirectiveRegistry {
 
   // Adds [entry] to the `registerType` calls which will be generated.
   void register(AnnotationMatch entry) {
+    if (_seen.contains(entry.node)) return;
+    _seen.add(entry.node);
+
     var element = entry.element;
     var annotation = entry.annotation;
 
