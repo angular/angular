@@ -33,22 +33,6 @@ export class EmptyExpr extends AST {
   }
 }
 
-export class Structural extends AST {
-  value:AST;
-  constructor(value:AST) {
-    super();
-    this.value = value;
-  }
-
-  eval(context) {
-    return value.eval(context);
-  }
-
-  visit(visitor) {
-    return visitor.visitStructural(this);
-  }
-}
-
 export class ImplicitReceiver extends AST {
   eval(context) {
     return context;
@@ -201,6 +185,20 @@ export class Formatter extends AST {
 
   visit(visitor) {
     return visitor.visitFormatter(this);
+  }
+}
+
+export class Pipe extends AST {
+  exp:AST;
+  name:string;
+  constructor(exp:AST, name:string) {
+    super();
+    this.exp = exp;
+    this.name = name;
+  }
+
+  visit(visitor) {
+    return visitor.visitPipe(this);
   }
 }
 
@@ -460,9 +458,9 @@ export class AstVisitor {
   visitAssignment(ast:Assignment) {}
   visitBinary(ast:Binary) {}
   visitChain(ast:Chain){}
-  visitStructural(ast:Structural) {}
   visitConditional(ast:Conditional) {}
   visitFormatter(ast:Formatter) {}
+  visitPipe(ast:Pipe) {}
   visitFunctionCall(ast:FunctionCall) {}
   visitImplicitReceiver(ast:ImplicitReceiver) {}
   visitKeyedAccess(ast:KeyedAccess) {}

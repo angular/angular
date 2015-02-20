@@ -14,6 +14,7 @@ import {
   PrefixNot,
   Conditional,
   Formatter,
+  Pipe,
   Assignment,
   Chain,
   KeyedAccess,
@@ -50,6 +51,15 @@ export class Parser {
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
     return new ASTWithSource(ast, input, location);
+  }
+
+  addPipes(bindingAst:ASTWithSource, pipes:List<String>):ASTWithSource {
+    if (ListWrapper.isEmpty(pipes)) return bindingAst;
+
+    var res = ListWrapper.reduce(pipes,
+      (result, currentPipeName) => new Pipe(result, currentPipeName),
+      bindingAst.ast);
+    return new ASTWithSource(res, bindingAst.source, bindingAst.location);
   }
 
   parseTemplateBindings(input:string, location:any):List<TemplateBinding> {

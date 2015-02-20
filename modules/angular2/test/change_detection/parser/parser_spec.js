@@ -51,6 +51,10 @@ export function main() {
     return createParser().parseInterpolation(text, location);
   }
 
+  function addPipes(ast, pipes) {
+    return createParser().addPipes(ast, pipes);
+  }
+
   function expectEval(text, passedInContext = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
     return expect(parseAction(text).eval(c));
@@ -541,6 +545,29 @@ export function main() {
         expect(ast.expressions.length).toEqual(2);
         expect(ast.expressions[0].name).toEqual('a');
         expect(ast.expressions[1].name).toEqual('b');
+      });
+    });
+
+    describe('addPipes', () => {
+      it('should return the given ast whe the list of pipes is empty', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, []);
+        expect(transformedAst).toBe(ast);
+      });
+
+      it('should append pipe ast nodes', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, ['one', 'two']);
+        expect(transformedAst.ast.name).toEqual("two");
+        expect(transformedAst.ast.exp.name).toEqual("one");
+        expect(transformedAst.ast.exp.exp.operation).toEqual("+");
+      });
+
+      it('should preserve location and source', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, ['one', 'two']);
+        expect(transformedAst.source).toEqual("1 + 1");
+        expect(transformedAst.location).toEqual("Location");
       });
     });
 

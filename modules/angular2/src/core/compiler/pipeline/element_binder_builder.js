@@ -195,34 +195,38 @@ export class ElementBinderBuilder extends CompileStep {
       var directive = ListWrapper.get(directives, directiveIndex);
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
-      var _this = this;
-      StringMapWrapper.forEach(annotation.bind, function (elProp, dirProp) {
-        var expression = isPresent(compileElement.propertyBindings) ?
+      StringMapWrapper.forEach(annotation.bind, (bindConfig, dirProp) => {
+        var bindConfigParts = this._splitBindConfig(bindConfig);
+        var elProp = bindConfigParts[0];
+        var pipes = ListWrapper.slice(bindConfigParts, 1, bindConfigParts.length);
+
+        var bindingAst = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
-        if (isBlank(expression)) {
+
+        if (isBlank(bindingAst)) {
           var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
           if (isPresent(attributeValue)) {
-            expression = _this._parser.wrapLiteralPrimitive(attributeValue, _this._compilationUnit);
+            bindingAst = this._parser.wrapLiteralPrimitive(attributeValue, this._compilationUnit);
           }
         }
 
         // Bindings are optional, so this binding only needs to be set up if an expression is given.
-        if (isPresent(expression)) {
-          var len = dirProp.length;
-          var dirBindingName = dirProp;
-          var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
-          if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
-
+        if (isPresent(bindingAst)) {
+          var fullExpAstWithBindPipes = this._parser.addPipes(bindingAst, pipes);
           protoView.bindDirectiveProperty(
             directiveIndex,
-            expression,
-            dirBindingName,
-            reflector.setter(dirBindingName),
-            isContentWatch
+            fullExpAstWithBindPipes,
+            dirProp,
+            reflector.setter(dirProp)
           );
         }
       });
     }
+  }
+
+  _splitBindConfig(bindConfig:string) {
+    var parts = StringWrapper.split(bindConfig, RegExpWrapper.create("\\|"));
+    return ListWrapper.map(parts, (s) => s.trim());
   }
 }

@@ -15,7 +15,7 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_INVOKE_FORMATTER,
-  RECORD_TYPE_STRUCTURAL_CHECK,
+  RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -163,11 +163,11 @@ if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
 `;
 }
 
-function pipeCheckTemplate(context:string, pipe:string,
+function pipeCheckTemplate(context:string, pipe:string, pipeType:string,
                                   value:string, change:string, addRecord:string, notify:string):string{
   return `
 if (${pipe} === ${UTIL}.unitialized() || !${pipe}.supports(${context})) {
-  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('[]', ${context});
+  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context});
 }
 
 ${CHANGE_LOCAL} = ${pipe}.transform(${context});
@@ -283,7 +283,7 @@ export class ChangeDetectorJITGenerator {
     fields = fields.concat(this.fieldNames);
 
     this.records.forEach((r) => {
-      if (r.mode === RECORD_TYPE_STRUCTURAL_CHECK) {
+      if (r.mode === RECORD_TYPE_PIPE) {
         fields.push(this.pipeNames[r.selfIndex]);
       }
     });
@@ -314,7 +314,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   genRecord(r:ProtoRecord):string {
-    if (r.mode === RECORD_TYPE_STRUCTURAL_CHECK) {
+    if (r.mode === RECORD_TYPE_PIPE) {
       return this.genPipeCheck (r);
     } else {
       return this.genReferenceCheck(r);
@@ -331,7 +331,7 @@ export class ChangeDetectorJITGenerator {
     var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
     var notify = this.genNotify(r);
 
-    return pipeCheckTemplate(context, pipe, newValue, change, addRecord, notify);
+    return pipeCheckTemplate(context, pipe, r.name, newValue, change, addRecord, notify);
   }
 
   genReferenceCheck(r:ProtoRecord):string {

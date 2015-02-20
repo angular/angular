@@ -119,7 +119,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
     parser.parseBinding('field9', null)
   ];
   for (var j = 0; j < 10; ++j) {
-    proto.addAst(astWithSource[j].ast, "memo", j, false);
+    proto.addAst(astWithSource[j].ast, "memo", j);
   }
 
   for (var i = 0; i < iterations; ++i) {

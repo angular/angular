@@ -9,9 +9,9 @@ import {
   AstVisitor,
   Binary,
   Chain,
-  Structural,
   Conditional,
   Formatter,
+  Pipe,
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
@@ -41,12 +41,12 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_INVOKE_FORMATTER,
-  RECORD_TYPE_STRUCTURAL_CHECK,
+  RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
 export class ProtoChangeDetector  {
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false){}
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
   instantiate(dispatcher:any, formatters:Map):ChangeDetector{
     return null;
   }
@@ -64,8 +64,8 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
   instantiate(dispatcher:any, formatters:Map) {
@@ -95,8 +95,8 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
   instantiate(dispatcher:any, formatters:Map) {
@@ -121,9 +121,7 @@ class ProtoRecordBuilder {
     this.records = [];
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    if (structural) ast = new Structural(ast);
-
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
     var last = ListWrapper.last(this.records);
     if (isPresent(last) && last.directiveMemento == directiveMemento) {
       last.lastInDirective = false;
@@ -228,9 +226,9 @@ class _ConvertAstIntoProtoRecords {
       ChangeDetectionUtil.cond, [c,t,f], null, 0);
   }
 
-  visitStructural(ast:Structural) {
-    var value = ast.value.visit(this);
-    return this._addRecord(RECORD_TYPE_STRUCTURAL_CHECK, "structural", null, [], null, value);
+  visitPipe(ast:Pipe) {
+    var value = ast.exp.visit(this);
+    return this._addRecord(RECORD_TYPE_PIPE, ast.name, ast.name, [], null, value);
   }
 
   visitKeyedAccess(ast:KeyedAccess) {
