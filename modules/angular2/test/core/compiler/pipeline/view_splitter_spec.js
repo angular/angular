@@ -99,26 +99,26 @@ export function main() {
 
     });
 
-    describe('elements with !directive_name attribute', () => {
+    describe('elements with *directive_name attribute', () => {
 
       it('should replace the element with an empty <template> element', () => {
-        var rootElement = el('<div><span !if></span></div>');
+        var rootElement = el('<div><span *if></span></div>');
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
         expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template if=""></template></div>');
-        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span !if=""></span>')
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span *if=""></span>')
         expect(results[2].element).toBe(originalChild);
       });
 
       it('should mark the element as viewRoot', () => {
-        var rootElement = el('<div><div !foo="bar"></div></div>');
+        var rootElement = el('<div><div *foo="bar"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].isViewRoot).toBe(true);
       });
 
       it('should work with top-level template node', () => {
-        var rootElement = DOM.createTemplate('<div !foo>x</div>');
+        var rootElement = DOM.createTemplate('<div *foo>x</div>');
         var originalChild = rootElement.content.childNodes[0];
         var results = createPipeline().process(rootElement);
 
@@ -130,19 +130,19 @@ export function main() {
       });
 
       it('should add property bindings from the template attribute', () => {
-        var rootElement = el('<div><div !prop="expr"></div></div>');
+        var rootElement = el('<div><div *prop="expr"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(MapWrapper.get(results[1].propertyBindings, 'prop').source).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute', () => {
-        var rootElement = el('<div><div !foreach="var varName=mapName"></div></div>');
+        var rootElement = el('<div><div *foreach="var varName=mapName"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[1].variableBindings).toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
       });
 
       it('should add entries without value as attribute to the element', () => {
-        var rootElement = el('<div><div !varname></div></div>');
+        var rootElement = el('<div><div *varname></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[1].attrs()).toEqual(MapWrapper.createFromStringMap({'varname': ''}));
         expect(results[1].propertyBindings).toBe(null);
@@ -150,7 +150,7 @@ export function main() {
       });
 
       it('should iterate properly after a template dom modification', () => {
-        var rootElement = el('<div><div !foo></div><after></after></div>');
+        var rootElement = el('<div><div *foo></div><after></after></div>');
         var results = createPipeline().process(rootElement);
         // 1 root + 2 initial + 1 generated template elements
         expect(results.length).toEqual(4);
@@ -158,14 +158,14 @@ export function main() {
 
       it('should not allow multiple template directives on the same element', () => {
         expect( () => {
-          var rootElement = el('<div><div !foo !bar="blah"></div></div>');
+          var rootElement = el('<div><div *foo *bar="blah"></div></div>');
           createPipeline().process(rootElement);
         }).toThrowError('Only one template directive per element is allowed: foo and bar cannot be used simultaneously!');
       });
 
       it('should not allow template and bang directives on the same element', () => {
         expect( () => {
-          var rootElement = el('<div><div !foo template="blah"></div></div>');
+          var rootElement = el('<div><div *foo template="blah"></div></div>');
           createPipeline().process(rootElement);
         }).toThrowError('Only one template directive per element is allowed: blah and foo cannot be used simultaneously!');
       });
