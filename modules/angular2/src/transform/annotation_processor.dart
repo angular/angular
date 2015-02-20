@@ -54,7 +54,7 @@ class AnnotationMatcher {
   }
 }
 
-/// [ConstructorElement] / [ElementAnnotation] pair, where the Constructor
+/// [ClassElement] / [ElementAnnotation] pair.
 class AnnotationMatch {
   /// The resolved element corresponding to [node].
   final ClassElement element;
