@@ -180,6 +180,19 @@ export function main() {
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
+
+      it("should work when the element injector array contains nulls", () => {
+        var lightDomEl = el("<div><a></a></div>")
+
+        var lightDomView = new FakeView([null]);
+
+        var lightDom = new LightDom(
+          lightDomView,
+          new FakeView(),
+          lightDomEl);
+
+        expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
+      });
     });
 
     describe("redistribute", () => {

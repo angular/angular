@@ -105,7 +105,8 @@ export class LightDom {
 
     var viewInj = this.lightDomView.elementInjectors;
     this.roots = ListWrapper.map(this.nodes, (n) =>
-      new _Root(n, ListWrapper.find(viewInj, (inj) => inj.forElement(n))));
+      new _Root(n, ListWrapper.find(viewInj,
+        (inj) => isPresent(inj) ? inj.forElement(n) : false)));
 
     return this.roots;
   }
