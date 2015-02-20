@@ -1,7 +1,9 @@
-import {isBlank, BaseException, isPresent} from 'angular2/src/facade/lang';
+import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {DOM, Element} from 'angular2/src/facade/dom';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+
+var BUBBLE_SYMBOL = '^';
 
 export class EventManager {
   _plugins: List<EventManagerPlugin>;
@@ -16,13 +18,13 @@ export class EventManager {
   }
 
   addEventListener(element: Element, eventName: string, handler: Function) {
-    var plugin = this._findPluginFor(eventName);
-
-    if (isPresent(plugin)) {
-      plugin.addEventListener(element, eventName, handler);
-    } else {
-      this._addNativeEventListener(element, eventName, handler);
+    var shouldSupportBubble = eventName[0] == BUBBLE_SYMBOL; 
+    if (shouldSupportBubble) {
+      eventName = StringWrapper.substring(eventName, 1); 
     }
+
+    var plugin = this._findPluginFor(eventName);
+    plugin.addEventListener(element, eventName, handler, shouldSupportBubble);
   }
 
   getZone(): VmTurnZone {
@@ -37,30 +39,56 @@ export class EventManager {
         return plugin;
       }
     }
-    return null;
-  }
-
-  _addNativeEventListener(element: Element, eventName: string, handler: Function) {
-    this._zone.runOutsideAngular(() => {
-      DOM.on(element, eventName, (event) => {
-        if (event.target === element) {
-          this._zone.run(function() {
-            handler(event);
-          });
-        }
-      });
-    });
+    throw new BaseException(`No event manager plugin found for event ${eventName}`);
   }
 }
 
 export class EventManagerPlugin {
   manager: EventManager;
 
+  // We are assuming here that all plugins support bubbled and non-bubbled events.
+  // That is equivalent to having supporting $event.target
+  // The bubbling flag (currently ^) is stripped before calling the supports and 
+  // addEventListener methods.
   supports(eventName: string): boolean {
     return false;
   }
 
-  addEventListener(element: Element, eventName: string, handler: Function) {
+  addEventListener(element: Element, eventName: string, handler: Function,
+      shouldSupportBubble: boolean) {
     throw "not implemented";
+  }
+}
+
+export class DomEventsPlugin extends EventManagerPlugin {
+  manager: EventManager;
+
+  // This plugin should come last in the list of plugins, because it accepts all
+  // events.
+  supports(eventName: string): boolean {
+    return true;
+  }
+
+  addEventListener(element: Element, eventName: string, handler: Function,
+      shouldSupportBubble: boolean) {
+    var outsideHandler = shouldSupportBubble ?
+      DomEventsPlugin.bubbleCallback(element, handler, this.manager._zone) :
+      DomEventsPlugin.sameElementCallback(element, handler, this.manager._zone);
+
+    this.manager._zone.runOutsideAngular(() => {
+      DOM.on(element, eventName, outsideHandler);
+    });
+  }
+
+  static sameElementCallback(element, handler, zone) {
+    return (event) => {
+        if (event.target === element) {
+          zone.run(() => handler(event));
+        }
+      };
+  }
+
+  static bubbleCallback(element, handler, zone) {
+    return (event) => zone.run(() => handler(event));
   }
 }

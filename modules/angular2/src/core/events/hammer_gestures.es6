@@ -17,7 +17,8 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
     return true;
   }
 
-  addEventListener(element:Element, eventName:string, handler:Function) {
+  addEventListener(element:Element, eventName:string, handler:Function, shouldSupportBubble: boolean) {
+    if (shouldSupportBubble) throw new BaseException('Hammer.js plugin does not support bubbling gestures.');
     var zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 

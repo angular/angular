@@ -15,7 +15,7 @@ import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
 
 @proxy
 @IMPLEMENTS(ViewContainer)
@@ -439,7 +439,8 @@ export function main() {
         var view, ctx, called, receivedEvent, dispatchedEvent;
 
         function createViewAndContext(protoView) {
-          view = createView(protoView, new EventManager([], new FakeVmTurnZone()));
+          view = createView(protoView,
+              new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
           ctx = view.context;
           called = 0;
           receivedEvent = null;
