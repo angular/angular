@@ -132,8 +132,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
-        var methodInvoker:Function = proto.funcOrValue;
-        return methodInvoker(this._readContext(proto), this._readArgs(proto));
+        var context = this._readContext(proto);
+        var args = this._readArgs(proto);
+        var c = ChangeDetectionUtil.findContext(proto.name, context);
+        if (c instanceof ContextWithVariableBindings) {
+          return FunctionWrapper.apply(c.get(proto.name), args);
+        } else {
+          var methodInvoker:Function = proto.funcOrValue;
+          return methodInvoker(c, args);
+        }
+        break;
 
       case RECORD_TYPE_KEYED_ACCESS:
         var arg = this._readArgs(proto)[0];

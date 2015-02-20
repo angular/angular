@@ -318,6 +318,14 @@ export function main() {
                 .toEqual(['key=value']);
             });
 
+            it('should invoke a function from ContextWithVariableBindings', () => {
+              var locals = new ContextWithVariableBindings(null,
+                MapWrapper.createFromPairs([["key", () => "value"]]));
+
+              expect(executeWatch('key', 'key()', locals))
+                .toEqual(['key=value']);
+            });
+
             it('should handle nested ContextWithVariableBindings', () => {
               var nested = new ContextWithVariableBindings(null,
                 MapWrapper.createFromPairs([["key", "value"]]));

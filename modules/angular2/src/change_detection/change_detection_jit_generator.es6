@@ -203,6 +203,17 @@ if (${TEMP_LOCAL} instanceof ContextWithVariableBindings) {
 `;
 }
 
+function invokeMethodTemplate(name:string, args:string, context:string, newValue:string) {
+  return `
+${TEMP_LOCAL} = ${UTIL}.findContext("${name}", ${context});
+if (${TEMP_LOCAL} instanceof ContextWithVariableBindings) {
+  ${newValue} = ${TEMP_LOCAL}.get('${name}').apply(null, [${args}]);
+} else {
+  ${newValue} = ${context}.${name}(${args});
+}
+`;
+}
+
 function localDefinitionsTemplate(names:List):string {
   return names.map((n) => `var ${n};`).join("\n");
 }
@@ -366,7 +377,11 @@ export class ChangeDetectorJITGenerator {
         }
 
       case RECORD_TYPE_INVOKE_METHOD:
-        return assignmentTemplate(newValue, `${context}.${r.name}(${args})`);
+        if (r.contextIndex == 0) { // only the first property read can be a local
+          return invokeMethodTemplate(r.name, args, context, newValue);
+        } else {
+          return assignmentTemplate(newValue, `${context}.${r.name}(${args})`);
+        }
 
       case RECORD_TYPE_INVOKE_CLOSURE:
         return assignmentTemplate(newValue, `${context}(${args})`);
