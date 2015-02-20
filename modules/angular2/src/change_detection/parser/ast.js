@@ -170,31 +170,15 @@ export class KeyedAccess extends AST {
   }
 }
 
-export class Formatter extends AST {
+export class Pipe extends AST {
   exp:AST;
   name:string;
   args:List<AST>;
-  allArgs:List<AST>;
   constructor(exp:AST, name:string, args:List) {
     super();
     this.exp = exp;
     this.name = name;
     this.args = args;
-    this.allArgs = ListWrapper.concat([exp], args);
-  }
-
-  visit(visitor) {
-    return visitor.visitFormatter(this);
-  }
-}
-
-export class Pipe extends AST {
-  exp:AST;
-  name:string;
-  constructor(exp:AST, name:string) {
-    super();
-    this.exp = exp;
-    this.name = name;
   }
 
   visit(visitor) {
@@ -459,7 +443,6 @@ export class AstVisitor {
   visitBinary(ast:Binary) {}
   visitChain(ast:Chain){}
   visitConditional(ast:Conditional) {}
-  visitFormatter(ast:Formatter) {}
   visitPipe(ast:Pipe) {}
   visitFunctionCall(ast:FunctionCall) {}
   visitImplicitReceiver(ast:ImplicitReceiver) {}

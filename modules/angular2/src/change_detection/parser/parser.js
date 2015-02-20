@@ -13,7 +13,6 @@ import {
   Binary,
   PrefixNot,
   Conditional,
-  Formatter,
   Pipe,
   Assignment,
   Chain,
@@ -57,7 +56,7 @@ export class Parser {
     if (ListWrapper.isEmpty(pipes)) return bindingAst;
 
     var res = ListWrapper.reduce(pipes,
-      (result, currentPipeName) => new Pipe(result, currentPipeName),
+      (result, currentPipeName) => new Pipe(result, currentPipeName, []),
       bindingAst.ast);
     return new ASTWithSource(res, bindingAst.source, bindingAst.location);
   }
@@ -191,7 +190,7 @@ class _ParseAST {
   parseChain():AST {
     var exprs = [];
     while (this.index < this.tokens.length) {
-      var expr = this.parseFormatter();
+      var expr = this.parsePipe();
       ListWrapper.push(exprs, expr);
 
       if (this.optionalCharacter($SEMICOLON)) {
@@ -208,18 +207,18 @@ class _ParseAST {
     return new Chain(exprs);
   }
 
-  parseFormatter() {
+  parsePipe() {
     var result = this.parseExpression();
     while (this.optionalOperator("|")) {
       if (this.parseAction) {
-        this.error("Cannot have a formatter in an action expression");
+        this.error("Cannot have a pipe in an action expression");
       }
       var name = this.expectIdentifierOrKeyword();
       var args = ListWrapper.create();
       while (this.optionalCharacter($COLON)) {
         ListWrapper.push(args, this.parseExpression());
       }
-      result = new Formatter(result, name, args);
+      result = new Pipe(result, name, args);
     }
     return result;
   }
@@ -380,7 +379,7 @@ class _ParseAST {
 
   parsePrimary() {
     if (this.optionalCharacter($LPAREN)) {
-      var result = this.parseFormatter();
+      var result = this.parsePipe();
       this.expectCharacter($RPAREN);
       return result;
 

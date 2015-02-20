@@ -16,7 +16,6 @@ import {
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_INVOKE_FORMATTER,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
@@ -25,7 +24,6 @@ import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './ex
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
-  formatters:Map;
   pipeRegistry;
 
   values:List;
@@ -35,10 +33,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   protos:List<ProtoRecord>;
 
-  constructor(dispatcher:any, formatters:Map, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>) {
+  constructor(dispatcher:any, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>) {
     super();
     this.dispatcher = dispatcher;
-    this.formatters = formatters;
     this.pipeRegistry = pipeRegistry;
 
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
@@ -148,10 +145,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       case RECORD_TYPE_INTERPOLATE:
       case RECORD_TYPE_PRIMITIVE_OP:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
-
-      case RECORD_TYPE_INVOKE_FORMATTER:
-        var formatter = MapWrapper.get(this.formatters, proto.funcOrValue);
-        return FunctionWrapper.apply(formatter, this._readArgs(proto));
 
       default:
         throw new BaseException(`Unknown operation ${proto.mode}`);

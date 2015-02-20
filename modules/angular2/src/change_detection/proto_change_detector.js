@@ -10,7 +10,6 @@ import {
   Binary,
   Chain,
   Conditional,
-  Formatter,
   Pipe,
   FunctionCall,
   ImplicitReceiver,
@@ -40,14 +39,13 @@ import {
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_INVOKE_FORMATTER,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
 export class ProtoChangeDetector  {
   addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
-  instantiate(dispatcher:any, formatters:Map):ChangeDetector{
+  instantiate(dispatcher:any):ChangeDetector{
     return null;
   }
 }
@@ -68,10 +66,9 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any) {
     this._createRecordsIfNecessary();
-    return new DynamicChangeDetector(dispatcher, formatters,
-      this._pipeRegistry, this._records);
+    return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records);
   }
 
   _createRecordsIfNecessary() {
@@ -99,9 +96,9 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any) {
     this._createFactoryIfNecessary();
-    return this._factory(dispatcher, formatters, this._pipeRegistry);
+    return this._factory(dispatcher, this._pipeRegistry);
   }
 
   _createFactoryIfNecessary() {
@@ -176,10 +173,6 @@ class _ConvertAstIntoProtoRecords {
   visitAccessMember(ast:AccessMember) {
     var receiver = ast.receiver.visit(this);
     return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
-  }
-
-  visitFormatter(ast:Formatter) {
-    return this._addRecord(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.name, this._visitAll(ast.allArgs), null, 0);
   }
 
   visitMethodCall(ast:MethodCall) {

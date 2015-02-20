@@ -5,7 +5,8 @@ import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
-import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
+import {Lexer, Parser, ChangeDetector, dynamicChangeDetection,
+  DynamicChangeDetection, Pipe, PipeRegistry} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -24,9 +25,8 @@ export function main() {
   describe('integration tests', function() {
     var compiler, tplResolver;
 
-    beforeEach( () => {
-      tplResolver = new FakeTemplateResolver();
-      compiler = new Compiler(dynamicChangeDetection,
+    function createCompiler(tplResolver, changedDetection) {
+      return new Compiler(changedDetection,
         new TemplateLoader(null),
         new DirectiveMetadataReader(),
         new Parser(new Lexer()),
@@ -34,6 +34,11 @@ export function main() {
         new NativeShadowDomStrategy(),
         tplResolver
       );
+    }
+
+    beforeEach( () => {
+      tplResolver = new FakeTemplateResolver();
+      compiler = createCompiler(tplResolver, dynamicChangeDetection);
     });
 
     describe('react to record changes', function() {
@@ -110,6 +115,33 @@ export function main() {
           expect(view.elementInjectors[1].get(MyDir).dirProp).toEqual('Hi there!');
           expect(view.elementInjectors[2].get(MyDir).dirProp).toEqual('Hi there!');
           expect(view.elementInjectors[3].get(MyDir).dirProp).toEqual('One more Hello World!');
+          done();
+        });
+      });
+
+      it("should support pipes in bindings and bind config", (done) => {
+        tplResolver.setTemplate(MyComp,
+          new Template({
+            inline: '<component-with-pipes #comp [prop]="ctxProp | double"></component-with-pipes>',
+            directives: [ComponentWithPipes]
+          }));
+
+
+        var registry = new PipeRegistry({
+          "double" : [new DoublePipeFactory()]
+        });
+        var changeDetection = new DynamicChangeDetection(registry);
+        var compiler = createCompiler(tplResolver, changeDetection);
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'a';
+          cd.detectChanges();
+
+          var comp = view.contextWithLocals.get("comp");
+
+          // it is doubled twice: once in the binding, second time in the bind config
+          expect(comp.prop).toEqual('aaaa');
           done();
         });
       });
@@ -379,6 +411,20 @@ class MyComp {
   }
 }
 
+
+@Component({
+  selector: 'component-with-pipes',
+  bind: {
+    "prop": "prop | double"
+  }
+})
+@Template({
+  inline: ''
+})
+class ComponentWithPipes {
+  prop:string;
+}
+
 @Component({
   selector: 'child-cmp',
   componentServices: [MyService]
@@ -466,5 +512,26 @@ class FakeTemplateResolver extends TemplateResolver {
     }
 
     return super.resolve(component);
+  }
+}
+
+
+class DoublePipe extends Pipe {
+  supports(obj) {
+    return true;
+  }
+
+  transform(value) {
+    return `${value}${value}`;
+  }
+}
+
+class DoublePipeFactory {
+  supports(obj) {
+    return true;
+  }
+
+  create() {
+    return new DoublePipe();
   }
 }

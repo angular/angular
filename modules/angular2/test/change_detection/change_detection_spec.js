@@ -3,7 +3,6 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DAR
 import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Pipe} from 'angular2/src/change_detection/parser/ast';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 
@@ -29,24 +28,18 @@ export function main() {
           return parser.parseBinding(exp, location);
         }
 
-        function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
-                                      registry = null, pipeType:string = null) {
+        function createChangeDetector(memo:string, exp:string, context = null, registry = null) {
           var pcd = createProtoChangeDetector(registry);
-          var parsedAst = ast(exp);
-          if (isPresent(pipeType)) {
-            parsedAst = new Pipe(parsedAst, pipeType);
-          }
-          pcd.addAst(parsedAst, memo, memo);
-
+          pcd.addAst(ast(exp), memo, memo);
           var dispatcher = new TestDispatcher();
-          var cd = pcd.instantiate(dispatcher, formatters);
+          var cd = pcd.instantiate(dispatcher);
           cd.setContext(context);
 
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
         }
 
-        function executeWatch(memo:string, exp:string, context = null, formatters = null) {
-          var res = createChangeDetector(memo, exp, context, formatters);
+        function executeWatch(memo:string, exp:string, context = null) {
+          var res = createChangeDetector(memo, exp, context);
           res["changeDetector"].detectChanges();
           return res["dispatcher"].log;
         }
@@ -182,14 +175,6 @@ export function main() {
             });
           });
 
-          it("should support formatters", () => {
-            var formatters = MapWrapper.createFromPairs([
-              ['uppercase', (v) => v.toUpperCase()],
-              ['wrap', (v, before, after) => `${before}${v}${after}`]]);
-            expect(executeWatch('str', '"aBc" | uppercase', null, formatters)).toEqual(['str=ABC']);
-            expect(executeWatch('str', '"b" | wrap:"a":"c"', null, formatters)).toEqual(['str=abc']);
-          });
-
           it("should support interpolation", () => {
             var parser = new Parser(new Lexer());
             var pcd = createProtoChangeDetector();
@@ -197,7 +182,7 @@ export function main() {
             pcd.addAst(ast, "memo", "memo");
 
             var dispatcher = new TestDispatcher();
-            var cd = pcd.instantiate(dispatcher, MapWrapper.create());
+            var cd = pcd.instantiate(dispatcher);
             cd.setContext(new TestData("value"));
 
             cd.detectChanges();
@@ -213,7 +198,7 @@ export function main() {
               pcd.addAst(ast("100 + 200"), "memo2", "2");
 
               var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher, null);
+              var cd = pcd.instantiate(dispatcher);
 
               cd.detectChanges();
 
@@ -227,7 +212,7 @@ export function main() {
               pcd.addAst(ast("c()"), "c", "2");
 
               var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher, null);
+              var cd = pcd.instantiate(dispatcher);
 
               var tr = new TestRecord();
               tr.a = () => {
@@ -256,7 +241,7 @@ export function main() {
               pcd.addAst(ast("a"), "a", 1);
 
               var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher, null);
+              var cd = pcd.instantiate(dispatcher);
               cd.setContext(new TestData('value'));
 
               expect(() => {
@@ -271,7 +256,7 @@ export function main() {
               var pcd = createProtoChangeDetector();
               pcd.addAst(ast('invalidProp', 'someComponent'), "a", 1);
 
-              var cd = pcd.instantiate(new TestDispatcher(), null);
+              var cd = pcd.instantiate(new TestDispatcher());
               cd.setContext(null);
 
               try {
@@ -318,10 +303,10 @@ export function main() {
 
             beforeEach(() => {
               var protoParent = createProtoChangeDetector();
-              parent = protoParent.instantiate(null, null);
+              parent = protoParent.instantiate(null);
 
               var protoChild = createProtoChangeDetector();
-              child = protoChild.instantiate(null, null);
+              child = protoChild.instantiate(null);
             });
 
             it("should add children", () => {
@@ -337,25 +322,6 @@ export function main() {
 
               expect(parent.children).toEqual([]);
             });
-          });
-        });
-
-        describe("optimizations", () => {
-          it("should not rerun formatters when args did not change", () => {
-            var count = 0;
-            var formatters = MapWrapper.createFromPairs([
-              ['count', (v) => {count ++; "value"}]]);
-
-            var c = createChangeDetector('a', 'a | count', new TestData(null), formatters);
-            var cd = c["changeDetector"];
-
-            cd.detectChanges();
-
-            expect(count).toEqual(1);
-
-            cd.detectChanges();
-
-            expect(count).toEqual(1);
           });
         });
 
@@ -383,7 +349,7 @@ export function main() {
           });
 
           it("should change CHECK_ONCE to CHECKED", () => {
-            var cd = createProtoChangeDetector().instantiate(null, null);
+            var cd = createProtoChangeDetector().instantiate(null);
             cd.mode = CHECK_ONCE;
 
             cd.detectChanges();
@@ -392,7 +358,7 @@ export function main() {
           });
 
           it("should not change the CHECK_ALWAYS", () => {
-            var cd = createProtoChangeDetector().instantiate(null, null);
+            var cd = createProtoChangeDetector().instantiate(null);
             cd.mode = CHECK_ALWAYS;
 
             cd.detectChanges();
@@ -403,7 +369,7 @@ export function main() {
 
         describe("markPathToRootAsCheckOnce", () => {
           function changeDetector(mode, parent) {
-            var cd = createProtoChangeDetector().instantiate(null, null);
+            var cd = createProtoChangeDetector().instantiate(null);
             cd.mode = mode;
             if (isPresent(parent)) parent.addChild(cd);
             return cd;
@@ -435,7 +401,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
+            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
             var cd = c["changeDetector"];
             var dispatcher = c["dispatcher"];
 
@@ -453,7 +419,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new OncePipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
+            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
             var cd = c["changeDetector"];
 
             cd.detectChanges();
@@ -471,7 +437,7 @@ export function main() {
           var registry = new FakePipeRegistry('pipe', () => new IdentityPipe())
           var ctx = new Person("Megatron");
 
-          var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
+          var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
           var cd = c["changeDetector"];
           var dispatcher = c["dispatcher"];
 

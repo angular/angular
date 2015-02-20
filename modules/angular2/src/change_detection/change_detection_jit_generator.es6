@@ -14,7 +14,6 @@ import {
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_INVOKE_FORMATTER,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
@@ -26,10 +25,9 @@ import {
  *
  * For example: An expression `address.city` will result in the following class:
  *
- * var ChangeDetector0 = function ChangeDetector0(dispatcher, formatters, protos) {
+ * var ChangeDetector0 = function ChangeDetector0(dispatcher, protos) {
  *   AbstractChangeDetector.call(this);
  *   this.dispatcher = dispatcher;
- *   this.formatters = formatters;
  *   this.protos = protos;
  *
  *   this.context = null;
@@ -89,12 +87,11 @@ import {
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
-var FORMATTERS_ACCESSOR = "this.formatters";
+var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 var PROTOS_ACCESSOR = "this.protos";
 var CHANGE_LOCAL = "change";
 var CHANGES_LOCAL = "changes";
 var TEMP_LOCAL = "temp";
-var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 
 function typeTemplate(type:string, cons:string, detectChanges:string, setContext:string):string {
   return `
@@ -102,18 +99,17 @@ ${cons}
 ${detectChanges}
 ${setContext};
 
-return function(dispatcher, formatters, pipeRegistry) {
-  return new ${type}(dispatcher, formatters, pipeRegistry, protos);
+return function(dispatcher, pipeRegistry) {
+  return new ${type}(dispatcher, pipeRegistry, protos);
 }
 `;
 }
 
 function constructorTemplate(type:string, fieldsDefinitions:string):string {
   return `
-var ${type} = function ${type}(dispatcher, formatters, pipeRegistry, protos) {
+var ${type} = function ${type}(dispatcher, pipeRegistry, protos) {
 ${ABSTRACT_CHANGE_DETECTOR}.call(this);
 ${DISPATCHER_ACCESSOR} = dispatcher;
-${FORMATTERS_ACCESSOR} = formatters;
 ${PIPE_REGISTRY_ACCESSOR} = pipeRegistry;
 ${PROTOS_ACCESSOR} = protos;
 ${fieldsDefinitions}
@@ -380,9 +376,6 @@ export class ChangeDetectorJITGenerator {
 
       case RECORD_TYPE_INTERPOLATE:
         return assignmentTemplate(newValue, this.genInterpolation(r));
-
-      case RECORD_TYPE_INVOKE_FORMATTER:
-        return assignmentTemplate(newValue, `${FORMATTERS_ACCESSOR}.get("${r.name}")(${args})`);
 
       case RECORD_TYPE_KEYED_ACCESS:
         var key = this.localNames[r.args[0]];

@@ -35,19 +35,33 @@ export var defaultPipes = {
   ]
 };
 
-var _registry = new PipeRegistry(defaultPipes);
-
 export class DynamicChangeDetection extends ChangeDetection {
+  registry:PipeRegistry;
+
+  constructor(registry:PipeRegistry) {
+    super();
+    this.registry = registry;
+  }
+
   createProtoChangeDetector(name:string):ProtoChangeDetector{
-    return new DynamicProtoChangeDetector(_registry);
+    return new DynamicProtoChangeDetector(this.registry);
   }
 }
 
 export class JitChangeDetection extends ChangeDetection {
+  registry:PipeRegistry;
+
+  constructor(registry:PipeRegistry) {
+    super();
+    this.registry = registry;
+  }
+
   createProtoChangeDetector(name:string):ProtoChangeDetector{
-    return new JitProtoChangeDetector(_registry);
+    return new JitProtoChangeDetector(this.registry);
   }
 }
 
-export var dynamicChangeDetection = new DynamicChangeDetection();
-export var jitChangeDetection = new JitChangeDetection();
+var _registry = new PipeRegistry(defaultPipes);
+
+export var dynamicChangeDetection = new DynamicChangeDetection(_registry);
+export var jitChangeDetection = new JitChangeDetection(_registry);

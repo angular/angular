@@ -19,8 +19,6 @@ import {EventManager} from 'angular2/src/core/events/event_manager';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
-// TODO(tbosch): Cannot use `const` because of Dart.
-var NO_FORMATTERS = MapWrapper.create();
 
 // TODO(rado): make this configurable/smarter.
 var VIEW_POOL_CAPACITY = 10000;
@@ -50,7 +48,7 @@ export class View {
   constructor(proto:ProtoView, nodes:List<Node>, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
-    this.changeDetector = protoChangeDetector.instantiate(this, NO_FORMATTERS);
+    this.changeDetector = protoChangeDetector.instantiate(this);
     this.elementInjectors = null;
     this.rootElementInjectors = null;
     this.textNodes = null;
