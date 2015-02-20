@@ -308,7 +308,7 @@ export class ProtoView {
   }
 
   _instantiate(hostElementInjector: ElementInjector, eventManager: EventManager): View {
-    var rootElementClone = this.instantiateInPlace ? this.element : DOM.clone(this.element);
+    var rootElementClone = this.instantiateInPlace ? this.element : DOM.importIntoDoc(this.element);
     var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
       elementsWithBindingsDynamic = DOM.querySelectorAll(DOM.content(rootElementClone), NG_BINDING_CLASS_SELECTOR);
