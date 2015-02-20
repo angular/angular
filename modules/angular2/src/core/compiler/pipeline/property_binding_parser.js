@@ -8,14 +8,14 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-// Group 1 = "bind"
-// Group 2 = "var"
-// Group 3 = "on"
-// Group 4 = the identifier after "bind", "var", or "on"
+// Group 1 = 'bind'
+// Group 2 = 'var'
+// Group 3 = 'on'
+// Group 4 = the identifier after 'bind', 'var', or 'on'
 // Group 5 = idenitifer inside square braces
 // Group 6 = identifier inside parenthesis
-// Group 7 = "#"
-// Group 8 = identifier after "#"
+// Group 7 = '#'
+// Group 8 = identifier after '#'
 var BIND_NAME_REGEXP = RegExpWrapper.create(
     '^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+)');
 
@@ -49,7 +49,7 @@ export class PropertyBindingParser extends CompileStep {
           // match: bind-prop
           current.addPropertyBinding(bindParts[4], this._parseBinding(attrValue));
         } else if (isPresent(bindParts[2]) || isPresent(bindParts[7])) {
-          // match: var-name / var-name="iden" / #name / #name="iden"
+          // match: var-name / var-name='iden' / #name / #name='iden'
           var identifier = (isPresent(bindParts[4]) && bindParts[4] !== '') ?
               bindParts[4] : bindParts[8];
           var value = attrValue == '' ? '\$implicit' : attrValue;
