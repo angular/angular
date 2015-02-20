@@ -169,7 +169,7 @@ export function setupReflectorForAngular() {
     'annotations' : [new Viewport({
       selector: '[foreach]',
       bind: {
-        'iterableChanges[]': 'in'
+        'iterableChanges': 'in | iterableDiff'
       }
     })]
   });

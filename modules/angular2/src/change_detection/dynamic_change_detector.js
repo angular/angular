@@ -17,7 +17,7 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_INVOKE_FORMATTER,
-  RECORD_TYPE_STRUCTURAL_CHECK,
+  RECORD_TYPE_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -81,7 +81,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _check(proto:ProtoRecord) {
     try {
-      if (proto.mode == RECORD_TYPE_STRUCTURAL_CHECK) {
+      if (proto.mode == RECORD_TYPE_PIPE) {
         return this._pipeCheck(proto);
       } else {
         return this._referenceCheck(proto);
@@ -184,7 +184,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isPresent(storedPipe) && storedPipe.supports(context)) {
       return storedPipe;
     } else {
-      var pipe = this.pipeRegistry.get("[]", context);
+      var pipe = this.pipeRegistry.get(proto.name, context);
       this._writePipe(proto, pipe);
       return pipe;
     }

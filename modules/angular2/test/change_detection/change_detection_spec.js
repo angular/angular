@@ -3,6 +3,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DAR
 import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
+import {Pipe} from 'angular2/src/change_detection/parser/ast';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 
@@ -29,9 +30,13 @@ export function main() {
         }
 
         function createChangeDetector(memo:string, exp:string, context = null, formatters = null,
-                                      registry = null, structural = false) {
+                                      registry = null, pipeType:string = null) {
           var pcd = createProtoChangeDetector(registry);
-          pcd.addAst(ast(exp), memo, memo, structural);
+          var parsedAst = ast(exp);
+          if (isPresent(pipeType)) {
+            parsedAst = new Pipe(parsedAst, pipeType);
+          }
+          pcd.addAst(parsedAst, memo, memo);
 
           var dispatcher = new TestDispatcher();
           var cd = pcd.instantiate(dispatcher, formatters);
@@ -40,9 +45,8 @@ export function main() {
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
         }
 
-        function executeWatch(memo:string, exp:string, context = null, formatters = null,
-                              registry = null, content = false) {
-          var res = createChangeDetector(memo, exp, context, formatters, registry, content);
+        function executeWatch(memo:string, exp:string, context = null, formatters = null) {
+          var res = createChangeDetector(memo, exp, context, formatters);
           res["changeDetector"].detectChanges();
           return res["dispatcher"].log;
         }
@@ -190,7 +194,7 @@ export function main() {
             var parser = new Parser(new Lexer());
             var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
-            pcd.addAst(ast, "memo", "memo", false);
+            pcd.addAst(ast, "memo", "memo");
 
             var dispatcher = new TestDispatcher();
             var cd = pcd.instantiate(dispatcher, MapWrapper.create());
@@ -428,10 +432,10 @@ export function main() {
 
         describe("pipes", () => {
           it("should support pipes", () => {
-            var registry = new FakePipeRegistry(() => new CountingPipe());
+            var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name", ctx, null, registry, true);
+            var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
             var cd = c["changeDetector"];
             var dispatcher = c["dispatcher"];
 
@@ -446,10 +450,10 @@ export function main() {
           });
 
           it("should lookup pipes in the registry when the context is not supported", () => {
-            var registry = new FakePipeRegistry(() => new OncePipe());
+            var registry = new FakePipeRegistry('pipe', () => new OncePipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name", ctx, null, registry, true);
+            var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
             var cd = c["changeDetector"];
 
             cd.detectChanges();
@@ -464,10 +468,10 @@ export function main() {
         });
 
         it("should do nothing when returns NO_CHANGE", () => {
-          var registry = new FakePipeRegistry(() => new IdentityPipe())
+          var registry = new FakePipeRegistry('pipe', () => new IdentityPipe())
           var ctx = new Person("Megatron");
 
-          var c  = createChangeDetector("memo", "name", ctx, null, registry, true);
+          var c  = createChangeDetector("memo", "name", ctx, null, registry, 'pipe');
           var cd = c["changeDetector"];
           var dispatcher = c["dispatcher"];
 
@@ -537,15 +541,18 @@ class IdentityPipe {
 
 class FakePipeRegistry extends PipeRegistry {
   numberOfLookups:number;
+  pipeType:string;
   factory:Function;
 
-  constructor(factory) {
+  constructor(pipeType, factory) {
     super({});
+    this.pipeType = pipeType;
     this.factory = factory;
     this.numberOfLookups = 0;
   }
 
   get(type:string, obj) {
+    if (type != this.pipeType) return null;
     this.numberOfLookups ++;
     return this.factory();
   }

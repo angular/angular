@@ -511,8 +511,7 @@ export class ProtoView {
     directiveIndex:number,
     expression:AST,
     setterName:string,
-    setter:SetterFn,
-    isContentWatch: boolean) {
+    setter:SetterFn) {
 
     var bindingMemento = new DirectiveBindingMemento(
       this.elementBinders.length-1,
@@ -521,7 +520,7 @@ export class ProtoView {
       setter
     );
     var directiveMemento = DirectiveMemento.get(bindingMemento);
-    this.protoChangeDetector.addAst(expression, bindingMemento, directiveMemento, isContentWatch);
+    this.protoChangeDetector.addAst(expression, bindingMemento, directiveMemento);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,

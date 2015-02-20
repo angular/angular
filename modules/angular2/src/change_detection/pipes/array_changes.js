@@ -16,6 +16,16 @@ import {
 
 import {NO_CHANGE, Pipe} from './pipe';
 
+export class ArrayChangesFactory {
+  supports(obj):boolean {
+    return ArrayChanges.supportsObj(obj);
+  }
+
+  create():Pipe {
+    return new ArrayChanges();
+  }
+}
+
 export class ArrayChanges extends Pipe {
   _collection;
   _length:int;

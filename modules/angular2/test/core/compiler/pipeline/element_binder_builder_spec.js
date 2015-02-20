@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
@@ -15,7 +15,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angul
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
+import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector, PipeRegistry, Pipe
   } from 'angular2/change_detection';
 import {Injector} from 'angular2/di';
 
@@ -23,8 +23,7 @@ export function main() {
   describe('ElementBinderBuilder', () => {
     var evalContext, view, changeDetector;
 
-    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
-      }={}) {
+    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector, registry}={}) {
       var reflector = new DirectiveMetadataReader();
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
@@ -70,8 +69,10 @@ export function main() {
             }
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element,
-                new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy());
+              current.inheritedProtoView = new ProtoView(
+                current.element,
+                new DynamicProtoChangeDetector(normalizeBlank(registry)),
+                new NativeShadowDomStrategy());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -393,6 +394,37 @@ export function main() {
       expect(view.elementInjectors[0].get(SomeComponentDirectiveWithBinding).compProp).toBe('c');
     });
 
+    it('should bind directive properties with pipes', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'boundprop': 'prop1'
+      });
+
+      var directives = [DirectiveWithBindingsThatHavePipes];
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
+
+      var registry = new PipeRegistry({
+        "double" : [new DoublePipeFactory()]
+      });
+
+      var pipeline = createPipeline({
+        propertyBindings: propertyBindings,
+        directives: directives,
+        protoElementInjector: protoElementInjector,
+        registry: registry
+      });
+
+      var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
+      var pv = results[0].inheritedProtoView;
+      results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
+        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy());
+
+      instantiateView(pv);
+      evalContext.prop1 = 'a';
+      changeDetector.detectChanges();
+
+      expect(view.elementInjectors[0].get(DirectiveWithBindingsThatHavePipes).compProp).toEqual('aa');
+    });
+
     it('should bind directive properties for sibling elements', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
         'boundprop1': 'prop1'
@@ -501,6 +533,34 @@ class SomeComponentDirectiveWithBinding {
   compProp;
   constructor() {
     this.compProp = null;
+  }
+}
+
+@Component({bind: {'compProp':'boundprop | double'}})
+class DirectiveWithBindingsThatHavePipes {
+  compProp;
+  constructor() {
+    this.compProp = null;
+  }
+}
+
+class DoublePipe extends Pipe {
+  supports(obj) {
+    return true;
+  }
+
+  transform(value) {
+    return `${value}${value}`;
+  }
+}
+
+class DoublePipeFactory {
+  supports(obj) {
+    return true;
+  }
+
+  create() {
+    return new DoublePipe();
   }
 }
 

@@ -16,12 +16,12 @@ export class PipeRegistry {
     }
 
     var matchingConfig = ListWrapper.find(listOfConfigs,
-      (pipeConfig) => pipeConfig["supports"](obj));
+      (pipeConfig) => pipeConfig.supports(obj));
 
     if (isBlank(matchingConfig)) {
       throw new BaseException(`Cannot find a pipe for type '${type}' object '${obj}'`);
     }
 
-    return matchingConfig["pipe"]();
+    return matchingConfig.create();
   }
 }
