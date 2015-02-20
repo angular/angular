@@ -9,8 +9,6 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
-import {$BANG} from 'angular2/src/change_detection/parser/lexer';
-
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
  * For `<template>` elements:
@@ -59,9 +57,9 @@ export class ViewSplitter extends CompileStep {
         var templateBindings = MapWrapper.get(attrs, 'template');
         var hasTemplateBinding = isPresent(templateBindings);
 
-        // look for template shortcuts such as !if="condition" and treat them as template="if condition"
+        // look for template shortcuts such as *if="condition" and treat them as template="if condition"
         MapWrapper.forEach(attrs, (attrValue, attrName) => {
-          if (StringWrapper.charCodeAt(attrName, 0) == $BANG) {
+          if (StringWrapper.startsWith(attrName, '*')) {
             var key = StringWrapper.substring(attrName, 1);  // remove the bang
             if (hasTemplateBinding) {
               // 2nd template binding detected
