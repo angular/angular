@@ -19,6 +19,8 @@ import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util'
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
+import {If} from 'angular2/directives';
+
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
   // as they are needed in all benchmarks...
@@ -43,18 +45,18 @@ function setupReflector() {
         bind: {'data': 'data'}
       }),
       new Template({
-        directives: [TreeComponent, NgIf],
-        inline: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+        directives: [TreeComponent, If],
+        inline: `<span> {{data.value}} <span template='if data.right != null'><tree [data]='data.right'></tree></span><span template='if data.left != null'><tree [data]='data.left'></tree></span></span>`
       })]
   });
 
-  reflector.registerType(NgIf, {
-    'factory': (vp) => new NgIf(vp),
+  reflector.registerType(If, {
+    'factory': (vp) => new If(vp),
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
-      selector: '[ng-if]',
+      selector: '[if]',
       bind: {
-        'ngIf': 'ng-if'
+        'condition': 'if'
       }
     })]
   });
@@ -133,7 +135,8 @@ function setupReflector() {
     'left': (a) => a.left,
     'right': (a) => a.right,
     'initData': (a) => a.initData,
-    'data': (a) => a.data
+    'data': (a) => a.data,
+    'condition': (a) => a.condition,
   });
 
   reflector.registerSetters({
@@ -142,7 +145,7 @@ function setupReflector() {
     'right': (a,v) => a.right = v,
     'initData': (a,v) => a.initData = v,
     'data': (a,v) => a.data = v,
-    'ngIf': (a,v) => a.ngIf = v
+    'condition': (a,v) => a.condition = v,
   });
 }
 
@@ -265,7 +268,7 @@ function buildTree(maxDepth, values, curDepth) {
 var BASELINE_TREE_TEMPLATE = DOM.createTemplate(
     '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
 var BASELINE_IF_TEMPLATE = DOM.createTemplate(
-    '<span template="ng-if"><tree></tree></span>');
+    '<span template="if"><tree></tree></span>');
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
@@ -343,22 +346,6 @@ class AppComponent {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
-  }
-}
-
-// TODO: Move this into a reusable directive in the 'core' module!
-class NgIf {
-  _viewContainer:ViewContainer;
-  constructor(viewContainer:ViewContainer) {
-    this._viewContainer = viewContainer;
-  }
-  set ngIf(value:boolean) {
-    if (this._viewContainer.length > 0) {
-      this._viewContainer.remove(0);
-    }
-    if (value) {
-      this._viewContainer.create();
-    }
   }
 }
 
