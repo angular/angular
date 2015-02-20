@@ -43,7 +43,7 @@ export class ProtoViewBuilder extends CompileStep {
         parent.inheritedElementBinder.nestedProtoView = inheritedProtoView;
 
         // When current is a view root, the variable bindings are set to the *nested* proto view.
-        // The root view conceptually signifies a new "block scope" (the nested view), to which
+        // The root view conceptually signifies a new 'block scope' (the nested view), to which
         // the variables are bound.
         if (isPresent(parent.variableBindings)) {
           MapWrapper.forEach(parent.variableBindings, (mappedName, varName) => {

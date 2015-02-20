@@ -45,25 +45,30 @@ export class DirectiveParser extends CompileStep {
 
     var cssSelector = new CssSelector();
     cssSelector.setElement(DOM.nodeName(current.element));
+
     for (var i=0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
+
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       if (isBlank(current.propertyBindings) ||
         isPresent(current.propertyBindings) && !MapWrapper.contains(current.propertyBindings, attrName)) {
         cssSelector.addAttribute(attrName, attrValue);
       }
     });
+
     if (isPresent(current.propertyBindings)) {
       MapWrapper.forEach(current.propertyBindings, (expression, prop) => {
         cssSelector.addAttribute(prop, expression.source);
       });
     }
+
     if (isPresent(current.variableBindings)) {
       MapWrapper.forEach(current.variableBindings, (value, name) => {
         cssSelector.addAttribute(name, value);
       });
     }
+
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
     // only be present on <template> elements any more!
     var isTemplateElement = DOM.isTemplateElement(current.element);

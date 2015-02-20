@@ -72,7 +72,7 @@ export class CompileElement {
     this._attrs = null;
   }
 
-  attrs():Map<string,string> {
+  attrs():Map<string, string> {
     if (isBlank(this._attrs)) {
       this._attrs = DOM.attributeMap(this.element);
     }
@@ -115,8 +115,8 @@ export class CompileElement {
 
     // Store the variable map from value to variable, reflecting how it will be used later by
     // View. When a local is set to the view, a lookup for the variable name will take place keyed
-    // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
-    // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
+    // by the 'value', or exported identifier. For example, ng-repeat sets a view local of 'index'.
+    // When this occurs, a lookup keyed by 'index' must occur to find if there is a var referencing
     // it.
     MapWrapper.set(this.variableBindings, variableValue, variableName);
   }
