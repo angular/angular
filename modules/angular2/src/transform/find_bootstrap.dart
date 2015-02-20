@@ -1,3 +1,5 @@
+library angular2.src.transform;
+
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:code_transformers/resolver.dart';
@@ -60,8 +62,8 @@ class _ParseBootstrapTypeVisitor extends SimpleAstVisitor<Object> {
   // TODO(kegluneq): Allow non-SimpleIdentifier expressions.
 
   @override
-  Object visitSimpleIdentifier(SimpleIdentifier e) {
-    bootstrapType = (e.bestElement as ClassElement);
+  Object visitSimpleIdentifier(SimpleIdentifier node) {
+    bootstrapType = (node.bestElement as ClassElement);
     if (!_types.isComponent(bootstrapType)) {
       throw new ArgumentError('Class passed to `${bootstrapMethodName}` must '
           'be a @${_types.componentAnnotation.name}');
@@ -71,7 +73,7 @@ class _ParseBootstrapTypeVisitor extends SimpleAstVisitor<Object> {
 
 /// Recursively visits all nodes in an Ast structure, recording all encountered
 /// calls to the provided [FunctionElement].
-class _FindFunctionVisitor extends UnifyingAstVisitor<Object> {
+class _FindFunctionVisitor extends RecursiveAstVisitor<Object> {
   final FunctionElement _target;
   _FindFunctionVisitor(this._target);
 

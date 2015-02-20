@@ -47,6 +47,7 @@ Resolvers createResolvers() {
 }
 
 const bootstrapMethodName = 'bootstrap';
+const reflectionCapabilitiesTypeName = 'ReflectionCapabilities';
 
 /// Provides resolved [Elements] for well-known Angular2 symbols.
 class Angular2Types {
@@ -57,6 +58,8 @@ class Angular2Types {
       new AssetId('angular2', 'lib/src/core/application.dart');
   static final _templateLibAssetId =
       new AssetId('angular2', 'lib/src/core/annotations/template.dart');
+  static final _reflectionCapabilitiesLibAssetId = new AssetId(
+      'angular2', 'lib/src/reflection/reflection_capabilities.dart');
 
   final Resolver _resolver;
   FunctionElement _bootstrapMethod;
@@ -83,6 +86,12 @@ class Angular2Types {
   LibraryElement get templateLib => _resolver.getLibrary(_templateLibAssetId);
 
   ClassElement get templateAnnotation => _getTypeSafe(templateLib, 'Template');
+
+  LibraryElement get reflectionCapabilitiesLib =>
+      _resolver.getLibrary(_reflectionCapabilitiesLibAssetId);
+
+  ClassElement get reflectionCapabilities =>
+      _getTypeSafe(reflectionCapabilitiesLib, reflectionCapabilitiesTypeName);
 
   LibraryElement get applicationLib =>
       _resolver.getLibrary(_applicationLibAssetId);

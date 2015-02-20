@@ -60,6 +60,12 @@ abstract class DirectiveRegistry {
   void register(AnnotationMatch entry);
 }
 
+const setupReflectionMethodName = 'setupReflection';
+
+const _libraryDeclaration = '''
+library angular2.src.transform.generated;
+''';
+
 const _reflectorImport = '''
 import 'package:angular2/src/reflection/reflection.dart' show reflector;
 ''';
@@ -70,18 +76,17 @@ AssetId _assetIdFromLibraryElement(LibraryElement el) {
   return (el.source as dynamic).assetId;
 }
 
-String codegenEntryPoint(Context context,
-    {LibraryElement entryPoint, AssetId newEntryPoint}) {
-  // This must be called prior to [codegenImports] or the entry point
-  // library will not be imported.
-  var entryPointPrefix = context._getPrefixDot(entryPoint);
+String codegenEntryPoint(Context context, {AssetId newEntryPoint}) {
+  if (newEntryPoint == null) {
+    throw new ArgumentError.notNull('newEntryPoint');
+  }
   // TODO(jakemac): copyright and library declaration
-  var outBuffer = new StringBuffer(_reflectorImport);
+  var outBuffer = new StringBuffer()
+    ..write(_libraryDeclaration)
+    ..write(_reflectorImport);
   _codegenImports(context, newEntryPoint, outBuffer);
   outBuffer
-    ..write('main() {')
-    ..write(context.directiveRegistry.toString())
-    ..write('${entryPointPrefix}main();}');
+      .write('${setupReflectionMethodName}() {${context.directiveRegistry}}');
 
   return new DartFormatter().format(outBuffer.toString());
 }
