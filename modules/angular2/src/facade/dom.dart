@@ -187,6 +187,9 @@ class DOM {
       node.nodeType == Node.TEXT_NODE;
   static bool isElementNode(Node node) =>
       node.nodeType == Node.ELEMENT_NODE;
+  static Node importIntoDoc(Node node) {
+    return document.importNode(node, true);
+  }
 }
 
 class CSSRuleWrapper {

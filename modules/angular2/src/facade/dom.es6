@@ -219,6 +219,9 @@ export class DOM {
   static isElementNode(node:Node):boolean {
     return node.nodeType === Node.ELEMENT_NODE;
   }
+  static importIntoDoc(node:Node) {
+    return document.importNode(node, true);
+  }
 }
 
 export class CSSRuleWrapper {
