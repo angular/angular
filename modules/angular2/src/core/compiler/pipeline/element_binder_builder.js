@@ -84,7 +84,7 @@ function roleSetter(element:Element, value) {
   } else {
     DOM.removeAttribute(element, ROLE_ATTR);
     if (isPresent(value)) {
-      throw new BaseException('Invalid role attribute, only string values are allowed, got "' + stringify(value) + '"');
+      throw new BaseException('Invalid role attribute, only string values are allowed, got \'' + stringify(value) + '\'');
     }
   }
 }
