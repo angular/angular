@@ -86,6 +86,7 @@ class SecondaryApp {
              </div>
              <nested-component></nested-component>
            </div>`,
+           // TODO - add some view-container-using components
   directives: [NestedComponent]
 })
 class BoundApp {
@@ -116,6 +117,20 @@ class NestedComponent {
   constructor() {
     this.qux = 'Qux';
   }
+}
+
+
+// TODO - Figure out the exact syntax for this
+// <cmp [baz]="foo">
+@Component({
+  selector: 'cmp'
+  bind: {
+    'baz': inproperty;
+  }
+})
+class ComponentWithBinding {
+  inproperty;
+
 }
 
 export function main() {

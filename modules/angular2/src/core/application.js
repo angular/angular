@@ -93,11 +93,11 @@ function _injectorBindings(appComponentType): List<Binding> {
       Lexer,
       ExceptionHandler,
       bind(XHR).toValue(new XHRImpl()),
-      bind(Testability).toAsyncFactory((registry, rootView, elem) => {
-        var testability = new Testability(rootView);
+      bind(Testability).toAsyncFactory((registry, rootView, elem, zone) => {
+        var testability = new Testability(rootView, zone);
         registry.registerApplication(elem, testability)
         return testability;
-      }, [TestabilityRegistry, appViewToken, appElementToken]),
+      }, [TestabilityRegistry, appViewToken, appElementToken, VmTurnZone]),
   ];
 }
 

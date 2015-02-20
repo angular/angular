@@ -20,6 +20,7 @@ class PublicTestability {
   }
 }
 
+// TODO - have an option to turn this off if people want to.
 export class GetTestability {
   static addToWindow(registry: TestabilityRegistry) {
     window.angular = {

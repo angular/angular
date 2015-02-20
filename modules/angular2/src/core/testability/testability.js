@@ -1,8 +1,10 @@
-import {window, Node} from 'angular2/src/facade/dom';
+import {window, Node, Element} from 'angular2/src/facade/dom';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {StringWrapper} from 'angular2/src/facade/lang';
+import {StringWrapper, isBlank} from 'angular2/src/facade/lang';
 import {View, DirectiveBindingMemento, ElementBindingMemento} from 'angular2/src/core/compiler/view';
 import {GetTestability} from 'angular2/src/core/testability/get_testability';
+import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+
 
 /**
  * The Testability service provides testing hooks that can be accessed from
@@ -14,15 +16,17 @@ export class Testability {
   _callbacks: List;
   _rootView: View;
   _bindingMap: Map;
+  _zone: VmTurnZone;
 
-  constructor(rootView) {
+  constructor(rootView: View, zone: VmTurnZone) {
     this._rootView = rootView;
     this._pendingCount = 0;
-    this._callbacks = [];
+    this._callbacks = ListWrapper.create();
+    this._zone = zone;
   }
 
   increaseCount(delta: number) {
-    if (delta === null || delta === undefined) {
+    if (isBlank(delta)) {
       delta = 1;
     }
     this._pendingCount += delta;
@@ -35,22 +39,25 @@ export class Testability {
   }
 
   _runCallbacks() {
+    console.log('Running whenStable callbacks');
     while (this._callbacks.length) {
-      this._callbacks.pop()();
+      ListWrapper.removeLast(this._callbacks)();
     }
   }
 
   whenStable(callback: Function) {
+    ListWrapper.push(this._callbacks, callback);
+
     if (this._pendingCount === 0) {
-      callback();
-    } else {
-      this._callbacks.push(callback);
+      this._runCallbacks();
     }
     // TODO(juliemr) - hook into the zone api.
   }
 
   _addBindingsFromView(view: View) {
-    var protos = view.changeDetector.protos;
+    // TODO - this (maybe? maybe not?) won't work for the JIT change detector
+    // TODO - figure out how to switch to the JIT change detector
+    var protos = view.changeDetector.protos; // These are ProtoRecords
     for (var i = 0; i < protos.length; ++i) {
       var memento = protos[i].bindingMemento;
       var elem = null;
@@ -59,6 +66,7 @@ export class Testability {
         continue;
       } else if (memento instanceof ElementBindingMemento) {
         // TODO - can we do this without accessing the private variable?
+        // This will (probably?) fail in dart.
         elem = view.bindElements[memento._elementIndex];
       } else {
         // memento is an integer index into textNodes.
@@ -72,17 +80,19 @@ export class Testability {
       if (!MapWrapper.contains(this._bindingMap, bindingName)) {
         MapWrapper.set(this._bindingMap, bindingName, [elem]);
       } else {
-        // Is this really the way we have to use facades to write stuff?
         ListWrapper.push(MapWrapper.get(this._bindingMap, bindingName), elem);
       }
     }
 
     for (var j = 0; j < view.componentChildViews.length; ++j) {
       this._addBindingsFromView(view.componentChildViews[j]);
+      // TODO - and also add view containers here?
     }
   }
 
   findBindings(using: Element, binding: string, exactMatch: boolean) {
+    console.log(this._rootView);
+
     // TODO(juliemr): restrict scope with 'using'
     this._bindingMap = MapWrapper.create();
     this._addBindingsFromView(this._rootView);
@@ -117,15 +127,15 @@ export class TestabilityRegistry {
   }
 
   registerApplication(token, testability) {
-    this._applications.set(token, testability);
+    MapWrapper.set(this._applications, token, testability);
   }
 
   _findTestabilityInTree(elem: Node) {
     if (elem == null) {
       return null;
     }
-    if (this._applications.has(elem)) {
-      return this._applications.get(elem);
+    if (MapWrapper.contains(this._applications, elem)) {
+      return MapWrapper.get(this._applications, elem);
     }
     if (elem instanceof window.ShadowRoot) {
       return this._findTestabilityInTree(elem.host);
