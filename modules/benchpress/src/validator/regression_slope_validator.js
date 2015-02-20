@@ -60,7 +60,7 @@ export class RegressionSlopeValidator extends Validator {
 var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
 var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
 var _BINDINGS = [
-  bind(Validator).toFactory(
+  bind(RegressionSlopeValidator).toFactory(
     (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
     [_SAMPLE_SIZE, _METRIC]
   ),

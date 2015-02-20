@@ -155,7 +155,7 @@ var _MAX_RETRY_COUNT = 20;
 var _MARK_NAME_PREFIX = 'benchpress';
 var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 var _BINDINGS = [
-  bind(Metric).toFactory(
+  bind(PerflogMetric).toFactory(
     (driverExtension, setTimeout) => new PerflogMetric(driverExtension, setTimeout),
     [WebDriverExtension, _SET_TIMEOUT]
   ),

@@ -2,7 +2,7 @@ import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/te
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { Json, isBlank } from 'angular2/src/facade/lang';
+import { Json, isBlank, isJsObject } from 'angular2/src/facade/lang';
 
 import {
   WebDriverExtension, ChromeDriverExtension,
@@ -20,15 +20,15 @@ export function main() {
     var chromeTimelineEvents = new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords = null) {
+    function createExtension(perfRecords = null, messageMethod = 'Tracing.dataCollected') {
       if (isBlank(perfRecords)) {
         perfRecords = [];
       }
       log = [];
       extension = new Injector([
         ChromeDriverExtension.BINDINGS,
-        bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
-      ]).get(WebDriverExtension);
+        bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords, messageMethod))
+      ]).get(ChromeDriverExtension);
       return extension;
     }
 
@@ -153,6 +153,31 @@ export function main() {
         });
       });
 
+      // TODO(tbosch): In Dart, somehow we don't provide the error
+      // correctly in the promise result...
+      if (isJsObject({})) {
+        it('should throw an error on buffer overflow', (done) => {
+          createExtension([
+            chromeTimelineEvents.start('FunctionCall', 1234),
+          ], 'Tracing.bufferUsage').readPerfLog().then(null, (err) => {
+            expect( () => {
+              throw err;
+            }).toThrowError('The DevTools trace buffer filled during the test!');
+            done();
+          });
+        });
+      }
+
+      it('should match chrome browsers', () => {
+        expect(createExtension().supports({
+          'browserName': 'chrome'
+        })).toBe(true);
+
+        expect(createExtension().supports({
+          'browserName': 'Chrome'
+        })).toBe(true);
+      });
+
     });
 
   });
@@ -161,10 +186,12 @@ export function main() {
 class MockDriverAdapter extends WebDriverAdapter {
   _log:List;
   _events:List;
-  constructor(log, events) {
+  _messageMethod:string;
+  constructor(log, events, messageMethod) {
     super();
     this._log = log;
     this._events = events;
+    this._messageMethod = messageMethod;
   }
 
   executeScript(script) {
@@ -175,11 +202,11 @@ class MockDriverAdapter extends WebDriverAdapter {
   logs(type) {
     ListWrapper.push(this._log, ['logs', type]);
     if (type === 'performance') {
-      return PromiseWrapper.resolve(this._events.map(function(event) {
+      return PromiseWrapper.resolve(this._events.map( (event) => {
         return {
           'message': Json.stringify({
             'message': {
-              'method': 'Tracing.dataCollected',
+              'method': this._messageMethod,
               'params': event
             }
           })

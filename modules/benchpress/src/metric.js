@@ -1,3 +1,4 @@
+import { bind } from 'angular2/di';
 import {
   Promise, PromiseWrapper
 } from 'angular2/src/facade/async';
@@ -11,6 +12,14 @@ import { StringMap } from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class Metric {
+  static bindTo(delegateToken) {
+    return [
+      bind(Metric).toFactory(
+        (delegate) => delegate, [delegateToken]
+      )
+    ];
+  }
+
   /**
    * Starts measuring
    */
