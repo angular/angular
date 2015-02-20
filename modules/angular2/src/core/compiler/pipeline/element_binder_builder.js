@@ -183,7 +183,7 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindEvents(protoView, compileElement) {
     MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
-      protoView.bindEvent(eventName,  expression);
+      protoView.bindEvent(eventName, expression);
     });
   }
 
@@ -211,7 +211,7 @@ export class ElementBinderBuilder extends CompileStep {
         if (isPresent(expression)) {
           var len = dirProp.length;
           var dirBindingName = dirProp;
-          var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
+          var isContentWatch = (dirProp[len - 2] === '[') && (dirProp[len - 1] === ']');
           if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
 
           protoView.bindDirectiveProperty(

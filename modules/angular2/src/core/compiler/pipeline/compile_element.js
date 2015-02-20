@@ -72,7 +72,7 @@ export class CompileElement {
     this._attrs = null;
   }
 
-  attrs():Map<string,string> {
+  attrs():Map<string, string> {
     if (isBlank(this._attrs)) {
       this._attrs = DOM.attributeMap(this.element);
     }
