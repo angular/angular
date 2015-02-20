@@ -109,7 +109,7 @@ export class ConsoleReporter extends Reporter {
 var _PRINT = new OpaqueToken('ConsoleReporter.print');
 var _COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidht');
 var _BINDINGS = [
-  bind(Reporter).toFactory(
+  bind(ConsoleReporter).toFactory(
     (columnWidth, sampleDescription, print) => new ConsoleReporter(columnWidth, sampleDescription, print),
     [_COLUMN_WIDTH, SampleDescription, _PRINT]
   ),

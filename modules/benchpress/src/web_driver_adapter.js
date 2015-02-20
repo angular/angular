@@ -1,5 +1,7 @@
+import { bind } from 'angular2/di';
 import { Promise } from 'angular2/src/facade/async';
 import { BaseException, ABSTRACT } from 'angular2/src/facade/lang';
+import { List, Map } from 'angular2/src/facade/collection';
 
 /**
  * A WebDriverAdapter bridges API differences between different WebDriver clients,
@@ -8,16 +10,24 @@ import { BaseException, ABSTRACT } from 'angular2/src/facade/lang';
  */
 @ABSTRACT()
 export class WebDriverAdapter {
+  static bindTo(delegateToken) {
+    return [
+      bind(WebDriverAdapter).toFactory(
+        (delegate) => delegate, [delegateToken]
+      )
+    ];
+  }
+
   waitFor(callback:Function):Promise {
     throw new BaseException('NYI');
   }
   executeScript(script:string):Promise {
     throw new BaseException('NYI');
   }
-  capabilities():Promise {
+  capabilities():Promise<Map> {
     throw new BaseException('NYI');
   }
-  logs(type:string):Promise {
+  logs(type:string):Promise<List> {
     throw new BaseException('NYI');
   }
 }

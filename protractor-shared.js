@@ -175,19 +175,13 @@ exports.createBenchpressRunner = function(options) {
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
       'lang': options.lang,
       'runId': runId
-    }),
-    // TODO(tbosch): Make the ChromeDriverExtension configurable based on the
-    // capabilities. Should support the case where we test against
-    // ios and chrome at the same time!
-    benchpress.bind(benchpress.WebDriverExtension).toFactory(function(adapter) {
-      return new benchpress.ChromeDriverExtension(adapter);
-    }, [benchpress.WebDriverAdapter])
+    })
   ];
   if (argv['benchmark']) {
-    bindings.push(benchpress.RegressionSlopeValidator.BINDINGS);
+    bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));
     bindings.push(benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(argv['sample-size']));
   } else {
-    bindings.push(benchpress.SizeValidator.BINDINGS);
+    bindings.push(benchpress.Validator.bindTo(benchpress.SizeValidator));
     bindings.push(benchpress.bind(benchpress.SizeValidator.SAMPLE_SIZE).toValue(1));
   }
 

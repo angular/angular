@@ -20,7 +20,7 @@ export function main() {
         fn();
       }),
       bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog))
-    ]).get(Metric);
+    ]).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {

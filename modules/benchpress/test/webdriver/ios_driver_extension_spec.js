@@ -26,7 +26,7 @@ export function main() {
       extension = new Injector([
         IOsDriverExtension.BINDINGS,
         bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
-      ]).get(WebDriverExtension);
+      ]).get(IOsDriverExtension);
       return extension;
     }
 
@@ -153,6 +153,16 @@ export function main() {
           ]);
           done();
         });
+      });
+
+      it('should match safari browsers', () => {
+        expect(createExtension().supports({
+          'browserName': 'safari'
+        })).toBe(true);
+
+        expect(createExtension().supports({
+          'browserName': 'Safari'
+        })).toBe(true);
       });
 
     });

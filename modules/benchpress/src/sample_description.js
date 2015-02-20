@@ -27,15 +27,18 @@ export class SampleDescription {
 
 var _BINDINGS = [
   bind(SampleDescription).toFactory(
-    (metric, id, forceGc, validator, defaultDesc, userDesc) => new SampleDescription(id,
+    (metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) => new SampleDescription(id,
       [
-        {'forceGc': forceGc},
+        {'forceGc': forceGc, 'userAgent': userAgent},
         validator.describe(),
         defaultDesc,
         userDesc
       ],
       metric.describe()),
-    [Metric, Options.SAMPLE_ID, Options.FORCE_GC, Validator, Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION]
+    [
+      Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT,
+      Validator, Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
+    ]
   ),
   bind(Options.DEFAULT_DESCRIPTION).toValue({}),
   bind(Options.SAMPLE_DESCRIPTION).toValue({})

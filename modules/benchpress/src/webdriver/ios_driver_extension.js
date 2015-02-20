@@ -1,5 +1,5 @@
 import { bind } from 'angular2/di';
-import { ListWrapper } from 'angular2/src/facade/collection';
+import { ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import {
   Json, isPresent, isBlank, RegExpWrapper, StringWrapper
 } from 'angular2/src/facade/lang';
@@ -36,6 +36,7 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(script);
   }
 
+  // See https://github.com/WebKit/webkit/tree/master/Source/WebInspectorUI/Versions
   readPerfLog() {
     // TODO(tbosch): Bug in IOsDriver: Need to execute at least one command
     // so that the browser logs can be read out!
@@ -97,6 +98,10 @@ export class IOsDriverExtension extends WebDriverExtension {
     });
     return events;
   }
+
+  supports(capabilities:StringMap):boolean {
+    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'safari');
+  }
 }
 
 function createEvent(ph, name, time, args = null) {
@@ -132,7 +137,7 @@ function createMarkEndEvent(name, time) {
 }
 
 var _BINDINGS = [
-  bind(WebDriverExtension).toFactory(
+  bind(IOsDriverExtension).toFactory(
     (driver) => new IOsDriverExtension(driver),
     [WebDriverAdapter]
   )

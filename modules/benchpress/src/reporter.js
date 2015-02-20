@@ -1,3 +1,4 @@
+import { bind } from 'angular2/di';
 import {
   Promise, PromiseWrapper
 } from 'angular2/src/facade/async';
@@ -12,6 +13,14 @@ import { MeasureValues } from './measure_values';
  */
 @ABSTRACT()
 export class Reporter {
+  static bindTo(delegateToken) {
+    return [
+      bind(Reporter).toFactory(
+        (delegate) => delegate, [delegateToken]
+      )
+    ];
+  }
+
   reportMeasureValues(values:MeasureValues):Promise {
     throw new BaseException('NYI');
   }

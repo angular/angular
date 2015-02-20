@@ -17,7 +17,13 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   _convertPromise(thenable) {
     var completer = PromiseWrapper.completer();
-    thenable.then(completer.complete, completer.reject);
+    thenable.then(
+      // selenium-webdriver uses an own Node.js context,
+      // so we need to convert data into objects of this context.
+      // (e.g. otherwise instanceof checks of rtts_assert would fail)
+      (data) => completer.complete(convertToLocalProcess(data)),
+      completer.reject
+    );
     return completer.promise;
   }
 
@@ -30,7 +36,9 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
   }
 
   capabilities():Promise {
-    return this._convertPromise(this._driver.getCapabilities());
+    return this._convertPromise(
+      this._driver.getCapabilities().then( (capsObject) => capsObject.toJSON() )
+    );
   }
 
   logs(type:string):Promise {
@@ -39,11 +47,15 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     return this._convertPromise(this._driver.schedule(
       new webdriver.Command(webdriver.CommandName.GET_LOG).
           setParameter('type', type),
-      'WebDriver.manage().logs().get(' + type + ')').then( (logs) => {
-        // Need to convert the Array into an instance of an Array
-        // as selenium-webdriver uses an own Node.js context!
-        return [].slice.call(logs);
-      }));
+      'WebDriver.manage().logs().get(' + type + ')'));
   }
 
+}
+
+function convertToLocalProcess(data) {
+  var serialized = JSON.stringify(data);
+  if (''+serialized === 'undefined') {
+    return undefined;
+  }
+  return JSON.parse(serialized);
 }

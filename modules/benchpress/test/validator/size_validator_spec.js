@@ -14,7 +14,7 @@ export function main() {
       validator = new Injector([
         SizeValidator.BINDINGS,
         bind(SizeValidator.SAMPLE_SIZE).toValue(size)
-      ]).get(Validator);
+      ]).get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {

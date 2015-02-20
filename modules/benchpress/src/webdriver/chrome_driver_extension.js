@@ -1,5 +1,5 @@
 import { bind } from 'angular2/di';
-import { ListWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
+import { ListWrapper, StringMapWrapper, StringMap } from 'angular2/src/facade/collection';
 import {
   Json, isPresent, isBlank, RegExpWrapper, StringWrapper, BaseException, NumberWrapper
 } from 'angular2/src/facade/lang';
@@ -36,6 +36,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(script);
   }
 
+  // See [Chrome Trace Event Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
   readPerfLog() {
     // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
     // so that the browser logs can be read out!
@@ -95,6 +96,10 @@ export class ChromeDriverExtension extends WebDriverExtension {
     });
     return normalizedEvents;
   }
+
+  supports(capabilities:StringMap):boolean {
+    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
+  }
 }
 
 function normalizeEvent(chromeEvent, data) {
@@ -120,7 +125,7 @@ function normalizeEvent(chromeEvent, data) {
 }
 
 var _BINDINGS = [
-  bind(WebDriverExtension).toFactory(
+  bind(ChromeDriverExtension).toFactory(
     (driver) => new ChromeDriverExtension(driver),
     [WebDriverAdapter]
   )

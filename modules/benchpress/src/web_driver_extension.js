@@ -1,6 +1,10 @@
-import { BaseException, ABSTRACT } from 'angular2/src/facade/lang';
-import { Promise } from 'angular2/src/facade/async';
-import { List } from 'angular2/src/facade/collection';
+import { bind, Injector, OpaqueToken } from 'angular2/di';
+
+import { BaseException, ABSTRACT, isBlank } from 'angular2/src/facade/lang';
+import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
+import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
+
+import { Options } from './sample_options';
 
 /**
  * A WebDriverExtension implements extended commands of the webdriver protocol
@@ -9,6 +13,30 @@ import { List } from 'angular2/src/facade/collection';
  */
 @ABSTRACT()
 export class WebDriverExtension {
+  static bindTo(childTokens) {
+    return [
+      bind(_CHILDREN).toAsyncFactory(
+        (injector) => PromiseWrapper.all(ListWrapper.map(childTokens, (token) => injector.asyncGet(token) )),
+        [Injector]
+      ),
+      bind(WebDriverExtension).toFactory(
+        (children, capabilities) => {
+          var delegate;
+          ListWrapper.forEach(children, (extension) => {
+            if (extension.supports(capabilities)) {
+              delegate = extension;
+            }
+          });
+          if (isBlank(delegate)) {
+            throw new BaseException('Could not find a delegate for given capabilities!');
+          }
+          return delegate;
+        },
+        [_CHILDREN, Options.CAPABILITIES]
+      )
+    ];
+  }
+
   gc():Promise {
     throw new BaseException('NYI');
   }
@@ -35,4 +63,10 @@ export class WebDriverExtension {
   readPerfLog():Promise<List> {
     throw new BaseException('NYI');
   }
+
+  supports(capabilities:StringMap):boolean {
+    return true;
+  }
 }
+
+var _CHILDREN = new OpaqueToken('WebDriverExtension.children');

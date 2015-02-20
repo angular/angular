@@ -38,7 +38,7 @@ export class SizeValidator extends Validator {
 
 var _SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
 var _BINDINGS = [
-  bind(Validator).toFactory(
+  bind(SizeValidator).toFactory(
     (size) => new SizeValidator(size),
     [_SAMPLE_SIZE]
   ),
