@@ -96,7 +96,7 @@ var car = child.get(Car); // uses the Car binding from the parent injector and E
 
 ## Bindings
 
-You can bind to a class, a value, or a factory
+You can bind to a class, a value, or a factory. It is also possible to alias existing bindings.
 
 ```
 var inj = new Injector([
@@ -127,6 +127,16 @@ var inj = new Injector([
 	bind("engine!").toClass(Engine);
 ]);
 ```
+
+If you want to alias an existing binding, you can do so using `toAlias`:
+
+```
+var inj = new Injector([
+	bind(Engine).toClass(Engine),
+	bind("engine!").toAlias(Engine)
+]);
+```
+which implies `inj.get(Engine) === inj.get("engine!")`.
 
 Note that tokens and factory functions are decoupled.
 

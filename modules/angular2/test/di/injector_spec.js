@@ -128,6 +128,26 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
+    it('should bind to an alias', function() {
+      var injector = new Injector([
+        Engine,
+        bind(SportsCar).toClass(SportsCar),
+        bind(Car).toAlias(SportsCar)
+      ]);
+
+      var car = injector.get(Car);
+      var sportsCar = injector.get(SportsCar);
+      expect(car).toBeAnInstanceOf(SportsCar);
+      expect(car).toBe(sportsCar);
+    });
+
+    it('should throw when the aliased binding does not exist', function () {
+      var injector = new Injector([
+        bind('car').toAlias(SportsCar)
+      ]);
+      expect(() => injector.get('car')).toThrowError('No provider for SportsCar! (car -> SportsCar)');
+    });
+
     it('should support overriding factory dependencies', function () {
       var injector = new Injector([
         Engine,

@@ -60,6 +60,15 @@ export class BindingBuilder {
     );
   }
 
+  toAlias(aliasToken):Binding {
+    return new Binding(
+      Key.get(this.token),
+      (aliasInstance) => aliasInstance,
+      [new Dependency(Key.get(aliasToken), false, false, [])],
+      false
+    );
+  }
+
   toFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(
       Key.get(this.token),
