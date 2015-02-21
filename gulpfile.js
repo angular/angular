@@ -527,11 +527,11 @@ gulp.task('build.dart', function(done) {
   runSequence(
     ['build/deps.js.dart2js', 'build/transpile.dart', 'build/html.dart'],
     'tests/transform.dart',
+    'build/format.dart',
     'build/pubspec.dart',
     'build/multicopy.dart',
     'build/pubbuild.dart',
     'build/analyze.dart',
-    'build/format.dart',
     done
   );
 });
