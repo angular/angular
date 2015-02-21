@@ -157,11 +157,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
     var newValue = pipe.transform(context);
     if (! ChangeDetectionUtil.noChangeMarker(newValue)) {
+      var prevValue = this._readSelf(proto);
       this._writeSelf(proto, newValue);
       this._setChanged(proto, true);
 
       if (proto.lastInBinding) {
-        var prevValue = this._readSelf(proto);
         return ChangeDetectionUtil.simpleChange(prevValue, newValue);
       } else {
         return null;

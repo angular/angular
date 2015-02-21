@@ -7,8 +7,9 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
-  PipeRegistry, NO_CHANGE,
-  CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
+  PipeRegistry, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
+
+import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
@@ -189,52 +190,90 @@ export function main() {
 
             expect(dispatcher.log).toEqual(["memo=BvalueA"]);
           });
+ 
+          describe("change notification", () => {
+            describe("simple checks", () => {
+              it("should pass a change record to the dispatcher", () => {
+                var person = new Person('bob');
+                var c = createChangeDetector('name', 'name', person);
+                var cd = c["changeDetector"];
+                var dispatcher = c["dispatcher"];
 
-          describe("group changes", () => {
-            it("should notify the dispatcher when a group of records changes", () => {
-              var pcd = createProtoChangeDetector();
-              pcd.addAst(ast("1 + 2"), "memo", "1");
-              pcd.addAst(ast("10 + 20"), "memo", "1");
-              pcd.addAst(ast("100 + 200"), "memo2", "2");
+                cd.detectChanges();
 
-              var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher);
+                var changeRecord = dispatcher.changeRecords[0][0];
 
-              cd.detectChanges();
-
-              expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
+                expect(changeRecord.bindingMemento).toEqual('name');
+                expect(changeRecord.change.currentValue).toEqual('bob');
+                expect(changeRecord.change.previousValue).toEqual(ChangeDetectionUtil.unitialized());
+              });
             });
 
-            it("should notify the dispatcher before switching to the next group", () => {
-              var pcd = createProtoChangeDetector();
-              pcd.addAst(ast("a()"), "a", "1");
-              pcd.addAst(ast("b()"), "b", "2");
-              pcd.addAst(ast("c()"), "c", "2");
+            describe("pipes", () => {
+              it("should pass a change record to the dispatcher", () => {
+                var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
 
-              var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher);
+                var person = new Person('bob');
+                var c = createChangeDetector('name', 'name | pipe', person, registry);
+                var cd = c["changeDetector"];
+                var dispatcher = c["dispatcher"];
 
-              var tr = new TestRecord();
-              tr.a = () => {
-                dispatcher.logValue('InvokeA');
-                return 'a'
-              };
-              tr.b = () => {
-                dispatcher.logValue('InvokeB');
-                return 'b'
-              };
-              tr.c = () => {
-                dispatcher.logValue('InvokeC');
-                return 'c'
-              };
-              cd.setContext(tr);
+                cd.detectChanges();
 
-              cd.detectChanges();
+                var changeRecord = dispatcher.changeRecords[0][0];
 
-              expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
+                expect(changeRecord.bindingMemento).toEqual('name');
+                expect(changeRecord.change.currentValue).toEqual('bob state:0');
+                expect(changeRecord.change.previousValue).toEqual(ChangeDetectionUtil.unitialized());
+              });
+            });
+
+            describe("group changes", () => {
+              it("should notify the dispatcher when a group of records changes", () => {
+                var pcd = createProtoChangeDetector();
+                pcd.addAst(ast("1 + 2"), "memo", "1");
+                pcd.addAst(ast("10 + 20"), "memo", "1");
+                pcd.addAst(ast("100 + 200"), "memo2", "2");
+
+                var dispatcher = new TestDispatcher();
+                var cd = pcd.instantiate(dispatcher);
+
+                cd.detectChanges();
+
+                expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
+              });
+
+              it("should notify the dispatcher before switching to the next group", () => {
+                var pcd = createProtoChangeDetector();
+                pcd.addAst(ast("a()"), "a", "1");
+                pcd.addAst(ast("b()"), "b", "2");
+                pcd.addAst(ast("c()"), "c", "2");
+
+                var dispatcher = new TestDispatcher();
+                var cd = pcd.instantiate(dispatcher);
+
+                var tr = new TestRecord();
+                tr.a = () => {
+                  dispatcher.logValue('InvokeA');
+                  return 'a'
+                };
+                tr.b = () => {
+                  dispatcher.logValue('InvokeB');
+                  return 'b'
+                };
+                tr.c = () => {
+                  dispatcher.logValue('InvokeC');
+                  return 'c'
+                };
+                cd.setContext(tr);
+
+                cd.detectChanges();
+
+                expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
+              });
             });
           });
-
+          
           describe("enforce no new changes", () => {
             it("should throw when a record gets changed after it has been checked", () => {
               var pcd = createProtoChangeDetector();
@@ -576,6 +615,7 @@ class TestData {
 class TestDispatcher extends ChangeDispatcher {
   log:List;
   loggedValues:List;
+  changeRecords:List;
   onChange:Function;
 
   constructor() {
@@ -589,21 +629,24 @@ class TestDispatcher extends ChangeDispatcher {
   clear() {
     this.log = ListWrapper.create();
     this.loggedValues = ListWrapper.create();
+    this.changeRecords = ListWrapper.create();
   }
 
   logValue(value) {
     ListWrapper.push(this.loggedValues, value);
   }
 
-  onRecordChange(group, updates:List) {
-    var value = updates[0].change.currentValue;
-    var memento = updates[0].bindingMemento;
+  onRecordChange(group, changeRecords:List) {
+    var value = changeRecords[0].change.currentValue;
+    var memento = changeRecords[0].bindingMemento;
     ListWrapper.push(this.log, memento + '=' + this._asString(value));
 
-    var values = ListWrapper.map(updates, (r) => r.change.currentValue);
+    var values = ListWrapper.map(changeRecords, (r) => r.change.currentValue);
     ListWrapper.push(this.loggedValues, values);
 
-    this.onChange(group, updates);
+    ListWrapper.push(this.changeRecords, changeRecords);
+
+    this.onChange(group, changeRecords);
   }
 
 
