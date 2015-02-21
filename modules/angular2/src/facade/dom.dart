@@ -179,6 +179,12 @@ class DOM {
       document.implementation.createHtmlDocument('fakeTitle');
 
   static HtmlDocument defaultDoc() => document;
+  static String getTitle(HtmlDocument document) {
+      return document.title;
+  }
+  static void setTitle(HtmlDocument document, String newTitle) {
+      document.title = newTitle;
+  }
   static bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
   static bool isTemplateElement(Element el) =>
