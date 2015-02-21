@@ -8,4 +8,4 @@ source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
 ./node_modules/.bin/gulp test.transpiler.unittest
-./node_modules/.bin/gulp test.dart/ci --browsers=$KARMA_BROWSERS
+./node_modules/.bin/gulp test.unit.dart/ci --browsers=$KARMA_BROWSERS

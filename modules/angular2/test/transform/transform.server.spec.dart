@@ -123,11 +123,11 @@ void _runTests() {
     // Read in input & output files.
     config.assetPathToInputPath.forEach((key, value) {
       config.assetPathToInputPath[key] =
-          cache.putIfAbsent(value, () => new File(value).readAsStringSync());
+          cache.putIfAbsent(value, () => new File('test/transform/${value}').readAsStringSync());
     });
     config.assetPathToExpectedOutputPath.forEach((key, value) {
       config.assetPathToExpectedOutputPath[key] = cache.putIfAbsent(value, () {
-        var code = new File(value).readAsStringSync();
+        var code = new File('test/transform/${value}').readAsStringSync();
         return value.endsWith('dart') ? formatter.format(code) : code;
       });
     });

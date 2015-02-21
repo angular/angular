@@ -95,6 +95,14 @@ class StringJoiner {
 }
 
 class NumberWrapper {
+  static String toFixed(num n, int fractionDigits) {
+    return n.toStringAsFixed(fractionDigits);
+  }
+
+  static bool equal(num a, num b) {
+    return a == b;
+  }
+
   static int parseIntAutoRadix(String text) {
     return int.parse(text);
   }

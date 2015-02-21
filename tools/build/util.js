@@ -1,14 +1,23 @@
 var Q = require('q');
 var path = require('path');
 var minimatch = require('minimatch');
+var glob = require('glob');
 
 module.exports = {
   processToPromise: processToPromise,
   streamToPromise: streamToPromise,
   insertSrcFolder: insertSrcFolder,
-  filterByFile: filterByFile
+  filterByFile: filterByFile,
+  forEachSubDir: forEachSubDir
 };
 
+
+function forEachSubDir(dir, callback) {
+  var moduleFolders = [].slice.call(glob.sync(dir + '/*'));
+  return Q.all(moduleFolders.map(function(subDir) {
+    return callback(subDir);
+  }));
+};
 
 function processToPromise(process) {
   var defer = Q.defer();

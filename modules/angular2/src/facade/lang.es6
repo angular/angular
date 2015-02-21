@@ -138,6 +138,14 @@ export class NumberParseError extends Error {
 
 
 export class NumberWrapper {
+  static toFixed(n:number, fractionDigits:int):string {
+    return n.toFixed(fractionDigits);
+  }
+
+  static equal(a, b):boolean {
+    return a === b;
+  }
+
   static parseIntAutoRadix(text:string):int {
     var result:int = parseInt(text);
     if (isNaN(result)) {

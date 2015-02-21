@@ -7,6 +7,8 @@ dependencies:
   browser: '>=0.10.0 <0.11.0'
 dev_dependencies:
   guinness: ">=0.1.16 <0.2.0"
+  benchpress:
+    path: ../benchpress
 transformers:
   - angular2:
       bootstrap_entry_point: web/src/hello_world/index_common.dart

@@ -1,4 +1,4 @@
-import { print, isPresent, isBlank } from 'angular2/src/facade/lang';
+import { print, isPresent, isBlank, NumberWrapper } from 'angular2/src/facade/lang';
 import { StringMapWrapper, ListWrapper, List } from 'angular2/src/facade/collection';
 import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
 import { Math } from 'angular2/src/facade/math';
@@ -28,14 +28,8 @@ export class ConsoleReporter extends Reporter {
     return result + value;
   }
 
-  static _formatNum(num) {
-    var result;
-    if (num === 0) {
-      result = '000';
-    } else {
-      result = `${Math.floor(num * 100)}`;
-    }
-    return result.substring(0, result.length - 2) + '.' + result.substring(result.length-2);
+  static _formatNum(n) {
+    return NumberWrapper.toFixed(n, 2);
   }
 
   static _sortedProps(obj) {
@@ -89,7 +83,8 @@ export class ConsoleReporter extends Reporter {
         var sample = ListWrapper.map(validSample, (measureValues) => measureValues.values[metricName]);
         var mean = Statistic.calculateMean(sample);
         var cv = Statistic.calculateCoefficientOfVariation(sample, mean);
-        return `${ConsoleReporter._formatNum(mean)}\u00B1${Math.floor(cv)}%`;
+        var formattedCv = NumberWrapper.isNaN(cv) ? 'NaN' : Math.floor(cv);
+        return `${ConsoleReporter._formatNum(mean)}\u00B1${formattedCv}%`;
       })
     );
     return PromiseWrapper.resolve(null);

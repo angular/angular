@@ -1,5 +1,5 @@
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
-import { isPresent, isBlank, int, BaseException, StringWrapper } from 'angular2/src/facade/lang';
+import { isPresent, isBlank, int, BaseException, StringWrapper, Math } from 'angular2/src/facade/lang';
 import { ListWrapper, StringMap, StringMapWrapper } from 'angular2/src/facade/collection';
 import { bind, OpaqueToken } from 'angular2/di';
 
@@ -95,7 +95,12 @@ export class PerflogMetric extends Metric {
     if (needSort) {
       // Need to sort because of the ph==='X' events
       ListWrapper.sort(this._remainingEvents, (a,b) => {
-        return a['ts'] - b['ts'];
+        var diff = a['ts'] - b['ts'];
+        return diff > 0
+            ? 1
+            : diff < 0
+                ? -1
+                : 0;
       });
     }
   }

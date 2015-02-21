@@ -19,6 +19,7 @@ var multicopy = require('./tools/build/multicopy');
 var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
+var runServerDartTests = require('./tools/build/run_server_dart_tests');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
@@ -484,38 +485,46 @@ gulp.task('docs/serve', function() {
 });
 
 // ------------------
-// tests
+// karma tests
+//     These tests run in the browser and are allowed to access
+//     HTML DOM APIs.
 function getBrowsersFromCLI() {
   var args = minimist(process.argv.slice(2));
   return [args.browsers?args.browsers:'DartiumWithWebPlatform']
 }
-gulp.task('test.js', function (done) {
+gulp.task('test.unit.js', function (done) {
   karma.start({configFile: __dirname + '/karma-js.conf.js'}, done);
 });
-gulp.task('test.dart', function (done) {
+gulp.task('test.unit.dart', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
 });
-gulp.task('test.js/ci', function (done) {
-  karma.start({configFile: __dirname + '/karma-js.conf.js', singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+gulp.task('test.unit.js/ci', function (done) {
+  karma.start({configFile: __dirname + '/karma-js.conf.js',
+      singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
-gulp.task('test.dart/ci', function (done) {
-  karma.start({configFile: __dirname + '/karma-dart.conf.js', singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+gulp.task('test.unit.dart/ci', function (done) {
+  karma.start({configFile: __dirname + '/karma-dart.conf.js',
+      singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
+
+// ------------------
+// server tests
+//     These tests run on the VM on the command-line and are
+//     allowed to access the file system and network.
+gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {
+  dest: 'dist/dart'
+}));
+
+// -----------------
+// test builders
 gulp.task('test.transpiler.unittest', function (done) {
   return gulp.src('tools/transpiler/unittest/**/*.js')
       .pipe(jasmine({
         includeStackTrace: true
       }))
 });
-gulp.task('ci', function(done) {
-  runSequence(
-    'test.transpiler.unittest',
-    'test.js/ci',
-    'test.dart/ci',
-    done
-  );
-});
 
+// Copy test resources to dist
 gulp.task('tests/transform.dart', function() {
   return gulp.src('modules/angular2/test/transform/**')
     .pipe(gulp.dest('dist/dart/angular2/test/transform'));

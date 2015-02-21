@@ -1,23 +1,32 @@
 library benchpress.src.webdriver.async_webdriver_adapter_dart;
 
+import 'package:webdriver/webdriver.dart' show WebDriver, LogEntry;
 import 'package:angular2/src/facade/async.dart' show Future;
 import '../web_driver_adapter.dart' show WebDriverAdapter;
 
 class AsyncWebDriverAdapter extends WebDriverAdapter {
-  dynamic _driver;
-  AsyncWebDriverAdapter(driver) {
-    this._driver = driver;
-  }
+  WebDriver _driver;
+  AsyncWebDriverAdapter(this._driver);
+
   Future waitFor(Function callback) {
     return callback();
   }
+
   Future executeScript(String script) {
-    return this._driver.execute(script);
+    return _driver.execute(script, const[]);
   }
-  Future capabilities() {
-    return this._driver.capabilities;
+
+  Map capabilities() {
+    return _driver.capabilities;
   }
-  Future logs(String type) {
-    return this._driver.logs.get(type);
+
+  Future<List<Map>> logs(String type) {
+    return _driver.logs.get(type)
+      .map((LogEntry entry) => {
+        'message': entry.message
+      })
+      .fold(<Map>[], (log, Map entry) {
+        return log..add(entry);
+      });
   }
 }
