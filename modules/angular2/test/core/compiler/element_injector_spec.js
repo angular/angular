@@ -1,5 +1,5 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject} from 'angular2/test_lib';
-import {isBlank, isPresent, FIELD, IMPLEMENTS, proxy} from 'angular2/src/facade/lang';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy} from 'angular2/test_lib';
+import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
@@ -7,8 +7,7 @@ import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Injector, Inject, bind} from 'angular2/di';
 import {View} from 'angular2/src/core/compiler/view';
-import {ProtoRecordRange} from 'angular2/change_detection';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
@@ -152,6 +151,26 @@ export function main() {
 
     return shadow;
   }
+
+  describe("ProtoElementInjector", () => {
+    describe("direct parent", () => {
+      it("should return parent proto injector when distance is 1", () => {
+        var distance = 1;
+        var protoParent = new ProtoElementInjector(null, 0, []);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+        expect(protoChild.directParent()).toEqual(protoParent);
+      });
+
+      it("should return null otherwise", () => {
+        var distance = 2;
+        var protoParent = new ProtoElementInjector(null, 0, []);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+
+        expect(protoChild.directParent()).toEqual(null);
+      });
+    });
+  });
 
   describe("ElementInjector", function () {
     describe("instantiate", function () {
@@ -389,11 +408,11 @@ export function main() {
         expect(inj.get(NgElement)).toEqual(element);
       });
 
-      it('should return viewPort', function () {
-        var viewPort = new ViewPort(null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewPort, null, null));
+      it('should return viewContainer', function () {
+        var viewContainer = new ViewContainer(null, null, null, null, null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
 
-        expect(inj.get(ViewPort)).toEqual(viewPort);
+        expect(inj.get(ViewContainer)).toEqual(viewContainer);
       });
 
       it('should return bindingPropagationConfig', function () {

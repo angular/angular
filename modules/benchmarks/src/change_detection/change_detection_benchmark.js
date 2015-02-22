@@ -103,7 +103,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
   var parser = new Parser(new Lexer());
 
   var parentProto = changeDetection.createProtoChangeDetector('parent');
-  var parentCd = parentProto.instantiate(dispatcher, MapWrapper.create());
+  var parentCd = parentProto.instantiate(dispatcher);
 
   var proto = changeDetection.createProtoChangeDetector("proto");
   var astWithSource = [
@@ -119,7 +119,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
     parser.parseBinding('field9', null)
   ];
   for (var j = 0; j < 10; ++j) {
-    proto.addAst(astWithSource[j].ast, "memo", j, false);
+    proto.addAst(astWithSource[j].ast, "memo", j);
   }
 
   for (var i = 0; i < iterations; ++i) {
@@ -127,7 +127,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
     for (var j = 0; j < 10; ++j) {
       obj.setField(j, i);
     }
-    var cd = proto.instantiate(dispatcher,  null);
+    var cd = proto.instantiate(dispatcher);
     cd.setContext(obj);
     parentCd.addChild(cd);
   }

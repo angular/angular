@@ -9,8 +9,6 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
-import {$BANG} from 'angular2/src/change_detection/parser/lexer';
-
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
  * For `<template>` elements:
@@ -45,12 +43,12 @@ export class ViewSplitter extends CompileStep {
     if (isBlank(parent)) {
       current.isViewRoot = true;
     } else {
-      if (current.element instanceof TemplateElement) {
+      if (DOM.isTemplateElement(current.element)) {
         if (!current.isViewRoot) {
           var viewRoot = new CompileElement(DOM.createTemplate(''));
           var currentElement:TemplateElement = current.element;
           var viewRootElement:TemplateElement = viewRoot.element;
-          this._moveChildNodes(currentElement.content, viewRootElement.content);
+          this._moveChildNodes(DOM.content(currentElement), DOM.content(viewRootElement));
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
         }
@@ -59,9 +57,9 @@ export class ViewSplitter extends CompileStep {
         var templateBindings = MapWrapper.get(attrs, 'template');
         var hasTemplateBinding = isPresent(templateBindings);
 
-        // look for template shortcuts such as !if="condition" and treat them as template="if condition"
+        // look for template shortcuts such as *if="condition" and treat them as template="if condition"
         MapWrapper.forEach(attrs, (attrValue, attrName) => {
-          if (StringWrapper.charCodeAt(attrName, 0) == $BANG) {
+          if (StringWrapper.startsWith(attrName, '*')) {
             var key = StringWrapper.substring(attrName, 1);  // remove the bang
             if (hasTemplateBinding) {
               // 2nd template binding detected
@@ -81,15 +79,17 @@ export class ViewSplitter extends CompileStep {
           this._addParentElement(current.element, newParent.element);
 
           control.addParent(newParent);
-          current.element.remove();
+          DOM.remove(current.element);
         }
       }
     }
   }
 
   _moveChildNodes(source, target) {
-    while (isPresent(source.firstChild)) {
-      DOM.appendChild(target, source.firstChild);
+    var next = DOM.firstChild(source);
+    while (isPresent(next)) {
+      DOM.appendChild(target, next);
+      next = DOM.firstChild(source);
     }
   }
 
@@ -107,7 +107,7 @@ export class ViewSplitter extends CompileStep {
       } else if (isPresent(binding.expression)) {
         compileElement.addPropertyBinding(binding.key, binding.expression);
       } else {
-        compileElement.element.setAttribute(binding.key, '');
+        DOM.setAttribute(compileElement.element, binding.key, '');
       }
     }
   }

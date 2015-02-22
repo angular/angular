@@ -96,12 +96,12 @@ var car = child.get(Car); // uses the Car binding from the parent injector and E
 
 ## Bindings
 
-You can bind to a class, a value, or a factory
+You can bind to a class, a value, or a factory. It is also possible to alias existing bindings.
 
 ```
 var inj = new Injector([
-	bind(Car).toClass(Car)
-	bind(Engine).toClass(Engine);
+	bind(Car).toClass(Car),
+	bind(Engine).toClass(Engine)
 ]);
 
 var inj = new Injector([
@@ -124,9 +124,19 @@ You can bind any token.
 ```
 var inj = new Injector([
 	bind(Car).toFactory((e) => new Car(), ["engine!"]),
-	bind("engine!").toClass(Engine);
+	bind("engine!").toClass(Engine)
 ]);
 ```
+
+If you want to alias an existing binding, you can do so using `toAlias`:
+
+```
+var inj = new Injector([
+	bind(Engine).toClass(Engine),
+	bind("engine!").toAlias(Engine)
+]);
+```
+which implies `inj.get(Engine) === inj.get("engine!")`.
 
 Note that tokens and factory functions are decoupled.
 
@@ -350,7 +360,7 @@ Or we can register a factory function:
 
 ```
 var inj = new Injector([
-  bind('MyClassFactory').toFactory(dep => () => new MyClass(dep), [SomeDependency]);
+  bind('MyClassFactory').toFactory(dep => () => new MyClass(dep), [SomeDependency])
 ]);
 
 var inj.get('MyClassFactory')();
@@ -364,7 +374,7 @@ Most of the time we do not have to deal with keys.
 
 ```
 var inj = new Injector([
-  bind(Engine).toFactory(() => new TurboEngine()); //the passed in token Engine gets mapped to a key
+  bind(Engine).toFactory(() => new TurboEngine())  //the passed in token Engine gets mapped to a key
 ]);
 var engine = inj.get(Engine); //the passed in token Engine gets mapped to a key
 ```
@@ -375,7 +385,7 @@ Now, the same example, but with keys
 var ENGINE_KEY = Key.get(Engine);
 
 var inj = new Injector([
-  bind(ENGINE_KEY).toFactory(() => new TurboEngine()); // no mapping
+  bind(ENGINE_KEY).toFactory(() => new TurboEngine()) // no mapping
 ]);
 var engine = inj.get(ENGINE_KEY);  // no mapping
 ```

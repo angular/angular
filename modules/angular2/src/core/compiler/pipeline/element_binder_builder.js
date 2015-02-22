@@ -1,4 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, stringify} from 'angular2/src/facade/lang';
+import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, isString, stringify} from 'angular2/src/facade/lang';
 import {Element, DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -6,17 +6,33 @@ import {reflector} from 'angular2/src/reflection/reflection';
 
 import {Parser, ProtoChangeDetector} from 'angular2/change_detection';
 
-import {Component, Directive} from '../../annotations/annotations';
 import {DirectiveMetadata} from '../directive_metadata';
-import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from '../view';
-import {ProtoElementInjector} from '../element_injector';
-import {ElementBinder} from '../element_binder';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
+
+const ARIA_PREFIX = 'aria-';
+var ariaSettersCache = StringMapWrapper.create();
+
+function ariaSetterFactory(attrName:string) {
+  var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
+
+  if (isBlank(setterFn)) {
+    setterFn = function(element:Element, value) {
+      if (isPresent(value)) {
+        DOM.setAttribute(element, attrName, stringify(value));
+      } else {
+        DOM.removeAttribute(element, attrName);
+      }
+    };
+    StringMapWrapper.set(ariaSettersCache, attrName, setterFn);
+  }
+
+  return setterFn;
+}
 
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
@@ -61,6 +77,18 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   return setterFn;
 }
 
+const ROLE_ATTR = 'role';
+function roleSetter(element:Element, value) {
+  if (isString(value)) {
+    DOM.setAttribute(element, ROLE_ATTR, value);
+  } else {
+    DOM.removeAttribute(element, ROLE_ATTR);
+    if (isPresent(value)) {
+      throw new BaseException("Invalid role attribute, only string values are allowed, got '" + stringify(value) + "'");
+    }
+  }
+}
+
 /**
  * Creates the ElementBinders and adds watches to the
  * ProtoChangeDetector.
@@ -78,7 +106,7 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
  * - CompileElement#eventBindings
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
- * - CompileElement#templateDirective
+ * - CompileElement#viewportDirective
  *
  * Note: This actually only needs the CompileElements with the flags
  * `hasBindings` and `isViewRoot`,
@@ -98,8 +126,14 @@ export class ElementBinderBuilder extends CompileStep {
     var elementBinder = null;
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
-      elementBinder = protoView.bindElement(current.inheritedProtoElementInjector,
-        current.componentDirective, current.templateDirective);
+      var protoInjectorWasBuilt = isBlank(parent) ? true :
+          current.inheritedProtoElementInjector !== parent.inheritedProtoElementInjector;
+
+      var currentProtoElementInjector = protoInjectorWasBuilt ?
+          current.inheritedProtoElementInjector : null;
+
+      elementBinder = protoView.bindElement(currentProtoElementInjector,
+        current.componentDirective, current.viewportDirective);
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
@@ -127,7 +161,11 @@ export class ElementBinderBuilder extends CompileStep {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       var setterFn, styleParts, styleSuffix;
 
-      if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
+      if (StringWrapper.startsWith(property, ARIA_PREFIX)) {
+        setterFn = ariaSetterFactory(property);
+      } else if (StringWrapper.equals(property, ROLE_ATTR)) {
+        setterFn = roleSetter;
+      } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
       } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
         styleParts = StringWrapper.split(property, DOT_REGEXP);
@@ -157,32 +195,38 @@ export class ElementBinderBuilder extends CompileStep {
       var directive = ListWrapper.get(directives, directiveIndex);
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
-      var _this = this;
-      StringMapWrapper.forEach(annotation.bind, function (dirProp, elProp) {
-        var expression = isPresent(compileElement.propertyBindings) ?
+      StringMapWrapper.forEach(annotation.bind, (bindConfig, dirProp) => {
+        var bindConfigParts = this._splitBindConfig(bindConfig);
+        var elProp = bindConfigParts[0];
+        var pipes = ListWrapper.slice(bindConfigParts, 1, bindConfigParts.length);
+
+        var bindingAst = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
             null;
-        if (isBlank(expression)) {
+
+        if (isBlank(bindingAst)) {
           var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
           if (isPresent(attributeValue)) {
-            expression = _this._parser.wrapLiteralPrimitive(attributeValue, _this._compilationUnit);
-          } else {
-            throw new BaseException("No element binding found for property '" + elProp
-            + "' which is required by directive '" + stringify(directive.type) + "'");
+            bindingAst = this._parser.wrapLiteralPrimitive(attributeValue, this._compilationUnit);
           }
         }
-        var len = dirProp.length;
-        var dirBindingName = dirProp;
-        var isContentWatch = dirProp[len - 2] === '[' && dirProp[len - 1] === ']';
-        if (isContentWatch) dirBindingName = dirProp.substring(0, len - 2);
-        protoView.bindDirectiveProperty(
-          directiveIndex,
-          expression,
-          dirBindingName,
-          reflector.setter(dirBindingName),
-          isContentWatch
-        );
+
+        // Bindings are optional, so this binding only needs to be set up if an expression is given.
+        if (isPresent(bindingAst)) {
+          var fullExpAstWithBindPipes = this._parser.addPipes(bindingAst, pipes);
+          protoView.bindDirectiveProperty(
+            directiveIndex,
+            fullExpAstWithBindPipes,
+            dirProp,
+            reflector.setter(dirProp)
+          );
+        }
       });
     }
+  }
+
+  _splitBindConfig(bindConfig:string) {
+    var parts = StringWrapper.split(bindConfig, RegExpWrapper.create("\\|"));
+    return ListWrapper.map(parts, (s) => s.trim());
   }
 }

@@ -1,25 +1,23 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
-import {proxy, IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
+import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el, proxy} from 'angular2/test_lib';
+import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/facade/dom';
 import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
-import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {View} from 'angular2/src/core/compiler/view';
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
+import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {ProtoRecordRange} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(ElementInjector)
 class FakeElementInjector {
   content;
-  viewPort;
+  viewContainer;
   element;
 
-  constructor(content = null, viewPort = null, element = null) {
+  constructor(content = null, viewContainer = null, element = null) {
     this.content = content;
-    this.viewPort = viewPort;
+    this.viewContainer = viewContainer;
     this.element = element;
   }
 
@@ -28,7 +26,7 @@ class FakeElementInjector {
   }
 
   hasPreBuiltObject(type) {
-    return this.viewPort != null;
+    return this.viewContainer != null;
   }
 
   forElement(n) {
@@ -37,7 +35,7 @@ class FakeElementInjector {
 
   get(t) {
     if (t === Content) return this.content;
-    if (t === ViewPort) return this.viewPort;
+    if (t === ViewContainer) return this.viewContainer;
     return null;
   }
 
@@ -61,8 +59,8 @@ class FakeView {
 }
 
 @proxy
-@IMPLEMENTS(ViewPort)
-class FakeViewPort {
+@IMPLEMENTS(ViewContainer)
+class FakeViewContainer {
   _nodes;
   _contentTagContainers;
 
@@ -128,9 +126,9 @@ export function main() {
         expect(lightDom.contentTags()).toEqual([tag]);
       });
 
-      it("should collect content tags from view ports", () => {
+      it("should collect content tags from ViewContainers", () => {
         var tag = new FakeContentTag();
-        var vp = new FakeViewPort(null, [
+        var vp = new FakeViewContainer(null, [
           new FakeView([new FakeElementInjector(tag, null)])
         ]);
 
@@ -149,13 +147,13 @@ export function main() {
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
 
-      it("should include view port nodes", () => {
+      it("should include ViewContainer nodes", () => {
         var lightDomEl = el("<div><template></template></div>")
 
         var lightDomView = new FakeView([
           new FakeElementInjector(
             null,
-            new FakeViewPort([el("<a></a>")]),
+            new FakeViewContainer([el("<a></a>")]),
             DOM.firstChild(lightDomEl))]);
 
         var lightDom = new LightDom(
@@ -174,6 +172,19 @@ export function main() {
             new FakeContentTag(null, [el("<a></a>")]),
             null,
             DOM.firstChild(lightDomEl))]);
+
+        var lightDom = new LightDom(
+          lightDomView,
+          new FakeView(),
+          lightDomEl);
+
+        expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
+      });
+
+      it("should work when the element injector array contains nulls", () => {
+        var lightDomEl = el("<div><a></a></div>")
+
+        var lightDomView = new FakeView([null]);
 
         var lightDom = new LightDom(
           lightDomView,

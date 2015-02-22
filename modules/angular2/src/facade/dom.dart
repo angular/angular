@@ -4,6 +4,8 @@ import 'dart:html';
 import 'dart:js' show JsObject, context;
 
 export 'dart:html' show
+  CssRule,
+  CssKeyframesRule,
   document,
   DocumentFragment,
   Element,
@@ -11,6 +13,7 @@ export 'dart:html' show
   Node,
   StyleElement,
   TemplateElement,
+  InputElement,
   Text,
   window;
 
@@ -57,6 +60,10 @@ class DOM {
   static void setInnerHTML(Element el, String value) {
     el.innerHtml = value;
   }
+  static String nodeName(Node el) => el.nodeName;
+  static String nodeValue(Node el) => el.nodeValue;
+  static String type(InputElement el) => el.type;
+  static Node content(TemplateElement el) => el.content;
   static Node firstChild(el) => el.firstChild;
   static Node nextSibling(Node el) => el.nextNode;
   static Element parentElement(Node el) => el.parent;
@@ -87,6 +94,14 @@ class DOM {
   static void setText(Node el, String value) {
     el.text = value;
   }
+  static String getValue(InputElement el) => el.value;
+  static void setValue(InputElement el, String value) {
+    el.value = value;
+  }
+  static bool getChecked(InputElement el) => el.checked;
+  static void setChecked(InputElement el, bool isChecked) {
+    el.checked = isChecked;
+  }
   static TemplateElement createTemplate(String html) {
     var t = new TemplateElement();
     t.setInnerHtml(html, treeSanitizer: identitySanitizer);
@@ -96,11 +111,20 @@ class DOM {
     if (doc == null) doc = document;
     return doc.createElement(tagName);
   }
+  static createTextNode(String text, [HtmlDocument doc = null]) {
+    return new Text(text);
+  }
   static createScriptTag(String attrName, String attrValue,
       [HtmlDocument doc = null]) {
     if (doc == null) doc = document;
     var el = doc.createElement("SCRIPT");
     el.setAttribute(attrName, attrValue);
+    return el;
+  }
+  static StyleElement createStyleElement(String css, [HtmlDocument doc = null]) {
+    if (doc == null) doc = document;
+    var el = doc.createElement("STYLE");
+    el.text = css;
     return el;
   }
   static clone(Node node) => node.clone(true);
@@ -142,6 +166,12 @@ class DOM {
     element.setAttribute(name, value);
   }
 
+  static void removeAttribute(Element element, String name) {
+      //there is no removeAttribute method as of now in Dart:
+      //https://code.google.com/p/dart/issues/detail?id=19934
+      element.attributes.remove(name);
+  }
+
   static Node templateAwareRoot(Element el) =>
       el is TemplateElement ? el.content : el;
 
@@ -151,4 +181,20 @@ class DOM {
   static HtmlDocument defaultDoc() => document;
   static bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
+  static bool isTemplateElement(Element el) =>
+      el is TemplateElement;
+  static bool isTextNode(Node node) =>
+      node.nodeType == Node.TEXT_NODE;
+  static bool isElementNode(Node node) =>
+      node.nodeType == Node.ELEMENT_NODE;
+  static Node importIntoDoc(Node node) {
+    return document.importNode(node, true);
+  }
+}
+
+class CSSRuleWrapper {
+  static isPageRule(CssRule rule) => rule is CssPageRule;
+  static isStyleRule(CssRule rule) => rule is CssStyleRule;
+  static isMediaRule(CssRule rule) => rule is CssMediaRule;
+  static isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
 }

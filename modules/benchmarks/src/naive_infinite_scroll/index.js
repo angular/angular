@@ -4,13 +4,16 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler}
-    from 'angular2/angular2';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
+import {
+  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange
+}  from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
@@ -42,7 +45,7 @@ export function setupReflector() {
   reflector.registerGetters({
     'scrollAreas': (o) => o.scrollAreas,
     'length': (o) => o.length,
-    'iterable': (o) => o.iterable,
+    'iterableChanges': (o) => o.iterableChanges,
     'scrollArea': (o) => o.scrollArea,
     'item': (o) => o.item,
     'visibleItems': (o) => o.visibleItems,
@@ -93,7 +96,7 @@ export function setupReflector() {
     'scrollArea': (o, v) => o.scrollArea = v,
     'item': (o, v) => o.item = v,
     'visibleItems': (o, v) => o.visibleItems = v,
-    'iterable': (o, v) => o.iterable = v,
+    'iterableChanges': (o, v) => o.iterableChanges = v,
     'width': (o, v) => o.width = v,
     'value': (o, v) => o.value = v,
     'company': (o, v) => o.company = v,
@@ -151,31 +154,33 @@ export function setupReflector() {
 export function setupReflectorForAngular() {
   reflector.registerType(If, {
     'factory': (vp) => new If(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
       selector: '[if]',
       bind: {
-        'if': 'condition'
+        'condition': 'if'
       }
     })]
   });
 
   reflector.registerType(Foreach, {
     'factory': (vp) => new Foreach(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
       selector: '[foreach]',
       bind: {
-        'in': 'iterable[]'
+        'iterableChanges': 'in | iterableDiff'
       }
     })]
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy) =>
-      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy),
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+      resolver) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+        resolver),
     "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
-                   [CompilerCache], [ShadowDomStrategy]],
+                   [CompilerCache], [ShadowDomStrategy], [TemplateResolver]],
     "annotations": []
   });
 
@@ -197,6 +202,12 @@ export function setupReflectorForAngular() {
     "annotations": []
   });
 
+  reflector.registerType(TemplateResolver, {
+    "factory": () => new TemplateResolver(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(XHR, {
     "factory": () => new XHRImpl(),
     "parameters": [],
@@ -215,9 +226,15 @@ export function setupReflectorForAngular() {
     'annotations': []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(LifeCycle, {
-    "factory": (cd) => new LifeCycle(cd),
-    "parameters": [[ChangeDetector]],
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler, ChangeDetector]],
     "annotations": []
   });
 

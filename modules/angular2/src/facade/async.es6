@@ -1,6 +1,7 @@
-import {int} from 'angular2/src/facade/lang';
+import {int, global} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-export var Promise = window.Promise;
+
+export var Promise = global.Promise;
 
 export class PromiseWrapper {
   static resolve(obj):Promise {
@@ -37,6 +38,10 @@ export class PromiseWrapper {
   }
 
   static setTimeout(fn:Function, millis:int) {
-    window.setTimeout(fn, millis);
+    global.setTimeout(fn, millis);
+  }
+
+  static isPromise(maybePromise):boolean {
+    return maybePromise instanceof Promise;
   }
 }

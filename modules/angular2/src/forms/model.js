@@ -1,4 +1,4 @@
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 
 export class Control {
   value:any;
@@ -9,9 +9,9 @@ export class Control {
 }
 
 export class ControlGroup {
-  controls;
+  controls: StringMap;
 
-  constructor(controls) {
+  constructor(controls:StringMap) {
     this.controls = controls;
   }
 

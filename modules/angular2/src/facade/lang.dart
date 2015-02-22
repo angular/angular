@@ -1,7 +1,8 @@
 library angular.core.facade.lang;
 
-export 'dart:core' show Type, RegExp;
+export 'dart:core' show Type, RegExp, print, DateTime;
 import 'dart:math' as math;
+import 'dart:convert' as convert;
 
 class Math {
   static final _random = new math.Random();
@@ -56,6 +57,10 @@ class StringWrapper {
 
   static bool equals(String s, String s2) {
     return s == s2;
+  }
+
+  static String replace(String s, Pattern from, String replace) {
+    return s.replaceFirst(from, replace);
   }
 
   static String replaceAll(String s, RegExp from, String replace) {
@@ -174,5 +179,20 @@ bool assertionsEnabled() {
     return false;
   } catch (e) {
     return true;
+  }
+}
+
+// Can't be all uppercase as our transpiler would think it is a special directive...
+class Json {
+  static parse(String s) => convert.JSON.decode(s);
+  static stringify(data) => convert.JSON.encode(data);
+}
+
+class DateWrapper {
+  static fromMillis(int ms) {
+    return new DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+  static now() {
+    return new DateTime.now();
   }
 }

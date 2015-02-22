@@ -1,7 +1,9 @@
-export {proxy} from 'rtts_assert/rtts_assert';
+var _global = typeof window === 'undefined' ? global : window;
+export {_global as global};
 
 export var Type = Function;
-export var Math = window.Math;
+export var Math = _global.Math;
+export var Date = _global.Date;
 
 var assertionsEnabled_ = typeof assert !== 'undefined';
 
@@ -9,14 +11,14 @@ var int;
 // global assert support, as Dart has it...
 // TODO: `assert` calls need to be removed in production code!
 if (assertionsEnabled_) {
-  window.assert = assert;
+  _global.assert = assert;
   // `int` is not a valid JS type
   int = assert.define('int', function(value) {
     return typeof value === 'number' && value%1 === 0;
   });
 } else {
   int = {};
-  window.assert = function() {};
+  _global.assert = function() {};
 }
 export {int};
 
@@ -75,6 +77,14 @@ export class StringWrapper {
     return s === s2;
   }
 
+  static replace(s:string, from , replace:string): string {
+    if (typeof(from) === "string") {
+      return s.replace(from, replace);
+    } else {
+      return s.replace(from.single, replace);
+    }
+  }
+
   static replaceAll(s:string, from:RegExp, replace:string):string {
     return s.replace(from.multiple, replace);
   }
@@ -89,6 +99,9 @@ export class StringWrapper {
 
   static replaceAllMapped(s:string, from:RegExp, cb:Function): string {
     return s.replace(from.multiple, function(...matches) {
+      // Remove offset & string from the result array
+      matches.splice(-2, 2);
+      // The callback receives match, p1, ..., pn
       return cb(matches);
     });
   }
@@ -169,12 +182,12 @@ export class NumberWrapper {
   }
 }
 
-var RegExp;
+export var RegExp;
 if (assertionsEnabled_) {
   RegExp = assert.define('RegExp', function(obj) {
     assert(obj).is(assert.structure({
-      single: window.RegExp,
-      multiple: window.RegExp
+      single: _global.RegExp,
+      multiple: _global.RegExp
     }));
   });
 } else {
@@ -185,8 +198,8 @@ export class RegExpWrapper {
   static create(regExpStr, flags:string = ''):RegExp {
     flags = flags.replace(/g/g, '');
     return {
-      multiple: new window.RegExp(regExpStr, flags + 'g'),
-      single: new window.RegExp(regExpStr, flags)
+      multiple: new _global.RegExp(regExpStr, flags + 'g'),
+      single: new _global.RegExp(regExpStr, flags)
     };
   }
   static firstMatch(regExp, input) {
@@ -240,5 +253,21 @@ export function assertionsEnabled():boolean {
 }
 
 export function print(obj) {
-  console.log(obj);
+  if (obj instanceof Error) {
+    console.log(obj.stack);
+  } else {
+    console.log(obj);
+  }
+}
+
+// Can't be all uppercase as our transpiler would think it is a special directive...
+export var Json = _global.JSON;
+
+export class DateWrapper {
+  static fromMillis(ms) {
+    return new Date(ms);
+  }
+  static now() {
+    return new Date();
+  }
 }

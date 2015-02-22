@@ -1,7 +1,6 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
-import {Key} from 'angular2/di';
 import {ProtoElementInjector, ComponentKeyMetaData, DirectiveBinding} from '../element_injector';
 
 import {CompileStep} from './compile_step';
@@ -23,7 +22,7 @@ import {DirectiveMetadata} from '../directive_metadata';
  * - CompileElement#inheritedProtoView
  * - CompileElement#decoratorDirectives
  * - CompileElement#componentDirective
- * - CompileElement#templateDirective
+ * - CompileElement#viewportDirective
  */
 export class ProtoElementInjectorBuilder extends CompileStep {
   // public so that we can overwrite it in tests
@@ -52,8 +51,8 @@ export class ProtoElementInjectorBuilder extends CompileStep {
       );
       current.distanceToParentInjector = 0;
 
-      // Template directives are treated differently than other element with var- definitions.
-      if (isPresent(current.variableBindings) && !isPresent(current.templateDirective)) {
+      // Viewport directives are treated differently than other element with var- definitions.
+      if (isPresent(current.variableBindings) && !isPresent(current.viewportDirective)) {
         current.inheritedProtoElementInjector.exportComponent = hasComponent;
         current.inheritedProtoElementInjector.exportElement = !hasComponent;
 

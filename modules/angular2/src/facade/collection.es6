@@ -1,8 +1,9 @@
-import {int, isJsObject} from 'angular2/src/facade/lang';
+import {int, isJsObject, global} from 'angular2/src/facade/lang';
 
-export var List = window.Array;
-export var Map = window.Map;
-export var Set = window.Set;
+export var List = global.Array;
+export var Map = global.Map;
+export var Set = global.Set;
+export var StringMap = global.Object;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
@@ -29,7 +30,6 @@ export class MapWrapper {
   static values(m) { return m.values(); }
 }
 
-// TODO: cannot export StringMap as a type as Dart does not support renaming types...
 /**
  * Wraps Javascript Objects
  */
@@ -39,6 +39,9 @@ export class StringMapWrapper {
     // performance!
     // http://jsperf.com/ng2-object-create-null
     return { };
+  }
+  static contains(map, key) {
+    return map.hasOwnProperty(key);
   }
   static get(map, key) {
     return map.hasOwnProperty(key) ? map[key] : undefined;
@@ -149,6 +152,9 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
+  static removeLast(list:List) {
+    return list.pop();
+  }
   static remove(list, el): boolean {
     var index = list.indexOf(el);
     if (index > -1) {
@@ -178,6 +184,10 @@ export class ListWrapper {
   }
   static slice(l:List, from:int, to:int):List {
     return l.slice(from, to);
+  }
+  static sort(l:List, compareFn:Function) {
+    l.sort(compareFn);
+    return l;
   }
 }
 

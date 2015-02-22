@@ -1,16 +1,14 @@
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
-import {TemplateElement} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/facade/dom';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
 import {DirectiveMetadata} from '../directive_metadata';
-import {Template} from '../../annotations/annotations';
-import {Component} from '../../annotations/annotations';
+import {Component, Viewport} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {ShadowDomStrategy} from '../shadow_dom_strategy';
 
 /**
  * Parses the directives on a single element. Assumes ViewSplitter has already created
@@ -46,7 +44,7 @@ export class DirectiveParser extends CompileStep {
     var classList = current.classList();
 
     var cssSelector = new CssSelector();
-    cssSelector.setElement(current.element.nodeName);
+    cssSelector.setElement(DOM.nodeName(current.element));
     for (var i=0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
@@ -68,12 +66,12 @@ export class DirectiveParser extends CompileStep {
     }
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
     // only be present on <template> elements any more!
-    var isTemplateElement = current.element instanceof TemplateElement;
+    var isTemplateElement = DOM.isTemplateElement(current.element);
     this._selectorMatcher.match(cssSelector, (directive) => {
-      if (directive.annotation instanceof Template) {
+      if (directive.annotation instanceof Viewport) {
         if (!isTemplateElement) {
-          throw new BaseException('Template directives need to be placed on <template> elements or elements with template attribute!');
-        } else if (isPresent(current.templateDirective)) {
+          throw new BaseException('Viewport directives need to be placed on <template> elements or elements with template attribute!');
+        } else if (isPresent(current.viewportDirective)) {
           throw new BaseException('Only one template directive per element is allowed!');
         }
       } else if (isTemplateElement) {

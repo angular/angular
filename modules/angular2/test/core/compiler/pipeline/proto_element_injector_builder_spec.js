@@ -1,6 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'angular2/src/core/compiler/pipeline/proto_element_injector_builder';
@@ -10,7 +9,7 @@ import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {ProtoView} from 'angular2/src/core/compiler/view';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {Viewport, Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 
 export function main() {
@@ -68,7 +67,7 @@ export function main() {
     });
 
     it('should create a ProtoElementInjector for elements directives', () => {
-      var directives = [SomeComponentDirective, SomeTemplateDirective, SomeDecoratorDirective];
+      var directives = [SomeComponentDirective, SomeViewportDirective, SomeDecoratorDirective];
       var results = createPipeline(directives).process(el('<div directives></div>'));
       var creationArgs = getCreationArgs(results[0].inheritedProtoElementInjector);
       var boundDirectives = creationArgs['bindings'].map((b) => b.key.token);
@@ -203,8 +202,8 @@ class MockStep extends CompileStep {
 
 class SomeComponentService {}
 
-@Template()
-class SomeTemplateDirective {}
+@Viewport()
+class SomeViewportDirective {}
 
 @Component({
   componentServices: [SomeComponentService]

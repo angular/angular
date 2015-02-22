@@ -1,35 +1,20 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {CONST} from 'angular2/src/facade/lang';
 
 
-@Decorator({
-  selector: 'someSelector'
-})
-class SomeDirective {
-}
+@Decorator({selector: 'someDecorator'})
+class SomeDecorator {}
+
+@Component({selector: 'someComponent'})
+class SomeComponent {}
+
+@Viewport({selector: 'someViewport'})
+class SomeViewport {}
 
 class SomeDirectiveWithoutAnnotation {
 }
-
-@Component({
-  selector: 'withoutDirectives'
-})
-class ComponentWithoutDirectives {}
-
-@Component({
-  selector: 'withDirectives',
-  template: new TemplateConfig({
-    directives: [ComponentWithoutDirectives]
-  })
-})
-class ComponentWithDirectives {}
-
-
 
 export function main() {
   describe("DirectiveMetadataReader", () => {
@@ -39,28 +24,28 @@ export function main() {
       reader = new DirectiveMetadataReader();
     });
 
-    it('should read out the annotation', () => {
-      var directiveMetadata = reader.read(SomeDirective);
+    it('should read out the Decorator annotation', () => {
+      var directiveMetadata = reader.read(SomeDecorator);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeDirective, new Decorator({selector: 'someSelector'}), null));
+        new DirectiveMetadata(SomeDecorator, new Decorator({selector: 'someDecorator'})));
+    });
+
+    it('should read out the Viewport annotation', () => {
+      var directiveMetadata = reader.read(SomeViewport);
+      expect(directiveMetadata).toEqual(
+        new DirectiveMetadata(SomeViewport, new Viewport({selector: 'someViewport'})));
+    });
+
+    it('should read out the Component annotation', () => {
+      var directiveMetadata = reader.read(SomeComponent);
+      expect(directiveMetadata).toEqual(
+        new DirectiveMetadata(SomeComponent, new Component({selector: 'someComponent'})));
     });
 
     it('should throw if not matching annotation is found', () => {
       expect(() => {
         reader.read(SomeDirectiveWithoutAnnotation);
       }).toThrowError('No Directive annotation found on SomeDirectiveWithoutAnnotation');
-    });
-
-    describe("componentDirectives", () => {
-      it("should return an empty list when no directives specified", () => {
-        var cmp = reader.read(ComponentWithoutDirectives);
-        expect(cmp.componentDirectives).toEqual([]);
-      });
-
-      it("should return a list of directives specified in the template config", () => {
-        var cmp = reader.read(ComponentWithDirectives);
-        expect(cmp.componentDirectives).toEqual([ComponentWithoutDirectives]);
-      });
     });
   });
 }

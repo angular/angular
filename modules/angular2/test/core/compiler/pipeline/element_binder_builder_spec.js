@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/facade/dom';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
@@ -10,14 +10,12 @@ import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/annotations';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector,
+import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector, PipeRegistry, Pipe
   } from 'angular2/change_detection';
 import {Injector} from 'angular2/di';
 
@@ -25,8 +23,7 @@ export function main() {
   describe('ElementBinderBuilder', () => {
     var evalContext, view, changeDetector;
 
-    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector
-    }={}) {
+    function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector, registry}={}) {
       var reflector = new DirectiveMetadataReader();
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
@@ -52,9 +49,6 @@ export function main() {
               });
               hasBinding = true;
             }
-            if (isPresent(protoElementInjector)) {
-              current.inheritedProtoElementInjector = protoElementInjector;
-            }
             if (isPresent(current.element.getAttribute('directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
@@ -66,10 +60,19 @@ export function main() {
               current.hasBindings = true;
               DOM.addClass(current.element, 'ng-binding');
             }
+            if (isPresent(protoElementInjector) &&
+                (isPresent(current.element.getAttribute('text-binding')) ||
+                 isPresent(current.element.getAttribute('prop-binding')) ||
+                 isPresent(current.element.getAttribute('directives')) ||
+                 isPresent(current.element.getAttribute('event-binding')))) {
+              current.inheritedProtoElementInjector = protoElementInjector;
+            }
             if (isPresent(current.element.getAttribute('viewroot'))) {
               current.isViewRoot = true;
-              current.inheritedProtoView = new ProtoView(current.element,
-                new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
+              current.inheritedProtoView = new ProtoView(
+                current.element,
+                new DynamicProtoChangeDetector(normalizeBlank(registry)),
+                new NativeShadowDomStrategy());
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -79,7 +82,7 @@ export function main() {
 
     function instantiateView(protoView) {
       evalContext = new Context();
-      view = protoView.instantiate(null);
+      view = protoView.instantiate(null, null);
       view.hydrate(new Injector([]), null, evalContext);
       changeDetector = view.changeDetector;
     }
@@ -114,12 +117,27 @@ export function main() {
       var directives = [SomeDecoratorDirective];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives);
 
-      var pipeline = createPipeline({protoElementInjector: protoElementInjector, directives: directives});
+      var pipeline = createPipeline({protoElementInjector: protoElementInjector,
+        directives: directives});
       var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
       expect(pv.elementBinders[0].protoElementInjector).toBe(protoElementInjector);
     });
+
+    it('should not store the parent protoElementInjector', () => {
+      var directives = [SomeDecoratorDirective];
+      var eventBindings = MapWrapper.createFromStringMap({
+        'event1': '1+1'
+      });
+
+      var pipeline = createPipeline({directives: directives, eventBindings: eventBindings});
+      var results = pipeline.process(el('<div viewroot directives><div event-binding></div></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[1].protoElementInjector).toBeNull();
+    });
+
 
     it('should store the component directive', () => {
       var directives = [SomeComponentDirective];
@@ -131,12 +149,12 @@ export function main() {
     });
 
     it('should store the template directive', () => {
-      var directives = [SomeTemplateDirective];
+      var directives = [SomeViewportDirective];
       var pipeline = createPipeline({protoElementInjector: null, directives: directives});
       var results = pipeline.process(el('<div viewroot directives></div>'));
       var pv = results[0].inheritedProtoView;
 
-      expect(pv.elementBinders[0].templateDirective.type).toBe(SomeTemplateDirective);
+      expect(pv.elementBinders[0].viewportDirective.type).toBe(SomeViewportDirective);
     });
 
     it('should bind text nodes', () => {
@@ -176,6 +194,93 @@ export function main() {
 
       expect(view.nodes[0].value).toEqual('a');
       expect(view.nodes[0].hidden).toEqual(false);
+    });
+
+    it('should bind to aria-* attributes when exp evaluates to strings', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'aria-label': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 'some label';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('some label');
+
+      evalContext.prop1 = 'some other label';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toEqual('some other label');
+
+      evalContext.prop1 = null;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-label')).toBeNull();
+    });
+
+    it('should bind to aria-* attributes when exp evaluates to booleans', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'aria-busy': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = true;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-busy')).toEqual('true');
+
+      evalContext.prop1 = false;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'aria-busy')).toEqual('false');
+    });
+
+    it('should bind to ARIA role attribute', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'role': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 'alert';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'role')).toEqual('alert');
+
+      evalContext.prop1 = 'alertdialog';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'role')).toEqual('alertdialog');
+
+      evalContext.prop1 = null;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'role')).toBeNull();
+    });
+
+    it('should throw for a non-string ARIA role', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'role': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      instantiateView(pv);
+
+      expect( () => {
+        evalContext.prop1 = 1; //invalid, non-string role
+        changeDetector.detectChanges();
+      }).toThrowError("Invalid role attribute, only string values are allowed, got '1'");
     });
 
     it('should bind class with a dot', () => {
@@ -264,7 +369,7 @@ export function main() {
         'boundprop3': 'prop3'
       });
       var directives = [SomeComponentDirectiveWithBinding,
-                        SomeTemplateDirectiveWithBinding,
+                        SomeViewportDirectiveWithBinding,
                         SomeDecoratorDirectiveWith2Bindings];
       var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
       var pipeline = createPipeline({
@@ -275,7 +380,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new DynamicProtoChangeDetector(), new NativeShadowDomStrategy());
+          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy());
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
@@ -285,8 +390,39 @@ export function main() {
 
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp).toBe('a');
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp2).toBe('b');
-      expect(view.elementInjectors[0].get(SomeTemplateDirectiveWithBinding).templProp).toBe('b');
+      expect(view.elementInjectors[0].get(SomeViewportDirectiveWithBinding).templProp).toBe('b');
       expect(view.elementInjectors[0].get(SomeComponentDirectiveWithBinding).compProp).toBe('c');
+    });
+
+    it('should bind directive properties with pipes', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'boundprop': 'prop1'
+      });
+
+      var directives = [DirectiveWithBindingsThatHavePipes];
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
+
+      var registry = new PipeRegistry({
+        "double" : [new DoublePipeFactory()]
+      });
+
+      var pipeline = createPipeline({
+        propertyBindings: propertyBindings,
+        directives: directives,
+        protoElementInjector: protoElementInjector,
+        registry: registry
+      });
+
+      var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
+      var pv = results[0].inheritedProtoView;
+      results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
+        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy());
+
+      instantiateView(pv);
+      evalContext.prop1 = 'a';
+      changeDetector.detectChanges();
+
+      expect(view.elementInjectors[0].get(DirectiveWithBindingsThatHavePipes).compProp).toEqual('aa');
     });
 
     it('should bind directive properties for sibling elements', () => {
@@ -326,11 +462,15 @@ export function main() {
 
     describe('errors', () => {
 
-      it('should throw if there is no element property bindings for a directive property binding', () => {
-        var pipeline = createPipeline({propertyBindings: MapWrapper.create(), directives: [SomeDecoratorDirectiveWithBinding]});
-        expect( () => {
-          pipeline.process(el('<div viewroot prop-binding directives>'));
-        }).toThrowError("No element binding found for property 'boundprop1' which is required by directive 'SomeDecoratorDirectiveWithBinding'");
+      it('should not throw any errors if there is no element property bindings for a directive ' +
+          'property binding', () => {
+        var pipeline = createPipeline({
+          propertyBindings: MapWrapper.create(),
+          directives: [SomeDecoratorDirectiveWithBinding]
+        });
+
+        // If processing throws an error, this test will fail.
+        pipeline.process(el('<div viewroot prop-binding directives>'));
       });
 
     });
@@ -344,7 +484,7 @@ class SomeDecoratorDirective {
 }
 
 @Decorator({
-  bind: {'boundprop1': 'decorProp'}
+  bind: {'decorProp': 'boundprop1'}
 })
 class SomeDecoratorDirectiveWithBinding {
   decorProp;
@@ -357,8 +497,8 @@ class SomeDecoratorDirectiveWithBinding {
 
 @Decorator({
   bind: {
-    'boundprop1': 'decorProp',
-    'boundprop2': 'decorProp2'
+    'decorProp': 'boundprop1',
+    'decorProp2': 'boundprop2'
   }
 })
 class SomeDecoratorDirectiveWith2Bindings {
@@ -370,14 +510,14 @@ class SomeDecoratorDirectiveWith2Bindings {
   }
 }
 
-@Template()
-class SomeTemplateDirective {
+@Viewport()
+class SomeViewportDirective {
 }
 
-@Template({
-  bind: {'boundprop2': 'templProp'}
+@Viewport({
+  bind: {'templProp': 'boundprop2'}
 })
-class SomeTemplateDirectiveWithBinding {
+class SomeViewportDirectiveWithBinding {
   templProp;
   constructor() {
     this.templProp = null;
@@ -388,13 +528,39 @@ class SomeTemplateDirectiveWithBinding {
 class SomeComponentDirective {
 }
 
-@Component({
-  bind: {'boundprop3': 'compProp'}
-})
+@Component({bind: {'compProp': 'boundprop3'}})
 class SomeComponentDirectiveWithBinding {
   compProp;
   constructor() {
     this.compProp = null;
+  }
+}
+
+@Component({bind: {'compProp':'boundprop | double'}})
+class DirectiveWithBindingsThatHavePipes {
+  compProp;
+  constructor() {
+    this.compProp = null;
+  }
+}
+
+class DoublePipe extends Pipe {
+  supports(obj) {
+    return true;
+  }
+
+  transform(value) {
+    return `${value}${value}`;
+  }
+}
+
+class DoublePipeFactory {
+  supports(obj) {
+    return true;
+  }
+
+  create() {
+    return new DoublePipe();
   }
 }
 

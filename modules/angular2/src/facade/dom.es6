@@ -1,3 +1,5 @@
+import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+
 export var window = frames.window;
 export var DocumentFragment = window.DocumentFragment;
 export var Node = window.Node;
@@ -9,8 +11,8 @@ export var StyleElement = window.HTMLStyleElement;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
-
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+export var CssRule = window.CSSRule;
+export var CssKeyframesRule = window.CSSKeyframesRule;
 
 export class DOM {
   static query(selector) {
@@ -41,6 +43,18 @@ export class DOM {
   }
   static getOuterHTML(el) {
     return el.outerHTML;
+  }
+  static nodeName(node:Node):string {
+    return node.nodeName;
+  }
+  static nodeValue(node:Node):string {
+    return node.nodeValue;
+  }
+  static type(node:Element):string {
+    return node.type;
+  }
+  static content(node:TemplateElement):Node {
+    return node.content;
   }
   static firstChild(el):Node {
     return el.firstChild;
@@ -97,6 +111,18 @@ export class DOM {
   static setText(el, value:string) {
     el.textContent = value;
   }
+  static getValue(el: Element) {
+    return el.value;
+  }
+  static setValue(el: Element, value:string) {
+    el.value = value;
+  }
+  static getChecked(el: Element) {
+    return el.checked;
+  }
+  static setChecked(el: Element, value:boolean) {
+    el.checked = value;
+  }
   static createTemplate(html) {
     var t = document.createElement('template');
     t.innerHTML = html;
@@ -104,6 +130,9 @@ export class DOM {
   }
   static createElement(tagName, doc=document) {
     return doc.createElement(tagName);
+  }
+  static createTextNode(text: string, doc=document) {
+    return doc.createTextNode(text);
   }
   static createScriptTag(attrName:string, attrValue:string, doc=document) {
     var el = doc.createElement("SCRIPT");
@@ -166,6 +195,9 @@ export class DOM {
   static setAttribute(element:Element, name:string, value:string) {
     element.setAttribute(name, value);
   }
+  static removeAttribute(element:Element, attribute:string) {
+    return element.removeAttribute(attribute);
+  }
   static templateAwareRoot(el:Element):Node {
     return el instanceof TemplateElement ? el.content : el;
   }
@@ -177,5 +209,32 @@ export class DOM {
   }
   static elementMatches(n, selector:string):boolean {
     return n instanceof Element && n.matches(selector);
+  }
+  static isTemplateElement(el:any):boolean {
+    return el instanceof TemplateElement;
+  }
+  static isTextNode(node:Node):boolean {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+  static isElementNode(node:Node):boolean {
+    return node.nodeType === Node.ELEMENT_NODE;
+  }
+  static importIntoDoc(node:Node) {
+    return document.importNode(node, true);
+  }
+}
+
+export class CSSRuleWrapper {
+  static isPageRule(rule) {
+    return rule.type === CSSRule.PAGE_RULE;
+  }
+  static isStyleRule(rule) {
+    return rule.type === CSSRule.STYLE_RULE;
+  }
+  static isMediaRule(rule) {
+    return rule.type === CSSRule.MEDIA_RULE;
+  }
+  static isKeyframesRule(rule) {
+    return rule.type === CSSRule.KEYFRAMES_RULE;
   }
 }

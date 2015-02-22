@@ -15,7 +15,7 @@ If you don't already have `npm`, get it by installing [node.js](http://nodejs.or
 3. `npm install -g protractor` (you might need to prefix this command with `sudo`)
 4. `webdriver-manager update`
 5. If you plan to use Dart:
-  1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/)
+  1. [Install the Dart SDK](https://www.dartlang.org/tools/sdk/) - Includes the `pub` command line tool. This repository requires `pub` in version `>=1.9.0-dev.8.0 <2.0.0`
   2. [Add the Dart SDK's `bin` directory to your system path](https://www.dartlang.org/tools/pub/installing.html)
   3. Get the pub packages you need: `pub get`
 6. `gulp build`
@@ -54,12 +54,25 @@ the transpiler is reloaded. With that it is possible to make changes
 to the preprocessor and run the tests without exiting karma
 (just touch a test file that you would like to run).
 
+### E2e tests
+
+1. `gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
+2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
+3. `protractor protractor-js.conf.js`: JS e2e tests
+4. `protractor protractor-dart2js.conf.js`: Dart2JS e2e tests
+
+Angular specific command line options when running protractor:
+`protractor protractor-{js|dart2js}-conf.js --ng-help`
+
 ### Performance tests
 
-1. `gulp build.cjs` (builds benchpress and tests into `dist/cjs` folder)
+1. `gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
 2. `gulp serve.js.prod serve.js.dart2js` (runs local webserver)
-3. `protractor protractor-perf-js.conf.js`: JS performance tests
-4. `protractor protractor-perf-dart2js.conf.js`: Dart2JS performance tests
+3. `protractor protractor-js.conf.js --benchmark`: JS performance tests
+4. `protractor protractor-dart2js.conf.js --benchmark`: Dart2JS performance tests
+
+Angular specific command line options when running protractor (e.g. force gc, ...):
+`protractor protractor-{js|dart2js}-conf.js --ng-help`
 
 ### Examples
 
@@ -72,7 +85,7 @@ source `modules/examples/src/hello_world/index.js`.
 
 You can build this example as either JS or Dart app:
 * (JS) `gulp serve.js.dev` and open `localhost:8000/examples/src/hello_world/` in Chrome.
-* (Dart) `gulp serve/examples.dart` and open `localhost:8080/hello_world` in Chrome (for dart2js) or Dartium (for Dart VM).
+* (Dart) `gulp serve/examples.dart` and open `localhost:8080/src/hello_world` in Chrome (for dart2js) or Dartium (for Dart VM).
 
 ## Debug the transpiler
 

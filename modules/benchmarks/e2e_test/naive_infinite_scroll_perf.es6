@@ -1,4 +1,4 @@
-var perfUtil = require('../../angular2/e2e_test/perf_util');
+var perfUtil = require('angular2/e2e_test/perf_util');
 
 describe('ng2 naive infinite scroll benchmark', function () {
 
@@ -8,15 +8,13 @@ describe('ng2 naive infinite scroll benchmark', function () {
 
   [1, 2, 4].forEach(function(appSize) {
     it('should run scroll benchmark and collect stats for appSize = ' +
-        appSize, function() {
+        appSize, function(done) {
       perfUtil.runBenchmark({
         url: URL,
         id: 'ng2.naive_infinite_scroll',
         work: function() {
-          browser.executeScript(
-              'document.querySelector("scroll-app /deep/ #reset-btn").click()');
-          browser.executeScript(
-              'document.querySelector("scroll-app /deep/ #run-btn").click()');
+          element(by.deepCss('#reset-btn')).click();
+          element(by.deepCss('#run-btn')).click();
           browser.wait(() => {
             return $('#done').getText().then(
               function() { return true; },
@@ -30,7 +28,7 @@ describe('ng2 naive infinite scroll benchmark', function () {
         }, {
           name: 'scrollIncrement', value: 40
         }]
-      });
+      }).then(done, done.fail);
     });
   });
 

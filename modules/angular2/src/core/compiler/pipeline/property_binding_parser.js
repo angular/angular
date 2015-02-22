@@ -1,6 +1,5 @@
 import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {TemplateElement} from 'angular2/src/facade/dom';
 
 import {Parser, AST, ExpressionWithSource} from 'angular2/change_detection';
 
@@ -38,6 +37,10 @@ export class PropertyBindingParser extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    if (current.ignoreBindings) {
+      return;
+    }
+
     var attrs = current.attrs();
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);

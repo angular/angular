@@ -5,7 +5,7 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {ContextWithVariableBindings} from 'angular2/src/change_detection/parser/context_with_variable_bindings';
-import {Formatter, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
+import {Pipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
   a;
@@ -49,6 +49,10 @@ export function main() {
 
   function parseInterpolation(text, location = null) {
     return createParser().parseInterpolation(text, location);
+  }
+
+  function addPipes(ast, pipes) {
+    return createParser().addPipes(ast, pipes);
   }
 
   function expectEval(text, passedInContext = null) {
@@ -336,8 +340,8 @@ export function main() {
         });
       });
 
-      it("should error when using formatters", () => {
-        expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a formatter'));
+      it("should error when using pipes", () => {
+        expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a pipe'));
       });
 
       it('should pass exceptions', () => {
@@ -363,16 +367,16 @@ export function main() {
     });
 
     describe("parseBinding", () => {
-      describe("formatters", () => {
-        it("should parse formatters", () => {
+      describe("pipes", () => {
+        it("should parse pipes", () => {
           var exp = parseBinding("'Foo'|uppercase").ast;
-          expect(exp).toBeAnInstanceOf(Formatter);
+          expect(exp).toBeAnInstanceOf(Pipe);
           expect(exp.name).toEqual("uppercase");
         });
 
-        it("should parse formatters with args", () => {
+        it("should parse pipes with args", () => {
           var exp = parseBinding("1|increment:2").ast;
-          expect(exp).toBeAnInstanceOf(Formatter);
+          expect(exp).toBeAnInstanceOf(Pipe);
           expect(exp.name).toEqual("increment");
           expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
         });
@@ -541,6 +545,29 @@ export function main() {
         expect(ast.expressions.length).toEqual(2);
         expect(ast.expressions[0].name).toEqual('a');
         expect(ast.expressions[1].name).toEqual('b');
+      });
+    });
+
+    describe('addPipes', () => {
+      it('should return the given ast whe the list of pipes is empty', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, []);
+        expect(transformedAst).toBe(ast);
+      });
+
+      it('should append pipe ast nodes', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, ['one', 'two']);
+        expect(transformedAst.ast.name).toEqual("two");
+        expect(transformedAst.ast.exp.name).toEqual("one");
+        expect(transformedAst.ast.exp.exp.operation).toEqual("+");
+      });
+
+      it('should preserve location and source', () => {
+        var ast = parseBinding("1 + 1", "Location");
+        var transformedAst = addPipes(ast, ['one', 'two']);
+        expect(transformedAst.source).toEqual("1 + 1");
+        expect(transformedAst.location).toEqual("Location");
       });
     });
 

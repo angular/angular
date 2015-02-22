@@ -1,6 +1,8 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/facade/dom';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -8,31 +10,38 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
-import {Decorator, Component, Template} from 'angular2/src/core/annotations/annotations';
-import {TemplateConfig} from 'angular2/src/core/annotations/template_config';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
+import {Template} from 'angular2/src/core/annotations/template';
 
-import {ViewPort} from 'angular2/src/core/compiler/viewport';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Foreach} from 'angular2/src/directives/foreach';
 
 export function main() {
   describe('foreach', () => {
-    var view, cd, compiler, component;
+    var view, cd, compiler, component, tplResolver;
     beforeEach(() => {
-      compiler = new Compiler(dynamicChangeDetection, null, new DirectiveMetadataReader(),
-        new Parser(new Lexer()), new CompilerCache(), new NativeShadowDomStrategy());
+      tplResolver = new FakeTemplateResolver();
+      compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
+        new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache(),
+        new NativeShadowDomStrategy(), tplResolver);
     });
 
     function createView(pv) {
       component = new TestComponent();
-      view = pv.instantiate(null);
+      view = pv.instantiate(null, null);
       view.hydrate(new Injector([]), null, component);
       cd = view.changeDetector;
     }
 
-    function compileWithTemplate(template) {
-      return compiler.compile(TestComponent, el(template));
+    function compileWithTemplate(html) {
+      var template = new Template({
+        inline: html,
+        directives: [Foreach]
+      });
+      tplResolver.setTemplate(TestComponent, template);
+      return compiler.compile(TestComponent);
     }
 
     var TEMPLATE = '<div><copy-me template="foreach #item in items">{{item.toString()}};</copy-me></div>';
@@ -217,17 +226,34 @@ class Foo {
   }
 }
 
-@Component({
-  selector: 'test-cmp',
-  template: new TemplateConfig({
-    inline: '',  // each test swaps with a custom template.
-    directives: [Foreach]
-  })
-})
+@Component({selector: 'test-cmp'})
 class TestComponent {
   items: any;
   item: any;
   constructor() {
     this.items = [1, 2];
+  }
+}
+
+class FakeTemplateResolver extends TemplateResolver {
+  _cmpTemplates: Map;
+
+  constructor() {
+    super();
+    this._cmpTemplates = MapWrapper.create();
+  }
+
+  setTemplate(component: Type, template: Template) {
+    MapWrapper.set(this._cmpTemplates, component, template);
+  }
+
+  resolve(component: Type): Template {
+    var override = MapWrapper.get(this._cmpTemplates, component);
+
+    if (isPresent(override)) {
+      return override;
+    }
+
+    return super.resolve(component);
   }
 }

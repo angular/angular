@@ -1,6 +1,4 @@
 import {ProtoElementInjector} from './element_injector';
-import {FIELD} from 'angular2/src/facade/lang';
-import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from './directive_metadata';
 import {List, Map} from 'angular2/src/facade/collection';
 import {ProtoView} from './view';
@@ -8,16 +6,17 @@ import {ProtoView} from './view';
 export class ElementBinder {
   protoElementInjector:ProtoElementInjector;
   componentDirective:DirectiveMetadata;
-  templateDirective:DirectiveMetadata;
+  viewportDirective:DirectiveMetadata;
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
   nestedProtoView: ProtoView;
   events:Map;
   constructor(
-    protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata, templateDirective:DirectiveMetadata) {
+    protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata,
+    viewportDirective:DirectiveMetadata) {
     this.protoElementInjector = protoElementInjector;
     this.componentDirective = componentDirective;
-    this.templateDirective = templateDirective;
+    this.viewportDirective = viewportDirective;
     // updated later when events are bound
     this.events = null;
     // updated later when text nodes are bound

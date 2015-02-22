@@ -9,9 +9,8 @@ import {
   AstVisitor,
   Binary,
   Chain,
-  Structural,
   Conditional,
-  Formatter,
+  Pipe,
   FunctionCall,
   ImplicitReceiver,
   Interpolation,
@@ -23,78 +22,30 @@ import {
   PrefixNot
   } from './parser/ast';
 
-import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {ChangeRecord, ChangeDispatcher, ChangeDetector} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
+import {PipeRegistry} from './pipes/pipe_registry';
 
-import {ArrayChanges} from './array_changes';
-import {KeyValueChanges} from './keyvalue_changes';
 import {coalesce} from './coalesce';
 
-export const RECORD_TYPE_SELF = 0;
-export const RECORD_TYPE_CONST = 1;
-export const RECORD_TYPE_PRIMITIVE_OP = 2;
-export const RECORD_TYPE_PROPERTY = 3;
-export const RECORD_TYPE_INVOKE_METHOD = 4;
-export const RECORD_TYPE_INVOKE_CLOSURE = 5;
-export const RECORD_TYPE_KEYED_ACCESS = 6;
-export const RECORD_TYPE_INVOKE_FORMATTER = 7;
-export const RECORD_TYPE_STRUCTURAL_CHECK = 8;
-export const RECORD_TYPE_INTERPOLATE = 9;
-
-export class ProtoRecord {
-  mode:number;
-  name:string;
-  funcOrValue:any;
-  args:List;
-  fixedArgs:List;
-  contextIndex:number;
-  selfIndex:number;
-  bindingMemento:any;
-  directiveMemento:any;
-  lastInBinding:boolean;
-  lastInDirective:boolean;
-  expressionAsString:string;
-
-  constructor(mode:number,
-              name:string,
-              funcOrValue,
-              args:List,
-              fixedArgs:List,
-              contextIndex:number,
-              selfIndex:number,
-              bindingMemento:any,
-              directiveMemento:any,
-              expressionAsString:string,
-              lastInBinding:boolean,
-              lastInDirective:boolean) {
-
-    this.mode = mode;
-    this.name = name;
-    this.funcOrValue = funcOrValue;
-    this.args = args;
-    this.fixedArgs = fixedArgs;
-    this.contextIndex = contextIndex;
-    this.selfIndex = selfIndex;
-    this.bindingMemento = bindingMemento;
-    this.directiveMemento = directiveMemento;
-    this.lastInBinding = lastInBinding;
-    this.lastInDirective = lastInDirective;
-    this.expressionAsString = expressionAsString;
-  }
-
-  isPureFunction():boolean {
-    return this.mode === RECORD_TYPE_INTERPOLATE ||
-      this.mode === RECORD_TYPE_INVOKE_FORMATTER ||
-      this.mode === RECORD_TYPE_PRIMITIVE_OP;
-  }
-}
+import {
+  ProtoRecord,
+  RECORD_TYPE_SELF,
+  RECORD_TYPE_PROPERTY,
+  RECORD_TYPE_INVOKE_METHOD,
+  RECORD_TYPE_CONST,
+  RECORD_TYPE_INVOKE_CLOSURE,
+  RECORD_TYPE_PRIMITIVE_OP,
+  RECORD_TYPE_KEYED_ACCESS,
+  RECORD_TYPE_PIPE,
+  RECORD_TYPE_INTERPOLATE
+  } from './proto_record';
 
 export class ProtoChangeDetector  {
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false){}
-  instantiate(dispatcher:any, formatters:Map):ChangeDetector{
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
+  instantiate(dispatcher:any):ChangeDetector{
     return null;
   }
 }
@@ -102,20 +53,22 @@ export class ProtoChangeDetector  {
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _records:List<ProtoRecord>;
   _recordBuilder:ProtoRecordBuilder;
+  _pipeRegistry:PipeRegistry;
 
-  constructor() {
+  constructor(pipeRegistry:PipeRegistry) {
     super();
+    this._pipeRegistry = pipeRegistry;
     this._records = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any) {
     this._createRecordsIfNecessary();
-    return new DynamicChangeDetector(dispatcher, formatters, this._records);
+    return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records);
   }
 
   _createRecordsIfNecessary() {
@@ -130,20 +83,22 @@ var _jitProtoChangeDetectorClassCounter:number = 0;
 export class JitProtoChangeDetector extends ProtoChangeDetector {
   _factory:Function;
   _recordBuilder:ProtoRecordBuilder;
+  _pipeRegistry;
 
-  constructor() {
+  constructor(pipeRegistry) {
     super();
+    this._pipeRegistry = pipeRegistry;
     this._factory = null;
     this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento, structural);
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
+    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
   }
 
-  instantiate(dispatcher:any, formatters:Map) {
+  instantiate(dispatcher:any) {
     this._createFactoryIfNecessary();
-    return this._factory(dispatcher, formatters);
+    return this._factory(dispatcher, this._pipeRegistry);
   }
 
   _createFactoryIfNecessary() {
@@ -163,9 +118,7 @@ class ProtoRecordBuilder {
     this.records = [];
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, structural:boolean = false) {
-    if (structural) ast = new Structural(ast);
-
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
     var last = ListWrapper.last(this.records);
     if (isPresent(last) && last.directiveMemento == directiveMemento) {
       last.lastInDirective = false;
@@ -222,10 +175,6 @@ class _ConvertAstIntoProtoRecords {
     return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
   }
 
-  visitFormatter(ast:Formatter) {
-    return this._addRecord(RECORD_TYPE_INVOKE_FORMATTER, ast.name, ast.name, this._visitAll(ast.allArgs), null, 0);
-  }
-
   visitMethodCall(ast:MethodCall) {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
@@ -270,9 +219,9 @@ class _ConvertAstIntoProtoRecords {
       ChangeDetectionUtil.cond, [c,t,f], null, 0);
   }
 
-  visitStructural(ast:Structural) {
-    var value = ast.value.visit(this);
-    return this._addRecord(RECORD_TYPE_STRUCTURAL_CHECK, "structural", null, [], null, value);
+  visitPipe(ast:Pipe) {
+    var value = ast.exp.visit(this);
+    return this._addRecord(RECORD_TYPE_PIPE, ast.name, ast.name, [], null, value);
   }
 
   visitKeyedAccess(ast:KeyedAccess) {

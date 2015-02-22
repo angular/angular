@@ -5,15 +5,18 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {Injector} from 'angular2/di';
-import {DOM} from 'angular2/src/facade/dom';
-
-import {Component, TemplateConfig} from 'angular2/core';
-import {ControlDirective, ControlNameDirective, ControlGroupDirective, NewControlGroupDirective,
-  Control, ControlGroup} from 'angular2/forms';
-
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+
+import {Injector} from 'angular2/di';
+
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent} from 'angular2/src/facade/lang';
+
+import {Component, Decorator, Template} from 'angular2/core';
+import {ControlGroupDirective, ControlNameDirective,
+  ControlDirective, NewControlGroupDirective,
+  Control, ControlGroup, ControlValueAccessor} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {
@@ -21,24 +24,29 @@ export function main() {
   }
 
   function compile(componentType, template, context, callback) {
+    var tplResolver = new FakeTemplateResolver();
+
     var compiler = new Compiler(dynamicChangeDetection,
-      new TemplateLoader(new XHRMock()),
+      new TemplateLoader(null),
       new DirectiveMetadataReader(),
       new Parser(new Lexer()),
       new CompilerCache(),
-      new NativeShadowDomStrategy());
+      new NativeShadowDomStrategy(),
+      tplResolver
+    );
 
-    compiler.compile(componentType, el(template)).then((pv) => {
-      var view = pv.instantiate(null);
+    tplResolver.setTemplate(componentType, new Template({
+      inline: template,
+      directives: [ControlGroupDirective, ControlNameDirective, ControlDirective,
+        NewControlGroupDirective, WrappedValue]
+    }));
+
+    compiler.compile(componentType).then((pv) => {
+      var view = pv.instantiate(null, null);
       view.hydrate(new Injector([]), null, context);
       detectChanges(view);
       callback(view);
     });
-  }
-
-  function formComponent(view) {
-    // TODO: vsavkin remove when view variables work
-    return view.elementInjectors[0].getComponent();
   }
 
   describe("integration tests", () => {
@@ -48,7 +56,7 @@ export function main() {
       }));
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -65,7 +73,7 @@ export function main() {
       var ctx = new MyComp(form);
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -86,7 +94,7 @@ export function main() {
       var ctx = new MyComp(form);
 
       var t = `<div [control-group]="form">
-                <input [control-name]="'login'">
+                <input type="text" control-name="login">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -108,7 +116,7 @@ export function main() {
       }), "one");
 
       var t = `<div [control-group]="form">
-                <input [control-name]="name">
+                <input type="text" [control-name]="name">
               </div>`;
 
       compile(MyComp, t, ctx, (view) => {
@@ -123,11 +131,51 @@ export function main() {
       });
     });
 
+    describe("different control types", () => {
+      it("should support type=checkbox", (done) => {
+        var ctx = new MyComp(new ControlGroup({"checkbox": new Control(true)}));
+
+        var t = `<div [control-group]="form">
+                  <input type="checkbox" control-name="checkbox">
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.checked).toBe(true);
+
+          input.checked = false;
+          dispatchEvent(input, "change");
+
+          expect(ctx.form.value).toEqual({"checkbox" : false});
+          done();
+        });
+      });
+
+      it("should support custom value accessors", (done) => {
+        var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
+
+        var t = `<div [control-group]="form">
+                  <input type="text" control-name="name" wrapped-value>
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("!aa!");
+
+          input.value = "!bb!";
+          dispatchEvent(input, "change");
+
+          expect(ctx.form.value).toEqual({"name" : "bb"});
+          done();
+        });
+      });
+    });
+
     describe("declarative forms", () => {
       it("should initialize dom elements", (done) => {
         var t = `<div [new-control-group]="{'login': 'loginValue', 'password':'passValue'}">
-                  <input id="login" [control]="'login'">
-                  <input id="password" [control]="'password'">
+                  <input type="text" id="login" control="login">
+                  <input type="password" id="password" control="password">
                 </div>`;
 
         compile(MyComp, t, new MyComp(), (view) => {
@@ -142,8 +190,8 @@ export function main() {
       });
 
       it("should update the control group values on DOM change", (done) => {
-        var t = `<div [new-control-group]="{'login': 'loginValue'}">
-                  <input [control]="'login'">
+        var t = `<div #form [new-control-group]="{'login': 'loginValue'}">
+                  <input type="text" control="login">
                 </div>`;
 
         compile(MyComp, t, new MyComp(), (view) => {
@@ -152,7 +200,8 @@ export function main() {
           input.value = "updatedValue";
           dispatchEvent(input, "change");
 
-          expect(formComponent(view).value).toEqual({'login': 'updatedValue'});
+          var form = view.contextWithLocals.get("form");
+          expect(form.value).toEqual({'login': 'updatedValue'});
           done();
         });
       });
@@ -161,14 +210,7 @@ export function main() {
   });
 }
 
-@Component({
-  selector: "my-comp",
-  template: new TemplateConfig({
-    inline: "",
-    directives: [ControlGroupDirective, ControlNameDirective,
-      ControlDirective, NewControlGroupDirective]
-  })
-})
+@Component({selector: "my-comp"})
 class MyComp {
   form:ControlGroup;
   name:string;
@@ -176,5 +218,47 @@ class MyComp {
   constructor(form = null, name = null) {
     this.form = form;
     this.name = name;
+  }
+}
+
+class WrappedValueAccessor extends ControlValueAccessor {
+  readValue(el){
+    return el.value.substring(1, el.value.length - 1);
+  }
+
+  writeValue(el, value):void {
+    el.value = `!${value}!`;
+  }
+}
+
+@Decorator({
+  selector:'[wrapped-value]'
+})
+class WrappedValue {
+  constructor(cd:ControlNameDirective) {
+    cd.valueAccessor = new WrappedValueAccessor();
+  }
+}
+
+class FakeTemplateResolver extends TemplateResolver {
+  _cmpTemplates: Map;
+
+  constructor() {
+    super();
+    this._cmpTemplates = MapWrapper.create();
+  }
+
+  setTemplate(component: Type, template: Template) {
+    MapWrapper.set(this._cmpTemplates, component, template);
+  }
+
+  resolve(component: Type): Template {
+    var override = MapWrapper.get(this._cmpTemplates, component);
+
+    if (isPresent(override)) {
+      return override;
+    }
+
+    return super.resolve(component);
   }
 }

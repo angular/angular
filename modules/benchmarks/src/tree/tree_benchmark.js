@@ -1,11 +1,13 @@
 import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
   from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'angular2/angular2';
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler} from 'angular2/angular2';
 
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -17,6 +19,8 @@ import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util'
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
+import {If} from 'angular2/directives';
+
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
   // as they are needed in all benchmarks...
@@ -24,45 +28,44 @@ function setupReflector() {
   reflector.registerType(AppComponent, {
     'factory': () => new AppComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'app',
-      template: new TemplateConfig({
+    'annotations' : [
+      new Component({selector: 'app'}),
+      new Template({
         directives: [TreeComponent],
         inline: `<tree [data]='initData'></tree>`
-      })
-    })]
+      })]
   });
 
   reflector.registerType(TreeComponent, {
     'factory': () => new TreeComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'tree',
-      bind: {
-        'data': 'data'
-      },
-      template: new TemplateConfig({
-          directives: [TreeComponent, NgIf],
-          inline: `<span>{{data.value}}<span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
-      })
-    })]
+    'annotations' : [
+      new Component({
+        selector: 'tree',
+        bind: {'data': 'data'}
+      }),
+      new Template({
+        directives: [TreeComponent, If],
+        inline: `<span> {{data.value}} <span template='if data.right != null'><tree [data]='data.right'></tree></span><span template='if data.left != null'><tree [data]='data.left'></tree></span></span>`
+      })]
   });
 
-  reflector.registerType(NgIf, {
-    'factory': (vp) => new NgIf(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
-      selector: '[ng-if]',
+  reflector.registerType(If, {
+    'factory': (vp) => new If(vp),
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
+      selector: '[if]',
       bind: {
-        'ng-if': 'ngIf'
+        'condition': 'if'
       }
     })]
   });
 
   reflector.registerType(Compiler, {
-    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy) => new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy),
+    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy, resolver) =>
+      new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy, resolver),
     'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader],
-                   [Parser], [CompilerCache], [ShadowDomStrategy]],
+                   [Parser], [CompilerCache], [ShadowDomStrategy], [TemplateResolver]],
     'annotations': []
   });
 
@@ -81,6 +84,12 @@ function setupReflector() {
   reflector.registerType(TemplateLoader, {
     'factory': (xhr) => new TemplateLoader(xhr),
     'parameters': [[XHR]],
+    'annotations': []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    'factory': () => new TemplateResolver(),
+    'parameters': [],
     'annotations': []
   });
 
@@ -108,9 +117,15 @@ function setupReflector() {
     'annotations': []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(LifeCycle, {
-    "factory": (cd) => new LifeCycle(cd),
-    "parameters": [[ChangeDetector]],
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler, ChangeDetector]],
     "annotations": []
   });
 
@@ -120,7 +135,8 @@ function setupReflector() {
     'left': (a) => a.left,
     'right': (a) => a.right,
     'initData': (a) => a.initData,
-    'data': (a) => a.data
+    'data': (a) => a.data,
+    'condition': (a) => a.condition,
   });
 
   reflector.registerSetters({
@@ -129,7 +145,7 @@ function setupReflector() {
     'right': (a,v) => a.right = v,
     'initData': (a,v) => a.initData = v,
     'data': (a,v) => a.data = v,
-    'ngIf': (a,v) => a.ngIf = v
+    'condition': (a,v) => a.condition = v,
   });
 }
 
@@ -252,7 +268,7 @@ function buildTree(maxDepth, values, curDepth) {
 var BASELINE_TREE_TEMPLATE = DOM.createTemplate(
     '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
 var BASELINE_IF_TEMPLATE = DOM.createTemplate(
-    '<span template="ng-if"><tree></tree></span>');
+    '<span template="if"><tree></tree></span>');
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
@@ -330,22 +346,6 @@ class AppComponent {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
-  }
-}
-
-// TODO: Move this into a reusable directive in the 'core' module!
-class NgIf {
-  _viewPort:ViewPort;
-  constructor(viewPort:ViewPort) {
-    this._viewPort = viewPort;
-  }
-  set ngIf(value:boolean) {
-    if (this._viewPort.length > 0) {
-      this._viewPort.remove(0);
-    }
-    if (value) {
-      this._viewPort.create();
-    }
   }
 }
 

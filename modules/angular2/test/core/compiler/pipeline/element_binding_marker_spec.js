@@ -9,12 +9,13 @@ import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_elemen
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Template, Decorator, Component} from 'angular2/src/core/annotations/annotations';
+import {Viewport, Decorator, Component} from 'angular2/src/core/annotations/annotations';
 
 export function main() {
   describe('ElementBindingMarker', () => {
 
-    function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings, directives}={}) {
+    function createPipeline({textNodeBindings, propertyBindings, variableBindings, eventBindings,
+      directives, ignoreBindings}={}) {
       var reader = new DirectiveMetadataReader();
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
@@ -30,6 +31,9 @@ export function main() {
             if (isPresent(eventBindings)) {
               current.eventBindings = eventBindings;
             }
+            if (isPresent(ignoreBindings)) {
+              current.ignoreBindings = ignoreBindings;
+            }
             if (isPresent(directives)) {
               for (var i=0; i<directives.length; i++) {
                 current.addDirective(reader.read(directives[i]));
@@ -41,6 +45,14 @@ export function main() {
 
     it('should not mark empty elements', () => {
       var results = createPipeline().process(el('<div></div>'));
+      assertBinding(results[0], false);
+    });
+
+    it('should not mark elements when ignoreBindings is true', () => {
+      var textNodeBindings = MapWrapper.create();
+      MapWrapper.set(textNodeBindings, 0, 'expr');
+      var results = createPipeline({textNodeBindings: textNodeBindings,
+        ignoreBindings: true}).process(el('<div></div>'));
       assertBinding(results[0], false);
     });
 
@@ -78,7 +90,7 @@ export function main() {
 
     it('should mark elements with template directives', () => {
       var results = createPipeline({
-        directives: [SomeTemplateDirective]
+        directives: [SomeViewportDirective]
       }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
@@ -109,8 +121,8 @@ class MockStep extends CompileStep {
   }
 }
 
-@Template()
-class SomeTemplateDirective {}
+@Viewport()
+class SomeViewportDirective {}
 
 @Component()
 class SomeComponentDirective {}

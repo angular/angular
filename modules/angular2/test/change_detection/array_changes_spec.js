@@ -1,5 +1,5 @@
 import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
-import {ArrayChanges} from 'angular2/src/change_detection/array_changes';
+import {ArrayChanges} from 'angular2/src/change_detection/pipes/array_changes';
 
 import {NumberWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -23,10 +23,10 @@ export function main() {
       });
 
       it('should support list and iterables', () => {
-        expect(ArrayChanges.supports([])).toBeTruthy();
-        expect(ArrayChanges.supports(new TestIterable())).toBeTruthy();
-        expect(ArrayChanges.supports(MapWrapper.create())).toBeFalsy();
-        expect(ArrayChanges.supports(null)).toBeFalsy();
+        expect(ArrayChanges.supportsObj([])).toBeTruthy();
+        expect(ArrayChanges.supportsObj(new TestIterable())).toBeTruthy();
+        expect(ArrayChanges.supportsObj(MapWrapper.create())).toBeFalsy();
+        expect(ArrayChanges.supportsObj(null)).toBeFalsy();
       });
 
       it('should support iterables', () => {

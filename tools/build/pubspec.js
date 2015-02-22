@@ -9,6 +9,9 @@ module.exports = function(gulp, plugins, config) {
     var files = [];
     var pubSpecCopy = util.streamToPromise(gulp.src(config.src)
       .pipe(plugins.changed(config.dest)) // Only forward files that changed.
+      .pipe(plugins.template({
+        'packageJson': require('../../package.json')
+      }))
       .pipe(through2.obj(function(file, enc, done) {
         files.push(path.resolve(process.cwd(), config.dest, file.relative));
         this.push(file);

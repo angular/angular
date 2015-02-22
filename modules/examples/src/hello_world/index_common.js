@@ -1,10 +1,10 @@
-import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'angular2/angular2';
+import {bootstrap, Component, Decorator, Template, NgElement} from 'angular2/angular2';
 
 // Angular 2.0 supports 3 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Decorator - add behavior to existing elements.
-// - Template - allow for stamping out of a html template (not in this demo).
+// - Viewport - allow for stamping out of a html template (not in this demo).
 
 // @Component is AtScript syntax to annotate the HelloCmp class as an Angular
 // 2.0 component.
@@ -15,19 +15,19 @@ import {bootstrap, Component, Decorator, TemplateConfig, NgElement} from 'angula
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  componentServices: [GreetingService],
-  template: new TemplateConfig({
-    // The template for the component.
-    // Expressions in the template (like {{greeting}}) are evaluated in the
-    // context of the HelloCmp class below.
-    inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-             <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
-    // All directives used in the template need to be specified. This allows for
-    // modularity (RedDec can only be used in this template)
-    // and better tooling (the template can be invalidated if the attribute is
-    // misspelled).
-    directives: [RedDec]
-  })
+  componentServices: [GreetingService]
+})
+// The template for the component.
+@Template({
+  // Expressions in the template (like {{greeting}}) are evaluated in the
+  // context of the HelloCmp class below.
+  inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
+           <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
+  // All directives used in the template need to be specified. This allows for
+  // modularity (RedDec can only be used in this template)
+  // and better tooling (the template can be invalidated if the attribute is
+  // misspelled).
+  directives: [RedDec]
 })
 class HelloCmp {
   greeting: string;
@@ -40,7 +40,7 @@ class HelloCmp {
 }
 
 // Decorators are light-weight. They don't allow for templates, or new
-// expression contexts (use @Component or @Template for those needs).
+// expression contexts (use @Component or @Viewport for those needs).
 @Decorator({
   selector: '[red]'
 })

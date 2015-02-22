@@ -51,4 +51,12 @@ export class AbstractChangeDetector extends ChangeDetector {
       children[i]._detectChanges(throwOnChange);
     }
   }
+
+  markPathToRootAsCheckOnce() {
+    var c = this;
+    while(isPresent(c) && c.mode != DETACHED) {
+      if (c.mode === CHECKED) c.mode = CHECK_ONCE;
+      c = c.parent;
+    }
+  }
 }

@@ -3,10 +3,9 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
+import {PipeRegistry} from './pipes/pipe_registry';
 import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
 
-import {ArrayChanges} from './array_changes';
-import {KeyValueChanges} from './keyvalue_changes';
 
 import {
   ProtoRecord,
@@ -17,36 +16,41 @@ import {
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
-  RECORD_TYPE_INVOKE_FORMATTER,
-  RECORD_TYPE_STRUCTURAL_CHECK,
-  RECORD_TYPE_INTERPOLATE,
-  ProtoChangeDetector
-  } from './proto_change_detector';
+  RECORD_TYPE_PIPE,
+  RECORD_TYPE_INTERPOLATE
+  } from './proto_record';
 
-import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
-  formatters:Map;
+  pipeRegistry;
+
   values:List;
   changes:List;
+  pipes:List;
+  prevContexts:List;
+
   protos:List<ProtoRecord>;
 
-  constructor(dispatcher:any, formatters:Map, protoRecords:List<ProtoRecord>) {
+  constructor(dispatcher:any, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>) {
     super();
     this.dispatcher = dispatcher;
-    this.formatters = formatters;
+    this.pipeRegistry = pipeRegistry;
 
     this.values = ListWrapper.createFixedSize(protoRecords.length + 1);
-    ListWrapper.fill(this.values, uninitialized);
-
+    this.pipes = ListWrapper.createFixedSize(protoRecords.length + 1);
+    this.prevContexts = ListWrapper.createFixedSize(protoRecords.length + 1);
     this.changes = ListWrapper.createFixedSize(protoRecords.length + 1);
 
     this.protos = protoRecords;
   }
 
   setContext(context:any) {
+    ListWrapper.fill(this.values, uninitialized);
+    ListWrapper.fill(this.changes, false);
+    ListWrapper.fill(this.pipes, null);
+    ListWrapper.fill(this.prevContexts, uninitialized);
     this.values[0] = context;
   }
 
@@ -74,8 +78,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _check(proto:ProtoRecord) {
     try {
-      if (proto.mode == RECORD_TYPE_STRUCTURAL_CHECK) {
-        return this._structuralCheck(proto);
+      if (proto.mode == RECORD_TYPE_PIPE) {
+        return this._pipeCheck(proto);
       } else {
         return this._referenceCheck(proto);
       }
@@ -128,8 +132,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
-        var methodInvoker:Function = proto.funcOrValue;
-        return methodInvoker(this._readContext(proto), this._readArgs(proto));
+        var context = this._readContext(proto);
+        var args = this._readArgs(proto);
+        var c = ChangeDetectionUtil.findContext(proto.name, context);
+        if (c instanceof ContextWithVariableBindings) {
+          return FunctionWrapper.apply(c.get(proto.name), args);
+        } else {
+          var methodInvoker:Function = proto.funcOrValue;
+          return methodInvoker(c, args);
+        }
+        break;
 
       case RECORD_TYPE_KEYED_ACCESS:
         var arg = this._readArgs(proto)[0];
@@ -142,24 +154,41 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       case RECORD_TYPE_PRIMITIVE_OP:
         return FunctionWrapper.apply(proto.funcOrValue, this._readArgs(proto));
 
-      case RECORD_TYPE_INVOKE_FORMATTER:
-        var formatter = MapWrapper.get(this.formatters, proto.funcOrValue);
-        return FunctionWrapper.apply(formatter, this._readArgs(proto));
-
       default:
         throw new BaseException(`Unknown operation ${proto.mode}`);
     }
   }
 
-  _structuralCheck(proto:ProtoRecord) {
-    var self = this._readSelf(proto);
+  _pipeCheck(proto:ProtoRecord) {
     var context = this._readContext(proto);
+    var pipe = this._pipeFor(proto, context);
 
-    var change = ChangeDetectionUtil.structuralCheck(self, context);
-    if (isPresent(change)) {
-      this._writeSelf(proto, change.currentValue);
+    var newValue = pipe.transform(context);
+    if (! ChangeDetectionUtil.noChangeMarker(newValue)) {
+      var prevValue = this._readSelf(proto);
+      this._writeSelf(proto, newValue);
+      this._setChanged(proto, true);
+
+      if (proto.lastInBinding) {
+        return ChangeDetectionUtil.simpleChange(prevValue, newValue);
+      } else {
+        return null;
+      }
+    } else {
+      this._setChanged(proto, false);
+      return null;
     }
-    return change;
+  }
+
+  _pipeFor(proto:ProtoRecord, context) {
+    var storedPipe = this._readPipe(proto);
+    if (isPresent(storedPipe) && storedPipe.supports(context)) {
+      return storedPipe;
+    } else {
+      var pipe = this.pipeRegistry.get(proto.name, context);
+      this._writePipe(proto, pipe);
+      return pipe;
+    }
   }
 
   _readContext(proto:ProtoRecord) {
@@ -172,6 +201,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _writeSelf(proto:ProtoRecord, value) {
     this.values[proto.selfIndex] = value;
+  }
+
+  _readPipe(proto:ProtoRecord) {
+    return this.pipes[proto.selfIndex];
+  }
+
+  _writePipe(proto:ProtoRecord, value) {
+    this.pipes[proto.selfIndex] = value;
   }
 
   _setChanged(proto:ProtoRecord, value:boolean) {

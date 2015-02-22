@@ -25,8 +25,8 @@ export class DartTransformer extends MultiTransformer {
       });
     };
 
-    append(NamedParamsTransformer);
     append(ArrowFunctionTransformer);
+    append(NamedParamsTransformer);
     append(MultiVarTransformer);
     append(InstanceOfTransformer);
     append(StrictEqualityTransformer);
