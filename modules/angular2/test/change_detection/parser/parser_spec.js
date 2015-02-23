@@ -525,6 +525,12 @@ export function main() {
         bindings = parseTemplateBindings("directive: var item in expr; var a = b", 'location');
         expect(keyValues(bindings)).toEqual(['directive', '#item=\$implicit', 'in=expr in location', '#a=b']);
       });
+
+      it('should parse pipes', () => {
+        var bindings = parseTemplateBindings('key value|pipe');
+        var ast = bindings[0].expression.ast
+        expect(ast).toBeAnInstanceOf(Pipe);
+      });
     });
 
     describe('parseInterpolation', () => {
