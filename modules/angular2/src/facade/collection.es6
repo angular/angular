@@ -187,7 +187,6 @@ export class ListWrapper {
   }
   static sort(l:List, compareFn:Function) {
     l.sort(compareFn);
-    return l;
   }
 }
 
