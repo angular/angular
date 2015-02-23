@@ -3,7 +3,7 @@ library angular.core.facade.math;
 import 'dart:core' show double, num;
 import 'dart:math' as math;
 
-var NaN = double.NAN;
+const NaN = double.NAN;
 
 class Math {
   static num pow(num x, num exponent) {
