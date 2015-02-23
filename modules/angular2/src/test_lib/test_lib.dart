@@ -38,6 +38,7 @@ class NotExpect extends gns.NotExpect {
   // TODO(tbosch) change back when https://github.com/vsavkin/guinness/issues/41 is fixed
   // void toEqual(expected) => toHaveSameProps(expected);
   void toEqual(expected) => _expect(actual, isNot(new FixedSamePropsMatcher(expected)));
+  void toBePromise() => _expect(actual is Future, equals(false));
   Function get _expect => gns.guinness.matchers.expect;
 }
 
