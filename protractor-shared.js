@@ -10,7 +10,7 @@ var argv = require('yargs')
         type: 'boolean'
       },
       'force-gc': {
-        describe: 'force gc',
+        describe: 'force gc.',
         default: false,
         type: 'boolean'
       },
@@ -19,8 +19,12 @@ var argv = require('yargs')
         default: false
       },
       'browsers': {
-        describe: 'preconfigured browsers that should be used',
+        describe: 'comma separated list of preconfigured browsers to use',
         default: 'ChromeDesktop'
+      },
+      'spec': {
+        describe: 'comma separated file patterns to test',
+        default: false
       }
     })
     .help('ng-help')
@@ -95,6 +99,21 @@ var BROWSER_CAPS = {
   }
 };
 
+var getBenchmarkFiles = function (benchmark, spec) {
+  var specFiles = [];
+  var perfFiles = [];
+  if (spec.length) {
+    spec.split(',').forEach(function (name) {
+      specFiles.push('dist/js/cjs/**/e2e_test/' + name)
+      perfFiles.push('dist/js/cjs/**/e2e_test/' + name)
+    });
+  } else {
+    specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
+    perfFiles.push('dist/js/cjs/**/e2e_test/**/*_perf.js');
+  }
+  return benchmark ? perfFiles : specFiles.concat(perfFiles);
+};
+
 var config = exports.config = {
   // Disable waiting for Angular as we don't have an integration layer yet...
   // TODO(tbosch): Implement a proper debugging API for Ng2.0, remove this here
@@ -110,12 +129,7 @@ var config = exports.config = {
     }
   },
 
-  specs: argv['benchmark'] ? [
-    'dist/js/cjs/**/e2e_test/**/*_perf.js'
-  ] : [
-    'dist/js/cjs/**/e2e_test/**/*_spec.js',
-    'dist/js/cjs/**/e2e_test/**/*_perf.js'
-  ],
+  specs: getBenchmarkFiles(argv['benchmark'], argv['spec']),
 
   exclude: [
     'dist/js/cjs/**/node_modules/**',
