@@ -193,14 +193,14 @@ bool assertionsEnabled() {
 // Can't be all uppercase as our transpiler would think it is a special directive...
 class Json {
   static parse(String s) => convert.JSON.decode(s);
-  static stringify(data) => convert.JSON.encode(data);
+  static String stringify(data) => convert.JSON.encode(data);
 }
 
 class DateWrapper {
-  static fromMillis(int ms) {
+  static DateTime fromMillis(int ms) {
     return new DateTime.fromMillisecondsSinceEpoch(ms);
   }
-  static now() {
+  static DateTime now() {
     return new DateTime.now();
   }
 }

@@ -144,13 +144,13 @@ class DOM {
   static bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 
-  static setStyle(Element element, String stylename, String stylevalue) {
+  static void setStyle(Element element, String stylename, String stylevalue) {
       element.style.setProperty(stylename, stylevalue);
   }
-  static removeStyle(Element element, String stylename) {
+  static void removeStyle(Element element, String stylename) {
       element.style.removeProperty(stylename);
   }
-  static getStyle(Element element, String stylename) {
+  static String getStyle(Element element, String stylename) {
       return element.style.getPropertyValue(stylename);
   }
 
@@ -193,8 +193,8 @@ class DOM {
 }
 
 class CSSRuleWrapper {
-  static isPageRule(CssRule rule) => rule is CssPageRule;
-  static isStyleRule(CssRule rule) => rule is CssStyleRule;
-  static isMediaRule(CssRule rule) => rule is CssMediaRule;
-  static isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
+  static bool isPageRule(CssRule rule) => rule is CssPageRule;
+  static bool isStyleRule(CssRule rule) => rule is CssStyleRule;
+  static bool isMediaRule(CssRule rule) => rule is CssMediaRule;
+  static bool isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
 }
