@@ -5,7 +5,7 @@ import {CompileControl} from './compile_control';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {DOM, Element, StyleElement} from 'angular2/src/facade/dom';
 import {isPresent, isBlank, Type} from 'angular2/src/facade/lang';
 
 export class ShimShadowCss extends CompileStep {
@@ -27,23 +27,24 @@ export class ShimShadowCss extends CompileStep {
     if (DOM.tagName(current.element) == 'STYLE') {
       current.ignoreBindings = true;
       if (this._strategy.extractStyles()) {
-        DOM.remove(current.element);
-        var css = DOM.getText(current.element);
+        var styleEl = current.element;
+        DOM.remove(styleEl);
+        var css = DOM.getText(styleEl);
         var shimComponent = this._strategy.getShimComponent(this._component);
         css = shimComponent.shimCssText(css);
-        this._insertStyle(this._styleHost, css);
+        DOM.setText(styleEl, css);
+        this._insertStyle(this._styleHost, styleEl);
       }
     }
   }
 
-  _insertStyle(el: Element, css: string) {
-    var style = DOM.createStyleElement(css);
+  _insertStyle(host: Element, style: StyleElement) {
     if (isBlank(this._lastInsertedStyle)) {
-      var firstChild = DOM.firstChild(el);
+      var firstChild = DOM.firstChild(host);
       if (isPresent(firstChild)) {
         DOM.insertBefore(firstChild, style);
       } else {
-        DOM.appendChild(el, style);
+        DOM.appendChild(host, style);
       }
     } else {
       DOM.insertAfter(this._lastInsertedStyle, style);

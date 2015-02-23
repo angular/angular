@@ -9,6 +9,7 @@ import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 import {Type} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
 
 export function main() {
   describe('ShimShadowCss', () => {
@@ -53,6 +54,15 @@ export function main() {
       expect(host).toHaveText('/* shim */.s{}original content');
     });
 
+    it('should preserve attributes on moved style', () => {
+      var host = el('<div></div>');
+      var pipeline = createPipeline(new FakeStrategy(true), host);
+      var template = el('<div><style media="print">.s{}</style></div>');
+      pipeline.process(template);
+      var styleEl = DOM.firstChild(host);
+      expect(DOM.getAttribute(styleEl, 'media')).toEqual('print');
+    });
+
     it('should move the styles to the host in the original order', () => {
       var host = el('<div></div>');
       var pipeline = createPipeline(new FakeStrategy(true), host);
@@ -60,6 +70,7 @@ export function main() {
       pipeline.process(template);
       expect(host).toHaveText('/* shim */.s1{}/* shim */.s2{}');
     });
+
   });
 }
 
