@@ -8,28 +8,30 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 
 import 'annotation_processor.dart';
+import 'logging.dart';
 
 /// Base class that maintains codegen state.
 class Context {
-  final TransformLogger _logger;
   /// Maps libraries to the import prefixes we will use in the newly
   /// generated code.
-  final Map<LibraryElement, String> _libraryPrefixes;
+  final Map<LibraryElement, String> _libraryPrefixes = {};
+
+  /// Whether to generate constructor stubs for classes annotated
+  /// with [Component], [Decorator], [Template], and [Inject] (and subtypes).
+  bool generateCtorStubs = true;
+
+  /// Whether to generate setter stubs for classes annotated with
+  /// [Directive] subtypes. These setters depend on the value passed to the
+  /// annotation's `bind` value.
+  bool generateSetterStubs = true;
 
   DirectiveRegistry _directiveRegistry;
   /// Generates [registerType] calls for all [register]ed [AnnotationMatch]
   /// objects.
   DirectiveRegistry get directiveRegistry => _directiveRegistry;
 
-  Context({TransformLogger logger})
-      : _logger = logger,
-        _libraryPrefixes = {} {
+  Context() {
     _directiveRegistry = new _DirectiveRegistryImpl(this);
-  }
-
-  void error(String errorString) {
-    if (_logger == null) throw new CodegenError(errorString);
-    _logger.error(errorString);
   }
 
   /// If elements in [lib] should be prefixed in our generated code, returns
@@ -41,16 +43,6 @@ class Context {
     var prefix =
         _libraryPrefixes.putIfAbsent(lib, () => 'i${_libraryPrefixes.length}');
     return '${prefix}.';
-  }
-}
-
-class CodegenError extends Error {
-  final String message;
-  CodegenError(this.message);
-
-  @override
-  String toString() {
-    return 'Error generating Angular2 code: ${Error.safeToString(message)}';
   }
 }
 
@@ -91,7 +83,7 @@ String codegenEntryPoint(Context context, {AssetId newEntryPoint}) {
   return new DartFormatter().format(outBuffer.toString());
 }
 
-String _codegenImports(
+void _codegenImports(
     Context context, AssetId newEntryPoint, StringBuffer buffer) {
   context._libraryPrefixes.forEach((lib, prefix) {
     buffer
@@ -101,19 +93,19 @@ String _codegenImports(
   });
 }
 
-_codegenImport(Context context, AssetId libraryId, AssetId entryPoint) {
+String _codegenImport(Context context, AssetId libraryId, AssetId entryPoint) {
   if (libraryId.path.startsWith('lib/')) {
     var packagePath = libraryId.path.replaceFirst('lib/', '');
     return "import 'package:${libraryId.package}/${packagePath}'";
   } else if (libraryId.package != entryPoint.package) {
-    context._error("Can't import `${libraryId}` from `${entryPoint}`");
+    logger.error("Can't import `${libraryId}` from `${entryPoint}`");
   } else if (path.url.split(libraryId.path)[0] ==
       path.url.split(entryPoint.path)[0]) {
     var relativePath =
         path.relative(libraryId.path, from: path.dirname(entryPoint.path));
     return "import '${relativePath}'";
   } else {
-    context._error("Can't import `${libraryId}` from `${entryPoint}`");
+    logger.error("Can't import `${libraryId}` from `${entryPoint}`");
   }
 }
 
@@ -121,14 +113,29 @@ _codegenImport(Context context, AssetId libraryId, AssetId entryPoint) {
 // Element#node.
 class _DirectiveRegistryImpl implements DirectiveRegistry {
   final Context _context;
-  final StringBuffer _buffer = new StringBuffer();
+  final PrintWriter _writer;
   final Set<ClassDeclaration> _seen = new Set();
+  final _AnnotationsTransformVisitor _annotationsVisitor;
+  final _BindTransformVisitor _bindVisitor;
+  final _FactoryTransformVisitor _factoryVisitor;
+  final _ParameterTransformVisitor _parametersVisitor;
 
-  _DirectiveRegistryImpl(this._context);
+  _DirectiveRegistryImpl._internal(Context context, PrintWriter writer)
+      : _writer = writer,
+        _context = context,
+        _annotationsVisitor = new _AnnotationsTransformVisitor(writer, context),
+        _bindVisitor = new _BindTransformVisitor(writer, context),
+        _factoryVisitor = new _FactoryTransformVisitor(writer, context),
+        _parametersVisitor = new _ParameterTransformVisitor(writer, context);
+
+  factory _DirectiveRegistryImpl(Context context) {
+    return new _DirectiveRegistryImpl._internal(
+        context, new PrintStringWriter());
+  }
 
   @override
   String toString() {
-    return _buffer.isEmpty ? '' : 'reflector${_buffer};';
+    return _seen.isEmpty ? '' : 'reflector${_writer};';
   }
 
   // Adds [entry] to the `registerType` calls which will be generated.
@@ -136,87 +143,104 @@ class _DirectiveRegistryImpl implements DirectiveRegistry {
     if (_seen.contains(entry.node)) return;
     _seen.add(entry.node);
 
+    if (_context.generateCtorStubs) {
+      _generateCtorStubs(entry);
+    }
+    if (_context.generateSetterStubs) {
+      _generateSetterStubs(entry);
+    }
+  }
+
+  void _generateSetterStubs(AnnotationMatch entry) {
+    // TODO(kegluneq): Remove these requirements for setter stub generation.
+    if (entry.element is! ClassElement) {
+      logger.error('Directives can only be applied to classes.');
+      return;
+    }
+    if (entry.node is! ClassDeclaration) {
+      logger.error('Unsupported annotation type for ctor stub generation. '
+          'Only class declarations are supported as Directives.');
+      return;
+    }
+
+    entry.node.accept(_bindVisitor);
+  }
+
+  void _generateCtorStubs(AnnotationMatch entry) {
     var element = entry.element;
     var annotation = entry.annotation;
 
+    // TODO(kegluneq): Remove these requirements for ctor stub generation.
     if (annotation.element is! ConstructorElement) {
-      _context._error('Unsupported annotation type. '
+      logger.error('Unsupported annotation type for ctor stub generation. '
           'Only constructors are supported as Directives.');
       return;
     }
     if (element is! ClassElement) {
-      _context._error('Directives can only be applied to classes.');
+      logger.error('Directives can only be applied to classes.');
       return;
     }
-    if (element.node is! ClassDeclaration) {
-      _context._error('Unsupported annotation type. '
+    if (entry.node is! ClassDeclaration) {
+      logger.error('Unsupported annotation type for ctor stub generation. '
           'Only class declarations are supported as Directives.');
       return;
     }
-    final ConstructorElement ctor = element.unnamedConstructor;
+    var ctor = element.unnamedConstructor;
     if (ctor == null) {
-      _context._error('No default constructor found for ${element.name}');
+      logger.error('No unnamed constructor found for ${element.name}');
       return;
     }
+    var ctorNode = ctor.node;
 
-    _buffer.writeln('..registerType(${_codegenClassTypeString(element)}, {'
-        '"factory": ${_codegenFactoryProp(ctor)},'
-        '"parameters": ${_codegenParametersProp(ctor)},'
-        '"annotations": ${_codegenAnnotationsProp(element)}'
-        '})');
+    _writer.print('..registerType(');
+    _codegenClassTypeString(element);
+    _writer.print(', {"factory": ');
+    _codegenFactoryProp(ctorNode, element);
+    _writer.print(', "parameters": ');
+    _codegenParametersProp(ctorNode);
+    _writer.print(', "annotations": ');
+    _codegenAnnotationsProp(entry.node);
+    _writer.print('})');
   }
 
-  String _codegenClassTypeString(ClassElement el) {
-    return '${_context._getPrefixDot(el.library)}${el.name}';
+  void _codegenClassTypeString(ClassElement el) {
+    _writer.print('${_context._getPrefixDot(el.library)}${el.name}');
   }
 
   /// Creates the 'annotations' property for the Angular2 [registerType] call
-  /// for [el].
-  String _codegenAnnotationsProp(ClassElement el) {
-    var writer = new PrintStringWriter();
-    var visitor = new _AnnotationsTransformVisitor(writer, _context);
-    el.node.accept(visitor);
-    return writer.toString();
+  /// for [node].
+  void _codegenAnnotationsProp(ClassDeclaration node) {
+    node.accept(_annotationsVisitor);
   }
 
   /// Creates the 'factory' property for the Angular2 [registerType] call
-  /// for [ctor].
-  String _codegenFactoryProp(ConstructorElement ctor) {
-    if (ctor.node == null) {
+  /// for [node]. [element] is necessary if [node] is null.
+  void _codegenFactoryProp(ConstructorDeclaration node, ClassElement element) {
+    if (node == null) {
       // This occurs when the class does not declare a constructor.
-      var prefix = _context._getPrefixDot(ctor.type.element.library);
-      return '() => new ${prefix}${ctor.enclosingElement.displayName}()';
+      var prefix = _context._getPrefixDot(element.library);
+      _writer.print('() => new ${prefix}${element.displayName}()');
     } else {
-      var writer = new PrintStringWriter();
-      var visitor = new _FactoryTransformVisitor(writer, _context);
-      ctor.node.accept(visitor);
-      return writer.toString();
+      node.accept(_factoryVisitor);
     }
   }
 
   /// Creates the 'parameters' property for the Angular2 [registerType] call
-  /// for [ctor].
-  String _codegenParametersProp(ConstructorElement ctor) {
-    if (ctor.node == null) {
+  /// for [node].
+  void _codegenParametersProp(ConstructorDeclaration node) {
+    if (node == null) {
       // This occurs when the class does not declare a constructor.
-      return 'const [const []]';
+      _writer.print('const [const []]');
     } else {
-      var writer = new PrintStringWriter();
-      var visitor = new _ParameterTransformVisitor(writer, _context);
-      ctor.node.accept(visitor);
-      return writer.toString();
+      node.accept(_parametersVisitor);
     }
   }
 }
 
 /// Visitor providing common methods for concrete implementations.
-abstract class _TransformVisitor extends ToSourceVisitor {
-  final Context _context;
-  final PrintWriter _writer;
-
-  _TransformVisitor(PrintWriter writer, this._context)
-      : this._writer = writer,
-        super(writer);
+class _TransformVisitorMixin {
+  final Context context;
+  final PrintWriter writer;
 
   /// Safely visit [node].
   void _visitNode(AstNode node) {
@@ -229,7 +253,7 @@ abstract class _TransformVisitor extends ToSourceVisitor {
   /// visits [node].
   void _visitNodeWithPrefix(String prefix, AstNode node) {
     if (node != null) {
-      _writer.print(prefix);
+      writer.print(prefix);
       node.accept(this);
     }
   }
@@ -239,29 +263,41 @@ abstract class _TransformVisitor extends ToSourceVisitor {
   void _visitNodeWithSuffix(AstNode node, String suffix) {
     if (node != null) {
       node.accept(this);
-      _writer.print(suffix);
+      writer.print(suffix);
     }
   }
+
+  String prefixedSimpleIdentifier(SimpleIdentifier node) {
+    // Make sure the identifier is prefixed if necessary.
+    if (node.bestElement is ClassElementImpl ||
+        node.bestElement is PropertyAccessorElement) {
+      return context._getPrefixDot(node.bestElement.library) +
+          node.token.lexeme;
+    } else {
+      return node.token.lexeme;
+    }
+  }
+}
+
+class _TransformVisitor extends ToSourceVisitor with _TransformVisitorMixin {
+  final Context context;
+  final PrintWriter writer;
+
+  _TransformVisitor(PrintWriter writer, this.context)
+      : this.writer = writer,
+        super(writer);
 
   @override
   Object visitPrefixedIdentifier(PrefixedIdentifier node) {
     // We add our own prefixes in [visitSimpleIdentifier], discard any used in
     // the original source.
-    _visitNode(node.identifier);
+    writer.print(super.prefixedSimpleIdentifier(node.identifier));
     return null;
   }
 
   @override
   Object visitSimpleIdentifier(SimpleIdentifier node) {
-    // Make sure the identifier is prefixed if necessary.
-    if (node.bestElement is ClassElementImpl ||
-        node.bestElement is PropertyAccessorElement) {
-      _writer
-        ..print(_context._getPrefixDot(node.bestElement.library))
-        ..print(node.token.lexeme);
-    } else {
-      return super.visitSimpleIdentifier(node);
-    }
+    writer.print(super.prefixedSimpleIdentifier(node));
     return null;
   }
 }
@@ -280,8 +316,8 @@ class _CtorTransformVisitor extends _TransformVisitor {
   Object _visitNormalFormalParameter(NormalFormalParameter node) {
     if (_withParameterTypes) {
       var paramType = node.element.type;
-      var prefix = _context._getPrefixDot(paramType.element.library);
-      _writer.print('${prefix}${paramType.displayName}');
+      var prefix = context._getPrefixDot(paramType.element.library);
+      writer.print('${prefix}${paramType.displayName}');
       if (_withParameterNames) {
         _visitNodeWithPrefix(' ', node.identifier);
       }
@@ -299,7 +335,7 @@ class _CtorTransformVisitor extends _TransformVisitor {
   @override
   Object visitFieldFormalParameter(FieldFormalParameter node) {
     if (node.parameters != null) {
-      _context.error('Parameters in ctor not supported '
+      logger.error('Parameters in ctor not supported '
           '(${super.visitFormalParameterList(node)}');
     }
     return _visitNormalFormalParameter(node);
@@ -315,16 +351,16 @@ class _CtorTransformVisitor extends _TransformVisitor {
   @override
   /// Overridden to avoid outputting grouping operators for default parameters.
   Object visitFormalParameterList(FormalParameterList node) {
-    _writer.print('(');
+    writer.print('(');
     NodeList<FormalParameter> parameters = node.parameters;
     int size = parameters.length;
     for (int i = 0; i < size; i++) {
       if (i > 0) {
-        _writer.print(', ');
+        writer.print(', ');
       }
       parameters[i].accept(this);
     }
-    _writer.print(')');
+    writer.print(')');
     return null;
   }
 }
@@ -339,9 +375,9 @@ class _ParameterTransformVisitor extends _CtorTransformVisitor {
   Object visitConstructorDeclaration(ConstructorDeclaration node) {
     _withParameterNames = false;
     _withParameterTypes = true;
-    _writer.print('const [const [');
+    writer.print('const [const [');
     _visitNode(node.parameters);
-    _writer.print(']]');
+    writer.print(']]');
     return null;
   }
 
@@ -351,7 +387,7 @@ class _ParameterTransformVisitor extends _CtorTransformVisitor {
     int size = parameters.length;
     for (int i = 0; i < size; i++) {
       if (i > 0) {
-        _writer.print(', ');
+        writer.print(', ');
       }
       parameters[i].accept(this);
     }
@@ -370,7 +406,7 @@ class _FactoryTransformVisitor extends _CtorTransformVisitor {
     _withParameterNames = true;
     _withParameterTypes = true;
     _visitNode(node.parameters);
-    _writer.print(' => new ');
+    writer.print(' => new ');
     _visitNode(node.returnType);
     _visitNodeWithPrefix(".", node.name);
     _withParameterTypes = false;
@@ -387,25 +423,93 @@ class _AnnotationsTransformVisitor extends _TransformVisitor {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    _writer.print('const [');
+    writer.print('const [');
     var size = node.metadata.length;
     for (var i = 0; i < size; ++i) {
       if (i > 0) {
-        _writer.print(', ');
+        writer.print(', ');
       }
       node.metadata[i].accept(this);
     }
-    _writer.print(']');
+    writer.print(']');
     return null;
   }
 
   @override
   Object visitAnnotation(Annotation node) {
-    _writer.print('const ');
+    writer.print('const ');
     _visitNode(node.name);
 //     TODO(tjblasi): Do we need to handle named constructors for annotations?
 //    _visitNodeWithPrefix(".", node.constructorName);
     _visitNode(node.arguments);
+    return null;
+  }
+}
+
+/// Visitor designed to print a [ClassDeclaration] node as a
+/// `registerSetters` call for Angular2.
+class _BindTransformVisitor extends Object
+    with SimpleAstVisitor<Object>, _TransformVisitorMixin {
+  final Context context;
+  final PrintWriter writer;
+  final List<String> _bindPieces = [];
+  SimpleIdentifier _currentName = null;
+
+  _BindTransformVisitor(this.writer, this.context);
+
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    _currentName = node.name;
+    node.metadata.forEach((meta) => _visitNode(meta));
+    if (_bindPieces.isNotEmpty) {
+      writer.print('..registerSetters({${_bindPieces.join(', ')}})');
+    }
+    return null;
+  }
+
+  @override
+  Object visitAnnotation(Annotation node) {
+    // TODO(kegluneq): Remove this restriction.
+    if (node.element is ConstructorElement) {
+      if (node.element.returnType.element is ClassElement) {
+        // TODO(kegluneq): Check if this is actually a `directive`.
+        node.arguments.arguments.forEach((arg) => _visitNode(arg));
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object visitNamedExpression(NamedExpression node) {
+    if (node.name.label.toString() == 'bind') {
+      // TODO(kegluneq): Remove this restriction.
+      if (node.expression is MapLiteral) {
+        node.expression.accept(this);
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object visitMapLiteral(MapLiteral node) {
+    node.entries.forEach((entry) {
+      if (entry.key is SimpleStringLiteral) {
+        _visitNode(entry.key);
+      } else {
+        logger.error('`bind` currently only supports string literals');
+      }
+    });
+    return null;
+  }
+
+  @override
+  Object visitSimpleStringLiteral(SimpleStringLiteral node) {
+    if (_currentName == null) {
+      logger.error('Unexpected code path: `currentName` should never be null');
+    }
+    _bindPieces.add('"${node.value}": ('
+        '${super.prefixedSimpleIdentifier(_currentName)} o, String value) => '
+        'o.${node.value} = value');
     return null;
   }
 }
