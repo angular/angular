@@ -1,7 +1,7 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
-import {StringMapWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
-import {isPresent, Type} from 'angular2/src/facade/lang';
+import {StringMapWrapper, List} from 'angular2/src/facade/collection';
+import {Type} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -14,7 +14,7 @@ import {ShadowDomStrategy,
         NativeShadowDomStrategy,
         EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
@@ -34,7 +34,7 @@ export function main() {
         var compiler, tplResolver;
 
         beforeEach(() => {
-          tplResolver = new FakeTemplateResolver();
+          tplResolver = new MockTemplateResolver();
           compiler = new Compiler(dynamicChangeDetection,
             new TemplateLoader(null),
             new DirectiveMetadataReader(),
@@ -336,27 +336,4 @@ function createView(pv) {
   var view = pv.instantiate(null, null);
   view.hydrate(new Injector([]), null, {});
   return view;
-}
-
-class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map;
-
-  constructor() {
-    super();
-    this._cmpTemplates = MapWrapper.create();
-  }
-
-  setTemplate(component: Type, template: Template) {
-    MapWrapper.set(this._cmpTemplates, component, template);
-  }
-
-  resolve(component: Type): Template {
-    var override = MapWrapper.get(this._cmpTemplates, component);
-
-    if (isPresent(override)) {
-      return override;
-    }
-
-    return super.resolve(component);
-  }
 }

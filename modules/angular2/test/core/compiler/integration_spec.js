@@ -1,8 +1,6 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/facade/dom';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
-import {Type, isPresent} from 'angular2/src/facade/lang';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection,
@@ -12,7 +10,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
@@ -37,7 +35,7 @@ export function main() {
     }
 
     beforeEach( () => {
-      tplResolver = new FakeTemplateResolver();
+      tplResolver = new MockTemplateResolver();
       compiler = createCompiler(tplResolver, dynamicChangeDetection);
     });
 
@@ -491,30 +489,6 @@ class MyService {
     this.greeting = 'hello';
   }
 }
-
-class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map;
-
-  constructor() {
-    super();
-    this._cmpTemplates = MapWrapper.create();
-  }
-
-  setTemplate(component: Type, template: Template) {
-    MapWrapper.set(this._cmpTemplates, component, template);
-  }
-
-  resolve(component: Type): Template {
-    var override = MapWrapper.get(this._cmpTemplates, component);
-
-    if (isPresent(override)) {
-      return override;
-    }
-
-    return super.resolve(component);
-  }
-}
-
 
 class DoublePipe extends Pipe {
   supports(obj) {
