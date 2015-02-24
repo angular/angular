@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'angular2/test_lib';
-import {ControlGroup, Control} from 'angular2/forms';
+import {ControlGroup, Control, OptionalControl} from 'angular2/forms';
 import * as validations from 'angular2/forms';
 
 export function main() {
@@ -40,7 +40,17 @@ export function main() {
     });
 
     describe("validator", () => {
-      it("should run the validator with the initial value", () => {
+      it("should run the validator with the initial value (valid)", () => {
+        var g = new ControlGroup({
+          "one": new Control('value', validations.required)
+        });
+
+        expect(g.valid).toEqual(true);
+
+        expect(g.errors).toEqual(null);
+      });
+
+      it("should run the validator with the initial value (invalid)", () => {
         var g = new ControlGroup({
           "one": new Control(null, validations.required)
         });
@@ -61,4 +71,54 @@ export function main() {
       });
     });
   });
+
+  describe("OptionalControl", () => {
+    it("should read properties from the wrapped component", () => {
+      var wrapperControl = new Control("value", validations.required);
+      var c = new OptionalControl(wrapperControl, true);
+
+      expect(c.value).toEqual('value');
+      expect(c.status).toEqual('VALID');
+      expect(c.validator).toEqual(validations.required);
+    });
+
+    it("should update the wrapped component", () => {
+      var wrappedControl = new Control("value");
+      var c = new OptionalControl(wrappedControl, true);
+
+      c.validator = validations.required;
+      c.updateValue("newValue");
+
+
+      expect(wrappedControl.validator).toEqual(validations.required);
+      expect(wrappedControl.value).toEqual('newValue');
+    });
+
+    it("should not include an inactive component into the group value", () => {
+      var group = new ControlGroup({
+        "required" : new Control("requiredValue"),
+        "optional" : new OptionalControl(new Control("optionalValue"), false)
+      });
+
+      expect(group.value).toEqual({"required" : "requiredValue"});
+
+      group.controls["optional"].cond = true;
+
+      expect(group.value).toEqual({"required" : "requiredValue", "optional" : "optionalValue"});
+    });
+
+    it("should not run validations on an inactive component", () => {
+      var group = new ControlGroup({
+        "required" : new Control("requiredValue", validations.required),
+        "optional" : new OptionalControl(new Control("", validations.required), false)
+      });
+
+      expect(group.valid).toEqual(true);
+
+      group.controls["optional"].cond = true;
+
+      expect(group.valid).toEqual(false);
+    });
+  });
+
 }

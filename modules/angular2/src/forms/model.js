@@ -5,32 +5,69 @@ import {nullValidator, controlGroupValidator} from './validators';
 export const VALID = "VALID";
 export const INVALID = "INVALID";
 
+//interface IControl {
+//  get value():any;
+//  validator:Function;
+//  get status():string;
+//  get errors():Map;
+//  get active():boolean {}
+//  updateValue(value:any){}
+//  setParent(parent){}
+//}
+
 export class Control {
-  value:any;
-  validator:Function;
-  status:string;
-  errors;
+  _value:any;
+  _status:string;
+  _errors;
+  _updated:boolean;
   _parent:ControlGroup;
+  validator:Function;
 
   constructor(value:any, validator:Function = nullValidator) {
-    this.value = value;
+    this._value = value;
     this.validator = validator;
-    this._updateStatus();
+    this._updated = true;
   }
 
   updateValue(value:any) {
-    this.value = value;
-    this._updateStatus();
+    this._value = value;
+    this._updated = true;
     this._updateParent();
   }
 
-  get valid() {
-    return this.status === VALID;
+  get active():boolean {
+    return true;
   }
 
-  _updateStatus() {
-    this.errors = this.validator(this);
-    this.status = isPresent(this.errors) ? INVALID : VALID;
+  get value() {
+    return this._value;
+  }
+
+  get status() {
+    this._updateIfNeeded();
+    return this._status;
+  }
+
+  get valid() {
+    this._updateIfNeeded();
+    return this._status === VALID;
+  }
+
+  get errors() {
+    this._updateIfNeeded();
+    return this._errors;
+  }
+
+  setParent(parent){
+    this._parent = parent;
+  }
+
+  _updateIfNeeded() {
+    if (this._updated) {
+      this._updated = false;
+      this._errors = this.validator(this);
+      this._status = isPresent(this._errors) ? INVALID : VALID;
+    }
   }
 
   _updateParent() {
@@ -41,42 +78,118 @@ export class Control {
 }
 
 export class ControlGroup {
-  controls;
+  _value:any;
+  _status:string;
+  _errors;
+  _updated:boolean;
   validator:Function;
-  status:string;
-  errors;
+  controls;
 
   constructor(controls, validator:Function = controlGroupValidator) {
     this.controls = controls;
     this.validator = validator;
+    this._updated = true;
     this._setParentForControls();
-    this._updateStatus();
   }
 
   get value() {
-    var res = {};
-    StringMapWrapper.forEach(this.controls, (control, name) => {
-      res[name] = control.value;
-    });
-    return res;
+    this._updateIfNeeded();
+    return this._value;
+  }
+
+  get status() {
+    this._updateIfNeeded();
+    return this._status;
   }
 
   get valid() {
-    return this.status === VALID;
+    this._updateIfNeeded();
+    return this._status === VALID;
+  }
+
+  get errors() {
+    this._updateIfNeeded();
+    return this._errors;
   }
 
   _setParentForControls() {
     StringMapWrapper.forEach(this.controls, (control, name) => {
-      control._parent = this;
+      control.setParent(this);
     });
   }
 
-  _updateStatus() {
-    this.errors = this.validator(this);
-    this.status = isPresent(this.errors) ? INVALID : VALID;
+  _updateIfNeeded() {
+    if (this._updated) {
+      this._updated = false;
+      this._value = this._reduceValue();
+      this._errors = this.validator(this);
+      this._status = isPresent(this._errors) ? INVALID : VALID;
+    }
+  }
+
+  _reduceValue() {
+    var newValue = {};
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (control.active) {
+        newValue[name] = control.value;
+      }
+    });
+    return newValue;
   }
 
   _controlChanged() {
-    this._updateStatus();
+    this._updated = true;
+  }
+}
+
+export class OptionalControl {
+  _control:Control;
+  _cond:boolean;
+
+  constructor(control:Control, cond:boolean) {
+    super();
+    this._control = control;
+    this._cond = cond;
+  }
+
+  get active():boolean {
+    return this._cond;
+  }
+
+  get value() {
+    return this._control.value;
+  }
+
+  get status() {
+    return this._control.status;
+  }
+
+  get errors() {
+    return this._control.errors;
+  }
+
+  set validator(v) {
+    this._control.validator = v;
+  }
+
+  get validator() {
+    return this._control.validator;
+  }
+
+  set cond(value:boolean){
+    this._cond = value;
+    this._control._updateParent();
+  }
+
+  get cond():boolean{
+    return this._cond;
+  }
+
+  updateValue(value:any){
+    this._control.updateValue(value);
+  }
+
+  setParent(parent){
+    this._control.setParent(parent);
   }
 }

@@ -15,7 +15,7 @@ import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {Injector} from 'angular2/di';
 
 import {Component, Decorator, Template} from 'angular2/core';
-import {ControlGroupDirective, ControlDirective, Control, ControlGroup,
+import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
   ControlValueAccessor, RequiredValidatorDirective} from 'angular2/forms';
 
 import * as validators from 'angular2/src/forms/validators';
@@ -42,7 +42,7 @@ export function main() {
 
     tplResolver.setTemplate(componentType, new Template({
       inline: template,
-      directives: [ControlGroupDirective, ControlDirective, WrappedValue]
+      directives: [ControlGroupDirective, ControlDirective, WrappedValue, RequiredValidatorDirective]
     }));
 
     compiler.compile(componentType).then((pv) => {

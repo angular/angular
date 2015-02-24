@@ -88,14 +88,13 @@ export class ControlDirective {
   _initialize() {
     this._groupDecorator.addDirective(this);
 
-    if (isPresent(this.validator)) {
-      var c = this._control();
-      c.validator = validators.compose([c.validator, this.validator]);
-    }
+    var c = this._control();
+    c.validator = validators.compose([c.validator, this.validator]);
 
     if (isBlank(this.valueAccessor)) {
       this.valueAccessor = controlValueAccessorFor(this.type);
     }
+
     this._updateDomValue();
     DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
   }

@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'angular2/test_lib';
-import {ControlGroup, Control, required, compose, controlGroupValidator} from 'angular2/forms';
+import {ControlGroup, Control, required, compose, controlGroupValidator, nullValidator} from 'angular2/forms';
 
 export function main() {
   function validator(key:string, error:any){
@@ -34,6 +34,11 @@ export function main() {
       it("should run validators left to right", () => {
         var c = compose([validator("a", 1), validator("a", 2)]);
         expect(c(new Control(""))).toEqual({"a" : 2});
+      });
+
+      it("should return null when no errors", () => {
+        var c = compose([nullValidator, nullValidator]);
+        expect(c(new Control(""))).toEqual(null);
       });
     });
 
