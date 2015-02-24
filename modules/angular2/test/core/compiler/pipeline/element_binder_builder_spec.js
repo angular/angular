@@ -72,7 +72,7 @@ export function main() {
               current.inheritedProtoView = new ProtoView(
                 current.element,
                 new DynamicProtoChangeDetector(normalizeBlank(registry)),
-                new NativeShadowDomStrategy());
+                new NativeShadowDomStrategy(null));
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -380,7 +380,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy());
+          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
@@ -416,7 +416,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy());
+        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy(null));
 
       instantiateView(pv);
       evalContext.prop1 = 'a';

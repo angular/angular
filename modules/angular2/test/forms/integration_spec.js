@@ -6,6 +6,10 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Injector} from 'angular2/di';
@@ -22,14 +26,17 @@ export function main() {
 
   function compile(componentType, template, context, callback) {
     var tplResolver = new MockTemplateResolver();
+    var urlResolver = new UrlResolver();
 
     var compiler = new Compiler(dynamicChangeDetection,
-      new TemplateLoader(null),
+      new TemplateLoader(null, null),
       new DirectiveMetadataReader(),
       new Parser(new Lexer()),
       new CompilerCache(),
-      new NativeShadowDomStrategy(),
-      tplResolver
+      new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+      tplResolver,
+      new ComponentUrlMapper(),
+      urlResolver
     );
 
     tplResolver.setTemplate(componentType, new Template({

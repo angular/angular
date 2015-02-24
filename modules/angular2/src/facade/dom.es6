@@ -6,8 +6,10 @@ export var Node = window.Node;
 export var NodeList = window.NodeList;
 export var Text = window.Text;
 export var Element = window.HTMLElement;
+export var AnchorElement = window.HTMLAnchorElement;
 export var TemplateElement = window.HTMLTemplateElement;
 export var StyleElement = window.HTMLStyleElement;
+export var ShadowRoot = window.ShadowRoot;
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
@@ -143,6 +145,12 @@ export class DOM {
     var style = doc.createElement('STYLE');
     style.innerText = css;
     return style;
+  }
+  static createShadowRoot(el: Element): ShadowRoot {
+    return el.createShadowRoot();
+  }
+  static getShadowRoot(el: Element): ShadowRoot {
+    return el.shadowRoot;
   }
   static clone(node:Node) {
     return node.cloneNode(true);

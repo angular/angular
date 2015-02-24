@@ -1,4 +1,5 @@
 import {DOM, Element, Node, Text, DocumentFragment} from 'angular2/src/facade/dom';
+import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
   from 'angular2/change_detection';
@@ -273,6 +274,8 @@ export class ProtoView {
   isTemplateElement:boolean;
   shadowDomStrategy: ShadowDomStrategy;
   _viewPool: ViewPool;
+  stylePromises: List<Promise>;
+
   constructor(
       template:Element,
       protoChangeDetector:ProtoChangeDetector,
@@ -290,6 +293,7 @@ export class ProtoView {
     this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.shadowDomStrategy = shadowDomStrategy;
     this._viewPool = new ViewPool(VIEW_POOL_CAPACITY);
+    this.stylePromises = [];
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -539,8 +543,7 @@ export class ProtoView {
         new ProtoElementInjector(null, 0, [cmpType], true));
     binder.componentDirective = rootComponentAnnotatedType;
     binder.nestedProtoView = protoView;
-    var shimComponent = shadowDomStrategy.getShimComponent(cmpType);
-    shimComponent.shimHostElement(insertionElement);
+    shadowDomStrategy.shimHostElement(cmpType, insertionElement);
     return rootProtoView;
   }
 }

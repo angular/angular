@@ -1,11 +1,11 @@
 import {Type, isPresent} from 'angular2/src/facade/lang';
-import {Map, MapWrapper} from 'angular2/src/facade/lang';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
 export class ComponentUrlMapper {
-  // Returns the url to the component source file.
-  // The returned url could be:
+  // Returns the base URL to the component source file.
+  // The returned URL could be:
   // - an absolute URL,
-  // - a URL relative to the application
+  // - a path relative to the application
   getUrl(component: Type): string {
     return './';
   }

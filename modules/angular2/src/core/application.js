@@ -19,6 +19,10 @@ import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
 import {HammerGesturesPlugin} from 'angular2/src/core/events/hammer_gestures';
 import {Binding} from 'angular2/src/di/binding';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 
 var _rootInjector: Injector;
 
@@ -78,7 +82,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
         return new EventManager(plugins, zone);
       }, [VmTurnZone]),
-      bind(ShadowDomStrategy).toValue(new NativeShadowDomStrategy()),
+      bind(ShadowDomStrategy).toClass(NativeShadowDomStrategy),
       Compiler,
       CompilerCache,
       TemplateResolver,
@@ -89,6 +93,10 @@ function _injectorBindings(appComponentType): List<Binding> {
       Lexer,
       ExceptionHandler,
       bind(XHR).toValue(new XHRImpl()),
+      ComponentUrlMapper,
+      UrlResolver,
+      StyleUrlResolver,
+      StyleInliner,
   ];
 }
 

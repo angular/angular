@@ -2,6 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular
 
 import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/facade/dom';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -14,6 +15,11 @@ import {ShadowDomStrategy,
         NativeShadowDomStrategy,
         EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
@@ -23,10 +29,13 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
 export function main() {
   describe('integration tests', function() {
+    var urlResolver = new UrlResolver();
+    var styleUrlResolver = new StyleUrlResolver(urlResolver);
+    var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
 
     StringMapWrapper.forEach({
-        "native" : new NativeShadowDomStrategy(),
-        "emulated" : new EmulatedShadowDomStrategy()
+        "native" : new NativeShadowDomStrategy(styleUrlResolver),
+        "emulated" : new EmulatedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div'))
       },
       (strategy, name) => {
 
@@ -36,12 +45,14 @@ export function main() {
         beforeEach(() => {
           tplResolver = new MockTemplateResolver();
           compiler = new Compiler(dynamicChangeDetection,
-            new TemplateLoader(null),
+            new TemplateLoader(null, null),
             new DirectiveMetadataReader(),
             new Parser(new Lexer()),
             new CompilerCache(),
             strategy,
-            tplResolver
+            tplResolver,
+            new ComponentUrlMapper(),
+            urlResolver
           );
         });
 

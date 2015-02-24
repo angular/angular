@@ -11,9 +11,11 @@ export 'dart:html' show
   Element,
   location,
   Node,
+  ShadowRoot,
   StyleElement,
   TemplateElement,
   InputElement,
+  AnchorElement,
   Text,
   window;
 
@@ -127,6 +129,8 @@ class DOM {
     el.text = css;
     return el;
   }
+  static ShadowRoot createShadowRoot(Element el) => el.createShadowRoot();
+  static ShadowRoot getShadowRoot(Element el) => el.shadowRoot;
   static clone(Node node) => node.clone(true);
   static bool hasProperty(Element element, String name) =>
       new JsObject.fromBrowserObject(element).hasProperty(name);

@@ -1,8 +1,11 @@
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   isBlank,
+  isPresent,
   RegExp,
   RegExpWrapper,
   StringWrapper,
@@ -13,20 +16,38 @@ import {
   PromiseWrapper,
 } from 'angular2/src/facade/async';
 
+/**
+ * Inline @import rules in the given CSS.
+ *
+ * When an @import rules is inlined, it's url are rewritten.
+ */
 export class StyleInliner {
   _xhr: XHR;
+  _urlResolver: UrlResolver;
+  _styleUrlResolver: StyleUrlResolver;
 
-  constructor(xhr: XHR) {
+  constructor(xhr: XHR, styleUrlResolver: StyleUrlResolver, urlResolver: UrlResolver) {
     this._xhr = xhr;
+    this._urlResolver = urlResolver;
+    this._styleUrlResolver = styleUrlResolver;
   }
 
-  // TODO(vicb): handle base url
+  /**
+   * Inline the @imports rules in the given CSS text.
+   *
+   * The baseUrl is required to rewrite URLs in the inlined content.
+   *
+   * @param {string} cssText
+   * @param {string} baseUrl
+   * @returns {*} a Promise<string> when @import rules are present, a string otherwise
+   */
   // TODO(vicb): Union types: returns either a Promise<string> or a string
-  inlineImports(cssText: string) {
-    return this._inlineImports(cssText, []);
+  // TODO(vicb): commented out @import rules should not be inlined
+  inlineImports(cssText: string, baseUrl: string) {
+    return this._inlineImports(cssText, baseUrl, []);
   }
 
-  _inlineImports(cssText: string, inlinedUrls: List<string>) {
+  _inlineImports(cssText: string, baseUrl: string, inlinedUrls: List<string>) {
     var partIndex = 0;
     var parts = StringWrapper.split(cssText, _importRe);
 
@@ -38,13 +59,20 @@ export class StyleInliner {
     var promises = [];
 
     while (partIndex < parts.length - 1) {
+      // prefix is the content before the @import rule
       var prefix = parts[partIndex];
+      // rule is the parameter of the @import rule
       var rule = parts[partIndex + 1];
       var url = _extractUrl(rule);
+      if (isPresent(url)) {
+        url = this._urlResolver.resolve(baseUrl, url);
+      }
       var mediaQuery = _extractMediaQuery(rule);
-
       var promise;
-      if (isBlank(url) || ListWrapper.contains(inlinedUrls, url)) {
+
+      if (isBlank(url)) {
+        promise = PromiseWrapper.resolve(`/* Invalid import rule: "@import ${rule};" */`);
+      } else if (ListWrapper.contains(inlinedUrls, url)) {
         // The current import rule has already been inlined, return the prefix only
         // Importing again might cause a circular dependency
         promise = PromiseWrapper.resolve(prefix);
@@ -54,13 +82,15 @@ export class StyleInliner {
           this._xhr.get(url),
           (css) => {
             // resolve nested @import rules
-            css = this._inlineImports(css, inlinedUrls);
+            css = this._inlineImports(css, url, inlinedUrls);
             if (PromiseWrapper.isPromise(css)) {
               // wait until nested @import are inlined
-              return css.then((css) => prefix + _wrapInMediaRule(css, mediaQuery)+ '\n') ;
+              return css.then((css) => {
+                return prefix + this._transformImportedCss(css, mediaQuery, url) + '\n'
+              }) ;
             } else {
               // there are no nested @import, return the css
-              return prefix + _wrapInMediaRule(css, mediaQuery) + '\n';
+              return prefix + this._transformImportedCss(css, mediaQuery, url) + '\n';
             }
           },
           (error) => `/* failed to import ${url} */\n`
@@ -70,20 +100,19 @@ export class StyleInliner {
       partIndex += 2;
     }
 
-    return PromiseWrapper.then(
-      PromiseWrapper.all(promises),
-      function (cssParts) {
-        var cssText = cssParts.join('');
-        if (partIndex < parts.length) {
-          // append whatever css located after the last @import rule
-          cssText += parts[partIndex];
-        }
-        return cssText;
-      },
-      function(e) {
-        throw 'error';
+    return PromiseWrapper.all(promises).then(function (cssParts) {
+      var cssText = cssParts.join('');
+      if (partIndex < parts.length) {
+        // append then content located after the last @import rule
+        cssText += parts[partIndex];
       }
-    );
+      return cssText;
+    });
+  }
+
+  _transformImportedCss(css: string, mediaQuery: string, url: string): string {
+    css = this._styleUrlResolver.resolveUrls(css, url);
+    return _wrapInMediaRule(css, mediaQuery);
   }
 }
 
@@ -106,7 +135,7 @@ function _extractMediaQuery(importRule: string): string {
 }
 
 // Wraps the css in a media rule when the media query is not null
-function _wrapInMediaRule(css: string, query: string) {
+function _wrapInMediaRule(css: string, query: string): string {
   return (isBlank(query)) ? css : `@media ${query} {\n${css}\n}`;
 }
 

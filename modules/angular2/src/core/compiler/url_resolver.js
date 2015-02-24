@@ -1,8 +1,8 @@
-import {isPresent, isBlank, RegExpWrapper} from 'angular2/src/facade/lang';
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/facade/lang';
+import {DOM, AnchorElement} from 'angular2/src/facade/dom';
 
 export class UrlResolver {
-  static a: Element;
+  static a: AnchorElement;
 
   constructor() {
     if (isBlank(UrlResolver.a)) {

@@ -60,7 +60,7 @@ export class XHRMock extends XHR {
 
     if (this._expectations.length > 0) {
       var expectation = this._expectations[0];
-      if (expectation.url === url) {
+      if (expectation.url == url) {
         ListWrapper.remove(this._expectations, expectation);
         request.complete(expectation.response);
         return;

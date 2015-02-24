@@ -12,20 +12,24 @@ export function main() {
       @import "2.css";
       @import url('3.css');
       @import url("4.css");
+      @import url(5.css);
 
       .foo {
         background-image: url("double.jpg");
         background-image: url('simple.jpg');
+        background-image: url(noquote.jpg);
       }`;
       var expectedCss = `
       @import 'base/1.css';
       @import 'base/2.css';
       @import url('base/3.css');
       @import url('base/4.css');
+      @import url('base/5.css');
 
       .foo {
         background-image: url('base/double.jpg');
         background-image: url('base/simple.jpg');
+        background-image: url('base/noquote.jpg');
       }`;
 
       var resolvedCss = styleUrlResolver.resolveUrls(css, 'base');

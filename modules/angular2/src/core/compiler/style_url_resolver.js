@@ -4,6 +4,9 @@
 import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {UrlResolver} from './url_resolver';
 
+/**
+ * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL.
+ */
 export class StyleUrlResolver {
   _resolver: UrlResolver;
 
@@ -31,5 +34,6 @@ export class StyleUrlResolver {
 }
 
 var _cssUrlRe = RegExpWrapper.create('(url\\()([^)]*)(\\))');
+// TODO(vicb): handle the media query part
 var _cssImportRe = RegExpWrapper.create('(@import[\\s]+(?!url\\())([^;]*)(;)');
 var _quoteRe = RegExpWrapper.create('[\'"]');

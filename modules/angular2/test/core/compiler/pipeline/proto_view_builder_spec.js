@@ -21,7 +21,7 @@ export function main() {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(null, null, null);
-      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy())]);
+      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
     }
 
     it('should not create a ProtoView when the isViewRoot flag is not set', () => {
