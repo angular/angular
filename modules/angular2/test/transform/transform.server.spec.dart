@@ -73,10 +73,7 @@ void _runTests() {
         inputs: {
       'a|web/index.dart': 'list_of_types_files/index.dart',
       'a|web/foo.dart': 'list_of_types_files/foo.dart',
-      'a|web/bar.dart': 'list_of_types_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart',
-      'angular2|lib/src/core/application.dart': 'common.dart'
+      'a|web/bar.dart': 'list_of_types_files/bar.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -85,10 +82,7 @@ void _runTests() {
     new TestConfig('Component with synthetic Constructor',
         inputs: {
       'a|web/index.dart': 'synthetic_ctor_files/index.dart',
-      'a|web/bar.dart': 'synthetic_ctor_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart',
-      'angular2|lib/src/core/application.dart': 'common.dart'
+      'a|web/bar.dart': 'synthetic_ctor_files/bar.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
@@ -98,15 +92,21 @@ void _runTests() {
         inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations/annotations.dart':
-          '../../lib/src/core/annotations/annotations.dart',
       'angular2|lib/src/core/annotations/template.dart':
-          '../../lib/src/core/annotations/template.dart',
-      'angular2|lib/src/core/application.dart': 'common.dart'
+          '../../lib/src/core/annotations/template.dart'
     },
         outputs: {
       'a|web/index.bootstrap.dart':
           'two_annotations_files/expected/index.bootstrap.dart'
+    }),
+    new TestConfig('Basic `bind`',
+        inputs: {
+      'a|web/index.dart': 'basic_bind_files/index.dart',
+      'a|web/bar.dart': 'basic_bind_files/bar.dart'
+    },
+        outputs: {
+      'a|web/index.bootstrap.dart':
+          'basic_bind_files/expected/index.bootstrap.dart'
     })
   ];
 
@@ -118,12 +118,12 @@ void _runTests() {
     config.assetPathToInputPath
       ..addAll(commonInputs)
       ..forEach((key, value) {
-        config.assetPathToInputPath[key] = cache.putIfAbsent(value,
-            () => new File('test/transform/${value}').readAsStringSync());
+        config.assetPathToInputPath[
+            key] = cache.putIfAbsent(value, () => _readFile(value));
       });
     config.assetPathToExpectedOutputPath.forEach((key, value) {
       config.assetPathToExpectedOutputPath[key] = cache.putIfAbsent(value, () {
-        var code = new File('test/transform/${value}').readAsStringSync();
+        var code = _readFile(value);
         return value.endsWith('dart') ? formatter.format(code) : code;
       });
     });
@@ -131,4 +131,15 @@ void _runTests() {
       [transform]
     ], config.assetPathToInputPath, config.assetPathToExpectedOutputPath, []);
   }
+}
+
+/// Smoothes over differences in CWD between IDEs and running tests in Travis.
+String _readFile(String path) {
+  for (var myPath in [path, 'test/transform/${path}']) {
+    var file = new File(myPath);
+    if (file.existsSync()) {
+      return file.readAsStringSync();
+    }
+  }
+  return null;
 }
