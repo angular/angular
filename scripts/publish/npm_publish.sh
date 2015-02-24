@@ -1,33 +1,48 @@
 #!/bin/bash
 set -ex
+shopt -s extglob
 
 ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd $ROOT_DIR
+
 gulp clean
-gulp build.js.prod build.js.dev
+gulp build.js.prod build.js.dev build.js.cjs
 
-function angular {
-  CHANNEL=$1
-  cd $ROOT_DIR/dist/js/$CHANNEL/es6/angular2
-  rm -fr test
-  npm publish ./ --tag "$CHANNEL"
+NPM_DIR=$ROOT_DIR/dist/npm
+rm -fr $NPM_DIR
+FILES='!(test|e2e_test|docs)'
+
+function publishRttsAssert {
+  NAME='rtts_assert'
+  PUBLISH_DIR=$NPM_DIR/$NAME
+  rm -fr $PUBLISH_DIR
+  mkdir -p $PUBLISH_DIR
+
+  mkdir -p $PUBLISH_DIR/es6
+  cp -r $ROOT_DIR/dist/js/prod/es6/$NAME/$FILES $PUBLISH_DIR/es6
+
+  cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+  npm publish $PUBLISH_DIR
 }
 
-function rttsAssert {
-  cd $ROOT_DIR/dist/js/prod/es6/rtts_assert
-  rm -fr test
-  npm publish ./
+function publishModule {
+  NAME=$1
+  PUBLISH_DIR=$NPM_DIR/$NAME
+  rm -fr $PUBLISH_DIR
+  mkdir -p $PUBLISH_DIR
+
+  mkdir -p $PUBLISH_DIR/es6/dev
+  cp -r $ROOT_DIR/dist/js/dev/es6/$NAME/$FILES $PUBLISH_DIR/es6/dev
+  mkdir -p $PUBLISH_DIR/es6/prod
+  cp -r $ROOT_DIR/dist/js/prod/es6/$NAME/$FILES $PUBLISH_DIR/es6/prod
+  mkdir -p $PUBLISH_DIR/atscript
+  cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/atscript
+
+  cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
+
+  npm publish $PUBLISH_DIR
 }
 
-# only publish dev version of benchpress
-# as implementation is not performance sensitive
-function benchpress {
-  cd $ROOT_DIR/dist/js/dev/es6/benchpress
-  rm -fr test
-  npm publish ./
-}
-
-rttsAssert
-angular dev
-angular prod
-benchpress
+publishRttsAssert
+publishModule angular2
+publishModule benchpress
