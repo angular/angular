@@ -8,7 +8,7 @@ var util = require('./util');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
-    return util.forEachSubDir(
+    return util.forEachSubDirSequential(
       config.dest,
       function(dir) {
         var testDir = path.join(dir, 'test');
@@ -18,7 +18,7 @@ module.exports = function(gulp, plugins, config) {
         }));
         if (testFiles.length == 0) {
           // No test files found
-          return;
+          return Q.resolve();
         }
         var header = ['library _all_tests;', ''];
         var main = ['main() {'];
