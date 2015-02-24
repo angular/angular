@@ -74,7 +74,15 @@ function assertArgumentTypes(...params) {
   }
 }
 
-function prettyPrint(value) {
+function prettyPrint(value, depth) {
+  if (typeof(depth) === 'undefined') {
+    depth = 0;
+  }
+
+  if (depth++ > 3) {
+    return '[...]';
+  }
+
   if (typeof value === 'undefined') {
     return 'undefined';
   }
@@ -96,12 +104,17 @@ function prettyPrint(value) {
       return value.__assertName;
     }
 
-    if (value.map) {
-      return '[' + value.map(prettyPrint).join(', ') + ']';
+    if (value.map && typeof value.map === 'function') {
+      return '[' + value.map((v) => prettyPrint(v, depth)).join(', ') + ']';
     }
 
     var properties = Object.keys(value);
-    return '{' + properties.map((p) => p + ': ' + prettyPrint(value[p])).join(', ') + '}';
+    var suffix = '}';
+    if (properties.length > 20) {
+      properties.length = 20;
+      suffix = ', ... }';
+    }
+    return '{' + properties.map((p) => p + ': ' + prettyPrint(value[p], depth)).join(', ') + suffix;
   }
 
   return value.__assertName || value.name || value.toString();
