@@ -1,7 +1,5 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 import {DOM} from 'angular2/src/facade/dom';
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
-import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -10,15 +8,15 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {NonBindable} from 'angular2/src/directives/non_bindable';
+import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 export function main() {
   describe('non-bindable', () => {
     var view, cd, compiler, component, tplResolver;
     beforeEach(() => {
-      tplResolver = new FakeTemplateResolver();
+      tplResolver = new MockTemplateResolver();
       compiler = new Compiler(dynamicChangeDetection, new TemplateLoader(null),
         new DirectiveMetadataReader(), new Parser(new Lexer()), new CompilerCache(),
         new NativeShadowDomStrategy(), tplResolver);
@@ -88,28 +86,5 @@ class TestComponent {
 class TestDecorator {
   constructor(el: NgElement) {
     DOM.addClass(el.domElement, 'compiled');
-  }
-}
-
-class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map;
-
-  constructor() {
-    super();
-    this._cmpTemplates = MapWrapper.create();
-  }
-
-  setTemplate(component: Type, template: Template) {
-    MapWrapper.set(this._cmpTemplates, component, template);
-  }
-
-  resolve(component: Type): Template {
-    var override = MapWrapper.get(this._cmpTemplates, component);
-
-    if (isPresent(override)) {
-      return override;
-    }
-
-    return super.resolve(component);
   }
 }

@@ -6,12 +6,9 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Injector} from 'angular2/di';
-
-import {Map, MapWrapper} from 'angular2/src/facade/collection';
-import {Type, isPresent} from 'angular2/src/facade/lang';
 
 import {Component, Decorator, Template} from 'angular2/core';
 import {ControlGroupDirective, ControlNameDirective,
@@ -24,7 +21,7 @@ export function main() {
   }
 
   function compile(componentType, template, context, callback) {
-    var tplResolver = new FakeTemplateResolver();
+    var tplResolver = new MockTemplateResolver();
 
     var compiler = new Compiler(dynamicChangeDetection,
       new TemplateLoader(null),
@@ -237,28 +234,5 @@ class WrappedValueAccessor extends ControlValueAccessor {
 class WrappedValue {
   constructor(cd:ControlNameDirective) {
     cd.valueAccessor = new WrappedValueAccessor();
-  }
-}
-
-class FakeTemplateResolver extends TemplateResolver {
-  _cmpTemplates: Map;
-
-  constructor() {
-    super();
-    this._cmpTemplates = MapWrapper.create();
-  }
-
-  setTemplate(component: Type, template: Template) {
-    MapWrapper.set(this._cmpTemplates, component, template);
-  }
-
-  resolve(component: Type): Template {
-    var override = MapWrapper.get(this._cmpTemplates, component);
-
-    if (isPresent(override)) {
-      return override;
-    }
-
-    return super.resolve(component);
   }
 }
