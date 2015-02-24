@@ -11,7 +11,7 @@ export function main() {
   describe('ViewSplitter', () => {
 
     function createPipeline() {
-      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()), null)]);
+      return new CompilePipeline([new ViewSplitter(new Parser(new Lexer()))]);
     }
 
     it('should mark root elements as viewRoot', () => {
@@ -160,14 +160,14 @@ export function main() {
         expect( () => {
           var rootElement = el('<div><div *foo *bar="blah"></div></div>');
           createPipeline().process(rootElement);
-        }).toThrowError('Only one template directive per element is allowed: foo and bar cannot be used simultaneously!');
+        }).toThrowError('Only one template directive per element is allowed: foo and bar cannot be used simultaneously in <div *foo *bar="blah">');
       });
 
-      it('should not allow template and bang directives on the same element', () => {
+      it('should not allow template and star directives on the same element', () => {
         expect( () => {
-          var rootElement = el('<div><div *foo template="blah"></div></div>');
+          var rootElement = el('<div><div *foo template="bar"></div></div>');
           createPipeline().process(rootElement);
-        }).toThrowError('Only one template directive per element is allowed: blah and foo cannot be used simultaneously!');
+        }).toThrowError('Only one template directive per element is allowed: bar and foo cannot be used simultaneously in <div *foo template="bar">');
       });
 
     });

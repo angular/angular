@@ -34,6 +34,7 @@ function ariaSetterFactory(attrName:string) {
   return setterFn;
 }
 
+const CLASS_ATTR = 'class';
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
@@ -54,6 +55,7 @@ function classSetterFactory(className:string) {
   return setterFn;
 }
 
+const STYLE_ATTR = 'style';
 const STYLE_PREFIX = 'style.';
 var styleSettersCache = StringMapWrapper.create();
 
@@ -89,6 +91,13 @@ function roleSetter(element:Element, value) {
   }
 }
 
+// tells if an attribute is handled by the ElementBinderBuilder step
+export function isSpecialProperty(propName:string) {
+  return StringWrapper.startsWith(propName, ARIA_PREFIX) 
+        || StringWrapper.startsWith(propName, CLASS_PREFIX) 
+        || StringWrapper.startsWith(propName, STYLE_PREFIX);
+}
+
 /**
  * Creates the ElementBinders and adds watches to the
  * ProtoChangeDetector.
@@ -115,11 +124,9 @@ function roleSetter(element:Element, value) {
  */
 export class ElementBinderBuilder extends CompileStep {
   _parser:Parser;
-  _compilationUnit:any;
-  constructor(parser:Parser, compilationUnit:any) {
+  constructor(parser:Parser) {
     super();
     this._parser = parser;
-    this._compilationUnit = compilationUnit;
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -207,7 +214,7 @@ export class ElementBinderBuilder extends CompileStep {
         if (isBlank(bindingAst)) {
           var attributeValue = MapWrapper.get(compileElement.attrs(), elProp);
           if (isPresent(attributeValue)) {
-            bindingAst = this._parser.wrapLiteralPrimitive(attributeValue, this._compilationUnit);
+            bindingAst = this._parser.wrapLiteralPrimitive(attributeValue, compileElement.elementDescription);
           }
         }
 

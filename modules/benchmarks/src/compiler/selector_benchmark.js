@@ -40,7 +40,7 @@ export function main() {
   function match() {
     var matchCount = 0;
     for (var i=0; i<count; i++) {
-      fixedMatcher.match(fixedSelectors[i], (selected) => {
+      fixedMatcher.match(fixedSelectors[i], (selector, selected) => {
         matchCount += selected;
       });
     }

@@ -15,13 +15,13 @@ export class CompilePipeline {
     this._control = new CompileControl(steps);
   }
 
-  process(rootElement:Element):List {
+  process(rootElement:Element, compilationCtxtDescription:string = ''):List {
     var results = ListWrapper.create();
-    this._process(results, null, new CompileElement(rootElement));
+    this._process(results, null, new CompileElement(rootElement, compilationCtxtDescription), compilationCtxtDescription);
     return results;
   }
 
-  _process(results, parent:CompileElement, current:CompileElement) {
+  _process(results, parent:CompileElement, current:CompileElement, compilationCtxtDescription:string = '') {
     var additionalChildren = this._control.internalProcess(results, 0, parent, current);
 
     if (current.compileChildren) {
@@ -31,7 +31,7 @@ export class CompilePipeline {
         // next sibling before recursing.
         var nextNode = DOM.nextSibling(node);
         if (DOM.isElementNode(node)) {
-          this._process(results, current, new CompileElement(node));
+          this._process(results, current, new CompileElement(node, compilationCtxtDescription));
         }
         node = nextNode;
       }
