@@ -1,8 +1,19 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-
 import {stringify, looseIdentical, isJsObject} from 'angular2/src/facade/lang';
 
-export class KeyValueChanges {
+import {NO_CHANGE, Pipe} from './pipe';
+
+export class KeyValueChangesFactory {
+  supports(obj):boolean {
+    return KeyValueChanges.supportsObj(obj);
+  }
+
+  create():Pipe {
+    return new KeyValueChanges();
+  }
+}
+
+export class KeyValueChanges extends Pipe {
   _records:Map;
 
   _mapHead:KVChangeRecord;
@@ -15,6 +26,7 @@ export class KeyValueChanges {
   _removalsTail:KVChangeRecord;
 
   constructor() {
+    super();
     this._records = MapWrapper.create();
     this._mapHead = null;
     this._previousMapHead = null;
@@ -26,12 +38,20 @@ export class KeyValueChanges {
     this._removalsTail = null;
   }
 
-  static supports(obj):boolean {
+  static supportsObj(obj):boolean {
     return obj instanceof Map || isJsObject(obj);
   }
 
-  supportsObj(obj):boolean {
-    return KeyValueChanges.supports(obj);
+  supports(obj):boolean {
+    return KeyValueChanges.supportsObj(obj);
+  }
+
+  transform(map){
+    if (this.check(map)) {
+      return this;
+    } else {
+      return NO_CHANGE;
+    }
   }
 
   get isDirty():boolean {

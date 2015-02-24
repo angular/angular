@@ -131,10 +131,10 @@ export function main() {
       if (isJsObject({})) {
         describe('JsObject changes', () => {
           it('should support JS Object', () => {
-            expect(KeyValueChanges.supports({})).toBeTruthy();
-            expect(KeyValueChanges.supports("not supported")).toBeFalsy();
-            expect(KeyValueChanges.supports(0)).toBeFalsy();
-            expect(KeyValueChanges.supports(null)).toBeFalsy();
+            expect(KeyValueChanges.supportsObj({})).toBeTruthy();
+            expect(KeyValueChanges.supportsObj("not supported")).toBeFalsy();
+            expect(KeyValueChanges.supportsObj(0)).toBeFalsy();
+            expect(KeyValueChanges.supportsObj(null)).toBeFalsy();
           });
 
           it('should do basic object watching', () => {
