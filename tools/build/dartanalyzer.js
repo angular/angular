@@ -9,7 +9,7 @@ var util = require('./util');
 module.exports = function(gulp, plugins, config) {
   return function() {
     var tempFile = '_analyzer.dart';
-    return util.forEachSubDir(
+    return util.forEachSubDirSequential(
       config.dest,
       function(dir) {
         var srcFiles = [].slice.call(glob.sync('{/lib,/web}/**/*.dart', {
