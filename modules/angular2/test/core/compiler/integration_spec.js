@@ -19,6 +19,8 @@ import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/anno
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 
+import {If} from 'angular2/src/directives/if';
+
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
 export function main() {
@@ -360,6 +362,29 @@ export function main() {
           createView(pv);
 
           var childComponent = view.contextWithLocals.get('child');
+          expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
+
+          done();
+        })
+      });
+
+      it('should create a component that injects an @Ancestor through viewport directive', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: `
+            <some-directive>
+              <p *if="true">
+                <cmp-with-ancestor #child></cmp-with-ancestor>
+              </p>
+            </some-directive>`,
+          directives: [SomeDirective, CompWithAncestor, If]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+          cd.detectChanges();
+
+          var subview = view.viewContainers[0].get(0);
+          var childComponent = subview.contextWithLocals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 
           done();
