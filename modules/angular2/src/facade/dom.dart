@@ -17,7 +17,8 @@ export 'dart:html' show
   InputElement,
   AnchorElement,
   Text,
-  window;
+  window,
+  attrToPropMap;
 
 // TODO(tbosch): Is there a builtin one? Why is Dart
 // removing unknown elements by default?
@@ -35,6 +36,11 @@ void gc() {
 }
 
 final identitySanitizer = new IdentitySanitizer();
+
+// override JS logic of attribute to property mapping
+var attrToPropMap = {
+  "inner-html": "innerHtml"
+};
 
 class DOM {
   static query(String selector) => document.querySelector(selector);

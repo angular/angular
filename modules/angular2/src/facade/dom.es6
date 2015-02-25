@@ -16,6 +16,8 @@ export var gc = window.gc ? () => window.gc() : () => null;
 export var CssRule = window.CSSRule;
 export var CssKeyframesRule = window.CSSKeyframesRule;
 
+export var attrToPropMap = {};
+
 export class DOM {
   static query(selector) {
     return document.querySelector(selector);

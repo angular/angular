@@ -102,6 +102,41 @@ export function main() {
         });
       });
 
+      it('should consume binding to propery names where attr name and property name do not match', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div [tabindex]="ctxNumProp"></div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+          expect(view.nodes[0].tabIndex).toEqual(0);
+
+          ctx.ctxNumProp = 5;
+          cd.detectChanges();
+          expect(view.nodes[0].tabIndex).toEqual(5);
+
+          done();
+        });
+      });
+
+      it('should consume binding to inner-html', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div inner-html="{{ctxProp}}"></div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'Some <span>HTML</span>';
+          cd.detectChanges();
+          expect(DOM.getInnerHTML(view.nodes[0])).toEqual('Some <span>HTML</span>');
+
+          ctx.ctxProp = 'Some other <div>HTML</div>';
+          cd.detectChanges();
+          expect(DOM.getInnerHTML(view.nodes[0])).toEqual('Some other <div>HTML</div>');
+
+          done();
+        });
+      });
+
       it('should consume directive watch expression change.', (done) => {
         var tpl =
           '<div>' +
@@ -490,8 +525,10 @@ class PushBasedComp {
 @Component()
 class MyComp {
   ctxProp:string;
+  ctxNumProp;
   constructor() {
     this.ctxProp = 'initial value';
+    this.ctxNumProp = 0;
   }
 }
 
