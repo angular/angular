@@ -215,7 +215,12 @@ var CONFIG = {
           [
             { src: 'node_modules/angular/angular.js', mimeType: 'text/javascript', copy: true },
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTML_DEFAULT_SCRIPTS_JS)
+          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
+        'benchmarks_external/**/*polymer*/**':
+          [
+            { src: 'bower_components/polymer/lib/polymer.html', copyOnly: true },
+            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
+          ]
       },
       dart: {
         '**': _HTML_DEFAULT_SCRIPTS_DART,

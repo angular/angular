@@ -17,7 +17,7 @@ module.exports = function(gulp, plugins, config) {
         var scripts = util.filterByFile(config.scriptsPerFolder, fileName).map(function(script) {
           var scriptTag;
           var scriptSrc = script.src;
-          if (script.copy) {
+          if (script.copy || script.copyOnly) {
             scriptSrc = path.basename(script.src);
             self.push(new VinylFile({
               cwd: file.cwd,
@@ -26,6 +26,9 @@ module.exports = function(gulp, plugins, config) {
               contents: fs.readFileSync(script.src)
             }));
           };
+          if (script.copyOnly) {
+            return '';
+          }
           if (scriptSrc) {
             scriptTag = '<script src="'+scriptSrc+'" type="'+script.mimeType+'"></script>';
           } else {
