@@ -104,8 +104,8 @@ var getBenchmarkFiles = function (benchmark, spec) {
   var perfFiles = [];
   if (spec.length) {
     spec.split(',').forEach(function (name) {
-      specFiles.push('dist/js/cjs/**/e2e_test/' + name)
-      perfFiles.push('dist/js/cjs/**/e2e_test/' + name)
+      specFiles.push('dist/js/cjs/**/e2e_test/' + name + '_spec.js');
+      perfFiles.push('dist/js/cjs/**/e2e_test/' + name + '_perf.js');
     });
   } else {
     specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
