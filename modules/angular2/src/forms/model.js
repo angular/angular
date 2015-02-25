@@ -9,6 +9,7 @@ export const INVALID = "INVALID";
 //  get value():any;
 //  validator:Function;
 //  get status():string;
+//  get valid():boolean;
 //  get errors():Map;
 //  get active():boolean {}
 //  updateValue(value:any){}
@@ -19,19 +20,19 @@ export class Control {
   _value:any;
   _status:string;
   _errors;
-  _updated:boolean;
+  _dirty:boolean;
   _parent:ControlGroup;
   validator:Function;
 
   constructor(value:any, validator:Function = nullValidator) {
     this._value = value;
     this.validator = validator;
-    this._updated = true;
+    this._dirty = true;
   }
 
   updateValue(value:any) {
     this._value = value;
-    this._updated = true;
+    this._dirty = true;
     this._updateParent();
   }
 
@@ -63,8 +64,8 @@ export class Control {
   }
 
   _updateIfNeeded() {
-    if (this._updated) {
-      this._updated = false;
+    if (this._dirty) {
+      this._dirty = false;
       this._errors = this.validator(this);
       this._status = isPresent(this._errors) ? INVALID : VALID;
     }
@@ -81,14 +82,14 @@ export class ControlGroup {
   _value:any;
   _status:string;
   _errors;
-  _updated:boolean;
+  _dirty:boolean;
   validator:Function;
   controls;
 
   constructor(controls, validator:Function = controlGroupValidator) {
     this.controls = controls;
     this.validator = validator;
-    this._updated = true;
+    this._dirty = true;
     this._setParentForControls();
   }
 
@@ -119,8 +120,8 @@ export class ControlGroup {
   }
 
   _updateIfNeeded() {
-    if (this._updated) {
-      this._updated = false;
+    if (this._dirty) {
+      this._dirty = false;
       this._value = this._reduceValue();
       this._errors = this.validator(this);
       this._status = isPresent(this._errors) ? INVALID : VALID;
@@ -138,7 +139,7 @@ export class ControlGroup {
   }
 
   _controlChanged() {
-    this._updated = true;
+    this._dirty = true;
   }
 }
 

@@ -25,7 +25,12 @@ export function controlGroupValidator(c:ControlGroup) {
   var res = {};
   StringMapWrapper.forEach(c.controls, (control, name) => {
     if (control.active && isPresent(control.errors)) {
-      res[name] = control.errors;
+      StringMapWrapper.forEach(control.errors, (value, error) => {
+        if (! StringMapWrapper.contains(res, error)) {
+          res[error] = [];
+        }
+        ListWrapper.push(res[error], control);
+      });
     }
   });
   return StringMapWrapper.isEmpty(res) ? null : res;

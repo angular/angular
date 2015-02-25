@@ -44,25 +44,23 @@ export function main() {
 
     describe("controlGroupValidator", () => {
       it("should collect errors from the child controls", () => {
-        var g = new ControlGroup({
-          "one" : new Control("one", validator("a", true)),
-          "two" : new Control("two", validator("b", true))
-        });
+        var one = new Control("one", validator("a", true));
+        var two = new Control("one", validator("b", true));
+        var g = new ControlGroup({"one" : one, "two" : two});
 
         expect(controlGroupValidator(g)).toEqual({
-          "one" : {"a" : true},
-          "two" : {"b" : true}
+          "a" : [one],
+          "b" : [two]
         });
       });
 
-      it("should not include keys for controls that have no errors", () => {
-        var g = new ControlGroup({
-          "one" : new Control("one", validator("a", true)),
-          "two" : new Control("one")
-        });
+      it("should not include controls that have no errors", () => {
+        var one = new Control("one", validator("a", true));
+        var two = new Control("two");
+        var g = new ControlGroup({"one" : one, "two" : two});
 
         expect(controlGroupValidator(g)).toEqual({
-          "one" : {"a" : true}
+          "a": [one]
         });
       });
 

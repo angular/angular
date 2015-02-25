@@ -51,13 +51,12 @@ export function main() {
       });
 
       it("should run the validator with the initial value (invalid)", () => {
-        var g = new ControlGroup({
-          "one": new Control(null, validations.required)
-        });
+        var one = new Control(null, validations.required);
+        var g = new ControlGroup({"one": one});
 
         expect(g.valid).toEqual(false);
 
-        expect(g.errors).toEqual({"one": {"required" : true}});
+        expect(g.errors).toEqual({"required": [one]});
       });
 
       it("should run the validator with the value changes", () => {
