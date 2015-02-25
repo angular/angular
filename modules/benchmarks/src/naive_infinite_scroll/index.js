@@ -234,7 +234,7 @@ export function setupReflectorForAngular() {
 
   reflector.registerType(LifeCycle, {
     "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
-    "parameters": [[ExceptionHandler, ChangeDetector]],
+    "parameters": [[ExceptionHandler], [ChangeDetector]],
     "annotations": []
   });
 
