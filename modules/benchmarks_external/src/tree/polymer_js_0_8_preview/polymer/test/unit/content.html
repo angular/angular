@@ -1,0 +1,459 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../polymer.html">
+</head>
+<body>
+<template></template>
+<script>
+
+// TODO(sorvell): cannot register element in main document under polyfill.
+var registered = false;
+function registerTestElement() {
+  if (registered) return;
+  var template = document.querySelector('template');
+  Polymer({
+    is: 'x-content-test',
+    _useContent: true,
+    _template: template
+  });
+  registered = true;
+}
+
+function syncLightDOM(n) {
+  for (var e=n.firstChild; e; e=e.nextSibling) {
+    if (n.lightChildren.indexOf(e) < 0) {
+      e.lightParent = n;
+      n.lightChildren.push(e);
+    }
+  }
+}
+
+/**
+ * Test the `<content>` element distribution algorithm by verifying the
+ * resulting composed tree structure.
+ */
+function testRender(descr, hostInnerHtml, shadowRootHtml, expectedHtml) {
+  test(descr, function() {
+    registerTestElement();
+    // Create an instance of the test element.
+    var host = document.createElement('x-content-test');
+    // Populate the initial pool of light DOM children.
+    host.innerHTML = hostInnerHtml;
+    syncLightDOM(host);
+    // Pretend we're stamping the template contents.
+    setInnerHTML(host.shadyRoot, shadowRootHtml);
+    // Invoke distribution and verify the resulting tree.
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, expectedHtml);
+  });
+}
+
+testRender('Empty shadow', 'abc', '', '');
+testRender('Simple shadow', 'abc', 'def', 'def');
+testRender('Fallback shadow', 'abc',
+           '<content select="xxx">fallback</content>', 'fallback');
+testRender('Content', 'abc',
+           '<content>fallback</content>', 'abc');
+testRender('Content before', 'abc',
+           'before<content>fallback</content>', 'beforeabc');
+testRender('Content after', 'abc',
+           '<content>fallback</content>after', 'abcafter');
+
+suite('render content', function() {
+  testRender('no select', '<a href="">Link</a> <b>bold</b>',
+             '<content></content>',
+             '<a href="">Link</a> <b>bold</b>');
+  testRender('select ""', '<a href="">Link</a> <b>bold</b>',
+             '<content select=""></content>',
+             '<a href="">Link</a> <b>bold</b>');
+  testRender('select *', '<a href="">Link</a> <b>bold</b>',
+             '<content select="*"></content>',
+             '<a href="">Link</a><b>bold</b>');
+
+  testRender('select .a',
+             '<a class="a">a</a> <a class="b">b</a>',
+             '<content select=".a"></content>',
+             '<a class="a">a</a>');
+
+  testRender('select .b .a',
+             '<a class="a">a</a> <a class="b">b</a>',
+             '<content select=".b"></content><content select=".a"></content>',
+             '<a class="b">b</a><a class="a">a</a>');
+
+  testRender('select .b .a 2',
+             '<a class="a">a</a> <a class="b">b</a> <a class="b">c</a>',
+             '<content select=".b"></content><content select=".a"></content>',
+             '<a class="b">b</a><a class="b">c</a><a class="a">a</a>');
+
+  testRender('select [c] *',
+             '<span>a</span><span>b</span><span c>c</span><span>d</span>',
+             '<content select="[c]"></content><content></content>',
+             '<span c="">c</span><span>a</span><span>b</span><span>d</span>');
+});
+
+
+test('Reproject', function() {
+  registerTestElement();
+  var host = document.createElement('x-content-test');
+  host.innerHTML = '<a></a>';
+  var a = host.firstChild;
+  syncLightDOM(host);
+  setInnerHTML(host.shadyRoot, '<x-content-test id="p"></x-content-test>');
+  var p = host.shadyRoot.firstChild;
+  p.innerHTML = '<b></b><content></content>';
+  var b = p.firstChild;
+  var content = p.lastChild;
+
+  // force upgrade on polyfilled browsers
+  CustomElements.upgrade(p);
+
+  syncLightDOM(p);
+  setInnerHTML(p.shadyRoot,
+      'a: <content select=a></content>b: <content select=b></content>');
+  var textNodeA = p.shadyRoot.firstChild;
+  var contentA = p.shadyRoot.childNodes[1];
+  var textNodeB = p.shadyRoot.childNodes[2]
+  var contentB = p.shadyRoot.childNodes[3];
+
+  function testRender() {
+    // Simulate the correct ordering as "ready" would fire.
+    host._distributeContent();
+    // NOTE: needed only for this imperative test that needs
+    // to simulate distribution from `shadyRoot`
+    p._distributeContent();
+
+    assert.strictEqual(host.innerHTML,
+        '<x-content-test id="p">a: <a></a>b: <b></b></x-content-test>');
+
+    assertArrayEqual(host.lightChildren, [a]);
+    assert.strictEqual(a.lightParent, host);
+    assertArrayEqual(host.shadyRoot.lightChildren, [p]);
+    assert.strictEqual(p.lightParent, host.shadyRoot);
+    assertArrayEqual(p.lightChildren, [b, content]);
+    assert.strictEqual(b.lightParent, p);
+    assert.strictEqual(content.lightParent, p);
+    assertArrayEqual(p.shadyRoot.lightChildren,
+        [textNodeA, contentA, textNodeB, contentB]);
+  }
+
+  testRender();
+  testRender();
+});
+
+
+suite('Mutate light DOM', function() {
+  test('removeAllChildNodes - mutate host', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content>fallback</content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    host.firstChild.textContent = '';
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a></a>');
+
+    host.lightChildren = [];
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, 'fallback');
+  });
+
+
+  test('removeAllChildNodes - mutate shadow', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content><b>after</b>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b>after</b>');
+
+    host.shadyRoot.lightChildren[1].textContent = '';
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b></b>');
+
+    host.shadyRoot.lightChildren = [];
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '');
+  });
+
+  test('removeAllChildNodes - mutate shadow fallback', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content select="xxx"><b>fallback</b></content>');
+    var b = host.shadyRoot.firstChild.firstChild;
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b>fallback</b>');
+
+    b.textContent = '';
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b></b>');
+
+    host.shadyRoot.firstChild.lightChildren = [];
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '');
+
+    host.shadyRoot.lightChildren = [];
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '');
+  });
+
+  test('removeChild - mutate host', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content>fallback</content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    host.firstChild.removeChild(host.firstChild.firstChild);
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a></a>');
+
+    host.lightChildren = [];
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, 'fallback');
+  });
+
+  test('removeChild - mutate host 2', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a></a><b></b>';
+    var a = host.firstChild;
+    var b = a.nextSibling;
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content>fallback</content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a></a><b></b>');
+
+    host.lightDom.removeChild(b);
+    assert.strictEqual(host.innerHTML, '<a></a>');
+
+    host.lightDom.removeChild(a);
+    assert.strictEqual(host.innerHTML, 'fallback');
+  });
+
+  test('removeChild - mutate shadow', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content><b>after</b>');
+    var b = host.shadyRoot.lastChild;
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b>after</b>');
+
+    b.removeChild(b.firstChild);
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b></b>');
+
+    host.shadyRoot.lightChildren.splice(1, 1); // remove b
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    host.shadyRoot.lightChildren = []; // remove a
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '');
+  });
+
+  test('setAttribute select', function() {
+    // TODO(arv): DOM bindings for select.
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a><b>World</b>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content select="b">fallback b</content>' +
+                            '<content select="a">fallback a</content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b>World</b><a>Hello</a>');
+
+    host.shadyRoot.firstChild.setAttribute('select', 'xxx');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, 'fallback b<a>Hello</a>');
+
+    host.shadyRoot.firstChild.setAttribute('select', '');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b>World</b>fallback a');
+  });
+
+  test('appendChild - mutate host', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.lightDom.appendChild(b);
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b></b>');
+  });
+
+  test('appendChild - mutate shadow', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.shadyRoot.appendChild(b);
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a><b></b>');
+  });
+
+  test('insertBefore - mutate host', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+    var a = host.firstChild;
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.lightDom.insertBefore(b, a);
+    assert.strictEqual(host.innerHTML, '<b></b><a>Hello</a>');
+  });
+
+  test('insertBefore - mutate shadow', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    var content = host.shadyRoot.firstChild;
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.shadyRoot.insertBefore(b, content);
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b></b><a>Hello</a>');
+  });
+
+  test('replaceChild - mutate host', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+    var a = host.firstChild;
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.lightChildren[0] = b;
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b></b>');
+  });
+
+  test('replaceChild - mutate shadow', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<a>Hello</a>';
+
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content>');
+    var content = host.shadyRoot.firstChild;
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<a>Hello</a>');
+
+    var b = document.createElement('b');
+    host.shadyRoot.replaceChild(b, content);
+    host._distributeContent();
+    assert.strictEqual(host.innerHTML, '<b></b>');
+  });
+
+  test('localDom.querySelectorAll', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<div id="main"></div>';
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content><span id="main"></span>' +
+      '<x-content-test></x-content-test>');
+    var hostLocalMain = host.shadyRoot.firstChild.nextSibling;
+    var child = host.shadyRoot.lastChild;
+    // force upgrade on polyfilled browsers
+    CustomElements.upgrade(child);
+    child.innerHTML = '<div id="sub"></div>';
+    var childLightSub = child.firstChild;
+    syncLightDOM(child);
+    setInnerHTML(child.shadyRoot, '<content></content><span id="sub"></span>');
+    var childLocalSub = child.shadyRoot.lastChild;
+    host._distributeContent();
+    // NOTE: needed only for this imperative test that needs
+    // to simulate distribution from `shadyRoot`
+    child._distributeContent();
+    
+    assert.deepEqual(host.localDom.querySelectorAll('span#main'), [hostLocalMain]);
+    assert.deepEqual(host.localDom.querySelectorAll('div#sub'), [childLightSub]);
+    assert.deepEqual(child.localDom.querySelectorAll('span#sub'), [childLocalSub]);
+  });
+
+  test('lightDom.querySelectorAll', function() {
+    var host = document.createElement('x-content-test');
+    host.innerHTML = '<div id="main"></div>';
+    var hostLightMain = host.firstChild;
+    syncLightDOM(host);
+    setInnerHTML(host.shadyRoot, '<content></content><span id="main"></span>' +
+      '<x-content-test></x-content-test>');
+    var child = host.shadyRoot.lastChild;
+    // force upgrade on polyfilled browsers
+    CustomElements.upgrade(child);
+    child.innerHTML = '<div id="sub"></div>';
+    var childLightSub = child.lastChild;
+    syncLightDOM(child);
+    setInnerHTML(child.shadyRoot, '<content></content><span id="sub"></span>');
+    host._distributeContent();
+    // NOTE: needed only for this imperative test that needs
+    // to simulate distribution from `shadyRoot`
+    child._distributeContent();
+    
+    assert.deepEqual(host.lightDom.querySelectorAll('div#main'), [hostLightMain]);
+    assert.deepEqual(host.lightDom.querySelectorAll('#sub'), []);
+    assert.deepEqual(child.lightDom.querySelectorAll('div#sub'), [childLightSub]);
+  });
+
+});
+
+function setInnerHTML(node, value) {
+  node.textContent = '';
+  var temp = node.ownerDocument.createElement('div');
+  temp.innerHTML = value;
+  var firstChild;
+  while (firstChild = temp.firstChild) {
+    node.appendChild(firstChild);
+  }
+}
+
+function assertArrayEqual(a, b, msg) {
+  assert.equal(a.length, b.length, msg);
+  for (var i = 0; i < a.length; i++) {
+    assert.equal(a[i], b[i], msg);
+  }
+}
+
+</script>
+</body>
+</html>

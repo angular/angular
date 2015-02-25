@@ -1,0 +1,100 @@
+<script>
+  var configureMixin = {
+
+    published: {
+      content: {
+        type: String,
+        notify: true
+      }
+    },
+    
+    bind: {
+      content: 'contentChanged'
+    },
+
+    changeHandlerCount: 0,
+        
+    contentChanged: function() {
+      this.changeHandlerReadyState = this._readied;
+      this.changeHandlerCount++;
+    }
+  };
+
+</script>
+
+<template>
+  <span id="content">{{content}}</span>
+</template>
+<script>
+  Polymer({
+
+    is: 'x-configure',
+
+    mixins: [configureMixin],
+    
+    configure: function() {
+      return {
+        content: 'content'
+      };
+    }
+
+  });
+</script>
+
+
+<template>
+  <span id="content">{{content}}</span>
+</template>
+<script>
+  Polymer({
+
+    is: 'x-configure-gchild',
+
+    mixins: [configureMixin],
+    
+    configure: function() {
+      return {
+        content: 'gchild'
+      };
+    }
+    
+  });
+</script>
+
+<template>
+  <x-configure-gchild id="gchild" content="{{content}}"></x-configure-gchild>
+</template>
+<script>
+  Polymer({
+
+    is: 'x-configure-child',
+
+    mixins: [configureMixin],
+    
+    configure: function() {
+      return {
+        content: 'child'
+      };
+    }
+    
+  });
+</script>
+
+<template>
+  <x-configure-child id="child" content="{{content}}"></x-configure-child>
+</template>
+<script>
+  Polymer({
+
+    is: 'x-configure-host',
+
+    mixins: [configureMixin],
+    
+    configure: function() {
+      return {
+        content: 'host'
+      };
+    }
+    
+  });
+</script>

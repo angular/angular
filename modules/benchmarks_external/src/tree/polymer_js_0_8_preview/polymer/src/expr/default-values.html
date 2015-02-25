@@ -1,0 +1,73 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<script>
+
+(function() {
+
+  /**
+
+    Allows default property values to be set on the prototype and applied
+    iff no other input value is given via attribute literal or binding.
+
+  */
+
+  // TODO(sorvell): monkey patch for now.
+  var originalCreateBindings = Base._createBindings;
+  var originalReadyCallback = Base._ready;
+
+  Base.addFeature({
+
+    _ready: function() {
+      originalReadyCallback.call(this);
+      this._applyDefaultValues();
+    },
+
+    // overridden to allow recording of initial values
+    _createBindings: function() {
+      this._recordDefaultValues();
+      originalCreateBindings.call(this);
+    },
+
+    _recordDefaultValues: function() {
+      this._defaultValues = {};
+      var fx$ = this._propertyEffects;
+      if (fx$) {
+        for (var n in fx$) {
+          var v = this[n];
+          if (v !== undefined) {
+            this._defaultValues[n] = v;
+          }
+        }
+      }
+    },
+
+    // TODO(sorvell): preferrably we would squelch method side effects here
+    _applyDefaultValues: function() {
+      for (var i in this._defaultValues) {
+        this.setDefaultValue(i, this._defaultValues[i]);
+      }
+      //this._defaultValues = null;
+    },
+
+    /**
+      Ensures `property` has a value. If it does not, then the property is
+      set to `defaultValue`.
+    */
+    setDefaultValue: function(property, defaultValue) {
+      if (this[property] === undefined) {
+        this[property] = defaultValue;
+      }
+    }
+
+  });
+
+})();
+
+</script>

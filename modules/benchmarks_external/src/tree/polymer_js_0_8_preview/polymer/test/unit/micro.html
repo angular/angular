@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../polymer-micro.html">
+  <link rel="import" href="micro-elements.html">
+</head>
+<body>
+
+<x-trivial></x-trivial>
+
+<x-trivial2></x-trivial2>
+
+<input is="x-extension">
+
+<script>
+
+  suite('polymer-micro', function() {
+
+    test('polymer-micro element created', function() {
+      assert.equal(document.querySelector('x-trivial').textContent, 'x-trivial');
+    });
+
+    test('polymer-micro type extension element created', function() {
+      assert.equal(document.querySelector('input').value, 'x-extension');
+    });
+
+  });
+
+  suite('constructor', function() {
+
+    test('normal constructor', function() {
+      var MyElement = Polymer({is: 'my-element'});
+      var el = new MyElement();
+      document.body.appendChild(el);
+      assert.instanceOf(el, MyElement, 'Instance of MyElement');
+      assert.instanceOf(el, HTMLElement, 'Instance of HTMLElement');
+    });
+
+    test('type-extension constructor', function() {
+      var MyInput = Polymer({is: 'my-input', extends: 'input'});
+      var el = new MyInput();
+      document.body.appendChild(el);
+      assert.instanceOf(el, MyInput, 'Instance of MyInput');
+      assert.instanceOf(el, HTMLElement, 'Instance of HTMLInputElement');
+    });
+
+  });
+
+</script>
+</body>
+</html>

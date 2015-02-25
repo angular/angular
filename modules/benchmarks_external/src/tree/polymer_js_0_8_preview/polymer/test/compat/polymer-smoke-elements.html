@@ -1,0 +1,319 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../polymer/polymer.html">
+
+<!--
+  Below, some elements add additional features to Base.
+  Ideally we Just Work under this scenario, but we need to take care
+  because we are sharing a base class and there could be name-collisions.
+-->
+
+<!-- raw -->
+
+<style>
+
+  x-trivial {
+    display: block;
+    padding: 8px;
+  }
+
+</style>
+<script>
+
+  Polymer({
+
+    is: 'x-trivial',
+
+    // stubbing out `features` gives us maximum vanilla
+
+    features: function() {
+    },
+
+    // These lifecycle callbacks are non-standard: the standard callbacks are
+    // all suffixed by `Callback`. We reserve the native callbacks for system
+    // processing in Base and supply the shorter names for individual elements
+    // to override as necessary.
+
+    created: function() {
+      this.innerHTML = '<i>Hey</i>, is this script <b>on</b>?';
+    },
+
+    // these lifecycle callbacks are also available
+
+    attached: function() {
+    },
+
+    detached: function() {
+    },
+
+    attributeChanged: function(name) {
+    }
+
+  });
+
+</script>
+
+
+<!-- using a template -->
+
+<style>
+
+  x-template {
+    display: block;
+    padding: 8px;
+  }
+
+</style>
+<template>
+
+  <i>Hey</i>, is this template <b>on</b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-template',
+
+    features: function() {
+      // use template feature
+      this.stampTemplate();
+    }
+
+  });
+
+</script>
+
+
+<!-- inexpensive `nodes` feature -->
+
+<style>
+
+  x-cheapgood-nodes {
+    display: block;
+    padding: 8px;
+  }
+
+</style>
+<template>
+
+  <i id="exclaim"></i>, is the node feature <b>on</b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-cheapgood-nodes',
+
+    features: function() {
+      // use template feature
+      this.stampTemplate();
+      // use `nodes` feature
+      this.marshalNodeReferences();
+    },
+
+    created: function() {
+      // `nodes` features populates `$` map from id's in the template
+      this.$.exclaim.textContent = 'Hey';
+    }
+
+  });
+
+</script>
+
+
+<!-- inexpensive `listeners` feature -->
+
+<style>
+
+  x-cheapgood-listeners {
+    display: block;
+    padding: 8px;
+  }
+
+</style>
+<template>
+
+  <i id="exclaim">Hey</i>, are listeners <b>on</b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-cheapgood-listeners',
+
+    listeners: {
+      click: 'clickAction',
+      'exclaim.click': 'exclaimClickAction'
+    },
+
+    features: function() {
+      // use template feature
+      this.stampTemplate();
+      // use `nodes` feature
+      this.marshalNodeReferences();
+      // use `listeners` feature
+      this.listenListeners();
+    },
+
+    clickAction: function() {
+      this.style.backgroundColor = 'lightblue';
+    },
+
+    exclaimClickAction: function(e) {
+      e.stopPropagation();
+      this.style.backgroundColor = 'orange';
+    }
+
+  });
+
+</script>
+
+
+<!-- uses standard features (template, nodes, listeners) -->
+
+<style>
+  x-simple {
+    display: block;
+    padding: 8px;
+  }
+</style>
+<template>
+
+  <i id="exclaim"></i>, is simple mode <b>on</b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-simple',
+
+    listeners: {
+      click: 'clickAction',
+      'exclaim.click': 'exclaimClickAction'
+    },
+
+    created: function() {
+      this.$.exclaim.textContent = 'Hey';
+    },
+
+    clickAction: function() {
+      this.style.backgroundColor = 'lightblue';
+    },
+
+    exclaimClickAction: function(e) {
+      e.stopPropagation();
+      this.style.backgroundColor = 'orange';
+    }
+
+  });
+
+</script>
+
+<!--
+
+  Can stop here if you want clean-and-simple.
+
+  This smoke test goes on to import and exercise some optional features
+  to make sure everything plays well together.
+
+-->
+
+<!-- import and use `bind` feature -->
+
+<link rel="import" href="../../polymer/more-features/bind.html">
+
+<style>
+
+    x-fancy-bind {
+      display: block;
+      padding: 8px;
+    }
+
+</style>
+<template>
+
+  <i id="exclaim"></i>, is fancy bind mode <b id="state"></b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-fancy-bind',
+
+    listeners: {
+      click: 'clickAction'
+    },
+
+    bind: {
+      // property: target (set property is pushed to $.<target>[.textContent])
+      exclaim: 'exclaim',
+      state: 'state'
+    },
+
+    created: function() {
+      // NOTE: binding feature turns on automatically at prototype level, if
+      // you include a `bind` object in your prototype.
+      // These properties automatically propagate to DOM as defined
+      // by the `bind` object.
+      this.exclaim = 'Hey';
+      this.state = 'on';
+    },
+
+    clickAction: function() {
+      this.state = 'LIVE';
+    }
+
+  });
+
+</script>
+
+<!-- template annotations feature -->
+
+<link rel="import" href="../../polymer/more-features/annotations.html">
+<link rel="import" href="../../polymer/more-features/bind-annotations.html">
+
+<style>
+
+  x-fancy-annotations {
+    display: block;
+    padding: 8px;
+  }
+
+</style>
+<template>
+
+  <i>{{exclaim}}</i>, is fancy annotations mode <b>{{state}}</b>?
+
+</template>
+<script>
+
+  Polymer({
+
+    is: 'x-fancy-annotations',
+
+    created: function() {
+      // NOTE: annotations feature turns on automatically at prototype level,
+      // need to gate this as it's affecting all elements with templates
+      // now.
+      // Create bindings from annotations.
+      this.marshalBoundNodes();
+      // These properties automatically propagate to DOM as defined
+      // by the template annotations.
+      this.exclaim = 'Hey';
+      this.state = 'on';
+    }
+  });
+
+</script>

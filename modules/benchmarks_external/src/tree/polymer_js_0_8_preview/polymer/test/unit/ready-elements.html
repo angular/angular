@@ -1,0 +1,73 @@
+<script>
+  var configureList = [];
+  var readyList = [];
+
+  function clearTestLists() {
+    configureList = [];
+    readyList = [];
+  }
+
+  var readyMixin = {
+    moniker: function() {
+      return this.is + (this.id ? '#' + this.id : '')
+    },
+    // use private, stateful, method for testing purposes
+    _configure: function() {
+      configureList.push(this.moniker());
+    },
+    ready: function() {
+      readyList.push(this.moniker());
+    },
+
+    attached: function() {
+      assert.isTrue(this._readied, 'Element not ready when iserted');
+    }
+  };
+</script>
+
+<template>
+  x-zot
+</template>
+<script>
+  Polymer({
+    is: 'x-zot',
+    mixins: [readyMixin]
+  });
+</script>
+
+<template>
+  <x-zot></x-zot>
+</template>
+<script>
+  Polymer({
+    is: 'x-bar',
+    mixins: [readyMixin]
+  });
+</script>
+
+<template>
+  <x-bar></x-bar>
+  <x-bar></x-bar>
+</template>
+<script>
+  Polymer({
+    is: 'x-foo',
+    mixins: [readyMixin]
+  });
+</script>
+
+<template>
+  <x-zot id="a">
+    <x-zot id="b"></x-zot>
+    <x-zot id="c">
+      <x-zot id="d"></x-zot>
+    </x-zot>
+  </x-zot>
+  <x-foo></x-foo>
+</template>
+<script>
+  Polymer({
+    is: 'x-ready',
+    mixins: [readyMixin]
+  });
+</script>

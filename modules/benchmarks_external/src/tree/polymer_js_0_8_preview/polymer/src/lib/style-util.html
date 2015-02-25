@@ -1,0 +1,71 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="css-parse.html">
+<script>
+
+  modulate('StyleUtil', ['CssParse'], function(parser) {
+
+    function toCssText(rules, callback) {
+      if (typeof rules === 'string') {
+        rules = parser.parse(rules);
+      } 
+      if (callback) {
+        forEachStyleRule(rules, callback);
+      }
+      return parser.stringify(rules);
+    }
+
+    function forEachStyleRule(node, cb) {
+      var s = node.selector;
+      var skipRules = false;
+      if (s) {
+        if ((s.indexOf(AT_RULE) !== 0) && (s.indexOf(MIXIN_SELECTOR) !== 0)) {
+          cb(node);
+        }
+        skipRules = (s.indexOf(KEYFRAME_RULE) >= 0) || 
+          (s.indexOf(MIXIN_SELECTOR) >= 0);
+      }
+      var r$ = node.rules;
+      if (r$ && !skipRules) {
+        for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
+          forEachStyleRule(r, cb);
+        }
+      }
+    }
+
+    // add a string of cssText to the document.
+    function applyCss(cssText, moniker, target) {
+      var style = document.createElement('style');
+      if (moniker) {
+        style.setAttribute('scope', moniker);
+      }
+      style.textContent = cssText;
+      // TODO(sorvell): investigate if it's better to batch multiple
+      // styles, perhaps into a fragment that's appended at once? (hopefully
+      // this doesn't matter)
+      target = target || document.head;
+      target.appendChild(style);
+      return style;
+    }
+    
+    var AT_RULE = '@';
+    var KEYFRAME_RULE = 'keyframe';
+    var MIXIN_SELECTOR = '--';
+
+    // exports
+    return {
+      parser: parser,
+      applyCss: applyCss,
+      forEachStyleRule: forEachStyleRule,
+      toCssText: toCssText
+    };
+
+  });
+</script>

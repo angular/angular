@@ -1,0 +1,520 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../polymer.html">
+  <link rel="import" href="bind-elements.html">
+<body>
+
+<script>
+
+suite('single-element binding effects', function() {
+
+  var el;
+
+  beforeEach(function() {
+    el = document.createElement('x-basic');
+    document.body.appendChild(el);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(el);
+  });
+
+  test('camel-case binding updates', function() {
+    el.value = 41;
+    assert.equal(el.$.boundChild.camelCase, 41, 'Value not propagated to camelCase property');
+  });
+
+  test('annotation binding updates', function() {
+    el.value = 42;
+    assert.equal(el.$.boundChild.value, 42, 'Value not propagated to bound child');
+  });
+
+  test('negated annotation binding updates', function() {
+    el.bool = true;
+    assert.equal(el.$.boundChild.negvalue, false, 'Value not negated');
+    el.bool = false;
+    assert.equal(el.$.boundChild.negvalue, true, 'Value not negated');
+  });
+
+  test('change handler called', function() {
+    var called = false;
+    el.valueChanged = function() {
+      called = true;
+    };
+    el.value = 43;
+    assert.equal(called, true, 'Change handler not called');
+  });
+
+  test('computed value updates', function(done) {
+    el.value = 44;
+    setTimeout(function() {
+      assert.equal(el.computedvalue, 45, 'Computed value not correct');
+      assert.equal(el.$.boundChild.computedvalue, 45, 'Computed value not propagated to bound child');
+      done();
+    });
+  });
+
+  test('notification sent', function() {
+    var notified = 0;
+    el.addEventListener('notifyingvalue-changed', function(e) {
+      assert.equal(e.detail.value, 45);
+      notified++;
+    });
+    el.addEventListener('camel-notifying-value-changed', function(e) {
+      assert.equal(e.detail.value, 45);
+      notified++;
+    });
+    el.notifyingvalue = 45;
+    el.camelNotifyingValue = 45;
+    assert.equal(notified, 2, 'Notification events not sent');
+  });
+
+  test('computed change handler called', function(done) {
+    var called = false;
+    el.computedvalueChanged = function() {
+      called = true;
+    };
+    el.value = 46;
+    setTimeout(function() {
+      assert.equal(called, true, 'Change handler not called');
+      done();
+    });
+  });
+
+  test('computed notification sent', function(done) {
+    var notified = false;
+    el.addEventListener('computednotifyingvalue-changed', function(e) {
+      assert.equal(e.detail.value, 49);
+      notified = true;
+    });
+    el.notifyingvalue = 47;
+    setTimeout(function() {
+      assert.equal(notified, true, 'Notification event not sent');
+      done();
+    });
+  });
+
+  test('computed property with multiple dependencies', function(done) {
+    var called = false;
+    el.computedFromMultipleValuesChanged = function() {
+      called = true;
+    };
+    var notified = false;
+    el.addEventListener('computed-from-multiple-values-changed', function(e) {
+      notified = true;
+    });
+    el.sum1 = 10;
+    el.sum2 = 20;
+    el.divide = 2;
+    setTimeout(function() {
+      assert.equal(el.computedFromMultipleValues, 15, 'Computed value wrong');
+      assert.equal(notified, true, 'Notification event not sent');
+      assert.equal(called, true, 'Change handler not called');
+      done();
+    });
+  });
+
+  test('no read-only change handler called with assignment', function() {
+    var called = false;
+    el.readonlyvalueChanged = function() {
+      called = true;
+    };
+    el.readolyvalue = 46;
+    assert.equal(called, false, 'Change handler should not be called for readOnly prop assignment');
+  });
+
+  test('read-only change handler called with _setReadonlyvalue', function() {
+    var called = false;
+    el.readonlyvalueChanged = function() {
+      assert(el.readonlyvalue == 46, 'value should be changed but was not');
+      called = true;
+    };
+    el._setReadonlyvalue(46);
+    assert.equal(called, true, 'Change handler should be called');
+    assert(el.readonlyvalue == 46, 'value should be changed but was not');
+  });
+
+  test('no read-only notification sent with assignment', function() {
+    var notified = false;
+    el.addEventListener('readonlyvalue-changed', function(e) {
+      notified = true;
+    });
+    el.readonlyvalue = 47;
+    assert.equal(notified, false, 'Notification should not be called for readOnly prop assignment');
+  });
+
+  test('read-only notification sent with _setReadonlyvalue', function() {
+    var notified = false;
+    el.addEventListener('readonlyvalue-changed', function(e) {
+      assert.equal(e.detail.value, 47);
+      notified = true;
+    });
+    el._setReadonlyvalue(47);
+    assert.equal(notified, true, 'Notification event not sent');
+  });
+
+});
+
+</script>
+
+<script>
+
+suite('2-way binding effects between elements', function() {
+
+  var el;
+
+  beforeEach(function() {
+    el = document.createElement('x-compose');
+    document.body.appendChild(el);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(el);
+  });
+
+  test('binding to non-notifying property', function() {
+    el.boundvalue = 42;
+    assert.equal(el.$.basic1.value, 42, 'binding to child not updated');
+    el.$.basic1.value = 43;
+    assert.equal(el.boundvalue, 42, 'binding to non-notifying property updated and should not have been');
+  });
+
+  test('changed handler for property bound to non-notifying property', function() {
+    var called = false;
+    el.boundvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic1.value = 44;
+    assert.equal(called, false, 'changed handler for property bound to non-notifying property called and should not have been');
+  });
+
+  test('binding to non-notifying computed property', function(done) {
+    el.boundcomputedvalue = 42;
+    el.$.basic1.value = 43;
+    setTimeout(function() {
+      assert.equal(el.boundcomputedvalue, 42, 'binding to non-notifying computed property updated and should not have been');
+      done();
+    });
+  });
+
+  test('changed handler for property bound to non-notifying computed property', function(done) {
+    var called = false;
+    el.boundcomputedvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic1.value = 44;
+    setTimeout(function() {
+      assert.equal(called, false, 'changed handler for property bound to non-notifying computed property called and should not have been');
+      done();
+    });
+  });
+
+  test('binding to notifying property', function() {
+    el.boundnotifyingvalue = 42;
+    assert.equal(el.$.basic1.notifyingvalue, 42, 'binding to child not updated');
+    assert.equal(el.$.basic1.camelNotifyingValue, 42, 'camel-case binding to child not updated');
+    el.$.basic1.notifyingvalue = 43;
+    assert.equal(el.boundnotifyingvalue, 43, 'binding to notifying property not updated');
+    el.$.basic1.camelNotifyingValue = -43;
+    assert.equal(el.boundnotifyingvalue, -43, 'camel-case binding to notifying property not updated');
+  });
+
+  test('changed handler for property bound to notifying property', function() {
+    var called = false;
+    el.boundnotifyingvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic1.notifyingvalue = 45;
+    assert.equal(called, true, 'changed handler for property bound to notifying property not called');
+  });
+
+  test('binding to notifying computed property', function(done) {
+    el.$.basic1.notifyingvalue = 43;
+    setTimeout(function() {
+      assert.equal(el.boundcomputednotifyingvalue, 45, 'binding to notifying computed property not updated');
+      done();
+    });
+  });
+
+  test('changed handler for property bound to notifying computed property', function(done) {
+    var called = false;
+    el.boundcomputednotifyingvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic1.notifyingvalue = 45;
+    setTimeout(function() {
+      assert.equal(called, true, 'changed handler for property bound to non-notifying computed property not called');
+      done();
+    });
+  });
+
+  test('no change for binding into read-only property', function() {
+    var called = false;
+    el.$.basic1._setReadonlyvalue(45);
+    el.$.basic1.readonlyvalueChanged = function() {
+      called = true;
+    };
+    el.boundreadonlyvalue = 46;
+    assert.equal(called, false, 'change handler for read-only property should not be called from change to bound value');
+    assert.equal(el.$.basic1.readonlyvalue, 45, 'read-only property should not change from change to bound value');
+  });
+
+  test('change for binding out of read-only property', function() {
+    var called = false;
+    el.boundreadonlyvalueChanged = function(neo, old) {
+      assert.equal(el.boundreadonlyvalue, 46, 'property bound to read-only property should change from change to bound value');
+      assert.equal(neo, 46, 'change handler argument incorrect');
+      called = true;
+    };
+    el.$.basic1._setReadonlyvalue(46);
+    assert.equal(called, true, 'change handler for property bound to read-only property should be called from change to bound value');
+    assert.equal(el.boundreadonlyvalue, 46, 'property bound to read-only property should change from change to bound value');
+  });
+
+});
+
+suite('1-way binding effects between elements', function() {
+
+  var el;
+
+  beforeEach(function() {
+    el = document.createElement('x-compose');
+    document.body.appendChild(el);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(el);
+  });
+
+  test('one-way binding to non-notifying property', function() {
+    el.boundvalue = 42;
+    assert.equal(el.$.basic1.value, 42, 'binding to child not updated');
+    el.$.basic2.value = 43;
+    assert.equal(el.boundvalue, 42, 'binding to non-notifying property updated and should not have been');
+  });
+
+  test('changed handler for property one-way-bound to non-notifying property', function() {
+    var called = false;
+    el.boundvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic2.value = 44;
+    assert.equal(called, false, 'changed handler for property one-way-bound to non-notifying property called and should not have been');
+  });
+
+  test('one-way binding to non-notifying computed property', function(done) {
+    el.boundcomputedvalue = 42;
+    el.$.basic2.value = 43;
+    setTimeout(function() {
+      assert.equal(el.boundcomputedvalue, 42, 'binding to non-notifying computed property updated and should not have been');
+      done();
+    });
+  });
+
+  test('changed handler for property one-way-bound to non-notifying computed property', function(done) {
+    var called = false;
+    el.boundcomputedvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic2.value = 44;
+    setTimeout(function() {
+      assert.equal(called, false, 'changed handler for property bound to non-notifying computed property called and should not have been');
+      done();
+    });
+  });
+
+  test('one-way binding to notifying property', function() {
+    el.boundnotifyingvalue = 42;
+    assert.equal(el.$.basic2.notifyingvalue, 42, 'binding to child not updated');
+    el.$.basic2.notifyingvalue = 43;
+    assert.equal(el.boundnotifyingvalue, 42, 'binding to notifying property updated and should not have been');
+  });
+
+  test('changed handler for property one-way-bound to notifying property', function() {
+    var called = false;
+    el.boundnotifyingvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic2.notifyingvalue = 45;
+    assert.equal(called, false, 'changed handler for property bound to notifying property called and should not have been');
+  });
+
+  test('one-way binding to notifying computed property', function(done) {
+    el.boundcomputednotifyingvalue = 42;
+    el.$.basic2.notifyingvalue = 43;
+    setTimeout(function() {
+      assert.equal(el.boundcomputednotifyingvalue, 42, 'binding to notifying computed property updated and should not have been');
+      done();
+    });
+  });
+
+  test('changed handler for property one-way-bound to notifying computed property', function(done) {
+    var called = false;
+    el.boundcomputednotifyingvalueChanged = function() {
+      called = true;
+    };
+    el.$.basic2.notifyingvalue = 45;
+    setTimeout(function() {
+      assert.equal(called, false, 'changed handler for property bound to non-notifying computed property called and should not have been');
+      done();
+    });
+  });
+
+});
+
+suite('reflection to attribute', function() {
+
+  var el;
+
+  beforeEach(function() {
+    el = document.createElement('x-reflect');
+    document.body.appendChild(el);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(el);
+  });
+
+  test('reflect object', function() {
+    el.reflectedobject = {foo: 'bar', array: [1, '2', {3:3}]};
+    assert.equal(el.getAttribute('reflectedobject'), '{"foo":"bar","array":[1,"2",{"3":3}]}');
+    el.reflectedobject = null;
+    assert(!el.hasAttribute('reflectedobject'));
+  });
+
+  test('reflect array', function() {
+    el.reflectedarray = [1, '2', {3:3}, {'four': 'four'}];
+    assert.equal(el.getAttribute('reflectedarray'), '[1,"2",{"3":3},{"four":"four"}]');
+    el.reflectedarray = null;
+    assert(!el.hasAttribute('reflectedarray'));
+  });
+
+  test('reflect string', function() {
+    el.reflectedstring = '"polymer is grrrrreat, ain\'t it?"';
+    assert.equal(el.getAttribute('reflectedstring'), '"polymer is grrrrreat, ain\'t it?"');
+    el.reflectedstring = '';
+    assert.equal(el.getAttribute('reflectedstring'), '');
+    el.reflectedstring = null;
+    assert(!el.hasAttribute('reflectedstring'));
+  });
+
+  test('reflect number', function() {
+    el.reflectedNumber = 765;
+    assert.equal(el.getAttribute('reflected-number'), '765');
+    el.reflectedNumber = 765.4321;
+    assert.equal(el.getAttribute('reflected-number'), '765.4321');
+    el.reflectedNumber = null;
+    assert(!el.hasAttribute('reflected-number'));
+  });
+
+  test('reflect boolean', function() {
+    el.reflectedboolean = true;
+    assert(el.hasAttribute('reflectedboolean'));
+    assert.equal(el.getAttribute('reflectedboolean'), '');
+    el.reflectedboolean = false;
+    assert(!el.hasAttribute('reflectedboolean'));
+    el.reflectedboolean = true;
+    el.reflectedboolean = null;
+    assert(!el.hasAttribute('reflectedboolean'));
+  });
+
+  test('reflect date', function() {
+    el.reflecteddate = new Date('Fri Jan 23 2015 17:40:29 GMT-0800 (PST)');
+    assert(el.hasAttribute('reflecteddate'));
+    assert.equal(Date.parse(el.getAttribute('reflecteddate')), 
+      el.reflecteddate.getTime());
+    el.reflecteddate = null;
+    assert(!el.hasAttribute('reflecteddate'));
+  });
+
+});
+
+suite('binding to attribute', function() {
+
+  var el;
+
+  beforeEach(function() {
+    el = document.createElement('x-basic');
+    document.body.appendChild(el);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(el);
+  });
+
+  test('bind object to attribute', function() {
+    el.attrvalue = {foo: 'bar', array: [1, '2', {3:3}]};
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'),
+      '{"foo":"bar","array":[1,"2",{"3":3}]}');
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+  test('bind array to attribute', function() {
+    el.attrvalue = [1, '2', {3:3}, {'four': 'four'}];
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'),
+      '[1,"2",{"3":3},{"four":"four"}]');
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+  test('bind string to attribute', function() {
+    el.attrvalue = '"polymer is grrrrreat, ain\'t it?"';
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'),
+      '"polymer is grrrrreat, ain\'t it?"');
+    el.attrvalue = '';
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'), '');
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+  test('bind number to attribute', function() {
+    el.attrvalue = 765;
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'), '765');
+    el.attrvalue = 765.4321;
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'), '765.4321');
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+  test('bind boolean to attribute', function() {
+    el.attrvalue = true;
+    assert(el.$.boundChild.hasAttribute('attrvalue'));
+    assert.equal(el.$.boundChild.getAttribute('attrvalue'), '');
+    el.attrvalue = false;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+    el.attrvalue = true;
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+  test('bind date to attribute', function() {
+    el.attrvalue = new Date('Fri Jan 23 2015 17:40:29 GMT-0800 (PST)');
+    assert(el.$.boundChild.hasAttribute('attrvalue'));
+    assert.equal(Date.parse(el.$.boundChild.getAttribute('attrvalue')), 
+      el.attrvalue.getTime());
+    el.attrvalue = null;
+    assert(!el.$.boundChild.hasAttribute('attrvalue'));
+  });
+
+});
+
+</script>
+
+
+
+</body>
+</html>

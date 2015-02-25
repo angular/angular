@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../polymer.html">
+  <link rel="import" href="ready-elements.html">
+</head>
+<body>
+
+<x-ready></x-ready>
+
+<script>
+
+  suite('ready', function() {
+
+    var configure = ['x-ready', 'x-zot#a', 'x-zot#b', 'x-zot#c', 'x-zot#d', 'x-foo', 'x-bar', 'x-zot', 'x-bar', 'x-zot'];
+    var ready = ['x-zot#a', 'x-zot#b', 'x-zot#c', 'x-zot#d', 'x-zot', 'x-bar', 'x-zot', 'x-bar', 'x-foo', 'x-ready'];
+
+    test('element create in dom calls configure/ready in proper order', function() {
+      assert.deepEqual(configureList, configure);
+      assert.deepEqual(readyList, ready);
+    });
+
+    test('element create + attach calls configure/ready in proper order', function() {
+      clearTestLists();
+      document.body.appendChild(document.createElement('x-ready'));
+      CustomElements.takeRecords(document);
+      assert.deepEqual(configureList, configure);
+      assert.deepEqual(readyList, ready);
+    });
+
+  });
+
+</script>
+</body>
+</html>

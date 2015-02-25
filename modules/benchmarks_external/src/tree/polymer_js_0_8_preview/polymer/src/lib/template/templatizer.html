@@ -1,0 +1,118 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<script>
+
+modulate('Templatizer', ['Base', 'Annotations'], function(Base, Annotations) {
+
+  Templatizer = {
+
+    templatize: function(template) {
+      // TODO(sjmiles): supply _alternate_ content reference missing from root
+      // templates (not nested). `_content` exists to provide content sharing
+      // for nested templates.
+      if (!template._content) {
+        template._content = template.content;
+      }
+      // fast path if template's anonymous class has been memoized
+      if (template._content._ctor) {
+        this.ctor = template._content._ctor;
+        //console.log('Templatizer.templatize: using memoized archetype');
+        return;
+      }
+      // `archetype` is the prototype of the anonymous
+      // class created by the templatizer 
+      var archetype = Object.create(Base);
+      // normally Annotations.parseAnnotations(template) but
+      // archetypes do special caching
+      this.customPrepAnnotations(archetype, template);
+      // setup accessors
+      archetype._prepEffects();
+      // late-binds archetype.listen to host.listen; h.l doesn't exist yet
+      archetype.listen = function() { 
+        this.listen.apply(this, arguments);
+      }.bind(this.host);
+      /*
+      var host = this.host;
+      archetype.listen = function() {
+        host.listen.apply(host, arguments);
+      };
+      */
+      // boilerplate code
+      archetype._notifyPath = this._notifyPathImpl;
+      // boilerplate code
+      var _constructor = this._constructorImpl;
+      var ctor = function TemplateInstance(model, host) {
+        _constructor.call(this, model, host);
+      };
+      // standard references
+      ctor.prototype = archetype;
+      archetype.constructor = ctor;
+      // TODO(sjmiles): constructor cache?
+      template._content._ctor = ctor;
+      // TODO(sjmiles): choose less general name
+      this.ctor = ctor;
+    },
+
+    customPrepAnnotations: function(archetype, template) {
+      if (template) {
+        archetype._template = template;
+        var c = template._content;
+        if (c) {
+          archetype._annotes = c._annotes ||
+            Annotations.parseAnnotations(template);
+          c._annotes = archetype._annotes;
+        } 
+        else {
+          console.warn('no _content');
+        }
+      }
+      else {
+        console.warn('no _template');
+      }
+    },
+
+    _notifyPathImpl: function() {
+      var pd = this.pathDelegate;
+      if (pd) {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift(this);
+        pd._notifyDelegatePath.apply(pd, args);
+      }
+    },
+
+    _constructorImpl: function(model, host) {
+      this._setupConfigure(model);
+      this.host = host;
+      if (this.host) {
+        this.host._beginHost();
+      }
+      this.root = this.instanceTemplate(this._template);
+      if (this.host) {
+        this.host._popHost();
+      }
+      this._marshalTemplateContent();
+      this._marshalAnnotatedNodes();
+      this._marshalInstanceEffects();
+      this._marshalAnnotatedListeners();
+      this._ready();
+    },
+
+    stamp: function(model) {
+      return new this.ctor(model, this.host);
+    }
+
+  };
+
+  return Templatizer;
+
+});
+
+</script>

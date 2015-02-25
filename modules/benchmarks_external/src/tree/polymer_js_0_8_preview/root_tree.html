@@ -1,0 +1,61 @@
+<link rel="import" href="polymer/polymer.html">
+<link rel="import" href="binary_tree.html">
+
+<dom-module id="root-tree">
+  <template>
+    <button on-click="measure">measure</button>
+  </template>
+</dom-module>
+<script type="application/javascript">
+  (function() {
+    var count = 0;
+    Polymer({
+      is: 'root-tree',
+      published: {
+        data: Object
+      },
+      data: null,
+      baseTree: null,
+      created: function() {
+        this.generateData();
+      },
+      measure: function() {
+        var start = performance.now();
+        console.log('Start: ' + start + 'ms');
+        if (this.baseTree) {
+          this.baseTree.remove();
+          this.baseTree = null;
+          this.data = null;
+        } else {
+          this.generateData();
+          this.baseTree = document.createElement('binary-tree');
+          this.baseTree.data = this.data;
+          this.appendChild(this.baseTree);
+        }
+
+        // TODO(jakemac): What is the deliverChanges equivalent in 0.8?
+        this.async(function() {
+          var stop = performance.now();
+          console.log('Stop: ' + stop + 'ms');
+          console.log('Elapsed: ' + (stop - start) + 'ms');
+        });
+      },
+      generateData: function() {
+        var maxDepth = 9;
+        var values = count++ % 2 == 0 ?
+          ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+          ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+
+        this.data = this.buildTree(maxDepth, values, 0);
+      },
+      buildTree: function(maxDepth, values, curDepth) {
+        if (maxDepth == curDepth) return {value: '', left: null, right: null};
+        return {
+          value: values[curDepth],
+          left: this.buildTree(maxDepth, values, curDepth+1),
+          right: this.buildTree(maxDepth, values, curDepth+1)
+        };
+      }
+    });
+  })();
+</script>

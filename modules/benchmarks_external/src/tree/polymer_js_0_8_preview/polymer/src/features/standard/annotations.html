@@ -1,0 +1,188 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!-- employ 'Annotations' module -->
+
+<link rel="import" href="../../lib/annotations/annotations.html">
+
+<script>
+
+/**
+ * Scans a template to produce an annotation object that stores expression 
+ * metadata along with information to associate the metadata with nodes in an 
+ * instance.
+ *
+ * Elements with `id` in the template are noted and marshaled into an 
+ * the `$` hash in an instance. 
+ * 
+ * Example
+ * 
+ *     &lt;template>
+ *       &lt;div id="foo">&lt;/div>
+ *     &lt;/template>
+ *     &lt;script>
+ *      Polymer({
+ *        task: function() {
+ *          this.$.foo.style.color = 'red';
+ *        }
+ *      });
+ *     &lt;/script>
+ * 
+ * Other expressions that are noted include:
+ *
+ * Double-mustache annotations in text content. The annotation must be the only
+ * content in the tag, compound expressions are not (currently) supported.
+ *
+ *     <[tag]>{{path.to.host.property}}<[tag]>
+ *
+ * Double-mustache annotations in an attribute.
+ *
+ *     <[tag] someAttribute="{{path.to.host.property}}"><[tag]>
+ *
+ * Only immediate host properties can automatically trigger side-effects.
+ * Setting `host.path` in the example above triggers the binding, setting
+ * `host.path.to.host.property` does not.
+ *
+ * `on-` style event declarations.
+ *
+ *     <[tag] on-<event-name>="{{hostMethodName}}"><[tag]>
+ *
+ * Note: **the `annotations` feature does not actually implement the behaviors
+ * associated with these expressions, it only captures the data**. 
+ * 
+ * Other optional features contain actual data implementations.
+ *
+ * @class standard feature: annotations
+ */
+
+/*
+
+Scans a template to produce an annotation map that stores expression metadata
+and information that associates the metadata to nodes in a template instance.
+
+Supported annotations are:
+
+  * id attributes
+  * binding annotations in text nodes
+    * double-mustache expressions: {{expression}}
+    * double-bracket expressions: [[expression]]
+  * binding annotations in attributes
+    * attribute-bind expressions: name="{{expression}} || [[expression]]"
+    * property-bind expressions: name*="{{expression}} || [[expression]]"
+    * property-bind expressions: name:="expression"
+  * event annotations
+    * event delegation directives: on-<eventName>="expression"
+
+Generated data-structure:
+
+  [
+    {
+      id: '<id>',
+      events: [
+        {
+          mode: ['auto'|''],
+          name: '<name>'
+          value: '<expression>'
+        }, ...
+      ],
+      bindings: [
+        {
+          kind: ['text'|'attribute'|'property'],
+          mode: ['auto'|''],
+          name: '<name>'
+          value: '<expression>'
+        }, ...
+      ],
+      // TODO(sjmiles): confusingly, this is annotation-parent, not node-parent
+      parent: <reference to parent annotation>,
+      index: <integer index in parent's childNodes collection>
+    },
+    ...
+  ]
+
+TODO(sjmiles): this module should produce either syntactic metadata
+(e.g. double-mustache, double-bracket, star-attr), or semantic metadata
+(e.g. manual-bind, auto-bind, property-bind). Right now it's half and half.
+
+*/
+
+  using(['Base', 'Annotations'], function(Base, Annotations) {
+
+    Base.addFeature({
+
+      // registration-time
+
+      _prepAnnotations: function() {
+        this._annotes = !this._template ? [] 
+          : Annotations.parseAnnotations(this._template);
+      },
+
+      // instance-time
+
+      findAnnotatedNode: Annotations.findAnnotatedNode,
+
+      // marshal all teh things
+      _marshalAnnotationReferences: function() {
+        if (this._template) {
+          this._marshalTemplateContent();
+          this._marshalIdNodes();
+          this._marshalAnnotatedNodes();
+          this._marshalAnnotatedListeners();
+        }
+      }, 
+
+      // nested template contents have been stored prototypically to avoid 
+      // unnecessary duplication, here we put references to the 
+      // indirected contents onto the nested template instances
+      _marshalTemplateContent: function() {
+        this._annotes.forEach(function(note) {
+          if (note.templateContent) {
+            var template = this.findAnnotatedNode(this.root, note);
+            template._content = note.templateContent;
+          }
+        }, this);
+      },
+
+      // construct `$` map (from id annotations)
+      _marshalIdNodes: function() {
+        this.$ = {};
+        this._annotes.forEach(function(a) {
+          if (a.id) {
+            this.$[a.id] = Annotations.findAnnotatedNode(this.root, a);
+          }
+        }, this);
+      },
+
+      // concretize `_nodes` map (from anonymous annotations)
+      _marshalAnnotatedNodes: function() {
+        if (this._nodes) {
+          this._nodes = this._nodes.map(function(a) {
+            return Annotations.findAnnotatedNode(this.root, a);
+          }, this);
+        }
+      },
+
+      // install event listeners (from event annotations)
+      _marshalAnnotatedListeners: function() {
+        this._annotes.forEach(function(a) {
+          if (a.events && a.events.length) {
+            var node = Annotations.findAnnotatedNode(this.root, a);
+            a.events.forEach(function(e) {
+              this.listen(node, e.name, e.value);
+            }, this);
+          }
+        }, this);
+      }
+
+    });
+
+  });
+
+</script>

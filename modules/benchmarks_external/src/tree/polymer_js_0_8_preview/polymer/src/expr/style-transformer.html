@@ -1,0 +1,138 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../lib/style-util.html">
+<script>
+
+  modulate('StyleTransformer', ['StyleUtil'], function(styleUtil) {
+
+    /* Transforms ShadowDOM styling into ShadyDOM styling
+
+     Transformations:
+
+     * scoping: 
+
+        * elements in scope get scoping selector class="x-foo-scope"
+        * selectors re-written as follows:
+
+          div button -> div.x-foo-scope button.x-foo-scope
+
+     * :host -> scopeName
+
+     * :host(...), :host-context(...): NOT SUPPORTED
+     TODO(sorvell): probably need to support this?
+
+     * ::content -> ' ' NOTE: requires use of scoping selector and selectors
+       cannot otherwise be scoped:
+       e.g. :host ::content > .bar -> x-foo > .bar
+
+     * ::shadow, /deep/: NOT SUPPORTED
+
+    */
+
+    // Given a node and scope name, add a scoping class to each node 
+    // in the tree. This facilitates transforming css into scoped rules. 
+    function transformDom(node, scope) {
+      _transformDom(node, scope + SCOPE_SUFFIX);
+    }
+
+    function _transformDom(node, selector) {
+      if (node.classList) {
+        node.classList.add(selector);
+      }
+      // NOTE: it'd be better to use *Element* but Safari does not support
+      // this api for document fragments.
+      for (var e=node.firstChild; e; e=e.nextSibling) {
+        _transformDom(e, selector);
+      }
+    }
+
+    function transformHost(host, scope) {
+      host.classList.add(scope + HOST_SCOPE_SUFFIX);
+    }
+
+    // Given a string of cssText and a scoping string (scope), returns
+    // a string of scoped css where each selector is transformed to include
+    // a class created from the scope. ShadowDOM selectors are also transformed
+    // (e.g. :host) to use the scoping selector.
+    function transformCss(rules, scope, callback) {
+      return styleUtil.toCssText(rules, function(rule) {
+        transformRule(rule, scope);
+        if (callback) {
+          callback(rule, scope);
+        }
+      });
+    }
+
+    // transforms a css rule to a scoped rule.
+    function transformRule(rule, scope) {
+      var p$ = rule.selector.split(COMPLEX_SELECTOR_SEP);
+      for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
+        p$[i] = transformComplexSelector(p, scope);
+      }
+      rule.selector = p$.join(COMPLEX_SELECTOR_SEP);
+    }
+
+    function transformComplexSelector(selector, scope) {
+      var stop = false;
+      return selector.replace(SIMPLE_SELECTOR_SEP, function(s) {
+        if (!stop) {
+          var o = transformCompoundSelector(s, scope);
+          if (o.stop) {
+            stop = true;
+          }
+          s = o.value;  
+        }
+        return s;
+      });
+    }
+
+    function transformCompoundSelector(selector, scope) {
+      // replace :host with host scoping class
+      if (selector.indexOf(HOST) >=0) {
+        selector = selector.replace(HOST, CLASS_PREFIX + scope + 
+          HOST_SCOPE_SUFFIX);
+      // replace other selectors with scoping class
+      } else {
+        selector = transformSimpleSelector(selector, scope);
+      }
+      // process ::content up to the ::content and then stop
+      var stop;
+      if (selector.indexOf(CONTENT) >= 0) {
+        selector = selector.replace(CONTENT, ' ');
+        stop = true;
+      }
+      return {value: selector, stop: stop};
+    }
+
+    function transformSimpleSelector(selector, scope) {
+      var p$ = selector.split(PSEUDO_PREFIX);
+      p$[0] += CLASS_PREFIX + scope + SCOPE_SUFFIX;
+      return p$.join(PSEUDO_PREFIX);
+    }
+
+    var SCOPE_SUFFIX = '-x';
+    var HOST_SCOPE_SUFFIX = '-xx';
+    var COMPLEX_SELECTOR_SEP = ',';
+    var SIMPLE_SELECTOR_SEP = /([^\s>+~]+)/g;
+    var HOST = ':host';
+    var CONTENT = "::content";
+    var CLASS_PREFIX = '.';
+    var PSEUDO_PREFIX = ':';
+
+    // exports
+    return {
+      dom: transformDom,
+      host: transformHost,
+      css: transformCss,
+      SCOPE_SUFFIX: SCOPE_SUFFIX
+    };
+
+  });
+</script>

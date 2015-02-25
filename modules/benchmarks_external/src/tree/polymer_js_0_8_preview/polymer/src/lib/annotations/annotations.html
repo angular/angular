@@ -1,0 +1,270 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../module.html">
+
+<script>
+/**
+ * Scans a template to produce an annotation list that that associates
+ * metadata culled from markup with tree locations 
+ * metadata and information to associate the metadata with nodes in an instance.
+ *
+ * Supported expressions include:
+ *
+ * Double-mustache annotations in text content. The annotation must be the only
+ * content in the tag, compound expressions are not supported.
+ *
+ *     <[tag]>{{annotation}}<[tag]>
+ *
+ * Double-escaped annotations in an attribute, either {{}} or [[]].
+ *
+ *     <[tag] someAttribute="{{annotation}}" another="[[annotation]]"><[tag]>
+ *
+ * `on-` style event declarations.
+ *
+ *     <[tag] on-<event-name>="annotation"><[tag]>
+ *
+ * Note that the `annotations` feature does not implement any behaviors
+ * associated with these expressions, it only captures the data.
+ *
+ * Generated data-structure:
+ * 
+ *     [
+ *       {
+ *         id: '<id>',
+ *         events: [
+ *           {
+ *             name: '<name>'
+ *             value: '<annotation>'
+ *           }, ...
+ *         ],
+ *         bindings: [
+ *           {
+ *             kind: ['text'|'attribute'],
+ *             mode: ['{'|'['],
+ *             name: '<name>'
+ *             value: '<annotation>'
+ *           }, ...
+ *         ],
+ *         // TODO(sjmiles): this is annotation-parent, not node-parent
+ *         parent: <reference to parent annotation object>,
+ *         index: <integer index in parent's childNodes collection>
+ *       },
+ *       ...
+ *     ]
+ * 
+ * @class Template feature
+ */
+
+  modulate('Annotations', function() {
+
+    // null-array (shared empty array to avoid null-checks)
+    var nar = [];
+
+    var Annotations = {
+
+      // preprocess-time
+
+      // construct and return a list of annotation records
+      // by scanning `template`'s content
+      parseAnnotations: function(template) {
+        var list = [];
+        var content = template._content || template.content; 
+        this._parseNodeAnnotations(content, list);
+        return list;
+      },
+
+      // add annotations gleaned from subtree at `node` to `list`
+      _parseNodeAnnotations: function(node, list) {
+        return node.nodeType === Node.TEXT_NODE ?
+          this._parseTextNodeAnnotation(node, list) :
+            // TODO(sjmiles): are there other nodes we may encounter
+            // that are not TEXT_NODE but also not ELEMENT?
+            this._parseElementAnnotations(node, list);
+      },
+
+      // add annotations gleaned from TextNode `node` to `list`
+      _parseTextNodeAnnotation: function(node, list) {
+        var v = node.textContent, escape = v.slice(0, 2);
+        if (escape === '{{' || escape === '[[') {
+          // NOTE: use a space here so the textNode remains; some browsers
+          // (IE) evacipate an empty textNode.
+          node.textContent = ' ';
+          var annote = {
+            bindings: [{
+              kind: 'text',
+              mode: escape[0],
+              value: v.slice(2, -2)
+            }]
+          };
+          list.push(annote);
+          return annote;
+        }
+      },
+
+      // add annotations gleaned from Element `node` to `list`
+      _parseElementAnnotations: function(element, list) {
+        var annote = {
+          bindings: [],
+          events: []
+        };
+        this._parseChildNodesAnnotations(element, annote, list);
+        // TODO(sjmiles): is this for non-ELEMENT nodes? If so, we should
+        // change the contract of this method, or filter these out above.
+        if (element.attributes) {
+          this._parseNodeAttributeAnnotations(element, annote, list);
+        }
+        if (annote.bindings.length || annote.events.length || annote.id) {
+          list.push(annote);
+        }
+        return annote;
+      },
+
+      // add annotations gleaned from children of `root` to `list`, `root`'s
+      // `annote` is supplied as it is the annote.parent of added annotations 
+      _parseChildNodesAnnotations: function(root, annote, list) {
+        if (root.firstChild) {
+          for (var i=0, node=root.firstChild; node; node=node.nextSibling, i++){
+            if (node.localName === 'template') {
+              // TODO(sjmiles): simply altering the .content reference didn't
+              // work (there was some confusion, might need verification)
+              var content = document.createDocumentFragment();
+              content.appendChild(node.content);
+              // TODO(sjmiles): using `nar` to avoid unnecessary allocation;
+              // in general the handling of these arrays needs some cleanup 
+              // in this module
+              list.push({
+                bindings: nar,
+                events: nar,
+                templateContent: content,
+                parent: annote,
+                index: i
+              });
+            }
+            //
+            var childAnnotation = this._parseNodeAnnotations(node, list);
+            if (childAnnotation) {
+              childAnnotation.parent = annote;
+              childAnnotation.index = i;
+            }
+          }
+        }
+      },
+
+      // add annotation data from attributes to the `annotation` for node `node`
+      // TODO(sjmiles): the distinction between an `annotation` and 
+      // `annotation data` is not as clear as it could be
+      _parseNodeAttributeAnnotations: function(node, annotation) {
+        for (var i=0, a; (a=node.attributes[i]); i++) {
+          var n = a.name, v = a.value;
+          // id
+          if (n === 'id') {
+            annotation.id = v;
+          }
+          // events (on-*)
+          else if (n.slice(0, 3) === 'on-') {
+            i--;
+            node.removeAttribute(n);
+            annotation.events.push({
+              name: n.slice(3),
+              value: v
+            });
+          }
+          // bindings (other attributes)
+          else {
+            var b = this._parseNodeAttributeAnnotation(node, n, v);
+            if (b) {
+              i--;
+              annotation.bindings.push(b);
+            }
+          }
+        }
+      },
+
+      // construct annotation data from a generic attribute, or undefined
+      _parseNodeAttributeAnnotation: function(node, n, v) {
+        var mode = '', escape = v.slice(0, 2), name = n;
+        if (escape === '{{' || escape === '[[') {
+          // Mode (one-way or two)
+          mode = escape[0];
+          v = v.slice(2, -2);
+          // Negate
+          var not = false;
+          if (v[0] == '!') {
+            v = v.substring(1);
+            not = true;
+          }
+          // Attribute or property
+          var kind = 'property';
+          if (n[n.length-1] == '$') {
+            name = n.slice(0, -1);
+            kind = 'attribute';
+          }
+          // Remove annotation
+          node.removeAttribute(n);
+          // Case hackery: attributes are lower-case, but bind targets 
+          // (properties) are case sensitive. Gambit is to map dash-case to 
+          // camel-case: `foo-bar` becomes `fooBar`.
+          // Attribute bindings are excepted.
+          if (kind === 'property') {
+            name = Annotations.dashToCamelCase(name);
+          }
+          return {
+            kind: kind,
+            mode: mode,
+            name: name,
+            value: v,
+            negate: not
+          };
+        }
+      },
+
+      dashToCamelCase: function(dash) {
+        // TODO(sjmiles): is rejection test actually helping perf?
+        if (dash.indexOf('-') < 0) {
+          return dash;
+        }
+        return dash.replace(/-([a-z])/g, 
+          function(m) {
+            return m[1].toUpperCase(); 
+          }
+        );
+      },
+
+      camelToDashCase: function(camel) {
+        return camel.replace(/([a-z][A-Z])/g, 
+          function (g) { 
+            return g[0] + '-' + g[1].toLowerCase() 
+          }
+        );
+      },
+
+      // instance-time
+
+      _localSubTree: function(node, host) {
+        return (node === host) ? node.childNodes :
+           (node.lightChildren || node.childNodes);
+      },
+
+      findAnnotatedNode: function(root, annote) {
+        // recursively ascend tree until we hit root
+        var parent = annote.parent && 
+          Annotations.findAnnotatedNode(root, annote.parent);
+        // unwind the stack, returning the indexed node at each level
+        return !parent ? root : 
+          Annotations._localSubTree(parent, root)[annote.index];
+      }
+
+    };
+
+    return Annotations;
+
+  });
+
+</script>

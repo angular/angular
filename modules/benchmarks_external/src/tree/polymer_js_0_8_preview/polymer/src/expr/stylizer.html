@@ -1,0 +1,119 @@
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../lib/style-util.html">
+<link rel="import" href="style-transformer.html">
+<link rel="import" href="shadow-settings.html">
+<script>
+
+  using(['Base', 'StyleTransformer', 'StyleUtil', 'ShadowSettings'], 
+    function(Base, transformer, styleUtil, settings) {
+    
+    var prepTemplate = Base._prepTemplate;
+    var stampTemplate = Base._stampTemplate;
+
+    var domModule = document.createElement('dom-module');
+
+    Base.addFeature({
+
+      // declaration-y
+      _prepTemplate: function() {
+        prepTemplate.call(this);
+        var port = domModule.import(this.is);
+        this._encapsulateStyle = (port && port.hasAttribute('encapsulate')) &&
+          !settings.useNativeShadow;
+        // scope dom 
+        if (this._encapsulateStyle && this._template) {
+          transformer.dom(this._template.content, this.is);
+        }
+        // scope css
+        // TODO(sorvell): native shadow styles will contain custom properties
+        if (settings.useNativeShadow || this._encapsulateStyle) {
+          this._scopeCss();
+        }
+      },
+
+      // TODO(sorvell): Need to decide where to place styles. If we do it
+      // outside the template, HTMLImports will load them for us and fix paths;
+      // however, ShadowDOM styles will not be properly parsed.
+      _scopeCss: function() {
+        this._styles = this._prepareStyles(this._findStyles());
+        this._scopeStyles(this._styles);
+      },
+
+      // search for extra style modules via `styleModules`
+      _findStyles: function() {
+        var styles = [];
+        var modules = (this.styleModules || []);
+        if (modules.indexOf(this.is) < 0) {
+          modules.push(this.is);
+        }
+        for (var i=0, l=modules.length, n, m; (i<l) && (n=modules[i]); i++) {
+          m = domModule.import(n);
+          if (m) {
+            styles = styles.concat(Array.prototype.slice.call(
+              m._styles ? m._styles : m.querySelectorAll('style')));
+          }
+        }
+        return styles;
+      },
+
+      // TODO(sorvell): goes away if these are in template; we need to unapply
+      // the styles from the document.
+      _prepareStyles: function(styles) {
+        var output = []
+        for (var i=0, l=styles.length, s, m; (i<l) && (s=styles[i]); i++) {
+          // NOTE: __appliedElement is supplied by the HTMLImports polyfill
+          // and is the element in the main document used to apply styles.
+          m = s.parentNode;
+          // store styles on module for later lookup
+          if (m) {
+            m._styles = [];
+            s = s.__appliedElement || s;
+            s.parentNode.removeChild(s);
+            m._styles.push(s);
+          }
+          // TODO(sorvell): clone styles only so they can have separate parsed
+          // rulesets when shared.
+          output.push(s.cloneNode(true));
+        }
+        return output;
+      },
+
+      _scopeStyles: function(styles) {
+        for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
+          // transform style if necessary and place in correct place
+          if (settings.useNativeShadow) {
+            this._template.content.appendChild(s);
+          } else {
+            var rules = this._rulesForStyle(s);
+            styleUtil.applyCss(transformer.css(rules, this.is), this.is);
+          }
+        }
+      },
+
+      _rulesForStyle: function(style) {
+        if (!style.__cssRules) {
+          style.__cssRules = styleUtil.parser.parse(style.textContent);
+        }
+        return style.__cssRules;
+      },
+
+      // instance-y
+      _stampTemplate: function() {
+        if (this._encapsulateStyle) {
+          transformer.host(this, this.is);
+        }
+        stampTemplate.call(this);
+      }
+
+    });
+
+  });
+</script>

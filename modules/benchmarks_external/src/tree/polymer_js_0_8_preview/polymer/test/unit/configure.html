@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../polymer.html">
+  <link rel="import" href="configure-elements.html">
+</head>
+<body>
+
+  <x-configure></x-configure>
+
+  <x-configure content="attr"></x-configure>
+
+  <x-configure-host></x-configure-host>  
+
+  <x-configure-host content="attr"></x-configure-host>  
+
+<script>
+
+  function testValueAndChangeHandler(e, value) {
+    assert.equal(e.content, value, 'Property does not equal configured value');
+    assert.equal(e.changeHandlerCount, 1, 'Change handler not run when default value set');
+    assert.equal(e.changeHandlerReadyState, true, 'Element not readied when change handler run');
+  }
+
+  function testConfigure(e, value) {
+    testValueAndChangeHandler(e, value);
+    assert.equal(e.$.content.textContent, value, 'Bound value not propagated to dom');
+  }
+
+  function testConfigureHost(e, value) {
+    testValueAndChangeHandler(e, value);
+    e = e.$.child;
+    testValueAndChangeHandler(e, value);
+    e = e.$.gchild;
+    testValueAndChangeHandler(e, value);
+    assert.equal(e.$.content.textContent, value, 'Bound value not propagated to dom');
+  }
+
+  suite('configure', function() {
+
+    test('value set in configure initializes correctly', function() {
+      var e = document.querySelector('x-configure');
+      testConfigure(e, 'content');      
+    });
+
+    test('attribute overrides value set in configure', function() {
+      var e = document.querySelector('x-configure[content]');
+      testConfigure(e, 'attr');
+    });
+
+    test('configured values initialize and propagates', function() {
+      var e = document.querySelector('x-configure-host');
+      testConfigureHost(e, 'host');
+    });
+
+    test('attribute overrides configured values and propagates', function() {
+      var e = document.querySelector('x-configure-host[content]');
+      testConfigureHost(e, 'attr');
+    });
+
+  });
+
+</script>
+</body>
+</html>
