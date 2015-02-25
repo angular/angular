@@ -116,7 +116,11 @@ function normalizeEvent(chromeEvent, data) {
     'ts': chromeEvent['ts'] / 1000
   };
   if (chromeEvent['ph'] === 'X') {
-    result['dur'] = chromeEvent['dur'] / 1000;
+    var dur = chromeEvent['dur'];
+    if (isBlank(dur)) {
+      dur = chromeEvent['tdur'];
+    }
+    result['dur'] = isBlank(dur) ? 0.0 : dur / 1000;
   }
   StringMapWrapper.forEach(data, (value, prop) => {
     result[prop] = value;

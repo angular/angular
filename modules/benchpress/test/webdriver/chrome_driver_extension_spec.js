@@ -83,6 +83,17 @@ export function main() {
         });
       });
 
+      it('should normalize "tdur" to "dur"', (done) => {
+        var event = chromeTimelineEvents.create('X', 'FunctionCall', 1100, null);
+        event['tdur'] = 5500;
+        createExtension([event]).readPerfLog().then( (events) => {
+          expect(events).toEqual([
+            normEvents.complete('script', 1.1, 5.5, null),
+          ]);
+          done();
+        });
+      });
+
       it('should report FunctionCall events as "script"', (done) => {
         createExtension([
           chromeTimelineEvents.start('FunctionCall', 0)
