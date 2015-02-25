@@ -325,7 +325,7 @@ class BaseLineIf {
     if (this.condition !== newCondition) {
       this.condition = newCondition;
       if (isPresent(this.component)) {
-        this.component.element.remove();
+        DOM.remove(this.component.element);
         this.component = null;
       }
       if (this.condition) {
