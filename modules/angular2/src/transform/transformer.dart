@@ -118,16 +118,13 @@ class _BootstrapFileBuilder {
 
     var types = new Angular2Types(_resolver);
     // TODO(kegluneq): Also match [Inject].
-    var matcher = new AnnotationMatcher(new Set.from([
-      types.componentAnnotation,
-      types.decoratorAnnotation,
-      types.templateAnnotation
-    ]));
+    var matcher = new AnnotationMatcher(
+        new Set.from([types.directiveAnnotation, types.templateAnnotation]));
 
     var traversal = new AngularVisibleTraversal(types, matcher);
     bootstrapCalls.forEach((call) => traversal.traverse(call.bootstrapType));
 
-    var context = new codegen.Context(logger: _transform.logger);
+    var context = new codegen.Context();
     matcher.matchQueue
         .forEach((entry) => context.directiveRegistry.register(entry));
 
