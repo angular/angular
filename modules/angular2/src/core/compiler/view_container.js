@@ -74,8 +74,10 @@ export class ViewContainer {
         'Cannot create views on a dehydrated ViewContainer');
     // TODO(rado): replace with viewFactory.
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
+    // insertion must come before hydration so that element injector trees are attached.
+    this.insert(newView, atIndex);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
-    return this.insert(newView, atIndex);
+    return newView;
   }
 
   insert(view, atIndex=-1): viewModule.View {
