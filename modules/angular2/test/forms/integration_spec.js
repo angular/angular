@@ -218,6 +218,54 @@ export function main() {
         });
       });
     });
+    
+    describe("nested forms", () => {
+      it("should init DOM with the given form object", (done) => {
+        var form = new ControlGroup({
+          "nested": new ControlGroup({
+            "login": new Control("value")
+          })
+        });
+        var ctx = new MyComp(form);
+
+        var t = `<div [control-group]="form">
+                    <div control-group="nested">
+                      <input type="text" control="login">
+                    </div>
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("value");
+          done();
+        });
+      });
+
+      it("should update the control group values on DOM change", (done) => {
+        var form = new ControlGroup({
+          "nested": new ControlGroup({
+            "login": new Control("value")
+          })
+        });
+        var ctx = new MyComp(form);
+
+        var t = `<div [control-group]="form">
+                    <div control-group="nested">
+                      <input type="text" control="login">
+                    </div>
+                </div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+
+          input.value = "updatedValue";
+          dispatchEvent(input, "change");
+
+          expect(form.value).toEqual({"nested" : {"login" : "updatedValue"}});
+          done();
+        });
+      });
+    });
   });
 }
 

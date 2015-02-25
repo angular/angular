@@ -16,7 +16,7 @@ export const INVALID = "INVALID";
 //  setParent(parent){}
 //}
 
-export class Control {
+export class AbstractControl {
   _value:any;
   _status:string;
   _errors;
@@ -24,16 +24,9 @@ export class Control {
   _parent:ControlGroup;
   validator:Function;
 
-  constructor(value:any, validator:Function = nullValidator) {
-    this._value = value;
+  constructor(validator:Function = nullValidator) {
     this.validator = validator;
     this._dirty = true;
-  }
-
-  updateValue(value:any) {
-    this._value = value;
-    this._dirty = true;
-    this._updateParent();
   }
 
   get active():boolean {
@@ -41,6 +34,7 @@ export class Control {
   }
 
   get value() {
+    this._updateIfNeeded();
     return this._value;
   }
 
@@ -64,11 +58,6 @@ export class Control {
   }
 
   _updateIfNeeded() {
-    if (this._dirty) {
-      this._dirty = false;
-      this._errors = this.validator(this);
-      this._status = isPresent(this._errors) ? INVALID : VALID;
-    }
   }
 
   _updateParent() {
@@ -78,39 +67,34 @@ export class Control {
   }
 }
 
-export class ControlGroup {
-  _value:any;
-  _status:string;
-  _errors;
-  _dirty:boolean;
-  validator:Function;
+export class Control extends AbstractControl {
+  constructor(value:any, validator:Function = nullValidator) {
+    super(validator);
+    this._value = value;
+  }
+
+  updateValue(value:any) {
+    this._value = value;
+    this._dirty = true;
+    this._updateParent();
+  }
+
+  _updateIfNeeded() {
+    if (this._dirty) {
+      this._dirty = false;
+      this._errors = this.validator(this);
+      this._status = isPresent(this._errors) ? INVALID : VALID;
+    }
+  }
+}
+
+export class ControlGroup extends AbstractControl {
   controls;
 
   constructor(controls, validator:Function = controlGroupValidator) {
+    super(validator);
     this.controls = controls;
-    this.validator = validator;
-    this._dirty = true;
     this._setParentForControls();
-  }
-
-  get value() {
-    this._updateIfNeeded();
-    return this._value;
-  }
-
-  get status() {
-    this._updateIfNeeded();
-    return this._status;
-  }
-
-  get valid() {
-    this._updateIfNeeded();
-    return this._status === VALID;
-  }
-
-  get errors() {
-    this._updateIfNeeded();
-    return this._errors;
   }
 
   _setParentForControls() {
@@ -140,6 +124,7 @@ export class ControlGroup {
 
   _controlChanged() {
     this._dirty = true;
+    this._updateParent();
   }
 }
 

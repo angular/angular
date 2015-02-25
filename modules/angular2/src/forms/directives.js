@@ -1,6 +1,7 @@
 import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
+import {Optional} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
 import * as validators from './validators';
@@ -64,7 +65,7 @@ function controlValueAccessorFor(controlType:string):ControlValueAccessor {
   }
 })
 export class ControlDirective {
-  _groupDecorator:ControlGroupDirective;
+  _groupDirective:ControlGroupDirective;
   _el:NgElement;
 
   controlName:string;
@@ -73,8 +74,8 @@ export class ControlDirective {
 
   validator:Function;
 
-  constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement)  {
-    this._groupDecorator = groupDecorator;
+  constructor(@Ancestor() groupDirective:ControlGroupDirective, el:NgElement)  {
+    this._groupDirective = groupDirective;
     this._el = el;
     this.validator = validators.nullValidator;
   }
@@ -86,7 +87,7 @@ export class ControlDirective {
   }
 
   _initialize() {
-    this._groupDecorator.addDirective(this);
+    this._groupDirective.addDirective(this);
 
     var c = this._control();
     c.validator = validators.compose([c.validator, this.validator]);
@@ -108,7 +109,7 @@ export class ControlDirective {
   }
 
   _control() {
-    return this._groupDecorator.findControl(this.controlName);
+    return this._groupDirective.findControl(this.controlName);
   }
 }
 
@@ -119,16 +120,28 @@ export class ControlDirective {
   }
 })
 export class ControlGroupDirective {
+  _groupDirective:ControlGroupDirective;
+  _controlGroupName:string;
+
   _controlGroup:ControlGroup;
   _directives:List<ControlDirective>;
 
-  constructor() {
+  constructor(@Optional() @Ancestor() groupDirective:ControlGroupDirective) {
     super();
+    this._groupDirective = groupDirective;
     this._directives = ListWrapper.create();
   }
 
-  set controlGroup(controlGroup:ControlGroup) {
-    this._controlGroup = controlGroup;
+  set controlGroup(controlGroup) {
+    if (isString(controlGroup)) {
+      this._controlGroupName = controlGroup;
+    } else {
+      this._controlGroup = controlGroup;
+    }
+    this._updateDomValue();
+  }
+
+  _updateDomValue() {
     ListWrapper.forEach(this._directives, (cd) => cd._updateDomValue());
   }
 
@@ -136,8 +149,16 @@ export class ControlGroupDirective {
     ListWrapper.push(this._directives, c);
   }
 
-  findControl(name:string):Control {
-    return this._controlGroup.controls[name];
+  findControl(name:string):any {
+    return this._getControlGroup().controls[name];
+  }
+
+  _getControlGroup():ControlGroup {
+    if (isPresent(this._controlGroupName)) {
+      return this._groupDirective.findControl(this._controlGroupName)
+    } else {
+      return this._controlGroup;
+    }
   }
 }
 
