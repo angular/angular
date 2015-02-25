@@ -9,8 +9,6 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
-import {$BANG} from 'angular2/src/change_detection/parser/lexer';
-
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
  * For `<template>` elements:
@@ -44,19 +42,16 @@ export class ViewSplitter extends CompileStep {
     var templateBindings = MapWrapper.get(attrs, 'template');
     var hasTemplateBinding = isPresent(templateBindings);
 
-    // look for template shortcuts such as !if="condition" and treat them as template="if condition"
+    // look for template shortcuts such as *if="condition" and treat them as template="if condition"
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
-      if (StringWrapper.charCodeAt(attrName, 0) == $BANG) {
-        var key = StringWrapper.substring(attrName, 1);  // remove the bang
+      if (StringWrapper.startsWith(attrName, '*')) {
+        var key = StringWrapper.substring(attrName, 1);  // remove the star
         if (hasTemplateBinding) {
           // 2nd template binding detected
           throw new BaseException(`Only one template directive per element is allowed: ` +
-              `${templateBindings} and ${key} cannot be used simultaneously ` +
-              `in ${current.elementDescription}`);
+            `${templateBindings} and ${key} cannot be used simultaneously ` +
+            `in ${current.elementDescription}`);
         } else {
-          if (isBlank(parent)) {
-            throw new BaseException(`Template directives cannot be used on root components in ${current.elementDescription}`);
-          }
           templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
           hasTemplateBinding = true;
         }
@@ -72,37 +67,17 @@ export class ViewSplitter extends CompileStep {
           var currentElement:TemplateElement = current.element;
           var viewRootElement:TemplateElement = viewRoot.element;
           this._moveChildNodes(DOM.content(currentElement), DOM.content(viewRootElement));
-          // viewRoot is a doesn't appear in the original template, so we associate
-          // the current element description to get a more meaninful message in case of error
+          // viewRoot doesn't appear in the original template, so we associate
+          // the current element description to get a more meaningful message in case of error
           viewRoot.elementDescription = current.elementDescription;
           viewRoot.isViewRoot = true;
           control.addChild(viewRoot);
         }
       } else {
-        var attrs = current.attrs();
-        var templateBindings = MapWrapper.get(attrs, 'template');
-        var hasTemplateBinding = isPresent(templateBindings);
-
-        // look for template shortcuts such as *if="condition" and treat them as template="if condition"
-        MapWrapper.forEach(attrs, (attrValue, attrName) => {
-          if (StringWrapper.startsWith(attrName, '*')) {
-            var key = StringWrapper.substring(attrName, 1);  // remove the bang
-            if (hasTemplateBinding) {
-              // 2nd template binding detected
-              throw new BaseException(`Only one template directive per element is allowed: ` +
-                `${templateBindings} and ${key} cannot be used simultaneously ` +
-                `in ${current.elementDescription}`);
-            } else {
-              templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
-              hasTemplateBinding = true;
-            }
-          }
-        });
-
         if (hasTemplateBinding) {
           var newParent = new CompileElement(DOM.createTemplate(''));
           // newParent doesn't appear in the original template, so we associate
-          // the current element description to get a more meaninful message in case of error
+          // the current element description to get a more meaningful message in case of error
           newParent.elementDescription = current.elementDescription;
           current.isViewRoot = true;
           this._parseTemplateBindings(templateBindings, newParent);
