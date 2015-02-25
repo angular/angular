@@ -196,6 +196,27 @@ export function main() {
       expect(view.nodes[0].hidden).toEqual(false);
     });
 
+    it('should bind element properties where attr name and prop name do not match', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'tabindex': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 1;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].tabIndex).toEqual(1);
+
+      evalContext.prop1 = 0;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].tabIndex).toEqual(0);
+    });
+
     it('should bind to aria-* attributes when exp evaluates to strings', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
         'aria-label': 'prop1'
