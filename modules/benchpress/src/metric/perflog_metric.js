@@ -65,7 +65,7 @@ export class PerflogMetric extends Metric {
       }
       var completer = PromiseWrapper.completer();
       this._setTimeout(
-        () => completer.complete(this._readUntilEndMark(markName, loopCount+1)),
+        () => completer.resolve(this._readUntilEndMark(markName, loopCount+1)),
         100
       );
       return completer.promise;

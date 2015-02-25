@@ -54,8 +54,8 @@ export function main() {
           b.promise.then((_) => log.add('b then'));
         });
 
-        a.complete("a");
-        b.complete("b");
+        a.resolve("a");
+        b.resolve("b");
 
         PromiseWrapper.all([a.promise, b.promise]).then((_) => {
           expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; onTurnDone; onTurnStart; b then; onTurnDone');
@@ -109,7 +109,7 @@ export function main() {
         zone.run(function () {
           PromiseWrapper.setTimeout(function () {
             PromiseWrapper.setTimeout(function () {
-              c.complete(null);
+              c.resolve(null);
               throw new BaseException('ccc');
             }, 0);
           }, 0);
@@ -130,7 +130,7 @@ export function main() {
         zone.run(function () {
           PromiseWrapper.resolve(null).then((_) => {
             return PromiseWrapper.resolve(null).then((__) => {
-              c.complete(null);
+              c.resolve(null);
               throw new BaseException("ddd");
             });
           });
@@ -152,7 +152,7 @@ export function main() {
         zone.run(function () {
           PromiseWrapper.setTimeout(function () {
             PromiseWrapper.setTimeout(function () {
-              c.complete(null);
+              c.resolve(null);
               throw new BaseException('ccc');
             }, 0);
           }, 0);

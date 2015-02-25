@@ -32,7 +32,7 @@ export class PromiseWrapper {
 
     return {
       promise: p,
-      complete: resolve,
+      resolve: resolve,
       reject: reject
     };
   }

@@ -90,7 +90,7 @@ class _PendingRequest {
     if (isBlank(response)) {
       this.completer.reject(`Failed to load ${this.url}`);
     } else {
-      this.completer.complete(response);
+      this.completer.resolve(response);
     }
   }
 

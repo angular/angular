@@ -125,7 +125,7 @@ export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, 
         lc.registerWith(zone, rootView.changeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
-        bootstrapProcess.complete(appInjector);
+        bootstrapProcess.resolve(appInjector);
       },
 
       (err) => {

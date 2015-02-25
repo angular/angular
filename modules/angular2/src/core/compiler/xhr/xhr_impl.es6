@@ -11,7 +11,7 @@ export class XHRImpl extends XHR {
     xhr.onload = function() {
       var status = xhr.status;
       if (200 <= status && status <= 300) {
-        completer.complete(xhr.responseText);
+        completer.resolve(xhr.responseText);
       } else {
         completer.reject(`Failed to load ${url}`);
       }

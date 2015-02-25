@@ -33,7 +33,7 @@ class _Completer {
 
   Future get promise => c.future;
 
-  void complete(v) {
+  void resolve(v) {
     c.complete(v);
   }
 
