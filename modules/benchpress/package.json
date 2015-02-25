@@ -8,8 +8,9 @@
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
   "dependencies": {
-    "traceur": "<%= packageJson.dependencies.traceur %>",
+    "angular2": "<%= packageJson.version %>",
     "rtts_assert": "<%= packageJson.version %>",
+    "traceur": "<%= packageJson.dependencies.traceur %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.devDependencies) %>
