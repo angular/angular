@@ -291,7 +291,9 @@ class UserController {
 }
 
 var inj = new Injector([UserList, UserController]);
-var ctrl:UserController = inj.get(UserController); //ctr.ul instanceof Promise;
+var ctrl:UserController = inj.get(UserController);
+// UserController responsible for dealing with asynchrony.
+expect(ctrl.ul).toBePromise();
 ```
 
 #### Async Binding + Sync Dependency:
@@ -308,7 +310,14 @@ var inj = new Injector([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ]);
-var ctrl:Promise = inj.asyncGet(UserController); //ctr.ul instanceof UserList;
+var ctrlPromise:Promise = inj.asyncGet(UserController);
+// Caller opts in to dealing with asynchrony.
+ctrlPromise.then((ctrl) {
+	expect(ctrl).toBeAnInstanceOf(UserController);
+	expect(ctrl.ul).toBeAnInstanceOf(UserList);
+});
+// No synchronous provider for UserList, results in a NoProviderError.
+expect(() => inj.get(UserController)).toThrow(new NoProviderError(...));
 ```
 
 
@@ -326,7 +335,15 @@ var inj = new Injector([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ]);
-var ctrl = inj.get(UserController); //ctr.ul instanceof UserList;
+var ctrl = inj.get(UserController);
+// UserController responsible for dealing with asynchrony.
+expect(ctrl.ul).toBePromise();
+
+var ctrlPromise = inj.asyncGet(UserController);
+ctrlPromise.then((ctrl) {
+  // UserList still provided async.
+  expect(ctrl.ul).toBePromise();
+});
 ```
 
 
@@ -363,7 +380,10 @@ var inj = new Injector([
   bind('MyClassFactory').toFactory(dep => () => new MyClass(dep), [SomeDependency])
 ]);
 
-var inj.get('MyClassFactory')();
+var factory = inj.get('MyClassFactory');
+var instance1 = factory(), instance2 = factory();
+// Depends on the implementation of MyClass, but generally holds.
+expect(instance1).not.toBe(instance2);
 ```
 
 
