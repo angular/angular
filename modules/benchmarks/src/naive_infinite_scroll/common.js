@@ -76,7 +76,7 @@ export class RawEntity {
   constructor() {
     this._data = MapWrapper.create();
   }
-  
+
   get(key:string) {
     if (key.indexOf('.') == -1) {
       return this._data[key];
@@ -105,7 +105,7 @@ export class RawEntity {
 
   remove(key:string) {
     if (!key.contains('.')) {
-      return this._data.remove(key);
+      return MapWrapper.delete(this._data, key);
     }
     var pieces = key.split('.');
     var last = ListWrapper.last(pieces);
