@@ -156,7 +156,7 @@ var config = exports.config = {
 
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: argv.benchpress ? 80000 : 30000
+    defaultTimeoutInterval: argv['benchmark'] ? 1200000 : 30000
   },
   params: {
     benchmark: {
