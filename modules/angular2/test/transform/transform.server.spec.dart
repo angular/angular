@@ -12,7 +12,6 @@ main() {
   useVMConfiguration();
 
   // TODO(kegluneq): Add a test for generating multiple annotations.
-
   group('Annotation tests:', _runTests);
 }
 
@@ -43,9 +42,9 @@ void _runTests() {
   var commonInputs = {
     'angular2|lib/src/core/annotations/annotations.dart':
         '../../lib/src/core/annotations/annotations.dart',
-    'angular2|lib/src/core/application.dart': 'common.dart',
+    'angular2|lib/src/core/application.dart': 'common/application.dart',
     'angular2|lib/src/reflection/reflection_capabilities.dart':
-        'reflection_capabilities.dart'
+        'common/reflection_capabilities.dart'
   };
 
   var tests = [
