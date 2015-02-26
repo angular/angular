@@ -64,6 +64,13 @@ exports.compile = function compile(options, paths, source) {
   return result;
 };
 
+exports.init = function() {
+  if (needsReload) {
+    reloadCompiler();
+    needsReload = false;
+  }
+}
+
 // Transpile and evaluate the code in `src`.
 // Use existing traceur to compile our sources.
 function reloadCompiler() {
