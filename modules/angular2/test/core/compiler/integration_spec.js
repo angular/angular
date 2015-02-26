@@ -1,11 +1,11 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Type, isPresent, BaseException} from 'angular2/src/facade/lang';
-import {assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
+import {Type, isPresent, BaseException, assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector} from 'angular2/di';
-import {Lexer, Parser, ChangeDetector, dynamicChangeDetection,
+import {Lexer, Parser, dynamicChangeDetection,
   DynamicChangeDetection, Pipe, PipeRegistry} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -433,17 +433,19 @@ export function main() {
       });
     });
 
-    // TODO support these tests with DART e.g. with Promise.catch (JS) transpiled to Future.catchError (DART)
-    if (assertionsEnabled() && isJsObject({})) {
+    if (assertionsEnabled()) {
 
       function expectCompileError(inlineTpl, errMessage, done) {
         tplResolver.setTemplate(MyComp, new Template({inline: inlineTpl}));
-        compiler.compile(MyComp).then(() => {
-          throw new BaseException("Test failure: should not have come here as an exception was expected");
-        },(err) => {
-          expect(err.message).toBe(errMessage);
-          done();
-        });
+        PromiseWrapper.then(compiler.compile(MyComp),
+          (value) => {
+            done("Test failure: should not have come here as an exception was expected");
+          },
+          (err) => {
+            expect(err.message).toEqual(errMessage);
+            done();
+          }
+        );
       }
 
       it('should raise an error if no directive is registered for an unsupported DOM property', (done) => {
