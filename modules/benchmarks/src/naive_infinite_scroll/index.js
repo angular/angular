@@ -274,8 +274,9 @@ export function setupReflectorForAngular() {
   });
 
   reflector.registerType(StyleInliner, {
-    "factory": () => new StyleInliner(),
-    "parameters": [],
+    "factory": (xhr, styleUrlResolver, urlResolver) =>
+      new StyleInliner(xhr, styleUrlResolver, urlResolver),
+    "parameters": [[XHR], [StyleUrlResolver], [UrlResolver]],
     "annotations": []
   });
 }
