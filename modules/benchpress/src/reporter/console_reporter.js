@@ -84,7 +84,9 @@ export class ConsoleReporter extends Reporter {
         var mean = Statistic.calculateMean(sample);
         var cv = Statistic.calculateCoefficientOfVariation(sample, mean);
         var formattedCv = NumberWrapper.isNaN(cv) ? 'NaN' : Math.floor(cv);
-        return `${ConsoleReporter._formatNum(mean)}\u00B1${formattedCv}%`;
+        // Note: Don't use the unicode character for +- as it might cause
+        // hickups consoles...
+        return `${ConsoleReporter._formatNum(mean)}+-${formattedCv}%`;
       })
     );
     return PromiseWrapper.resolve(null);
