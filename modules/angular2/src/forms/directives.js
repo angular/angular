@@ -3,11 +3,7 @@ import {DOM} from 'angular2/src/facade/dom';
 import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
-
-class ControlGroupDirectiveBase {
-  addDirective(directive):void {}
-  findControl(name:string):Control { return null; }
-}
+import * as validators from './validators';
 
 @CONST()
 export class ControlValueAccessor {
@@ -59,25 +55,47 @@ function controlValueAccessorFor(controlType:string):ControlValueAccessor {
   }
 }
 
-
-export class ControlDirectiveBase {
-  _groupDecorator:ControlGroupDirectiveBase;
+@Decorator({
+  lifecycle: [onChange],
+  selector: '[control]',
+  bind: {
+    'controlName' : 'control',
+    'type' : 'type'
+  }
+})
+export class ControlDirective {
+  _groupDecorator:ControlGroupDirective;
   _el:NgElement;
 
   controlName:string;
   type:string;
   valueAccessor:ControlValueAccessor;
 
-  constructor(groupDecorator, el:NgElement)  {
+  validator:Function;
+
+  constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement)  {
     this._groupDecorator = groupDecorator;
     this._el = el;
+    this.validator = validators.nullValidator;
+  }
+
+  // TODO: vsavkin this should be moved into the constructor once static bindings
+  // are implemented
+  onChange(_) {
+    this._initialize();
   }
 
   _initialize() {
+    this._groupDecorator.addDirective(this);
+
+    if (isPresent(this.validator)) {
+      var c = this._control();
+      c.validator = validators.compose([c.validator, this.validator]);
+    }
+
     if (isBlank(this.valueAccessor)) {
       this.valueAccessor = controlValueAccessorFor(this.type);
     }
-    this._groupDecorator.addDirective(this);
     this._updateDomValue();
     DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
   }
@@ -87,47 +105,11 @@ export class ControlDirectiveBase {
   }
 
   _updateControlValue() {
-    this._control().value = this.valueAccessor.readValue(this._el.domElement);
+    this._control().updateValue(this.valueAccessor.readValue(this._el.domElement));
   }
 
   _control() {
     return this._groupDecorator.findControl(this.controlName);
-  }
-}
-
-@Decorator({
-  lifecycle: [onChange],
-  selector: '[control-name]',
-  bind: {
-    'controlName' : 'control-name',
-    'type' : 'type'
-  }
-})
-export class ControlNameDirective extends ControlDirectiveBase {
-  constructor(@Ancestor() groupDecorator:ControlGroupDirective, el:NgElement) {
-    super(groupDecorator, el);
-  }
-
-  onChange(_) {
-    this._initialize();
-  }
-}
-
-@Decorator({
-  lifecycle: [onChange],
-  selector: '[control]',
-  bind: {
-    'controlName' : 'control',
-    'type' : 'type'
-  }
-})
-export class ControlDirective extends ControlDirectiveBase {
-  constructor(@Ancestor() groupDecorator:NewControlGroupDirective, el:NgElement) {
-    super(groupDecorator, el);
-  }
-
-  onChange(_) {
-    this._initialize();
   }
 }
 
@@ -137,9 +119,9 @@ export class ControlDirective extends ControlDirectiveBase {
     'controlGroup' : 'control-group'
   }
 })
-export class ControlGroupDirective extends ControlGroupDirectiveBase {
+export class ControlGroupDirective {
   _controlGroup:ControlGroup;
-  _directives:List<ControlNameDirective>;
+  _directives:List<ControlDirective>;
 
   constructor() {
     super();
@@ -151,63 +133,15 @@ export class ControlGroupDirective extends ControlGroupDirectiveBase {
     ListWrapper.forEach(this._directives, (cd) => cd._updateDomValue());
   }
 
-  addDirective(c:ControlNameDirective) {
-    ListWrapper.push(this._directives, c);
-  }
-
-  findControl(name:string):Control {
-    return this._controlGroup.controls[name];
-  }
-}
-
-@Component({
-  selector: '[new-control-group]',
-  bind: {
-    'initData' : 'new-control-group'
-  }
-})
-@Template({inline: '<content>'})
-export class NewControlGroupDirective extends ControlGroupDirectiveBase {
-  _initData:any;
-  _controlGroup:ControlGroup;
-  _directives:List<ControlNameDirective>;
-
-  constructor() {
-    super();
-    this._directives = ListWrapper.create();
-  }
-
-  set initData(value) {
-    this._initData = value;
-  }
-
   addDirective(c:ControlDirective) {
     ListWrapper.push(this._directives, c);
-    this._controlGroup = null;
   }
 
   findControl(name:string):Control {
-    if (isBlank(this._controlGroup)) {
-      this._controlGroup = this._createControlGroup();
-    }
     return this._controlGroup.controls[name];
-  }
-
-  _createControlGroup():ControlGroup {
-    var controls = ListWrapper.reduce(this._directives, (memo, cd) => {
-      var initControlValue = this._initData[cd.controlName];
-      memo[cd.controlName] = new Control(initControlValue);
-      return memo;
-    }, {});
-    return new ControlGroup(controls);
-  }
-
-  get value() {
-    return this._controlGroup.value;
   }
 }
 
 export var FormDirectives = [
-  ControlGroupDirective, ControlNameDirective,
-  ControlDirective, NewControlGroupDirective
+  ControlGroupDirective, ControlDirective
 ];
