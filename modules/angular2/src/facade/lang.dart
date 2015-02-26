@@ -137,12 +137,22 @@ class RegExpWrapper {
 }
 
 class RegExpMatcherWrapper {
-  static Match next(Iterator<Match> matcher) {
+  static _JSLikeMatch next(Iterator<Match> matcher) {
     if (matcher.moveNext()) {
-      return matcher.current;
+      return new _JSLikeMatch(matcher.current);
     }
     return null;
   }
+}
+
+class _JSLikeMatch {
+  Match _m;
+
+  _JSLikeMatch(this._m);
+
+  String operator[](index) => _m[index];
+  int get index => _m.start;
+  int get length => _m.groupCount + 1;
 }
 
 class FunctionWrapper {
