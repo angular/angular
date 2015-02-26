@@ -13,7 +13,9 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy,
         NativeShadowDomStrategy,
-        EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+        EmulatedScopedShadowDomStrategy,
+        EmulatedUnscopedShadowDomStrategy,
+} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
@@ -35,7 +37,8 @@ export function main() {
 
     StringMapWrapper.forEach({
         "native" : new NativeShadowDomStrategy(styleUrlResolver),
-        "emulated" : new EmulatedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div'))
+        "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
+        "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div')),
       },
       (strategy, name) => {
 

@@ -12,7 +12,7 @@ import {ElementBinderBuilder} from './element_binder_builder';
 import {ResolveCss} from './resolve_css';
 import {ShimShadowDom} from './shim_shadow_dom';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {ShadowDomStrategy, EmulatedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, EmulatedScopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 /**
  * Default steps used for compiling a template.
@@ -39,7 +39,7 @@ export function createDefaultSteps(
     new ElementBinderBuilder(parser),
   ];
 
-  if (shadowDomStrategy instanceof EmulatedShadowDomStrategy) {
+  if (shadowDomStrategy instanceof EmulatedScopedShadowDomStrategy) {
     var step = new ShimShadowDom(compiledComponent, shadowDomStrategy);
     ListWrapper.push(steps, step);
   }
