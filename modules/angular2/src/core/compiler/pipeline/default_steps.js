@@ -37,7 +37,7 @@ export function createDefaultSteps(
     new ProtoViewBuilder(changeDetection, shadowDomStrategy),
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder(parser),
-  ]
+  ];
 
   if (shadowDomStrategy instanceof EmulatedShadowDomStrategy) {
     var step = new ShimShadowDom(compiledComponent, shadowDomStrategy);
