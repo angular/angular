@@ -34,6 +34,5 @@ export class StyleUrlResolver {
 }
 
 var _cssUrlRe = RegExpWrapper.create('(url\\()([^)]*)(\\))');
-// TODO(vicb): handle the media query part
-var _cssImportRe = RegExpWrapper.create('(@import[\\s]+(?!url\\())([^;]*)(;)');
+var _cssImportRe = RegExpWrapper.create('(@import[\\s]+(?!url\\())[\'"]([^\'"]*)[\'"](.*;)');
 var _quoteRe = RegExpWrapper.create('[\'"]');
