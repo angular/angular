@@ -8,7 +8,8 @@
   "license": "<%= packageJson.license %>",
   "dependencies": {
     "traceur": "<%= packageJson.dependencies.traceur %>",
-    "rtts_assert": "<%= packageJson.version %>"
+    "rtts_assert": "<%= packageJson.version %>",
+    "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.devDependencies) %>
 }
