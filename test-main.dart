@@ -4,6 +4,7 @@ import 'package:unittest/unittest.dart' as unit;
 main() {
   unit.filterStacks = true;
   unit.formatStacks = false;
+  unit.unittestConfiguration.timeout = new Duration(milliseconds: 100);
 
   _printWarnings();
 
