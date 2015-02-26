@@ -462,5 +462,10 @@ export function main() {
         expect(inj.hasEventEmitter('move')).toBe(false);
       });
     });
+
+    it("should flatten the passed-in bindings", function () {
+      var inj = injector([[SimpleDirective]]);
+      expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
+    });
   });
 }

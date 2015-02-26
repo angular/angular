@@ -29,6 +29,10 @@ class IterableMap extends IterableBase<List> {
   Iterator<List> get iterator => new MapIterator(_map);
 }
 
+List toArray(Iterable iter) {
+  return iter.toList();
+}
+
 class MapWrapper {
   static HashMap create() => new HashMap();
   static HashMap clone(Map m) => new HashMap.from(m);

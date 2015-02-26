@@ -1,9 +1,9 @@
 import {FIELD, Type, isBlank, isPresent} from 'angular2/src/facade/lang';
-import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {List, MapWrapper, ListWrapper, toArray} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {Inject, InjectLazy, InjectPromise, DependencyAnnotation} from './annotations';
-import {NoAnnotationError} from './exceptions';
+import {NoAnnotationError, InvalidBindingError} from './exceptions';
 
 export class Dependency {
   key:Key;
@@ -134,4 +134,38 @@ function _extractToken(typeOrFunc, annotations) {
 
 function _createDependency(token, asPromise, lazy, depProps):Dependency {
   return new Dependency(Key.get(token), asPromise, lazy, depProps);
+}
+
+export function flattenBindings(bindings:List) {
+  var m = _flattenBindings(bindings, MapWrapper.create());
+  return toArray(MapWrapper.values(m));
+}
+
+export function createFastLookupArrayFromBindings(bindings:List) {
+  var m = _flattenBindings(bindings, MapWrapper.create());
+  var res = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
+  MapWrapper.forEach(m, (v, keyId) => res[keyId] = v);
+  return res;
+}
+
+function _flattenBindings(bindings:List, res:Map) {
+  ListWrapper.forEach(bindings, function (b) {
+    if (b instanceof Binding) {
+      MapWrapper.set(res, b.key.id, b);
+
+    } else if (b instanceof Type) {
+      var s = bind(b).toClass(b);
+      MapWrapper.set(res, s.key.id, s);
+
+    } else if (b instanceof List) {
+      _flattenBindings(b, res);
+
+    } else if (b instanceof BindingBuilder) {
+      throw new InvalidBindingError(b.token);
+
+    } else {
+      throw new InvalidBindingError(b);
+    }
+  });
+  return res;
 }
