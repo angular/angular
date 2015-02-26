@@ -1,7 +1,7 @@
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError, InvalidBindingError,
-  AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
+import {Binding, BindingBuilder, bind, createFastLookupArrayFromBindings} from './binding';
+import {ProviderError, NoProviderError, AsyncBindingError, CyclicDependencyError,
+  InstantiationError} from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Key} from './key';
@@ -27,8 +27,7 @@ export class Injector {
   _asyncStrategy: _AsyncInjectorStrategy;
   _syncStrategy:_SyncInjectorStrategy;
   constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
-    var flatten = _flattenBindings(bindings, MapWrapper.create());
-    this._bindings = this._createListOfBindings(flatten);
+    this._bindings = createFastLookupArrayFromBindings(bindings);
     this._instances = this._createInstances();
     this._parent = parent;
     this._defaultBindings = defaultBindings;
@@ -47,13 +46,6 @@ export class Injector {
 
   createChild(bindings:List):Injector {
     return new Injector(bindings, {parent: this});
-  }
-
-
-  _createListOfBindings(flattenBindings):List {
-    var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
-    MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
-    return bindings;
   }
 
   _createInstances():List {
@@ -232,27 +224,4 @@ class _AsyncInjectorStrategy {
     this.injector._setInstance(key, instance);
     return instance
   }
-}
-
-
-function _flattenBindings(bindings:List, res:Map) {
-  ListWrapper.forEach(bindings, function (b) {
-    if (b instanceof Binding) {
-      MapWrapper.set(res, b.key.id, b);
-
-    } else if (b instanceof Type) {
-      var s = bind(b).toClass(b);
-      MapWrapper.set(res, s.key.id, s);
-
-    } else if (b instanceof List) {
-      _flattenBindings(b, res);
-
-    } else if (b instanceof BindingBuilder) {
-      throw new InvalidBindingError(b.token);
-
-    } else {
-      throw new InvalidBindingError(b);
-    }
-  });
-  return res;
 }

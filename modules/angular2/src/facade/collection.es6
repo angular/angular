@@ -5,6 +5,14 @@ export var Map = global.Map;
 export var Set = global.Set;
 export var StringMap = global.Object;
 
+export function toArray(iterator) {
+  var res = [];
+  for (var i of iterator) {
+    res.push(i);
+  }
+  return res;
+}
+
 export class MapWrapper {
   static create():Map { return new Map(); }
   static clone(m:Map):Map { return new Map(m); }

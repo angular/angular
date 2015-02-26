@@ -1,7 +1,8 @@
 import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
+import {Injector, Key, Dependency, bind, Binding, NoProviderError,
+  ProviderError, CyclicDependencyError, flattenBindings} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
@@ -240,18 +241,19 @@ export class ProtoElementInjector  {
     this._binding8 = null; this._keyId8 = null;
     this._binding9 = null; this._keyId9 = null;
 
-    var length = bindings.length;
+    var flattenedBindings = flattenBindings(bindings);
+    var length = flattenedBindings.length;
 
-    if (length > 0) {this._binding0 = this._createBinding(bindings[0]); this._keyId0 = this._binding0.key.id;}
-    if (length > 1) {this._binding1 = this._createBinding(bindings[1]); this._keyId1 = this._binding1.key.id;}
-    if (length > 2) {this._binding2 = this._createBinding(bindings[2]); this._keyId2 = this._binding2.key.id;}
-    if (length > 3) {this._binding3 = this._createBinding(bindings[3]); this._keyId3 = this._binding3.key.id;}
-    if (length > 4) {this._binding4 = this._createBinding(bindings[4]); this._keyId4 = this._binding4.key.id;}
-    if (length > 5) {this._binding5 = this._createBinding(bindings[5]); this._keyId5 = this._binding5.key.id;}
-    if (length > 6) {this._binding6 = this._createBinding(bindings[6]); this._keyId6 = this._binding6.key.id;}
-    if (length > 7) {this._binding7 = this._createBinding(bindings[7]); this._keyId7 = this._binding7.key.id;}
-    if (length > 8) {this._binding8 = this._createBinding(bindings[8]); this._keyId8 = this._binding8.key.id;}
-    if (length > 9) {this._binding9 = this._createBinding(bindings[9]); this._keyId9 = this._binding9.key.id;}
+    if (length > 0) {this._binding0 = this._createBinding(flattenedBindings[0]); this._keyId0 = this._binding0.key.id;}
+    if (length > 1) {this._binding1 = this._createBinding(flattenedBindings[1]); this._keyId1 = this._binding1.key.id;}
+    if (length > 2) {this._binding2 = this._createBinding(flattenedBindings[2]); this._keyId2 = this._binding2.key.id;}
+    if (length > 3) {this._binding3 = this._createBinding(flattenedBindings[3]); this._keyId3 = this._binding3.key.id;}
+    if (length > 4) {this._binding4 = this._createBinding(flattenedBindings[4]); this._keyId4 = this._binding4.key.id;}
+    if (length > 5) {this._binding5 = this._createBinding(flattenedBindings[5]); this._keyId5 = this._binding5.key.id;}
+    if (length > 6) {this._binding6 = this._createBinding(flattenedBindings[6]); this._keyId6 = this._binding6.key.id;}
+    if (length > 7) {this._binding7 = this._createBinding(flattenedBindings[7]); this._keyId7 = this._binding7.key.id;}
+    if (length > 8) {this._binding8 = this._createBinding(flattenedBindings[8]); this._keyId8 = this._binding8.key.id;}
+    if (length > 9) {this._binding9 = this._createBinding(flattenedBindings[9]); this._keyId9 = this._binding9.key.id;}
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
     }
@@ -265,12 +267,11 @@ export class ProtoElementInjector  {
     return this.distanceToParent < 2 ? this.parent : null;
   }
 
-  _createBinding(bindingOrType) {
-    if (bindingOrType instanceof DirectiveBinding) {
-      return bindingOrType;
+  _createBinding(binding) {
+    if (binding instanceof DirectiveBinding) {
+      return binding;
     } else {
-      var b = bind(bindingOrType).toClass(bindingOrType);
-      return DirectiveBinding.createFromBinding(b, null);
+      return DirectiveBinding.createFromBinding(binding, null);
     }
   }
 
