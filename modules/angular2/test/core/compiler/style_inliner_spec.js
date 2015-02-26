@@ -46,7 +46,7 @@ export function main() {
       });
 
       // TODO(vicb): fix the StyleInliner
-      xit('should support url([unquoted url]) in @import rules', (done) => {
+      it('should support url([unquoted url]) in @import rules', (done) => {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import url(one.css);.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');

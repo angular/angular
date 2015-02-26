@@ -118,11 +118,11 @@ export class StyleInliner {
 
 // Extracts the url from an import rule, supported formats:
 // - 'url' / "url",
-// - url('url') / url("url")
+// - url(url) / url('url') / url("url")
 function _extractUrl(importRule: string): string {
   var match = RegExpWrapper.firstMatch(_urlRe, importRule);
   if (isBlank(match)) return null;
-  return match[1];
+  return isPresent(match[1]) ? match[1] : match[2];
 }
 
 // Extracts the media query from an import rule.
@@ -140,5 +140,8 @@ function _wrapInMediaRule(css: string, query: string): string {
 }
 
 var _importRe = RegExpWrapper.create('@import\\s+([^;]+);');
-var _urlRe = RegExpWrapper.create('(?:url\\(\\s*)?[\'"]([^\'"]+)[\'"]');
+var _urlRe = RegExpWrapper.create(
+  'url\\(\\s*?[\'"]?([^\'")]+)[\'"]?|' + // url(url) or url('url') or url("url")
+  '[\'"]([^\'")]+)[\'"]'                 // "url" or 'url'
+);
 var _mediaQueryRe = RegExpWrapper.create('[\'"][^\'"]+[\'"]\\s*\\)?\\s*(.*)');
