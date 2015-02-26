@@ -1,7 +1,8 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
 import { StringMap, ListWrapper } from 'angular2/src/facade/collection';
-import { isPresent, StringWrapper, isJsObject } from 'angular2/src/facade/lang';
+import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
+import { PromiseWrapper } from 'angular2/src/facade/async';
 
 import { WebDriverExtension, bind, Injector, Options } from 'benchpress/benchpress';
 
@@ -23,16 +24,15 @@ export function main() {
       });
     });
 
-    // TODO(tbosch): In Dart, somehow we don't provide the error
-    // correctly in the promise result...
-    if (isJsObject({})) {
-      it('should throw if there is no match', (done) => {
-        createExtension(['m1'], {'browser': 'm2'}).then(null, (err) => {
+    it('should throw if there is no match', (done) => {
+      PromiseWrapper.catchError(
+        createExtension(['m1'], {'browser': 'm2'}),
+        (err) => {
           expect(isPresent(err)).toBe(true);
           done();
-        });
-      });
-    }
+        }
+      );
+    });
 
   });
 }

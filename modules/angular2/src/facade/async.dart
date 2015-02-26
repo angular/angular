@@ -15,6 +15,12 @@ class PromiseWrapper {
     return promise.then(success, onError: onError);
   }
 
+  // Note: We can't rename this method to `catch`, as this is not a valid
+  // method name in Dart.
+  static Future catchError(Future promise, Function onError) {
+    return promise.catchError(onError);
+  }
+
   static _Completer completer() => new _Completer(new Completer());
 
   static void setTimeout(fn(), int millis) {

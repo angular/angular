@@ -2,7 +2,7 @@ import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/te
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { Json, isBlank, isJsObject } from 'angular2/src/facade/lang';
+import { Json, isBlank } from 'angular2/src/facade/lang';
 
 import {
   WebDriverExtension, ChromeDriverExtension,
@@ -164,20 +164,16 @@ export function main() {
         });
       });
 
-      // TODO(tbosch): In Dart, somehow we don't provide the error
-      // correctly in the promise result...
-      if (isJsObject({})) {
-        it('should throw an error on buffer overflow', (done) => {
-          createExtension([
-            chromeTimelineEvents.start('FunctionCall', 1234),
-          ], 'Tracing.bufferUsage').readPerfLog().then(null, (err) => {
-            expect( () => {
-              throw err;
-            }).toThrowError('The DevTools trace buffer filled during the test!');
-            done();
-          });
+      it('should throw an error on buffer overflow', (done) => {
+        PromiseWrapper.catchError(createExtension([
+          chromeTimelineEvents.start('FunctionCall', 1234),
+        ], 'Tracing.bufferUsage').readPerfLog(), (err) => {
+          expect( () => {
+            throw err;
+          }).toThrowError('The DevTools trace buffer filled during the test!');
+          done();
         });
-      }
+      });
 
       it('should match chrome browsers', () => {
         expect(createExtension().supports({
