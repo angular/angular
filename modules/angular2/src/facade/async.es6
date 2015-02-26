@@ -12,6 +12,10 @@ export class PromiseWrapper {
     return Promise.reject(obj);
   }
 
+  static catchError(promise:Promise, onError:Function):Promise {
+    return promise.catch(onError);
+  }
+
   static all(promises:List):Promise {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);

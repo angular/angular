@@ -15,6 +15,10 @@ class PromiseWrapper {
     return promise.then(success, onError: onError);
   }
 
+  static Future catchError(Future promise, Function onError) {
+    return promise.catchError(onError);
+  }
+
   static _Completer completer() => new _Completer(new Completer());
 
   static void setTimeout(fn(), int millis) {
