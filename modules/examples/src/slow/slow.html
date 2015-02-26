@@ -1,0 +1,14 @@
+<h4>Slow things</h4>
+<div>
+  <button (click)="doTimeout()">slow timeout</button>
+  <span>{{timeoutStatus}}</span>
+</div>
+<div>
+  <button (click)="startInterval()">start interval</button>
+  <span>{{intervalStatus}}</span>
+  <span>Count: {{intervalCount}}</span>
+</div>
+<div>
+  <button (click)="doHttp()">slow http</button>
+  <span>{{httpStatus}}</span>
+</div>
