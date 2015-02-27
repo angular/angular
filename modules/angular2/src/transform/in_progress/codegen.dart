@@ -8,7 +8,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 
 import 'annotation_processor.dart';
-import 'logging.dart';
+import 'common/logging.dart';
 
 /// Base class that maintains codegen state.
 class Context {
@@ -72,7 +72,7 @@ String codegenEntryPoint(Context context, {AssetId newEntryPoint}) {
   if (newEntryPoint == null) {
     throw new ArgumentError.notNull('newEntryPoint');
   }
-  // TODO(jakemac): copyright and library declaration
+  // TODO(kegluneq): copyright declaration
   var outBuffer = new StringBuffer()
     ..write(_libraryDeclaration)
     ..write(_reflectorImport);
@@ -195,11 +195,14 @@ class _DirectiveRegistryImpl implements DirectiveRegistry {
     _writer.print('..registerType(');
     _codegenClassTypeString(element);
     _writer.print(', {"factory": ');
-    _codegenFactoryProp(ctorNode, element);
+    _codegenClassTypeString(element);
+    _writer.print('.ngFactory');
     _writer.print(', "parameters": ');
-    _codegenParametersProp(ctorNode);
+    _codegenClassTypeString(element);
+    _writer.print('.ngParameters');
     _writer.print(', "annotations": ');
-    _codegenAnnotationsProp(entry.node);
+    _codegenClassTypeString(element);
+    _writer.print('.ngAnnotations');
     _writer.print('})');
   }
 

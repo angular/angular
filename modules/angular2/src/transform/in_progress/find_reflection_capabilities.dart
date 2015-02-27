@@ -9,7 +9,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 
 import 'codegen.dart';
-import 'logging.dart';
+import 'common/logging.dart';
 import 'resolvers.dart';
 
 /// Finds all calls to the Angular2 [ReflectionCapabilities] constructor

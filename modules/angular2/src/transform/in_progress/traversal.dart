@@ -4,7 +4,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 
 import 'annotation_processor.dart';
-import 'logging.dart';
+import 'common/logging.dart';
 import 'resolvers.dart';
 
 /// Walks through an Angular2 application, finding all classes matching the

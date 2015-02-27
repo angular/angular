@@ -1,0 +1,22 @@
+library angular2.src.transform.common.formatter;
+
+import 'package:dart_style/dart_style.dart';
+
+import 'logging.dart';
+
+DartFormatter _formatter;
+
+void init(DartFormatter formatter) {
+  if (_formatter != null) {
+    logger.warning('Formatter is being overwritten.');
+  }
+  _formatter = formatter;
+}
+
+DartFormatter get formatter {
+  if (_formatter == null) {
+    logger.info('Formatter never initialized, using default formatter.');
+    _formatter = new DartFormatter();
+  }
+  return _formatter;
+}
