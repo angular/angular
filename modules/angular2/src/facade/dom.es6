@@ -217,6 +217,12 @@ export class DOM {
   static defaultDoc() {
     return document;
   }
+  static getTitle(document) {
+    return document.title;
+  }
+  static setTitle(document, newTitle:string) {
+    document.title = newTitle;
+  }
   static elementMatches(n, selector:string):boolean {
     return n instanceof Element && n.matches(selector);
   }
