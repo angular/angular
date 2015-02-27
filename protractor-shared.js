@@ -6,8 +6,7 @@ var argv = require('yargs')
     .options({
       'sample-size': {
         describe: 'sample size',
-        default: 20,
-        type: 'boolean'
+        default: 20
       },
       'force-gc': {
         describe: 'force gc.',
