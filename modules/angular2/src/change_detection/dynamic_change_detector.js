@@ -43,15 +43,36 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.prevContexts = ListWrapper.createFixedSize(protoRecords.length + 1);
     this.changes = ListWrapper.createFixedSize(protoRecords.length + 1);
 
+    ListWrapper.fill(this.values, uninitialized);
+    ListWrapper.fill(this.pipes, null);
+    ListWrapper.fill(this.prevContexts, uninitialized);
+    ListWrapper.fill(this.changes, false);
+
     this.protos = protoRecords;
   }
 
-  setContext(context:any) {
+  hydrate(context:any) {
+    this.values[0] = context;
+  }
+
+  dehydrate() {
+    this._destroyPipes();
     ListWrapper.fill(this.values, uninitialized);
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
-    this.values[0] = context;
+  }
+
+  _destroyPipes() {
+    for(var i = 0; i < this.pipes.length; ++i) {
+      if (isPresent(this.pipes[i])) {
+        this.pipes[i].onDestroy();
+      }
+    }
+  }
+
+  hydrated():boolean {
+    return this.values[0] !== uninitialized;
   }
 
   detectChangesInRecords(throwOnChange:boolean) {
@@ -184,11 +205,13 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe) && storedPipe.supports(context)) {
       return storedPipe;
-    } else {
-      var pipe = this.pipeRegistry.get(proto.name, context);
-      this._writePipe(proto, pipe);
-      return pipe;
     }
+    if (isPresent(storedPipe)) {
+      storedPipe.onDestroy();
+    }
+    var pipe = this.pipeRegistry.get(proto.name, context);
+    this._writePipe(proto, pipe);
+    return pipe;
   }
 
   _readContext(proto:ProtoRecord) {

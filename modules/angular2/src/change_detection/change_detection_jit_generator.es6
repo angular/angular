@@ -30,9 +30,9 @@ import {
  *   this.dispatcher = dispatcher;
  *   this.protos = protos;
  *
- *   this.context = null;
- *   this.address0 = null;
- *   this.city1 = null;
+ *   this.context = ChangeDetectionUtil.unitialized();
+ *   this.address0 = ChangeDetectionUtil.unitialized();
+ *   this.city1 = ChangeDetectionUtil.unitialized();
  * }
  * ChangeDetector0.prototype = Object.create(AbstractChangeDetector.prototype);
  *
@@ -70,8 +70,18 @@ import {
  * }
  *
  *
- * ChangeDetector0.prototype.setContext = function(context) {
+ * ChangeDetector0.prototype.hydrate = function(context) {
  *   this.context = context;
+ * }
+ *
+ * ChangeDetector0.prototype.dehydrate = function(context) {
+ *   this.context = ChangeDetectionUtil.unitialized();
+ *   this.address0 = ChangeDetectionUtil.unitialized();
+ *   this.city1 = ChangeDetectionUtil.unitialized();
+ * }
+ *
+ * ChangeDetector0.prototype.hydrated = function() {
+ *   return this.context !== ChangeDetectionUtil.unitialized();
  * }
  *
  * return ChangeDetector0;
@@ -119,10 +129,21 @@ ${type}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 `;
 }
 
-function setContextTemplate(type:string):string {
+function pipeOnDestroyTemplate(pipeNames:List) {
+  return pipeNames.map((p) => `${p}.onDestroy()`).join("\n");
+}
+
+function hydrateTemplate(type:string, fieldsDefinitions:string, pipeOnDestroy:string):string {
   return `
-${type}.prototype.setContext = function(context) {
+${type}.prototype.hydrate = function(context) {
   this.context = context;
+}
+${type}.prototype.dehydrate = function() {
+  ${pipeOnDestroy}
+  ${fieldsDefinitions}
+}
+${type}.prototype.hydrated = function() {
+  return this.context !== ${UTIL}.unitialized();
 }
 `;
 }
@@ -162,7 +183,10 @@ if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
 function pipeCheckTemplate(context:string, pipe:string, pipeType:string,
                                   value:string, change:string, addRecord:string, notify:string):string{
   return `
-if (${pipe} === ${UTIL}.unitialized() || !${pipe}.supports(${context})) {
+if (${pipe} === ${UTIL}.unitialized()) {
+  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context});
+} else if (!${pipe}.supports(${context})) {
+  ${pipe}.onDestroy();
   ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context});
 }
 
@@ -281,25 +305,34 @@ export class ChangeDetectorJITGenerator {
   }
 
   generate():Function {
-    var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(), this.genSetContext());
+    var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(), this.genHydrate());
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'ContextWithVariableBindings', 'protos', text)(AbstractChangeDetector, ChangeDetectionUtil, ContextWithVariableBindings, this.records);
   }
 
   genConstructor():string {
-    var fields = [];
-    fields = fields.concat(this.fieldNames);
-
-    this.records.forEach((r) => {
-      if (r.mode === RECORD_TYPE_PIPE) {
-        fields.push(this.pipeNames[r.selfIndex]);
-      }
-    });
-
-    return constructorTemplate(this.typeName, fieldDefinitionsTemplate(fields));
+    return constructorTemplate(this.typeName, this.genFieldDefinitions());
   }
 
-  genSetContext():string {
-    return setContextTemplate(this.typeName);
+  genHydrate():string {
+    return hydrateTemplate(this.typeName, this.genFieldDefinitions(),
+      pipeOnDestroyTemplate(this.getnonNullPipeNames()));
+  }
+
+  genFieldDefinitions() {
+    var fields = [];
+    fields = fields.concat(this.fieldNames);
+    fields = fields.concat(this.getnonNullPipeNames());
+    return fieldDefinitionsTemplate(fields);
+  }
+
+  getnonNullPipeNames():List<String> {
+    var pipes = [];
+    this.records.forEach((r) => {
+      if (r.mode === RECORD_TYPE_PIPE) {
+        pipes.push(this.pipeNames[r.selfIndex]);
+      }
+    });
+    return pipes;
   }
 
   genDetectChanges():string {

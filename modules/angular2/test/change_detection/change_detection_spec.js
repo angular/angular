@@ -7,7 +7,7 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
-  PipeRegistry, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
+  PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
 
 import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
@@ -33,7 +33,7 @@ export function main() {
           pcd.addAst(ast(exp), memo, memo);
           var dispatcher = new TestDispatcher();
           var cd = pcd.instantiate(dispatcher);
-          cd.setContext(context);
+          cd.hydrate(context);
 
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
         }
@@ -183,7 +183,7 @@ export function main() {
 
             var dispatcher = new TestDispatcher();
             var cd = pcd.instantiate(dispatcher);
-            cd.setContext(new TestData("value"));
+            cd.hydrate(new TestData("value"));
 
             cd.detectChanges();
 
@@ -264,7 +264,7 @@ export function main() {
                   dispatcher.logValue('InvokeC');
                   return 'c'
                 };
-                cd.setContext(tr);
+                cd.hydrate(tr);
 
                 cd.detectChanges();
 
@@ -280,7 +280,7 @@ export function main() {
 
               var dispatcher = new TestDispatcher();
               var cd = pcd.instantiate(dispatcher);
-              cd.setContext(new TestData('value'));
+              cd.hydrate(new TestData('value'));
 
               expect(() => {
                 cd.checkNoChanges();
@@ -295,7 +295,7 @@ export function main() {
               pcd.addAst(ast('invalidProp', 'someComponent'), "a", 1);
 
               var cd = pcd.instantiate(new TestDispatcher());
-              cd.setContext(null);
+              cd.hydrate(null);
 
               try {
                 cd.detectChanges();
@@ -442,6 +442,35 @@ export function main() {
           });
         });
 
+        describe("hydration", () => {
+          it("should be able to rehydrate a change detector", () => {
+            var c  = createChangeDetector("memo", "name");
+            var cd = c["changeDetector"];
+
+            cd.hydrate("some context");
+            expect(cd.hydrated()).toBe(true);
+
+            cd.dehydrate();
+            expect(cd.hydrated()).toBe(false);
+
+            cd.hydrate("other context");
+            expect(cd.hydrated()).toBe(true);
+          });
+
+          it("should destroy all active pipes during dehyration", () => {
+            var pipe = new OncePipe();
+            var registry = new FakePipeRegistry('pipe', () => pipe);
+            var c  = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
+            var cd = c["changeDetector"];
+
+            cd.detectChanges();
+
+            cd.dehydrate();
+
+            expect(pipe.destroyCalled).toBe(true);
+          });
+        });
+
         describe("pipes", () => {
           it("should support pipes", () => {
             var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
@@ -477,6 +506,21 @@ export function main() {
 
             expect(registry.numberOfLookups).toEqual(2);
           });
+
+          it("should invoke onDestroy on a pipe before switching to another one", () => {
+            var pipe = new OncePipe();
+            var registry = new FakePipeRegistry('pipe', () => pipe);
+            var ctx = new Person("Megatron");
+
+            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
+            var cd = c["changeDetector"];
+
+            cd.detectChanges();
+            ctx.name = "Optimus Prime";
+            cd.detectChanges();
+
+            expect(pipe.destroyCalled).toEqual(true);
+          });
         });
 
         it("should do nothing when returns NO_CHANGE", () => {
@@ -502,10 +546,11 @@ export function main() {
   });
 }
 
-class CountingPipe {
+class CountingPipe extends Pipe {
   state:number;
 
   constructor() {
+    super();
     this.state = 0;
   }
 
@@ -518,14 +563,22 @@ class CountingPipe {
   }
 }
 
-class OncePipe {
+class OncePipe extends Pipe {
   called:boolean;
+  destroyCalled:boolean;
+
   constructor() {
+    super();
     this.called = false;;
+    this.destroyCalled = false;
   }
 
   supports(newValue) {
     return !this.called;
+  }
+
+  onDestroy() {
+    this.destroyCalled = true;
   }
 
   transform(value) {
@@ -534,7 +587,7 @@ class OncePipe {
   }
 }
 
-class IdentityPipe {
+class IdentityPipe extends Pipe {
   state:any;
 
   supports(newValue) {

@@ -97,7 +97,7 @@ export class View {
     // TODO(tbosch): if we have a contextWithLocals we actually only need to
     // set the contextWithLocals once. Would it be faster to always use a contextWithLocals
     // even if we don't have locals and not update the recordRange here?
-    this.changeDetector.setContext(this.context);
+    this.changeDetector.hydrate(this.context);
   }
 
   _dehydrateContext() {
@@ -105,6 +105,7 @@ export class View {
       this.contextWithLocals.clearValues();
     }
     this.context = null;
+    this.changeDetector.dehydrate();
   }
 
   /**

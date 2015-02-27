@@ -76,6 +76,15 @@ export function main() {
         expect(view.hydrated()).toBe(false);
       });
 
+      it('should hydrate and dehydrate the change detector', () => {
+        var ctx = new Object();
+        view.hydrate(null, null, ctx);
+        expect(view.changeDetector.hydrated()).toBe(true);
+
+        view.dehydrate();
+        expect(view.changeDetector.hydrated()).toBe(false);
+      });
+
       it('should use the view pool to reuse views', () => {
         var pv = new ProtoView(el('<div id="1"></div>'), new DynamicProtoChangeDetector(null), null);
         var fakeView = new FakeView();

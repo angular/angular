@@ -55,7 +55,8 @@ export class ChangeDetector {
   addChild(cd:ChangeDetector) {}
   removeChild(cd:ChangeDetector) {}
   remove() {}
-  setContext(context:any) {}
+  hydrate(context:any) {}
+  dehydrate() {}
   markPathToRootAsCheckOnce() {}
 
   detectChanges() {}

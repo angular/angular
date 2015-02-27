@@ -129,7 +129,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
       obj.setField(j, i);
     }
     var cd = proto.instantiate(dispatcher);
-    cd.setContext(obj);
+    cd.hydrate(obj);
     parentCd.addChild(cd);
   }
   return parentCd;
