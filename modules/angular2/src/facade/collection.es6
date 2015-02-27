@@ -93,9 +93,9 @@ export class ListWrapper {
   static map(array, fn) {
     return array.map(fn);
   }
-  static forEach(array, fn) {
-    for(var p of array) {
-      fn(p);
+  static forEach(array:List, fn:Function) {
+    for (var i = 0; i < array.length; i++) {
+      fn(array[i]);
     }
   }
   static push(array, el) {
@@ -198,8 +198,16 @@ export function isListLikeIterable(obj):boolean {
 }
 
 export function iterateListLike(obj, fn:Function) {
-  for (var item of obj) {
-    fn(item);
+  if (ListWrapper.isList(obj)) {
+    for (var i = 0; i < obj.length; i++) {
+      fn(obj[i]);
+    }
+  } else {
+    var iterator = obj[Symbol.iterator]();
+    var item;
+    while (!((item = iterator.next()).done)) {
+      fn(item.value);
+    }
   }
 }
 

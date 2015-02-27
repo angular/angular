@@ -259,8 +259,8 @@ var number = type.number = define('number', function(value) {
 function arrayOf(...types) {
   return assert.define('array of ' + types.map(prettyPrint).join('/'), function(value) {
     if (assert(value).is(Array)) {
-      for (var item of value) {
-        assert(item).is(...types);
+      for (var i = 0; i < value.length; i++) {
+        assert(value[i]).is(...types);
       }
     }
   });
@@ -270,7 +270,8 @@ function structure(definition) {
   var properties = Object.keys(definition);
   return assert.define('object with properties ' + properties.join(', '), function(value) {
     if (assert(value).is(Object)) {
-      for (var property of properties) {
+      for (var i = 0; i < properties.length; i++) {
+        var property = properties[i];
         assert(value[property]).is(definition[property]);
       }
     }
@@ -318,8 +319,8 @@ function assert(value) {
       // var errors = []
       var allErrors = [];
       var errors;
-
-      for (var type of types) {
+      for (var i = 0; i < types.length; i++) {
+        var type = types[i];
         errors = [];
 
         if (isType(value, type, errors)) {
