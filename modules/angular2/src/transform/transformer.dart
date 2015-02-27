@@ -9,10 +9,10 @@ import 'package:code_transformers/resolver.dart';
 import 'annotation_processor.dart';
 import 'codegen.dart' as codegen;
 import 'find_bootstrap.dart';
-import 'find_reflection_capabilities.dart';
 import 'logging.dart' as log;
 import 'options.dart';
 import 'resolvers.dart';
+import 'setup_reflection/remove_reflection_capabilities.dart';
 import 'traversal.dart';
 
 export 'options.dart';
@@ -35,63 +35,59 @@ class AngularTransformer extends Transformer {
 
   bool isPrimary(AssetId id) => options.reflectionEntryPoint == id.path;
 
-  Future apply(Transform transform) {
+  Future apply(Transform transform) async {
     log.init(transform);
 
     var entryPointId =
-        new AssetId(transform.primaryInput.id.package, options.entryPoint);
+    new AssetId(transform.primaryInput.id.package, options.entryPoint);
     var reflectionEntryPointId = new AssetId(
         transform.primaryInput.id.package, options.reflectionEntryPoint);
     var newEntryPointId =
-        new AssetId(transform.primaryInput.id.package, options.newEntryPoint);
+    new AssetId(transform.primaryInput.id.package, options.newEntryPoint);
 
-    var reflectionExists = transform.hasInput(reflectionEntryPointId);
-    var newEntryPointExists = transform.hasInput(newEntryPointId);
+    var reflectionExists = await transform.hasInput(reflectionEntryPointId);
+    var newEntryPointExists = await transform.hasInput(newEntryPointId);
 
     Resolver myResolver;
-    return Future
-        .wait([reflectionExists, newEntryPointExists])
-        .then((existsList) {
-      if (!existsList[0]) {
-        log.logger.error('Reflection entry point file '
-            '${reflectionEntryPointId} does not exist.');
-      } else if (existsList[1]) {
-        log.logger
-            .error('New entry point file $newEntryPointId already exists.');
-      } else {
-        return _resolvers
-            .get(transform, [entryPointId, reflectionEntryPointId])
-            .then((resolver) {
-          myResolver = resolver;
-          try {
-            String reflectionCapabilitiesCreation = findReflectionCapabilities(
-                resolver, reflectionEntryPointId, newEntryPointId);
+    if (!reflectionExists) {
+      log.logger.error('Reflection entry point file '
+      '${reflectionEntryPointId} does not exist.');
+    } else if (newEntryPointExists) {
+      log.logger
+      .error('New entry point file $newEntryPointId already exists.');
+    } else {
+      var resolver = await _resolvers.get(transform, [entryPointId,
+      reflectionEntryPointId]);
+      try {
+        try {
+          String reflectionCapabilitiesCreation = removeReflectionCapabilities(
+              resolver, reflectionEntryPointId, newEntryPointId);
 
-            transform.addOutput(new Asset.fromString(
-                reflectionEntryPointId, reflectionCapabilitiesCreation));
-            // Find the call to `new ReflectionCapabilities()`
-            // Generate new source.
-          } catch (err, stackTrace) {
-            log.logger.error('${err}: ${stackTrace}',
-                asset: reflectionEntryPointId);
-            rethrow;
-          }
+          transform.addOutput(new Asset.fromString(
+              reflectionEntryPointId, reflectionCapabilitiesCreation));
+          // Find the call to `new ReflectionCapabilities()`
+          // Generate new source.
+        } catch (err, stackTrace) {
+          log.logger.error('${err}: ${stackTrace}',
+          asset: reflectionEntryPointId);
+          rethrow;
+        }
 
-          try {
-            new _BootstrapFileBuilder(
-                resolver, transform, entryPointId, newEntryPointId).run();
-          } catch (err, stackTrace) {
-            log.logger.error('${err}: ${stackTrace}',
-                asset: transform.primaryInput.id);
-            rethrow;
-          }
-        });
+        try {
+          new _BootstrapFileBuilder(
+              resolver, transform, entryPointId, newEntryPointId).run();
+        } catch (err, stackTrace) {
+          log.logger.error('${err}: ${stackTrace}',
+          asset: transform.primaryInput.id);
+          rethrow;
+        }
       }
-    }).whenComplete(() {
-      if (myResolver != null) {
-        myResolver.release();
+      finally {
+        if (resolver != null) {
+          resolver.release();
+        }
       }
-    });
+    }
   }
 }
 
@@ -110,11 +106,6 @@ class _BootstrapFileBuilder {
   void run() {
     Set<BootstrapCallInfo> bootstrapCalls =
         findBootstrapCalls(_resolver, _resolver.getLibrary(_entryPoint));
-
-    log.logger.info('found ${bootstrapCalls.length} call(s) to `bootstrap`');
-    bootstrapCalls.forEach((BootstrapCallInfo info) {
-      log.logger.info('Arg1: ${info.bootstrapType}');
-    });
 
     var types = new Angular2Types(_resolver);
     // TODO(kegluneq): Also match [Inject].

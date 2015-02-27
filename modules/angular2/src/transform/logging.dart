@@ -7,12 +7,7 @@ BuildLogger _logger;
 
 /// Prepares [logger] for use throughout the transformer.
 void init(Transform t) {
-  if (_logger == null) {
-    _logger = new BuildLogger(t);
-  } else {
-    _logger.fine('Attempted to initialize logger multiple times.',
-        asset: t.primaryInput.id);
-  }
+  _logger = new BuildLogger(t);
 }
 
 /// The logger the transformer should use for messaging.
