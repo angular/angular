@@ -13,7 +13,7 @@ import {ProtoView} from 'angular2/src/core/compiler/view';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 

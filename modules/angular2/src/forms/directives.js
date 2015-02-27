@@ -1,5 +1,5 @@
 import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';

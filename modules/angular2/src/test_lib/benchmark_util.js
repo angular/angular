@@ -1,5 +1,8 @@
-import {DOM, document, location} from 'angular2/src/facade/dom';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {document} from 'angular2/src/facade/browser';
 import {NumberWrapper, BaseException, isBlank} from 'angular2/src/facade/lang';
+
+var DOM = new BrowserDomAdapter();
 
 export function getIntParameter(name:string) {
   return NumberWrapper.parseInt(getStringParameter(name), 10);

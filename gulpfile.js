@@ -618,19 +618,31 @@ gulp.task('tests/transform.dart', function() {
     .pipe(gulp.dest('dist/dart/angular2/test/transform'));
 });
 
+
+
 // -----------------
 // orchestrated targets
-gulp.task('build.dart', function(done) {
+
+// Builds all Dart packages, but does not compile them
+gulp.task('build/packages.dart', function(done) {
   runSequence(
     ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
     'build/format.dart',
     'build/pubspec.dart',
+    done
+  );
+});
+
+// Builds and compiles all Dart packages
+gulp.task('build.dart', function(done) {
+  runSequence(
+    'build/packages.dart',
+    'build/analyze.dart',
     'build/pubbuild.dart',
     // Note: pubbuild.dart will clear the dart2js folder, so we need to copy
     // our files after this :-(
     'build/multicopy.js.dart2js',
-    'build/analyze.dart',
     done
   );
 });

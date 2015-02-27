@@ -1,6 +1,6 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Type, isPresent, BaseException} from 'angular2/src/facade/lang';
 import {assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
 

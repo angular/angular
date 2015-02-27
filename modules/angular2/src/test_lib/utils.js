@@ -1,5 +1,5 @@
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 
 export class Log {

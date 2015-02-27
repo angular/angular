@@ -22,7 +22,7 @@ import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy'
 import {ProtoView} from 'angular2/src/core/compiler/view';
 
 import {IMPLEMENTS, Type, stringify} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {

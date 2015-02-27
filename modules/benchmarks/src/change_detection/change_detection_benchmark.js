@@ -2,6 +2,7 @@ import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 import {
   Lexer,
@@ -135,6 +136,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
 }
 
 export function main () {
+  BrowserDomAdapter.makeCurrent();
   var numberOfChecks = getIntParameter('numberOfChecks');
 
   var numberOfChecksPerDetector = 10;

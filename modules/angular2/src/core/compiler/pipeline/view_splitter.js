@@ -1,5 +1,5 @@
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
-import {DOM, TemplateElement} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 import {Parser} from 'angular2/change_detection';
@@ -64,8 +64,8 @@ export class ViewSplitter extends CompileStep {
       if (DOM.isTemplateElement(current.element)) {
         if (!current.isViewRoot) {
           var viewRoot = new CompileElement(DOM.createTemplate(''));
-          var currentElement:TemplateElement = current.element;
-          var viewRootElement:TemplateElement = viewRoot.element;
+          var currentElement = current.element;
+          var viewRootElement = viewRoot.element;
           this._moveChildNodes(DOM.content(currentElement), DOM.content(viewRootElement));
           // viewRoot doesn't appear in the original template, so we associate
           // the current element description to get a more meaningful message in case of error

@@ -1,5 +1,5 @@
 import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Parser} from 'angular2/change_detection';
 

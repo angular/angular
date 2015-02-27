@@ -2,7 +2,6 @@ library angular.events;
 
 import 'dart:html';
 import './hammer_common.dart';
-import '../../facade/dom.dart' show Element;
 import '../../facade/lang.dart' show BaseException;
 
 import 'dart:js' as js;

@@ -16,14 +16,16 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 
 import {reflector} from 'angular2/src/reflection/reflection';
-import {DOM, document, window, Element, gc} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
+import {window, document, gc} from 'angular2/src/facade/browser';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 import {If} from 'angular2/directives';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
@@ -188,9 +190,10 @@ function setupReflector() {
 }
 
 export function main() {
- var maxDepth = getIntParameter('depth');
+  BrowserDomAdapter.makeCurrent();
+  var maxDepth = getIntParameter('depth');
 
- setupReflector();
+  setupReflector();
 
   var app;
   var lifeCycle;
@@ -310,7 +313,7 @@ var BASELINE_IF_TEMPLATE = DOM.createTemplate(
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
-  element:Element;
+  element;
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;
@@ -352,7 +355,7 @@ class BaseLineInterpolation {
 class BaseLineIf {
   condition:boolean;
   component:BaseLineTreeComponent;
-  anchor:Element;
+  anchor;
   constructor(anchor) {
     this.anchor = anchor;
     this.condition = false;

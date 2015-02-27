@@ -1,7 +1,6 @@
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM, Element} from 'angular2/src/facade/dom';
 
 import {ChangeDetection, Parser} from 'angular2/change_detection';
 
@@ -149,7 +148,7 @@ export class Compiler {
   }
 
   // TODO(vicb): union type return ProtoView or Promise<ProtoView>
-  _compileTemplate(template: Template, tplElement: Element, component: Type) {
+  _compileTemplate(template: Template, tplElement, component: Type) {
     var pipeline = new CompilePipeline(this.createSteps(component, template));
     var compilationCtxtDescription = stringify(this._reader.read(component).type);
     var compileElements;

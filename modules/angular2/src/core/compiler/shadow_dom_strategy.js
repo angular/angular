@@ -1,5 +1,5 @@
 import {Type, isBlank, isPresent, int} from 'angular2/src/facade/lang';
-import {DOM, Element, StyleElement} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -13,14 +13,14 @@ import {StyleInliner} from './style_inliner';
 import {StyleUrlResolver} from './style_url_resolver';
 
 export class ShadowDomStrategy {
-  attachTemplate(el:Element, view:View) {}
-  constructLightDom(lightDomView:View, shadowDomView:View, el:Element) {}
+  attachTemplate(el, view:View) {}
+  constructLightDom(lightDomView:View, shadowDomView:View, el) {}
   polyfillDirectives():List<Type> { return null; }
   // TODO(vicb): union types: return either a string or a Promise<string>
   transformStyleText(cssText: string, baseUrl: string, component: Type) {}
-  handleStyleElement(styleEl: StyleElement) {};
-  shimContentElement(component: Type, element: Element) {}
-  shimHostElement(component: Type, element: Element) {}
+  handleStyleElement(styleEl) {};
+  shimContentElement(component: Type, element) {}
+  shimHostElement(component: Type, element) {}
 }
 
 /**
@@ -34,21 +34,21 @@ export class ShadowDomStrategy {
  */
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
-  _lastInsertedStyle: StyleElement;
-  _styleHost: Element;
+  _lastInsertedStyle;
+  _styleHost;
 
-  constructor(styleUrlResolver: StyleUrlResolver, styleHost: Element) {
+  constructor(styleUrlResolver: StyleUrlResolver, styleHost) {
     super();
     this._styleUrlResolver = styleUrlResolver;
     this._styleHost = styleHost;
   }
 
-  attachTemplate(el:Element, view:View){
+  attachTemplate(el, view:View){
     DOM.clearNodes(el);
     _moveViewNodesIntoParent(el, view);
   }
 
-  constructLightDom(lightDomView:View, shadowDomView:View, el:Element){
+  constructLightDom(lightDomView:View, shadowDomView:View, el) {
     return new LightDom(lightDomView, shadowDomView, el);
   }
 
@@ -60,7 +60,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     return this._styleUrlResolver.resolveUrls(cssText, baseUrl);
   }
 
-  handleStyleElement(styleEl: StyleElement) {
+  handleStyleElement(styleEl) {
     DOM.remove(styleEl);
 
     var cssText = DOM.getText(styleEl);
@@ -73,7 +73,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     }
   };
 
-  _insertStyleElement(host: Element, style: StyleElement) {
+  _insertStyleElement(host, style) {
     if (isBlank(this._lastInsertedStyle)) {
       var firstChild = DOM.firstChild(host);
       if (isPresent(firstChild)) {
@@ -103,7 +103,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   _styleInliner: StyleInliner;
 
-  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost: Element) {
+  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
     super(styleUrlResolver, styleHost);
     this._styleInliner = styleInliner;
   }
@@ -118,18 +118,18 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     }
   }
 
-  handleStyleElement(styleEl: StyleElement) {
+  handleStyleElement(styleEl) {
     DOM.remove(styleEl);
     this._insertStyleElement(this._styleHost, styleEl);
   };
 
-  shimContentElement(component: Type, element: Element) {
+  shimContentElement(component: Type, element) {
     var id = _getComponentId(component);
     var attrName = _getContentAttribute(id);
     DOM.setAttribute(element, attrName, '');
   }
 
-  shimHostElement(component: Type, element: Element) {
+  shimHostElement(component: Type, element) {
     var id = _getComponentId(component);
     var attrName = _getHostAttribute(id);
     DOM.setAttribute(element, attrName, '');
@@ -150,11 +150,11 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     this._styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el:Element, view:View){
+  attachTemplate(el, view:View){
     _moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
   }
 
-  constructLightDom(lightDomView:View, shadowDomView:View, el:Element){
+  constructLightDom(lightDomView:View, shadowDomView:View, el) {
     return null;
   }
 

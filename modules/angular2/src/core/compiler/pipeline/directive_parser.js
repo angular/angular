@@ -1,6 +1,6 @@
 import {isPresent, isBlank, BaseException, assertionsEnabled, RegExpWrapper} from 'angular2/src/facade/lang';
 import {List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 

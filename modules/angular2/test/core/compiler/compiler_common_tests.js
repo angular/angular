@@ -1,6 +1,6 @@
 import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
 
-import {DOM, Element, TemplateElement} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -22,7 +22,7 @@ import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-export function main() {
+export function runCompilerCommonTests() {
   describe('compiler', function() {
     StringMapWrapper.forEach({
       '(sync TemplateLoader)': true,

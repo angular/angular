@@ -13,6 +13,7 @@ dependencies:
   barback: '^0.15.2+2'
   code_transformers: '^0.2.5'
   dart_style: '^0.1.3'
+  html5lib: '^0.12.0'
   stack_trace: '^1.1.1'
 dev_dependencies:
   guinness: "^0.1.16"

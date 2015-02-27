@@ -1,5 +1,5 @@
 import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, isString, stringify} from 'angular2/src/facade/lang';
-import {Element, DOM, attrToPropMap} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -21,7 +21,7 @@ function ariaSetterFactory(attrName:string) {
   var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element, value) {
       if (isPresent(value)) {
         DOM.setAttribute(element, attrName, stringify(value));
       } else {
@@ -42,7 +42,7 @@ function classSetterFactory(className:string) {
   var setterFn = StringMapWrapper.get(classSettersCache, className);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element, value) {
       if (value) {
         DOM.addClass(element, className);
       } else {
@@ -64,7 +64,7 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
 
   if (isBlank(setterFn)) {
-    setterFn = function(element:Element, value) {
+    setterFn = function(element, value) {
       var valAsStr;
       if (isPresent(value)) {
         valAsStr = stringify(value);
@@ -80,7 +80,7 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
 }
 
 const ROLE_ATTR = 'role';
-function roleSetter(element:Element, value) {
+function roleSetter(element, value) {
   if (isString(value)) {
     DOM.setAttribute(element, ROLE_ATTR, value);
   } else {
@@ -92,18 +92,25 @@ function roleSetter(element:Element, value) {
 }
 
 // special mapping for cases where attribute name doesn't match property name
-var attrToProp = StringMapWrapper.merge({
-  "inner-html": "innerHTML",
-  "readonly": "readOnly",
-  "tabindex": "tabIndex",
-}, attrToPropMap);
+var _lazyAttrToProp;
+
+function attrToProp() {
+  if (!isPresent(_lazyAttrToProp)) {
+    _lazyAttrToProp = StringMapWrapper.merge({
+      "inner-html": "innerHTML",
+      "readonly": "readOnly",
+      "tabindex": "tabIndex",
+    }, DOM.attrToPropMap);
+  }
+  return _lazyAttrToProp;
+}
 
 // tells if an attribute is handled by the ElementBinderBuilder step
 export function isSpecialProperty(propName:string) {
   return StringWrapper.startsWith(propName, ARIA_PREFIX)
         || StringWrapper.startsWith(propName, CLASS_PREFIX)
         || StringWrapper.startsWith(propName, STYLE_PREFIX)
-        || StringMapWrapper.contains(attrToProp, propName);
+        || StringMapWrapper.contains(attrToProp(), propName);
 }
 
 /**
@@ -250,7 +257,7 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _resolvePropertyName(attrName:string) {
-    var mappedPropName = StringMapWrapper.get(attrToProp, attrName);
+    var mappedPropName = StringMapWrapper.get(attrToProp(), attrName);
     return isPresent(mappedPropName) ? mappedPropName : attrName;
   }
 }

@@ -5,7 +5,7 @@ import {CompileControl} from './compile_control';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Type} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';

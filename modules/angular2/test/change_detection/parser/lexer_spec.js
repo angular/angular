@@ -49,7 +49,6 @@ function expectKeywordToken(token, index, keyword) {
   expect(token.toString()).toEqual(keyword);
 }
 
-
 export function main() {
   describe('lexer', function() {
     describe('token', function() {

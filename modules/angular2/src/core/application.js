@@ -1,6 +1,7 @@
 import {Injector, bind, OpaqueToken} from 'angular2/di';
 import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
@@ -117,6 +118,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
 // Multiple calls to this method are allowed. Each application would only share
 // _rootInjector, which is not user-configurable by design, thus safe to share.
 export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, givenBootstrapErrorReporter: Function=null): Promise {
+  BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
   var zone = _createVmZone(givenBootstrapErrorReporter);

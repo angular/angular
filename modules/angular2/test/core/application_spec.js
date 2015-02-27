@@ -2,7 +2,7 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from '
 import {bootstrap, appDocumentToken, appElementToken}
     from 'angular2/src/core/application';
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';

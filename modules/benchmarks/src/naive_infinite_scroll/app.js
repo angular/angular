@@ -7,7 +7,8 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
 import {If, Foreach} from 'angular2/directives';
-import {DOM, document, Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
+import {document} from 'angular2/src/facade/browser';
 
 export class App {
   scrollAreas:List<int>;
@@ -68,7 +69,7 @@ export class App {
     }, 0);
   }
 
-  _locateFinishedMarker():Element {
+  _locateFinishedMarker() {
     return DOM.querySelector(document.body, '#done');
   }
 

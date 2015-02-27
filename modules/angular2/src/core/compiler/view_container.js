@@ -1,5 +1,5 @@
 import * as viewModule from './view';
-import {DOM, Node, Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
@@ -9,7 +9,7 @@ import {EventManager} from 'angular2/src/core/events/event_manager';
 
 export class ViewContainer {
   parentView: viewModule.View;
-  templateElement: Element;
+  templateElement;
   defaultProtoView: viewModule.ProtoView;
   _views: List<viewModule.View>;
   _lightDom: any;
@@ -18,7 +18,7 @@ export class ViewContainer {
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
 
-  constructor(parentView: viewModule.View, templateElement: Element, defaultProtoView: viewModule.ProtoView,
+  constructor(parentView: viewModule.View, templateElement, defaultProtoView: viewModule.ProtoView,
       elementInjector: eiModule.ElementInjector, eventManager: EventManager, lightDom = null) {
     this.parentView = parentView;
     this.templateElement = templateElement;
@@ -124,7 +124,7 @@ export class ViewContainer {
     return this._views;
   }
 
-  nodes():List<Node> {
+  nodes():List {
     var r = [];
     for (var i = 0; i < this._views.length; ++i) {
       r = ListWrapper.concat(r, this._views[i].nodes);

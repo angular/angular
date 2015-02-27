@@ -1,5 +1,5 @@
 import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
@@ -17,7 +17,7 @@ export class EventManager {
     }
   }
 
-  addEventListener(element: Element, eventName: string, handler: Function) {
+  addEventListener(element, eventName: string, handler: Function) {
     var shouldSupportBubble = eventName[0] == BUBBLE_SYMBOL; 
     if (shouldSupportBubble) {
       eventName = StringWrapper.substring(eventName, 1); 
@@ -54,7 +54,7 @@ export class EventManagerPlugin {
     return false;
   }
 
-  addEventListener(element: Element, eventName: string, handler: Function,
+  addEventListener(element, eventName: string, handler: Function,
       shouldSupportBubble: boolean) {
     throw "not implemented";
   }
@@ -69,7 +69,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  addEventListener(element: Element, eventName: string, handler: Function,
+  addEventListener(element, eventName: string, handler: Function,
       shouldSupportBubble: boolean) {
     var outsideHandler = shouldSupportBubble ?
       DomEventsPlugin.bubbleCallback(element, handler, this.manager._zone) :

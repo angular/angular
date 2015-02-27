@@ -17,12 +17,10 @@ function verifyNoBrowserErrors() {
   browser.executeScript('1+1');
   browser.manage().logs().get('browser').then(function(browserLog) {
     var filteredLog = browserLog.filter(function(logEntry) {
+      console.log('>> ' + require('util').inspect(logEntry));
       return logEntry.level.value > webdriver.logging.Level.WARNING.value;
     });
     expect(filteredLog.length).toEqual(0);
-    if (filteredLog.length) {
-      console.log('browser console errors: ' + require('util').inspect(filteredLog));
-    }
   });
 }
 

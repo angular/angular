@@ -11,7 +11,6 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWi
 
 import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
-
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
 
 

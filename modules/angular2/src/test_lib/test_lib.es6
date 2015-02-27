@@ -1,4 +1,4 @@
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export {proxy} from 'rtts_assert/rtts_assert';
 export var describe = window.describe;
@@ -150,7 +150,6 @@ export class SpyObject {
 
 
 function elementText(n) {
-  var hasShadowRoot = (n) => n instanceof Element && n.shadowRoot;
   var hasNodes = (n) => {var children = DOM.childNodes(n); return children && children.length > 0;}
 
   if (n instanceof Comment)         return '';
@@ -158,7 +157,7 @@ function elementText(n) {
   if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
   if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
     return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
-  if (hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
+  if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
   if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
 
   return n.textContent;

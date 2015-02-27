@@ -1,5 +1,7 @@
-import {DOM, document} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {isBlank, Type} from 'angular2/src/facade/lang';
+import {document} from 'angular2/src/facade/browser';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -80,6 +82,7 @@ function setupReflector() {
 }
 
 export function main() {
+  BrowserDomAdapter.makeCurrent();
   var count = getIntParameter('elements');
 
   setupReflector();

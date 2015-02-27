@@ -1,9 +1,9 @@
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {normalizeBlank} from 'angular2/src/facade/lang';
 
 export class NgElement {
-  domElement:Element;
-  constructor(domElement:Element) {
+  domElement;
+  constructor(domElement) {
     this.domElement = domElement;
   }
 

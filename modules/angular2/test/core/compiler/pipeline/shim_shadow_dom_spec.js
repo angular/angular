@@ -11,7 +11,7 @@ import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
 import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
-import {DOM, Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   describe('ShimShadowDom', () => {
@@ -62,12 +62,12 @@ class FakeStrategy extends ShadowDomStrategy {
     super();
   }
 
-  shimContentElement(component: Type, element: Element) {
+  shimContentElement(component: Type, element) {
     var attrName = stringify(component) + '-content';
     DOM.setAttribute(element, attrName, '');
   }
 
-  shimHostElement(component: Type, element: Element) {
+  shimHostElement(component: Type, element) {
     var attrName = stringify(component) + '-host';
     DOM.setAttribute(element, attrName, '');
   }

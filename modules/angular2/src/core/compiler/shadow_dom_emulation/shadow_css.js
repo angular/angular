@@ -1,10 +1,4 @@
-import {
-  StyleElement,
-  DOM,
-  CssRule,
-  CssKeyframesRule,
-  CSSRuleWrapper
-} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {
   StringWrapper,
@@ -153,7 +147,7 @@ export class ShadowCss {
   * Shim a style element with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   */
-  shimStyle(style: StyleElement, selector: string, hostSelector: string = ''): string {
+  shimStyle(style, selector: string, hostSelector: string = ''): string {
     var cssText = DOM.getText(style);
     return this.shimCssText(cssText, selector, hostSelector);
   }
@@ -353,11 +347,11 @@ export class ShadowCss {
     if (isPresent(cssRules)) {
       for (var i = 0; i < cssRules.length; i++) {
         var rule = cssRules[i];
-        if (CSSRuleWrapper.isStyleRule(rule) || CSSRuleWrapper.isPageRule(rule)) {
+        if (DOM.isStyleRule(rule) || DOM.isPageRule(rule)) {
           cssText += this._scopeSelector(rule.selectorText, scopeSelector, hostSelector,
             this.strictStyling) + ' {\n';
           cssText += this._propertiesFromRule(rule) + '\n}\n\n';
-        } else if (CSSRuleWrapper.isMediaRule(rule)) {
+        } else if (DOM.isMediaRule(rule)) {
           cssText += '@media ' + rule.media.mediaText + ' {\n';
           cssText += this._scopeRules(rule.cssRules, scopeSelector, hostSelector);
           cssText += '\n}\n\n';
@@ -372,7 +366,7 @@ export class ShadowCss {
               cssText += rule.cssText + '\n\n';
             }
           } catch(x) {
-            if (CSSRuleWrapper.isKeyframesRule(rule) && isPresent(rule.cssRules)) {
+            if (DOM.isKeyframesRule(rule) && isPresent(rule.cssRules)) {
               cssText += this._ieSafeCssTextFromKeyFrameRule(rule);
             }
           }
@@ -382,7 +376,7 @@ export class ShadowCss {
     return cssText;
   }
 
-  _ieSafeCssTextFromKeyFrameRule(rule: CssKeyframesRule): string {
+  _ieSafeCssTextFromKeyFrameRule(rule): string {
     var cssText = '@keyframes ' + rule.name + ' {';
     for (var i = 0; i < rule.cssRules.length; i++) {
       var r = rule.cssRules[i];

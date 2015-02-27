@@ -5,7 +5,7 @@ import {Component, Viewport, Template, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Element} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Math} from 'angular2/src/facade/math';
 
 import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,

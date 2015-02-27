@@ -2,7 +2,8 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} fr
 import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM, Element, document} from 'angular2/src/facade/dom';
+import {document} from 'angular2/src/facade/browser';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   var domEventPlugin;
@@ -100,7 +101,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     return ListWrapper.contains(this._supports, eventName);
   }
 
-  addEventListener(element: Element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
     MapWrapper.set(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
         eventName, handler);
   }

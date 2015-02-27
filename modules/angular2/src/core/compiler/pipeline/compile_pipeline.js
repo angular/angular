@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {Element, DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
@@ -15,7 +15,7 @@ export class CompilePipeline {
     this._control = new CompileControl(steps);
   }
 
-  process(rootElement:Element, compilationCtxtDescription:string = ''):List {
+  process(rootElement, compilationCtxtDescription:string = ''):List {
     var results = ListWrapper.create();
     this._process(results, null, new CompileElement(rootElement, compilationCtxtDescription), compilationCtxtDescription);
     return results;

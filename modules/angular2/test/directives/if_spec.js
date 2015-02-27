@@ -1,6 +1,6 @@
 import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
 
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';

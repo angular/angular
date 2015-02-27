@@ -2,7 +2,7 @@ import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular
 
 import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -29,7 +29,10 @@ import {Template} from 'angular2/src/core/annotations/template';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+
 export function main() {
+  BrowserDomAdapter.makeCurrent();
   describe('integration tests', function() {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);

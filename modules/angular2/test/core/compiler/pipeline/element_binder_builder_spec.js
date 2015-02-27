@@ -1,6 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ElementBinderBuilder} from 'angular2/src/core/compiler/pipeline/element_binder_builder';

@@ -15,15 +15,17 @@ import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector'
 export function main() {
   describe('ProtoElementInjectorBuilder', () => {
     var protoElementInjectorBuilder, protoView;
+    // Create consts for an elements with a var- so that we can fake parsing the var into
+    // the CompileElement's variableBindings without actually doing any parsing.
+    var ELEMENT_WITH_VAR;
+    var DIRECTIVE_ELEMENT_WITH_VAR;
+
     beforeEach( () => {
+      ELEMENT_WITH_VAR = el('<div var-name></div>');
+      DIRECTIVE_ELEMENT_WITH_VAR = el('<div var-name directives></div>');
       protoElementInjectorBuilder = new TestableProtoElementInjectorBuilder();
       protoView = new ProtoView(null, null, null);
     });
-
-    // Create consts for an elements with a var- so that we can fake parsing the var into
-    // the CompileElement's variableBindings without actually doing any parsing.
-    var ELEMENT_WITH_VAR = el('<div var-name></div>');
-    var DIRECTIVE_ELEMENT_WITH_VAR = el('<div var-name directives></div>');
 
     function createPipeline(directives = null) {
       if (isBlank(directives)) {

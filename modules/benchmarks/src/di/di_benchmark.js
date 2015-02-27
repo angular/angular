@@ -1,6 +1,7 @@
 import {Injector, Key} from "angular2/di";
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 var count = 0;
 
@@ -33,6 +34,7 @@ function setupReflector() {
 }
 
 export function main() {
+  BrowserDomAdapter.makeCurrent();
   var iterations = getIntParameter('iterations');
 
   setupReflector();

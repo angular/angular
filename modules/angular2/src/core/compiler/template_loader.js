@@ -1,6 +1,6 @@
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
-import {DOM, Element} from 'angular2/src/facade/dom';
 import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {XHR} from './xhr/xhr';
 

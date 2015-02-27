@@ -17,21 +17,25 @@ System.paths = {
   'transpiler/*': '../tools/transpiler/*.js'
 }
 
-
 // Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
-Promise.all(
-  Object.keys(window.__karma__.files) // All files served by Karma.
-  .filter(onlySpecFiles)
-  .map(window.file2moduleName)        // Normalize paths to module names.
-  .map(function(path) {
-    return System.import(path).then(function(module) {
-      if (module.hasOwnProperty('main')) {
-        module.main()
-      } else {
-        throw new Error('Module ' + path + ' does not implement main() method.');
-      }
-    });
-  })).then(function() {
+System.import('angular2/src/dom/browser_adapter').then(function(browser_adapter) {
+  browser_adapter.BrowserDomAdapter.makeCurrent();
+}).then(function() {
+  return Promise.all(
+    Object.keys(window.__karma__.files) // All files served by Karma.
+    .filter(onlySpecFiles)
+    .map(window.file2moduleName)        // Normalize paths to module names.
+    .map(function(path) {
+      return System.import(path).then(function(module) {
+        if (module.hasOwnProperty('main')) {
+          module.main()
+        } else {
+          throw new Error('Module ' + path + ' does not implement main() method.');
+        }
+      });
+    }))
+})
+.then(function() {
   __karma__.start();
 }, function(error) {
   console.error(error.stack || error)

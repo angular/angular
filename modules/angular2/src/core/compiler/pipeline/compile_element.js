@@ -1,5 +1,5 @@
 import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Element, DOM} from 'angular2/src/facade/dom';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {int, isBlank, isPresent, Type, StringJoiner, assertionsEnabled} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator, Component, Viewport} from '../../annotations/annotations';
@@ -15,7 +15,7 @@ import {AST} from 'angular2/change_detection';
  * by the CompileSteps starting out with the pure HTMLElement.
  */
 export class CompileElement {
-  element:Element;
+  element;
   _attrs:Map;
   _classList:List;
   textNodeBindings:Map;
@@ -40,7 +40,7 @@ export class CompileElement {
   ignoreBindings: boolean;
   elementDescription: string; // e.g. '<div [class]="foo">' : used to provide context in case of error
 
-  constructor(element:Element, compilationUnit = '') {
+  constructor(element, compilationUnit = '') {
     this.element = element;
     this._attrs = null;
     this._classList = null;
@@ -177,7 +177,7 @@ export class CompileElement {
 
 // return an HTML representation of an element start tag - without its content
 // this is used to give contextual information in case of errors
-function getElementDescription(domElement:Element):string {
+function getElementDescription(domElement):string {
   var buf = new StringJoiner();
   var atts = DOM.attributeMap(domElement);
 
