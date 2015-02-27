@@ -25,6 +25,13 @@ export class MapWrapper {
   static size(m) {return m.size;}
   static delete(m, k) { m.delete(k); }
   static clear(m) { m.clear(); }
+  static clearValues(m) {
+    var keyIterator = m.keys();
+    var k;
+    while (!((k = keyIterator.next()).done)) {
+      m.set(k.value, null);
+    }
+  }
   static iterable(m) { return m; }
   static keys(m) { return m.keys(); }
   static values(m) { return m.values(); }

@@ -52,6 +52,11 @@ class MapWrapper {
   static void clear(Map m) {
     m.clear();
   }
+  static void clearValues(Map m) {
+    for (var k in m.keys) {
+      m[k] = null;
+    }
+  }
   static Iterable iterable(Map m) => new IterableMap(m);
   static Iterable keys(Map m) => m.keys;
   static Iterable values(Map m) => m.values;
