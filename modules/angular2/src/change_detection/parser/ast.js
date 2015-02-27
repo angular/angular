@@ -168,11 +168,13 @@ export class Pipe extends AST {
   exp:AST;
   name:string;
   args:List<AST>;
-  constructor(exp:AST, name:string, args:List) {
+  inBinding:boolean;
+  constructor(exp:AST, name:string, args:List, inBinding:boolean) {
     super();
     this.exp = exp;
     this.name = name;
     this.args = args;
+    this.inBinding = inBinding;
   }
 
   visit(visitor) {

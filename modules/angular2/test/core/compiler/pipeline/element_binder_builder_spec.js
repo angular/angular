@@ -660,7 +660,7 @@ class DoublePipeFactory {
     return true;
   }
 
-  create() {
+  create(bpc) {
     return new DoublePipe();
   }
 }

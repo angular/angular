@@ -535,6 +535,18 @@ export function main() {
 
             expect(pipe.destroyCalled).toEqual(true);
           });
+
+          it("should inject the binding propagation configuration " +
+            "of the encompassing component into a pipe", () => {
+
+            var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+            var c = createChangeDetector("memo", "name | pipe", new Person('bob'), null, registry);
+            var cd = c["changeDetector"];
+
+            cd.detectChanges();
+
+            expect(registry.bpc).toBe(cd.bindingPropagationConfig);
+          });
         });
 
         it("should do nothing when returns NO_CHANGE", () => {
@@ -622,6 +634,7 @@ class FakePipeRegistry extends PipeRegistry {
   numberOfLookups:number;
   pipeType:string;
   factory:Function;
+  bpc:any;
 
   constructor(pipeType, factory) {
     super({});
@@ -630,9 +643,10 @@ class FakePipeRegistry extends PipeRegistry {
     this.numberOfLookups = 0;
   }
 
-  get(type:string, obj) {
+  get(type:string, obj, bpc) {
     if (type != this.pipeType) return null;
     this.numberOfLookups ++;
+    this.bpc = bpc;
     return this.factory();
   }
 }

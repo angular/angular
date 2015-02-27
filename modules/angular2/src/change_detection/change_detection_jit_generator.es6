@@ -15,6 +15,7 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
+  RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -180,14 +181,14 @@ if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
 `;
 }
 
-function pipeCheckTemplate(context:string, pipe:string, pipeType:string,
+function pipeCheckTemplate(context:string, bindingPropagationConfig:string, pipe:string, pipeType:string,
                                   value:string, change:string, addRecord:string, notify:string):string{
   return `
 if (${pipe} === ${UTIL}.unitialized()) {
-  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context});
+  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${bindingPropagationConfig});
 } else if (!${pipe}.supports(${context})) {
   ${pipe}.onDestroy();
-  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context});
+  ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${bindingPropagationConfig});
 }
 
 ${CHANGE_LOCAL} = ${pipe}.transform(${context});
@@ -293,20 +294,20 @@ export class ChangeDetectorJITGenerator {
 
   genHydrate():string {
     return hydrateTemplate(this.typeName, this.genFieldDefinitions(),
-      pipeOnDestroyTemplate(this.getnonNullPipeNames()));
+      pipeOnDestroyTemplate(this.getNonNullPipeNames()));
   }
 
   genFieldDefinitions() {
     var fields = [];
     fields = fields.concat(this.fieldNames);
-    fields = fields.concat(this.getnonNullPipeNames());
+    fields = fields.concat(this.getNonNullPipeNames());
     return fieldDefinitionsTemplate(fields);
   }
 
-  getnonNullPipeNames():List<String> {
+  getNonNullPipeNames():List<String> {
     var pipes = [];
     this.records.forEach((r) => {
-      if (r.mode === RECORD_TYPE_PIPE) {
+      if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
         pipes.push(this.pipeNames[r.selfIndex]);
       }
     });
@@ -332,7 +333,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   genRecord(r:ProtoRecord):string {
-    if (r.mode === RECORD_TYPE_PIPE) {
+    if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
       return this.genPipeCheck (r);
     } else {
       return this.genReferenceCheck(r);
@@ -345,11 +346,12 @@ export class ChangeDetectorJITGenerator {
     var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
     var change = this.changeNames[r.selfIndex];
+    var bpc = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.bindingPropagationConfig" : "null";
 
     var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
     var notify = this.genNotify(r);
 
-    return pipeCheckTemplate(context, pipe, r.name, newValue, change, addRecord, notify);
+    return pipeCheckTemplate(context, bpc, pipe, r.name, newValue, change, addRecord, notify);
   }
 
   genReferenceCheck(r:ProtoRecord):string {

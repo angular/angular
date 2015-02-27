@@ -41,6 +41,7 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
+  RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -239,7 +240,8 @@ class _ConvertAstIntoProtoRecords {
 
   visitPipe(ast:Pipe) {
     var value = ast.exp.visit(this);
-    return this._addRecord(RECORD_TYPE_PIPE, ast.name, ast.name, [], null, value);
+    var type = ast.inBinding ? RECORD_TYPE_BINDING_PIPE : RECORD_TYPE_PIPE;
+    return this._addRecord(type, ast.name, ast.name, [], null, value);
   }
 
   visitKeyedAccess(ast:KeyedAccess) {

@@ -8,7 +8,7 @@ import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations';
-import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
+import {BindingPropagationConfig} from 'angular2/change_detection';
 import * as pclModule from 'angular2/src/core/compiler/private_component_location';
 import {setterFactory} from './property_setter_factory';
 

@@ -8,7 +8,7 @@ export class KeyValueChangesFactory {
     return KeyValueChanges.supportsObj(obj);
   }
 
-  create():Pipe {
+  create(bpc):Pipe {
     return new KeyValueChanges();
   }
 }

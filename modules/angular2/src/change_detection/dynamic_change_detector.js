@@ -3,7 +3,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {PipeRegistry} from './pipes/pipe_registry';
-import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
+import {ChangeDetectionUtil, uninitialized} from './change_detection_util';
 
 
 import {
@@ -17,6 +17,7 @@ import {
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
+  RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -103,7 +104,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _check(proto:ProtoRecord) {
     try {
-      if (proto.mode == RECORD_TYPE_PIPE) {
+      if (proto.mode === RECORD_TYPE_PIPE || proto.mode === RECORD_TYPE_BINDING_PIPE) {
         return this._pipeCheck(proto);
       } else {
         return this._referenceCheck(proto);
@@ -202,7 +203,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isPresent(storedPipe)) {
       storedPipe.onDestroy();
     }
-    var pipe = this.pipeRegistry.get(proto.name, context);
+
+    // Currently, only pipes that used in bindings in the template get
+    // the bindingPropagationConfig of the encompassing component.
+    //
+    // In the future, pipes declared in the bind configuration should
+    // be able to access the bindingPropagationConfig of that component.
+    var bpc = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.bindingPropagationConfig : null;
+    var pipe = this.pipeRegistry.get(proto.name, context, bpc);
     this._writePipe(proto, pipe);
     return pipe;
   }

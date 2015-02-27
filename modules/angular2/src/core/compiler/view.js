@@ -2,10 +2,9 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  ChangeRecord, BindingRecord, uninitialized} from 'angular2/change_detection';
+  ChangeRecord, BindingRecord, BindingPropagationConfig, uninitialized} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
-import {BindingPropagationConfig} from './binding_propagation_config';
 import {ElementBinder} from './element_binder';
 import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'angular2/src/reflection/types';

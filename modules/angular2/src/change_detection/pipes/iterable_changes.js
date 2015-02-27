@@ -21,7 +21,7 @@ export class IterableChangesFactory {
     return IterableChanges.supportsObj(obj);
   }
 
-  create():Pipe {
+  create(bpc):Pipe {
     return new IterableChanges();
   }
 }

@@ -9,7 +9,8 @@ export const RECORD_TYPE_INVOKE_METHOD = 5;
 export const RECORD_TYPE_INVOKE_CLOSURE = 6;
 export const RECORD_TYPE_KEYED_ACCESS = 7;
 export const RECORD_TYPE_PIPE = 8;
-export const RECORD_TYPE_INTERPOLATE = 9;
+export const RECORD_TYPE_BINDING_PIPE = 9;
+export const RECORD_TYPE_INTERPOLATE = 10;
 
 export class ProtoRecord {
   mode:number;

@@ -12,7 +12,7 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
-import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
+import {BindingPropagationConfig} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(View)

@@ -18,7 +18,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection,
-  DynamicChangeDetection, Pipe, PipeRegistry} from 'angular2/change_detection';
+  DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -27,7 +27,6 @@ import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_compo
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
-import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
@@ -869,7 +868,7 @@ class DoublePipeFactory {
     return true;
   }
 
-  create() {
+  create(bpc) {
     return new DoublePipe();
   }
 }

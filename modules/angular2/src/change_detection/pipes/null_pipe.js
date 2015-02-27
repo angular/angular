@@ -6,7 +6,7 @@ export class NullPipeFactory {
     return NullPipe.supportsObj(obj);
   }
 
-  create():Pipe {
+  create(bpc):Pipe {
     return new NullPipe();
   }
 }
