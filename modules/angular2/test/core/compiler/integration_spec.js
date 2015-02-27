@@ -102,7 +102,7 @@ export function main() {
         });
       });
 
-      it('should consume binding to propery names where attr name and property name do not match', (done) => {
+      it('should consume binding to property names where attr name and property name do not match', (done) => {
         tplResolver.setTemplate(MyComp, new Template({inline: '<div [tabindex]="ctxNumProp"></div>'}));
 
         compiler.compile(MyComp).then((pv) => {
