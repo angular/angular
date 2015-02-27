@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Injector, Inject, InjectLazy, bind} from 'angular2/di';
+import {Injector, Inject, InjectLazy, Optional, bind} from 'angular2/di';
 
 class Engine {
 }
@@ -31,6 +31,13 @@ class CarWithLazyEngine {
   engineFactory;
   constructor(@InjectLazy(Engine) engineFactory) {
     this.engineFactory = engineFactory;
+  }
+}
+
+class CarWithOptionalEngine {
+  engine;
+  constructor(@Optional() engine:Engine) {
+    this.engine = engine;
   }
 }
 
@@ -157,6 +164,15 @@ export function main() {
       var car = injector.get(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car.engine).toBeAnInstanceOf(Engine);
+    });
+
+    it('should support optional dependencies', function () {
+      var injector = new Injector([
+        CarWithOptionalEngine
+      ]);
+
+      var car = injector.get(CarWithOptionalEngine);
+      expect(car.engine).toEqual(null);
     });
 
     it("should flatten passed-in bindings", function () {
