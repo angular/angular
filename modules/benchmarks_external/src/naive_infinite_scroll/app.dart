@@ -11,10 +11,6 @@ import 'package:angular2/src/test_lib/benchmark_util.dart';
     <div>
         <div style="display: flex">
           <scroll-area scroll-top="scrollTop"></scroll-area>
-          <div style="padding-left: 20px">
-            <button id='run-btn'>Run</button>
-            <button id='reset-btn'>Reset</button>
-          </div>
         </div>
         <div ng-if="scrollAreas.length > 0">
           <p>Following tables are only here to add weight to the UI:</p>
@@ -39,10 +35,10 @@ class App implements ShadowRootAware {
 
   @override
   void onShadowRoot(ShadowRoot shadowRoot) {
-    bindAction('scroll-app /deep/ #run-btn', () {
+    bindAction('#run-btn', () {
       runBenchmark();
     });
-    bindAction('scroll-app /deep/ #reset-btn', () {
+    bindAction('#reset-btn', () {
       scrollTop = 0;
     });
   }

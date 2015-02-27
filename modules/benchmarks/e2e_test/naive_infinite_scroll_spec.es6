@@ -53,10 +53,8 @@ describe('ng2 naive infinite scroll benchmark', function () {
       });
     })
 
-    browser.executeScript(
-        'document.querySelector("scroll-app /deep/ #reset-btn").click()');
-    browser.executeScript(
-        'document.querySelector("scroll-app /deep/ #run-btn").click()');
+    $("#reset-btn").click();
+    $("#run-btn").click();
     browser.wait(() => {
       return $('#done').getText().then(
         function() { return true; },

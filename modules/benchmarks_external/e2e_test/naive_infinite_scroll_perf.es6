@@ -13,8 +13,8 @@ describe('ng-dart1.x naive infinite scroll benchmark', function () {
         url: URL,
         id: 'ng1-dart1.x.naive_infinite_scroll',
         work: function() {
-          element(by.deepCss('#reset-btn')).click();
-          element(by.deepCss('#run-btn')).click();
+          $('#reset-btn').click();
+          $('#run-btn').click();
           var s = 1000;
           if (appSize > 4) {
             s = s + appSize * 100;
