@@ -1,4 +1,4 @@
-export {Inject, InjectPromise, InjectLazy, DependencyAnnotation} from './src/di/annotations';
+export {Inject, InjectPromise, InjectLazy, Optional, DependencyAnnotation} from './src/di/annotations';
 export {Injector} from './src/di/injector';
 export {Binding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry} from './src/di/key';

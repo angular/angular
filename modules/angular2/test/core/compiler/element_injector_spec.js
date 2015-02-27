@@ -5,7 +5,7 @@ import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter} from 'angular2/src/core/annotations/events';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
-import {Injector, Inject, bind} from 'angular2/di';
+import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
@@ -32,6 +32,13 @@ class SomeOtherDirective {
 class NeedsDirective {
   dependency:SimpleDirective;
   constructor(dependency:SimpleDirective){
+    this.dependency = dependency;
+  }
+}
+
+class OptionallyNeedsDirective {
+  dependency:SimpleDirective;
+  constructor(@Optional() dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
@@ -340,6 +347,12 @@ export function main() {
       it("should throw when no SimpleDirective found", function () {
         expect(() => injector([NeedDirectiveFromParent])).
             toThrowError('No provider for SimpleDirective! (NeedDirectiveFromParent -> SimpleDirective)');
+      });
+
+      it("should inject null when no directive found", function () {
+        var inj = injector([OptionallyNeedsDirective]);
+        var d = inj.get(OptionallyNeedsDirective);
+        expect(d.dependency).toEqual(null);
       });
 
       it("should accept SimpleDirective bindings instead of SimpleDirective types", function () {

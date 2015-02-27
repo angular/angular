@@ -91,14 +91,15 @@ export class DirectiveDependency extends Dependency {
   depth:int;
   eventEmitterName:string;
 
-  constructor(key:Key, asPromise:boolean, lazy:boolean, properties:List, depth:int, eventEmitterName: string) {
-    super(key, asPromise, lazy, properties);
+  constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
+              properties:List, depth:int, eventEmitterName: string) {
+    super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
   }
 
   static createFrom(d:Dependency):Dependency {
-    return new DirectiveDependency(d.key, d.asPromise, d.lazy,
+    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
       d.properties, DirectiveDependency._depth(d.properties),
       DirectiveDependency._eventEmitterName(d.properties));
   }
@@ -123,13 +124,11 @@ export class DirectiveDependency extends Dependency {
 export class DirectiveBinding extends Binding {
   callOnDestroy:boolean;
   callOnChange:boolean;
-  onCheck:boolean;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
     this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
-    //this.onCheck = isPresent(annotation) && annotation.hasLifecycleHook(onCheck);
   }
 
   static createFromBinding(b:Binding, annotation:Directive):Binding {
@@ -405,7 +404,7 @@ export class ElementInjector extends TreeNode {
   }
 
   get(token) {
-    return this._getByKey(Key.get(token), 0, null);
+    return this._getByKey(Key.get(token), 0, false, null);
   }
 
   hasDirective(type:Type):boolean {
@@ -489,7 +488,7 @@ export class ElementInjector extends TreeNode {
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
-    return this._getByKey(dep.key, dep.depth, requestor);
+    return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
 
   _buildEventEmitter(dep) {
@@ -515,7 +514,7 @@ export class ElementInjector extends TreeNode {
    *
    * Write benchmarks before doing this optimization.
    */
-  _getByKey(key:Key, depth:number, requestor:Key) {
+  _getByKey(key:Key, depth:number, optional:boolean, requestor:Key) {
     var ei = this;
 
     if (! this._shouldIncludeSelf(depth)) {
@@ -536,6 +535,8 @@ export class ElementInjector extends TreeNode {
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
+    } else if (optional) {
+      return this._appInjector(requestor).getOptional(key);
     } else {
       return this._appInjector(requestor).get(key);
     }

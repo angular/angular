@@ -38,11 +38,15 @@ export class Injector {
   }
 
   get(token) {
-    return this._getByKey(Key.get(token), false, false);
+    return this._getByKey(Key.get(token), false, false, false);
+  }
+
+  getOptional(token) {
+    return this._getByKey(Key.get(token), false, false, true);
   }
 
   asyncGet(token) {
-    return this._getByKey(Key.get(token), true, false);
+    return this._getByKey(Key.get(token), true, false, false);
   }
 
   createChild(bindings:List):Injector {
@@ -60,9 +64,9 @@ export class Injector {
     return ListWrapper.createFixedSize(Key.numberOfKeys + 1);
   }
 
-  _getByKey(key:Key, returnPromise:boolean, returnLazy:boolean) {
+  _getByKey(key:Key, returnPromise:boolean, returnLazy:boolean, optional:boolean) {
     if (returnLazy) {
-      return () => this._getByKey(key, returnPromise, false);
+      return () => this._getByKey(key, returnPromise, false, optional);
     }
 
     var strategy = returnPromise ? this._asyncStrategy : this._syncStrategy;
@@ -74,14 +78,19 @@ export class Injector {
     if (isPresent(instance)) return instance;
 
     if (isPresent(this._parent)) {
-      return this._parent._getByKey(key, returnPromise, returnLazy);
+      return this._parent._getByKey(key, returnPromise, returnLazy, optional);
     }
-    throw new NoProviderError(key);
+
+    if (optional) {
+      return null;
+    } else {
+      throw new NoProviderError(key);
+    }
   }
 
   _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List {
     try {
-      var getDependency = d => this._getByKey(d.key, forceAsync || d.asPromise, d.lazy);
+      var getDependency = d => this._getByKey(d.key, forceAsync || d.asPromise, d.lazy, d.optional);
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
       this._clear(key);

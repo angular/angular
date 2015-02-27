@@ -59,6 +59,24 @@ export class InjectLazy {
 }
 
 /**
+ * A parameter annotation that marks a dependency as optional.
+ *
+ * ```
+ * class AComponent {
+ *   constructor(@Optional() dp:Dependency) {
+ *     this.dp = dp;
+ *   }
+ * }
+ * ```
+ *
+ */
+export class Optional {
+  @CONST()
+  constructor() {
+  }
+}
+
+/**
  * `DependencyAnnotation` is used by the framework to extend DI.
  *
  * Only annotations implementing `DependencyAnnotation` will be added
