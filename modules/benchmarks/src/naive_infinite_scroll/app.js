@@ -23,11 +23,10 @@ export class App {
     for (var i = 0; i < appSize; i++) {
       ListWrapper.push(this.scrollAreas, i);
     }
-    // TODO(tbosch): change to bindAction when it works in pub serve
-    DOM.on(DOM.query('scroll-app /deep/ #run-btn'), 'click', (_) => {
+    bindAction('#run-btn', () => {
       this.runBenchmark();
     });
-    DOM.on(DOM.query('scroll-app /deep/ #reset-btn'), 'click', (_) => {
+    bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
       var existingMarker = this._locateFinishedMarker();
       if (isPresent(existingMarker)) {
@@ -90,10 +89,6 @@ export function setupReflectorForApp() {
           <div>
             <div style="display: flex">
               <scroll-area id="testArea"></scroll-area>
-              <div style="padding-left: 20px">
-                <button id="run-btn">Run</button>
-                <button id="reset-btn">Reset</button>
-              </div>
             </div>
             <div template="if scrollAreas.length > 0">
               <p>Following tables are only here to add weight to the UI:</p>
