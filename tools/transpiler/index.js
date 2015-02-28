@@ -40,12 +40,9 @@ exports.compile = function compile(options, paths, source) {
   moduleName = moduleName || inputPath;
   moduleName = moduleName.replace(/\.\w*$/, '');
 
-  var localOptions = extend(options, {
-    moduleName: moduleName
-  });
   var CompilerCls = System.get('transpiler/src/compiler').Compiler;
 
-  var compiler = new CompilerCls(localOptions);
+  var compiler = new CompilerCls(options, moduleName);
   var result = {
     js: compiler.compile(source, inputPath, outputPath),
     sourceMap: null
@@ -56,7 +53,7 @@ exports.compile = function compile(options, paths, source) {
     result.sourceMap = JSON.parse(sourceMapString);
   }
 
-  if (localOptions.outputLanguage === 'es6' && source.indexOf('$traceurRuntime') === -1) {
+  if (options.outputLanguage === 'es6' && source.indexOf('$traceurRuntime') === -1) {
     assert(result.js.indexOf('$traceurRuntime') === -1,
       'Transpile to ES6 must not add references to $traceurRuntime, '
         + inputPath + ' is transpiled to:\n' + result.js);
@@ -109,12 +106,17 @@ function loadModule(filepath, transpile) {
       .replace(__dirname, 'transpiler')
       .replace(/\\/g, '/')
       .replace(/\.\w*$/, '');
-    data = (new traceur.NodeCompiler(
-      extend(SELF_COMPILE_OPTIONS, { moduleName: moduleName } )
-    )).compile(data, filepath, filepath);
+    data = traceur.compile(data, SELF_COMPILE_OPTIONS, moduleName);
+    //(new traceur.NodeCompiler(
+    //  SELF_COMPILE_OPTIONS, moduleName
+    //)).compile(data, filepath, filepath);
   }
 
+try {
   ('global', eval)(data);
+} catch (e) {
+  throw e;
+}
 }
 
 function extend(source, props) {
@@ -155,8 +157,9 @@ function convertTypesToExpressionsInEs6Patch() {
   PureES6Transformer.prototype.transform = function() {
     if (!this._patched) {
       this._patched = true;
+      var self = this;
       this.treeTransformers_.splice(0,0, function(tree) {
-        return new TypeToExpressionTransformer(new UniqueIdentifierGenerator(), this.reporter_).transformAny(tree);
+        return new TypeToExpressionTransformer(new UniqueIdentifierGenerator(), self.reporter_, self.options_).transformAny(tree);
       });
     }
     return _transform.apply(this, arguments);
@@ -170,12 +173,10 @@ function convertTypesToExpressionsInEs6Patch() {
 function removeNonStaticFieldDeclarationsInEs6Patch() {
   var traceurVersion = System.map['traceur'];
   var ParseTreeWriter = System.get(traceurVersion+'/src/outputgeneration/ParseTreeWriter').ParseTreeWriter;
-  var options = System.get(traceurVersion + "/src/Options.js").options;
   var _visitPropertyVariableDeclaration = ParseTreeWriter.prototype.visitPropertyVariableDeclaration;
   ParseTreeWriter.prototype.visitPropertyVariableDeclaration = function() {
-    if (options.outputLanguage !== 'es6') {
-      return _visitPropertyVariableDeclaration.apply(this, arguments);
-    }
+    // TODO(caitp): track the options used to build this file
+    return _visitPropertyVariableDeclaration.apply(this, arguments);
   };
 }
 
@@ -254,4 +255,3 @@ function patchCommonJSModuleTransformerToSupportExportStar() {
     }
   }
 }
-

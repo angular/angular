@@ -4,9 +4,7 @@ import {DartParseTreeWriter} from './outputgeneration/DartParseTreeWriter';
 import {CollectingErrorReporter} from 'traceur/src/util/CollectingErrorReporter';
 import {Parser} from './parser';
 import {SourceFile} from 'traceur/src/syntax/SourceFile';
-import {
-  options as traceurOptions
-} from 'traceur/src/Options';
+import {Options} from 'traceur/src/Options';
 
 export class Compiler extends TraceurCompiler {
 
@@ -46,12 +44,13 @@ export class Compiler extends TraceurCompiler {
 
     this.sourceMapGenerator_ = null;
     // Here we mutate the global/module options object to be used in parsing.
+    var traceurOptions = new Options();
     traceurOptions.setFromObject(this.options_);
 
     var errorReporter = new CollectingErrorReporter();
     sourceName = this.sourceName(sourceName);
     var sourceFile = new SourceFile(sourceName, content);
-    var parser = new Parser(sourceFile, errorReporter);
+    var parser = new Parser(sourceFile, errorReporter, this.options_);
     var tree =
         this.options_.script ? parser.parseScript() : parser.parseModule();
     this.throwIfErrors(errorReporter);

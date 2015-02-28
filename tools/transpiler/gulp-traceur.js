@@ -38,7 +38,7 @@ function gulpTraceur(options, resolveModuleName) {
           contents: JSON.stringify(sourceMap)
         });
 
-        transpiledContent += '\n//# sourceMappingURL=./' + path.basename(sourceMapFile.path);
+        transpiledContent += '\n//@ sourceURL=./' + path.basename(sourceMapFile.path);
         this.push(sourceMapFile);
       }
 

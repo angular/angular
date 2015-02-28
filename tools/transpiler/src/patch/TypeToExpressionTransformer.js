@@ -16,6 +16,10 @@ import {
 } from 'traceur/src/codegeneration/PlaceholderParser.js';
 
 export class TypeToExpressionTransformer extends ParseTreeTransformer {
+  constructor(idGenerator, reporter, options) {
+    super(idGenerator, reporter);
+    this.options_ = options;
+  }
 
   transformTypeName(tree) {
     if (tree.moduleName) {
