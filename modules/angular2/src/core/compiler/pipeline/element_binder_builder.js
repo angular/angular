@@ -91,26 +91,12 @@ function roleSetter(element, value) {
   }
 }
 
-// special mapping for cases where attribute name doesn't match property name
-var _lazyAttrToProp;
-
-function attrToProp() {
-  if (!isPresent(_lazyAttrToProp)) {
-    _lazyAttrToProp = StringMapWrapper.merge({
-      "inner-html": "innerHTML",
-      "readonly": "readOnly",
-      "tabindex": "tabIndex",
-    }, DOM.attrToPropMap);
-  }
-  return _lazyAttrToProp;
-}
-
 // tells if an attribute is handled by the ElementBinderBuilder step
 export function isSpecialProperty(propName:string) {
   return StringWrapper.startsWith(propName, ARIA_PREFIX)
         || StringWrapper.startsWith(propName, CLASS_PREFIX)
         || StringWrapper.startsWith(propName, STYLE_PREFIX)
-        || StringMapWrapper.contains(attrToProp(), propName);
+        || StringMapWrapper.contains(DOM.attrToPropMap, propName);
 }
 
 /**
@@ -257,7 +243,7 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _resolvePropertyName(attrName:string) {
-    var mappedPropName = StringMapWrapper.get(attrToProp(), attrName);
+    var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, attrName);
     return isPresent(mappedPropName) ? mappedPropName : attrName;
   }
 }

@@ -15,9 +15,15 @@ function _abstract() {
  */
 @ABSTRACT()
 export class DomAdapter {
-  get attrToPropMap():Map {
+
+  /**
+   * Maps attribute names to their corresponding property names for cases
+   * where attribute name doesn't match property name.
+   */
+  get attrToPropMap() {
     throw _abstract();
   }
+
   parse(templateHtml:string) {
     throw _abstract();
   }

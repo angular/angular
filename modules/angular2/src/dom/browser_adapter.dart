@@ -18,10 +18,11 @@ class BrowserDomAdapter extends DomAdapter {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
-  // override JS logic of attribute to property mapping
   @override
   final attrToPropMap = const {
-    "inner-html": "innerHtml"
+    'inner-html': 'innerHtml',
+    'readonly': 'readOnly',
+    'tabindex': 'tabIndex',
   };
 
   query(String selector) => document.querySelector(selector);
@@ -108,13 +109,13 @@ class BrowserDomAdapter extends DomAdapter {
   createScriptTag(String attrName, String attrValue,
       [HtmlDocument doc = null]) {
     if (doc == null) doc = document;
-    var el = doc.createElement("SCRIPT");
+    var el = doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
     return el;
   }
   StyleElement createStyleElement(String css, [HtmlDocument doc = null]) {
     if (doc == null) doc = document;
-    var el = doc.createElement("STYLE");
+    var el = doc.createElement('STYLE');
     el.text = css;
     return el;
   }

@@ -2,15 +2,19 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
 
-var EMPTY_MAP = MapWrapper.create();
+var _attrToPropMap = {
+  'inner-html': 'innerHTML',
+  'readonly': 'readOnly',
+  'tabindex': 'tabIndex',
+};
 
 export class BrowserDomAdapter extends DomAdapter {
   static makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
-  get attrToPropMap():Map {
-    return EMPTY_MAP
+  get attrToPropMap() {
+    return _attrToPropMap;
   }
 
   query(selector) {
@@ -75,7 +79,7 @@ export class BrowserDomAdapter extends DomAdapter {
     return res;
   }
   clearNodes(el) {
-    el.innerHTML = "";
+    el.innerHTML = '';
   }
   appendChild(el, node) {
     el.appendChild(node);
@@ -133,7 +137,7 @@ export class BrowserDomAdapter extends DomAdapter {
     return doc.createTextNode(text);
   }
   createScriptTag(attrName:string, attrValue:string, doc=document) {
-    var el = doc.createElement("SCRIPT");
+    var el = doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
     return el;
   }
