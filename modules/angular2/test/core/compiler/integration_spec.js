@@ -19,10 +19,6 @@ import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
-
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
-
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
@@ -64,7 +60,7 @@ export function main() {
         ctx = new MyComp();
         view = pv.instantiate(
           null,
-          new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()),
+          null,
           reflector
         );
         view.hydrate(new Injector([]), null, ctx);
@@ -354,7 +350,7 @@ export function main() {
 
           var value = view.contextWithLocals.get('alice');
           expect(value).not.toBe(null);
-          expect(value.tagName).toEqual('DIV');
+          expect(value.tagName.toLowerCase()).toEqual('div');
 
           done();
         })
@@ -724,18 +720,3 @@ class DecoratorListeningEvent {
     this.msg = msg;
   }
 }
-
-class FakeVmTurnZone extends VmTurnZone {
-  constructor() {
-    super({enableLongStackTrace: false});
-  }
-
-  run(fn) {
-    fn();
-  }
-
-  runOutsideAngular(fn) {
-    fn();
-  }
-}
-

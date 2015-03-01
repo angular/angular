@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy, IS_NODEJS} from 'angular2/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedScopedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -444,96 +444,98 @@ export function main() {
         });
       });
 
-      describe('event handlers', () => {
-        var view, ctx, called, receivedEvent, dispatchedEvent;
+      if (!IS_NODEJS) {
+        describe('event handlers', () => {
+          var view, ctx, called, receivedEvent, dispatchedEvent;
 
-        function createViewAndContext(protoView) {
-          view = createView(protoView,
-              new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
-          ctx = view.context;
-          called = 0;
-          receivedEvent = null;
-          ctx.callMe = (event) => {
-            called += 1;
-            receivedEvent = event;
+          function createViewAndContext(protoView) {
+            view = createView(protoView,
+                new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
+            ctx = view.context;
+            called = 0;
+            receivedEvent = null;
+            ctx.callMe = (event) => {
+              called += 1;
+              receivedEvent = event;
+            }
           }
-        }
 
-        function dispatchClick(el) {
-          dispatchedEvent = DOM.createMouseEvent('click');
-          DOM.dispatchEvent(el, dispatchedEvent);
-        }
+          function dispatchClick(el) {
+            dispatchedEvent = DOM.createMouseEvent('click');
+            DOM.dispatchEvent(el, dispatchedEvent);
+          }
 
-        function createProtoView() {
-          var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
-            new DynamicProtoChangeDetector(null), null);
-          pv.bindElement(new TestProtoElementInjector(null, 0, []));
-          pv.bindEvent('click', parser.parseBinding('callMe($event)', null));
-          return pv;
-        }
+          function createProtoView() {
+            var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
+              new DynamicProtoChangeDetector(null), null);
+            pv.bindElement(new TestProtoElementInjector(null, 0, []));
+            pv.bindEvent('click', parser.parseBinding('callMe($event)', null));
+            return pv;
+          }
 
-        it('should fire on non-bubbling native events', () => {
-          createViewAndContext(createProtoView());
+          it('should fire on non-bubbling native events', () => {
+            createViewAndContext(createProtoView());
 
-          dispatchClick(view.nodes[0]);
+            dispatchClick(view.nodes[0]);
 
-          expect(called).toEqual(1);
-          expect(receivedEvent).toBe(dispatchedEvent);
+            expect(called).toEqual(1);
+            expect(receivedEvent).toBe(dispatchedEvent);
+          });
+
+          it('should not fire on a bubbled native events', () => {
+            createViewAndContext(createProtoView());
+
+            dispatchClick(view.nodes[0].firstChild);
+
+            // This test passes trivially on webkit browsers due to
+            // https://bugs.webkit.org/show_bug.cgi?id=122755
+            expect(called).toEqual(0);
+          });
+
+          it('should not throw if the view is dehydrated', () => {
+            createViewAndContext(createProtoView());
+
+            view.dehydrate();
+            expect(() => dispatchClick(view.nodes[0])).not.toThrow();
+            expect(called).toEqual(0);
+          });
+
+          it('should support custom event emitters', () => {
+            var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
+              new DynamicProtoChangeDetector(null), null);
+            pv.bindElement(new TestProtoElementInjector(null, 0, [EventEmitterDirective]));
+            pv.bindEvent('click', parser.parseBinding('callMe($event)', null));
+
+            createViewAndContext(pv);
+            var dir = view.elementInjectors[0].get(EventEmitterDirective);
+
+            var dispatchedEvent = new Object();
+
+            dir.click(dispatchedEvent);
+            expect(receivedEvent).toBe(dispatchedEvent);
+            expect(called).toEqual(1);
+
+            // Should not eval the binding, because custom emitter takes over.
+            dispatchClick(view.nodes[0]);
+
+            expect(called).toEqual(1);
+          });
+
+          it('should bind to directive events', () => {
+            var pv = new ProtoView(el('<div class="ng-binding"></div>'),
+              new DynamicProtoChangeDetector(null), null);
+            pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirectiveWithEventHandler]));
+            pv.bindEvent('click', parser.parseAction('onEvent($event)', null), 0);
+            view = createView(pv, new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
+
+            var directive = view.elementInjectors[0].get(SomeDirectiveWithEventHandler);
+            expect(directive.event).toEqual(null);
+
+            dispatchClick(view.nodes[0]);
+            expect(directive.event).toBe(dispatchedEvent);
+          });
         });
-
-        it('should not fire on a bubbled native events', () => {
-          createViewAndContext(createProtoView());
-
-          dispatchClick(view.nodes[0].firstChild);
-
-          // This test passes trivially on webkit browsers due to
-          // https://bugs.webkit.org/show_bug.cgi?id=122755
-          expect(called).toEqual(0);
-        });
-
-        it('should not throw if the view is dehydrated', () => {
-          createViewAndContext(createProtoView());
-
-          view.dehydrate();
-          expect(() => dispatchClick(view.nodes[0])).not.toThrow();
-          expect(called).toEqual(0);
-        });
-
-        it('should support custom event emitters', () => {
-          var pv = new ProtoView(el('<div class="ng-binding"><div></div></div>'),
-            new DynamicProtoChangeDetector(null), null);
-          pv.bindElement(new TestProtoElementInjector(null, 0, [EventEmitterDirective]));
-          pv.bindEvent('click', parser.parseBinding('callMe($event)', null));
-
-          createViewAndContext(pv);
-          var dir = view.elementInjectors[0].get(EventEmitterDirective);
-
-          var dispatchedEvent = new Object();
-
-          dir.click(dispatchedEvent);
-          expect(receivedEvent).toBe(dispatchedEvent);
-          expect(called).toEqual(1);
-
-          // Should not eval the binding, because custom emitter takes over.
-          dispatchClick(view.nodes[0]);
-
-          expect(called).toEqual(1);
-        });
-
-        it('should bind to directive events', () => {
-          var pv = new ProtoView(el('<div class="ng-binding"></div>'),
-            new DynamicProtoChangeDetector(null), null);
-          pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirectiveWithEventHandler]));
-          pv.bindEvent('click', parser.parseAction('onEvent($event)', null), 0);
-          view = createView(pv, new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
-
-          var directive = view.elementInjectors[0].get(SomeDirectiveWithEventHandler);
-          expect(directive.event).toEqual(null);
-
-          dispatchClick(view.nodes[0]);
-          expect(directive.event).toBe(dispatchedEvent);
-        });
-      });
+      }
 
       describe('react to record changes', () => {
         var view, cd, ctx;

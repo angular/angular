@@ -45,8 +45,9 @@ If you don't already have `npm`, get it by installing [node.js](http://nodejs.or
 
 ### Unit tests
 
-1. `gulp test.unit.js`: JS tests
-2. `gulp test.unit.dart`: Dart tests
+1. `gulp test.unit.js`: JS tests in a browser
+2. `gulp test.unit.cjs`: JS tests in NodeJS (requires a build before)
+3. `gulp test.unit.dart`: Dart tests
 
 Notes for transpiler tests:
 

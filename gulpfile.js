@@ -19,6 +19,7 @@ var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
+var transformCJSTests = require('./tools/build/transformCJSTests');
 var util = require('./tools/build/util');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
@@ -299,12 +300,15 @@ gulp.task('build/transpile.js.prod', function(done) {
 });
 
 gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.js,
+  src: CONFIG.transpile.src.js.concat(['modules/**/*.cjs']),
   dest: CONFIG.dest.js.cjs,
   outputExt: 'js',
   options: CONFIG.transpile.options.js.cjs,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
+gulp.task('build/transformCJSTests', function() {
+  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js').pipe(transformCJSTests()).pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
+});
 
 gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.dart,
@@ -548,6 +552,9 @@ gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
+gulp.task('test.unit.cjs', function (done) {
+  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/core/compiler/**/*_spec.js').pipe(jasmine({verbose: true, includeStackTrace: true}));
+});
 
 // ------------------
 // server tests
@@ -616,6 +623,7 @@ gulp.task('build.js.cjs', function(done) {
   runSequence(
     ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
     ['build/linknodemodules.js.cjs'],
+    'build/transformCJSTests',
     done
   );
 });
