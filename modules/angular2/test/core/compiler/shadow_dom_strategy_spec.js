@@ -87,7 +87,7 @@ export function main() {
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);
-      expect(DOM.tagName(firstChild)).toEqual('DIV');
+      expect(DOM.tagName(firstChild).toLowerCase()).toEqual('div');
       expect(firstChild).toHaveText('view');
       expect(host).toHaveText('view');
     });
@@ -222,7 +222,7 @@ export function main() {
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);
-      expect(DOM.tagName(firstChild)).toEqual('DIV');
+      expect(DOM.tagName(firstChild).toLowerCase()).toEqual('div');
       expect(firstChild).toHaveText('view');
       expect(host).toHaveText('view');
     });

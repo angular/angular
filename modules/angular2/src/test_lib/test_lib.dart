@@ -11,6 +11,7 @@ import 'package:collection/equality.dart';
 import 'package:angular2/src/dom/dom_adapter.dart' show DOM;
 
 bool IS_DARTIUM = true;
+bool IS_NODEJS = false;
 
 Expect expect(actual, [matcher]) {
   final expect = new Expect(actual);

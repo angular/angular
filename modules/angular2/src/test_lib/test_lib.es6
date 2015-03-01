@@ -1,23 +1,26 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+var _global = typeof window === 'undefined' ? global : window;
+
 export {proxy} from 'rtts_assert/rtts_assert';
-export var describe = window.describe;
-export var xdescribe = window.xdescribe;
-export var ddescribe = window.ddescribe;
-export var it = window.it;
-export var xit = window.xit;
-export var iit = window.iit;
-export var beforeEach = window.beforeEach;
-export var afterEach = window.afterEach;
-export var expect = window.expect;
+export var describe = _global.describe;
+export var xdescribe = _global.xdescribe;
+export var ddescribe = _global.ddescribe;
+export var it = _global.it;
+export var xit = _global.xit;
+export var iit = _global.iit;
+export var beforeEach = _global.beforeEach;
+export var afterEach = _global.afterEach;
+export var expect = _global.expect;
 export var IS_DARTIUM = false;
+export var IS_NODEJS = typeof window === 'undefined';
 
 // To make testing consistent between dart and js
-window.print = function(msg) {
-  if (window.dump) {
-    window.dump(msg);
+_global.print = function(msg) {
+  if (_global.dump) {
+    _global.dump(msg);
   } else {
-    window.console.log(msg);
+    _global.console.log(msg);
   }
 };
 
@@ -25,7 +28,7 @@ window.print = function(msg) {
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-window.Map.prototype.jasmineToString = function() {
+_global.Map.prototype.jasmineToString = function() {
   var m = this;
   if (!m) {
     return ''+m;
@@ -37,7 +40,7 @@ window.Map.prototype.jasmineToString = function() {
   return `{ ${res.join(',')} }`;
 }
 
-window.beforeEach(function() {
+_global.beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
     toEqual: function(util, customEqualityTesters) {
@@ -150,15 +153,48 @@ export class SpyObject {
 
 
 function elementText(n) {
-  var hasNodes = (n) => {var children = DOM.childNodes(n); return children && children.length > 0;}
+  if (!IS_NODEJS) {
+    var hasNodes = (n) => {var children = DOM.childNodes(n); return children && children.length > 0;}
 
-  if (n instanceof Comment)         return '';
+    if (n instanceof Comment)         return '';
 
-  if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
-  if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
-    return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
-  if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
-  if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
+    if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
+    if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
+      return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
+    if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
+    if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
 
-  return n.textContent;
+    return n.textContent;
+  } else {
+    if (DOM.hasShadowRoot(n)) {
+      return elementText(DOM.getShadowRoot(n).childNodes);
+    } else if (n instanceof Array) {
+      return n.map((nn) => elementText(nn)).join("");
+    } else if (DOM.tagName(n) == 'content') {
+      //minimal implementation of getDistributedNodes()
+      var host = null;
+      var temp = n;
+      while (temp.parent) {
+        if (DOM.hasShadowRoot(temp)) {
+          host = temp;
+        }
+        temp = temp.parent;
+      }
+      if (host) {
+        var list = [];
+        var select = DOM.getAttribute(n, "select");
+        var selectClass = select? select.substring(1): null;
+        DOM.childNodes(host).forEach((child) => {
+          var classList = DOM.classList(child);
+          if (selectClass && classList.indexOf(selectClass) > -1 || selectClass == null && classList.length == 0) {
+            list.push(child);
+          }
+        });
+        return list.length > 0? elementText(list): "";
+      }
+      return "";
+    } else {
+      return DOM.getText(n);
+    }
+  }
 }

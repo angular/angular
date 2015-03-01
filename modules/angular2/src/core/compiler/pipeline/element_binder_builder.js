@@ -184,7 +184,9 @@ export class ElementBinderBuilder extends CompileStep {
       } else {
         property = this._resolvePropertyName(property);
         //TODO(pk): special casing innerHtml, see: https://github.com/angular/angular/issues/789
-        if (DOM.hasProperty(compileElement.element, property) || StringWrapper.equals(property, 'innerHtml')) {
+        if (StringWrapper.equals(property, 'innerHTML')) {
+          setterFn = (element, value) => DOM.setInnerHTML(element, value);
+        } else if (DOM.hasProperty(compileElement.element, property) || StringWrapper.equals(property, 'innerHtml')) {
           setterFn = reflector.setter(property);
         }
       }
