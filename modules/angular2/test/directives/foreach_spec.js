@@ -13,6 +13,7 @@ import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {Template} from 'angular2/src/core/annotations/template';
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
@@ -36,7 +37,9 @@ export function main() {
         new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
         tplResolver,
         new ComponentUrlMapper(),
-        urlResolver);
+        urlResolver,
+        new CssProcessor()
+      );
     });
 
     function createView(pv) {

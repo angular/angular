@@ -10,6 +10,10 @@ import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {ProtoView} from 'angular2/src/core/compiler/view';
+import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
+
+import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
+
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
@@ -41,16 +45,24 @@ export function main() {
       expect(shadowRoot).toHaveText('view');
     });
 
+    it('should should not transform template elements', () => {
+      expect(strategy.getTemplateCompileStep(null)).toBe(null);
+    });
+
     it('should rewrite style urls', () => {
-      var css = '.foo {background-image: url("img.jpg");}';
-      expect(strategy.transformStyleText(css, 'http://base', null))
-        .toEqual(".foo {background-image: url('http://base/img.jpg');}");
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElement = DOM.createStyleElement('.one {background-image: url("img.jpg");}');
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText(".one {background-image: url('http://base/img.jpg');}");
     });
 
     it('should not inline import rules', () => {
-      var css = '@import "other.css";';
-      expect(strategy.transformStyleText(css, 'http://base', null))
-        .toEqual("@import 'http://base/other.css';");
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElement = DOM.createStyleElement('@import "other.css";');
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText("@import 'http://base/other.css';");
     });
   });
 
@@ -81,65 +93,113 @@ export function main() {
     });
 
     it('should rewrite style urls', () => {
-      var css = '.foo {background-image: url("img.jpg");}';
-      expect(strategy.transformStyleText(css, 'http://base', SomeComponent))
-        .toEqual(".foo[_ngcontent-0] {\nbackground-image: url(http://base/img.jpg);\n}");
+      var template = el('<div><style>.foo {background-image: url("img.jpg");}</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText(".foo[_ngcontent-0] {\n" +
+        "background-image: url(http://base/img.jpg);\n" +
+        "}");
     });
 
-    it('should scope style', () => {
-      var css = '.foo {} :host {}';
-      expect(strategy.transformStyleText(css, 'http://base', SomeComponent))
-        .toEqual(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
+    it('should scope styles', () => {
+      var template = el('<div><style>.foo {} :host {}</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
     });
 
     it('should inline @import rules', (done) => {
       xhr.reply('http://base/one.css', '.one {}');
-      var css = '@import "one.css";';
-      var promise = strategy.transformStyleText(css, 'http://base', SomeComponent);
-      expect(promise).toBePromise();
-      promise.then((css) => {
-        expect(css).toEqual('.one[_ngcontent-0] {\n\n}');
+
+      var template = el('<div><style>@import "one.css";</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var parentElement = new CompileElement(template);
+      var compileElement = new CompileElement(styleElement);
+      var parentpv = new ProtoView(null, null, null);
+      parentElement.inheritedProtoView = parentpv;
+      step.process(parentElement, compileElement, null);
+
+      expect(parentpv.stylePromises.length).toEqual(1);
+      expect(parentpv.stylePromises[0]).toBePromise();
+
+      expect(styleElement).toHaveText('');
+      parentpv.stylePromises[0].then((_) => {
+        expect(styleElement).toHaveText('.one[_ngcontent-0] {\n\n}');
         done();
       });
     });
 
     it('should return the same style given the same component', () => {
-      var css = '.foo {} :host {}';
-      expect(strategy.transformStyleText(css, 'http://base', SomeComponent))
-        .toEqual(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
-      expect(strategy.transformStyleText(css, 'http://base', SomeComponent))
-        .toEqual(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
+      var template = el('<div><style>.foo {} :host {}</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+
+      var template2 = el('<div><style>.foo {} :host {}</style></div>');
+      var step2 = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement2 = DOM.firstChild(template2);
+      var compileElement2 = new CompileElement(styleElement2);
+      step2.process(null, compileElement2, null);
+
+      expect(DOM.getText(styleElement)).toEqual(DOM.getText(styleElement2));
     });
 
     it('should return different styles given different components', () => {
-      var css = '.foo {} :host {}';
-      expect(strategy.transformStyleText(css, 'http://base', SomeComponent))
-        .toEqual(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
-      expect(strategy.transformStyleText(css, 'http://base', SomeOtherComponent))
-        .toEqual(".foo[_ngcontent-1] {\n\n}\n\n[_nghost-1] {\n\n}");
+      var template = el('<div><style>.foo {} :host {}</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+
+      var template2 = el('<div><style>.foo {} :host {}</style></div>');
+      var cmpMetadata2 = new DirectiveMetadata(SomeOtherComponent, null);
+      var step2 = strategy.getStyleCompileStep(cmpMetadata2, 'http://base');
+      var styleElement2 = DOM.firstChild(template2);
+      var compileElement2 = new CompileElement(styleElement2);
+      step2.process(null, compileElement2, null);
+
+      expect(DOM.getText(styleElement)).not.toEqual(DOM.getText(styleElement2));
     });
 
     it('should move the style element to the style host', () => {
-      var originalHost = el('<div></div>');
-      var styleEl = el('<style>/*css*/</style>');
-      DOM.appendChild(originalHost, styleEl);
-      expect(originalHost).toHaveText('/*css*/');
-
-      strategy.handleStyleElement(styleEl);
-      expect(originalHost).toHaveText('');
-      expect(styleHost).toHaveText('/*css*/');
+      var template = el('<div><style>.one {}</style></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getStyleCompileStep(cmpMetadata, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(template).toHaveText('');
+      expect(styleHost).toHaveText('.one[_ngcontent-0] {\n\n}');
     });
 
     it('should add an attribute to the content elements', () => {
-      var elt = el('<div></div>');
-      strategy.shimContentElement(SomeComponent, elt);
-      expect(DOM.getAttribute(elt, '_ngcontent-0')).toEqual('');
+      var template = el('<div></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getTemplateCompileStep(cmpMetadata);
+      var compileElement = new CompileElement(template);
+      step.process(null, compileElement, null);
+      expect(DOM.getAttribute(template, '_ngcontent-0')).toEqual('');
     });
 
     it('should add an attribute to the host elements', () => {
-      var elt = el('<div></div>');
-      strategy.shimHostElement(SomeComponent, elt);
-      expect(DOM.getAttribute(elt, '_nghost-0')).toEqual('');
+      var template = el('<div></div>');
+      var cmpMetadata = new DirectiveMetadata(SomeComponent, null);
+      var step = strategy.getTemplateCompileStep(cmpMetadata);
+      var compileElement = new CompileElement(template);
+      compileElement.componentDirective = new DirectiveMetadata(SomeOtherComponent, null);
+      step.process(null, compileElement, null);
+      expect(DOM.getAttribute(template, '_nghost-1')).toEqual('');
     });
   });
 
@@ -168,43 +228,45 @@ export function main() {
     });
 
     it('should rewrite style urls', () => {
-      var css = '.foo {background-image: url("img.jpg");}';
-      expect(strategy.transformStyleText(css, 'http://base', null))
-        .toEqual(".foo {background-image: url('http://base/img.jpg');}");
+      var template = el('<div><style>.one {background-image: url("img.jpg");}</style></div>')
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText(".one {background-image: url('http://base/img.jpg');}");
     });
 
     it('should not inline import rules', () => {
-      var css = '@import "other.css";';
-      expect(strategy.transformStyleText(css, 'http://base', null))
-        .toEqual("@import 'http://base/other.css';");
+      var template = el('<div><style>@import "other.css";</style></div>')
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleElement).toHaveText("@import 'http://base/other.css';");
     });
 
     it('should move the style element to the style host', () => {
-      var originalHost = el('<div></div>');
-      var styleEl = el('<style>/*css*/</style>');
-      DOM.appendChild(originalHost, styleEl);
-      expect(originalHost).toHaveText('/*css*/');
-
-      strategy.handleStyleElement(styleEl);
-      expect(originalHost).toHaveText('');
-      expect(styleHost).toHaveText('/*css*/');
+      var template = el('<div><style>/*css*/</style></div>')
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElement = DOM.firstChild(template);
+      var compileElement = new CompileElement(styleElement);
+      step.process(null, compileElement, null);
+      expect(styleHost).toHaveText("/*css*/");
     });
 
     it('should insert the same style only once in the style host', () => {
-      var originalHost = el('<div></div>');
-      var styleEl1 = el('<style>/*css 1*/</style>');
-      var styleEl2 = el('<style>/*css 2*/</style>');
-      var styleEl1bis = el('<style>/*css 1*/</style>');
+      var template = el('<div><style>/*css1*/</style><style>/*css2*/</style>' +
+                        '<style>/*css1*/</style></div>')
+      var step = strategy.getStyleCompileStep(null, 'http://base');
+      var styleElements = DOM.childNodes(template);
+      var compileElement = new CompileElement(styleElements[0]);
+      step.process(null, compileElement, null);
+      compileElement = new CompileElement(styleElements[0]);
+      step.process(null, compileElement, null);
+      compileElement = new CompileElement(styleElements[0]);
+      step.process(null, compileElement, null);
 
-      DOM.appendChild(originalHost, styleEl1);
-      DOM.appendChild(originalHost, styleEl2);
-      DOM.appendChild(originalHost, styleEl1bis);
-
-      strategy.handleStyleElement(styleEl1);
-      strategy.handleStyleElement(styleEl2);
-      strategy.handleStyleElement(styleEl1bis);
-      expect(originalHost).toHaveText('');
-      expect(styleHost).toHaveText('/*css 1*//*css 2*/');
+      expect(styleHost).toHaveText("/*css1*//*css2*/");
     });
   });
 }

@@ -14,6 +14,7 @@ import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -69,12 +70,12 @@ function setupReflector() {
 
   reflector.registerType(Compiler, {
     'factory': (cd, templateLoader, reader, parser, compilerCache, strategy, tplResolver,
-      cmpUrlMapper, urlResolver) =>
+      cmpUrlMapper, urlResolver, cssProcessor) =>
       new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy, tplResolver,
-        cmpUrlMapper, urlResolver),
+        cmpUrlMapper, urlResolver, cssProcessor),
     'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader],
                    [Parser], [CompilerCache], [ShadowDomStrategy], [TemplateResolver],
-                   [ComponentUrlMapper], [UrlResolver]],
+                   [ComponentUrlMapper], [UrlResolver], [CssProcessor]],
     'annotations': []
   });
 
@@ -167,6 +168,12 @@ function setupReflector() {
     "factory": (xhr, styleUrlResolver, urlResolver) =>
       new StyleInliner(xhr, styleUrlResolver, urlResolver),
     "parameters": [[XHR], [StyleUrlResolver], [UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(CssProcessor, {
+    "factory": () => new CssProcessor(),
+    "parameters": [],
     "annotations": []
   });
 
