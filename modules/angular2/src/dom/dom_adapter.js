@@ -27,7 +27,7 @@ export class DomAdapter {
   parse(templateHtml:string) {
     throw _abstract();
   }
-  query(selector) {
+  query(selector:string) {
     throw _abstract();
   }
   querySelector(el, selector:string) {
@@ -222,16 +222,16 @@ export class DomAdapter {
   importIntoDoc(node) {
     throw _abstract();
   }
-  isPageRule(rule) {
+  isPageRule(rule): boolean {
     throw _abstract();
   }
-  isStyleRule(rule) {
+  isStyleRule(rule): boolean {
     throw _abstract();
   }
-  isMediaRule(rule) {
+  isMediaRule(rule): boolean {
     throw _abstract();
   }
-  isKeyframesRule(rule) {
+  isKeyframesRule(rule): boolean {
     throw _abstract();
   }
 }

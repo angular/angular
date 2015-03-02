@@ -188,8 +188,8 @@ class BrowserDomAdapter extends DomAdapter {
   Node importIntoDoc(Node node) {
     return document.importNode(node, true);
   }
-  isPageRule(CssRule rule) => rule is CssPageRule;
-  isStyleRule(CssRule rule) => rule is CssStyleRule;
-  isMediaRule(CssRule rule) => rule is CssMediaRule;
-  isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
+  bool isPageRule(CssRule rule) => rule is CssPageRule;
+  bool isStyleRule(CssRule rule) => rule is CssStyleRule;
+  bool isMediaRule(CssRule rule) => rule is CssMediaRule;
+  bool isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
 }
