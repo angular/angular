@@ -49,7 +49,7 @@ class Html5LibDomAdapter implements DomAdapter {
   content(TemplateElement node) {
     throw 'not implemented';
   }
-  
+
   firstChild(el) => el is NodeList
     ? el.first
     : el.firstChild;
@@ -166,7 +166,7 @@ class Html5LibDomAdapter implements DomAdapter {
   getStyle(element, String stylename) {
     throw 'not implemented';
   }
-  
+
   String tagName(element) => element.localName;
 
   attributeMap(element) => element.attributes;
@@ -205,7 +205,7 @@ class Html5LibDomAdapter implements DomAdapter {
   bool isCommentNode(node) {
     throw 'not implemented';
   }
-  
+
   bool isElementNode(node) => node is Element;
 
   bool hasShadowRoot(node) {
@@ -214,16 +214,16 @@ class Html5LibDomAdapter implements DomAdapter {
   importIntoDoc(node) {
     throw 'not implemented';
   }
-  isPageRule(rule) {
+  bool isPageRule(rule) {
     throw 'not implemented';
   }
-  isStyleRule(rule) {
+  bool isStyleRule(rule) {
     throw 'not implemented';
   }
-  isMediaRule(rule) {
+  bool isMediaRule(rule) {
     throw 'not implemented';
   }
-  isKeyframesRule(rule) {
+  bool isKeyframesRule(rule) {
     throw 'not implemented';
   }
 }
