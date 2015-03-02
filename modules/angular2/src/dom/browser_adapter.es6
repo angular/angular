@@ -17,7 +17,7 @@ export class BrowserDomAdapter extends DomAdapter {
     return _attrToPropMap;
   }
 
-  query(selector) {
+  query(selector:string) {
     return document.querySelector(selector);
   }
   querySelector(el, selector:string):Node {
@@ -246,16 +246,16 @@ export class BrowserDomAdapter extends DomAdapter {
     }
     return result;
   }
-  isPageRule(rule) {
+  isPageRule(rule): boolean {
     return rule.type === CSSRule.PAGE_RULE;
   }
-  isStyleRule(rule) {
+  isStyleRule(rule): boolean {
     return rule.type === CSSRule.STYLE_RULE;
   }
-  isMediaRule(rule) {
+  isMediaRule(rule): boolean {
     return rule.type === CSSRule.MEDIA_RULE;
   }
-  isKeyframesRule(rule) {
+  isKeyframesRule(rule): boolean {
     return rule.type === CSSRule.KEYFRAMES_RULE;
   }
 }
