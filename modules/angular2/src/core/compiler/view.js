@@ -544,7 +544,7 @@ export class ProtoView {
         new ProtoElementInjector(null, 0, [cmpType], true));
     binder.componentDirective = rootComponentAnnotatedType;
     binder.nestedProtoView = protoView;
-    shadowDomStrategy.shimHostElement(cmpType, insertionElement);
+    shadowDomStrategy.shimAppElement(rootComponentAnnotatedType, insertionElement);
     return rootProtoView;
   }
 }

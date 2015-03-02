@@ -19,6 +19,7 @@ import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
@@ -100,7 +101,9 @@ export function main() {
     new NativeShadowDomStrategy(styleUrlResolver),
     templateResolver,
     new ComponentUrlMapper(),
-    urlResolver);
+    urlResolver,
+    new CssProcessor()
+  );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
   var templateWithBindings = createTemplateHtml('templateWithBindings', count);
 

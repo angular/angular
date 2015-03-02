@@ -21,6 +21,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
@@ -58,7 +59,8 @@ export function main() {
             strategy,
             tplResolver,
             new ComponentUrlMapper(),
-            urlResolver
+            urlResolver,
+            new CssProcessor()
           );
         });
 
