@@ -35,13 +35,14 @@ var _COMPILER_CONFIG_JS_DEFAULT = {
 };
 
 var _HTLM_DEFAULT_SCRIPTS_JS = [
-  {src: '../../traceur-runtime.js', mimeType: 'text/javascript'},
-  {src: '../../es6-module-loader-sans-promises.src.js', mimeType: 'text/javascript'},
-  {src: '../../zone.js', mimeType: 'text/javascript'},
-  {src: '../../long-stack-trace-zone.js', mimeType: 'text/javascript'},
-  {src: '../../system.src.js', mimeType: 'text/javascript'},
-  {src: '../../extension-register.js', mimeType: 'text/javascript'},
-  {src: '../../runtime_paths.js', mimeType: 'text/javascript'},
+  {src: gulpTraceur.RUNTIME_PATH, mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
+      mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/zone.js/zone.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/zone.js/long-stack-trace-zone.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/systemjs/dist/system.src.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/systemjs/lib/extension-register.js', mimeType: 'text/javascript', copy: true},
+  {src: 'tools/build/snippets/runtime_paths.js', mimeType: 'text/javascript', copy: true},
   {
     inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.error.bind(console))',
     mimeType: 'text/javascript'
@@ -86,18 +87,6 @@ var SRC_FOLDER_INSERTION = {
       'example*/test/**': ''
     }
   };
-
-var ES5_DEPS = [
-  gulpTraceur.RUNTIME_PATH,
-  'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
-  'node_modules/systemjs/dist/system.src.js',
-  'node_modules/systemjs/lib/extension-register.js',
-  'node_modules/zone.js/zone.js',
-  'node_modules/zone.js/long-stack-trace-zone.js',
-  'tools/build/snippets/runtime_paths.js',
-  'tools/build/snippets/url_params_to_form.js',
-  'node_modules/angular/angular.js'
-];
 
 var CONFIG = {
   dest: {
@@ -194,26 +183,13 @@ var CONFIG = {
         es6: {
           src: ['tools/build/es5build.js'],
           pipes: {}
-        },
-        es5: {
-          src: ES5_DEPS,
-          pipes: {}
         }
       },
       prod: {
         es6: {
           src: ['tools/build/es5build.js'],
           pipes: {}
-        },
-        es5: {
-          src: ES5_DEPS,
-          pipes: {}
         }
-      },
-      dart2js: {
-        src: ['tools/build/snippets/url_params_to_form.js'],
-        exclude: ['rtts_assert/'],
-        pipes: {}
       }
     },
     dart: {
@@ -232,19 +208,19 @@ var CONFIG = {
         '**': _HTLM_DEFAULT_SCRIPTS_JS,
         'benchmarks/**':
           [
-            { src: '../../url_params_to_form.js', mimeType: 'text/javascript' }
+            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
           ].concat(_HTLM_DEFAULT_SCRIPTS_JS),
         'benchmarks_external/**':
           [
-            { src: '../../angular.js', mimeType: 'text/javascript' },
-            { src: '../../url_params_to_form.js', mimeType: 'text/javascript' }
+            { src: 'node_modules/angular/angular.js', mimeType: 'text/javascript', copy: true },
+            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
           ].concat(_HTLM_DEFAULT_SCRIPTS_JS)
       },
       dart: {
         '**': _HTML_DEFAULT_SCRIPTS_DART,
         'benchmarks*/**':
           [
-            { src: '../../url_params_to_form.js', mimeType: 'text/javascript' }
+            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
           ].concat(_HTML_DEFAULT_SCRIPTS_DART)
       }
     }
@@ -407,25 +383,11 @@ gulp.task('build/multicopy.js.dev.es6', copy.multicopy(gulp, gulpPlugins, {
   dest: CONFIG.dest.js.dev.es6
 }));
 
-gulp.task('build/multicopy.js.dev.es5', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.dev.es5.src,
-  pipes: CONFIG.multicopy.js.dev.es5.pipes,
-  exclude: CONFIG.multicopy.js.dev.es5.exclude,
-  dest: CONFIG.dest.js.dev.es5
-}));
-
 gulp.task('build/multicopy.js.prod.es6', copy.multicopy(gulp, gulpPlugins, {
   src: CONFIG.multicopy.js.prod.es6.src,
   pipes: CONFIG.multicopy.js.prod.es6.pipes,
   exclude: CONFIG.multicopy.js.prod.es6.exclude,
   dest: CONFIG.dest.js.prod.es6
-}));
-
-gulp.task('build/multicopy.js.prod.es5', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.prod.es5.src,
-  pipes: CONFIG.multicopy.js.prod.es5.pipes,
-  exclude: CONFIG.multicopy.js.prod.es5.exclude,
-  dest: CONFIG.dest.js.prod.es5
 }));
 
 gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
@@ -434,14 +396,6 @@ gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
   exclude: CONFIG.multicopy.dart.exclude,
   dest: CONFIG.dest.dart
 }));
-
-gulp.task('build/multicopy.js.dart2js', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.dart2js.src,
-  pipes: CONFIG.multicopy.js.dart2js.pipes,
-  exclude: CONFIG.multicopy.js.dart2js.exclude,
-  dest: CONFIG.dest.js.dart2js
-}));
-
 
 // ------------
 // pubspec
@@ -640,23 +594,20 @@ gulp.task('build.dart', function(done) {
     'build/packages.dart',
     'build/analyze.dart',
     'build/pubbuild.dart',
-    // Note: pubbuild.dart will clear the dart2js folder, so we need to copy
-    // our files after this :-(
-    'build/multicopy.js.dart2js',
     done
   );
 });
 
 gulp.task('build.js.dev', function(done) {
   runSequence(
-    ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6', 'build/multicopy.js.dev.es5'],
+    ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
     done
   );
 });
 
 gulp.task('build.js.prod', function(done) {
   runSequence(
-    ['build/transpile.js.prod', 'build/html.js.prod', 'build/copy.js.prod', 'build/multicopy.js.prod.es6', 'build/multicopy.js.prod.es5'],
+    ['build/transpile.js.prod', 'build/html.js.prod', 'build/copy.js.prod', 'build/multicopy.js.prod.es6'],
     done
   );
 });
