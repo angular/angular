@@ -19,8 +19,8 @@ class SubFoo extends Foo {
   c;
 
   constructor(a, b) {
-    this.c = 3;
     super(a, b);
+    this.c = 3;
   }
 }
 

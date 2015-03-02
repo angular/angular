@@ -418,7 +418,6 @@ export class TemplateBinding {
   name:string;
   expression:ASTWithSource;
   constructor(key:string, keyIsVar:boolean, name:string, expression:ASTWithSource) {
-    super();
     this.key = key;
     this.keyIsVar = keyIsVar;
     // only either name or expression will be filled.
