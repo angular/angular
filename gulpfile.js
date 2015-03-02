@@ -43,7 +43,7 @@ var _HTLM_DEFAULT_SCRIPTS_JS = [
   {src: '../../extension-register.js', mimeType: 'text/javascript'},
   {src: '../../runtime_paths.js', mimeType: 'text/javascript'},
   {
-    inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.log.bind(console))',
+    inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.error.bind(console))',
     mimeType: 'text/javascript'
   }
 ];

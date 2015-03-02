@@ -189,11 +189,19 @@ function setupReflector() {
   });
 }
 
+var BASELINE_TREE_TEMPLATE;
+var BASELINE_IF_TEMPLATE;
+
 export function main() {
   BrowserDomAdapter.makeCurrent();
   var maxDepth = getIntParameter('depth');
 
   setupReflector();
+
+  BASELINE_TREE_TEMPLATE = DOM.createTemplate(
+    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+  BASELINE_IF_TEMPLATE = DOM.createTemplate(
+    '<span template="if"><tree></tree></span>');
 
   var app;
   var lifeCycle;
@@ -306,10 +314,6 @@ function buildTree(maxDepth, values, curDepth) {
       buildTree(maxDepth, values, curDepth+1));
 }
 
-var BASELINE_TREE_TEMPLATE = DOM.createTemplate(
-    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
-var BASELINE_IF_TEMPLATE = DOM.createTemplate(
-    '<span template="if"><tree></tree></span>');
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
