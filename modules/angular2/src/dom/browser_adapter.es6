@@ -234,7 +234,17 @@ export class BrowserDomAdapter extends DomAdapter {
     return node instanceof HTMLElement && isPresent(node.shadowRoot);
   }
   importIntoDoc(node:Node) {
-    return document.importNode(node, true);
+    var result = document.importNode(node, true);
+    // Workaround WebKit https://bugs.webkit.org/show_bug.cgi?id=137619
+    if (this.isTemplateElement(result) &&
+        !result.content.childNodes.length && node.content.childNodes.length) {
+      var childNodes = node.content.childNodes;
+      for (var i = 0; i < childNodes.length; ++i) {
+        result.content.appendChild(
+            this.importIntoDoc(childNodes[i]));
+      }
+    }
+    return result;
   }
   isPageRule(rule) {
     return rule.type === CSSRule.PAGE_RULE;
