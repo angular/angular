@@ -3,7 +3,7 @@ import {
   Runner, Sampler, SampleDescription,
   Validator, bind, Injector, Metric,
   Options, WebDriverAdapter
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 import { isBlank } from 'angular2/src/facade/lang';
 import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
 

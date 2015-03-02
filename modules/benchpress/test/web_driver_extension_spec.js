@@ -4,7 +4,7 @@ import { StringMap, ListWrapper } from 'angular2/src/facade/collection';
 import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
 import { PromiseWrapper } from 'angular2/src/facade/async';
 
-import { WebDriverExtension, bind, Injector, Options } from 'benchpress/benchpress';
+import { WebDriverExtension, bind, Injector, Options } from 'benchpress/common';
 
 export function main() {
   function createExtension(ids, caps) {

@@ -7,7 +7,7 @@ import { Json, isBlank, isPresent } from 'angular2/src/facade/lang';
 import {
   WebDriverExtension, IOsDriverExtension,
   WebDriverAdapter, Injector, bind
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 
 import { TraceEventFactory } from '../trace_event_factory';
 

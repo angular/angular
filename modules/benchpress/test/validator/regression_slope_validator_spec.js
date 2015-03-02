@@ -4,7 +4,7 @@ import { ListWrapper } from 'angular2/src/facade/collection';
 
 import {
   Validator, RegressionSlopeValidator, Injector, bind, MeasureValues
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 
 export function main() {
   describe('regression slope validator', () => {

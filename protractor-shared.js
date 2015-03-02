@@ -169,8 +169,6 @@ var config = exports.config = {
 exports.createBenchpressRunner = function(options) {
   var nodeUuid = require('node-uuid');
   var benchpress = require('./dist/js/cjs/benchpress/benchpress');
-  var SeleniumWebDriverAdapter =
-    require('./dist/js/cjs/benchpress/src/webdriver/selenium_webdriver_adapter').SeleniumWebDriverAdapter;
 
   // TODO(tbosch): add cloud reporter again (only when !options.test)
   // var cloudReporterConfig;
@@ -189,9 +187,7 @@ exports.createBenchpressRunner = function(options) {
     runId = process.env.GIT_SHA + ' ' + runId;
   }
   var bindings = [
-    benchpress.bind(benchpress.WebDriverAdapter).toFactory(
-      function() { return new SeleniumWebDriverAdapter(global.browser); }, []
-    ),
+    benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
       'lang': options.lang,

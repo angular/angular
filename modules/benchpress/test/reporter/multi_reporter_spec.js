@@ -4,7 +4,7 @@ import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 import { DateWrapper } from 'angular2/src/facade/lang';
 
-import { Reporter, MultiReporter, bind, Injector, MeasureValues } from 'benchpress/benchpress';
+import { Reporter, MultiReporter, bind, Injector, MeasureValues } from 'benchpress/common';
 
 export function main() {
   function createReporters(ids) {

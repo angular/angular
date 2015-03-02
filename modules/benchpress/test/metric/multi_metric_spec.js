@@ -3,7 +3,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 
-import { Metric, MultiMetric, bind, Injector } from 'benchpress/benchpress';
+import { Metric, MultiMetric, bind, Injector } from 'benchpress/common';
 
 export function main() {
   function createMetric(ids) {
