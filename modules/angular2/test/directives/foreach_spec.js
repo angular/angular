@@ -145,6 +145,32 @@ export function main() {
       });
     });
 
+    it('should iterate over an array of objects when using star directive', () => {
+      compileWithTemplate('<ul><li *foreach="var item in items">{{item["name"]}};</li></ul>').then((pv) => {
+        createView(pv);
+
+        // INIT
+        component.items = [];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('');
+
+        // GROW
+        ListWrapper.push(component.items, {'name': 'Angular'});
+        ListWrapper.push(component.items, {'name': 'rocks'});
+        ListWrapper.push(component.items, {'name': 'again'});
+        cd.detectChanges();
+
+        expect(DOM.getText(view.nodes[0])).toEqual('Angular;rocks;again;');
+
+        // SHRINK
+        ListWrapper.removeAt(component.items, 2);
+        ListWrapper.removeAt(component.items, 1);
+        cd.detectChanges();
+
+        expect(DOM.getText(view.nodes[0])).toEqual('Angular;');
+      });
+    });
+
     it('should gracefully handle nulls', (done) => {
       compileWithTemplate('<ul><li template="foreach #item in null">{{item}};</li></ul>').then((pv) => {
         createView(pv);
