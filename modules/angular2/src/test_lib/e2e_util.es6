@@ -17,7 +17,9 @@ function verifyNoBrowserErrors() {
   browser.executeScript('1+1');
   browser.manage().logs().get('browser').then(function(browserLog) {
     var filteredLog = browserLog.filter(function(logEntry) {
-      console.log('>> ' + require('util').inspect(logEntry));
+      if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
+        console.log('>> ' + logEntry.message);
+      }
       return logEntry.level.value > webdriver.logging.Level.WARNING.value;
     });
     expect(filteredLog.length).toEqual(0);
