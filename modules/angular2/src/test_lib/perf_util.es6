@@ -1,4 +1,4 @@
-var testUtil = require('./test_util');
+var testUtil = require('./e2e_util');
 var benchpress = require('benchpress/benchpress');
 
 module.exports = {
