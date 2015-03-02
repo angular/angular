@@ -53,6 +53,7 @@
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.16.*",
     "gulp-webserver": "^0.8.7",
+    "js-yaml": "^3.2.7",
     "karma": "^0.12.23",
     "karma-chrome-launcher": "^0.1.4",
     "karma-cli": "^0.0.4",
