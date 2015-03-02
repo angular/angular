@@ -31,3 +31,4 @@ function publishModule {
 
 publishModule angular2
 publishModule benchpress
+publishModule benchmarks
