@@ -7,7 +7,7 @@ import { Json, isBlank } from 'angular2/src/facade/lang';
 import {
   WebDriverExtension, ChromeDriverExtension,
   WebDriverAdapter, Injector, bind
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 
 import { TraceEventFactory } from '../trace_event_factory';
 

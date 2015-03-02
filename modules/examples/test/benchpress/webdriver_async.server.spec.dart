@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:guinness/guinness.dart';
 import 'package:benchpress/benchpress.dart';
-import 'package:benchpress/src/webdriver/async_webdriver_adapter.dart';
 import 'package:webdriver/webdriver.dart' show WebDriver, Capabilities, LogType, LogLevel, By;
 
 main() {

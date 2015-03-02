@@ -6,7 +6,7 @@ import { List, ListWrapper } from 'angular2/src/facade/collection';
 import {
   SampleState, Reporter, bind, Injector,
   ConsoleReporter, SampleDescription, MeasureValues
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 
 export function main() {
   describe('console reporter', () => {

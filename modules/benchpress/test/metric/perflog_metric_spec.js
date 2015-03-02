@@ -3,7 +3,7 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 import { List, ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 
-import { Metric, PerflogMetric, WebDriverExtension, bind, Injector } from 'benchpress/benchpress';
+import { Metric, PerflogMetric, WebDriverExtension, bind, Injector } from 'benchpress/common';
 
 import { TraceEventFactory } from '../trace_event_factory';
 

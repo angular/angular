@@ -4,7 +4,7 @@ import { ListWrapper } from 'angular2/src/facade/collection';
 
 import {
   Validator, SizeValidator, Injector, bind, MeasureValues
-} from 'benchpress/benchpress';
+} from 'benchpress/common';
 
 export function main() {
   describe('size validator', () => {

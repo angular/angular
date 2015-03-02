@@ -8,6 +8,9 @@ import webdriver from 'selenium-webdriver';
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
+  // TODO(tbosch): use static values when our transpiler supports them
+  static get PROTRACTOR_BINDINGS() { return _PROTRACTOR_BINDINGS; }
+
   _driver:any;
 
   constructor(driver) {
@@ -59,3 +62,7 @@ function convertToLocalProcess(data) {
   }
   return JSON.parse(serialized);
 }
+
+var _PROTRACTOR_BINDINGS = [
+  bind(WebDriverAdapter).toFactory( () => new SeleniumWebDriverAdapter(global.browser), [])
+];
