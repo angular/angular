@@ -1,4 +1,4 @@
-var testUtil = require('angular2/e2e_test/test_util');
+var testUtil = require('angular2/src/test_lib/e2e_util');
 
 describe('ng2 naive infinite scroll benchmark', function () {
 
