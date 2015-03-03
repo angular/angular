@@ -150,11 +150,10 @@ export class Compiler {
   // TODO(vicb): union type return ProtoView or Promise<ProtoView>
   _compileTemplate(template: Template, tplElement, component: Type) {
     var pipeline = new CompilePipeline(this.createSteps(component, template));
-    var compilationCtxtDescription = stringify(this._reader.read(component).type);
     var compileElements;
 
     try {
-      compileElements = pipeline.process(tplElement, compilationCtxtDescription);
+      compileElements = pipeline.process(tplElement, stringify(component));
     } catch(ex) {
       return PromiseWrapper.reject(ex);
     }
