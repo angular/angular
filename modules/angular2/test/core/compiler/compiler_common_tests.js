@@ -229,19 +229,17 @@ export function runCompilerCommonTests() {
       createNestedComponentSpec('(error -> sync)', templateResolver,
         'Failed to load the template for ParentComponent');
 
-      // TODO(vicb): Check why errors this fails with Dart
-      // TODO(vicb): The Promise is rejected with the correct error but an exc is thrown before
-      //templateResolver = new FakeTemplateResolver();
-      //templateResolver.setSync(ParentComponent);
-      //templateResolver.setError(NestedComponent);
-      //createNestedComponentSpec('(sync -> error)', templateResolver,
-      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
-      //
-      //templateResolver = new FakeTemplateResolver();
-      //templateResolver.setAsync(ParentComponent);
-      //templateResolver.setError(NestedComponent);
-      //createNestedComponentSpec('(async -> error)', templateResolver,
-      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+      templateResolver = new FakeTemplateResolver();
+      templateResolver.setSync(ParentComponent);
+      templateResolver.setError(NestedComponent);
+      createNestedComponentSpec('(sync -> error)', templateResolver,
+        'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+
+      templateResolver = new FakeTemplateResolver();
+      templateResolver.setAsync(ParentComponent);
+      templateResolver.setError(NestedComponent);
+      createNestedComponentSpec('(async -> error)', templateResolver,
+        'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
 
     });
 

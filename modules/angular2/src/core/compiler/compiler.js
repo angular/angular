@@ -199,10 +199,10 @@ export class Compiler {
     var protoView = this._compile(ce.componentDirective.type);
 
     if (PromiseWrapper.isPromise(protoView)) {
-      ListWrapper.push(promises, protoView);
-      protoView.then(function (protoView) {
-        ce.inheritedElementBinder.nestedProtoView = protoView;
-      });
+      ListWrapper.push(
+        promises,
+        protoView.then(function(pv) { ce.inheritedElementBinder.nestedProtoView = pv;})
+      );
     } else {
       ce.inheritedElementBinder.nestedProtoView = protoView;
     }
