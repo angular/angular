@@ -136,7 +136,10 @@ var _BINDINGS = [
       execute: execute,
       time: time
     }),
-    [WebDriverAdapter, WebDriverExtension, Metric, Reporter, Validator, Options.FORCE_GC, Options.PREPARE, Options.EXECUTE, _TIME]
+    [
+      WebDriverAdapter, WebDriverExtension, Metric, Reporter, Validator,
+      Options.FORCE_GC, Options.PREPARE, Options.EXECUTE, _TIME
+    ]
   ),
   bind(Options.FORCE_GC).toValue(false),
   bind(Options.PREPARE).toValue(false),

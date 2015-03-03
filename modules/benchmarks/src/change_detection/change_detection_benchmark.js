@@ -138,9 +138,9 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
 export function main () {
   BrowserDomAdapter.makeCurrent();
   var numberOfChecks = getIntParameter('numberOfChecks');
+  var numberOfRuns = getIntParameter('iterations');
 
   var numberOfChecksPerDetector = 10;
-  var numberOfRuns = 20;
   var numberOfDetectors = numberOfChecks / numberOfChecksPerDetector / numberOfRuns;
 
   setUpReflector();

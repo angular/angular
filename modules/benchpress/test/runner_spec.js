@@ -85,6 +85,13 @@ export function main() {
       });
     });
 
+    it('should bind Options.MICRO_ITERATIONS', (done) => {
+      createRunner().sample({id: 'someId', microIterations: 23}).then( (_) => {
+        expect(injector.get(Options.MICRO_ITERATIONS)).toEqual(23);
+        done();
+      });
+    });
+
     it('should overwrite bindings per sample call', (done) => {
       createRunner([
         bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1}),

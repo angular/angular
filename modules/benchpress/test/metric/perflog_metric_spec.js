@@ -2,8 +2,9 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '
 
 import { List, ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
+import { isPresent } from 'angular2/src/facade/lang';
 
-import { Metric, PerflogMetric, WebDriverExtension, bind, Injector } from 'benchpress/common';
+import { Metric, PerflogMetric, WebDriverExtension, bind, Injector, Options } from 'benchpress/common';
 
 import { TraceEventFactory } from '../trace_event_factory';
 
@@ -11,16 +12,18 @@ export function main() {
   var commandLog;
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
-  function createMetric(perfLogs) {
+  function createMetric(perfLogs, microIterations = 0) {
     commandLog = [];
-    return new Injector([
+    var bindings = [
       PerflogMetric.BINDINGS,
       bind(PerflogMetric.SET_TIMEOUT).toValue( (fn, millis) => {
         ListWrapper.push(commandLog, ['setTimeout', millis]);
         fn();
       }),
-      bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog))
-    ]).get(PerflogMetric);
+      bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog)),
+      bind(Options.MICRO_ITERATIONS).toValue(microIterations)
+    ];
+    return new Injector(bindings).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {
@@ -151,10 +154,10 @@ export function main() {
 
     describe('aggregation', () => {
 
-      function aggregate(events) {
+      function aggregate(events, microIterations = 0) {
         ListWrapper.insert(events, 0, eventFactory.markStart('benchpress0', 0));
         ListWrapper.push(events, eventFactory.markEnd('benchpress0', 10));
-        var metric = createMetric([events]);
+        var metric = createMetric([events], microIterations);
         return metric
           .beginMeasure().then( (_) => metric.endMeasure(false) );
       }
@@ -250,6 +253,31 @@ export function main() {
           expect(data['script']).toBe(2);
           done();
         });
+      });
+
+      describe('microIterations', () => {
+
+        it('should not report scriptMicroAvg if microIterations = 0', (done) => {
+          aggregate([
+            eventFactory.start('script', 0),
+            eventFactory.end('script', 5)
+          ], 0).then((data) => {
+            expect(isPresent(data['scriptMicroAvg'])).toBe(false);
+            done();
+          });
+        });
+
+        it('should report scriptMicroAvg', (done) => {
+          aggregate([
+            eventFactory.start('script', 0),
+            eventFactory.end('script', 5)
+          ], 4).then((data) => {
+            expect(data['script']).toBe(5);
+            expect(data['scriptMicroAvg']).toBe(5/4);
+            done();
+          });
+        });
+
       });
 
       describe('gcTimeInScript / gcAmountInScript', () => {
