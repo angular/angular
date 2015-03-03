@@ -110,7 +110,7 @@ var CONFIG = {
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
-      dart: ['modules/**/*.js'],
+      dart: ['modules/**/*.js']
     },
     options: {
       js: {
@@ -617,7 +617,7 @@ gulp.task('build.js.cjs', function(done) {
     ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
     ['build/linknodemodules.js.cjs'],
     done
-  );;
+  );
 });
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
