@@ -5,6 +5,7 @@ import { bind, OpaqueToken } from 'angular2/di';
 
 import { WebDriverExtension } from '../web_driver_extension';
 import { Metric } from '../metric';
+import { Options } from '../sample_options';
 
 /**
  * A metric that reads out the performance log
@@ -19,17 +20,25 @@ export class PerflogMetric extends Metric {
   _remainingEvents:List;
   _measureCount:int;
   _setTimeout:Function;
+  _microIterations:int;
 
-  constructor(driverExtension:WebDriverExtension, setTimeout:Function) {
+  /**
+   * @param driverExtension
+   * @param setTimeout
+   * @param microIterations Number of iterations that run inside the browser by user code.
+   *                        Used for micro benchmarks.
+   **/
+  constructor(driverExtension:WebDriverExtension, setTimeout:Function, microIterations:int) {
     super();
     this._driverExtension = driverExtension;
     this._remainingEvents = [];
     this._measureCount = 0;
     this._setTimeout = setTimeout;
+    this._microIterations = microIterations;
   }
 
   describe():StringMap {
-    return {
+    var res = {
       'script': 'script execution time in ms',
       'render': 'render time in ms',
       'gcTime': 'gc time in ms',
@@ -37,6 +46,10 @@ export class PerflogMetric extends Metric {
       'gcTimeInScript': 'gc time during script execution in ms',
       'gcAmountInScript': 'gc amount during script execution in kbytes'
     };
+    if (this._microIterations > 0) {
+      res['scriptMicroAvg'] = 'average script time for a micro iteration';
+    }
+    return res;
   }
 
   beginMeasure():Promise {
@@ -148,6 +161,9 @@ export class PerflogMetric extends Metric {
       }
     });
     result['script'] -= result['gcTimeInScript'];
+    if (this._microIterations > 0) {
+      result['scriptMicroAvg'] = result['script'] / this._microIterations;
+    }
     return isPresent(markStartEvent) && isPresent(markEndEvent) ? result : null;
   }
 
@@ -161,8 +177,9 @@ var _MARK_NAME_PREFIX = 'benchpress';
 var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 var _BINDINGS = [
   bind(PerflogMetric).toFactory(
-    (driverExtension, setTimeout) => new PerflogMetric(driverExtension, setTimeout),
-    [WebDriverExtension, _SET_TIMEOUT]
+    (driverExtension, setTimeout, microIterations) => new PerflogMetric(driverExtension, setTimeout, microIterations),
+    [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_ITERATIONS]
   ),
-  bind(_SET_TIMEOUT).toValue( (fn, millis) => PromiseWrapper.setTimeout(fn, millis) )
+  bind(_SET_TIMEOUT).toValue( (fn, millis) => PromiseWrapper.setTimeout(fn, millis) ),
+  bind(Options.MICRO_ITERATIONS).toValue(0)
 ];

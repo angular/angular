@@ -17,6 +17,12 @@ export class Options {
   static get CAPABILITIES() { return _CAPABILITIES; }
   // TODO(tbosch): use static initializer when our transpiler supports it
   static get USER_AGENT() { return _USER_AGENT; }
+  // TODO(tbosch): use static initializer when our transpiler supports it
+  /**
+   * Number of iterations that run inside the browser by user code.
+   * Used for micro benchmarks.
+   **/
+  static get MICRO_ITERATIONS() { return _MICRO_ITERATIONS; }
 }
 
 var _SAMPLE_ID = new OpaqueToken('Options.sampleId');
@@ -27,3 +33,4 @@ var _PREPARE = new OpaqueToken('Options.prepare');
 var _EXECUTE = new OpaqueToken('Options.execute');
 var _CAPABILITIES = new OpaqueToken('Options.capabilities');
 var _USER_AGENT = new OpaqueToken('Options.userAgent');
+var _MICRO_ITERATIONS = new OpaqueToken('Options.microIterations');
