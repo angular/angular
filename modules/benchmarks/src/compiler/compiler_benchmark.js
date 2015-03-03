@@ -102,7 +102,7 @@ export function main() {
     templateResolver,
     new ComponentUrlMapper(),
     urlResolver,
-    new CssProcessor()
+    new CssProcessor(null)
   );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
   var templateWithBindings = createTemplateHtml('templateWithBindings', count);

@@ -99,7 +99,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       UrlResolver,
       StyleUrlResolver,
       StyleInliner,
-      CssProcessor,
+      bind(CssProcessor).toFactory(() => new CssProcessor(null), []),
   ];
 }
 

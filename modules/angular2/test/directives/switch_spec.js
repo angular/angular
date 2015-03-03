@@ -33,7 +33,7 @@ export function main() {
         tplResolver,
         new ComponentUrlMapper(),
         urlResolver,
-        new CssProcessor()
+        new CssProcessor(null)
       );
     });
 
