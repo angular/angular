@@ -151,7 +151,7 @@ function setup() {
   });
 
   reflector.registerType(CssProcessor, {
-    "factory": () => new CssProcessor(),
+    "factory": () => new CssProcessor(null),
     "parameters": [],
     "annotations": []
   });

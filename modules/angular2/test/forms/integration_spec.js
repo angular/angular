@@ -39,7 +39,7 @@ export function main() {
       tplResolver,
       new ComponentUrlMapper(),
       urlResolver,
-      new CssProcessor()
+      new CssProcessor(null)
     );
 
     tplResolver.setTemplate(componentType, new Template({
@@ -220,7 +220,7 @@ export function main() {
         });
       });
     });
-    
+
     describe("nested forms", () => {
       it("should init DOM with the given form object", (done) => {
         var form = new ControlGroup({

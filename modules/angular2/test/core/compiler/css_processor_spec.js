@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {CssProcessor, CssTransformer} from 'angular2/src/core/compiler/css_processor';
 
 import {ShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 
@@ -7,6 +7,8 @@ import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipel
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step';
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
+
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Component} from 'angular2/src/core/annotations/annotations';
 
@@ -28,7 +30,7 @@ export function main() {
 
       it('it should set ignoreBindings to true for style elements', () => {
         var strategy = new FakeShadowDomStrategy(null);
-        var cssProcessor = new CssProcessor();
+        var cssProcessor = new CssProcessor(null);
 
         var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
         var results = pipeline.process(el('<div><style></style></div>'));
@@ -44,12 +46,25 @@ export function main() {
         });
         var strategy = new FakeShadowDomStrategy(compileStep);
 
-        var cssProcessor = new CssProcessor();
+        var cssProcessor = new CssProcessor(null);
         var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
         var results = pipeline.process(el('<div><style></style></div>'));
 
         expect(processedEls.length).toEqual(1);
         expect(processedEls[0]).toBe(results[1].element);
+      });
+
+      it('should apply the given transformers', () => {
+        var strategy = new FakeShadowDomStrategy(null);
+        var cssProcessor = new CssProcessor([
+          new FakeCssTransformer('/*transformer1 */'),
+          new FakeCssTransformer('/*transformer2 */'),
+        ]);
+
+        var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
+        var results = pipeline.process(el('<div><style></style></div>'));
+
+        expect(results[1].element).toHaveText('/*transformer1 *//*transformer2 */');
       });
     });
   });
@@ -76,6 +91,21 @@ class MockStep extends CompileStep {
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     this.processClosure(parent, current, control);
+  }
+}
+
+class FakeCssTransformer extends CssTransformer {
+  _css: string;
+
+  constructor(css: string) {
+    super();
+    this._css = css;
+  }
+
+  transform(styleEl) {
+    var cssText = DOM.getText(styleEl);
+    cssText += this._css;
+    DOM.setText(styleEl, cssText);
   }
 }
 

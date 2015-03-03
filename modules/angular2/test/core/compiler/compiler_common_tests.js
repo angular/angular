@@ -302,7 +302,7 @@ class TestableCompiler extends Compiler {
           templateResolver,
           cmpUrlMapper,
           urlResolver,
-          new CssProcessor());
+          new CssProcessor(null));
 
     this.steps = steps;
   }
