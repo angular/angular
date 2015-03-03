@@ -15,7 +15,7 @@ export class Compiler extends TraceurCompiler {
   transform(tree, moduleName = undefined) {
     if (this.options_.outputLanguage.toLowerCase() === 'dart') {
       var errorReporter = new CollectingErrorReporter();
-      var transformer = new DartTransformer(errorReporter);
+      var transformer = new DartTransformer(errorReporter, this.options_);
       var transformedTree = transformer.transform(tree);
       this.throwIfErrors(errorReporter);
       return transformedTree;

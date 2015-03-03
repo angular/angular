@@ -123,7 +123,6 @@ export class ControlGroupDirective {
   _directives:List<ControlDirective>;
 
   constructor() {
-    super();
     this._directives = ListWrapper.create();
   }
 

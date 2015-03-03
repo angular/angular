@@ -534,7 +534,6 @@ export class ProtoView {
       protoChangeDetector:ProtoChangeDetector,
       shadowDomStrategy: ShadowDomStrategy
   ): ProtoView {
-
     DOM.addClass(insertionElement, NG_BINDING_CLASS);
     var cmpType = rootComponentAnnotatedType.type;
     var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);

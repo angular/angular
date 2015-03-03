@@ -142,7 +142,6 @@ export class ElementBinderBuilder extends CompileStep {
 
       elementBinder = protoView.bindElement(currentProtoElementInjector,
         current.componentDirective, current.viewportDirective);
-
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
       }
@@ -168,7 +167,6 @@ export class ElementBinderBuilder extends CompileStep {
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       var setterFn, styleParts, styleSuffix;
-
       if (StringWrapper.startsWith(property, ARIA_PREFIX)) {
         setterFn = ariaSetterFactory(property);
       } else if (StringWrapper.equals(property, ROLE_ATTR)) {

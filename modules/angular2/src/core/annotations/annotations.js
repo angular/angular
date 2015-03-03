@@ -95,7 +95,6 @@ export class Decorator extends Directive {
       compileChildren:boolean
     }={})
   {
-    this.compileChildren = compileChildren;
     super({
         selector: selector,
         bind: bind,
@@ -103,6 +102,7 @@ export class Decorator extends Directive {
         implementsTypes: implementsTypes,
         lifecycle: lifecycle
     });
+    this.compileChildren = compileChildren;
   }
 }
 

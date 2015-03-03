@@ -234,6 +234,14 @@ export class BrowserDomAdapter extends DomAdapter {
     return node instanceof HTMLElement && isPresent(node.shadowRoot);
   }
   importIntoDoc(node:Node) {
+    if (node instanceof HTMLTemplateElement) {
+      var result = document.importNode(node, true);
+      for (var i = 0; i < node.content.childNodes.length; ++i) {
+        result.content.appendChild(
+            this.importIntoDoc(node.content.childNodes[i]));
+      }
+      return result;
+    }
     return document.importNode(node, true);
   }
   isPageRule(rule) {
