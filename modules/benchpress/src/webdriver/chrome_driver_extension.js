@@ -61,10 +61,13 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (isBlank(normalizedEvents)) {
       normalizedEvents = [];
     }
+    var majorGCPids = {};
     chromeEvents.forEach( (event) => {
       var cat = event['cat'];
       var name = event['name'];
       var args = event['args'];
+      var pid = event['pid'];
+      var ph = event['ph'];
       if (StringWrapper.equals(cat, 'disabled-by-default-devtools.timeline')) {
         if (StringWrapper.equals(name, 'FunctionCall') &&
           (isBlank(args) || isBlank(args['data']) || !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
@@ -81,17 +84,28 @@ export class ChromeDriverExtension extends WebDriverExtension {
             'name': 'render'
           }));
         } else if (StringWrapper.equals(name, 'GCEvent')) {
+          var normArgs = {
+            'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] : args['usedHeapSizeBefore']
+          };
+          if (StringWrapper.equals(event['ph'], 'E')) {
+            normArgs['majorGc'] = isPresent(majorGCPids[pid]) && majorGCPids[pid];
+          }
+          majorGCPids[pid] = false;
           ListWrapper.push(normalizedEvents, normalizeEvent(event, {
             'name': 'gc',
-            'args': {
-              'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] : args['usedHeapSizeBefore']
-            }
+            'args': normArgs
           }));
         }
       } else if (StringWrapper.equals(cat, 'blink.console')) {
         ListWrapper.push(normalizedEvents, normalizeEvent(event, {
           'name': name
         }));
+      } else if (StringWrapper.equals(cat, 'v8')) {
+        if (StringWrapper.equals(name, 'majorGC')) {
+          if (StringWrapper.equals(ph, 'B')) {
+            majorGCPids[pid] = true;
+          }
+        }
       }
     });
     return normalizedEvents;

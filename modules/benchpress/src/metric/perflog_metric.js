@@ -43,8 +43,8 @@ export class PerflogMetric extends Metric {
       'render': 'render time in ms',
       'gcTime': 'gc time in ms',
       'gcAmount': 'gc amount in kbytes',
-      'gcTimeInScript': 'gc time during script execution in ms',
-      'gcAmountInScript': 'gc amount during script execution in kbytes'
+      'majorGcTime': 'time of major gcs in ms',
+      'majorGcAmount': 'amount of major gcs in kbytes'
     };
     if (this._microIterations > 0) {
       res['scriptMicroAvg'] = 'average script time for a micro iteration';
@@ -124,12 +124,13 @@ export class PerflogMetric extends Metric {
       'render': 0,
       'gcTime': 0,
       'gcAmount': 0,
-      'gcTimeInScript': 0,
-      'gcAmountInScript': 0
+      'majorGcTime': 0,
+      'majorGcAmount': 0
     };
 
     var markStartEvent = null;
     var markEndEvent = null;
+    var gcTimeInScript = 0;
 
     var intervalStarts = {};
     events.forEach( (event) => {
@@ -148,19 +149,24 @@ export class PerflogMetric extends Metric {
           var duration = event['ts'] - startEvent['ts'];
           intervalStarts[name] = null;
           if (StringWrapper.equals(name, 'gc')) {
+            var amount = (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
             result['gcTime'] += duration;
-            result['gcAmount'] += (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
-            if (isPresent(intervalStarts['script'])) {
-              result['gcTimeInScript'] += duration;
-              result['gcAmountInScript'] += result['gcAmount'];
+            result['gcAmount'] += amount;
+            var majorGc = event['args']['majorGc'];
+            if (isPresent(majorGc) && majorGc) {
+              result['majorGcTime'] += duration;
+              result['majorGcAmount'] += amount;
             }
-          } else {
+            if (isPresent(intervalStarts['script'])) {
+              gcTimeInScript += duration;
+            }
+          } else if (StringWrapper.equals(name, 'script') || StringWrapper.equals(name, 'render')) {
             result[name] += duration;
           }
         }
       }
     });
-    result['script'] -= result['gcTimeInScript'];
+    result['script'] -= gcTimeInScript;
     if (this._microIterations > 0) {
       result['scriptMicroAvg'] = result['script'] / this._microIterations;
     }

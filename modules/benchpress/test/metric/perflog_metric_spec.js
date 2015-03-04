@@ -221,7 +221,7 @@ export function main() {
           });
       });
 
-      ['script', 'gcTime', 'render'].forEach( (metricName) => {
+      ['script', 'render'].forEach( (metricName) => {
         it(`should support ${metricName} metric`, (done) => {
           aggregate([
             eventFactory.start(metricName, 0),
@@ -233,12 +233,28 @@ export function main() {
         });
       });
 
-      it('should support gcAmount metric', (done) => {
+      it('should support gcTime/gcAmount metric', (done) => {
         aggregate([
           eventFactory.start('gc', 0, {'usedHeapSize': 2500}),
           eventFactory.end('gc', 5, {'usedHeapSize': 1000})
         ]).then((data) => {
+          expect(data['gcTime']).toBe(5);
           expect(data['gcAmount']).toBe(1.5);
+          expect(data['majorGcTime']).toBe(0);
+          expect(data['majorGcAmount']).toBe(0);
+          done();
+        });
+      });
+
+      it('should support majorGcTime/majorGcAmount metric', (done) => {
+        aggregate([
+          eventFactory.start('gc', 0, {'usedHeapSize': 2500}),
+          eventFactory.end('gc', 5, {'usedHeapSize': 1000, 'majorGc': true})
+        ]).then((data) => {
+          expect(data['gcTime']).toBe(5);
+          expect(data['gcAmount']).toBe(1.5);
+          expect(data['majorGcTime']).toBe(5);
+          expect(data['majorGcAmount']).toBe(1.5);
           done();
         });
       });
@@ -274,48 +290,6 @@ export function main() {
           ], 4).then((data) => {
             expect(data['script']).toBe(5);
             expect(data['scriptMicroAvg']).toBe(5/4);
-            done();
-          });
-        });
-
-      });
-
-      describe('gcTimeInScript / gcAmountInScript', () => {
-
-        it('should detect gc during script execution with begin/end events', (done) => {
-          aggregate([
-            eventFactory.start('script', 0),
-            eventFactory.start('gc', 1, {'usedHeapSize': 10000}),
-            eventFactory.end('gc', 4, {'usedHeapSize': 0}),
-            eventFactory.end('script', 5)
-          ]).then((data) => {
-            expect(data['gcTimeInScript']).toBe(3);
-            expect(data['gcAmountInScript']).toBe(10.0);
-            done();
-          });
-        });
-
-        it('should detect gc during script execution with complete events', (done) => {
-          aggregate([
-            eventFactory.complete('script', 0, 5),
-            eventFactory.start('gc', 1, {'usedHeapSize': 10000}),
-            eventFactory.end('gc', 4, {'usedHeapSize': 0})
-          ]).then((data) => {
-            expect(data['gcTimeInScript']).toBe(3);
-            expect(data['gcAmountInScript']).toBe(10.0);
-            done();
-          });
-        });
-
-        it('should ignore gc outside of script execution', (done) => {
-          aggregate([
-            eventFactory.start('gc', 1, {'usedHeapSize': 10}),
-            eventFactory.end('gc', 4, {'usedHeapSize': 0}),
-            eventFactory.start('script', 0),
-            eventFactory.end('script', 5)
-          ]).then((data) => {
-            expect(data['gcTimeInScript']).toEqual(0.0);
-            expect(data['gcAmountInScript']).toEqual(0.0);
             done();
           });
         });

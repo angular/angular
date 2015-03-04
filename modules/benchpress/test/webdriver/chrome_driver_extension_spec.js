@@ -17,6 +17,8 @@ export function main() {
     var extension;
 
     var blinkEvents = new TraceEventFactory('blink.console', 'pid0');
+    var v8Events = new TraceEventFactory('v8', 'pid0');
+    var v8EventsOtherProcess = new TraceEventFactory('v8', 'pid1');
     var chromeTimelineEvents = new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
     var normEvents = new TraceEventFactory('timeline', 'pid0');
 
@@ -143,7 +145,37 @@ export function main() {
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
-            normEvents.end('gc', 2.0, {'usedHeapSize': 0}),
+            normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}),
+          ]);
+          done();
+        });
+      });
+
+      it('should report major gc', (done) => {
+        createExtension([
+          chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
+          v8EventsOtherProcess.start('majorGC', 1100, null),
+          v8EventsOtherProcess.end('majorGC', 1200, null),
+          chromeTimelineEvents.end('GCEvent', 2000, {'usedHeapSizeAfter': 0}),
+        ]).readPerfLog().then( (events) => {
+          expect(events).toEqual([
+            normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
+            normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}),
+          ]);
+          done();
+        });
+      });
+
+      it('should ignore major gc from different processes', (done) => {
+        createExtension([
+          chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
+          v8Events.start('majorGC', 1100, null),
+          v8Events.end('majorGC', 1200, null),
+          chromeTimelineEvents.end('GCEvent', 2000, {'usedHeapSizeAfter': 0}),
+        ]).readPerfLog().then( (events) => {
+          expect(events).toEqual([
+            normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
+            normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true}),
           ]);
           done();
         });
