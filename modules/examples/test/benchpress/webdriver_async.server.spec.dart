@@ -46,7 +46,7 @@ Future<WebDriver> createTestDriver() {
       'binary': env['DARTIUM_BIN'],
       'args': ['--js-flags=--expose-gc'],
       'perfLoggingPrefs': {
-        'traceCategories': 'blink.console,disabled-by-default-devtools.timeline'
+        'traceCategories': 'v8,blink.console,disabled-by-default-devtools.timeline'
       },
     },
     'loggingPrefs': {
