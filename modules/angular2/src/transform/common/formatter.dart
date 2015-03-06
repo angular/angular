@@ -4,7 +4,7 @@ import 'package:dart_style/dart_style.dart';
 
 import 'logging.dart';
 
-DartFormatter _formatter;
+DartFormatter _formatter = null;
 
 void init(DartFormatter formatter) {
   if (_formatter != null) {

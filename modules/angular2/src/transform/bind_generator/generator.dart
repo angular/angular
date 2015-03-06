@@ -27,7 +27,8 @@ class CreateNgSettersVisitor extends ToSourceVisitor with VisitorMixin {
 
   @override
   Object visitMethodInvocation(MethodInvocation node) {
-    var isRegisterType = node.methodName.toString() == REGISTER_TYPE_METHOD_NAME;
+    var isRegisterType =
+        node.methodName.toString() == REGISTER_TYPE_METHOD_NAME;
     // The first argument to a `registerType` call is the type.
     extractVisitor.currentName = node.argumentList.arguments[0] is Identifier
         ? node.argumentList.arguments[0]
