@@ -208,9 +208,8 @@ export class ElementBinderBuilder extends CompileStep {
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
       StringMapWrapper.forEach(annotation.bind, (bindConfig, dirProp) => {
-        var bindConfigParts = this._splitBindConfig(bindConfig);
-        var elProp = bindConfigParts[0];
-        var pipes = ListWrapper.slice(bindConfigParts, 1, bindConfigParts.length);
+        var pipes = this._splitBindConfig(bindConfig);
+        var elProp = ListWrapper.removeAt(pipes, 0);
 
         var bindingAst = isPresent(compileElement.propertyBindings) ?
           MapWrapper.get(compileElement.propertyBindings, elProp) :
@@ -238,8 +237,7 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _splitBindConfig(bindConfig:string) {
-    var parts = StringWrapper.split(bindConfig, RegExpWrapper.create("\\|"));
-    return ListWrapper.map(parts, (s) => s.trim());
+    return ListWrapper.map(bindConfig.split('|'), (s) => s.trim());
   }
 
   _resolvePropertyName(attrName:string) {
