@@ -21,6 +21,8 @@ import {ControlGroupDirective, ControlDirective, Control, ControlGroup, Optional
 
 import * as validators from 'angular2/src/forms/validators';
 
+import {reflector} from 'angular2/src/reflection/reflection';
+
 export function main() {
   function detectChanges(view) {
     view.changeDetector.detectChanges();
@@ -48,7 +50,7 @@ export function main() {
     }));
 
     compiler.compile(componentType).then((pv) => {
-      var view = pv.instantiate(null, null);
+      var view = pv.instantiate(null, null, reflector);
       view.hydrate(new Injector([]), null, context);
       detectChanges(view);
       callback(view);

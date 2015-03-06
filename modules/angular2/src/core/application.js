@@ -59,7 +59,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, strategy, eventManager) => {
+        appComponentAnnotatedType, strategy, eventManager, reflector) => {
         return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
@@ -68,12 +68,12 @@ function _injectorBindings(appComponentType): List<Binding> {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null, eventManager);
+          var view = appProtoView.instantiate(null, eventManager, reflector);
           view.hydrate(injector, null, new Object());
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          ShadowDomStrategy, EventManager]),
+          ShadowDomStrategy, EventManager, Reflector]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),

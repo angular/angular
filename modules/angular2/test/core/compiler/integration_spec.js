@@ -27,6 +27,8 @@ import {If} from 'angular2/src/directives/if';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
+import {reflector} from 'angular2/src/reflection/reflection';
+
 export function main() {
   describe('integration tests', function() {
     var compiler, tplResolver;
@@ -55,7 +57,7 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(null, null);
+        view = pv.instantiate(null, null, reflector);
         view.hydrate(new Injector([]), null, ctx);
         cd = view.changeDetector;
       }

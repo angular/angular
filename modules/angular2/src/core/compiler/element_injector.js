@@ -3,13 +3,14 @@ import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import {View, ProtoView} from 'angular2/src/core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
+import {Reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -90,18 +91,22 @@ class TreeNode {
 export class DirectiveDependency extends Dependency {
   depth:int;
   eventEmitterName:string;
+  propSetterName:string;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
-              properties:List, depth:int, eventEmitterName: string) {
+              properties:List, depth:int, eventEmitterName: string, propSetterName: string) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
+    this.propSetterName = propSetterName;
   }
 
   static createFrom(d:Dependency):Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
       d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._eventEmitterName(d.properties));
+      DirectiveDependency._eventEmitterName(d.properties),
+      DirectiveDependency._propSetterName(d.properties)
+    );
   }
 
   static _depth(properties):int {
@@ -115,6 +120,15 @@ export class DirectiveDependency extends Dependency {
     for (var i = 0; i < properties.length; i++) {
       if (properties[i] instanceof EventEmitter) {
         return properties[i].eventName;
+      }
+    }
+    return null;
+  }
+
+  static _propSetterName(properties):string {
+    for (var i = 0; i < properties.length; i++) {
+      if (properties[i] instanceof PropertySetter) {
+        return properties[i].propName;
       }
     }
     return null;
@@ -256,8 +270,9 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, eventCallbacks):ElementInjector {
-    return new ElementInjector(this, parent, host, eventCallbacks);
+  instantiate(parent:ElementInjector, host:ElementInjector, eventCallbacks,
+    reflector: Reflector):ElementInjector {
+    return new ElementInjector(this, parent, host, eventCallbacks, reflector);
   }
 
   directParent(): ProtoElementInjector {
@@ -311,7 +326,10 @@ export class ElementInjector extends TreeNode {
   _preBuiltObjects;
   _constructionCounter;
   _eventCallbacks;
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, eventCallbacks: Map) {
+  _refelector: Reflector;
+
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector,
+    eventCallbacks: Map, reflector: Reflector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -324,6 +342,7 @@ export class ElementInjector extends TreeNode {
     }
 
     this._proto = proto;
+    this._refelector = reflector;
 
     //we cannot call clearDirectives because fields won't be detected
     this._preBuiltObjects = null;
@@ -488,6 +507,7 @@ export class ElementInjector extends TreeNode {
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
+    if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
 
@@ -500,6 +520,13 @@ export class ElementInjector extends TreeNode {
       }
     }
     return (_) => {};
+  }
+
+  _buildPropSetter(dep) {
+    var ngElement = this._getPreBuiltObjectByKeyId(StaticKeys.instance().ngElementId);
+    var domElement = ngElement.domElement;
+    var setter = this._refelector.setter(dep.propSetterName);
+    return function(v) { setter(domElement, v) };
   }
 
   /*

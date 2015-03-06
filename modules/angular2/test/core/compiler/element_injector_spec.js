@@ -1,9 +1,9 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy} from 'angular2/test_lib';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
 import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {View} from 'angular2/src/core/compiler/view';
@@ -12,6 +12,7 @@ import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 @proxy
 @IMPLEMENTS(View)
@@ -74,6 +75,17 @@ class NeedsEventEmitter {
   }
 }
 
+class NeedsPropertySetter {
+  propSetter;
+  constructor(@PropertySetter('title') propSetter: Function) {
+    this.propSetter = propSetter;
+  }
+
+  setProp(value) {
+    this.propSetter(value);
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -118,7 +130,7 @@ export function main() {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
-    var inj = proto.instantiate(null, null, null);
+    var inj = proto.instantiate(null, null, null, reflector);
     var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
 
     inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector, preBuilt);
@@ -131,12 +143,12 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null, null);
+    var parent = protoParent.instantiate(null, null, null, reflector);
 
     parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
-    var child = protoChild.instantiate(parent, null, null);
+    var child = protoChild.instantiate(parent, null, null, reflector);
     child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     return child;
@@ -149,11 +161,11 @@ export function main() {
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
-    var host = protoParent.instantiate(null, null, null);
+    var host = protoParent.instantiate(null, null, null, reflector);
     host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false, 1);
-    var shadow = protoChild.instantiate(null, host, null);
+    var shadow = protoChild.instantiate(null, host, null, reflector);
     shadow.instantiateDirectives(shadowInj, null, null);
 
     return shadow;
@@ -186,9 +198,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null, null);
-        var c1 = protoChild1.instantiate(p, null, null);
-        var c2 = protoChild2.instantiate(p, null, null);
+        var p = protoParent.instantiate(null, null, null, reflector);
+        var c1 = protoChild1.instantiate(p, null, null, reflector);
+        var c2 = protoChild2.instantiate(p, null, null, reflector);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -203,8 +215,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, null);
-          var c = protoChild.instantiate(p, null, null);
+          var p = protoParent.instantiate(null, null, null, reflector);
+          var c = protoChild.instantiate(p, null, null, reflector);
 
           expect(c.directParent()).toEqual(p);
         });
@@ -214,8 +226,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, null);
-          var c = protoChild.instantiate(p, null, null);
+          var p = protoParent.instantiate(null, null, null, reflector);
+          var c = protoChild.instantiate(p, null, null, reflector);
 
           expect(c.directParent()).toEqual(null);
         });
@@ -422,7 +434,7 @@ export function main() {
       });
 
       it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null, null, null);
+        var viewContainer = new ViewContainer(null, null, null, null, null, null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
@@ -475,5 +487,19 @@ export function main() {
         expect(inj.hasEventEmitter('move')).toBe(false);
       });
     });
+
+    describe('property setter', () => {
+      it('should be injectable and callable', () => {
+        var div = el('<div></div>');
+        var ngElement = new NgElement(div);
+
+        var preBuildObject = new PreBuiltObjects(null, ngElement, null, null, null);
+        var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
+        inj.get(NeedsPropertySetter).setProp('foobar');
+
+        expect(div.title).toEqual('foobar');
+      });
+    });
+
   });
 }

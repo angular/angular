@@ -13,3 +13,16 @@ export class EventEmitter extends DependencyAnnotation {
     this.eventName = eventName;
   }
 }
+
+/**
+ * The directive can inject a property setter that would allow setting this property on the
+ * host element
+ */
+export class PropertySetter extends DependencyAnnotation {
+  propName: string;
+  @CONST()
+  constructor(propName) {
+    super();
+    this.propName = propName;
+  }
+}
