@@ -23,6 +23,14 @@ export class SampleDescription {
       StringMapWrapper.forEach(description, (value, prop) => this.description[prop] = value );
     });
   }
+
+  toJson() {
+    return {
+      'id': this.id,
+      'description': this.description,
+      'metrics': this.metrics
+    };
+  }
 }
 
 var _BINDINGS = [
