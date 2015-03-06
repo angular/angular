@@ -37,8 +37,11 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   // See https://github.com/WebKit/webkit/tree/master/Source/WebInspectorUI/Versions
+  // for the protocol.
+  // See https://github.com/WebKit/webkit/blob/master/Source/WebCore/inspector/InspectorTimelineAgent.cpp
+  // for which records are actually fired by Safari.
   readPerfLog() {
-    // TODO(tbosch): Bug in IOsDriver: Need to execute at least one command
+    // TODO(tbosch): Bug in WebKit: Need to execute at least one command
     // so that the browser logs can be read out!
     return this._driver.executeScript('1+1')
       .then( (_) => this._driver.logs('performance') )
@@ -64,7 +67,6 @@ export class IOsDriverExtension extends WebDriverExtension {
       var data = record['data'];
       var startTime = record['startTime'];
       var endTime = record['endTime'];
-
       if (StringWrapper.equals(type, 'FunctionCall') &&
           (isBlank(data) || !StringWrapper.equals(data['scriptName'], 'InjectedScript'))) {
         ListWrapper.push(events, createStartEvent('script', startTime));
@@ -99,8 +101,8 @@ export class IOsDriverExtension extends WebDriverExtension {
     return events;
   }
 
-  supports(capabilities:StringMap):boolean {
-    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'safari');
+  supports(userAgent:string):boolean {
+    return isPresent(RegExpWrapper.firstMatch(_USER_AGENT_REGEX, userAgent));
   }
 }
 
@@ -135,6 +137,8 @@ function createMarkStartEvent(name, time) {
 function createMarkEndEvent(name, time) {
   return createEvent('e', name, time);
 }
+
+var _USER_AGENT_REGEX = RegExpWrapper.create('\\bMobile\\b.*\\bSafari\\b');
 
 var _BINDINGS = [
   bind(IOsDriverExtension).toFactory(

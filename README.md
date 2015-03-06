@@ -74,6 +74,32 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `protractor protractor-{js|dart2js}-conf.js --ng-help`
 
+### Test on mobile devices
+
+## iOS:
+
+1. Download [latest iphone-driver](http://ios-driver-ci.ebaystratus.com/userContent/ios-server-standalone-0.6.6-SNAPSHOT.jar),
+   see `scripts/ci/install_io_driver.sh`.
+2. create a wifi network on which the iOS device can see the server
+3. Run `java -jar ios-server-standalone-0.6.6-SNAPSHOT.jar -real`
+4. `protractor protractor-js.conf.js --browsers=SafariIos --seleniumAddress=http://localhost:5555/wd/hub --serverAddress=yourServerName`
+
+Notes:
+* ios-driver does not yet support iOS 8.x native devices, so only use iOS 7.x for them
+* ios-driver does support iOS 8.x for the iOS simulator
+
+## Android:
+
+1. get root access so that you can control the CPU speed of the device
+  * e.g. flash a so called user-debug build of Android
+2. connect your Android device via usb
+3. run `./scripts/ci/init_android.sh`. This will:
+  * set up a reverse proxy so that the browser on Android can use `localhost`
+  * set the cpu speed to a fixed value
+  * prevent the device from sleeping
+4. `protractor protractor-js.conf.js --browsers=ChromeAndroid`
+
+
 ### Examples
 
 To see the examples, first build the project as described above.

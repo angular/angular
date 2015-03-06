@@ -72,9 +72,6 @@ var _DEFAULT_BINDINGS = [
   WebDriverExtension.bindTo([ChromeDriverExtension, IOsDriverExtension]),
   Metric.bindTo(MultiMetric),
 
-  bind(Options.CAPABILITIES).toAsyncFactory(
-    (adapter) => adapter.capabilities(), [WebDriverAdapter]
-  ),
   bind(Options.USER_AGENT).toAsyncFactory(
     (adapter) => adapter.executeScript('return window.navigator.userAgent;'), [WebDriverAdapter]
   )

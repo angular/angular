@@ -20,19 +20,19 @@ export class WebDriverExtension {
         [Injector]
       ),
       bind(WebDriverExtension).toFactory(
-        (children, capabilities) => {
+        (children, userAgent) => {
           var delegate;
           ListWrapper.forEach(children, (extension) => {
-            if (extension.supports(capabilities)) {
+            if (extension.supports(userAgent)) {
               delegate = extension;
             }
           });
           if (isBlank(delegate)) {
-            throw new BaseException('Could not find a delegate for given capabilities!');
+            throw new BaseException(`Could not find a delegate for userAgent ${userAgent}!`);
           }
           return delegate;
         },
-        [_CHILDREN, Options.CAPABILITIES]
+        [_CHILDREN, Options.USER_AGENT]
       )
     ];
   }
@@ -64,7 +64,7 @@ export class WebDriverExtension {
     throw new BaseException('NYI');
   }
 
-  supports(capabilities:StringMap):boolean {
+  supports(userAgent:string):boolean {
     return true;
   }
 }

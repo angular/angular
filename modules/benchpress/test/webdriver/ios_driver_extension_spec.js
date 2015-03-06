@@ -156,13 +156,8 @@ export function main() {
       });
 
       it('should match safari browsers', () => {
-        expect(createExtension().supports({
-          'browserName': 'safari'
-        })).toBe(true);
-
-        expect(createExtension().supports({
-          'browserName': 'Safari'
-        })).toBe(true);
+        expect(createExtension().supports('Mozilla/5.0 (iPhone; CPU iPhone OS 7_1_2 like Mac OS X) '+
+          'AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D257 Safari/9537.53')).toBe(true);
       });
 
     });

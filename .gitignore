@@ -22,4 +22,8 @@ pubspec.lock
 # Don't check in secret files
 *secret.js
 
+# Don't check in downloaded jar files or log files
+*.jar
+*.log
+
 /docs/bower_components/

@@ -111,8 +111,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return normalizedEvents;
   }
 
-  supports(capabilities:StringMap):boolean {
-    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
+  supports(userAgent:string):boolean {
+    return isPresent(RegExpWrapper.firstMatch(_USER_AGENT_REGEX, userAgent));
   }
 }
 
@@ -141,6 +141,8 @@ function normalizeEvent(chromeEvent, data) {
   });
   return result;
 }
+
+var _USER_AGENT_REGEX = RegExpWrapper.create('\\bChrome\\b');
 
 var _BINDINGS = [
   bind(ChromeDriverExtension).toFactory(
