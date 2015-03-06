@@ -519,6 +519,20 @@ export function main() {
 
           expect(called).toEqual(1);
         });
+
+        it('should bind to directive events', () => {
+          var pv = new ProtoView(el('<div class="ng-binding"></div>'),
+            new DynamicProtoChangeDetector(null), null);
+          pv.bindElement(new ProtoElementInjector(null, 0, [SomeDirectiveWithEventHandler]));
+          pv.bindEvent('click', parser.parseAction('onEvent($event)', null), 0);
+          view = createView(pv, new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()));
+
+          var directive = view.elementInjectors[0].get(SomeDirectiveWithEventHandler);
+          expect(directive.event).toEqual(null);
+
+          dispatchClick(view.nodes[0]);
+          expect(directive.event).toBe(dispatchedEvent);
+        });
       });
 
       describe('react to record changes', () => {
@@ -690,7 +704,6 @@ class SomeViewport {
   }
 }
 
-
 class AnotherDirective {
   prop:string;
   constructor() {
@@ -708,6 +721,17 @@ class EventEmitterDirective {
   }
 }
 
+class SomeDirectiveWithEventHandler {
+  event;
+
+  constructor() {
+    this.event = null;
+  }
+
+  onEvent(event) {
+    this.event = event;
+  }
+}
 
 class MyEvaluationContext {
   foo:string;

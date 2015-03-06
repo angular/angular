@@ -1,6 +1,6 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Promise} from 'angular2/src/facade/async';
-import {ListWrapper, MapWrapper, StringMapWrapper, List} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
   from 'angular2/change_detection';
 
@@ -326,8 +326,8 @@ export class ProtoView {
     }
 
     var elementsWithBindings = ListWrapper.createFixedSize(elementsWithBindingsDynamic.length);
-    for (var i = 0; i < elementsWithBindingsDynamic.length; ++i) {
-      elementsWithBindings[i] = elementsWithBindingsDynamic[i];
+    for (var binderIdx = 0; binderIdx < elementsWithBindingsDynamic.length; ++binderIdx) {
+      elementsWithBindings[binderIdx] = elementsWithBindingsDynamic[binderIdx];
     }
 
     var viewNodes;
@@ -353,13 +353,13 @@ export class ProtoView {
     var viewContainers = [];
     var componentChildViews = [];
 
-    for (var i = 0; i < binders.length; i++) {
-      var binder = binders[i];
+    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
+      var binder = binders[binderIdx];
       var element;
-      if (i === 0 && this.rootBindingOffset === 1) {
+      if (binderIdx === 0 && this.rootBindingOffset === 1) {
         element = rootElementClone;
       } else {
-        element = elementsWithBindings[i - this.rootBindingOffset];
+        element = elementsWithBindings[binderIdx - this.rootBindingOffset];
       }
       var elementInjector = null;
 
@@ -376,7 +376,7 @@ export class ProtoView {
           ListWrapper.push(rootElementInjectors, elementInjector);
         }
       }
-      elementInjectors[i] = elementInjector;
+      elementInjectors[binderIdx] = elementInjector;
 
       if (binder.hasElementPropertyBindings) {
         ListWrapper.push(elementsWithPropertyBindings, element);
@@ -421,15 +421,15 @@ export class ProtoView {
 
       // preBuiltObjects
       if (isPresent(elementInjector)) {
-        preBuiltObjects[i] = new PreBuiltObjects(view, new NgElement(element), viewContainer,
+        preBuiltObjects[binderIdx] = new PreBuiltObjects(view, new NgElement(element), viewContainer,
           lightDom, bindingPropagationConfig);
       }
 
       // events
       if (isPresent(binder.events)) {
-        MapWrapper.forEach(binder.events, (expr, eventName) => {
+        StringMapWrapper.forEach(binder.events, (eventMap, eventName) => {
           if (isBlank(elementInjector) || !elementInjector.hasEventEmitter(eventName)) {
-            var handler = ProtoView.buildInnerCallback(expr, view);
+            var handler = ProtoView.buildEventCallback(eventMap, view, binderIdx);
             eventManager.addEventListener(element, eventName, handler);
           }
         });
@@ -446,17 +446,39 @@ export class ProtoView {
     this._viewPool.push(view);
   }
 
-  static buildInnerCallback(expr:AST, view:View) {
+  /**
+   * Create an event callback invoked in the context of the enclosing View
+   *
+   * @param {AST} expr
+   * @param {View} view
+   * @returns {Function}
+   */
+
+  /**
+   * Creates the event callback.
+   *
+   * @param {Map} eventMap Map directiveIndexes to expressions
+   * @param {View} view
+   * @param {int} injectorIdx
+   * @returns {Function}
+   */
+  static buildEventCallback(eventMap: Map, view:View, injectorIdx: int) {
     var locals = MapWrapper.create();
     return (event) => {
-      // Most of the time the event will be fired only when the view is
-      // in the live document.  However, in a rare circumstance the
-      // view might get dehydrated, in between the event queuing up and
-      // firing.
+      // Most of the time the event will be fired only when the view is in the live document.
+      // However, in a rare circumstance the view might get dehydrated, in between the event
+      // queuing up and firing.
       if (view.hydrated()) {
         MapWrapper.set(locals, '$event', event);
-        var context = new ContextWithVariableBindings(view.context, locals);
-        expr.eval(context);
+        MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
+          var context;
+          if (directiveIndex === -1) {
+            context = view.context;
+          } else {
+            context = view.elementInjectors[injectorIdx].getDirectiveAtIndex(directiveIndex);
+          }
+          expr.eval(new ContextWithVariableBindings(context, locals));
+        });
       }
     }
   }
@@ -505,14 +527,31 @@ export class ProtoView {
   }
 
   /**
-   * Adds an event binding for the last created ElementBinder via bindElement
+   * Adds an event binding for the last created ElementBinder via bindElement.
+   *
+   * If the directive index is a positive integer, the event is evaluated in the context of
+   * the given directive.
+   *
+   * If the directive index is -1, the event is evaluated in the context of the enclosing view.
+   *
+   * @param {string} eventName
+   * @param {AST} expression
+   * @param {int} directiveIndex The directive index in the binder or -1 when the event is not bound
+   *                             to a directive
    */
-  bindEvent(eventName:string, expression:AST) {
-    var elBinder = this.elementBinders[this.elementBinders.length-1];
-    if (isBlank(elBinder.events)) {
-      elBinder.events = MapWrapper.create();
+  bindEvent(eventName:string, expression:AST, directiveIndex: int = -1) {
+    var elBinder = this.elementBinders[this.elementBinders.length - 1];
+    var events = elBinder.events;
+    if (isBlank(events)) {
+      events = StringMapWrapper.create();
+      elBinder.events = events;
     }
-    MapWrapper.set(elBinder.events, eventName, expression);
+    var event = StringMapWrapper.get(events, eventName);
+    if (isBlank(event)) {
+      event = MapWrapper.create();
+      StringMapWrapper.set(events, eventName, event);
+    }
+    MapWrapper.set(event, directiveIndex, expression);
   }
 
   /**

@@ -1,6 +1,6 @@
 import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
@@ -17,6 +17,8 @@ var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 var MAX_DEPTH = Math.pow(2, 30) - 1;
 
 var _undefined = new Object();
+
+var _noop = function(_) {};
 
 var _staticKeys;
 
@@ -270,9 +272,9 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, eventCallbacks,
-    reflector: Reflector):ElementInjector {
-    return new ElementInjector(this, parent, host, eventCallbacks, reflector);
+  instantiate(parent:ElementInjector, host:ElementInjector, events,
+     reflector: Reflector):ElementInjector {
+    return new ElementInjector(this, parent, host, events, reflector);
   }
 
   directParent(): ProtoElementInjector {
@@ -325,11 +327,11 @@ export class ElementInjector extends TreeNode {
   _obj9:any;
   _preBuiltObjects;
   _constructionCounter;
-  _eventCallbacks;
+  _events:StringMap;
   _refelector: Reflector;
 
   constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector,
-    eventCallbacks: Map, reflector: Reflector) {
+    events: StringMap, reflector: Reflector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -348,7 +350,7 @@ export class ElementInjector extends TreeNode {
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
-    this._eventCallbacks = eventCallbacks;
+    this._events = events;
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -513,13 +515,13 @@ export class ElementInjector extends TreeNode {
 
   _buildEventEmitter(dep) {
     var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    if (isPresent(this._eventCallbacks)) {
-      var callback = MapWrapper.get(this._eventCallbacks, dep.eventEmitterName);
-      if (isPresent(callback)) {
-        return ProtoView.buildInnerCallback(callback, view);
+    if (isPresent(this._events)) {
+      var eventMap = StringMapWrapper.get(this._events, dep.eventEmitterName);
+      if (isPresent(eventMap)) {
+        return ProtoView.buildEventCallback(eventMap, view, this._proto.index);
       }
     }
-    return (_) => {};
+    return _noop;
   }
 
   _buildPropSetter(dep) {

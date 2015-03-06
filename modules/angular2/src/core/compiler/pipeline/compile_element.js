@@ -183,7 +183,7 @@ function getElementDescription(domElement):string {
 
   buf.add("<");
   buf.add(DOM.tagName(domElement).toLowerCase());
-  
+
   // show id and class first to ease element identification
   addDescriptionAttribute(buf, "id", MapWrapper.get(atts, "id"));
   addDescriptionAttribute(buf, "class", MapWrapper.get(atts, "class"));

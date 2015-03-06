@@ -152,7 +152,9 @@ export class ElementBinderBuilder extends CompileStep {
       if (isPresent(current.eventBindings)) {
         this._bindEvents(protoView, current);
       }
-      this._bindDirectiveProperties(current.getAllDirectives(), current);
+      var directives = current.getAllDirectives();
+      this._bindDirectiveProperties(directives, current);
+      this._bindDirectiveEvents(directives, current);
     } else if (isPresent(parent)) {
       elementBinder = parent.inheritedElementBinder;
     }
@@ -197,6 +199,19 @@ export class ElementBinderBuilder extends CompileStep {
     MapWrapper.forEach(compileElement.eventBindings, (expression, eventName) => {
       protoView.bindEvent(eventName,  expression);
     });
+  }
+
+  _bindDirectiveEvents(directives: List<DirectiveMetadata>, compileElement: CompileElement) {
+    for (var directiveIndex = 0; directiveIndex < directives.length; directiveIndex++) {
+      var directive = directives[directiveIndex];
+      var annotation = directive.annotation;
+      if (isBlank(annotation.events)) continue;
+      var protoView = compileElement.inheritedProtoView;
+      StringMapWrapper.forEach(annotation.events, (action, eventName) => {
+        var expression = this._parser.parseAction(action, compileElement.elementDescription);
+        protoView.bindEvent(eventName, expression, directiveIndex);
+      });
+    }
   }
 
   _bindDirectiveProperties(directives: List<DirectiveMetadata>,

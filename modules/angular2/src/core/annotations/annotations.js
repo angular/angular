@@ -8,16 +8,19 @@ export class Directive {
   lightDomServices:any; //List;
   implementsTypes:any; //List;
   lifecycle:any; //List
+  events:any; //List
   @CONST()
   constructor({
       selector,
       bind,
+      events,
       lightDomServices,
       implementsTypes,
       lifecycle
     }:{
       selector:string,
       bind:any,
+      events: any,
       lightDomServices:List,
       implementsTypes:List,
       lifecycle:List
@@ -27,6 +30,7 @@ export class Directive {
     this.lightDomServices = lightDomServices;
     this.implementsTypes = implementsTypes;
     this.bind = bind;
+    this.events = events;
     this.lifecycle = lifecycle;
   }
 
@@ -37,15 +41,14 @@ export class Directive {
 
 export class Component extends Directive {
   //TODO: vsavkin: uncomment it once the issue with defining fields in a sublass works
-  lightDomServices:any; //List;
   shadowDomServices:any; //List;
   componentServices:any; //List;
-  lifecycle:any; //List
 
 @CONST()
   constructor({
     selector,
     bind,
+    events,
     lightDomServices,
     shadowDomServices,
     componentServices,
@@ -54,6 +57,7 @@ export class Component extends Directive {
     }:{
       selector:String,
       bind:Object,
+      events:Object,
       lightDomServices:List,
       shadowDomServices:List,
       componentServices:List,
@@ -64,15 +68,14 @@ export class Component extends Directive {
     super({
       selector: selector,
       bind: bind,
+      events: events,
       lightDomServices: lightDomServices,
       implementsTypes: implementsTypes,
       lifecycle: lifecycle
     });
 
-    this.lightDomServices = lightDomServices;
     this.shadowDomServices = shadowDomServices;
     this.componentServices = componentServices;
-    this.lifecycle = lifecycle;
   }
 }
 
@@ -82,6 +85,7 @@ export class Decorator extends Directive {
   constructor({
       selector,
       bind,
+      events,
       lightDomServices,
       implementsTypes,
       lifecycle,
@@ -89,6 +93,7 @@ export class Decorator extends Directive {
     }:{
       selector:string,
       bind:any,
+      events:any,
       lightDomServices:List,
       implementsTypes:List,
       lifecycle:List,
@@ -99,6 +104,7 @@ export class Decorator extends Directive {
     super({
         selector: selector,
         bind: bind,
+        events: events,
         lightDomServices: lightDomServices,
         implementsTypes: implementsTypes,
         lifecycle: lifecycle
@@ -111,6 +117,7 @@ export class Viewport extends Directive {
   constructor({
       selector,
       bind,
+      events,
       lightDomServices,
       implementsTypes,
       lifecycle
@@ -125,6 +132,7 @@ export class Viewport extends Directive {
     super({
         selector: selector,
         bind: bind,
+        events: events,
         lightDomServices: lightDomServices,
         implementsTypes: implementsTypes,
         lifecycle: lifecycle

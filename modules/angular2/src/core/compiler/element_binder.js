@@ -1,6 +1,6 @@
 import {ProtoElementInjector} from './element_injector';
 import {DirectiveMetadata} from './directive_metadata';
-import {List, Map} from 'angular2/src/facade/collection';
+import {List, StringMap} from 'angular2/src/facade/collection';
 import {ProtoView} from './view';
 
 export class ElementBinder {
@@ -10,7 +10,7 @@ export class ElementBinder {
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
   nestedProtoView: ProtoView;
-  events:Map;
+  events:StringMap;
   constructor(
     protoElementInjector: ProtoElementInjector, componentDirective:DirectiveMetadata,
     viewportDirective:DirectiveMetadata) {

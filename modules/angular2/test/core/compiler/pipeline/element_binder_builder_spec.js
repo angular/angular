@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, Map, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {ElementBinderBuilder} from 'angular2/src/core/compiler/pipeline/element_binder_builder';
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
@@ -137,7 +137,6 @@ export function main() {
 
       expect(pv.elementBinders[1].protoElementInjector).toBeNull();
     });
-
 
     it('should store the component directive', () => {
       var directives = [SomeComponentDirective];
@@ -379,8 +378,28 @@ export function main() {
       var results = pipeline.process(el('<div viewroot event-binding></div>'));
       var pv = results[0].inheritedProtoView;
 
-      var ast = MapWrapper.get(pv.elementBinders[0].events, 'event1');
+      var eventMap = StringMapWrapper.get(pv.elementBinders[0].events, 'event1');
+      var ast = MapWrapper.get(eventMap, -1);
       expect(ast.eval(null)).toBe(2);
+    });
+
+    it('should bind directive events', () => {
+      var directives = [SomeDecoratorWithEvent];
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
+      var pipeline = createPipeline({
+        directives: directives,
+        protoElementInjector: protoElementInjector
+      });
+      var results = pipeline.process(el('<div viewroot directives></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      var directiveEvents = pv.elementBinders[0].events;
+      var eventMap = StringMapWrapper.get(directiveEvents, 'event');
+      // Get the cb AST for the directive at index 0 (SomeDecoratorWithEvent)
+      var ast = MapWrapper.get(eventMap, 0);
+
+      var context = new SomeDecoratorWithEvent();
+      expect(ast.eval(context)).toEqual('onEvent() callback');
     });
 
     it('should bind directive properties', () => {
@@ -513,6 +532,21 @@ class SomeDecoratorDirectiveWithBinding {
   constructor() {
     this.decorProp = null;
     this.decorProp2 = null;
+  }
+}
+
+@Decorator({
+  events: {'event': 'onEvent($event)'}
+})
+class SomeDecoratorWithEvent {
+  // Added here so that we don't have to wrap the content in a ContextWithVariableBindings
+  $event: string;
+
+  constructor() {
+    this.$event = 'onEvent'
+  }
+  onEvent(event) {
+    return `${event}() callback`;
   }
 }
 

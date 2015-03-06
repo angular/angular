@@ -19,9 +19,14 @@ import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
+
+import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
+import {EventEmitter} from 'angular2/src/core/annotations/di';
 
 import {If} from 'angular2/src/directives/if';
 
@@ -57,7 +62,11 @@ export function main() {
       var view, ctx, cd;
       function createView(pv) {
         ctx = new MyComp();
-        view = pv.instantiate(null, null, reflector);
+        view = pv.instantiate(
+          null,
+          new EventManager([new DomEventsPlugin()], new FakeVmTurnZone()),
+          reflector
+        );
         view.hydrate(new Injector([]), null, ctx);
         cd = view.changeDetector;
       }
@@ -435,6 +444,32 @@ export function main() {
           done();
         })
       });
+
+      it('should support events', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<div emitter listener></div>',
+          directives: [DecoratorEmitingEvent, DecoratorListeningEvent]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          var injector = view.elementInjectors[0];
+
+          var emitter = injector.get(DecoratorEmitingEvent);
+          var listener = injector.get(DecoratorListeningEvent);
+
+          expect(emitter.msg).toEqual('');
+          expect(listener.msg).toEqual('');
+
+          emitter.fireEvent('fired !');
+          expect(emitter.msg).toEqual('fired !');
+          expect(listener.msg).toEqual('fired !');
+
+          done();
+        });
+      });
+
     });
 
     if (assertionsEnabled()) {
@@ -651,3 +686,56 @@ class DoublePipeFactory {
     return new DoublePipe();
   }
 }
+
+@Decorator({
+  selector: '[emitter]',
+  events: {'event': 'onEvent($event)'}
+})
+class DecoratorEmitingEvent {
+  msg: string;
+  emitter;
+
+  constructor(@EventEmitter('event') emitter:Function) {
+    this.msg = '';
+    this.emitter = emitter;
+  }
+
+  fireEvent(msg: string) {
+    this.emitter(msg);
+  }
+
+  onEvent(msg: string) {
+    this.msg = msg;
+  }
+}
+
+@Decorator({
+  selector: '[listener]',
+  events: {'event': 'onEvent($event)'}
+})
+class DecoratorListeningEvent {
+  msg: string;
+
+  constructor() {
+    this.msg = '';
+  }
+
+  onEvent(msg: string) {
+    this.msg = msg;
+  }
+}
+
+class FakeVmTurnZone extends VmTurnZone {
+  constructor() {
+    super({enableLongStackTrace: false});
+  }
+
+  run(fn) {
+    fn();
+  }
+
+  runOutsideAngular(fn) {
+    fn();
+  }
+}
+
