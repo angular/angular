@@ -40,6 +40,7 @@
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.10",
     "event-stream": "^3.1.5",
+    "fs-extra": "^0.16.4",
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-changed": "^1.0.0",

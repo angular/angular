@@ -1,5 +1,6 @@
 // load traceur runtime as our tests are written in es6
 require('traceur/bin/traceur-runtime.js');
+var fs = require('fs-extra');
 
 var argv = require('yargs')
     .usage('Angular e2e/perf test options.')
@@ -208,13 +209,21 @@ exports.createBenchpressRunner = function(options) {
   if (process.env.GIT_SHA) {
     runId = process.env.GIT_SHA + ' ' + runId;
   }
+  var resultsFolder = './dist/benchmark_results';
+  fs.ensureDirSync(resultsFolder);
   var bindings = [
     benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
       'lang': options.lang,
       'runId': runId
-    })
+    }),
+    benchpress.MultiReporter.createBindings([
+      benchpress.ConsoleReporter,
+      benchpress.JsonFileReporter
+    ]),
+    benchpress.JsonFileReporter.BINDINGS,
+    benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
   if (argv['benchmark']) {
     bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));

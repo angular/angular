@@ -7,6 +7,7 @@ export { WebDriverAdapter } from './src/web_driver_adapter';
 export { SizeValidator } from './src/validator/size_validator';
 export { RegressionSlopeValidator } from './src/validator/regression_slope_validator';
 export { ConsoleReporter } from './src/reporter/console_reporter';
+export { JsonFileReporter } from './src/reporter/json_file_reporter';
 export { SampleDescription } from './src/sample_description';
 export { PerflogMetric } from './src/metric/perflog_metric';
 export { ChromeDriverExtension } from './src/webdriver/chrome_driver_extension';

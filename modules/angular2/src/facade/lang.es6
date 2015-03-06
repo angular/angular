@@ -275,7 +275,13 @@ export class DateWrapper {
   static fromMillis(ms) {
     return new Date(ms);
   }
+  static toMillis(date:Date) {
+    return date.getTime();
+  }
   static now() {
     return new Date();
+  }
+  static toJson(date) {
+    return date.toJSON();
   }
 }

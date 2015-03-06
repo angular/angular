@@ -210,7 +210,13 @@ class DateWrapper {
   static DateTime fromMillis(int ms) {
     return new DateTime.fromMillisecondsSinceEpoch(ms);
   }
+  static int toMillis(DateTime date) {
+    return date.millisecondsSinceEpoch;
+  }
   static DateTime now() {
     return new DateTime.now();
+  }
+  static toJson(DateTime date) {
+    return date.toUtc().toIso8601String();
   }
 }
