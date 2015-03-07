@@ -7,7 +7,9 @@ SCRIPT_DIR=$(dirname $0)
 cd $SCRIPT_DIR/../..
 
 IOS_SERVER_BINARY="ios-server-standalone-0.6.6-SNAPSHOT.jar"
-HOSTNAME=$(hostname)
+# This is fixed as Jenkins is running on the host
+# that also hosts the wifi
+HOSTNAME="192.168.2.1"
 PROTRACTOR="./node_modules/.bin/protractor"
 # TODO(tbosch): only running a smoke test on iOS as our transpiled sources don't run in Safari yet.
 IOS_ARGS="--seleniumAddress=http://localhost:5555/wd/hub --hostname=$HOSTNAME \
@@ -51,7 +53,7 @@ if [[ $IOS_BROWSER ]]; then
 fi
 
 # wait for server to come up!
-sleep 10
+sleep 20
 
 if [[ $IOS_BROWSER ]]; then
   echo Running ios tests
