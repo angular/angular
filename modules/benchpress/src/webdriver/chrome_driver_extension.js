@@ -4,7 +4,7 @@ import {
   Json, isPresent, isBlank, RegExpWrapper, StringWrapper, BaseException, NumberWrapper
 } from 'angular2/src/facade/lang';
 
-import { WebDriverExtension } from '../web_driver_extension';
+import { WebDriverExtension, PerfLogFeatures } from '../web_driver_extension';
 import { WebDriverAdapter } from '../web_driver_adapter';
 import { Promise } from 'angular2/src/facade/async';
 
@@ -109,6 +109,13 @@ export class ChromeDriverExtension extends WebDriverExtension {
       }
     });
     return normalizedEvents;
+  }
+
+  perfLogFeatures():PerfLogFeatures {
+    return new PerfLogFeatures({
+      render: true,
+      gc: true
+    });
   }
 
   supports(capabilities:StringMap):boolean {

@@ -65,5 +65,5 @@ var _BINDINGS = [
     [_SAMPLE_SIZE, _METRIC]
   ),
   bind(_SAMPLE_SIZE).toValue(10),
-  bind(_METRIC).toValue('script')
+  bind(_METRIC).toValue('scriptTime')
 ];

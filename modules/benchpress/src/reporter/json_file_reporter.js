@@ -7,16 +7,12 @@ import { bind, OpaqueToken } from 'angular2/di';
 import { Reporter } from '../reporter';
 import { SampleDescription } from '../sample_description';
 import { MeasureValues } from '../measure_values';
+import { Options } from '../common_options';
 
 /**
  * A reporter that writes results into a json file.
- * TODO(tbosch): right now we bind the `writeFile` method
- * in benchpres/benchpress.es6. This does not work for Dart,
- * find another way...
  */
 export class JsonFileReporter extends Reporter {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get WRITE_FILE() { return _WRITE_FILE; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get PATH() { return _PATH; }
   static get BINDINGS() { return _BINDINGS; }
@@ -24,12 +20,14 @@ export class JsonFileReporter extends Reporter {
   _writeFile:Function;
   _path:string;
   _description:SampleDescription;
+  _now:Function;
 
-  constructor(sampleDescription, path, writeFile) {
+  constructor(sampleDescription, path, writeFile, now) {
     super();
     this._description = sampleDescription;
     this._path = path;
     this._writeFile = writeFile;
+    this._now = now;
   }
 
   reportMeasureValues(measureValues:MeasureValues):Promise {
@@ -42,17 +40,16 @@ export class JsonFileReporter extends Reporter {
       'completeSample': completeSample,
       'validSample': validSample
     });
-    var filePath = `${this._path}/${this._description.id}_${DateWrapper.toMillis(DateWrapper.now())}.json`;
+    var filePath = `${this._path}/${this._description.id}_${DateWrapper.toMillis(this._now())}.json`;
     return this._writeFile(filePath, content);
   }
 }
 
-var _WRITE_FILE = new OpaqueToken('JsonFileReporter.writeFile');
 var _PATH = new OpaqueToken('JsonFileReporter.path');
 var _BINDINGS = [
   bind(JsonFileReporter).toFactory(
-    (sampleDescription, path, writeFile) => new JsonFileReporter(sampleDescription, path, writeFile),
-    [SampleDescription, _PATH, _WRITE_FILE]
+    (sampleDescription, path, writeFile, now) => new JsonFileReporter(sampleDescription, path, writeFile, now),
+    [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]
   ),
   bind(_PATH).toValue('.')
 ];

@@ -41,12 +41,9 @@ export function main() {
       return extension;
     }
 
-    it('should force gc via window.gc()', inject([AsyncTestCompleter], (async) => {
-      createExtension().gc().then( (_) => {
-        expect(log).toEqual([['executeScript', 'window.gc()']]);
-        async.done();
-      });
-    }));
+    it('should throw on forcing gc', () => {
+      expect( () => createExtension().gc() ).toThrowError('Force GC is not supported on iOS');
+    });
 
     it('should mark the timeline via console.time()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeBegin('someName').then( (_) => {
@@ -119,18 +116,6 @@ export function main() {
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.markEnd('someName', 12)
-          ]);
-          async.done();
-        });
-      }));
-
-      it('should report gc', inject([AsyncTestCompleter], (async) => {
-        createExtension([
-          gcRecord(1, 3, 21)
-        ]).readPerfLog().then( (events) => {
-          expect(events).toEqual([
-            normEvents.start('gc', 1, {'usedHeapSize': 0}),
-            normEvents.end('gc', 3, {'usedHeapSize': -21}),
           ]);
           async.done();
         });
@@ -220,17 +205,6 @@ function internalScriptRecord(startTime, endTime) {
     'endTime': endTime,
     'data': {
       'scriptName': 'InjectedScript'
-    }
-  };
-}
-
-function gcRecord(startTime, endTime, gcAmount) {
-  return {
-    'type': 'GCEvent',
-    'startTime': startTime,
-    'endTime': endTime,
-    'data': {
-      'usedHeapSizeDelta': gcAmount
     }
   };
 }

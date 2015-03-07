@@ -2,7 +2,7 @@ import { StringMapWrapper, ListWrapper, StringMap } from 'angular2/src/facade/co
 import { bind, OpaqueToken } from 'angular2/di';
 import { Validator } from './validator';
 import { Metric } from './metric';
-import { Options } from './sample_options';
+import { Options } from './common_options';
 
 /**
  * SampleDescription merges all available descriptions about a sample
@@ -47,7 +47,5 @@ var _BINDINGS = [
       Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT,
       Validator, Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
     ]
-  ),
-  bind(Options.DEFAULT_DESCRIPTION).toValue({}),
-  bind(Options.SAMPLE_DESCRIPTION).toValue({})
+  )
 ];

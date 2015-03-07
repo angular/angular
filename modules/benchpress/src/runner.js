@@ -18,7 +18,7 @@ import { SampleDescription } from './sample_description';
 import { WebDriverAdapter } from './web_driver_adapter';
 import { Reporter } from './reporter';
 import { Metric } from './metric';
-import { Options } from './sample_options';
+import { Options } from './common_options';
 
 /**
  * The Runner is the main entry point for executing a sample run.
@@ -56,6 +56,7 @@ export class Runner {
 }
 
 var _DEFAULT_BINDINGS = [
+  Options.DEFAULT_BINDINGS,
   Sampler.BINDINGS,
   ConsoleReporter.BINDINGS,
   RegressionSlopeValidator.BINDINGS,

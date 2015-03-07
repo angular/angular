@@ -17,7 +17,8 @@ import { PromiseWrapper } from 'angular2/src/facade/async';
 import {
   bind, Injector,
   SampleDescription,
-  MeasureValues
+  MeasureValues,
+  Options
 } from 'benchpress/common';
 
 
@@ -32,7 +33,8 @@ export function main() {
         JsonFileReporter.BINDINGS,
         bind(SampleDescription).toValue(new SampleDescription(sampleId, descriptions, metrics)),
         bind(JsonFileReporter.PATH).toValue(path),
-        bind(JsonFileReporter.WRITE_FILE).toValue((filename, content) => {
+        bind(Options.NOW).toValue( () => DateWrapper.fromMillis(1234) ),
+        bind(Options.WRITE_FILE).toValue((filename, content) => {
           loggedFile = {
             'filename': filename,
             'content': content
