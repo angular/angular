@@ -15,4 +15,4 @@ This package contains different sources for different users:
 As a convenience, we provide you with `/es6/{dev|prod}/es5build.js`, a script to transpile the es6 sources into es5
 using [Google Traceur](https://github.com/google/traceur-compiler/).
 
-License: Apache MIT 2.0
+License: Apache 2.0

@@ -557,6 +557,13 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {
   dest: 'dist/dart'
 }));
 
+gulp.task('test.server.js', function () {
+  return gulp.src('dist/js/cjs/**/test/**/*.server.spec.js')
+        .pipe(jasmine({
+          includeStackTrace: true
+        }))
+});
+
 // -----------------
 // test builders
 gulp.task('test.transpiler.unittest', function (done) {
