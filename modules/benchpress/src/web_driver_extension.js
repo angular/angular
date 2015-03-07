@@ -1,10 +1,10 @@
 import { bind, Injector, OpaqueToken } from 'angular2/di';
 
-import { BaseException, ABSTRACT, isBlank } from 'angular2/src/facade/lang';
+import { BaseException, ABSTRACT, isBlank, isPresent } from 'angular2/src/facade/lang';
 import { Promise, PromiseWrapper } from 'angular2/src/facade/async';
 import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 
-import { Options } from './sample_options';
+import { Options } from './common_options';
 
 /**
  * A WebDriverExtension implements extended commands of the webdriver protocol
@@ -64,8 +64,22 @@ export class WebDriverExtension {
     throw new BaseException('NYI');
   }
 
+  perfLogFeatures():PerfLogFeatures {
+    throw new BaseException('NYI');
+  }
+
   supports(capabilities:StringMap):boolean {
     return true;
+  }
+}
+
+export class PerfLogFeatures {
+  render:boolean;
+  gc:boolean;
+
+  constructor({render, gc} = {}) {
+    this.render = isPresent(render) && render;
+    this.gc = isPresent(gc) && gc;
   }
 }
 

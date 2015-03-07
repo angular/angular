@@ -1,10 +1,10 @@
 import { bind } from 'angular2/di';
 import { ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import {
-  Json, isPresent, isBlank, RegExpWrapper, StringWrapper
+  Json, isPresent, isBlank, RegExpWrapper, StringWrapper, BaseException
 } from 'angular2/src/facade/lang';
 
-import { WebDriverExtension } from '../web_driver_extension';
+import { WebDriverExtension, PerfLogFeatures } from '../web_driver_extension';
 import { WebDriverAdapter } from '../web_driver_adapter';
 import { Promise } from 'angular2/src/facade/async';
 
@@ -21,7 +21,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   gc() {
-    return this._driver.executeScript('window.gc()');
+    throw new BaseException('Force GC is not supported on iOS');
   }
 
   timeBegin(name:string):Promise {
@@ -81,14 +81,8 @@ export class IOsDriverExtension extends WebDriverExtension {
         StringWrapper.equals(type, 'CompositeLayers')) {
         ListWrapper.push(events, createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
-      } else if (StringWrapper.equals(type, 'GCEvent')) {
-        ListWrapper.push(events, createStartEvent('gc', startTime, {
-          'usedHeapSize': 0
-        }));
-        endEvent = createEndEvent('gc', endTime, {
-          'usedHeapSize': -data['usedHeapSizeDelta']
-        });
       }
+      // Note: ios used to support GCEvent up until iOS 6 :-(
       if (isPresent(record['children'])) {
         this._convertPerfRecordsToEvents(record['children'], events);
       }
@@ -97,6 +91,12 @@ export class IOsDriverExtension extends WebDriverExtension {
       }
     });
     return events;
+  }
+
+  perfLogFeatures():PerfLogFeatures {
+    return new PerfLogFeatures({
+      render: true
+    });
   }
 
   supports(capabilities:StringMap):boolean {

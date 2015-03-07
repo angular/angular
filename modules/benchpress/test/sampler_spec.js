@@ -50,15 +50,17 @@ export function main() {
       if (isBlank(driverExtension)) {
         driverExtension = new MockDriverExtension([]);
       }
-      var bindings = ListWrapper.concat(Sampler.BINDINGS, [
+      var bindings = [
+        Options.DEFAULT_BINDINGS,
+        Sampler.BINDINGS,
         bind(Metric).toValue(metric),
         bind(Reporter).toValue(reporter),
         bind(WebDriverAdapter).toValue(driver),
         bind(WebDriverExtension).toValue(driverExtension),
         bind(Options.EXECUTE).toValue(execute),
         bind(Validator).toValue(validator),
-        bind(Sampler.TIME).toValue( () => DateWrapper.fromMillis(time++) )
-      ]);
+        bind(Options.NOW).toValue( () => DateWrapper.fromMillis(time++) )
+      ];
       if (isPresent(prepare)) {
         ListWrapper.push(bindings, bind(Options.PREPARE).toValue(prepare));
       }
