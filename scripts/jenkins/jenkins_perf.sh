@@ -13,6 +13,10 @@ export PERF_BROWSERS=SafariIos
 export CLOUD_SECRET_PATH="/Users/Shared/jenkins/keys/perf-cloud-secret"
 export GIT_SHA=$(git rev-parse HEAD)
 
+# This is fixed as Jenkins is running on the host
+# that also hosts the wifi
+export CIHOSTADDRESS=192.168.2.1
+
 nvm use 0.10
 
 # TODO ./scripts/ci/init_android.sh
