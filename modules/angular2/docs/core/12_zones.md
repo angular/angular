@@ -1,8 +1,8 @@
 # Zones
 
 A Zone is an execution context that persists across async tasks. You can think of it as thread-local storage for
-JavaScript. Zones are used to intercept all async operation callbacks in the browser. By intercepting  async
-callbacks angular can automatically execute the change detection at the end of the VM turn to update the application
+JavaScript. Zones are used to intercept all async operation callbacks in the browser. By intercepting async
+callbacks Angular can automatically execute the change detection at the end of the VM turn to update the application
 UI bindings. Zones means that in Angular v2 you don't have to remember to call `rootScope.$apply()` in your async call.
 
 ## Execution Context
@@ -55,8 +55,8 @@ execution which was registered in the `run` block.
 
 ## Putting it all together in Angular
 
-In Angular2 it is not necessary to notify Angular of changes manually after async callback, because angular relevant
-async callbacks are intercepted. The question is how do we know which callbacks are angular relevant?
+In Angular2 it is not necessary to notify Angular of changes manually after async callback, because a relevant
+async callbacks are intercepted. The question is how do we know which callbacks are Angular relevant?
 
 ```
 /// Some other code running on page can do async operation
@@ -97,9 +97,9 @@ Mouse clicked.
 ANGULAR AUTO-DIGEST!
 ```
 
-Notice how the place where the listener was register will effect weather or not angular will be notified of the
+Notice how the place where the listener was registered will effect whether or not Angular will be notified of the
 async call and cause a change detection to run to update the UI.
 
 Being able to globally intercept the async operation is important to have a seamless integration with all existing
-libraries. But it is equally important to be able to differentiate between Angular and none Angular code running
+libraries. But it is equally important to be able to differentiate between Angular and non-Angular code running
 on the same page concurrently.
