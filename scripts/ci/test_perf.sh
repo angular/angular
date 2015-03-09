@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 echo =============================================================================
 # go to project dir
@@ -29,7 +29,6 @@ function killServer () {
   if [[ $serverPid ]]; then
     kill $serverPid
   fi
-  kill $serverPid
   if [[ $iosServerPid ]]; then
     kill $iosServerPid
   fi
@@ -50,7 +49,7 @@ if [[ $IOS_BROWSER ]]; then
 fi
 
 # wait for server to come up!
-sleep 40
+sleep 120
 
 if [[ $IOS_BROWSER ]]; then
   echo Running ios tests
