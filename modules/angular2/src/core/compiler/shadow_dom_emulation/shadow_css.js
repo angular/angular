@@ -523,28 +523,8 @@ var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
 var _colonHostRe = RegExpWrapper.create(':host', 'im');
 var _colonHostContextRe = RegExpWrapper.create(':host-context', 'im');
 
-function _cssTextToStyle(cssText: string) {
-  return DOM.createStyleElement(cssText);
-}
-
 function _cssToRules(cssText: string) {
-  var style = _cssTextToStyle(cssText);
-  DOM.appendChild(DOM.defaultDoc().head, style);
-  var rules = [];
-  if (isPresent(style.sheet)) {
-    // TODO(sorvell): Firefox throws when accessing the rules of a stylesheet
-    // with an @import
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=625013
-    try {
-      rules = style.sheet.cssRules;
-    } catch(e) {
-      //
-    }
-  } else {
-    // console.warn('sheet not found', style);
-  }
-  DOM.remove(style);
-  return rules;
+  return DOM.cssToRules(cssText);
 }
 
 function _withCssRules(cssText: string, callback: Function) {
