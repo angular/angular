@@ -141,7 +141,7 @@ var config = exports.config = {
 function patchProtractorWait(browser) {
   browser.ignoreSynchronization = true;
   var _get = browser.get;
-  var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 7000 : 3000;
+  var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 10000 : 10000;
   browser.get = function() {
     var result = _get.apply(this, arguments);
     browser.sleep(sleepInterval);
