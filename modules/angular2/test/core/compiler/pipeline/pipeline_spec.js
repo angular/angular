@@ -105,7 +105,7 @@ export function main() {
         var newChild = new CompileElement(el('<div id="3"></div>'));
         var pipeline = new CompilePipeline([
           new MockStep((parent, current, control) => {
-            if (StringWrapper.equals(current.element.id, '1')) {
+            if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
               control.addChild(newChild);
             }
           }),
@@ -144,9 +144,9 @@ export class IgnoreChildrenStep extends CompileStep {
 function logEntry(log, parent, current) {
   var parentId = '';
   if (isPresent(parent)) {
-    parentId = parent.element.getAttribute('id')+'<';
+    parentId = DOM.getAttribute(parent.element, 'id') + '<';
   }
-  ListWrapper.push(log, parentId+current.element.getAttribute('id'));
+  ListWrapper.push(log, parentId + DOM.getAttribute(current.element, 'id'));
 }
 
 function createLoggerStep(log) {
@@ -158,7 +158,7 @@ function createLoggerStep(log) {
 function createWrapperStep(wrapperId, log) {
   var nextElementId = 0;
   return new MockStep((parent, current, control) => {
-    var parentCountStr = current.element.getAttribute(wrapperId);
+    var parentCountStr = DOM.getAttribute(current.element, wrapperId);
     if (isPresent(parentCountStr)) {
       var parentCount = NumberWrapper.parseInt(parentCountStr, 10);
       while (parentCount > 0) {

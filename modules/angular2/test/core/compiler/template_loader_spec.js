@@ -1,4 +1,5 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 
@@ -17,7 +18,7 @@ export function main() {
 
     it('should load inline templates synchronously', () => {
       var template = new Template({inline: 'inline template'});
-      expect(loader.load(template).content).toHaveText('inline template');
+      expect(DOM.content(loader.load(template))).toHaveText('inline template');
     });
 
     it('should load templates through XHR', (done) => {
@@ -25,7 +26,7 @@ export function main() {
       var template = new Template({url: '/foo'});
       loader.setBaseUrl(template, 'base');
       loader.load(template).then((el) => {
-        expect(el.content).toHaveText('xhr template');
+        expect(DOM.content(el)).toHaveText('xhr template');
         done();
       });
       xhr.flush();
@@ -43,7 +44,7 @@ export function main() {
         })
         .then((el) =>{
           expect(el).toBe(firstEl);
-          expect(el.content).toHaveText('xhr template');
+          expect(DOM.content(el)).toHaveText('xhr template');
           done();
         });
       xhr.flush();
