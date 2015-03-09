@@ -4,7 +4,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {View} from './view';
+import * as viewModule from './view';
 
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
@@ -20,8 +20,8 @@ import {CompileElement} from './pipeline/compile_element';
 import {CompileControl} from './pipeline/compile_control';
 
 export class ShadowDomStrategy {
-  attachTemplate(el, view:View) {}
-  constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom { return null; }
+  attachTemplate(el, view:viewModule.View) {}
+  constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom { return null; }
   polyfillDirectives():List<Type> { return []; }
 
   /**
@@ -78,12 +78,12 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     this._styleHost = styleHost;
   }
 
-  attachTemplate(el, view:View){
+  attachTemplate(el, view:viewModule.View){
     DOM.clearNodes(el);
     _moveViewNodesIntoParent(el, view);
   }
 
-  constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom {
+  constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom {
     return new LightDom(lightDomView, shadowDomView, el);
   }
 
@@ -147,7 +147,7 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     this._styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el, view:View){
+  attachTemplate(el, view:viewModule.View){
     _moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
   }
 

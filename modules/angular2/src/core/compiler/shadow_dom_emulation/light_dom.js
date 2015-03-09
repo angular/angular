@@ -2,7 +2,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
-import {View} from '../view';
+import * as viewModule from '../view';
 import {ElementInjector} from '../element_injector';
 import {ViewContainer} from '../view_container';
 import {Content} from './content_tag';
@@ -25,14 +25,14 @@ class _Root {
 // once interfaces are supported
 export class LightDom {
   // The light DOM of the element is enclosed inside the lightDomView
-  lightDomView:View;
+  lightDomView:viewModule.View;
   // The shadow DOM
-  shadowDomView:View;
+  shadowDomView:viewModule.View;
   // The nodes of the light DOM
   nodes:List;
   roots:List<_Root>;
 
-  constructor(lightDomView:View, shadowDomView:View, element) {
+  constructor(lightDomView:viewModule.View, shadowDomView:viewModule.View, element) {
     this.lightDomView = lightDomView;
     this.shadowDomView = shadowDomView;
     this.nodes = DOM.childNodesAsList(element);
@@ -51,7 +51,7 @@ export class LightDom {
   }
 
   // Collects the Content directives from the view and all its child views
-  _collectAllContentTags(view: View, acc:List<Content>):List<Content> {
+  _collectAllContentTags(view: viewModule.View, acc:List<Content>):List<Content> {
     var eis = view.elementInjectors;
     for (var i = 0; i < eis.length; ++i) {
       var ei = eis[i];
