@@ -4,7 +4,7 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
-import {View, ProtoView} from 'angular2/src/core/compiler/view';
+import * as viewModule from 'angular2/src/core/compiler/view';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
@@ -30,7 +30,7 @@ class StaticKeys {
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
-    this.viewId = Key.get(View).id;
+    this.viewId = Key.get(viewModule.View).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.destinationLightDomId = Key.get(DestinationLightDom).id;
@@ -163,7 +163,7 @@ export class DirectiveBinding extends Binding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
-  view:View;
+  view:viewModule.View;
   element:NgElement;
   viewContainer:ViewContainer;
   lightDom:LightDom;
@@ -222,7 +222,7 @@ export class ProtoElementInjector  {
   _keyId9:int;
   parent:ProtoElementInjector;
   index:int;
-  view:View;
+  view:viewModule.View;
   distanceToParent:number;
 
   /** Whether the element is exported as $implicit. */

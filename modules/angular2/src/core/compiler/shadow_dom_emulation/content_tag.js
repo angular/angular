@@ -1,5 +1,5 @@
 import {Decorator} from '../../annotations/annotations';
-import {SourceLightDom, DestinationLightDom, LightDom} from './light_dom';
+import * as ldModule from './light_dom';
 import {Inject} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -68,9 +68,9 @@ class RenderedContent extends ContentStrategy {
  * and thus does not get rendered but only affect the distribution of its parent component.
  */
 class IntermediateContent extends ContentStrategy {
-  destinationLightDom:LightDom;
+  destinationLightDom:ldModule.LightDom;
 
-  constructor(destinationLightDom:LightDom) {
+  constructor(destinationLightDom:ldModule.LightDom) {
     super();
     this.destinationLightDom = destinationLightDom;
     this.nodes = [];
@@ -90,7 +90,7 @@ export class Content {
   select:string;
   _strategy:ContentStrategy;
 
-  constructor(@Inject(DestinationLightDom) destinationLightDom, contentEl:NgElement) {
+  constructor(@Inject(ldModule.DestinationLightDom) destinationLightDom, contentEl:NgElement) {
     this.select = contentEl.getAttribute('select');
     this._strategy = isPresent(destinationLightDom) ?
       new IntermediateContent(destinationLightDom) :
