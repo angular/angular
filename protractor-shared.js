@@ -143,6 +143,7 @@ function patchProtractorWait(browser) {
   var _get = browser.get;
   var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 10000 : 10000;
   browser.get = function() {
+    browser.sleep(4000);
     var result = _get.apply(this, arguments);
     browser.sleep(sleepInterval);
     return result;
