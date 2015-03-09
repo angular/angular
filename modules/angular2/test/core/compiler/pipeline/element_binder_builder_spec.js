@@ -29,13 +29,13 @@ export function main() {
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
             var hasBinding = false;
-            if (isPresent(current.element.getAttribute('text-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'text-binding'))) {
               MapWrapper.forEach(textNodeBindings, (v,k) => {
                 current.addTextNodeBinding(k, parser.parseBinding(v, null));
               });
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('prop-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'prop-binding'))) {
               if (isPresent(propertyBindings)) {
                 MapWrapper.forEach(propertyBindings, (v,k) => {
                   current.addPropertyBinding(k, parser.parseBinding(v, null));
@@ -43,13 +43,13 @@ export function main() {
               }
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('event-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'event-binding'))) {
               MapWrapper.forEach(eventBindings, (v,k) => {
                 current.addEventBinding(k, parser.parseAction(v, null));
               });
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('directives'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
                 var dirMetadata = reflector.read(directives[i]);
@@ -61,13 +61,13 @@ export function main() {
               DOM.addClass(current.element, 'ng-binding');
             }
             if (isPresent(protoElementInjector) &&
-                (isPresent(current.element.getAttribute('text-binding')) ||
-                 isPresent(current.element.getAttribute('prop-binding')) ||
-                 isPresent(current.element.getAttribute('directives')) ||
-                 isPresent(current.element.getAttribute('event-binding')))) {
+                (isPresent(DOM.getAttribute(current.element, 'text-binding')) ||
+                 isPresent(DOM.getAttribute(current.element, 'prop-binding')) ||
+                 isPresent(DOM.getAttribute(current.element, 'directives')) ||
+                 isPresent(DOM.getAttribute(current.element, 'event-binding')))) {
               current.inheritedProtoElementInjector = protoElementInjector;
             }
-            if (isPresent(current.element.getAttribute('viewroot'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
               current.isViewRoot = true;
               current.inheritedProtoView = new ProtoView(
                 current.element,
@@ -338,11 +338,11 @@ export function main() {
 
       evalContext.prop1 = 'red';
       changeDetector.detectChanges();
-      expect(view.nodes[0].style.color).toEqual('red');
+      expect(DOM.getStyle(view.nodes[0], 'color')).toEqual('red');
 
       evalContext.prop1 = 'blue';
       changeDetector.detectChanges();
-      expect(view.nodes[0].style.color).toEqual('blue');
+      expect(DOM.getStyle(view.nodes[0], 'color')).toEqual('blue');
     });
 
     it('should bind style with a dot and suffix', () => {

@@ -1,5 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ProtoElementInjectorBuilder} from 'angular2/src/core/compiler/pipeline/proto_element_injector_builder';
@@ -33,11 +34,11 @@ export function main() {
       }
       var reader = new DirectiveMetadataReader();
       return new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(current.element.getAttribute('viewroot'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
           current.isViewRoot = true;
         }
 
-        if (isPresent(current.element.getAttribute('directives'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'directives'))) {
           for (var i=0; i<directives.length; i++) {
             var dirMetadata = reader.read(directives[i]);
             current.addDirective(dirMetadata);
@@ -45,7 +46,7 @@ export function main() {
         }
 
         // Check only for the hard-coded var- attribute from ELEMENT_WITH_VAR test element.
-        if (isPresent(current.element.getAttribute('var-name'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'var-name'))) {
           current.variableBindings = MapWrapper.create();
           MapWrapper.set(current.variableBindings, '\$implicit', 'name');
         }

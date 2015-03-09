@@ -1,5 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {dynamicChangeDetection} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {ProtoViewBuilder} from 'angular2/src/core/compiler/pipeline/proto_view_builder';
@@ -14,10 +15,10 @@ export function main() {
   describe('ProtoViewBuilder', () => {
     function createPipeline(variableBindings = null) {
       return new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(current.element.getAttribute('viewroot'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
           current.isViewRoot = true;
         }
-        if (isPresent(current.element.getAttribute('var-binding'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'var-binding'))) {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(null, null, null);
