@@ -1,18 +1,18 @@
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {ControlGroup, Control} from 'angular2/forms';
+import * as modelModule from './model';
 
-export function required(c:Control) {
+export function required(c:modelModule.Control) {
   return isBlank(c.value) || c.value == "" ? {"required" : true} : null;
 }
 
-export function nullValidator(c:Control) {
+export function nullValidator(c:modelModule.Control) {
   return null;
 }
 
 export function compose(validators:List<Function>):Function {
-  return function(c:Control) {
+  return function(c:modelModule.Control) {
     var res = ListWrapper.reduce(validators, (res, validator) => {
       var errors = validator(c);
       return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
@@ -21,7 +21,7 @@ export function compose(validators:List<Function>):Function {
   }
 }
 
-export function controlGroupValidator(c:ControlGroup) {
+export function controlGroupValidator(c:modelModule.ControlGroup) {
   var res = {};
   StringMapWrapper.forEach(c.controls, (control, name) => {
     if (c.contains(name) && isPresent(control.errors)) {
