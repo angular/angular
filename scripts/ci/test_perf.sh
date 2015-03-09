@@ -45,6 +45,7 @@ function waitForUrl {
     echo waiting $((COUNT++)) seconds
   done
   if [[ $COUNT == $MAX_COUNT ]]; then
+    echo timeout after waiting $COUNT seconds!
     return 1
   else
     return 0
