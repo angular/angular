@@ -173,6 +173,10 @@ class BrowserDomAdapter extends DomAdapter {
       document.implementation.createHtmlDocument('fakeTitle');
 
   HtmlDocument defaultDoc() => document;
+  String getTitle() => document.title;
+  void setTitle(String newTitle) {
+    document.title = newTitle;
+  }
   bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
   bool isTemplateElement(Element el) =>
