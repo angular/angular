@@ -12,8 +12,8 @@ export class UrlResolver {
 
   resolve(baseUrl: string, url: string): string {
     if (isBlank(baseUrl)) {
-      UrlResolver.a.href = url;
-      return UrlResolver.a.href;
+      DOM.resolveAndSetHref(UrlResolver.a, url, null);
+      return DOM.getHref(UrlResolver.a);
     }
 
     if (isBlank(url) || url == '') return baseUrl;
@@ -28,8 +28,8 @@ export class UrlResolver {
       return url;
     }
 
-    UrlResolver.a.href = baseUrl + '/../' + url;
-    return UrlResolver.a.href;
+    DOM.resolveAndSetHref(UrlResolver.a, baseUrl, url);
+    return DOM.getHref(UrlResolver.a);
   }
 }
 

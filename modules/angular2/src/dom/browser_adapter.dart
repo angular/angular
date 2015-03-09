@@ -2,7 +2,8 @@ library angular.core.facade.dom;
 
 import 'dart:html';
 import 'dart:js' show JsObject;
-import 'dom_adapter.dart' show setRootDomAdapter, DomAdapter;
+import 'dom_adapter.dart' show setRootDomAdapter;
+import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import '../facade/browser.dart';
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
@@ -13,7 +14,7 @@ class _IdentitySanitizer implements NodeTreeSanitizer {
 
 final _identitySanitizer = new _IdentitySanitizer();
 
-class BrowserDomAdapter extends DomAdapter {
+class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
@@ -196,4 +197,7 @@ class BrowserDomAdapter extends DomAdapter {
   bool isStyleRule(CssRule rule) => rule is CssStyleRule;
   bool isMediaRule(CssRule rule) => rule is CssMediaRule;
   bool isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
+  String getHref(AnchorElement element) {
+    return element.href;
+  }
 }

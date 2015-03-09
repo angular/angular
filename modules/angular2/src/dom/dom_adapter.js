@@ -240,4 +240,13 @@ export class DomAdapter {
   isKeyframesRule(rule): boolean {
     throw _abstract();
   }
+  getHref(element): string {
+    throw _abstract();
+  }
+  resolveAndSetHref(element, baseUrl:string, href:string) {
+    throw _abstract();
+  }
+  cssToRules(css:string): List {
+    throw _abstract();
+  }
 }

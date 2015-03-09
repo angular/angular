@@ -226,4 +226,13 @@ class Html5LibDomAdapter implements DomAdapter {
   bool isKeyframesRule(rule) {
     throw 'not implemented';
   }
+  String getHref(element) {
+    throw 'not implemented';
+  }
+  void resolveAndSetHref(element, baseUrl, href) {
+    throw 'not implemented';
+  }
+  List cssToRules(String css) {
+    throw 'not implemented';
+  }
 }
