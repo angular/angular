@@ -201,6 +201,12 @@ export class DomAdapter {
   defaultDoc() {
     throw _abstract();
   }
+  getTitle() {
+    throw _abstract();
+  }
+  setTitle(newTitle:string) {
+    throw _abstract();
+  }
   elementMatches(n, selector:string):boolean {
     throw _abstract();
   }

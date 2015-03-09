@@ -215,6 +215,12 @@ export class BrowserDomAdapter extends DomAdapter {
   defaultDoc() {
     return document;
   }
+  getTitle() {
+    return document.title;
+  }
+  setTitle(newTitle:string) {
+    document.title = newTitle;
+  }
   elementMatches(n, selector:string):boolean {
     return n instanceof HTMLElement && n.matches(selector);
   }
