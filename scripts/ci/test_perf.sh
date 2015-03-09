@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 echo =============================================================================
 # go to project dir
@@ -61,7 +61,7 @@ echo Started webserver
 
 if [[ $IOS_BROWSER ]]; then
   echo Starting ios selenium server
-  java -jar $IOS_SERVER_BINARY -real&
+  java -jar $IOS_SERVER_BINARY -real &> /dev/null&
   iosServerPid=$!
   waitForUrl http://localhost:5555/wd/hub
   echo Started ios selenium server
