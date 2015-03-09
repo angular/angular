@@ -75,7 +75,7 @@ export function main() {
         createView(pv);
         cd.detectChanges();
 
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello');
         async.done();
       });
@@ -86,7 +86,7 @@ export function main() {
         createView(pv);
         cd.detectChanges();
 
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello2');
         async.done();
       });
@@ -98,18 +98,18 @@ export function main() {
 
         component.booleanCondition = false;
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
         expect(DOM.getText(view.nodes[0])).toEqual('');
 
 
         component.booleanCondition = true;
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
         component.booleanCondition = false;
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
         expect(DOM.getText(view.nodes[0])).toEqual('');
 
         async.done();
@@ -127,18 +127,18 @@ export function main() {
         createView(pv);
 
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(3);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(3);
         expect(DOM.getText(view.nodes[0])).toEqual('helloNumberhelloStringhelloFunction');
 
         component.numberCondition = 0;
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('helloString');
 
         component.numberCondition = 1;
         component.stringCondition = "bar";
         cd.detectChanges();
-        expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('helloNumber');
         async.done();
       });
@@ -151,7 +151,7 @@ export function main() {
           createView(pv);
           cd.detectChanges();
 
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
           async.done();
         });
@@ -162,7 +162,7 @@ export function main() {
           createView(pv);
           cd.detectChanges();
 
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
           async.done();
         });
@@ -173,7 +173,7 @@ export function main() {
           createView(pv);
           cd.detectChanges();
 
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
           async.done();
         });
@@ -184,12 +184,12 @@ export function main() {
           createView(pv);
 
           cd.detectChanges();
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
           component.numberCondition = 2;
           cd.detectChanges();
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
           async.done();
@@ -215,7 +215,7 @@ export function main() {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           expect(function(){cd.detectChanges();}).toThrowError();
-          expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
+          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
           async.done();
         });

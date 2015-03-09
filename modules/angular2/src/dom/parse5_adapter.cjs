@@ -10,6 +10,7 @@ var url = require('url');
 import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
 import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
 
 var _attrToPropMap = {
   'inner-html': 'innerHTML',
@@ -35,27 +36,55 @@ export class Parse5DomAdapter extends DomAdapter {
     throw _notImplemented('query');
   }
   querySelector(el, selector:string) {
-    throw _notImplemented('querySelector');
+    return this.querySelectorAll(el, selector)[0];
   }
   querySelectorAll(el, selector:string) {
-    //TODO: use selector class from core. For now, only works for .classname ...
     var res = ListWrapper.create();
-    var _recursive = (result, node, className) => {
-      if (this.hasClass(node, className)) {
+    var _recursive = (result, node, selector, matcher) => {
+      if (this.elementMatches(node, selector, matcher)) {
         ListWrapper.push(result, node);
       }
       var cNodes = node.childNodes;
       if (cNodes && cNodes.length > 0) {
         for (var i = 0; i < cNodes.length; i++) {
-          _recursive(result, cNodes[i], className);
+          _recursive(result, cNodes[i], selector, matcher);
         }
       }
     };
-    _recursive(res, el, selector.substring(1));
+    var matcher = new SelectorMatcher();
+    matcher.addSelectable(CssSelector.parse(selector));
+    _recursive(res, el, selector, matcher);
     return res;
   }
+  elementMatches(node, selector:string, matcher = null):boolean {
+    var result = false;
+    if (selector && selector.charAt(0) == "#") {
+      result = this.getAttribute(node, 'id') == selector.substring(1);
+    } else if (selector) {
+      var result = false;
+      if (matcher == null) {
+        matcher = new SelectorMatcher();
+        matcher.addSelectable(CssSelector.parse(selector));
+      }
+
+      var cssSelector = new CssSelector();
+      cssSelector.setElement(this.tagName(node));
+      if (node.attribs) {
+        for (var attrName in node.attribs) {
+          cssSelector.addAttribute(attrName, node.attribs[attrName]);
+        }
+      }
+      var classList = this.classList(node);
+      for (var i = 0; i < classList.length; i++) {
+        cssSelector.addClassName(classList[i]);
+      }
+
+      matcher.match(cssSelector, function(selector, cb) {result = true;});
+    }
+    return result;
+  }
   on(el, evt, listener) {
-    throw _notImplemented('on');
+    //Do nothing, in order to not break forms integration tests
   }
   dispatchEvent(el, evt) {
     throw _notImplemented('dispatchEvent');
@@ -316,7 +345,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return res;
   }
   getAttribute(element, attribute:string) {
-    return element.attribs.hasOwnProperty(attribute) ? element.attribs[attribute] : null;
+    return element.attribs && element.attribs.hasOwnProperty(attribute)? element.attribs[attribute]: null;
   }
   setAttribute(element, attribute:string, value:string) {
     if (attribute) {
@@ -340,14 +369,6 @@ export class Parse5DomAdapter extends DomAdapter {
       StringMapWrapper.set(defDoc, "head", treeAdapter.createElement("head", null, []));
     }
     return defDoc;
-  }
-  elementMatches(n, selector:string):boolean {
-    //TODO: use selector class from core.
-    if (selector && selector.charAt(0) == ".") {
-      return this.hasClass(n, selector.substring(1));
-    } else {
-      return n.tagName == selector;
-    }
   }
   isTemplateElement(el:any):boolean {
     return this.isElementNode(el) && this.tagName(el) === "template";

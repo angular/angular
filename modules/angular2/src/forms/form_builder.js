@@ -1,26 +1,26 @@
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
-import {ControlGroup, Control, OptionalControl, OptionalControlGroup} from 'angular2/forms';
+import * as modelModule from './model';
 
 
 export class FormBuilder {
-  group(controlsConfig, extra = null):ControlGroup {
+  group(controlsConfig, extra = null):modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null;
     var validator = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
 
     if (isPresent(validator)) {
-      return new ControlGroup(controls, optionals, validator);
+      return new modelModule.ControlGroup(controls, optionals, validator);
     } else {
-      return new ControlGroup(controls, optionals);
+      return new modelModule.ControlGroup(controls, optionals);
     }
   }
 
-  control(value, validator:Function = null):Control {
+  control(value, validator:Function = null):modelModule.Control {
     if (isPresent(validator)) {
-      return new Control(value, validator);
+      return new modelModule.Control(value, validator);
     } else {
-      return new Control(value);
+      return new modelModule.Control(value);
     }
   }
 
@@ -33,7 +33,7 @@ export class FormBuilder {
   }
 
   _createControl(controlConfig) {
-    if (controlConfig instanceof Control || controlConfig instanceof ControlGroup) {
+    if (controlConfig instanceof modelModule.Control || controlConfig instanceof modelModule.ControlGroup) {
       return controlConfig;
 
     } else if (ListWrapper.isList(controlConfig)) {

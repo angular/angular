@@ -229,8 +229,18 @@ var CONFIG = {
   formatDart: {
     packageName: 'dart_style',
     args: ['dart_style:format', '-w', 'dist/dart']
+  },
+  test: {
+    js: {
+      cjs: [
+        '/angular2/test/core/compiler/**/*_spec.js',
+        '/angular2/test/directives/**/*_spec.js',
+        '/angular2/test/forms/**/*_spec.js'
+      ]
+    }
   }
 };
+CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
 
 // ------------
 // clean
@@ -553,7 +563,7 @@ gulp.task('test.unit.dart/ci', function (done) {
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
 gulp.task('test.unit.cjs', function (done) {
-  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/core/compiler/**/*_spec.js').pipe(jasmine({verbose: true, includeStackTrace: true}));
+  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine(/*{verbose: true, includeStackTrace: true}*/));
 });
 
 // ------------------
