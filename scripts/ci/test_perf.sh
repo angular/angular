@@ -36,20 +36,36 @@ function killServer () {
 
 trap killServer EXIT
 
+function waitForUrl {
+  URL=$1
+  COUNT=0
+  MAX_COUNT=120
+  until curl $URL &> /dev/null || [[ $COUNT == $MAX_COUNT ]]; do
+    sleep 1
+    echo waiting $((COUNT++)) seconds
+  done
+  if [[ $COUNT == $MAX_COUNT ]]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
 ./node_modules/.bin/webdriver-manager update
 
 echo Starting webserver
 ./node_modules/.bin/gulp serve.js.prod serve.js.dart2js&
 serverPid=$!
+waitForUrl http://localhost:8001
+echo Started webserver
 
 if [[ $IOS_BROWSER ]]; then
   echo Starting ios selenium server
   java -jar $IOS_SERVER_BINARY -real&
   iosServerPid=$!
+  waitForUrl http://localhost:5555/wd/hub
+  echo Started ios selenium server
 fi
-
-# wait for server to come up!
-sleep 120
 
 if [[ $IOS_BROWSER ]]; then
   echo Running ios tests
