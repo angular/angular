@@ -18,6 +18,12 @@ class HelloRootCmp {
   }
 }
 
+@Component({selector: 'hello-app'})
+@Template({inline: 'before: <content></content> after: done'})
+class HelloRootCmpContent {
+  constructor() { }
+}
+
 @Component({selector: 'hello-app-2'})
 @Template({inline: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
@@ -48,14 +54,17 @@ class HelloRootCmp4 {
 }
 
 export function main() {
-  var fakeDoc, el, el2, testBindings;
+  var fakeDoc, el, el2, testBindings, lightDom;
 
   beforeEach(() => {
     fakeDoc = DOM.createHtmlDocument();
     el = DOM.createElement('hello-app', fakeDoc);
     el2 = DOM.createElement('hello-app-2', fakeDoc);
+    lightDom = DOM.createElement('light-dom-el', fakeDoc);
     DOM.appendChild(fakeDoc.body, el);
     DOM.appendChild(fakeDoc.body, el2);
+    DOM.appendChild(el, lightDom);
+    DOM.setText(lightDom, 'loading');
     testBindings = [bind(appDocumentToken).toValue(fakeDoc)];
   });
 
@@ -93,8 +102,7 @@ export function main() {
     it('should display hello world', (done) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
-        expect(injector.get(appElementToken)
-            .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
+        expect(injector.get(appElementToken)).toHaveText('hello world!');
         done();
       });
     });
@@ -103,10 +111,8 @@ export function main() {
       var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
       var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
       PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
-        expect(injectors[0].get(appElementToken)
-            .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
-        expect(injectors[1].get(appElementToken)
-            .shadowRoot.childNodes[0].nodeValue).toEqual('hello world, again!');
+        expect(injectors[0].get(appElementToken)).toHaveText('hello world!');
+        expect(injectors[1].get(appElementToken)).toHaveText('hello world, again!');
         done();
       });
     });
@@ -128,6 +134,14 @@ export function main() {
 
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp4).lc).toBe(injector.get(LifeCycle));
+        done();
+      });
+    });
+
+    it("should support shadow dom content tag", (done) => {
+      var injectorPromise = bootstrap(HelloRootCmpContent, testBindings);
+      injectorPromise.then((injector) => {
+        expect(injector.get(appElementToken)).toHaveText('before: loading after: done');
         done();
       });
     });

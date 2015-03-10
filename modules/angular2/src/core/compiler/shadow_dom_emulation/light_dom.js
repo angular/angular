@@ -36,6 +36,7 @@ export class LightDom {
     this.lightDomView = lightDomView;
     this.shadowDomView = shadowDomView;
     this.nodes = DOM.childNodesAsList(element);
+
     this.roots = null;
   }
 

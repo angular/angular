@@ -7,7 +7,9 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
@@ -125,6 +127,12 @@ function setup() {
     "annotations": []
   });
 
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
   reflector.registerType(StyleUrlResolver, {
     "factory": (urlResolver) => new StyleUrlResolver(urlResolver),
     "parameters": [[UrlResolver]],
@@ -141,6 +149,12 @@ function setup() {
     "factory": () => new ComponentUrlMapper(),
     "parameters": [],
     "annotations": []
+  });
+
+  reflector.registerType(Content, {
+    "factory": (lightDom, el) => new Content(lightDom, el),
+    "parameters": [[DestinationLightDom], [NgElement]],
+    "annotations" : [new Decorator({selector: '[content]'})]
   });
 
   reflector.registerType(StyleInliner, {

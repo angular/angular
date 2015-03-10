@@ -6,12 +6,14 @@ import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {
-  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange
+  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange, NgElement, Decorator
 }  from 'angular2/angular2';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -256,6 +258,12 @@ export function setupReflectorForAngular() {
     "annotations": []
   });
 
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
   reflector.registerType(StyleUrlResolver, {
     "factory": (urlResolver) => new StyleUrlResolver(urlResolver),
     "parameters": [[UrlResolver]],
@@ -272,6 +280,12 @@ export function setupReflectorForAngular() {
     "factory": () => new ComponentUrlMapper(),
     "parameters": [],
     "annotations": []
+  });
+
+  reflector.registerType(Content, {
+    "factory": (lightDom, el) => new Content(lightDom, el),
+    "parameters": [[DestinationLightDom], [NgElement]],
+    "annotations" : [new Decorator({selector: '[content]'})]
   });
 
   reflector.registerType(StyleInliner, {

@@ -14,7 +14,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
@@ -84,7 +84,9 @@ function _injectorBindings(appComponentType): List<Binding> {
         var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
         return new EventManager(plugins, zone);
       }, [VmTurnZone]),
-      bind(ShadowDomStrategy).toClass(NativeShadowDomStrategy),
+      bind(ShadowDomStrategy).toFactory(
+          (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+          [StyleUrlResolver, appDocumentToken]),
       Compiler,
       CompilerCache,
       TemplateResolver,
