@@ -213,6 +213,23 @@ export class View {
     this._dehydrateContext();
   }
 
+  /**
+   * Triggers the event handlers for the element and the directives.
+   *
+   * This method is intended to be called from directive EventEmitters.
+   *
+   * @param {string} eventName
+   * @param {*} eventObj
+   * @param {int} binderIndex
+   */
+  triggerEventHandlers(eventName: string, eventObj, binderIndex: int) {
+    var handlers = this.proto.eventHandlers[binderIndex];
+    if (isBlank(handlers)) return;
+    var handler = StringMapWrapper.get(handlers, eventName);
+    if (isBlank(handler)) return;
+    handler(eventObj, this);
+  }
+
   onRecordChange(directiveMemento, records:List) {
     this._invokeMementos(records);
     if (directiveMemento instanceof DirectiveMemento) {
@@ -278,6 +295,8 @@ export class ProtoView {
   shadowDomStrategy: ShadowDomStrategy;
   _viewPool: ViewPool;
   stylePromises: List<Promise>;
+  // List<Map<eventName, handler>>, indexed by binder index
+  eventHandlers: List;
 
   constructor(
       template,
@@ -297,6 +316,7 @@ export class ProtoView {
     this.shadowDomStrategy = shadowDomStrategy;
     this._viewPool = new ViewPool(VIEW_POOL_CAPACITY);
     this.stylePromises = [];
+    this.eventHandlers = [];
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -346,6 +366,7 @@ export class ProtoView {
     var view = new View(this, viewNodes, this.protoChangeDetector, this.protoContextLocals);
     var binders = this.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
+    var eventHandlers = ListWrapper.createFixedSize(binders.length);
     var rootElementInjectors = [];
     var textNodes = [];
     var elementsWithPropertyBindings = [];
@@ -368,11 +389,9 @@ export class ProtoView {
       if (isPresent(protoElementInjector)) {
         if (isPresent(protoElementInjector.parent)) {
           var parentElementInjector = elementInjectors[protoElementInjector.parent.index];
-          elementInjector = protoElementInjector.instantiate(parentElementInjector, null,
-            binder.events, reflector);
+          elementInjector = protoElementInjector.instantiate(parentElementInjector, null, reflector);
         } else {
-          elementInjector = protoElementInjector.instantiate(null, hostElementInjector,
-            binder.events, reflector);
+          elementInjector = protoElementInjector.instantiate(null, hostElementInjector, reflector);
           ListWrapper.push(rootElementInjectors, elementInjector);
         }
       }
@@ -427,14 +446,19 @@ export class ProtoView {
 
       // events
       if (isPresent(binder.events)) {
+        eventHandlers[binderIdx] = StringMapWrapper.create();
         StringMapWrapper.forEach(binder.events, (eventMap, eventName) => {
+          var handler = ProtoView.buildEventHandler(eventMap, binderIdx);
+          StringMapWrapper.set(eventHandlers[binderIdx], eventName, handler);
           if (isBlank(elementInjector) || !elementInjector.hasEventEmitter(eventName)) {
-            var handler = ProtoView.buildEventCallback(eventMap, view, binderIdx);
-            eventManager.addEventListener(element, eventName, handler);
+            eventManager.addEventListener(element, eventName,
+              (event) => { handler(event, view); });
           }
         });
       }
     }
+
+    this.eventHandlers = eventHandlers;
 
     view.init(elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,
       viewContainers, preBuiltObjects, componentChildViews);
@@ -447,24 +471,15 @@ export class ProtoView {
   }
 
   /**
-   * Create an event callback invoked in the context of the enclosing View
-   *
-   * @param {AST} expr
-   * @param {View} view
-   * @returns {Function}
-   */
-
-  /**
-   * Creates the event callback.
+   * Creates an event handler.
    *
    * @param {Map} eventMap Map directiveIndexes to expressions
-   * @param {View} view
    * @param {int} injectorIdx
    * @returns {Function}
    */
-  static buildEventCallback(eventMap: Map, view:View, injectorIdx: int) {
+  static buildEventHandler(eventMap: Map, injectorIdx: int) {
     var locals = MapWrapper.create();
-    return (event) => {
+    return (event, view) => {
       // Most of the time the event will be fired only when the view is in the live document.
       // However, in a rare circumstance the view might get dehydrated, in between the event
       // queuing up and firing.

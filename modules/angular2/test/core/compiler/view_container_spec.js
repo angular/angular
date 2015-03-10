@@ -72,7 +72,7 @@ export function main() {
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null),
         new NativeShadowDomStrategy(null));
-      elementInjector = new ElementInjector(null, null, null, null, reflector);
+      elementInjector = new ElementInjector(null, null, null, reflector);
       viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
         null, reflector);
       customViewWithOneNode = createView([el('<div>single</div>')]);

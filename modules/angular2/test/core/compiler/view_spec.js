@@ -264,7 +264,7 @@ export function main() {
           pv.bindElement(testProtoElementInjector);
 
           var hostProtoInjector = new ProtoElementInjector(null, 0, []);
-          var hostInjector = hostProtoInjector.instantiate(null, null, null, reflector);
+          var hostInjector = hostProtoInjector.instantiate(null, null, reflector);
           var view;
           expect(() => view = pv.instantiate(hostInjector, null, reflector)).not.toThrow();
           expect(testProtoElementInjector.parentElementInjector).toBe(view.elementInjectors[0]);
@@ -279,7 +279,7 @@ export function main() {
           pv.bindElement(testProtoElementInjector);
 
           var hostProtoInjector = new ProtoElementInjector(null, 0, []);
-          var hostInjector = hostProtoInjector.instantiate(null, null, null, reflector);
+          var hostInjector = hostProtoInjector.instantiate(null, null, reflector);
           expect(() => pv.instantiate(hostInjector, null, reflector)).not.toThrow();
           expect(testProtoElementInjector.parentElementInjector).toBeNull();
           expect(testProtoElementInjector.hostElementInjector).toBe(hostInjector);
@@ -751,11 +751,10 @@ class TestProtoElementInjector extends ProtoElementInjector {
     super(parent, index, bindings, firstBindingIsComponent);
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, events,
-              reflector: Reflector):ElementInjector {
+  instantiate(parent:ElementInjector, host:ElementInjector, reflector: Reflector):ElementInjector {
     this.parentElementInjector = parent;
     this.hostElementInjector = host;
-    return super.instantiate(parent, host, events, reflector);
+    return super.instantiate(parent, host, reflector);
   }
 }
 
