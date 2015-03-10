@@ -2,13 +2,15 @@ import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
   from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
-import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler} from 'angular2/angular2';
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler, NgElement, Decorator} from 'angular2/angular2';
 
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
@@ -127,10 +129,22 @@ function setupReflector() {
     "annotations": []
   });
 
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
   reflector.registerType(StyleUrlResolver, {
     "factory": (urlResolver) => new StyleUrlResolver(urlResolver),
     "parameters": [[UrlResolver]],
     "annotations": []
+  });
+
+  reflector.registerType(Content, {
+    "factory": (lightDom, el) => new Content(lightDom, el),
+    "parameters": [[DestinationLightDom], [NgElement]],
+    "annotations" : [new Decorator({selector: '[content]'})]
   });
 
   reflector.registerType(UrlResolver, {

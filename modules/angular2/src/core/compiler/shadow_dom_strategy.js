@@ -78,7 +78,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     this._styleHost = styleHost;
   }
 
-  attachTemplate(el, view:viewModule.View){
+  attachTemplate(el, view:viewModule.View) {
     DOM.clearNodes(el);
     _moveViewNodesIntoParent(el, view);
   }

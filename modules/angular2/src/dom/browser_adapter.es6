@@ -79,7 +79,9 @@ export class BrowserDomAdapter extends DomAdapter {
     return res;
   }
   clearNodes(el) {
-    el.innerHTML = '';
+    for (var i = 0; i < el.childNodes.length; i++) {
+      this.remove(el.childNodes[i]);
+    }
   }
   appendChild(el, node) {
     el.appendChild(node);
