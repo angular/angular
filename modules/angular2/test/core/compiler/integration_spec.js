@@ -123,6 +123,23 @@ export function main() {
         });
       });
 
+      it('should consume binding to camel-cased properties using dash-cased syntax in templates', (done) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<input [read-only]="ctxBoolProp">'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          cd.detectChanges();
+          expect(view.nodes[0].readOnly).toBeFalsy();
+
+          ctx.ctxBoolProp = true;
+          cd.detectChanges();
+          expect(view.nodes[0].readOnly).toBeTruthy();
+
+          done();
+        });
+      });
+
       it('should consume binding to inner-html', (done) => {
         tplResolver.setTemplate(MyComp, new Template({inline: '<div inner-html="{{ctxProp}}"></div>'}));
 
@@ -532,9 +549,11 @@ class PushBasedComp {
 class MyComp {
   ctxProp:string;
   ctxNumProp;
+  ctxBoolProp;
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;
+    this.ctxBoolProp = false;
   }
 }
 

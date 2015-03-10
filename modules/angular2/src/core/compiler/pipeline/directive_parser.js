@@ -10,7 +10,8 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {isSpecialProperty} from './element_binder_builder';;
+import {isSpecialProperty} from './element_binder_builder';
+import {dashCaseToCamelCase} from './util';
 
 var PROPERTY_BINDING_REGEXP = RegExpWrapper.create('^ *([^\\s\\|]+)');
 
@@ -72,7 +73,7 @@ export class DirectiveParser extends CompileStep {
     // only be present on <template> elements any more!
     var isTemplateElement = DOM.isTemplateElement(current.element);
     var matchedProperties; // StringMap - used in dev mode to store all properties that have been matched
-    
+
     this._selectorMatcher.match(cssSelector, (selector, directive) => {
       matchedProperties = updateMatchedProperties(matchedProperties, selector, directive);
       checkDirectiveValidity(directive, current, isTemplateElement);
@@ -139,10 +140,10 @@ function checkMissingDirectives(current, matchedProperties, isTemplateElement) {
     if (isPresent(ppBindings)) {
       // check that each property corresponds to a real property or has been matched by a directive
       MapWrapper.forEach(ppBindings, (expression, prop) => {
-        if (!DOM.hasProperty(current.element, prop) && !isSpecialProperty(prop)) {
+        if (!DOM.hasProperty(current.element, dashCaseToCamelCase(prop)) && !isSpecialProperty(prop)) {
           if (!isPresent(matchedProperties) || !isPresent(StringMapWrapper.get(matchedProperties, prop))) {
             throw new BaseException(`Missing directive to handle '${prop}' in ${current.elementDescription}`);
-          } 
+          }
         }
       });
     }
