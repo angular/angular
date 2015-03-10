@@ -8,6 +8,7 @@ import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_elemen
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
@@ -21,7 +22,7 @@ export function main() {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(null, null, null);
-      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
+      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null, new DomOpQueue()))]);
     }
 
     it('should not create a ProtoView when the isViewRoot flag is not set', () => {

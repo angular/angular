@@ -9,6 +9,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
@@ -23,18 +24,19 @@ import {If} from 'angular2/src/directives/if';
 
 export function main() {
   describe('if directive', () => {
-    var view, cd, compiler, component, tplResolver;
+    var view, cd, domQueue, compiler, component, tplResolver;
 
     beforeEach(() => {
       var urlResolver = new UrlResolver();
       tplResolver = new MockTemplateResolver();
+      domQueue = new DomOpQueue();
       compiler = new Compiler(
         dynamicChangeDetection,
         new TemplateLoader(null, null),
         new DirectiveMetadataReader(),
         new Parser(new Lexer()),
         new CompilerCache(),
-        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver), domQueue),
         tplResolver,
         new ComponentUrlMapper(),
         urlResolver,
@@ -44,7 +46,7 @@ export function main() {
 
     function createView(pv) {
       component = new TestComponent();
-      view = pv.instantiate(null, null, null);
+      view = pv.instantiate(null, null, domQueue, null);
       view.hydrate(new Injector([]), null, component);
       cd = view.changeDetector;
     }
@@ -58,10 +60,15 @@ export function main() {
       return compiler.compile(TestComponent);
     }
 
+    function tick() {
+      cd.detectChanges();
+      domQueue.run();
+    }
+
     it('should work in a template attribute', (done) => {
       compileWithTemplate('<div><copy-me template="if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
-        cd.detectChanges();
+        tick();
 
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello');
@@ -72,7 +79,7 @@ export function main() {
     it('should work in a template element', (done) => {
       compileWithTemplate('<div><template [if]="booleanCondition"><copy-me>hello2</copy-me></template></div>').then((pv) => {
         createView(pv);
-        cd.detectChanges();
+        tick();
 
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello2');
@@ -85,18 +92,18 @@ export function main() {
         createView(pv);
 
         component.booleanCondition = false;
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
         expect(DOM.getText(view.nodes[0])).toEqual('');
 
 
         component.booleanCondition = true;
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
         component.booleanCondition = false;
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
         expect(DOM.getText(view.nodes[0])).toEqual('');
 
@@ -114,18 +121,18 @@ export function main() {
       compileWithTemplate(templateString).then((pv) => {
         createView(pv);
 
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(3);
         expect(DOM.getText(view.nodes[0])).toEqual('helloNumberhelloStringhelloFunction');
 
         component.numberCondition = 0;
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('helloString');
 
         component.numberCondition = 1;
         component.stringCondition = "bar";
-        cd.detectChanges();
+        tick();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('helloNumber');
         done();
@@ -137,7 +144,7 @@ export function main() {
       it('should leave the element if the condition is a non-empty string (JS)', (done) => {
         compileWithTemplate('<div><copy-me template="if stringCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
-          cd.detectChanges();
+          tick();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
@@ -148,7 +155,7 @@ export function main() {
       it('should leave the element if the condition is an object (JS)', (done) => {
         compileWithTemplate('<div><copy-me template="if objectCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
-          cd.detectChanges();
+          tick();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
@@ -159,7 +166,7 @@ export function main() {
       it('should remove the element if the condition is null (JS)', (done) => {
         compileWithTemplate('<div><copy-me template="if nullCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
-          cd.detectChanges();
+          tick();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
@@ -171,12 +178,12 @@ export function main() {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
-          cd.detectChanges();
+          tick();
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
           component.numberCondition = 2;
-          cd.detectChanges();
+          tick();
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
@@ -188,11 +195,11 @@ export function main() {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
-          cd.detectChanges();
+          tick();
           DOM.addClass(view.nodes[0].childNodes[1], "foo");
 
           component.numberCondition = 2;
-          cd.detectChanges();
+          tick();
           expect(DOM.hasClass(view.nodes[0].childNodes[1], "foo")).toBe(true);
 
           done();
@@ -202,7 +209,7 @@ export function main() {
       it('should not create the element if the condition is not a boolean (DART)', (done) => {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
-          expect(function(){cd.detectChanges();}).toThrowError();
+          expect(function(){tick();}).toThrowError();
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
           done();

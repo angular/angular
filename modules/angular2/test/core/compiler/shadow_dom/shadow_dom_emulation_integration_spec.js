@@ -4,7 +4,7 @@ import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Injector} from 'angular2/di';
+import {Injector, bind} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
@@ -27,6 +27,7 @@ import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
@@ -40,11 +41,19 @@ export function main() {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+    var domQueue = new DomOpQueue();
+
+    function createView(pv) {
+      var appInjector = new Injector([bind(DomOpQueue).toValue(domQueue)]);
+      var view = pv.instantiate(null, null, domQueue, reflector);
+      view.hydrate(appInjector, null, {});
+      return view;
+    }
 
     StringMapWrapper.forEach({
-        "native" : new NativeShadowDomStrategy(styleUrlResolver),
-        "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
-        "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div')),
+        "native" : new NativeShadowDomStrategy(styleUrlResolver, domQueue),
+        "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div'), domQueue),
+        "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'), domQueue),
       },
       (strategy, name) => {
 
@@ -75,6 +84,7 @@ export function main() {
             .then(createView)
             .then((view) => {
               var lc = new LifeCycle(new ExceptionHandler(), view.changeDetector, false);
+              lc.setDomQueue(domQueue);
               assertions(view, lc);
             });
         }
@@ -87,6 +97,8 @@ export function main() {
           '</multiple-content-tags>';
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
+            lc.tick();
+
             expect(view.nodes).toHaveText('(A, BC)');
             done();
           });
@@ -99,6 +111,7 @@ export function main() {
             '</multiple-content-tags>';
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
+            lc.tick();
             expect(view.nodes).toHaveText('(, BAC)');
             done();
           });
@@ -113,6 +126,7 @@ export function main() {
           compile(temp, [MultipleContentTagsComponent, ManualViewportDirective], (view, lc) => {
             var dir = view.elementInjectors[1].get(ManualViewportDirective);
 
+            lc.tick();
             expect(view.nodes).toHaveText('(, B)');
 
             dir.show();
@@ -138,6 +152,7 @@ export function main() {
           compile(temp, [MultipleContentTagsComponent, ManualViewportDirective], (view, lc) => {
             var dir = view.elementInjectors[1].get(ManualViewportDirective);
 
+            lc.tick();
             expect(view.nodes).toHaveText('(, B)');
 
             dir.show();
@@ -161,6 +176,7 @@ export function main() {
             '</outer-with-indirect-nested>';
 
           compile(temp, [OuterWithIndirectNestedComponent], (view, lc) => {
+            lc.tick();
             expect(view.nodes).toHaveText('OUTER(SIMPLE(AB))');
 
             done();
@@ -177,6 +193,7 @@ export function main() {
           compile(temp, [OuterComponent, ManualViewportDirective], (view, lc) => {
             var dir = view.elementInjectors[1].get(ManualViewportDirective);
 
+            lc.tick();
             expect(view.nodes).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
 
             dir.show();
@@ -351,10 +368,4 @@ class InnerInnerComponent {
     ConditionalContentComponent, OuterWithIndirectNestedComponent, OuterComponent]
 })
 class MyComp {
-}
-
-function createView(pv) {
-  var view = pv.instantiate(null, null, reflector);
-  view.hydrate(new Injector([]), null, {});
-  return view;
 }

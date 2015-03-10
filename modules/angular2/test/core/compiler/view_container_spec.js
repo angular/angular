@@ -8,6 +8,7 @@ import {Injector} from 'angular2/di';
 import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 function createView(nodes) {
@@ -64,17 +65,16 @@ class HydrateAwareFakeView {
 export function main() {
   describe('ViewContainer', () => {
     var viewContainer, parentView, protoView, dom, customViewWithOneNode,
-        customViewWithTwoNodes, elementInjector;
+        customViewWithTwoNodes, elementInjector, domQueue;
 
     beforeEach(() => {
       dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null),
-        new NativeShadowDomStrategy(null));
+      domQueue = new DomOpQueue();
+      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null, domQueue));
       elementInjector = new ElementInjector(null, null, null, null, reflector);
-      viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
-        null, reflector);
+      viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector, null, domQueue, reflector);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
@@ -87,6 +87,8 @@ export function main() {
 
     describe('when hydrated', () => {
       function textInViewContainer() {
+        domQueue.run();
+
         var out = '';
         // skipping starting filler, insert-me and final filler.
         for (var i = 2; i < dom.childNodes.length - 1; i++) {
@@ -94,6 +96,10 @@ export function main() {
           out += DOM.getInnerHTML(dom.childNodes[i]);
         }
         return out;
+      }
+
+      function tick() {
+        domQueue.run();
       }
 
       beforeEach(() => {
@@ -131,6 +137,7 @@ export function main() {
       it('should remove the last view by default', () => {
         viewContainer.insert(customViewWithOneNode);
 
+        tick();
         viewContainer.remove();
 
         expect(textInViewContainer()).toEqual('filler');
@@ -141,6 +148,7 @@ export function main() {
         viewContainer.insert(customViewWithOneNode);
         viewContainer.insert(customViewWithTwoNodes);
 
+        tick();
         viewContainer.remove(1);
 
         expect(textInViewContainer()).toEqual('filler one two');
@@ -151,6 +159,8 @@ export function main() {
       it('should detach the last view by default', () => {
         viewContainer.insert(customViewWithOneNode);
         expect(viewContainer.length).toBe(2);
+
+        tick();
 
         var detachedView = viewContainer.detach();
 
@@ -163,6 +173,8 @@ export function main() {
         viewContainer.insert(customViewWithOneNode);
         viewContainer.insert(customViewWithTwoNodes);
         expect(viewContainer.length).toBe(3);
+
+        tick();
 
         var detachedView = viewContainer.detach(1);
         expect(detachedView).toBe(customViewWithOneNode);
@@ -216,10 +228,10 @@ export function main() {
         viewContainer.hydrate(new Injector([]), null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
-          new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
+          new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null, domQueue));
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
-        fancyView = pv.instantiate(null, null, reflector);
+        fancyView = pv.instantiate(null, null, domQueue, reflector);
       });
 
       it('hydrating should update rootElementInjectors and parent change detector', () => {

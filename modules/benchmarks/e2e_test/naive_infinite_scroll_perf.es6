@@ -1,6 +1,6 @@
 var perfUtil = require('angular2/src/test_lib/perf_util');
 
-describe('ng2 naive infinite scroll benchmark', function () {
+fdescribe('ng2 naive infinite scroll benchmark', function () {
 
   var URL = 'benchmarks/src/naive_infinite_scroll/index.html';
 

@@ -8,8 +8,9 @@ import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -121,9 +122,22 @@ function setupReflector() {
     "annotations": []
   });
 
+  reflector.registerType(DomOpQueue, {
+    "factory": () => new DomOpQueue(),
+    "parameters": [],
+    "annotations": []
+  });
+
+
   reflector.registerType(NativeShadowDomStrategy, {
-    "factory": (styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
-    "parameters": [[StyleUrlResolver]],
+    "factory": (styleUrlResolver, q) => new NativeShadowDomStrategy(styleUrlResolver, q),
+    "parameters": [[StyleUrlResolver], [DomOpQueue]],
+    "annotations": []
+  });
+
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver, q) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null, q),
+    "parameters": [[StyleUrlResolver], [DomOpQueue]],
     "annotations": []
   });
 

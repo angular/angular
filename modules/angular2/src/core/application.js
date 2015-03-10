@@ -14,12 +14,13 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
 import {HammerGesturesPlugin} from 'angular2/src/core/events/hammer_gestures';
 import {Binding} from 'angular2/src/di/binding';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
@@ -59,7 +60,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, strategy, eventManager, reflector) => {
+        appComponentAnnotatedType, strategy, eventManager, reflector, domOpQueue) => {
         return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
@@ -68,12 +69,12 @@ function _injectorBindings(appComponentType): List<Binding> {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null, eventManager, reflector);
+          var view = appProtoView.instantiate(null, eventManager, reflector, domOpQueue);
           view.hydrate(injector, null, new Object());
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          ShadowDomStrategy, EventManager, Reflector]),
+          ShadowDomStrategy, EventManager, DomOpQueue, Reflector]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),
@@ -94,6 +95,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       Parser,
       Lexer,
       ExceptionHandler,
+      DomOpQueue,
       bind(XHR).toValue(new XHRImpl()),
       ComponentUrlMapper,
       UrlResolver,
@@ -133,8 +135,9 @@ export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, 
     PromiseWrapper.then(appInjector.asyncGet(appViewToken),
       (rootView) => {
         // retrieve life cycle: may have already been created if injected in root component
-        var lc=appInjector.get(LifeCycle);
+        var lc = appInjector.get(LifeCycle);
         lc.registerWith(zone, rootView.changeDetector);
+        lc.setDomQueue(appInjector.get(DomOpQueue));
         lc.tick(); //the first tick that will bootstrap the app
 
         bootstrapProcess.resolve(appInjector);

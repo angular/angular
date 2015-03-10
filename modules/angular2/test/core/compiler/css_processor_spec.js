@@ -74,7 +74,7 @@ class FakeShadowDomStrategy extends ShadowDomStrategy {
   _compileStep: CompileStep;
 
   constructor(compileStep: CompileStep) {
-    super();
+    super(null);
     this._compileStep = compileStep;
   }
 

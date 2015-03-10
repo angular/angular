@@ -8,6 +8,7 @@ import {View} from './view';
 
 import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {ShadowCss} from './shadow_dom_emulation/shadow_css';
 
 import {StyleInliner} from './style_inliner';
@@ -20,6 +21,10 @@ import {CompileElement} from './pipeline/compile_element';
 import {CompileControl} from './pipeline/compile_control';
 
 export class ShadowDomStrategy {
+  _domQueue: DomOpQueue;
+  constructor(domQueue: DomOpQueue) {
+    this._domQueue = domQueue;
+  }
   attachTemplate(el, view:View) {}
   constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom { return null; }
   polyfillDirectives():List<Type> { return []; }
@@ -72,15 +77,17 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
   _styleHost;
 
-  constructor(styleUrlResolver: StyleUrlResolver, styleHost) {
-    super();
+  constructor(styleUrlResolver: StyleUrlResolver, styleHost, domQueue: DomOpQueue) {
+    super(domQueue);
     this._styleUrlResolver = styleUrlResolver;
     this._styleHost = styleHost;
   }
 
-  attachTemplate(el, view:View){
-    DOM.clearNodes(el);
-    _moveViewNodesIntoParent(el, view);
+  attachTemplate(el, view:View) {
+    this._domQueue.push(() => {
+      DOM.clearNodes(el);
+      _moveViewNodesIntoParent(el, view);
+    });
   }
 
   constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom {
@@ -112,8 +119,8 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   _styleInliner: StyleInliner;
 
-  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost) {
-    super(styleUrlResolver, styleHost);
+  constructor(styleInliner: StyleInliner, styleUrlResolver: StyleUrlResolver, styleHost, domQueue: DomOpQueue) {
+    super(styleUrlResolver, styleHost, domQueue);
     this._styleInliner = styleInliner;
   }
 
@@ -142,13 +149,15 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
 
-  constructor(styleUrlResolver: StyleUrlResolver) {
-    super();
+  constructor(styleUrlResolver: StyleUrlResolver, domQueue: DomOpQueue) {
+    super(domQueue);
     this._styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el, view:View){
-    _moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
+  attachTemplate(el, view:View) {
+    this._domQueue.push(() => {
+      _moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
+    });
   }
 
   getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): CompileStep {

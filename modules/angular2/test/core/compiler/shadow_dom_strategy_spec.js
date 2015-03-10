@@ -22,24 +22,36 @@ import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DynamicProtoChangeDetector} from 'angular2/change_detection';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
+
 
 export function main() {
-  var strategy;
+  var strategy, domQueue;
+
+  function tick() {
+    domQueue.run();
+  }
 
   describe('NativeShadowDomStratgey', () => {
+
     beforeEach(() => {
+      domQueue = new DomOpQueue();
       var urlResolver = new UrlResolver();
       var styleUrlResolver = new StyleUrlResolver(urlResolver);
-      strategy = new NativeShadowDomStrategy(styleUrlResolver);
+      strategy = new NativeShadowDomStrategy(styleUrlResolver, domQueue);
     });
+
 
     it('should attach the view nodes to the shadow root', () => {
       var host = el('<div></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null, domQueue, null);
 
       strategy.attachTemplate(host, view);
+
+      tick();
+
       var shadowRoot = DOM.getShadowRoot(host);
       expect(isPresent(shadowRoot)).toBeTruthy();
       expect(shadowRoot).toHaveText('view');
@@ -70,12 +82,13 @@ export function main() {
     var xhr, styleHost;
 
     beforeEach(() => {
+      domQueue = new DomOpQueue();
       var urlResolver = new UrlResolver();
       var styleUrlResolver = new StyleUrlResolver(urlResolver);
       xhr = new FakeXHR();
       var styleInliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
       styleHost = el('<div></div>');
-      strategy = new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, styleHost);
+      strategy = new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, styleHost, domQueue);
       resetShadowDomCache();
     });
 
@@ -83,9 +96,11 @@ export function main() {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null, domQueue, null);
 
       strategy.attachTemplate(host, view);
+      tick();
+
       var firstChild = DOM.firstChild(host);
       expect(DOM.tagName(firstChild)).toEqual('DIV');
       expect(firstChild).toHaveText('view');
@@ -207,10 +222,11 @@ export function main() {
     var styleHost;
 
     beforeEach(() => {
+      domQueue = new DomOpQueue();
       var urlResolver = new UrlResolver();
       var styleUrlResolver = new StyleUrlResolver(urlResolver);
       styleHost = el('<div></div>');
-      strategy = new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, styleHost);
+      strategy = new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, styleHost, domQueue);
       resetShadowDomCache();
     });
 
@@ -218,9 +234,11 @@ export function main() {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null, domQueue, null);
 
       strategy.attachTemplate(host, view);
+      tick();
+
       var firstChild = DOM.firstChild(host);
       expect(DOM.tagName(firstChild)).toEqual('DIV');
       expect(firstChild).toHaveText('view');

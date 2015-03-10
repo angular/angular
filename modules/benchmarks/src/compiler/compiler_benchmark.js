@@ -5,6 +5,7 @@ import {document} from 'angular2/src/facade/browser';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
 
@@ -92,13 +93,14 @@ export function main() {
   var templateResolver = new FakeTemplateResolver();
   var urlResolver = new UrlResolver();
   var styleUrlResolver = new StyleUrlResolver(urlResolver);
+  var domQueue = new DomOpQueue();
   var compiler = new Compiler(
     dynamicChangeDetection,
     new TemplateLoader(null, urlResolver),
     reader,
     new Parser(new Lexer()),
     cache,
-    new NativeShadowDomStrategy(styleUrlResolver),
+    new NativeShadowDomStrategy(styleUrlResolver, domQueue),
     templateResolver,
     new ComponentUrlMapper(),
     urlResolver,

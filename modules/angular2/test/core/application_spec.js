@@ -8,6 +8,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
 import {Template} from 'angular2/src/core/annotations/template';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 @Component({selector: 'hello-app'})
 @Template({inline: '{{greeting}} world!'})
@@ -77,6 +78,7 @@ export function main() {
     it('should resolve an injector promise and contain bindings', (done) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
+        injector.get(DomOpQueue).run();
         expect(injector.get(appElementToken)).toBe(el);
         done();
       });
@@ -85,6 +87,7 @@ export function main() {
     it('should provide the application component in the injector', (done) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
+        injector.get(DomOpQueue).run();
         expect(injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
         done();
       });
@@ -93,6 +96,7 @@ export function main() {
     it('should display hello world', (done) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
+        injector.get(DomOpQueue).run();
         expect(injector.get(appElementToken)
             .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
         done();
@@ -103,6 +107,7 @@ export function main() {
       var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
       var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
       PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
+        injectors.forEach((i) => i.get(DomOpQueue).run());
         expect(injectors[0].get(appElementToken)
             .shadowRoot.childNodes[0].nodeValue).toEqual('hello world!');
         expect(injectors[1].get(appElementToken)
@@ -118,6 +123,7 @@ export function main() {
       ]);
 
       injectorPromise.then((injector) => {
+        injector.get(DomOpQueue).run();
         expect(injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
         done();
       });

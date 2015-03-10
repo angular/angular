@@ -12,6 +12,7 @@ import {SetterFn} from 'angular2/src/reflection/types';
 import {FIELD, IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import {NgElement} from 'angular2/src/core/dom/element';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {ViewContainer} from './view_container';
 import {LightDom, DestinationLightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
@@ -300,23 +301,19 @@ export class ProtoView {
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
-  instantiate(hostElementInjector: ElementInjector, eventManager: EventManager,
-    reflector: Reflector):View {
-    if (this._viewPool.length() == 0) this._preFillPool(hostElementInjector, eventManager,
-      reflector);
+  instantiate(hostElementInjector: ElementInjector, eventManager: EventManager, domQueue: DomOpQueue, reflector: Reflector):View {
+    if (this._viewPool.length() == 0) this._preFillPool(hostElementInjector, eventManager, domQueue, reflector);
     var view = this._viewPool.pop();
-    return isPresent(view) ? view : this._instantiate(hostElementInjector, eventManager, reflector);
+    return isPresent(view) ? view : this._instantiate(hostElementInjector, eventManager, domQueue, reflector);
   }
 
-  _preFillPool(hostElementInjector: ElementInjector, eventManager: EventManager,
-    reflector: Reflector) {
+  _preFillPool(hostElementInjector: ElementInjector, eventManager: EventManager, domQueue: DomOpQueue, reflector: Reflector) {
     for (var i = 0; i < VIEW_POOL_PREFILL; i++) {
-      this._viewPool.push(this._instantiate(hostElementInjector, eventManager, reflector));
+      this._viewPool.push(this._instantiate(hostElementInjector, eventManager, domQueue, reflector));
     }
   }
 
-  _instantiate(hostElementInjector: ElementInjector, eventManager: EventManager,
-    reflector: Reflector): View {
+  _instantiate(hostElementInjector: ElementInjector, eventManager: EventManager, domQueue: DomOpQueue, reflector: Reflector): View {
     var rootElementClone = this.instantiateInPlace ? this.element : DOM.importIntoDoc(this.element);
     var elementsWithBindingsDynamic;
     if (this.isTemplateElement) {
@@ -399,7 +396,7 @@ export class ProtoView {
       var bindingPropagationConfig = null;
       if (isPresent(binder.componentDirective)) {
         var strategy = this.shadowDomStrategy;
-        var childView = binder.nestedProtoView.instantiate(elementInjector, eventManager, reflector);
+        var childView = binder.nestedProtoView.instantiate(elementInjector, eventManager, domQueue, reflector);
         view.changeDetector.addChild(childView.changeDetector);
 
         lightDom = strategy.constructLightDom(view, childView, element);
@@ -415,7 +412,7 @@ export class ProtoView {
       if (isPresent(binder.viewportDirective)) {
         var destLightDom = this._directParentElementLightDom(protoElementInjector, preBuiltObjects);
         viewContainer = new ViewContainer(view, element, binder.nestedProtoView, elementInjector,
-          eventManager, reflector, destLightDom);
+          eventManager, domQueue, reflector, destLightDom);
         ListWrapper.push(viewContainers, viewContainer);
       }
 

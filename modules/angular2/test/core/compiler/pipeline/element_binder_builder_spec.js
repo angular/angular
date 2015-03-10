@@ -14,6 +14,7 @@ import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/anno
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 
 import {ChangeDetector, Lexer, Parser, DynamicProtoChangeDetector, PipeRegistry, Pipe
   } from 'angular2/change_detection';
@@ -21,9 +22,10 @@ import {Injector} from 'angular2/di';
 
 export function main() {
   describe('ElementBinderBuilder', () => {
-    var evalContext, view, changeDetector;
+    var evalContext, view, changeDetector, queue;
 
     function createPipeline({textNodeBindings, propertyBindings, eventBindings, directives, protoElementInjector, registry}={}) {
+      queue = new DomOpQueue();
       var reflector = new DirectiveMetadataReader();
       var parser = new Parser(new Lexer());
       return new CompilePipeline([
@@ -72,7 +74,7 @@ export function main() {
               current.inheritedProtoView = new ProtoView(
                 current.element,
                 new DynamicProtoChangeDetector(normalizeBlank(registry)),
-                new NativeShadowDomStrategy(null));
+                new NativeShadowDomStrategy(null, queue));
             } else if (isPresent(parent)) {
               current.inheritedProtoView = parent.inheritedProtoView;
             }
@@ -82,9 +84,14 @@ export function main() {
 
     function instantiateView(protoView) {
       evalContext = new Context();
-      view = protoView.instantiate(null, null, null);
+      view = protoView.instantiate(null, null, queue, null);
       view.hydrate(new Injector([]), null, evalContext);
       changeDetector = view.changeDetector;
+    }
+
+    function tick() {
+      changeDetector.detectChanges();
+      queue.run();
     }
 
     it('should not create an ElementBinder for elements that have no bindings', () => {
@@ -170,7 +177,7 @@ export function main() {
       instantiateView(pv);
       evalContext.prop1 = 'a';
       evalContext.prop2 = 'b';
-      changeDetector.detectChanges();
+      tick();
 
       expect(view.nodes[0].childNodes[0].nodeValue).toEqual('a');
       expect(view.nodes[0].childNodes[2].nodeValue).toEqual('b');
@@ -190,7 +197,7 @@ export function main() {
       instantiateView(pv);
       evalContext.prop1 = 'a';
       evalContext.prop2 = false;
-      changeDetector.detectChanges();
+      tick();
 
       expect(view.nodes[0].value).toEqual('a');
       expect(view.nodes[0].hidden).toEqual(false);
@@ -317,11 +324,11 @@ export function main() {
       instantiateView(pv);
 
       evalContext.prop1 = true;
-      changeDetector.detectChanges();
+      tick();
       expect(view.nodes[0].className).toEqual('foo ng-binding bar');
 
       evalContext.prop1 = false;
-      changeDetector.detectChanges();
+      tick();
       expect(view.nodes[0].className).toEqual('foo ng-binding');
     });
 
@@ -338,11 +345,11 @@ export function main() {
       instantiateView(pv);
 
       evalContext.prop1 = 'red';
-      changeDetector.detectChanges();
+      tick();
       expect(view.nodes[0].style.color).toEqual('red');
 
       evalContext.prop1 = 'blue';
-      changeDetector.detectChanges();
+      tick();
       expect(view.nodes[0].style.color).toEqual('blue');
     });
 
@@ -359,15 +366,15 @@ export function main() {
       instantiateView(pv);
 
       evalContext.prop1 = 10;
-      changeDetector.detectChanges();
+      tick();
       expect(DOM.getStyle(view.nodes[0], 'font-size')).toEqual('10px');
 
       evalContext.prop1 = 20;
-      changeDetector.detectChanges();
+      tick();
       expect(DOM.getStyle(view.nodes[0], 'font-size')).toEqual('20px');
 
       evalContext.prop1 = null;
-      changeDetector.detectChanges();
+      tick();
       expect(DOM.getStyle(view.nodes[0], 'font-size')).toEqual('');
     });
 
@@ -401,13 +408,13 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
+          el('<div></div>'), new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null, queue));
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
       evalContext.prop2 = 'b';
       evalContext.prop3 = 'c';
-      changeDetector.detectChanges();
+      tick();
 
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp).toBe('a');
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWith2Bindings).decorProp2).toBe('b');
@@ -437,7 +444,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot prop-binding directives></div>'));
       var pv = results[0].inheritedProtoView;
       results[0].inheritedElementBinder.nestedProtoView = new ProtoView(
-        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy(null));
+        el('<div></div>'), new DynamicProtoChangeDetector(registry), new NativeShadowDomStrategy(null, queue));
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
@@ -464,7 +471,7 @@ export function main() {
 
       instantiateView(pv);
       evalContext.prop1 = 'a';
-      changeDetector.detectChanges();
+      tick();
 
       expect(view.elementInjectors[1].get(SomeDecoratorDirectiveWithBinding).decorProp).toBe('a');
     });
@@ -476,7 +483,7 @@ export function main() {
       var results = pipeline.process(el('<div viewroot directives boundprop1="foo"></div>'));
       var pv = results[0].inheritedProtoView;
       instantiateView(pv);
-      changeDetector.detectChanges();
+      tick();
 
       expect(view.elementInjectors[0].get(SomeDecoratorDirectiveWithBinding).decorProp).toEqual('foo');
     });

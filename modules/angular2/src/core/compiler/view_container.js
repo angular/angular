@@ -1,5 +1,6 @@
 import * as viewModule from './view';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {DomOpQueue} from 'angular2/src/core/dom/op_queue';
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
@@ -19,12 +20,14 @@ export class ViewContainer {
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
+  _domQueue: DomOpQueue;
 
   constructor(parentView: viewModule.View,
               templateElement,
               defaultProtoView: viewModule.ProtoView,
               elementInjector: eiModule.ElementInjector,
               eventManager: EventManager,
+              domQueue: DomOpQueue,
               reflector: Reflector,
               lightDom = null) {
     this.parentView = parentView;
@@ -39,6 +42,7 @@ export class ViewContainer {
     this.appInjector = null;
     this.hostElementInjector = null;
     this._eventManager = eventManager;
+    this._domQueue = domQueue;
   }
 
   hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
@@ -82,7 +86,7 @@ export class ViewContainer {
         'Cannot create views on a dehydrated ViewContainer');
     // TODO(rado): replace with viewFactory.
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager,
-      this._reflector);
+      this._domQueue, this._reflector);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
@@ -93,7 +97,7 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
     if (isBlank(this._lightDom)) {
-      ViewContainer.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
+      ViewContainer.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view, this._domQueue);
     } else {
       this._lightDom.redistribute();
     }
@@ -120,7 +124,7 @@ export class ViewContainer {
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     if (isBlank(this._lightDom)) {
-      ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
+      ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView, this._domQueue);
     } else {
       this._lightDom.redistribute();
     }
@@ -153,13 +157,13 @@ export class ViewContainer {
     }
   }
 
-  static moveViewNodesAfterSibling(sibling, view) {
+  static moveViewNodesAfterSibling(sibling, view, domQueue) {
     for (var i = view.nodes.length - 1; i >= 0; --i) {
       DOM.insertAfter(sibling, view.nodes[i]);
     }
   }
 
-  static removeViewNodesFromParent(parent, view) {
+  static removeViewNodesFromParent(parent, view, domQueue) {
     for (var i = view.nodes.length - 1; i >= 0; --i) {
       DOM.removeChild(parent, view.nodes[i]);
     }

@@ -4,7 +4,7 @@ describe('ng2 tree benchmark', function () {
 
   var URL = 'benchmarks/src/tree/tree_benchmark.html';
 
-  afterEach(perfUtil.verifyNoBrowserErrors);
+  //afterEach(perfUtil.verifyNoBrowserErrors);
 
   it('should log the ng stats', function(done) {
     perfUtil.runClickBenchmark({
