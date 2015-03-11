@@ -6,7 +6,6 @@ import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
-import {Reflector} from 'angular2/src/reflection/reflection';
 
 export class ViewContainer {
   parentView: viewModule.View;
@@ -15,7 +14,6 @@ export class ViewContainer {
   _views: List<viewModule.View>;
   _lightDom: any;
   _eventManager: EventManager;
-  _reflector: Reflector;
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
@@ -25,14 +23,12 @@ export class ViewContainer {
               defaultProtoView: viewModule.ProtoView,
               elementInjector: eiModule.ElementInjector,
               eventManager: EventManager,
-              reflector: Reflector,
               lightDom = null) {
     this.parentView = parentView;
     this.templateElement = templateElement;
     this.defaultProtoView = defaultProtoView;
     this.elementInjector = elementInjector;
     this._lightDom = lightDom;
-    this._reflector = reflector;
 
     // The order in this list matches the DOM order.
     this._views = [];
@@ -81,8 +77,7 @@ export class ViewContainer {
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
     // TODO(rado): replace with viewFactory.
-    var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager,
-      this._reflector);
+    var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);

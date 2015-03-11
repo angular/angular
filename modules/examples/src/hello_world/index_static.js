@@ -20,7 +20,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 function setup() {
   reflector.registerType(app.HelloCmp, {
@@ -166,12 +166,6 @@ function setup() {
 
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
-    "parameters": [],
-    "annotations": []
-  });
-
-  reflector.registerType(Reflector, {
-    "factory": () => reflector,
     "parameters": [],
     "annotations": []
   });

@@ -33,11 +33,11 @@ export function main() {
 
   var bindings = [A, B, C];
   var proto = new ProtoElementInjector(null, 0, bindings);
-  var elementInjector = proto.instantiate(null, null, null);
+  var elementInjector = proto.instantiate(null, null);
 
   function instantiate () {
     for (var i = 0; i < iterations; ++i) {
-      var ei = proto.instantiate(null, null, null);
+      var ei = proto.instantiate(null, null);
       ei.instantiateDirectives(appInjector, null, null);
     }
   }

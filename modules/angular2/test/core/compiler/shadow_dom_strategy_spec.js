@@ -37,7 +37,7 @@ export function main() {
       var host = el('<div></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);
       var shadowRoot = DOM.getShadowRoot(host);
@@ -83,7 +83,7 @@ export function main() {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);
@@ -218,7 +218,7 @@ export function main() {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
       var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null), null);
-      var view = pv.instantiate(null, null, null);
+      var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);

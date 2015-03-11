@@ -32,8 +32,6 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
-import {reflector} from 'angular2/src/reflection/reflection';
-
 export function main() {
   BrowserDomAdapter.makeCurrent();
   describe('integration tests', function() {
@@ -357,7 +355,7 @@ class MyComp {
 }
 
 function createView(pv) {
-  var view = pv.instantiate(null, null, reflector);
+  var view = pv.instantiate(null, null);
   view.hydrate(new Injector([]), null, {});
   return view;
 }

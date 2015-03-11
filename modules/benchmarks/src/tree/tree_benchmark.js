@@ -18,7 +18,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {window, document, gc} from 'angular2/src/facade/browser';
@@ -171,7 +171,6 @@ function setupReflector() {
     "annotations": []
   });
 
-
   reflector.registerType(ComponentUrlMapper, {
     "factory": () => new ComponentUrlMapper(),
     "parameters": [],
@@ -187,12 +186,6 @@ function setupReflector() {
 
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
-    "parameters": [],
-    "annotations": []
-  });
-
-  reflector.registerType(Reflector, {
-    "factory": () => reflector,
     "parameters": [],
     "annotations": []
   });

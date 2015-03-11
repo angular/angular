@@ -8,7 +8,7 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {
   bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange, NgElement, Decorator
 }  from 'angular2/angular2';
-import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -297,12 +297,6 @@ export function setupReflectorForAngular() {
 
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
-    "parameters": [],
-    "annotations": []
-  });
-
-  reflector.registerType(Reflector, {
-    "factory": () => reflector,
     "parameters": [],
     "annotations": []
   });

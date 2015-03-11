@@ -8,7 +8,6 @@ import {Injector} from 'angular2/di';
 import {ProtoElementInjector, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
-import {reflector} from 'angular2/src/reflection/reflection';
 
 function createView(nodes) {
   var view = new View(null, nodes, new DynamicProtoChangeDetector(null), MapWrapper.create());
@@ -72,9 +71,9 @@ export function main() {
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null),
         new NativeShadowDomStrategy(null));
-      elementInjector = new ElementInjector(null, null, null, reflector);
+      elementInjector = new ElementInjector(null, null, null);
       viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
-        null, reflector);
+        null);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
@@ -219,7 +218,7 @@ export function main() {
           new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
         pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
-        fancyView = pv.instantiate(null, null, reflector);
+        fancyView = pv.instantiate(null, null);
       });
 
       it('hydrating should update rootElementInjectors and parent change detector', () => {

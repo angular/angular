@@ -10,7 +10,7 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
-import {Reflector} from 'angular2/src/reflection/reflection';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -270,8 +270,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, reflector: Reflector):ElementInjector {
-    return new ElementInjector(this, parent, host, reflector);
+  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
+    return new ElementInjector(this, parent, host);
   }
 
   directParent(): ProtoElementInjector {
@@ -324,10 +324,8 @@ export class ElementInjector extends TreeNode {
   _obj9:any;
   _preBuiltObjects;
   _constructionCounter;
-  _refelector: Reflector;
 
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector,
-    reflector: Reflector) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -340,7 +338,6 @@ export class ElementInjector extends TreeNode {
     }
 
     this._proto = proto;
-    this._refelector = reflector;
 
     //we cannot call clearDirectives because fields won't be detected
     this._preBuiltObjects = null;
@@ -518,7 +515,7 @@ export class ElementInjector extends TreeNode {
   _buildPropSetter(dep) {
     var ngElement = this._getPreBuiltObjectByKeyId(StaticKeys.instance().ngElementId);
     var domElement = ngElement.domElement;
-    var setter = this._refelector.setter(dep.propSetterName);
+    var setter = reflector.setter(dep.propSetterName);
     return function(v) { setter(domElement, v) };
   }
 

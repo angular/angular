@@ -12,7 +12,6 @@ import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
-import {reflector} from 'angular2/src/reflection/reflection';
 import {DynamicProtoChangeDetector} from 'angular2/change_detection';
 
 @proxy
@@ -131,7 +130,7 @@ export function main() {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
-    var inj = proto.instantiate(null, null, reflector);
+    var inj = proto.instantiate(null, null);
     var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
 
     inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector, preBuilt);
@@ -144,12 +143,12 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null, reflector);
+    var parent = protoParent.instantiate(null, null);
 
     parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
-    var child = protoChild.instantiate(parent, null, reflector);
+    var child = protoChild.instantiate(parent, null);
     child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     return child;
@@ -162,11 +161,11 @@ export function main() {
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
-    var host = protoParent.instantiate(null, null, reflector);
+    var host = protoParent.instantiate(null, null);
     host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false, 1);
-    var shadow = protoChild.instantiate(null, host, reflector);
+    var shadow = protoChild.instantiate(null, host);
     shadow.instantiateDirectives(shadowInj, null, null);
 
     return shadow;
@@ -199,9 +198,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null, reflector);
-        var c1 = protoChild1.instantiate(p, null, reflector);
-        var c2 = protoChild2.instantiate(p, null, reflector);
+        var p = protoParent.instantiate(null, null);
+        var c1 = protoChild1.instantiate(p, null);
+        var c2 = protoChild2.instantiate(p, null);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -216,8 +215,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, reflector);
-          var c = protoChild.instantiate(p, null, reflector);
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
 
           expect(c.directParent()).toEqual(p);
         });
@@ -227,8 +226,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, reflector);
-          var c = protoChild.instantiate(p, null, reflector);
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
 
           expect(c.directParent()).toEqual(null);
         });
@@ -435,7 +434,7 @@ export function main() {
       });
 
       it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null, null, null, null);
+        var viewContainer = new ViewContainer(null, null, null, null, null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);

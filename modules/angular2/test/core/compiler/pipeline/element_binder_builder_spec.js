@@ -82,7 +82,7 @@ export function main() {
 
     function instantiateView(protoView) {
       evalContext = new Context();
-      view = protoView.instantiate(null, null, null);
+      view = protoView.instantiate(null, null);
       view.hydrate(new Injector([]), null, evalContext);
       changeDetector = view.changeDetector;
     }
