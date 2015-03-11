@@ -220,7 +220,7 @@ To better understand the kinds of injections which are supported in Angular we h
 
 ### Injecting Services
 
-Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `componentServices` and then letting the directive ask for the configured service. 
+Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `services` and then letting the directive ask for the configured service. 
 
 This example illustrates how to inject `MyService` into `House` directive.
 
@@ -231,7 +231,7 @@ class MyService {}                   | Assume a service which needs to be inject
                                      |
 @Component({                         | Assume a top level application component which 
   selector: 'my-app',                | configures the services to be injected.
-  componentServices: [MyService]     | 
+  services: [MyService]     | 
 })                                   |
 @Template({                          | Assume we have a template that needs to be
   url: 'my_app.html',                | configured with directives to be injected.

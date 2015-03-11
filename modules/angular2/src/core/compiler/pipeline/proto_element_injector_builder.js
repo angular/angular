@@ -34,9 +34,6 @@ export class ProtoElementInjectorBuilder extends CompileStep {
     var distanceToParentInjector = this._getDistanceToParentInjector(parent, current);
     var parentProtoElementInjector = this._getParentProtoElementInjector(parent, current);
     var injectorBindings = ListWrapper.map(current.getAllDirectives(), this._createBinding);
-    // TODO: add lightDomServices as well,
-    // but after the directives as we rely on that order
-    // in the element_binder_builder.
 
     // Create a protoElementInjector for any element that either has bindings *or* has one
     // or more var- defined. Elements with a var- defined need a their own element injector

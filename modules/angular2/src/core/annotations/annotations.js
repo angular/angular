@@ -5,7 +5,6 @@ import {ListWrapper, List} from 'angular2/src/facade/collection';
 export class Directive {
   selector:any; //string;
   bind:any;
-  lightDomServices:any; //List;
   implementsTypes:any; //List;
   lifecycle:any; //List
   events:any; //List
@@ -14,20 +13,17 @@ export class Directive {
       selector,
       bind,
       events,
-      lightDomServices,
       implementsTypes,
       lifecycle
     }:{
       selector:string,
       bind:any,
       events: any,
-      lightDomServices:List,
       implementsTypes:List,
       lifecycle:List
     }={})
   {
     this.selector = selector;
-    this.lightDomServices = lightDomServices;
     this.implementsTypes = implementsTypes;
     this.bind = bind;
     this.events = events;
@@ -41,26 +37,21 @@ export class Directive {
 
 export class Component extends Directive {
   //TODO: vsavkin: uncomment it once the issue with defining fields in a sublass works
-  shadowDomServices:any; //List;
-  componentServices:any; //List;
+  services:any; //List;
 
 @CONST()
   constructor({
     selector,
     bind,
     events,
-    lightDomServices,
-    shadowDomServices,
-    componentServices,
+    services,
     implementsTypes,
     lifecycle
     }:{
       selector:String,
       bind:Object,
       events:Object,
-      lightDomServices:List,
-      shadowDomServices:List,
-      componentServices:List,
+      services:List,
       implementsTypes:List,
       lifecycle:List
     }={})
@@ -69,13 +60,11 @@ export class Component extends Directive {
       selector: selector,
       bind: bind,
       events: events,
-      lightDomServices: lightDomServices,
       implementsTypes: implementsTypes,
       lifecycle: lifecycle
     });
 
-    this.shadowDomServices = shadowDomServices;
-    this.componentServices = componentServices;
+    this.services = services;
   }
 }
 
@@ -86,7 +75,6 @@ export class Decorator extends Directive {
       selector,
       bind,
       events,
-      lightDomServices,
       implementsTypes,
       lifecycle,
       compileChildren = true,
@@ -94,7 +82,6 @@ export class Decorator extends Directive {
       selector:string,
       bind:any,
       events:any,
-      lightDomServices:List,
       implementsTypes:List,
       lifecycle:List,
       compileChildren:boolean
@@ -105,7 +92,6 @@ export class Decorator extends Directive {
         selector: selector,
         bind: bind,
         events: events,
-        lightDomServices: lightDomServices,
         implementsTypes: implementsTypes,
         lifecycle: lifecycle
     });
@@ -118,13 +104,11 @@ export class Viewport extends Directive {
       selector,
       bind,
       events,
-      lightDomServices,
       implementsTypes,
       lifecycle
     }:{
       selector:string,
       bind:any,
-      lightDomServices:List,
       implementsTypes:List,
       lifecycle:List
     }={})
@@ -133,7 +117,6 @@ export class Viewport extends Directive {
         selector: selector,
         bind: bind,
         events: events,
-        lightDomServices: lightDomServices,
         implementsTypes: implementsTypes,
         lifecycle: lifecycle
     });

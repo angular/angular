@@ -676,7 +676,7 @@ class DirectiveImplementingOnChange {
 
 class SomeService {}
 
-@Component({componentServices: [SomeService]})
+@Component({services: [SomeService]})
 class SomeComponent {
   service: SomeService;
   constructor(service: SomeService) {
