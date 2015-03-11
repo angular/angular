@@ -16,7 +16,7 @@ void setupReflection(reflector) {
       "annotations": const [
         const Component(
             selector: '[soup]',
-            componentServices: const [dep.DependencyComponent])
+            services: const [dep.DependencyComponent])
       ]
     });
   i0.setupReflection(reflector);

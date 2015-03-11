@@ -13,7 +13,7 @@ void setupReflection(reflector) {
       "factory": (MyContext c) => new MyComponent(c),
       "parameters": const [const [MyContext]],
       "annotations": const [
-        const Component(componentServices: const [MyContext])
+        const Component(services: const [MyContext])
       ]
     });
 }

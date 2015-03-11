@@ -209,7 +209,7 @@ class SomeComponentService {}
 class SomeViewportDirective {}
 
 @Component({
-  componentServices: [SomeComponentService]
+  services: [SomeComponentService]
 })
 class SomeComponentDirective {}
 

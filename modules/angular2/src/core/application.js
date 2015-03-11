@@ -43,9 +43,7 @@ function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(appDocumentToken).toValue(DOM.defaultDoc()),
       bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
-        // TODO(rado): inspect annotation here and warn if there are bindings,
-        // lightDomServices, and other component annotations that are skipped
-        // for bootstrapping components.
+        // TODO(rado): investigate whether to support bindings on root component.
         return reader.read(appComponentType);
       }, [DirectiveMetadataReader]),
 
