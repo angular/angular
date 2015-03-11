@@ -7,6 +7,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Key} from './key';
 
 var _constructing = new Object();
+var _notFound = new Object();
 
 class _Waiting {
   promise:Promise;
@@ -72,10 +73,10 @@ export class Injector {
     var strategy = returnPromise ? this._asyncStrategy : this._syncStrategy;
 
     var instance = strategy.readFromCache(key);
-    if (isPresent(instance)) return instance;
+    if (instance !== _notFound) return instance;
 
     instance = strategy.instantiate(key);
-    if (isPresent(instance)) return instance;
+    if (instance !== _notFound) return instance;
 
     if (isPresent(this._parent)) {
       return this._parent._getByKey(key, returnPromise, returnLazy, optional);
@@ -148,13 +149,13 @@ class _SyncInjectorStrategy {
     } else if (isPresent(instance) && !_isWaiting(instance)) {
       return instance;
     } else {
-      return null;
+      return _notFound;
     }
   }
 
   instantiate(key:Key) {
     var binding = this.injector._getBinding(key);
-    if (isBlank(binding)) return null;
+    if (isBlank(binding)) return _notFound;
 
     if (binding.providedAsPromise) throw new AsyncBindingError(key);
 
@@ -198,13 +199,13 @@ class _AsyncInjectorStrategy {
     } else if (isPresent(instance)) {
       return PromiseWrapper.resolve(instance);
     } else {
-      return null;
+      return _notFound;
     }
   }
 
   instantiate(key:Key) {
     var binding = this.injector._getBinding(key);
-    if (isBlank(binding)) return null;
+    if (isBlank(binding)) return _notFound;
 
     //add a marker so we can detect cyclic dependencies
     this.injector._markAsConstructing(key);
@@ -242,7 +243,6 @@ class _AsyncInjectorStrategy {
     return instance
   }
 }
-
 
 function _flattenBindings(bindings:List, res:Map) {
   ListWrapper.forEach(bindings, function (b) {
