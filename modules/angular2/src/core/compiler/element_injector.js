@@ -100,36 +100,26 @@ export class DirectiveDependency extends Dependency {
   }
 
   static createFrom(d:Dependency):Dependency {
-    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
-      d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._eventEmitterName(d.properties),
-      DirectiveDependency._propSetterName(d.properties)
-    );
-  }
+    var depth = 0;
+    var eventName = null;
+    var propName = null;
+    var properties = d.properties;
 
-  static _depth(properties):int {
-    if (properties.length == 0) return 0;
-    if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
-    if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
-    return 0;
-  }
-
-  static _eventEmitterName(properties):string {
     for (var i = 0; i < properties.length; i++) {
-      if (properties[i] instanceof EventEmitter) {
-        return properties[i].eventName;
+      var property = properties[i];
+      if (property instanceof Parent) {
+        depth = 1;
+      } else if (property instanceof Ancestor) {
+        depth = MAX_DEPTH;
+      } else if (property instanceof EventEmitter) {
+        eventName = property.eventName;
+      } else if (property instanceof PropertySetter) {
+        propName = property.propName;
       }
     }
-    return null;
-  }
 
-  static _propSetterName(properties):string {
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i] instanceof PropertySetter) {
-        return properties[i].propName;
-      }
-    }
-    return null;
+    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties, depth,
+        eventName, propName);
   }
 }
 
