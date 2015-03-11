@@ -7,7 +7,6 @@ import {ElementInjector} from '../element_injector';
 import {ViewContainer} from '../view_container';
 import {Content} from './content_tag';
 
-export class SourceLightDom {}
 export class DestinationLightDom {}
 
 
@@ -21,7 +20,7 @@ class _Root {
   }
 }
 
-// TODO: LightDom should implement SourceLightDom and DestinationLightDom
+// TODO: LightDom should implement DestinationLightDom
 // once interfaces are supported
 export class LightDom {
   // The light DOM of the element is enclosed inside the lightDomView
