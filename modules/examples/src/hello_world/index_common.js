@@ -15,7 +15,7 @@ import {bootstrap, Component, Decorator, Template, NgElement} from 'angular2/ang
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  componentServices: [GreetingService]
+  services: [GreetingService]
 })
 // The template for the component.
 @Template({

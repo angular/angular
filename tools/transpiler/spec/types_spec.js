@@ -22,7 +22,6 @@ function namedObjectType({a,b}:{a:A,b:B<C>}) {
 class Bar {
   constructor({
       selector,
-      lightDomServices,
       implementsTypes
     })
   {

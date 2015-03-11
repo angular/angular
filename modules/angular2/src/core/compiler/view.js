@@ -144,7 +144,7 @@ export class View {
 
       // shadowDomAppInjector
       if (isPresent(componentDirective)) {
-        var services = componentDirective.annotation.componentServices;
+        var services = componentDirective.annotation.services;
         if (isPresent(services))
           shadowDomAppInjector = appInjector.createChild(services);
         else {

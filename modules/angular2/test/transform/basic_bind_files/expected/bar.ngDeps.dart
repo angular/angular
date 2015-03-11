@@ -12,7 +12,7 @@ void setupReflection(reflector) {
       "factory": () => new MyComponent(),
       "parameters": const [],
       "annotations": const [
-        const Component(selector: 'soup', componentServices: const [ToolTip])
+        const Component(selector: 'soup', services: const [ToolTip])
       ]
     })
     ..registerType(ToolTip, {
