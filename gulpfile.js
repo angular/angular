@@ -35,7 +35,7 @@ var _COMPILER_CONFIG_JS_DEFAULT = {
   modules: 'instantiate'
 };
 
-var _HTLM_DEFAULT_SCRIPTS_JS = [
+var _HTML_DEFAULT_SCRIPTS_JS = [
   {src: gulpTraceur.RUNTIME_PATH, mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       mimeType: 'text/javascript', copy: true},
@@ -206,16 +206,16 @@ var CONFIG = {
     },
     scriptsPerFolder: {
       js: {
-        '**': _HTLM_DEFAULT_SCRIPTS_JS,
+        '**': _HTML_DEFAULT_SCRIPTS_JS,
         'benchmarks/**':
           [
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTLM_DEFAULT_SCRIPTS_JS),
+          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
         'benchmarks_external/**':
           [
             { src: 'node_modules/angular/angular.js', mimeType: 'text/javascript', copy: true },
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTLM_DEFAULT_SCRIPTS_JS)
+          ].concat(_HTML_DEFAULT_SCRIPTS_JS)
       },
       dart: {
         '**': _HTML_DEFAULT_SCRIPTS_DART,
