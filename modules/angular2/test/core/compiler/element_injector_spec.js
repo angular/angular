@@ -9,7 +9,7 @@ import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {ProtoView, View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 import {DynamicProtoChangeDetector} from 'angular2/change_detection';
@@ -455,22 +455,16 @@ export function main() {
           parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom, null);
         });
 
-        it("should return destination light DOM from the parent's injector", function () {
-          var child = parentChildInjectors([], [], parentPreBuiltObjects);
+        it("should return light DOM from the current injector", function () {
+          var inj = injector([], null, null, parentPreBuiltObjects);
 
-          expect(child.get(DestinationLightDom)).toEqual(lightDom);
+          expect(inj.get(LightDom)).toEqual(lightDom);
         });
 
         it("should return null when parent's injector is a component boundary", function () {
           var child = hostShadowInjectors([], [], parentPreBuiltObjects);
 
           expect(child.get(DestinationLightDom)).toBeNull();
-        });
-
-        it("should return source light DOM from the closest component boundary", function () {
-          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
-
-          expect(child.get(SourceLightDom)).toEqual(lightDom);
         });
       });
     });

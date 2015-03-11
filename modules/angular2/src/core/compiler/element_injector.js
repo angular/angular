@@ -5,7 +5,7 @@ import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
@@ -25,7 +25,7 @@ class StaticKeys {
   ngElementId:number;
   viewContainerId:number;
   destinationLightDomId:number;
-  sourceLightDomId:number;
+  lightDomId:number;
   bindingPropagationConfigId:number;
 
   constructor() {
@@ -34,7 +34,7 @@ class StaticKeys {
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.destinationLightDomId = Key.get(DestinationLightDom).id;
-    this.sourceLightDomId = Key.get(SourceLightDom).id;
+    this.lightDomId = Key.get(LightDom).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
   }
 
@@ -581,8 +581,8 @@ export class ElementInjector extends TreeNode {
       var p:ElementInjector = this.directParent();
       return isPresent(p) ? p._preBuiltObjects.lightDom : null;
     }
-    if (keyId === staticKeys.sourceLightDomId)   {
-      return this._host._preBuiltObjects.lightDom;
+    if (keyId === staticKeys.lightDomId)   {
+      return this._preBuiltObjects.lightDom;
     }
 
     //TODO add other objects as needed

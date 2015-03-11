@@ -188,33 +188,32 @@ export function main() {
           });
         });
 
-        // Enable once dom-write queue is implemented and onDehydrate is implemented
-        //it('should redistribute when the shadow dom changes', (done) => {
-        //  var temp = '<conditional-content>' +
-        //    '<div class="left">A</div>' +
-        //    '<div>B</div>' +
-        //    '<div>C</div>' +
-        //    '</conditional-content>';
-        //
-        //
-        //  compile(temp, (view, lc) => {
-        //    var cmp = view.elementInjectors[0].get(ConditionalContentComponent);
-        //
-        //    expect(view.nodes).toHaveText('(, ABC)');
-        //
-        //    cmp.showLeft();
-        //    lc.tick();
-        //
-        //    expect(view.nodes).toHaveText('(A, BC)');
-        //
-        //    cmp.hideLeft()
-        //    lc.tick();
-        //
-        //    expect(view.nodes).toHaveText('(, ABC)');
-        //
-        //    done();
-        //  });
-        //});
+        it('should redistribute when the shadow dom changes', (done) => {
+          var temp = '<conditional-content>' +
+            '<div class="left">A</div>' +
+            '<div>B</div>' +
+            '<div>C</div>' +
+            '</conditional-content>';
+
+
+          compile(temp, [ConditionalContentComponent, AutoViewportDirective], (view, lc) => {
+            var cmp = view.elementInjectors[0].get(ConditionalContentComponent);
+
+            expect(view.nodes).toHaveText('(, ABC)');
+
+            cmp.showLeft();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(A, BC)');
+
+            cmp.hideLeft();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(, ABC)');
+
+            done();
+          });
+        });
 
         //Implement once NgElement support changing a class
         //it("should redistribute when a class has been added or removed");
@@ -300,7 +299,7 @@ class MultipleContentTagsComponent {
 
 @Component({selector: 'conditional-content'})
 @Template({
-  inline: '<div>(<div template="auto: cond"><content select=".left"></content></div>, <content></content>)</div>',
+  inline: '<div>(<div *auto="cond"><content select=".left"></content></div>, <content></content>)</div>',
   directives: [AutoViewportDirective]
 })
 class ConditionalContentComponent  {
