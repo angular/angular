@@ -11,6 +11,7 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {dashCaseToCamelCase} from './util';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
 
@@ -257,6 +258,6 @@ export class ElementBinderBuilder extends CompileStep {
 
   _resolvePropertyName(attrName:string) {
     var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, attrName);
-    return isPresent(mappedPropName) ? mappedPropName : attrName;
+    return isPresent(mappedPropName) ? mappedPropName : dashCaseToCamelCase(attrName);
   }
 }
