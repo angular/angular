@@ -1,5 +1,5 @@
 import {Injector, bind, OpaqueToken} from 'angular2/di';
-import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';

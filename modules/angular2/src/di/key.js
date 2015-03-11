@@ -1,6 +1,6 @@
 import {KeyMetadataError} from './exceptions';
 import {MapWrapper, Map} from 'angular2/src/facade/collection';
-import {FIELD, int, isPresent} from 'angular2/src/facade/lang';
+import {int, isPresent} from 'angular2/src/facade/lang';
 
 export class Key {
   token;

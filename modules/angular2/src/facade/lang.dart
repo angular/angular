@@ -10,11 +10,6 @@ class Math {
   static double random() => _random.nextDouble();
 }
 
-class FIELD {
-  final String definition;
-  const FIELD(this.definition);
-}
-
 class CONST {
   const CONST();
 }
