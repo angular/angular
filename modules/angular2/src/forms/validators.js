@@ -24,7 +24,7 @@ export function compose(validators:List<Function>):Function {
 export function controlGroupValidator(c:ControlGroup) {
   var res = {};
   StringMapWrapper.forEach(c.controls, (control, name) => {
-    if (control.active && isPresent(control.errors)) {
+    if (c.contains(name) && isPresent(control.errors)) {
       StringMapWrapper.forEach(control.errors, (value, error) => {
         if (! StringMapWrapper.contains(res, error)) {
           res[error] = [];

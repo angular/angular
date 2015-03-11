@@ -84,56 +84,68 @@ export function main() {
           expect(g.errors).toEqual(null);
         });
       });
-    });
 
-    describe("OptionalControl", () => {
-      it("should read properties from the wrapped component", () => {
-        var wrapperControl = new Control("value", validations.required);
-        var c = new OptionalControl(wrapperControl, true);
+      describe("optional components", () => {
+        describe("contains", () => {
+          var group;
 
-        expect(c.value).toEqual('value');
-        expect(c.status).toEqual('VALID');
-        expect(c.validator).toEqual(validations.required);
-      });
+          beforeEach(() => {
+            group = new ControlGroup({
+              "required": new Control("requiredValue"),
+              "optional": new Control("optionalValue")
+            }, {
+              "optional": false
+            });
+          });
 
-      it("should update the wrapped component", () => {
-        var wrappedControl = new Control("value");
-        var c = new OptionalControl(wrappedControl, true);
+          // rename contains into has
+          it("should return false when the component is not included", () => {
+            expect(group.contains("optional")).toEqual(false);
+          })
 
-        c.validator = validations.required;
-        c.updateValue("newValue");
+          it("should return false when there is no component with the given name", () => {
+            expect(group.contains("something else")).toEqual(false);
+          });
 
+          it("should return true when the component is included", () => {
+            expect(group.contains("required")).toEqual(true);
 
-        expect(wrappedControl.validator).toEqual(validations.required);
-        expect(wrappedControl.value).toEqual('newValue');
-      });
+            group.include("optional");
 
-      it("should not include an inactive component into the group value", () => {
-        var group = new ControlGroup({
-          "required" : new Control("requiredValue"),
-          "optional" : new OptionalControl(new Control("optionalValue"), false)
+            expect(group.contains("optional")).toEqual(true);
+          });
         });
 
-        expect(group.value).toEqual({"required" : "requiredValue"});
+        it("should not include an inactive component into the group value", () => {
+          var group = new ControlGroup({
+            "required": new Control("requiredValue"),
+            "optional": new Control("optionalValue")
+          }, {
+            "optional": false
+          });
 
-        group.controls["optional"].cond = true;
+          expect(group.value).toEqual({"required" : "requiredValue"});
 
-        expect(group.value).toEqual({"required" : "requiredValue", "optional" : "optionalValue"});
-      });
+          group.include("optional");
 
-      it("should not run validations on an inactive component", () => {
-        var group = new ControlGroup({
-          "required" : new Control("requiredValue", validations.required),
-          "optional" : new OptionalControl(new Control("", validations.required), false)
+          expect(group.value).toEqual({"required" : "requiredValue", "optional" : "optionalValue"});
         });
 
-        expect(group.valid).toEqual(true);
+        it("should not run validations on an inactive component", () => {
+          var group = new ControlGroup({
+            "required": new Control("requiredValue", validations.required),
+            "optional": new Control("", validations.required)
+          }, {
+            "optional": false
+          });
 
-        group.controls["optional"].cond = true;
+          expect(group.valid).toEqual(true);
 
-        expect(group.valid).toEqual(false);
+          group.include("optional");
+
+          expect(group.valid).toEqual(false);
+        });
       });
     });
-
   });
 }

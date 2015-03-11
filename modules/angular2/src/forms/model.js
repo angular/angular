@@ -11,7 +11,6 @@ export const INVALID = "INVALID";
 //  get status():string;
 //  get valid():boolean;
 //  get errors():Map;
-//  get active():boolean {}
 //  updateValue(value:any){}
 //  setParent(parent){}
 //}
@@ -27,10 +26,6 @@ export class AbstractControl {
   constructor(validator:Function = nullValidator) {
     this.validator = validator;
     this._dirty = true;
-  }
-
-  get active():boolean {
-    return true;
   }
 
   get value() {
@@ -90,11 +85,28 @@ export class Control extends AbstractControl {
 
 export class ControlGroup extends AbstractControl {
   controls;
+  optionals;
 
-  constructor(controls, validator:Function = controlGroupValidator) {
+  constructor(controls, optionals = null, validator:Function = controlGroupValidator) {
     super(validator);
     this.controls = controls;
+    this.optionals = isPresent(optionals) ? optionals : {};
     this._setParentForControls();
+  }
+
+  include(controlName:string) {
+    this._dirty = true;
+    StringMapWrapper.set(this.optionals, controlName, true);
+  }
+
+  exclude(controlName:string) {
+    this._dirty = true;
+    StringMapWrapper.set(this.optionals, controlName, false);
+  }
+
+  contains(controlName:string) {
+    var c = StringMapWrapper.contains(this.controls, controlName);
+    return c && this._included(controlName);
   }
 
   _setParentForControls() {
@@ -115,7 +127,7 @@ export class ControlGroup extends AbstractControl {
   _reduceValue() {
     var newValue = {};
     StringMapWrapper.forEach(this.controls, (control, name) => {
-      if (control.active) {
+      if (this._included(name)) {
         newValue[name] = control.value;
       }
     });
@@ -126,56 +138,9 @@ export class ControlGroup extends AbstractControl {
     this._dirty = true;
     this._updateParent();
   }
-}
 
-export class OptionalControl {
-  _control:Control;
-  _cond:boolean;
-
-  constructor(control:Control, cond:boolean) {
-    super();
-    this._control = control;
-    this._cond = cond;
-  }
-
-  get active():boolean {
-    return this._cond;
-  }
-
-  get value() {
-    return this._control.value;
-  }
-
-  get status() {
-    return this._control.status;
-  }
-
-  get errors() {
-    return this._control.errors;
-  }
-
-  set validator(v) {
-    this._control.validator = v;
-  }
-
-  get validator() {
-    return this._control.validator;
-  }
-
-  set cond(value:boolean){
-    this._cond = value;
-    this._control._updateParent();
-  }
-
-  get cond():boolean{
-    return this._cond;
-  }
-
-  updateValue(value:any){
-    this._control.updateValue(value);
-  }
-
-  setParent(parent){
-    this._control.setParent(parent);
+  _included(controlName:string):boolean {
+    var isOptional = StringMapWrapper.contains(this.optionals, controlName);
+    return !isOptional || StringMapWrapper.get(this.optionals, controlName);
   }
 }
