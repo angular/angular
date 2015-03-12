@@ -6,6 +6,7 @@ import {Decorator, Component, Viewport} from '../../annotations/annotations';
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
+import {dashCaseToCamelCase} from './util';
 
 import {AST} from 'angular2/change_detection';
 
@@ -114,7 +115,7 @@ export class CompileElement {
     if (isBlank(this.propertyBindings)) {
       this.propertyBindings = MapWrapper.create();
     }
-    MapWrapper.set(this.propertyBindings, property, expression);
+    MapWrapper.set(this.propertyBindings, dashCaseToCamelCase(property), expression);
   }
 
   addVariableBinding(variableName:string, variableValue:string) {

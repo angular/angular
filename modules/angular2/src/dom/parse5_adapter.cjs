@@ -13,7 +13,7 @@ import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
 
 var _attrToPropMap = {
-  'inner-html': 'innerHTML',
+  'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
 };
@@ -206,7 +206,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   setText(el, value:string) {
     if (this.isTextNode(el)) {
-      el.data = value;  
+      el.data = value;
     } else {
       this.clearNodes(el);
       treeAdapter.insertText(el, value);
@@ -315,7 +315,7 @@ export class Parse5DomAdapter extends DomAdapter {
     for (var key in styleMap) {
       var newValue = styleMap[key];
       if (newValue && newValue.length > 0) {
-        styleAttrValue += key + ":" + styleMap[key] + ";";  
+        styleAttrValue += key + ":" + styleMap[key] + ";";
       }
     }
     element.attribs["style"] = styleAttrValue;
@@ -427,7 +427,7 @@ export class Parse5DomAdapter extends DomAdapter {
           var declaration = parsedRule.declarations[j];
           rule.style[declaration.property] = declaration.value;
           rule.style.cssText += declaration.property + ": " + declaration.value + ";";
-        }  
+        }
       } else if (parsedRule.type == "media") {
         rule.type = 4;
         rule.media = {mediaText: parsedRule.media};

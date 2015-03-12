@@ -21,7 +21,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   @override
   final attrToPropMap = const {
-    'inner-html': 'innerHtml',
+    'innerHtml': 'innerHtml',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
