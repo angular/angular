@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, IS_NODEJS} from 'angular2/test_lib';
 
 import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
@@ -40,12 +40,15 @@ export function main() {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+    var strategies = {
+      "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
+      "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
+    }
+    if (!IS_NODEJS) {
+      StringMapWrapper.set(strategies, "native", new NativeShadowDomStrategy(styleUrlResolver));
+    }
 
-    StringMapWrapper.forEach({
-        "native" : new NativeShadowDomStrategy(styleUrlResolver),
-        "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
-        "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div')),
-      },
+    StringMapWrapper.forEach(strategies,
       (strategy, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
