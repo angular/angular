@@ -14,8 +14,6 @@ export class Options {
   // TODO(tbosch): use static initializer when our transpiler supports it
   static get EXECUTE() { return _EXECUTE; }
   // TODO(tbosch): use static initializer when our transpiler supports it
-  static get CAPABILITIES() { return _CAPABILITIES; }
-  // TODO(tbosch): use static initializer when our transpiler supports it
   static get USER_AGENT() { return _USER_AGENT; }
   // TODO(tbosch): use static initializer when our transpiler supports it
   /**
@@ -31,6 +29,5 @@ var _SAMPLE_DESCRIPTION = new OpaqueToken('Options.sampleDescription');
 var _FORCE_GC = new OpaqueToken('Options.forceGc');
 var _PREPARE = new OpaqueToken('Options.prepare');
 var _EXECUTE = new OpaqueToken('Options.execute');
-var _CAPABILITIES = new OpaqueToken('Options.capabilities');
 var _USER_AGENT = new OpaqueToken('Options.userAgent');
 var _MICRO_ITERATIONS = new OpaqueToken('Options.microIterations');

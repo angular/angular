@@ -1,7 +1,7 @@
 var data = module.exports = require('./protractor-shared.js');
 var config = data.config;
 
-config.baseUrl = 'http://localhost:8002/';
+config.baseUrl = 'http://'+config.serverAddress+':8002/';
 
 config.exclude.push(
   'dist/js/cjs/examples/e2e_test/sourcemap/sourcemap_spec.js',

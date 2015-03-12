@@ -22,16 +22,14 @@ var argv = require('yargs')
         describe: 'comma separated list of preconfigured browsers to use',
         default: 'ChromeDesktop'
       },
-      'spec': {
-        describe: 'comma separated file patterns to test',
-        default: false
+      'hostname': {
+        describe: 'the hostname that browsers should use to access the server',
+        default: 'localhost'
       }
     })
     .help('ng-help')
     .wrap(40)
     .argv
-
-var browsers = argv['browsers'].split(',');
 
 var CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc'],
@@ -84,22 +82,11 @@ var BROWSER_CAPS = {
       browser: 'ALL'
     }
   },
-  IPhoneSimulator: {
-    browserName: 'MobileSafari',
-    simulator: true,
-    CFBundleName: 'Safari',
-    device: 'iphone',
-    instruments: 'true',
-    loggingPrefs: {
-      performance: 'ALL',
-      browser: 'ALL'
-    }
-  },
-  IPadNative: {
+  SafariIos: {
     browserName: 'MobileSafari',
     simulator: false,
     CFBundleName: 'Safari',
-    device: 'ipad',
+    device: 'iphone',
     loggingPrefs: {
       performance: 'ALL',
       browser: 'ALL'
@@ -107,58 +94,31 @@ var BROWSER_CAPS = {
   }
 };
 
-var getBenchmarkFiles = function (benchmark, spec) {
-  var specFiles = [];
-  var perfFiles = [];
-  if (spec.length) {
-    spec.split(',').forEach(function (name) {
-      specFiles.push('dist/js/cjs/**/e2e_test/' + name)
-      perfFiles.push('dist/js/cjs/**/e2e_test/' + name)
-    });
-  } else {
-    specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
-    perfFiles.push('dist/js/cjs/**/e2e_test/**/*_perf.js');
-  }
+var getBenchmarkFiles = function (benchmark) {
+  var specFiles = ['dist/js/cjs/**/e2e_test/**/*_spec.js'];
+  var perfFiles = ['dist/js/cjs/**/e2e_test/**/*_perf.js'];
   return benchmark ? perfFiles : specFiles.concat(perfFiles);
 };
 
 var config = exports.config = {
   onPrepare: function() {
     patchProtractorWait(browser);
-    // During benchmarking, we need to open a new browser
-    // for every benchmark, otherwise the numbers can get skewed
-    // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
-    if (argv['benchmark']) {
-      var originalBrowser = browser;
-      var _tmpBrowser;
-      beforeEach(function() {
-        global.browser = originalBrowser.forkNewDriverInstance();
-        patchProtractorWait(global.browser);
-        global.element = global.browser.element;
-        global.$ = global.browser.$;
-        global.$$ = global.browser.$$;
-      });
-      afterEach(function() {
-        global.browser.quit();
-        global.browser = originalBrowser;
-      });
-    }
   },
 
-  specs: getBenchmarkFiles(argv['benchmark'], argv['spec']),
+  // During benchmarking, we need to open a new browser
+  // for every benchmark, otherwise the numbers can get skewed
+  // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
+  restartBrowserBetweenTests: argv['benchmark'],
+
+  serverAddress: argv['hostname'],
+
+  specs: getBenchmarkFiles(argv['benchmark']),
 
   exclude: [
     'dist/js/cjs/**/node_modules/**',
   ],
 
-  multiCapabilities: browsers.map(function(browserName) {
-    var caps = BROWSER_CAPS[browserName];
-    console.log('Testing against', browserName);
-    if (!caps) {
-      throw new Error('Not configured browser name: '+browserName);
-    }
-    return caps;
-  }),
+  multiCapabilities: getBrowserCapabilities(),
 
   framework: 'jasmine2',
 
@@ -187,6 +147,17 @@ function patchProtractorWait(browser) {
     browser.sleep(sleepInterval);
     return result;
   }
+}
+
+function getBrowserCapabilities() {
+  return argv['browsers'].split(',').map(function(browserName) {
+    var caps = BROWSER_CAPS[browserName];
+    console.log('Testing against', browserName);
+    if (!caps) {
+      throw new Error('Not configured browser name: '+browserName);
+    }
+    return caps;
+  });
 }
 
 exports.createBenchpressRunner = function(options) {
