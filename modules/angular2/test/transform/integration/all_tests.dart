@@ -93,14 +93,6 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'two_annotations_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('should generate setters for `bind` values.',
-        inputs: {
-      'a|web/index.dart': 'basic_bind_files/index.dart',
-      'a|web/bar.dart': 'basic_bind_files/bar.dart'
-    },
-        outputs: {
-      'a|web/bar.ngDeps.dart': 'basic_bind_files/expected/bar.ngDeps.dart'
-    }),
     new IntegrationTestConfig(
         'should ensure that dependencies are property chained.',
         inputs: {

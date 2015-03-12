@@ -64,7 +64,7 @@ class CreateNgDepsVisitor extends Object
   }
 
   void _writeImport() {
-    writer.print('import \'${path.basename(importPath)}\';');
+    writer.print('''import '${path.basename(importPath)}';''');
   }
 
   @override
@@ -150,19 +150,19 @@ class CreateNgDepsVisitor extends Object
       }
       writer.print('..registerType(');
       visitNode(node.name);
-      writer.print(', {\'factory\': ');
+      writer.print(''', {'factory': ''');
       if (ctor == null) {
         _generateEmptyFactory(node.name.toString());
       } else {
         ctor.accept(_factoryVisitor);
       }
-      writer.print(', \'parameters\': ');
+      writer.print(''', 'parameters': ''');
       if (ctor == null) {
         _generateEmptyParams();
       } else {
         ctor.accept(_paramsVisitor);
       }
-      writer.print(', \'annotations\': ');
+      writer.print(''', 'annotations': ''');
       node.accept(_metaVisitor);
       writer.print('})');
 

@@ -27,7 +27,7 @@ List<String> _generateSetters(Map<String, String> bindMap) {
   var setters = [];
   // TODO(kegluneq): Include types for receivers. See #886.
   bindMap.forEach((prop, type) {
-    setters.add('\'$prop\': (o, String v) => o.$prop = v');
+    setters.add(''''$prop': (o, String v) => o.$prop = v''');
   });
   return setters;
 }

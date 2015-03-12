@@ -10,13 +10,13 @@ class RegisteredType {
   /// The actual call to `Reflector#registerType`.
   final MethodInvocation registerMethod;
   /// The factory method registered.
-  final Expression factory;
+  final Expression factoryFn;
   /// The parameters registered.
   final Expression parameters;
   /// The annotations registered.
   final Expression annotations;
 
-  RegisteredType._(this.typeName, this.registerMethod, this.factory,
+  RegisteredType._(this.typeName, this.registerMethod, this.factoryFn,
       this.parameters, this.annotations);
 
   /// Creates a [RegisteredType] given a [MethodInvocation] node representing
@@ -25,14 +25,14 @@ class RegisteredType {
     var visitor = new _ParseRegisterTypeVisitor();
     registerMethod.accept(visitor);
     return new RegisteredType._(visitor.typeName, registerMethod,
-        visitor.factory, visitor.parameters, visitor.annotations);
+        visitor.factoryFn, visitor.parameters, visitor.annotations);
   }
 }
 
 class _ParseRegisterTypeVisitor extends Object
     with RecursiveAstVisitor<Object> {
   Identifier typeName;
-  Expression factory;
+  Expression factoryFn;
   Expression parameters;
   Expression annotations;
 
@@ -56,7 +56,7 @@ class _ParseRegisterTypeVisitor extends Object
           annotations = node.value;
           break;
         case 'factory':
-          factory = node.value;
+          factoryFn = node.value;
           break;
         case 'parameters':
           parameters = node.value;

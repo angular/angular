@@ -8,13 +8,6 @@ void setupReflection(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(MyComponent, {
-      'factory': () => new MyComponent(),
-      'parameters': const [],
-      'annotations': const [
-        const Component(selector: 'soup', services: const [ToolTip])
-      ]
-    })
     ..registerType(ToolTip, {
       'factory': () => new ToolTip(),
       'parameters': const [],
@@ -22,6 +15,5 @@ void setupReflection(reflector) {
         const Decorator(
             selector: '[tool-tip]', bind: const {'text': 'tool-tip'})
       ]
-    })
-    ..registerSetters({'text': (o, String v) => o.text = v});
+    });
 }
