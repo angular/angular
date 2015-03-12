@@ -151,8 +151,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   String tagName(Element element) => element.tagName;
 
-  Map<String, String> attributeMap(Element element) =>
-      element.attributes;
+  Map<String, String> attributeMap(Element element) {
+    return new Map.from(element.attributes);
+  }
 
   String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
