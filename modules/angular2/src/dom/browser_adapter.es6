@@ -4,9 +4,9 @@ import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
 var _attrToPropMap = {
-  'inner-html': 'innerHTML',
+  'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
+  'tabindex': 'tabIndex'
 };
 
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {

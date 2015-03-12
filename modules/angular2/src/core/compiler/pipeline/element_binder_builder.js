@@ -11,21 +11,24 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
 
-const ARIA_PREFIX = 'aria-';
+const ARIA_PREFIX = 'aria';
 var ariaSettersCache = StringMapWrapper.create();
 
 function ariaSetterFactory(attrName:string) {
   var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
+  var ariaAttrName;
 
   if (isBlank(setterFn)) {
+    ariaAttrName = camelCaseToDashCase(attrName);
     setterFn = function(element, value) {
       if (isPresent(value)) {
-        DOM.setAttribute(element, attrName, stringify(value));
+        DOM.setAttribute(element, ariaAttrName, stringify(value));
       } else {
-        DOM.removeAttribute(element, attrName);
+        DOM.removeAttribute(element, ariaAttrName);
       }
     };
     StringMapWrapper.set(ariaSettersCache, attrName, setterFn);
@@ -34,7 +37,6 @@ function ariaSetterFactory(attrName:string) {
   return setterFn;
 }
 
-const CLASS_ATTR = 'class';
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
@@ -55,22 +57,23 @@ function classSetterFactory(className:string) {
   return setterFn;
 }
 
-const STYLE_ATTR = 'style';
 const STYLE_PREFIX = 'style.';
 var styleSettersCache = StringMapWrapper.create();
 
 function styleSetterFactory(styleName:string, stylesuffix:string) {
   var cacheKey = styleName + stylesuffix;
   var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
+  var dashCasedStyleName;
 
   if (isBlank(setterFn)) {
+    dashCasedStyleName = camelCaseToDashCase(styleName);
     setterFn = function(element, value) {
       var valAsStr;
       if (isPresent(value)) {
         valAsStr = stringify(value);
-        DOM.setStyle(element, styleName, valAsStr + stylesuffix);
+        DOM.setStyle(element, dashCasedStyleName, valAsStr + stylesuffix);
       } else {
-        DOM.removeStyle(element, styleName);
+        DOM.removeStyle(element, dashCasedStyleName);
       }
     };
     StringMapWrapper.set(classSettersCache, cacheKey, setterFn);
@@ -229,7 +232,7 @@ export class ElementBinderBuilder extends CompileStep {
         var elProp = ListWrapper.removeAt(pipes, 0);
 
         var bindingAst = isPresent(compileElement.propertyBindings) ?
-          MapWrapper.get(compileElement.propertyBindings, elProp) :
+          MapWrapper.get(compileElement.propertyBindings, dashCaseToCamelCase(elProp)) :
             null;
 
         if (isBlank(bindingAst)) {
@@ -246,7 +249,7 @@ export class ElementBinderBuilder extends CompileStep {
             directiveIndex,
             fullExpAstWithBindPipes,
             dirProp,
-            reflector.setter(dirProp)
+            reflector.setter(dashCaseToCamelCase(dirProp))
           );
         }
       });

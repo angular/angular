@@ -10,7 +10,8 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {isSpecialProperty} from './element_binder_builder';;
+import {isSpecialProperty} from './element_binder_builder';
+import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
 
 var PROPERTY_BINDING_REGEXP = RegExpWrapper.create('^ *([^\\s\\|]+)');
 
@@ -84,7 +85,7 @@ function updateMatchedProperties(matchedProperties, selector, directive) {
     if (isPresent(attrs)) {
       for (var idx = 0; idx<attrs.length; idx+=2) {
         // attribute name is stored on even indexes
-        StringMapWrapper.set(matchedProperties, attrs[idx], true);
+        StringMapWrapper.set(matchedProperties, dashCaseToCamelCase(attrs[idx]), true);
       }
     }
     // some properties can be used by the directive, so we need to register them
@@ -97,7 +98,7 @@ function updateMatchedProperties(matchedProperties, selector, directive) {
         // keep the property name and remove the pipe
         var bindProp = RegExpWrapper.firstMatch(PROPERTY_BINDING_REGEXP, value);
         if (isPresent(bindProp) && isPresent(bindProp[1])) {
-          StringMapWrapper.set(matchedProperties, bindProp[1], true);
+          StringMapWrapper.set(matchedProperties, dashCaseToCamelCase(bindProp[1]), true);
         }
       });
     }
@@ -130,7 +131,7 @@ function checkMissingDirectives(current, matchedProperties, isTemplateElement) {
       MapWrapper.forEach(ppBindings, (expression, prop) => {
         if (!DOM.hasProperty(current.element, prop) && !isSpecialProperty(prop)) {
           if (!isPresent(matchedProperties) || !isPresent(StringMapWrapper.get(matchedProperties, prop))) {
-            throw new BaseException(`Missing directive to handle '${prop}' in ${current.elementDescription}`);
+            throw new BaseException(`Missing directive to handle '${camelCaseToDashCase(prop)}' in ${current.elementDescription}`);
           }
         }
       });
