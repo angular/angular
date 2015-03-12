@@ -40,7 +40,8 @@ void allTests() {
   };
 
   var tests = [
-    new IntegrationTestConfig('Simple',
+    new IntegrationTestConfig(
+        'should generate proper code for a Component defining only a selector.',
         inputs: {
       'a|web/index.dart': 'simple_annotation_files/index.dart',
       'a|web/bar.dart': 'simple_annotation_files/bar.dart'
@@ -51,7 +52,9 @@ void allTests() {
       'a|web/index.ngDeps.dart':
           'simple_annotation_files/expected/index.ngDeps.dart'
     }),
-    new IntegrationTestConfig('Two injected dependencies',
+    new IntegrationTestConfig(
+        'should generate proper code for a Component using a selector defined '
+        'in another file.',
         inputs: {
       'a|web/index.dart': 'two_deps_files/index.dart',
       'a|web/foo.dart': 'two_deps_files/foo.dart',
@@ -60,7 +63,9 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'two_deps_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('List of types',
+    new IntegrationTestConfig(
+        'should generate proper code for a Component declaring a '
+        'componentService defined in another file.',
         inputs: {
       'a|web/index.dart': 'list_of_types_files/index.dart',
       'a|web/foo.dart': 'list_of_types_files/foo.dart',
@@ -69,7 +74,8 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'list_of_types_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('Component with synthetic Constructor',
+    new IntegrationTestConfig(
+        'should generate a factory for a class with no declared ctor.',
         inputs: {
       'a|web/index.dart': 'synthetic_ctor_files/index.dart',
       'a|web/bar.dart': 'synthetic_ctor_files/bar.dart'
@@ -77,7 +83,7 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'synthetic_ctor_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('Component with two annotations',
+    new IntegrationTestConfig('should preserve multiple annotations.',
         inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
@@ -87,7 +93,7 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'two_annotations_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('Basic `bind`',
+    new IntegrationTestConfig('should generate setters for `bind` values.',
         inputs: {
       'a|web/index.dart': 'basic_bind_files/index.dart',
       'a|web/bar.dart': 'basic_bind_files/bar.dart'
@@ -95,7 +101,8 @@ void allTests() {
         outputs: {
       'a|web/bar.ngDeps.dart': 'basic_bind_files/expected/bar.ngDeps.dart'
     }),
-    new IntegrationTestConfig('Chained dependencies',
+    new IntegrationTestConfig(
+        'should ensure that dependencies are property chained.',
         inputs: {
       'a|web/index.dart': 'chained_deps_files/index.dart',
       'a|web/foo.dart': 'chained_deps_files/foo.dart',

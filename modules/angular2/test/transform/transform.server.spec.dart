@@ -9,7 +9,7 @@ import 'reflection_remover/all_tests.dart' as reflectionRemover;
 
 main() {
   useVMConfiguration();
-  group('Directive Processor tests:', directiveProcessor.allTests);
-  group('Integration tests:', integration.allTests);
-  group('Reflection Remover:', reflectionRemover.allTests);
+  group('Directive Processor', directiveProcessor.allTests);
+  group('Reflection Remover', reflectionRemover.allTests);
+  group('Transformer Pipeline', integration.allTests);
 }
