@@ -68,14 +68,6 @@ export function main() {
         expect(dirs[1]).toEqual(reader.read(SomeDecorator));
       });
 
-      it('should detect them in property bindings', () => {
-        var pipeline = createPipeline({propertyBindings: {
-          'some-comp': 'someExpr'
-        }});
-        var results = pipeline.process(el('<div></div>'));
-        expect(results[0].componentDirective).toEqual(reader.read(SomeComponent));
-      });
-
       it('should detect them in variable bindings', () => {
         var pipeline = createPipeline({variableBindings: {
           'some-comp': 'someExpr'
@@ -89,7 +81,7 @@ export function main() {
            createPipeline().process(
              el('<div some-comp some-comp2></div>')
            );
-         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>'); 
+         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>');
       });
 
       it('should not allow component directives on <template> elements', () => {
@@ -104,14 +96,6 @@ export function main() {
     describe('viewport directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(el('<template some-templ></template>'));
-        expect(results[0].viewportDirective).toEqual(reader.read(SomeViewport));
-      });
-
-      it('should detect them in property bindings', () => {
-        var pipeline = createPipeline({propertyBindings: {
-          'some-templ': 'someExpr'
-        }});
-        var results = pipeline.process(el('<template></template>'));
         expect(results[0].viewportDirective).toEqual(reader.read(SomeViewport));
       });
 
@@ -144,14 +128,6 @@ export function main() {
     describe('decorator directives', () => {
       it('should detect them in attributes', () => {
         var results = createPipeline().process(el('<div some-decor></div>'));
-        expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
-      });
-
-      it('should detect them in property bindings', () => {
-        var pipeline = createPipeline({propertyBindings: {
-          'some-decor': 'someExpr'
-        }});
-        var results = pipeline.process(el('<div></div>'));
         expect(results[0].decoratorDirectives).toEqual([reader.read(SomeDecorator)]);
       });
 
