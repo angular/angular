@@ -7,18 +7,20 @@ import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 import {Reflector} from 'angular2/src/reflection/reflection';
+import * as ldModule from './shadow_dom_emulation/light_dom';
 
 export class ViewContainer {
   parentView: viewModule.View;
   templateElement;
   defaultProtoView: viewModule.ProtoView;
   _views: List<viewModule.View>;
-  _lightDom: any;
+  _lightDom: ldModule.LightDom;
   _eventManager: EventManager;
   _reflector: Reflector;
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
+  hostLightDom: ldModule.LightDom;
 
   constructor(parentView: viewModule.View,
               templateElement,
@@ -38,17 +40,20 @@ export class ViewContainer {
     this._views = [];
     this.appInjector = null;
     this.hostElementInjector = null;
+    this.hostLightDom = null;
     this._eventManager = eventManager;
   }
 
   hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
     this.appInjector = appInjector;
     this.hostElementInjector = hostElementInjector;
+    this.hostLightDom = isPresent(hostElementInjector) ? hostElementInjector.get(ldModule.LightDom) : null;
   }
 
   dehydrate() {
     this.appInjector = null;
     this.hostElementInjector = null;
+    this.hostLightDom = null;
     this.clear();
   }
 
@@ -86,6 +91,11 @@ export class ViewContainer {
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
     newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
+
+    // new content tags might have appeared, we need to redistrubute.
+    if (isPresent(this.hostLightDom)) {
+      this.hostLightDom.redistribute();
+    }
     return newView;
   }
 
@@ -99,6 +109,7 @@ export class ViewContainer {
     }
     this.parentView.changeDetector.addChild(view.changeDetector);
     this._linkElementInjectors(view);
+
     return view;
   }
 
@@ -123,6 +134,10 @@ export class ViewContainer {
       ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
     } else {
       this._lightDom.redistribute();
+    }
+    // content tags might have disappeared we need to do redistribution.
+    if (isPresent(this.hostLightDom)) {
+      this.hostLightDom.redistribute();
     }
     detachedView.changeDetector.remove();
     this._unlinkElementInjectors(detachedView);
