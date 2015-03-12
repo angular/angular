@@ -52,27 +52,16 @@ export class DirectiveParser extends CompileStep {
     for (var i=0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }
+
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
-      if (isBlank(current.propertyBindings) ||
-        isPresent(current.propertyBindings) && !MapWrapper.contains(current.propertyBindings, attrName)) {
-        cssSelector.addAttribute(attrName, attrValue);
-      }
+      cssSelector.addAttribute(attrName, attrValue);
     });
-    if (isPresent(current.propertyBindings)) {
-      MapWrapper.forEach(current.propertyBindings, (expression, prop) => {
-        cssSelector.addAttribute(prop, expression.source);
-      });
-    }
-    if (isPresent(current.variableBindings)) {
-      MapWrapper.forEach(current.variableBindings, (value, name) => {
-        cssSelector.addAttribute(name, value);
-      });
-    }
+
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
     // only be present on <template> elements any more!
     var isTemplateElement = DOM.isTemplateElement(current.element);
     var matchedProperties; // StringMap - used in dev mode to store all properties that have been matched
-    
+
     this._selectorMatcher.match(cssSelector, (selector, directive) => {
       matchedProperties = updateMatchedProperties(matchedProperties, selector, directive);
       checkDirectiveValidity(directive, current, isTemplateElement);
@@ -102,7 +91,7 @@ function updateMatchedProperties(matchedProperties, selector, directive) {
     if (isPresent(directive.annotation) && isPresent(directive.annotation.bind)) {
       var bindMap = directive.annotation.bind;
       StringMapWrapper.forEach(bindMap, (value, key) => {
-        // value is the name of the property that is intepreted
+        // value is the name of the property that is interpreted
         // e.g. 'myprop' or 'myprop | double' when a pipe is used to transform the property
 
         // keep the property name and remove the pipe
@@ -142,7 +131,7 @@ function checkMissingDirectives(current, matchedProperties, isTemplateElement) {
         if (!DOM.hasProperty(current.element, prop) && !isSpecialProperty(prop)) {
           if (!isPresent(matchedProperties) || !isPresent(StringMapWrapper.get(matchedProperties, prop))) {
             throw new BaseException(`Missing directive to handle '${prop}' in ${current.elementDescription}`);
-          } 
+          }
         }
       });
     }

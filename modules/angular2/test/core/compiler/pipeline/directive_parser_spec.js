@@ -39,10 +39,14 @@ export function main() {
           if (isPresent(propertyBindings)) {
             StringMapWrapper.forEach(propertyBindings, (v, k) => {
               current.addPropertyBinding(k, parser.parseBinding(v, null));
+              MapWrapper.set(current.attrs(), k, v);
             });
           }
           if (isPresent(variableBindings)) {
-            current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
+            StringMapWrapper.forEach(variableBindings, (v, k) => {
+              current.addVariableBinding(k, v);
+              MapWrapper.set(current.attrs(), k, v);
+            });
           }
         }), new DirectiveParser(annotatedDirectives)]);
     }
@@ -89,7 +93,7 @@ export function main() {
            createPipeline().process(
              el('<div some-comp some-comp2></div>')
            );
-         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>'); 
+         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>');
       });
 
       it('should not allow component directives on <template> elements', () => {
