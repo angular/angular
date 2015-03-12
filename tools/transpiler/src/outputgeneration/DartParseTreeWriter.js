@@ -516,7 +516,19 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   toString() {
-    return "library " + this.libName + "_dart;\n" + super.toString();
+    return "library " + this._transformLibName(this.libName) + ";\n" + super.toString();
+  }
+
+  _transformLibName(libName) {
+    var parts = libName.split('.');
+    for (var part of parts) {
+      if (DART_RESERVED_WORDS.indexOf(part) != -1) {
+        return libName + '_dart';
+      }
+    }
+    return libName;
   }
 }
 
+// see: https://www.dartlang.org/docs/dart-up-and-running/ch02.html for a full list.
+const DART_RESERVED_WORDS = ['if', 'switch'];
