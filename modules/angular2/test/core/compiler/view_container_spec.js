@@ -10,8 +10,9 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
 
 function createView(nodes) {
-  var view = new View(null, nodes, new DynamicProtoChangeDetector(null), MapWrapper.create());
-  view.init([], [], [], [], [], [], []);
+  var view = new View(null, nodes, MapWrapper.create());
+  var cd = new DynamicProtoChangeDetector(null).instantiate(view, []);
+  view.init(cd, [], [], [], [], [], [], []);
   return view;
 }
 

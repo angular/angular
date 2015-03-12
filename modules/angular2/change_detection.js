@@ -7,7 +7,7 @@ export {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError}
     from './src/change_detection/exceptions';
 export {ChangeRecord, ChangeDispatcher, ChangeDetector,
     CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED} from './src/change_detection/interfaces';
-export {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector}
+export {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector, BindingRecord}
     from './src/change_detection/proto_change_detector';
 export {DynamicChangeDetector}
     from './src/change_detection/dynamic_change_detector';

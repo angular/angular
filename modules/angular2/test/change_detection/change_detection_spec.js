@@ -6,7 +6,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 
-import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings,
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings, BindingRecord,
   PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
 
 import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
@@ -30,9 +30,8 @@ export function main() {
 
         function createChangeDetector(memo:string, exp:string, context = null, registry = null) {
           var pcd = createProtoChangeDetector(registry);
-          pcd.addAst(ast(exp), memo, memo);
           var dispatcher = new TestDispatcher();
-          var cd = pcd.instantiate(dispatcher);
+          var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast(exp), memo, memo)]);
           cd.hydrate(context);
 
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
@@ -179,10 +178,9 @@ export function main() {
             var parser = new Parser(new Lexer());
             var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
-            pcd.addAst(ast, "memo", "memo");
 
             var dispatcher = new TestDispatcher();
-            var cd = pcd.instantiate(dispatcher);
+            var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast, "memo", "memo")]);
             cd.hydrate(new TestData("value"));
 
             cd.detectChanges();
@@ -230,12 +228,13 @@ export function main() {
             describe("group changes", () => {
               it("should notify the dispatcher when a group of records changes", () => {
                 var pcd = createProtoChangeDetector();
-                pcd.addAst(ast("1 + 2"), "memo", "1");
-                pcd.addAst(ast("10 + 20"), "memo", "1");
-                pcd.addAst(ast("100 + 200"), "memo2", "2");
 
                 var dispatcher = new TestDispatcher();
-                var cd = pcd.instantiate(dispatcher);
+                var cd = pcd.instantiate(dispatcher, [
+                  new BindingRecord(ast("1 + 2"), "memo", "1"),
+                  new BindingRecord(ast("10 + 20"), "memo", "1"),
+                  new BindingRecord(ast("100 + 200"), "memo", "2")
+                ]);
 
                 cd.detectChanges();
 
@@ -244,12 +243,12 @@ export function main() {
 
               it("should notify the dispatcher before switching to the next group", () => {
                 var pcd = createProtoChangeDetector();
-                pcd.addAst(ast("a()"), "a", "1");
-                pcd.addAst(ast("b()"), "b", "2");
-                pcd.addAst(ast("c()"), "c", "2");
-
                 var dispatcher = new TestDispatcher();
-                var cd = pcd.instantiate(dispatcher);
+                var cd = pcd.instantiate(dispatcher, [
+                  new BindingRecord(ast("a()"), "a", "1"),
+                  new BindingRecord(ast("b()"), "b", "2"),
+                  new BindingRecord(ast("c()"), "c", "2")
+                ]);
 
                 var tr = new TestRecord();
                 tr.a = () => {
@@ -279,7 +278,9 @@ export function main() {
               pcd.addAst(ast("a"), "a", 1);
 
               var dispatcher = new TestDispatcher();
-              var cd = pcd.instantiate(dispatcher);
+              var cd = pcd.instantiate(dispatcher, [
+                new BindingRecord(ast("a"), "a", 1)
+              ]);
               cd.hydrate(new TestData('value'));
 
               expect(() => {
@@ -292,9 +293,9 @@ export function main() {
           describe("error handling", () => {
             xit("should wrap exceptions into ChangeDetectionError", () => {
               var pcd = createProtoChangeDetector();
-              pcd.addAst(ast('invalidProp', 'someComponent'), "a", 1);
-
-              var cd = pcd.instantiate(new TestDispatcher());
+              var cd = pcd.instantiate(new TestDispatcher(), [
+                new BindingRecord(ast("invalidProp", "someComponent"), "a", 1)
+              ]);
               cd.hydrate(null);
 
               try {
@@ -349,10 +350,10 @@ export function main() {
 
             beforeEach(() => {
               var protoParent = createProtoChangeDetector();
-              parent = protoParent.instantiate(null);
+              parent = protoParent.instantiate(null, []);
 
               var protoChild = createProtoChangeDetector();
-              child = protoChild.instantiate(null);
+              child = protoChild.instantiate(null, []);
             });
 
             it("should add children", () => {
@@ -395,7 +396,7 @@ export function main() {
           });
 
           it("should change CHECK_ONCE to CHECKED", () => {
-            var cd = createProtoChangeDetector().instantiate(null);
+            var cd = createProtoChangeDetector().instantiate(null, []);
             cd.mode = CHECK_ONCE;
 
             cd.detectChanges();
@@ -404,7 +405,7 @@ export function main() {
           });
 
           it("should not change the CHECK_ALWAYS", () => {
-            var cd = createProtoChangeDetector().instantiate(null);
+            var cd = createProtoChangeDetector().instantiate(null, []);
             cd.mode = CHECK_ALWAYS;
 
             cd.detectChanges();
@@ -415,7 +416,7 @@ export function main() {
 
         describe("markPathToRootAsCheckOnce", () => {
           function changeDetector(mode, parent) {
-            var cd = createProtoChangeDetector().instantiate(null);
+            var cd = createProtoChangeDetector().instantiate(null, []);
             cd.mode = mode;
             if (isPresent(parent)) parent.addChild(cd);
             return cd;

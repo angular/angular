@@ -12,7 +12,6 @@ import {NgElement} from 'angular2/src/core/dom/element';
 import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
-import {DynamicProtoChangeDetector} from 'angular2/change_detection';
 
 @proxy
 @IMPLEMENTS(View)
@@ -476,7 +475,7 @@ export function main() {
         StringMapWrapper.set(handlers, 'click', (e, view) => { called = true;});
         var pv = new ProtoView(null, null, null);
         pv.eventHandlers = [handlers];
-        var view = new View(pv, null, new DynamicProtoChangeDetector(null), MapWrapper.create());
+        var view = new View(pv, null, MapWrapper.create());
         var preBuildObject = new PreBuiltObjects(view, null, null, null, null);
         var inj = injector([NeedsEventEmitter], null, null, preBuildObject);
         inj.get(NeedsEventEmitter).click();

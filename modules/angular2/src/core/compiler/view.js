@@ -1,8 +1,8 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
-import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector, ChangeRecord}
-  from 'angular2/change_detection';
+import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
+  ChangeRecord, BindingRecord} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {BindingPropagationConfig} from './binding_propagation_config';
@@ -46,10 +46,10 @@ export class View {
   context: any;
   contextWithLocals:ContextWithVariableBindings;
 
-  constructor(proto:ProtoView, nodes:List, protoChangeDetector:ProtoChangeDetector, protoContextLocals:Map) {
+  constructor(proto:ProtoView, nodes:List, protoContextLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
-    this.changeDetector = protoChangeDetector.instantiate(this);
+    this.changeDetector = null;
     this.elementInjectors = null;
     this.rootElementInjectors = null;
     this.textNodes = null;
@@ -63,8 +63,9 @@ export class View {
       : null;
   }
 
-  init(elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List,
+  init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List,
     viewContainers:List, preBuiltObjects:List, componentChildViews:List) {
+    this.changeDetector = changeDetector;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
     this.textNodes = textNodes;
@@ -294,12 +295,13 @@ export class ProtoView {
   _viewPool: ViewPool;
   stylePromises: List<Promise>;
   // List<Map<eventName, handler>>, indexed by binder index
-  eventHandlers: List;
+  eventHandlers:List;
+  bindingRecords:List;
 
   constructor(
       template,
       protoChangeDetector:ProtoChangeDetector,
-      shadowDomStrategy: ShadowDomStrategy) {
+      shadowDomStrategy:ShadowDomStrategy) {
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
@@ -315,6 +317,7 @@ export class ProtoView {
     this._viewPool = new ViewPool(VIEW_POOL_CAPACITY);
     this.stylePromises = [];
     this.eventHandlers = [];
+    this.bindingRecords = [];
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -357,7 +360,9 @@ export class ProtoView {
       viewNodes = [rootElementClone];
     }
 
-    var view = new View(this, viewNodes, this.protoChangeDetector, this.protoContextLocals);
+    var view = new View(this, viewNodes, this.protoContextLocals);
+    var changeDetector = this.protoChangeDetector.instantiate(view, this.bindingRecords);
+
     var binders = this.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
     var eventHandlers = ListWrapper.createFixedSize(binders.length);
@@ -413,12 +418,12 @@ export class ProtoView {
       if (isPresent(binder.componentDirective)) {
         var strategy = this.shadowDomStrategy;
         var childView = binder.nestedProtoView.instantiate(elementInjector, eventManager);
-        view.changeDetector.addChild(childView.changeDetector);
+        changeDetector.addChild(childView.changeDetector);
 
         lightDom = strategy.constructLightDom(view, childView, element);
         strategy.attachTemplate(element, childView);
 
-        bindingPropagationConfig = new BindingPropagationConfig(view.changeDetector);
+        bindingPropagationConfig = new BindingPropagationConfig(changeDetector);
 
         ListWrapper.push(componentChildViews, childView);
       }
@@ -454,7 +459,7 @@ export class ProtoView {
 
     this.eventHandlers = eventHandlers;
 
-    view.init(elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,
+    view.init(changeDetector, elementInjectors, rootElementInjectors, textNodes, elementsWithPropertyBindings,
       viewContainers, preBuiltObjects, componentChildViews);
 
     return view;
@@ -519,7 +524,7 @@ export class ProtoView {
     }
     ListWrapper.push(elBinder.textNodeIndices, indexInParent);
     var memento = this.textNodesWithBindingCount++;
-    this.protoChangeDetector.addAst(expression, memento);
+    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, memento, null));
   }
 
   /**
@@ -532,7 +537,7 @@ export class ProtoView {
       this.elementsWithBindingCount++;
     }
     var memento = new ElementBindingMemento(this.elementsWithBindingCount-1, setterName, setter);
-    this.protoChangeDetector.addAst(expression, memento);
+    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, memento, null));
   }
 
   /**
@@ -579,7 +584,7 @@ export class ProtoView {
       setter
     );
     var directiveMemento = DirectiveMemento.get(bindingMemento);
-    this.protoChangeDetector.addAst(expression, bindingMemento, directiveMemento);
+    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, bindingMemento, directiveMemento));
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
