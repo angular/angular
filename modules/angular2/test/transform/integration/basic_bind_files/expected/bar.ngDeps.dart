@@ -23,5 +23,5 @@ void setupReflection(reflector) {
             selector: '[tool-tip]', bind: const {'text': 'tool-tip'})
       ]
     })
-    ..registerSetters({'text': (ToolTip o, String value) => o.text = value});
+    ..registerSetters({'text': (o, String v) => o.text = v});
 }

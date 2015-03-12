@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:barback/barback.dart';
 
+/// A class that allows fetching code using [AssetId]s without all the
+/// additional baggage of a [Transform].
 abstract class AssetReader {
   Future<String> readAsString(AssetId id, {Encoding encoding});
   Future<bool> hasInput(AssetId id);

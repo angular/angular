@@ -1,6 +1,7 @@
 library angular2.src.transform.bind_generator.transformer;
 
 import 'dart:async';
+import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -28,11 +29,11 @@ class BindGenerator extends Transformer {
     log.init(transform);
 
     try {
-      var assetCode = await transform.primaryInput.readAsString();
-      var assetPath = transform.primaryInput.id.path;
-      var transformedCode = createNgSetters(assetCode, assetPath);
-      transform.addOutput(new Asset.fromString(transform.primaryInput.id,
-          formatter.format(transformedCode, uri: assetPath)));
+      var id = transform.primaryInput.id;
+      var reader = new AssetReader.fromTransform(transform);
+      var transformedCode = await createNgSetters(reader, id);
+      transform.addOutput(new Asset.fromString(
+          id, formatter.format(transformedCode, uri: id.path)));
     } catch (ex, stackTrace) {
       log.logger.error('Creating ng setters failed.\n'
           'Exception: $ex\n'
