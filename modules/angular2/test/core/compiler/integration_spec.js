@@ -243,6 +243,30 @@ export function main() {
         });
       });
 
+      it('should support directives where a selector matches property binding', function(done) {
+        tplResolver.setTemplate(MyComp,
+          new Template({
+            inline: '<p [id]="ctxProp"></p>',
+            directives: [IdComponent]
+          }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'some_id';
+          cd.detectChanges();
+          expect(view.nodes[0].id).toEqual('some_id');
+          expect(DOM.getInnerHTML(view.nodes[0].shadowRoot.childNodes[0])).toEqual('Matched on id with some_id');
+
+          ctx.ctxProp = 'other_id';
+          cd.detectChanges();
+          expect(view.nodes[0].id).toEqual('other_id');
+          expect(DOM.getInnerHTML(view.nodes[0].shadowRoot.childNodes[0])).toEqual('Matched on id with other_id');
+
+          done();
+        });
+      });
+
       it('should support template directives via `<template>` elements.', (done) => {
         tplResolver.setTemplate(MyComp,
           new Template({
@@ -713,4 +737,15 @@ class DecoratorListeningEvent {
   onEvent(msg: string) {
     this.msg = msg;
   }
+}
+
+@Component({
+  selector: '[id]',
+  bind: {'id': 'id'}
+})
+@Template({
+  inline: '<div>Matched on id with {{id}}</div>'
+})
+class IdComponent {
+  id: string;
 }
