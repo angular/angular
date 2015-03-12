@@ -25,7 +25,8 @@ import {
 } from 'traceur/src/syntax/trees/ParseTrees';
 
 import {
-  PropertyConstructorAssignment
+  PropertyConstructorAssignment,
+  ImplementsDeclaration
 } from '../syntax/trees/ParseTrees';
 
 /**
@@ -122,6 +123,13 @@ export class ClassTransformer extends ParseTreeTransformer {
       }
     }
 
+    let implementsAnnotation = this._extractImplementsAnnotation(tree);
+    if (implementsAnnotation !== null) {
+      tree.implements = new ImplementsDeclaration(
+        implementsAnnotation.location,
+        implementsAnnotation.args.args);
+    }
+
     // Add the field definitions to the beginning of the class.
     tree.elements = fields.concat(tree.elements);
     if (isConst) {
@@ -188,30 +196,49 @@ export class ClassTransformer extends ParseTreeTransformer {
   }
 
   /**
+   * Extract the @IMPLEMENTS annotation from the class annotations.
+   * When found the annotation is removed from the class annotations and returned.
+   */
+  _extractImplementsAnnotation(tree) {
+    return this._extractAnnotation(tree, this._isImplementsAnnotation);
+  }
+
+  /**
    * Extract the @CONST annotation from the class annotations.
    * When found the annotation is removed from the class annotations and returned.
    */
   _extractConstAnnotation(tree) {
+    return this._extractAnnotation(tree, this._isConstAnnotation);
+  }
+
+  _extractAnnotation(tree, predicate) {
     var annotations = [];
-    var constAnnotation = null;
-    var that = this;
+    var extractedAnnotation = null;
 
     tree.annotations.forEach((annotation) => {
-      if (that._isConstAnnotation(annotation)) {
-        constAnnotation = annotation;
+      if (predicate(annotation)) {
+        extractedAnnotation = annotation;
       } else {
         annotations.push(annotation);
       }
     });
 
     tree.annotations = annotations;
-    return constAnnotation;
+    return extractedAnnotation;
   }
+
   /**
    * Returns true if the annotation is @CONST
    */
   _isConstAnnotation(annotation) {
     return annotation.name.identifierToken.value === 'CONST';
+  }
+
+  /**
+   * Returns true if the annotation is @IMPLEMENTS
+   */
+  _isImplementsAnnotation(annotation) {
+    return annotation.name.identifierToken.value === 'IMPLEMENTS';
   }
 
 }

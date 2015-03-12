@@ -1,53 +1,17 @@
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
-
-import {SelectorMatcher} from "core/compiler/selector";
-import {CssSelector} from "core/compiler/selector";
-import {StringWrapper, Math} from 'facade/lang';
-import {ListWrapper} from 'facade/collection';
-
-var fixedMatcher;
-var fixedSelectorStrings = [];
-var fixedSelectors = [];
-
-var COUNT = 1000;
+import {SelectorMatcher} from "angular2/src/core/compiler/selector";
+import {CssSelector} from "angular2/src/core/compiler/selector";
+import {StringWrapper, Math} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 export function main() {
-  setup(COUNT);
+  BrowserDomAdapter.makeCurrent();
+  var count = getIntParameter('selectors');
 
-  benchmark(`cssSelector.parse * ${COUNT}`, function() {
-    benchmarkStep(`run`, function() {
-      var result = [];
-      for (var i=0; i<COUNT; i++) {
-        ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
-      }
-      return result;
-    });
-  });
-
-  benchmark(`cssSelector.addSelectable * ${COUNT}`, function() {
-    benchmarkStep(`run`, function() {
-      var matcher = new SelectorMatcher();
-      for (var i=0; i<COUNT; i++) {
-        matcher.addSelectable(fixedSelectors[i], i);
-      }
-      return matcher;
-    });
-  });
-
-  benchmark(`cssSelector.match * ${COUNT}`, function() {
-    benchmarkStep(`run`, function() {
-      var matchCount = 0;
-      for (var i=0; i<COUNT; i++) {
-        fixedMatcher.match(fixedSelectors[i], (selected) => {
-          matchCount += selected;
-        });
-      }
-      return matchCount;
-    });
-  });
-}
-
-function setup(count) {
+  var fixedMatcher;
+  var fixedSelectorStrings = [];
+  var fixedSelectors = [];
   for (var i=0; i<count; i++) {
     ListWrapper.push(fixedSelectorStrings, randomSelector());
   }
@@ -58,6 +22,36 @@ function setup(count) {
   for (var i=0; i<count; i++) {
     fixedMatcher.addSelectable(fixedSelectors[i], i);
   }
+
+  function parse() {
+    var result = [];
+    for (var i=0; i<count; i++) {
+      ListWrapper.push(result, CssSelector.parse(fixedSelectorStrings[i]));
+    }
+    return result;
+  }
+
+  function addSelectable() {
+    var matcher = new SelectorMatcher();
+    for (var i=0; i<count; i++) {
+      matcher.addSelectable(fixedSelectors[i], i);
+    }
+    return matcher;
+  }
+
+  function match() {
+    var matchCount = 0;
+    for (var i=0; i<count; i++) {
+      fixedMatcher.match(fixedSelectors[i], (selector, selected) => {
+        matchCount += selected;
+      });
+    }
+    return matchCount;
+  }
+
+  bindAction('#parse', parse);
+  bindAction('#addSelectable', addSelectable);
+  bindAction('#match', match);
 }
 
 function randomSelector() {

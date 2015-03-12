@@ -1,3 +1,5 @@
+require('../../tools/transpiler/index.js').init();
+
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
@@ -29,7 +31,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .processor(require('./processors/processModuleDocs'))
 .processor(require('./processors/processClassDocs'))
 .processor(require('./processors/generateNavigationDoc'))
-
+.processor(require('./processors/extractTitleFromGuides'))
 
 // Configure the log service
 .config(function(log) {

@@ -19,8 +19,8 @@ describe('atParser service', function() {
     'export class Inject {\n' +
       'token;\n' +
       '@CONST()\n' +
-      'constructor(token) {\n' +
-        'this.token = token;\n' +
+      'constructor({a,b}:{a:string, b:string}) {\n' +
+        'this.token = a;\n' +
       '}\n' +
     '}';
 
@@ -54,7 +54,7 @@ describe('atParser service', function() {
       relativePath: 'di/src/annotations.js'
     });
 
-    expect(result.moduleTree.moduleName).toEqual('di/annotations');
+    expect(result.moduleTree.moduleName).toEqual('di/src/annotations');
     expect(result.moduleTree.scriptItemList[0].type).toEqual('IMPORT_DECLARATION');
 
     expect(result.moduleTree.scriptItemList[1].type).toEqual('EXPORT_DECLARATION');

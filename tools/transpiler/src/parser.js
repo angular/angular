@@ -8,28 +8,15 @@ export class Parser extends TraceurParser {
     super(file, errorReporter);
   }
 
-  parseTypeName_() {
-    // Copy of original implementation
-    var typeName = super.parseTypeName_();
-    // Generics support
-    if (this.eatIf_(OPEN_ANGLE)) {
-      var generics = [];
-      do {
-        generics.push(this.eatId_());
-      } while(this.eatIf_(COMMA));
-      this.eat_(CLOSE_ANGLE);
-      // TODO: save the generics into the typeName and use them e.g. for assertions, ...
-    }
-    return typeName;
-  }
-
+  // TODO: add support for object type literals to traceur!
   parseObjectType_() {
-   //TODO(misko): save the type information
    this.eat_(OPEN_CURLY);
    do {
      var identifier = this.eatId_();
      this.eat_(COLON);
      var type = this.parseNamedOrPredefinedType_();
+     var typeParameters = this.parseTypeParametersOpt_();
+     // TODO(misko): save the type information
    } while (this.eatIf_(COMMA));
    this.eat_(CLOSE_CURLY);
  }

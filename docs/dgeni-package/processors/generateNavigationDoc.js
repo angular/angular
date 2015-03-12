@@ -54,10 +54,10 @@ module.exports = function generateNavigationDoc() {
           var guideDoc = {
             path: doc.path,
             partial: doc.outputPath,
-            name: doc.id,
+            name: doc.name,
             type: 'guide'
           };
-          guidesDoc.value.pages.push(guideDoc)
+          guidesDoc.value.pages.push(guideDoc);
         }
       });
       docs.push(guidesDoc);

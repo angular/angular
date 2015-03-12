@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, expect} from 'test_lib/test_lib';
+import {ddescribe, describe, it, expect} from 'angular2/test_lib';
 import {CONST} from './fixtures/annotations';
 
 class Foo {

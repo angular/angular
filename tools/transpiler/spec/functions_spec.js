@@ -1,4 +1,4 @@
-import {describe, ddescribe, it, iit, expect} from 'test_lib/test_lib';
+import {describe, ddescribe, it, iit, expect} from 'angular2/test_lib';
 
 function sum(a, b) {
   return a + b;

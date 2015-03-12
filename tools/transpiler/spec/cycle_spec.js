@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect} from 'angular2/test_lib';
 import {cycle} from './cycle';
 
 export function main() {

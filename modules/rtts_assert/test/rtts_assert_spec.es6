@@ -10,10 +10,36 @@
 //   - [assert.structure](#assert-structure)
 // - [Integrating with Traceur](#integrating-with-traceur)
 
-import {assert} from 'rtts_assert/rtts_assert';
-
+// Note: `assert` gets automatically included by traceur!
 
 export function main() {
+
+describe('prettyPrint', () => {
+  class Type {};
+
+  it('should limit the number of printed properties', () => {
+    var o = {};
+    for (var i = 0; i < 100; i++) {
+      o['p_' + i] = i;
+    }
+    try {
+      assert.type(o, Type);
+      throw 'fail!';
+    } catch (e) {
+      expect(e.message.indexOf('p_0')).toBeGreaterThan(-1);
+      expect(e.message.indexOf('...')).toBeGreaterThan(-1);
+      expect(e.message.indexOf('p_20')).toBe(-1);
+    }
+  });
+
+  it('should limit the depth of printed properties', () => {
+    var o = {l1: {l2: {l3: {l4: {l5: {l6: 'deep'}}}}}};
+
+    expect(() => {
+      assert.type(o, Type);
+    }).toThrowError('Expected an instance of Type, got {l1: {l2: {l3: {l4: [...]}}}}!');
+  });
+});
 
 // ## Basic Type Check
 // By default, `instanceof` is used to check the type.
@@ -163,7 +189,6 @@ describe('primitive value check', function() {
     });
   });
 });
-
 
 
 // ## Describing more complex types
@@ -370,11 +395,18 @@ describe('Traceur', function() {
         .toThrowError('Expected to return an instance of void, got null!');
     });
   });
+
+
+  describe('generics', function() {
+
+    it('should pass', function() {
+      var list:Array<string> = [];
+    });
+
+    // TODO(tbosch): add assertions based on generics to rtts_assert
+
+  });
+
 });
-
-
-// <center><small>
-// This documentation was generated from [assert.spec.js](https://github.com/vojtajina/assert/blob/master/test/assert.spec.js) using [Docco](http://jashkenas.github.io/docco/).
-// </small></center>
 
 }

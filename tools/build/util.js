@@ -1,21 +1,42 @@
 var Q = require('q');
+var path = require('path');
 var minimatch = require('minimatch');
+var glob = require('glob');
 
 module.exports = {
   processToPromise: processToPromise,
   streamToPromise: streamToPromise,
-  renameSrcFolder: renameSrcFolder,
-  filterByFile: filterByFile
+  insertSrcFolder: insertSrcFolder,
+  filterByFile: filterByFile,
+  subDirs: subDirs,
+  forEachSubDir: forEachSubDir,
+  forEachSubDirSequential: forEachSubDirSequential
 };
 
-function filterByFile(valuesWithPatterns, fileName) {
-  var match = null;
-  for (var pattern in valuesWithPatterns) {
-    if (pattern !== 'default' && minimatch(fileName, pattern)) {
-      match = valuesWithPatterns[pattern];
+function subDirs(dir) {
+  return [].slice.call(glob.sync('*/', {cwd: dir}));
+}
+
+function forEachSubDir(dir, callback) {
+  var dirs = subDirs(dir);
+  return Q.all(dirs.map(function(subdir) {
+    return callback(path.join(dir, subdir));
+  }));
+};
+
+function forEachSubDirSequential(dir, callback) {
+  var dirs = subDirs(dir);
+  return next(0);
+
+  function next(index) {
+    if (index < dirs.length) {
+      return callback(path.join(dir, dirs[index])).then(function() {
+        return next(index+1);
+      });
+    } else {
+      return true;
     }
   }
-  return match || valuesWithPatterns['default'];
 }
 
 function processToPromise(process) {
@@ -37,9 +58,33 @@ function streamToPromise(stream) {
   return defer.promise;
 }
 
-function renameSrcFolder(plugins, srcFolderMapping) {
+function filterByFile(pathMapping, folder) {
+  var folderParts = folder.split(path.sep);
+  var match;
+  var lastPattern;
+  for (var pattern in pathMapping) {
+    if (minimatch(folder, pattern)) {
+      if (!lastPattern || lastPattern.length < pattern.length) {
+        match = pathMapping[pattern];
+        lastPattern = pattern;
+      }
+    }
+  }
+  if (match !== undefined) {
+    return match;
+  } else {
+    throw new Error('No entry for folder '+folder+' found in '+JSON.stringify(pathMapping));
+  }
+}
+
+function insertSrcFolder(plugins, srcFolderInsertion) {
   return plugins.rename(function(file) {
-    var srcOutputFolder = filterByFile(srcFolderMapping, file.dirname);
-    file.dirname = file.dirname.replace(/\bsrc\b/, srcOutputFolder);
+    var folder = file.dirname;
+    var srcDir = filterByFile(srcFolderInsertion, path.join(folder, file.basename));
+    if (srcDir) {
+      var folderParts = file.dirname.split(path.sep);
+      folder = [folderParts[0], srcDir].concat(folderParts.slice(1)).join(path.sep);
+    }
+    file.dirname = folder;
   });
 }

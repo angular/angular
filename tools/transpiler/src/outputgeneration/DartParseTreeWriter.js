@@ -1,6 +1,7 @@
 import {CONSTRUCTOR, FROM} from 'traceur/src/syntax/PredefinedName';
 import {
   AT,
+  CLASS,
   CLOSE_CURLY,
   CLOSE_PAREN,
   CLOSE_SQUARE,
@@ -8,15 +9,20 @@ import {
   COMMA,
   EQUAL,
   EQUAL_EQUAL_EQUAL,
+  EXTENDS,
+  IMPLEMENTS,
   IMPORT,
   OPEN_CURLY,
   OPEN_PAREN,
   OBJECT_PATTERN,
   OPEN_SQUARE,
+  PERIOD,
   SEMI_COLON,
   STAR,
   STATIC,
-  VAR
+  VAR,
+  OPEN_ANGLE,
+  CLOSE_ANGLE
 } from 'traceur/src/syntax/TokenType';
 
 import {
@@ -27,6 +33,7 @@ import {ParseTreeWriter as JavaScriptParseTreeWriter, ObjectLiteralExpression} f
 import {ImportedBinding, BindingIdentifier} from 'traceur/src/syntax/trees/ParseTrees';
 import {IdentifierToken} from 'traceur/src/syntax/IdentifierToken';
 import {EXPORT_STAR, NAMED_EXPORT} from 'traceur/src/syntax/trees/ParseTreeType';
+import {typeMapping} from '../type_mapping';
 
 export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   constructor(moduleName, outputPath) {
@@ -50,7 +57,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       if (tree.isFinal) {
         this.write_('final');
       }
-      this.writeType_(tree.typeAnnotation);
+      this.writeTypeAndSpace_(tree.typeAnnotation);
     }
     this.writeSpace_();
 
@@ -75,7 +82,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   visitVariableDeclaration(tree) {
-    this.writeType_(tree.typeAnnotation);
+    this.writeTypeAndSpace_(tree.typeAnnotation);
     this.visitAny(tree.lvalue);
 
     if (tree.initializer !== null) {
@@ -96,9 +103,15 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   visitTemplateLiteralPortion(tree) {
-    this.writeRaw_(tree.value.toString().replace(/('|")/g, "\\$&"));
+    this.writeRaw_(tree.value.toString()
+      .replace(/('|")/g, "\\$&")
+      .replace(/([^\\])\$/g, "$1\\\$")
+      .replace(/^\$/, '\\\$'));
   }
 
+  visitLiteralExpression(tree) {
+    this.write_(('' + tree.literalToken).replace(/([^\\])\$/g, "$1\\\$"));
+  }
 
   // FUNCTIONS
   // - remove the "function" keyword
@@ -114,7 +127,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
 
     if (tree.name) {
-      this.writeType_(tree.typeAnnotation);
+      this.writeTypeAndSpace_(tree.typeAnnotation);
       this.visitAny(tree.name);
     }
 
@@ -143,7 +156,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       this.write_(ASYNC);
     }
 
-    this.writeType_(tree.typeAnnotation);
+    this.writeTypeAndSpace_(tree.typeAnnotation);
     this.visitAny(tree.name);
     this.write_(OPEN_PAREN);
     this.visitAny(tree.parameterList);
@@ -191,7 +204,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       this.writeSpace_();
     }
 
-    this.writeType_(tree.typeAnnotation);
+    this.writeTypeAndSpace_(tree.typeAnnotation);
     this.visitAny(tree.name);
     this.write_(OPEN_PAREN);
     this.visitAny(tree.parameterList);
@@ -210,14 +223,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
   }
 
   normalizeType_(typeName) {
-    switch (typeName) {
-      case 'number': return 'num';
-      case 'boolean': return 'bool';
-      case 'string': return 'String';
-      case 'any': return 'dynamic';
-      case 'Promise': return 'Future';
-      default: return typeName;
-    }
+    return typeMapping[typeName] || typeName;
   }
 
   // FUNCTION/METHOD ARGUMENTS
@@ -237,7 +243,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     // resetting type annotation so it doesn't filter down recursively
     this.currentParameterTypeAnnotation_ = null;
 
-    this.writeType_(typeAnnotation);
+    this.writeTypeAndSpace_(typeAnnotation);
     this.visitAny(tree.binding);
 
     if (tree.initializer) {
@@ -248,22 +254,49 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     }
   }
 
+  writeTypeAndSpace_(typeAnnotation) {
+    this.writeType_(typeAnnotation);
+    this.writeSpace_();
+  }
+
 
   writeType_(typeAnnotation) {
     if (!typeAnnotation) {
       return;
     }
+    var typeNameNode;
+    var args = [];
+    if (typeAnnotation.typeName) {
+      typeNameNode = typeAnnotation.typeName;
+      args = typeAnnotation.args.args;
+    } else {
+      typeNameNode = typeAnnotation;
+      args = [];
+    }
 
-    // TODO(vojta): Figure out why `typeAnnotation` has different structure when used with a variable.
+    if (typeNameNode.moduleName && typeNameNode.moduleName.name && typeNameNode.moduleName.name.value) {
+      this.write_(typeNameNode.moduleName.name.value);
+      this.write_(PERIOD);
+    }
+
+    // TODO(vojta): Figure out why `typeNameNode` has different structure when used with a variable.
     // This should probably be fixed in Traceur.
-    var typeName = typeAnnotation.typeToken && typeAnnotation.typeToken.value || (typeAnnotation.name && typeAnnotation.name.value) || null;
-
+    var typeName = typeNameNode.typeToken && typeNameNode.typeToken.value || (typeNameNode.name && typeNameNode.name.value) || null;
     if (!typeName) {
       return;
     }
 
     this.write_(this.normalizeType_(typeName));
-    this.writeSpace_();
+    if (args.length) {
+      this.write_(OPEN_ANGLE);
+      this.writeType_(args[0]);
+      for (var i=1; i<args.length; i++) {
+        this.write_(COMMA);
+        this.writeSpace_();
+        this.writeType_(args[i]);
+      }
+      this.write_(CLOSE_ANGLE);
+    }
   }
 
   // EXPORTS
@@ -418,7 +451,7 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
       this.write_(STATIC);
       this.writeSpace_();
     }
-    this.writeType_(tree.typeAnnotation);
+    this.writeTypeAndSpace_(tree.typeAnnotation);
     this.writeSpace_();
     this.write_(GET);
     this.writeSpace_();
@@ -456,8 +489,34 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
     this.writeList_(tree.parameterNameAndValues, COMMA, false);
   }
 
+  visitClassDeclaration(tree) {
+    this.writeAnnotations_(tree.annotations);
+    this.write_(CLASS);
+    this.writeSpace_();
+    this.visitAny(tree.name);
+
+    if (tree.superClass) {
+      this.writeSpace_();
+      this.write_(EXTENDS);
+      this.writeSpace_();
+      this.visitAny(tree.superClass);
+    }
+
+    if (tree.implements) {
+      this.writeSpace_();
+      this.write_(IMPLEMENTS);
+      this.writeSpace_();
+      this.writeList_(tree.implements.interfaces, COMMA, false);
+    }
+
+    this.writeSpace_();
+    this.write_(OPEN_CURLY);
+    this.writelnList_(tree.elements);
+    this.write_(CLOSE_CURLY);
+  }
+
   toString() {
-    return "library " + this.libName + ";\n" + super.toString();
+    return "library " + this.libName + "_dart;\n" + super.toString();
   }
 }
 

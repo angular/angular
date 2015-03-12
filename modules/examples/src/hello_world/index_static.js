@@ -1,26 +1,41 @@
-import *  as app from './index';
+import *  as app from './index_common';
 
-import {Component, Decorator, TemplateConfig, NgElement} from 'core/core';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {Component, Decorator, Template, NgElement} from 'angular2/angular2';
+import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
+import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
-import {Compiler, CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/compiler/template_loader';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {reflector} from 'reflection/reflection';
+import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 
 function setup() {
   reflector.registerType(app.HelloCmp, {
     "factory": (service) => new app.HelloCmp(service),
     "parameters": [[app.GreetingService]],
-    "annotations" : [new Component({
-      selector: 'hello-app',
-      componentServices: [app.GreetingService],
-      template: new TemplateConfig({
+    "annotations" : [
+      new Component({
+        selector: 'hello-app',
+        services: [app.GreetingService]
+      }),
+      new Template({
         directives: [app.RedDec],
-        inline: `{{greeting}} <span red>world</span>!`})
-    })]
+        inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
+                 <button class="changeButton" (click)="changeGreeting()">change greeting</button>`
+      })]
   });
 
   reflector.registerType(app.RedDec, {
@@ -36,8 +51,13 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (templateLoader, reader, parser, compilerCache) => new Compiler(templateLoader, reader, parser, compilerCache),
-    "parameters": [[TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+                tplResolver, cmpUrlMapper, urlResolver, cssProcessor) =>
+      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
+        tplResolver, cmpUrlMapper, urlResolver, cssProcessor),
+    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
+                   [CompilerCache], [ShadowDomStrategy], [TemplateResolver], [ComponentUrlMapper],
+                   [UrlResolver], [CssProcessor]],
     "annotations": []
   });
 
@@ -47,7 +67,6 @@ function setup() {
     "annotations": []
   });
 
-
   reflector.registerType(Parser, {
     "factory": (lexer) => new Parser(lexer),
     "parameters": [[Lexer]],
@@ -55,7 +74,19 @@ function setup() {
   });
 
   reflector.registerType(TemplateLoader, {
-    "factory": () => new TemplateLoader(),
+    "factory": (xhr, urlResolver) => new TemplateLoader(xhr, urlResolver),
+    "parameters": [[XHR], [UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    "factory": () => new TemplateResolver(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(XHR, {
+    "factory": () => new XHRImpl(),
     "parameters": [],
     "annotations": []
   });
@@ -72,6 +103,78 @@ function setup() {
     "annotations": []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(LifeCycle, {
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler], [ChangeDetector]],
+    "annotations": []
+  });
+
+  reflector.registerType(ShadowDomStrategy, {
+    "factory": (strategy) => strategy,
+    "parameters": [[NativeShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(NativeShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(StyleUrlResolver, {
+    "factory": (urlResolver) => new StyleUrlResolver(urlResolver),
+    "parameters": [[UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(UrlResolver, {
+    "factory": () => new UrlResolver(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(ComponentUrlMapper, {
+    "factory": () => new ComponentUrlMapper(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(Content, {
+    "factory": (lightDom, el) => new Content(lightDom, el),
+    "parameters": [[DestinationLightDom], [NgElement]],
+    "annotations" : [new Decorator({selector: '[content]'})]
+  });
+
+  reflector.registerType(StyleInliner, {
+    "factory": (xhr, styleUrlResolver, urlResolver) =>
+      new StyleInliner(xhr, styleUrlResolver, urlResolver),
+    "parameters": [[XHR], [StyleUrlResolver], [UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(CssProcessor, {
+    "factory": () => new CssProcessor(null),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(Reflector, {
+    "factory": () => reflector,
+    "parameters": [],
+    "annotations": []
+  });
 
   reflector.registerGetters({
     "greeting": (a) => a.greeting
@@ -79,6 +182,10 @@ function setup() {
 
   reflector.registerSetters({
     "greeting": (a,v) => a.greeting = v
+  });
+
+  reflector.registerMethods({
+    "changeGreeting": (obj, args) => obj.changeGreeting()
   });
 }
 

@@ -1,0 +1,17 @@
+{
+  "name": "benchpress",
+  "version": "<%= packageJson.version %>",
+  "description": "Benchpress - a framework for e2e performance tests",
+  "homepage": "<%= packageJson.homepage %>",
+  "bugs": "<%= packageJson.bugs %>",
+  "main" : "./index.js",
+  "contributors": <%= JSON.stringify(packageJson.contributors) %>,
+  "license": "<%= packageJson.license %>",
+  "dependencies": {
+    "angular2": "<%= packageJson.version %>",
+    "rtts_assert": "<%= packageJson.version %>",
+    "traceur": "<%= packageJson.dependencies.traceur %>",
+    "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>"
+  },
+  "devDependencies": <%= JSON.stringify(packageJson.devDependencies) %>
+}

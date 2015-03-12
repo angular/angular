@@ -11,25 +11,29 @@ module.exports = function(config) {
       // Sources and specs.
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'modules/**', included: false},
-      {pattern: 'tools/transpiler/**', included: false},
+      {pattern: 'tools/transpiler/spec/**', included: false},
 
       'node_modules/traceur/bin/traceur-runtime.js',
-      'traceur-runtime-patch.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/zone.js/zone.js',
+      'node_modules/zone.js/long-stack-trace-zone.js',
 
       'tools/build/file2modulename.js',
       'test-main.js'
     ],
 
+    exclude: [
+      'modules/**/e2e_test/**'
+    ],
+
     preprocessors: {
       'modules/**/*.js': ['traceur'],
       'modules/**/*.es6': ['traceur'],
-      'tools/transpiler/**/*.js': ['traceur'],
-      'tools/transpiler/**/*.es6': ['traceur'],
+      'tools/transpiler/spec/**/*.js': ['traceur'],
+      'tools/transpiler/spec/**/*.es6': ['traceur'],
     },
 
     traceurPreprocessor: {

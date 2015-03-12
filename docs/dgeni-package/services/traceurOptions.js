@@ -1,5 +1,3 @@
-var traceur = require('traceur/src/node/traceur.js');
-
 module.exports = function traceurOptions() {
-  return traceur.options;
+  return System.get(System.map.traceur + '/src/Options.js').options;
 };

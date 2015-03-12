@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'test_lib/test_lib';
+import {describe, it, expect} from 'angular2/test_lib';
 
 function same(a, b) {
   return a === b;

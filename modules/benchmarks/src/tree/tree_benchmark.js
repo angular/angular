@@ -1,70 +1,83 @@
-import {benchmark, benchmarkStep} from 'benchpress/benchpress';
+import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
+  from 'angular2/change_detection';
+import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
-import {ChangeDetector} from 'change_detection/change_detector';
-import {Parser} from 'change_detection/parser/parser';
-import {Lexer} from 'change_detection/parser/lexer';
+import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler, NgElement, Decorator} from 'angular2/angular2';
 
-import {bootstrap, Component, Template, TemplateConfig, ViewPort, Compiler} from 'core/core';
+import {CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
+import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
+import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {CompilerCache} from 'core/compiler/compiler';
-import {DirectiveMetadataReader} from 'core/compiler/directive_metadata_reader';
-import {TemplateLoader} from 'core/compiler/template_loader';
+import {Reflector, reflector} from 'angular2/src/reflection/reflection';
+import {DOM} from 'angular2/src/dom/dom_adapter';
+import {isPresent} from 'angular2/src/facade/lang';
+import {window, document, gc} from 'angular2/src/facade/browser';
+import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
-import {reflector} from 'reflection/reflection';
-import {DOM, document, Element} from 'facade/dom';
-import {isPresent} from 'facade/lang';
+import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
-var MAX_DEPTH = 9;
+import {If} from 'angular2/directives';
+import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
-function setup() {
+function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
   // as they are needed in all benchmarks...
 
   reflector.registerType(AppComponent, {
     'factory': () => new AppComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'app',
-      template: new TemplateConfig({
+    'annotations' : [
+      new Component({selector: 'app'}),
+      new Template({
         directives: [TreeComponent],
         inline: `<tree [data]='initData'></tree>`
-      })
-    })]
+      })]
   });
 
   reflector.registerType(TreeComponent, {
     'factory': () => new TreeComponent(),
     'parameters': [],
-    'annotations' : [new Component({
-      selector: 'tree',
-      bind: {
-        'data': 'data'
-      },
-      template: new TemplateConfig({
-          directives: [TreeComponent, NgIf],
-          inline: `
-    <span> {{data.value}}
-       <span template='ng-if data.left != null'><tree [data]='data.left'></tree></span>
-       <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span>
-    </span>`
-      })
-    })]
+    'annotations' : [
+      new Component({
+        selector: 'tree',
+        bind: {'data': 'data'}
+      }),
+      new Template({
+        directives: [TreeComponent, If],
+        inline: `<span> {{data.value}} <span template='if data.right != null'><tree [data]='data.right'></tree></span><span template='if data.left != null'><tree [data]='data.left'></tree></span></span>`
+      })]
   });
 
-  reflector.registerType(NgIf, {
-    'factory': (vp) => new NgIf(vp),
-    'parameters': [[ViewPort]],
-    'annotations' : [new Template({
-      selector: '[ng-if]',
+  reflector.registerType(If, {
+    'factory': (vp) => new If(vp),
+    'parameters': [[ViewContainer]],
+    'annotations' : [new Viewport({
+      selector: '[if]',
       bind: {
-        'ng-if': 'ngIf'
+        'condition': 'if'
       }
     })]
   });
 
   reflector.registerType(Compiler, {
-    'factory': (templateLoader, reader, parser, compilerCache) => new Compiler(templateLoader, reader, parser, compilerCache),
-    'parameters': [[TemplateLoader], [DirectiveMetadataReader], [Parser], [CompilerCache]],
+    'factory': (cd, templateLoader, reader, parser, compilerCache, strategy, tplResolver,
+      cmpUrlMapper, urlResolver, cssProcessor) =>
+      new Compiler(cd, templateLoader, reader, parser, compilerCache, strategy, tplResolver,
+        cmpUrlMapper, urlResolver, cssProcessor),
+    'parameters': [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader],
+                   [Parser], [CompilerCache], [ShadowDomStrategy], [TemplateResolver],
+                   [ComponentUrlMapper], [UrlResolver], [CssProcessor]],
     'annotations': []
   });
 
@@ -81,7 +94,19 @@ function setup() {
   });
 
   reflector.registerType(TemplateLoader, {
-    'factory': () => new TemplateLoader(),
+    'factory': (xhr, urlResolver) => new TemplateLoader(xhr, urlResolver),
+    'parameters': [[XHR], [UrlResolver]],
+    'annotations': []
+  });
+
+  reflector.registerType(TemplateResolver, {
+    'factory': () => new TemplateResolver(),
+    'parameters': [],
+    'annotations': []
+  });
+
+  reflector.registerType(XHR, {
+    'factory': () => new XHRImpl(),
     'parameters': [],
     'annotations': []
   });
@@ -92,19 +117,93 @@ function setup() {
     'annotations': []
   });
 
+  reflector.registerType(ShadowDomStrategy, {
+    "factory": (strategy) => strategy,
+    "parameters": [[NativeShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(NativeShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new NativeShadowDomStrategy(styleUrlResolver),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(EmulatedUnscopedShadowDomStrategy, {
+    "factory": (styleUrlResolver) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null),
+    "parameters": [[StyleUrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(StyleUrlResolver, {
+    "factory": (urlResolver) => new StyleUrlResolver(urlResolver),
+    "parameters": [[UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(Content, {
+    "factory": (lightDom, el) => new Content(lightDom, el),
+    "parameters": [[DestinationLightDom], [NgElement]],
+    "annotations" : [new Decorator({selector: '[content]'})]
+  });
+
+  reflector.registerType(UrlResolver, {
+    "factory": () => new UrlResolver(),
+    "parameters": [],
+    "annotations": []
+  });
+
   reflector.registerType(Lexer, {
     'factory': () => new Lexer(),
     'parameters': [],
     'annotations': []
   });
 
+  reflector.registerType(ExceptionHandler, {
+    "factory": () => new ExceptionHandler(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(LifeCycle, {
+    "factory": (exHandler, cd) => new LifeCycle(exHandler, cd),
+    "parameters": [[ExceptionHandler], [ChangeDetector]],
+    "annotations": []
+  });
+
+
+  reflector.registerType(ComponentUrlMapper, {
+    "factory": () => new ComponentUrlMapper(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(StyleInliner, {
+    "factory": (xhr, styleUrlResolver, urlResolver) =>
+      new StyleInliner(xhr, styleUrlResolver, urlResolver),
+    "parameters": [[XHR], [StyleUrlResolver], [UrlResolver]],
+    "annotations": []
+  });
+
+  reflector.registerType(CssProcessor, {
+    "factory": () => new CssProcessor(null),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(Reflector, {
+    "factory": () => reflector,
+    "parameters": [],
+    "annotations": []
+  });
 
   reflector.registerGetters({
     'value': (a) => a.value,
     'left': (a) => a.left,
     'right': (a) => a.right,
     'initData': (a) => a.initData,
-    'data': (a) => a.data
+    'data': (a) => a.data,
+    'condition': (a) => a.condition,
   });
 
   reflector.registerSetters({
@@ -113,63 +212,114 @@ function setup() {
     'right': (a,v) => a.right = v,
     'initData': (a,v) => a.initData = v,
     'data': (a,v) => a.data = v,
-    'ngIf': (a,v) => a.ngIf = v
+    'condition': (a,v) => a.condition = v,
   });
-
-  return bootstrap(AppComponent);
 }
 
+var BASELINE_TREE_TEMPLATE;
+var BASELINE_IF_TEMPLATE;
+
 export function main() {
+  BrowserDomAdapter.makeCurrent();
+  var maxDepth = getIntParameter('depth');
+
+  setupReflector();
+
+  BASELINE_TREE_TEMPLATE = DOM.createTemplate(
+    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+  BASELINE_IF_TEMPLATE = DOM.createTemplate(
+    '<span template="if"><tree></tree></span>');
+
   var app;
-  var changeDetector;
-  setup().then((injector) => {
-    changeDetector = injector.get(ChangeDetector);
-    app = injector.get(AppComponent);
-  });
+  var lifeCycle;
+  var baselineRootTreeComponent;
+  var count = 0;
 
-  benchmark(`tree benchmark`, function() {
-    var count = 0;
+  function ng2DestroyDom() {
+    // TODO: We need an initial value as otherwise the getter for data.value will fail
+    // --> this should be already caught in change detection!
+    app.initData = new TreeNode('', null, null);
+    lifeCycle.tick();
+  }
 
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
-      // TODO: We need an initial value as otherwise the getter for data.value will fail
-      // --> this should be already caught in change detection!
-      app.initData = new TreeNode('', null, null);
-      changeDetector.detectChanges();
+  function profile(create, destroy, name) {
+    return function() {
+      window.console.profile(name + ' w GC');
+      var duration = 0;
+      var count = 0;
+      while(count++ < 150) {
+        gc();
+        var start = window.performance.now();
+        create();
+        duration += window.performance.now() - start;
+        destroy();
+      }
+      window.console.profileEnd(name + ' w GC');
+      window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+
+      window.console.profile(name + ' w/o GC');
+      duration = 0;
+      count = 0;
+      while(count++ < 150) {
+        var start = window.performance.now();
+        create();
+        duration += window.performance.now() - start;
+        destroy();
+      }
+      window.console.profileEnd(name + ' w/o GC');
+      window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
+    };
+  }
+
+  function ng2CreateDom() {
+    var values = count++ % 2 == 0 ?
+      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+
+    app.initData = buildTree(maxDepth, values, 0);
+    lifeCycle.tick();
+  }
+
+  function noop() {}
+
+  function initNg2() {
+    bootstrap(AppComponent).then((injector) => {
+      lifeCycle = injector.get(LifeCycle);
+
+      app = injector.get(AppComponent);
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
     });
+  }
 
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
-      var maxDepth = 9;
-      var values = count++ % 2 == 0 ?
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
+  function baselineDestroyDom() {
+    baselineRootTreeComponent.update(new TreeNode('', null, null));
+  }
 
-      app.initData = buildTree(maxDepth, values, 0);
-      changeDetector.detectChanges();
-    });
+  function baselineCreateDom() {
+    var values = count++ % 2 == 0 ?
+      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
-  });
+    baselineRootTreeComponent.update(buildTree(maxDepth, values, 0));
+  }
 
-  benchmark(`baseline tree benchmark`, function() {
-    var baselineAppElement = DOM.querySelectorAll(document, 'baseline')[0];
-    var rootTreeComponent = new BaseLineTreeComponent();
-    DOM.appendChild(baselineAppElement, rootTreeComponent.element);
+  function initBaseline() {
+    var tree = DOM.createElement('tree');
+    DOM.appendChild(DOM.querySelector(document, 'baseline'), tree);
+    baselineRootTreeComponent = new BaseLineTreeComponent(tree);
 
-    var count = 0;
+    bindAction('#baselineDestroyDom', baselineDestroyDom);
+    bindAction('#baselineCreateDom', baselineCreateDom);
 
-    benchmarkStep(`destroyDom binary tree of depth ${MAX_DEPTH}`, function() {
-      rootTreeComponent.update(new TreeNode('', null, null));
-    });
+    bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
+    bindAction('#baselineCreateDomProfile', profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+  }
 
-    benchmarkStep(`createDom binary tree of depth ${MAX_DEPTH}`, function() {
-      var maxDepth = 9;
-      var values = count++ % 2 == 0 ?
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
-        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
-
-      rootTreeComponent.update(buildTree(maxDepth, values, 0));
-    });
-
-  });
+  initNg2();
+  initBaseline();
 }
 
 class TreeNode {
@@ -191,18 +341,16 @@ function buildTree(maxDepth, values, curDepth) {
       buildTree(maxDepth, values, curDepth+1));
 }
 
-var BASELINE_TEMPLATE = DOM.createTemplate(
-    '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
 // http://jsperf.com/nextsibling-vs-childnodes
 
 class BaseLineTreeComponent {
-  element:Element;
+  element;
   value:BaseLineInterpolation;
   left:BaseLineIf;
   right:BaseLineIf;
-  constructor() {
-    this.element = DOM.createElement('span');
-    var clone = DOM.clone(BASELINE_TEMPLATE.content.firstChild);
+  constructor(element) {
+    this.element = element;
+    var clone = DOM.clone(BASELINE_TREE_TEMPLATE.content.firstChild);
     var shadowRoot = this.element.createShadowRoot();
     DOM.appendChild(shadowRoot, clone);
 
@@ -238,7 +386,7 @@ class BaseLineInterpolation {
 class BaseLineIf {
   condition:boolean;
   component:BaseLineTreeComponent;
-  anchor:Element;
+  anchor;
   constructor(anchor) {
     this.anchor = anchor;
     this.condition = false;
@@ -249,12 +397,13 @@ class BaseLineIf {
     if (this.condition !== newCondition) {
       this.condition = newCondition;
       if (isPresent(this.component)) {
-        this.component.element.remove();
+        DOM.remove(this.component.element);
         this.component = null;
       }
       if (this.condition) {
-        this.component = new BaseLineTreeComponent();
-        this.anchor.parentNode.insertBefore(this.component.element, this.anchor);
+        var element = DOM.firstChild(DOM.clone(BASELINE_IF_TEMPLATE).content);
+        this.anchor.parentNode.insertBefore(element, DOM.nextSibling(this.anchor));
+        this.component = new BaseLineTreeComponent(DOM.firstChild(element));
       }
     }
     if (isPresent(this.component)) {
@@ -269,22 +418,6 @@ class AppComponent {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
-  }
-}
-
-// TODO: Move this into a reusable directive in the 'core' module!
-class NgIf {
-  _viewPort:ViewPort;
-  constructor(viewPort:ViewPort) {
-    this._viewPort = viewPort;
-  }
-  set ngIf(value:boolean) {
-    if (this._viewPort.length > 0) {
-      this._viewPort.remove(0);
-    }
-    if (value) {
-      this._viewPort.create();
-    }
   }
 }
 
