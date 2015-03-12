@@ -7,6 +7,10 @@ dependencies:
 dev_dependencies:
   angular2:
     path: ../angular2
+  polymer_js:
+    git:
+      url: git@github.com:dart-lang/polymer_js.git
+      ref: 0.8.0-preview
 transformers:
 - angular:
     html_files:
