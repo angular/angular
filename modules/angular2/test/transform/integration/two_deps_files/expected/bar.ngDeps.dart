@@ -10,10 +10,10 @@ void setupReflection(reflector) {
   _visited = true;
   reflector
     ..registerType(MyComponent, {
-      "factory":
+      'factory':
           (prefix.MyContext c, String inValue) => new MyComponent(c, inValue),
-      "parameters": const [const [prefix.MyContext], const [String]],
-      "annotations": const [
+      'parameters': const [const [prefix.MyContext], const [String]],
+      'annotations': const [
         const Component(selector: prefix.preDefinedSelector)
       ]
     });

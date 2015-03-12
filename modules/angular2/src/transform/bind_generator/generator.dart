@@ -71,7 +71,7 @@ class _ExtractSettersVisitor extends Object
       // TODO(kegluneq): Remove this restriction
       if (entry.key is SimpleStringLiteral) {
         var propName = entry.key.value;
-        bindPieces.add('"${propName}": ('
+        bindPieces.add('\'${propName}\': ('
             '${currentName} o, String value) => o.${propName} = value');
       } else {
         logger.error('`bind` currently only supports string literals');

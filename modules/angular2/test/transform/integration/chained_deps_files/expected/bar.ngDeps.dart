@@ -11,12 +11,11 @@ void setupReflection(reflector) {
   _visited = true;
   reflector
     ..registerType(MyComponent, {
-      "factory": () => new MyComponent(),
-      "parameters": const [],
-      "annotations": const [
+      'factory': () => new MyComponent(),
+      'parameters': const [],
+      'annotations': const [
         const Component(
-            selector: '[soup]',
-            services: const [dep.DependencyComponent])
+            selector: '[soup]', services: const [dep.DependencyComponent])
       ]
     });
   i0.setupReflection(reflector);

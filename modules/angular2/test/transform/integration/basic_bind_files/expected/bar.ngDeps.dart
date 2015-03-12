@@ -9,19 +9,19 @@ void setupReflection(reflector) {
   _visited = true;
   reflector
     ..registerType(MyComponent, {
-      "factory": () => new MyComponent(),
-      "parameters": const [],
-      "annotations": const [
+      'factory': () => new MyComponent(),
+      'parameters': const [],
+      'annotations': const [
         const Component(selector: 'soup', services: const [ToolTip])
       ]
     })
     ..registerType(ToolTip, {
-      "factory": () => new ToolTip(),
-      "parameters": const [],
-      "annotations": const [
+      'factory': () => new ToolTip(),
+      'parameters': const [],
+      'annotations': const [
         const Decorator(
             selector: '[tool-tip]', bind: const {'text': 'tool-tip'})
       ]
     })
-    ..registerSetters({"text": (ToolTip o, String value) => o.text = value});
+    ..registerSetters({'text': (ToolTip o, String value) => o.text = value});
 }

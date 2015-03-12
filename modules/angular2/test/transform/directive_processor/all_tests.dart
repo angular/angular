@@ -15,7 +15,7 @@ import '../common/read_file.dart';
 var formatter = new DartFormatter();
 
 void allTests() {
-  test('should preserve parameter annotations as const instances', () {
+  test('should preserve parameter annotations as const instances.', () {
     var inputPath = 'parameter_metadata/soup.dart';
     var expected = _readFile('parameter_metadata/expected/soup.ngDeps.dart');
     var output =

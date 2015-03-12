@@ -9,8 +9,8 @@ void setupReflection(reflector) {
   _visited = true;
   reflector
     ..registerType(DependencyComponent, {
-      "factory": () => new DependencyComponent(),
-      "parameters": const [],
-      "annotations": const [const Component(selector: '[salad]')]
+      'factory': () => new DependencyComponent(),
+      'parameters': const [],
+      'annotations': const [const Component(selector: '[salad]')]
     });
 }
