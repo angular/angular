@@ -51,7 +51,7 @@ export function main() {
     function createView(pv) {
       component = new TestComponent();
       view = pv.instantiate(null, null);
-      view.hydrate(new Injector([]), null, null, component);
+      view.hydrate(new Injector([]), null, null, component, null);
       cd = view.changeDetector;
     }
 

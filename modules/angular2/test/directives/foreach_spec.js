@@ -45,7 +45,7 @@ export function main() {
     function createView(pv) {
       component = new TestComponent();
       view = pv.instantiate(null, null);
-      view.hydrate(new Injector([]), null, null, component);
+      view.hydrate(new Injector([]), null, null, component, null);
       cd = view.changeDetector;
     }
 
@@ -201,19 +201,18 @@ export function main() {
       compileWithTemplate(
           '<div><div template="foreach #item in items">' +
             '<div template="foreach #subitem in item">' +
-            '{{subitem}};' +
+            '{{subitem}}-{{item.length}};' +
           '</div>|</div></div>'
       ).then((pv) => {
         createView(pv);
-        component.items = [['a', 'b'], ['c','d']];
+        component.items = [['a', 'b'], ['c']];
         cd.detectChanges();
         cd.detectChanges();
         cd.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('a;b;|c;d;|');
+        expect(DOM.getText(view.nodes[0])).toEqual('a-2;b-2;|c-1;|');
         async.done();
       });
     }));
-
 
     it('should display indices correctly', inject([AsyncTestCompleter], (async) => {
       var INDEX_TEMPLATE =
@@ -243,7 +242,6 @@ class Foo {
 @Component({selector: 'test-cmp'})
 class TestComponent {
   items: any;
-  item: any;
   constructor() {
     this.items = [1, 2];
   }

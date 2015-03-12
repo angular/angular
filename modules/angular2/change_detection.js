@@ -1,8 +1,8 @@
 export {AST} from './src/change_detection/parser/ast';
 export {Lexer} from './src/change_detection/parser/lexer';
 export {Parser} from './src/change_detection/parser/parser';
-export {ContextWithVariableBindings}
-    from './src/change_detection/parser/context_with_variable_bindings';
+export {Locals}
+  from './src/change_detection/parser/locals';
 export {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError}
     from './src/change_detection/exceptions';
 export {ChangeRecord, ChangeDispatcher, ChangeDetector,

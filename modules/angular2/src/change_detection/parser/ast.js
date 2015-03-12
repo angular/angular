@@ -1,9 +1,8 @@
 import {autoConvertAdd, isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
 import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
-import {ContextWithVariableBindings} from "./context_with_variable_bindings";
 
 export class AST {
-  eval(context) {
+  eval(context, locals) {
     throw new BaseException("Not supported");
   }
 
@@ -11,7 +10,7 @@ export class AST {
     return false;
   }
 
-  assign(context, value) {
+  assign(context, locals, value) {
     throw new BaseException("Not supported");
   }
 
@@ -24,7 +23,7 @@ export class AST {
 }
 
 export class EmptyExpr extends AST {
-  eval(context) {
+  eval(context, locals) {
     return null;
   }
 
@@ -34,7 +33,7 @@ export class EmptyExpr extends AST {
 }
 
 export class ImplicitReceiver extends AST {
-  eval(context) {
+  eval(context, locals) {
     return context;
   }
 
@@ -53,10 +52,10 @@ export class Chain extends AST {
     this.expressions = expressions;
   }
 
-  eval(context) {
+  eval(context, locals) {
     var result;
     for (var i = 0; i < this.expressions.length; i++) {
-      var last = this.expressions[i].eval(context);
+      var last = this.expressions[i].eval(context, locals);
       if (isPresent(last)) result = last;
     }
     return result;
@@ -78,11 +77,11 @@ export class Conditional extends AST {
     this.falseExp = falseExp;
   }
 
-  eval(context) {
-    if(this.condition.eval(context)) {
-      return this.trueExp.eval(context);
+  eval(context, locals) {
+    if(this.condition.eval(context, locals)) {
+      return this.trueExp.eval(context, locals);
     } else {
-      return this.falseExp.eval(context);
+      return this.falseExp.eval(context, locals);
     }
   }
 
@@ -104,34 +103,29 @@ export class AccessMember extends AST {
     this.setter = setter;
   }
 
-  eval(context) {
-    var evaluatedContext = this.receiver.eval(context);
-
-    while (evaluatedContext instanceof ContextWithVariableBindings) {
-      if (evaluatedContext.hasBinding(this.name)) {
-        return evaluatedContext.get(this.name);
-      }
-      evaluatedContext = evaluatedContext.parent;
+  eval(context, locals) {
+    if (this.receiver instanceof ImplicitReceiver &&
+      isPresent(locals) && locals.contains(this.name)) {
+      return locals.get(this.name);
+    } else {
+      var evaluatedReceiver = this.receiver.eval(context, locals);
+      return this.getter(evaluatedReceiver);
     }
-
-    return this.getter(evaluatedContext);
   }
 
   get isAssignable() {
     return true;
   }
 
-  assign(context, value) {
-    var evaluatedContext = this.receiver.eval(context);
+  assign(context, locals, value) {
+    var evaluatedContext = this.receiver.eval(context, locals);
 
-    while (evaluatedContext instanceof ContextWithVariableBindings) {
-      if (evaluatedContext.hasBinding(this.name)) {
-        throw new BaseException(`Cannot reassign a variable binding ${this.name}`)
-      }
-      evaluatedContext = evaluatedContext.parent;
+    if (this.receiver instanceof ImplicitReceiver &&
+      isPresent(locals) && locals.contains(this.name)) {
+      throw new BaseException(`Cannot reassign a variable binding ${this.name}`);
+    } else {
+      return this.setter(evaluatedContext, value);
     }
-
-    return this.setter(evaluatedContext, value);
   }
 
   visit(visitor) {
@@ -148,9 +142,9 @@ export class KeyedAccess extends AST {
     this.key = key;
   }
 
-  eval(context) {
-    var obj = this.obj.eval(context);
-    var key = this.key.eval(context);
+  eval(context, locals) {
+    var obj = this.obj.eval(context, locals);
+    var key = this.key.eval(context, locals);
     return obj[key];
   }
 
@@ -158,9 +152,9 @@ export class KeyedAccess extends AST {
     return true;
   }
 
-  assign(context, value) {
-    var obj = this.obj.eval(context);
-    var key = this.key.eval(context);
+  assign(context, locals, value) {
+    var obj = this.obj.eval(context, locals);
+    var key = this.key.eval(context, locals);
     obj[key] = value;
     return value;
   }
@@ -193,7 +187,7 @@ export class LiteralPrimitive extends AST {
     this.value = value;
   }
 
-  eval(context) {
+  eval(context, locals) {
     return this.value;
   }
 
@@ -209,8 +203,8 @@ export class LiteralArray extends AST {
     this.expressions = expressions;
   }
 
-  eval(context) {
-    return ListWrapper.map(this.expressions, (e) => e.eval(context));
+  eval(context, locals) {
+    return ListWrapper.map(this.expressions, (e) => e.eval(context, locals));
   }
 
   visit(visitor) {
@@ -227,10 +221,10 @@ export class LiteralMap extends AST {
     this.values = values;
   }
 
-  eval(context) {
+  eval(context, locals) {
     var res = StringMapWrapper.create();
     for(var i = 0; i < this.keys.length; ++i) {
-      StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context));
+      StringMapWrapper.set(res, this.keys[i], this.values[i].eval(context, locals));
     }
     return res;
   }
@@ -249,7 +243,7 @@ export class Interpolation extends AST {
     this.expressions = expressions;
   }
 
-  eval(context) {
+  eval(context, locals) {
     throw new BaseException("evaluating an Interpolation is not supported");
   }
 
@@ -269,13 +263,13 @@ export class Binary extends AST {
     this.right = right;
   }
 
-  eval(context) {
-    var left = this.left.eval(context);
+  eval(context, locals) {
+    var left = this.left.eval(context, locals);
     switch (this.operation) {
-      case '&&': return left && this.right.eval(context);
-      case '||': return left || this.right.eval(context);
+      case '&&': return left && this.right.eval(context, locals);
+      case '||': return left || this.right.eval(context, locals);
     }
-    var right = this.right.eval(context);
+    var right = this.right.eval(context, locals);
 
     switch (this.operation) {
       case '+'  : return left + right;
@@ -307,8 +301,8 @@ export class PrefixNot extends AST {
     this.expression = expression;
   }
 
-  eval(context) {
-    return !this.expression.eval(context);
+  eval(context, locals) {
+    return !this.expression.eval(context, locals);
   }
 
   visit(visitor) {
@@ -325,8 +319,8 @@ export class Assignment extends AST {
     this.value = value;
   }
 
-  eval(context) {
-    return this.target.assign(context, this.value.eval(context));
+  eval(context, locals) {
+    return this.target.assign(context, locals, this.value.eval(context, locals));
   }
 
   visit(visitor) {
@@ -347,19 +341,16 @@ export class MethodCall extends AST {
     this.name = name;
   }
 
-  eval(context) {
-    var evaluatedContext = this.receiver.eval(context);
-    var evaluatedArgs = evalList(context, this.args);
-
-    while (evaluatedContext instanceof ContextWithVariableBindings) {
-      if (evaluatedContext.hasBinding(this.name)) {
-        var fn = evaluatedContext.get(this.name);
-        return FunctionWrapper.apply(fn, evaluatedArgs);
-      }
-      evaluatedContext = evaluatedContext.parent;
+  eval(context, locals) {
+    var evaluatedArgs = evalList(context, locals, this.args);
+    if (this.receiver instanceof ImplicitReceiver &&
+      isPresent(locals) && locals.contains(this.name)) {
+      var fn = locals.get(this.name);
+      return FunctionWrapper.apply(fn, evaluatedArgs);
+    } else {
+      var evaluatedReceiver = this.receiver.eval(context, locals);
+      return this.fn(evaluatedReceiver, evaluatedArgs);
     }
-
-    return this.fn(evaluatedContext, evaluatedArgs);
   }
 
   visit(visitor) {
@@ -376,12 +367,12 @@ export class FunctionCall extends AST {
     this.args = args;
   }
 
-  eval(context) {
-    var obj = this.target.eval(context);
+  eval(context, locals) {
+    var obj = this.target.eval(context, locals);
     if (! (obj instanceof Function)) {
       throw new BaseException(`${obj} is not a function`);
     }
-    return FunctionWrapper.apply(obj, evalList(context, this.args));
+    return FunctionWrapper.apply(obj, evalList(context, locals, this.args));
   }
 
   visit(visitor) {
@@ -400,16 +391,16 @@ export class ASTWithSource extends AST {
     this.ast = ast;
   }
 
-  eval(context) {
-    return this.ast.eval(context);
+  eval(context, locals) {
+    return this.ast.eval(context, locals);
   }
 
   get isAssignable() {
     return this.ast.isAssignable;
   }
 
-  assign(context, value) {
-    return this.ast.assign(context, value);
+  assign(context, locals, value) {
+    return this.ast.assign(context, locals, value);
   }
 
   visit(visitor) {
@@ -454,12 +445,19 @@ export class AstVisitor {
   visitPrefixNot(ast:PrefixNot) {}
 }
 
-var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0]];
-function evalList(context, exps:List){
+var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0],
+  [0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0]];
+
+function evalList(context, locals, exps:List){
   var length = exps.length;
+  if (length > 10) {
+    throw new BaseException("Cannot have more than 10 argument");
+  }
+
   var result = _evalListCache[length];
   for (var i = 0; i < length; i++) {
-    result[i] = exps[i].eval(context);
+    result[i] = exps[i].eval(context, locals);
   }
   return result;
 }

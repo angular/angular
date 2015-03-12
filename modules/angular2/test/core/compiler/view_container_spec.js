@@ -11,7 +11,7 @@ import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular
 
 function createView(nodes) {
   var view = new View(null, nodes, MapWrapper.create());
-  var cd = new DynamicProtoChangeDetector(null).instantiate(view, []);
+  var cd = new DynamicProtoChangeDetector(null).instantiate(view, [], null);
   view.init(cd, [], [], [], [], [], [], [], [], []);
   return view;
 }
@@ -48,7 +48,8 @@ class HydrateAwareFakeView {
     return this.isHydrated;
   }
 
-  hydrate(_, __, ___, ____) {
+
+  hydrate(_, __, ___, ____, _____) {
     this.isHydrated = true;
   }
 

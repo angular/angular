@@ -83,7 +83,7 @@ export function main() {
     function instantiateView(protoView) {
       evalContext = new Context();
       view = protoView.instantiate(null, null);
-      view.hydrate(new Injector([]), null, null, evalContext);
+      view.hydrate(new Injector([]), null, null, evalContext, null);
       changeDetector = view.changeDetector;
     }
 
@@ -380,7 +380,7 @@ export function main() {
 
       var eventMap = StringMapWrapper.get(pv.elementBinders[0].events, 'event1');
       var ast = MapWrapper.get(eventMap, -1);
-      expect(ast.eval(null)).toBe(2);
+      expect(ast.eval(null, null)).toBe(2);
     });
 
     it('should bind directive events', () => {
@@ -399,7 +399,7 @@ export function main() {
       var ast = MapWrapper.get(eventMap, 0);
 
       var context = new SomeDecoratorWithEvent();
-      expect(ast.eval(context)).toEqual('onEvent() callback');
+      expect(ast.eval(context, null)).toEqual('onEvent() callback');
     });
 
     it('should bind directive properties', () => {
@@ -539,7 +539,6 @@ class SomeDecoratorDirectiveWithBinding {
   events: {'event': 'onEvent($event)'}
 })
 class SomeDecoratorWithEvent {
-  // Added here so that we don't have to wrap the content in a ContextWithVariableBindings
   $event: string;
 
   constructor() {

@@ -67,7 +67,7 @@ function _injectorBindings(appComponentType): List<Binding> {
           // the angular application. Thus the context and lightDomInjector are
           // empty.
           var view = appProtoView.instantiate(null, eventManager);
-          view.hydrate(injector, null, null, new Object());
+          view.hydrate(injector, null, null, new Object(), null);
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,

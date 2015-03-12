@@ -68,7 +68,7 @@ export function main() {
       function createView(pv) {
         ctx = new MyComp();
         view = pv.instantiate(null, null);
-        view.hydrate(new Injector([]), null, null, ctx);
+        view.hydrate(new Injector([]), null, null, ctx, null);
         cd = view.changeDetector;
       }
 
@@ -211,7 +211,7 @@ export function main() {
           ctx.ctxProp = 'a';
           cd.detectChanges();
 
-          var comp = view.contextWithLocals.get("comp");
+          var comp = view.locals.get("comp");
 
           // it is doubled twice: once in the binding, second time in the bind config
           expect(comp.prop).toEqual('aaaa');
@@ -345,8 +345,8 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          expect(view.contextWithLocals).not.toBe(null);
-          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+          expect(view.locals).not.toBe(null);
+          expect(view.locals.get('alice')).toBeAnInstanceOf(ChildComp);
 
           async.done();
         })
@@ -361,10 +361,10 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          expect(view.contextWithLocals).not.toBe(null);
-          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
-          expect(view.contextWithLocals.get('bob')).toBeAnInstanceOf(ChildComp);
-          expect(view.contextWithLocals.get('alice')).not.toBe(view.contextWithLocals.get('bob'));
+          expect(view.locals).not.toBe(null);
+          expect(view.locals.get('alice')).toBeAnInstanceOf(ChildComp);
+          expect(view.locals.get('bob')).toBeAnInstanceOf(ChildComp);
+          expect(view.locals.get('alice')).not.toBe(view.locals.get('bob'));
 
           async.done();
         })
@@ -379,8 +379,8 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          expect(view.contextWithLocals).not.toBe(null);
-          expect(view.contextWithLocals.get('alice')).toBeAnInstanceOf(ChildComp);
+          expect(view.locals).not.toBe(null);
+          expect(view.locals.get('alice')).toBeAnInstanceOf(ChildComp);
 
           async.done();
         })
@@ -392,9 +392,9 @@ export function main() {
 
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
-          expect(view.contextWithLocals).not.toBe(null);
+          expect(view.locals).not.toBe(null);
 
-          var value = view.contextWithLocals.get('alice');
+          var value = view.locals.get('alice');
           expect(value).not.toBe(null);
           expect(value.tagName.toLowerCase()).toEqual('div');
 
@@ -411,7 +411,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          var cmp = view.contextWithLocals.get('cmp');
+          var cmp = view.locals.get('cmp');
 
           cd.detectChanges();
           expect(cmp.numberOfChecks).toEqual(1);
@@ -436,7 +436,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          var childComponent = view.contextWithLocals.get('child');
+          var childComponent = view.locals.get('child');
           expect(childComponent.myParent).toBeAnInstanceOf(SomeDirective);
 
           async.done();
@@ -457,7 +457,7 @@ export function main() {
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
-          var childComponent = view.contextWithLocals.get('child');
+          var childComponent = view.locals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 
           async.done();
@@ -479,9 +479,8 @@ export function main() {
           createView(pv);
           cd.detectChanges();
 
-          // Note: viewContainers is a sparse array!
           var subview = view.viewContainers[1].get(0);
-          var childComponent = subview.contextWithLocals.get('child');
+          var childComponent = subview.locals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 
           async.done();

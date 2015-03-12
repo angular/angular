@@ -85,7 +85,8 @@ export class ViewContainer {
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
-    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom, this.parentView.context);
+    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom, 
+      this.parentView.context, this.parentView.locals);
 
     // new content tags might have appeared, we need to redistrubute.
     if (isPresent(this.hostLightDom)) {

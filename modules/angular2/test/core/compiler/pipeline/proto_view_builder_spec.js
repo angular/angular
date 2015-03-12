@@ -49,6 +49,15 @@ export function main() {
       expect(results[1].inheritedElementBinder.nestedProtoView).toBe(results[2].inheritedProtoView);
     });
 
+    it('should set the parent proto view', () => {
+      var element = el('<div viewroot><template><a viewroot></a></template></div>');
+      var results = createPipeline().process(element);
+
+      var parentProtoView = results[1].inheritedProtoView;
+      var nestedProtoView = results[2].inheritedProtoView;
+      expect(nestedProtoView.parentProtoView).toBe(parentProtoView);
+    });
+
     it('should bind variables to the nested ProtoView', () => {
       var element = el('<div viewroot><template var-binding><a viewroot></a></template></div>');
       var results = createPipeline({
@@ -71,7 +80,7 @@ export function main() {
       }).process(element);
 
       var protoView = results[0].inheritedProtoView;
-      expect(protoView.protoContextLocals).toEqual(MapWrapper.createFromStringMap({
+      expect(protoView.protoLocals).toEqual(MapWrapper.createFromStringMap({
         'map2': null,
         'map1': null
       }));

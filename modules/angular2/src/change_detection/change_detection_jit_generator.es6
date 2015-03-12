@@ -1,7 +1,6 @@
 import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil} from './change_detection_util';
 
@@ -9,6 +8,7 @@ import {
   ProtoRecord,
   RECORD_TYPE_SELF,
   RECORD_TYPE_PROPERTY,
+  RECORD_TYPE_LOCAL,
   RECORD_TYPE_INVOKE_METHOD,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
@@ -44,13 +44,7 @@ import {
  *   var temp;
  *   var context = this.context;
  *
- *   temp = ChangeDetectionUtil.findContext("address", context);
- *   if (temp instanceof ContextWithVariableBindings) {
- *     address0 = temp.get('address');
- *   } else {
- *     address0 = temp.address;
- *   }
- *
+ *   address0 = context.address;
  *   if (address0 !== this.address0) {
  *     this.address0 = address0;
  *   }
@@ -70,14 +64,16 @@ import {
  * }
  *
  *
- * ChangeDetector0.prototype.hydrate = function(context) {
+ * ChangeDetector0.prototype.hydrate = function(context, locals) {
  *   this.context = context;
+ *   this.locals = locals;
  * }
  *
  * ChangeDetector0.prototype.dehydrate = function(context) {
  *   this.context = ChangeDetectionUtil.unitialized();
  *   this.address0 = ChangeDetectionUtil.unitialized();
  *   this.city1 = ChangeDetectionUtil.unitialized();
+ *   this.locals = null;
  * }
  *
  * ChangeDetector0.prototype.hydrated = function() {
@@ -99,8 +95,10 @@ var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
 var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 var PROTOS_ACCESSOR = "this.protos";
+var CONTEXT_ACCESSOR = "this.context";
 var CHANGE_LOCAL = "change";
 var CHANGES_LOCAL = "changes";
+var LOCALS_ACCESSOR = "this.locals";
 var TEMP_LOCAL = "temp";
 
 function typeTemplate(type:string, cons:string, detectChanges:string, setContext:string):string {
@@ -135,15 +133,17 @@ function pipeOnDestroyTemplate(pipeNames:List) {
 
 function hydrateTemplate(type:string, fieldsDefinitions:string, pipeOnDestroy:string):string {
   return `
-${type}.prototype.hydrate = function(context) {
-  this.context = context;
+${type}.prototype.hydrate = function(context, locals) {
+  ${CONTEXT_ACCESSOR} = context;
+  ${LOCALS_ACCESSOR} = locals;
 }
 ${type}.prototype.dehydrate = function() {
   ${pipeOnDestroy}
   ${fieldsDefinitions}
+  ${LOCALS_ACCESSOR} = null;
 }
 ${type}.prototype.hydrated = function() {
-  return this.context !== ${UTIL}.unitialized();
+  return ${CONTEXT_ACCESSOR} !== ${UTIL}.unitialized();
 }
 `;
 }
@@ -165,7 +165,7 @@ var ${TEMP_LOCAL};
 var ${CHANGE_LOCAL};
 var ${CHANGES_LOCAL} = null;
 
-context = this.context;
+context = ${CONTEXT_ACCESSOR};
 ${records}
 `;
 }
@@ -214,17 +214,6 @@ ${notify}
 
 function assignmentTemplate(field:string, value:string) {
   return `${field} = ${value};`;
-}
-
-function propertyReadTemplate(name:string, context:string, newValue:string) {
-  return `
-${TEMP_LOCAL} = ${UTIL}.findContext("${name}", ${context});
-if (${TEMP_LOCAL} instanceof ContextWithVariableBindings) {
-  ${newValue} = ${TEMP_LOCAL}.get('${name}');
-} else {
-  ${newValue} = ${TEMP_LOCAL}.${name};
-}
-`;
 }
 
 function invokeMethodTemplate(name:string, args:string, context:string, newValue:string) {
@@ -306,7 +295,7 @@ export class ChangeDetectorJITGenerator {
 
   generate():Function {
     var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(), this.genHydrate());
-    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'ContextWithVariableBindings', 'protos', text)(AbstractChangeDetector, ChangeDetectionUtil, ContextWithVariableBindings, this.records);
+    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos', text)(AbstractChangeDetector, ChangeDetectionUtil, this.records);
   }
 
   genConstructor():string {
@@ -403,18 +392,13 @@ export class ChangeDetectorJITGenerator {
         return `${newValue} = ${this.genLiteral(r.funcOrValue)}`;
 
       case RECORD_TYPE_PROPERTY:
-        if (r.contextIndex == 0) { // only the first property read can be a local
-          return propertyReadTemplate(r.name, context, newValue);
-        } else {
-          return assignmentTemplate(newValue, `${context}.${r.name}`);
-        }
+        return assignmentTemplate(newValue, `${context}.${r.name}`);
+
+      case RECORD_TYPE_LOCAL:
+        return assignmentTemplate(newValue, `${LOCALS_ACCESSOR}.get('${r.name}')`);
 
       case RECORD_TYPE_INVOKE_METHOD:
-        if (r.contextIndex == 0) { // only the first property read can be a local
-          return invokeMethodTemplate(r.name, args, context, newValue);
-        } else {
-          return assignmentTemplate(newValue, `${context}.${r.name}(${args})`);
-        }
+        return assignmentTemplate(newValue, `${context}.${r.name}(${args})`);
 
       case RECORD_TYPE_INVOKE_CLOSURE:
         return assignmentTemplate(newValue, `${context}(${args})`);

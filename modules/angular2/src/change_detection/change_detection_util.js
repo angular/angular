@@ -1,6 +1,5 @@
 import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 import {ProtoRecord} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
 import {NO_CHANGE} from './pipes/pipe';
@@ -142,16 +141,6 @@ export class ChangeDetectionUtil {
 
   static keyedAccess(obj, args) {
     return obj[args[0]];
-  }
-
-  static findContext(name:string, c){
-    while (c instanceof ContextWithVariableBindings) {
-      if (c.hasBinding(name)) {
-        return c;
-      }
-      c = c.parent;
-    }
-    return c;
   }
 
   static noChangeMarker(value):boolean {

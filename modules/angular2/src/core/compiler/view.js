@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
-import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
+import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
   ChangeRecord, BindingRecord, uninitialized} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
@@ -47,9 +47,9 @@ export class View {
   lightDoms: List<LightDom>;
   proto: ProtoView;
   context: any;
-  contextWithLocals:ContextWithVariableBindings;
+  locals:Locals;
 
-  constructor(proto:ProtoView, nodes:List, protoContextLocals:Map) {
+  constructor(proto:ProtoView, nodes:List, protoLocals:Map) {
     this.proto = proto;
     this.nodes = nodes;
     this.changeDetector = null;
@@ -63,9 +63,7 @@ export class View {
     this.preBuiltObjects = null;
     this.lightDoms = null;
     this.context = null;
-    this.contextWithLocals = (MapWrapper.size(protoContextLocals) > 0)
-      ? new ContextWithVariableBindings(null, MapWrapper.clone(protoContextLocals))
-      : null;
+    this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List, textNodes: List, bindElements:List,
@@ -88,29 +86,22 @@ export class View {
       return;
     }
     var templateName = MapWrapper.get(this.proto.variableBindings, contextName);
-    this.context.set(templateName, value);
+    this.locals.set(templateName, value);
   }
 
   hydrated() {
     return isPresent(this.context);
   }
 
-  _hydrateContext(newContext) {
-    if (isPresent(this.contextWithLocals)) {
-      this.contextWithLocals.parent = newContext;
-      this.context = this.contextWithLocals;
-    } else {
-      this.context = newContext;
-    }
-    // TODO(tbosch): if we have a contextWithLocals we actually only need to
-    // set the contextWithLocals once. Would it be faster to always use a contextWithLocals
-    // even if we don't have locals and not update the recordRange here?
-    this.changeDetector.hydrate(this.context);
+  _hydrateContext(newContext, locals) {
+    this.context = newContext;
+    this.locals.parent = locals;
+    this.changeDetector.hydrate(this.context, this.locals);
   }
 
   _dehydrateContext() {
-    if (isPresent(this.contextWithLocals)) {
-      this.contextWithLocals.clearValues();
+    if (isPresent(this.locals)) {
+      this.locals.clearValues();
     }
     this.context = null;
     this.changeDetector.dehydrate();
@@ -133,9 +124,9 @@ export class View {
    * tree.
    */
   hydrate(appInjector: Injector, hostElementInjector: ElementInjector, hostLightDom: LightDom,
-      context: Object) {
+      context: Object, locals:Locals) {
     if (this.hydrated()) throw new BaseException('The view is already hydrated.');
-    this._hydrateContext(context);
+    this._hydrateContext(context, locals);
 
     // viewContainers
     for (var i = 0; i < this.viewContainers.length; i++) {
@@ -173,15 +164,15 @@ export class View {
         // name.
         var exportImplicitName = elementInjector.getExportImplicitName();
         if (elementInjector.isExportingComponent()) {
-          this.context.set(exportImplicitName, elementInjector.getComponent());
+          this.locals.set(exportImplicitName, elementInjector.getComponent());
         } else if (elementInjector.isExportingElement()) {
-          this.context.set(exportImplicitName, elementInjector.getNgElement().domElement);
+          this.locals.set(exportImplicitName, elementInjector.getNgElement().domElement);
         }
       }
 
       if (isPresent(componentDirective)) {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
-          elementInjector, this.lightDoms[i], elementInjector.getComponent());
+          elementInjector, this.lightDoms[i], elementInjector.getComponent(), null);
       }
     }
 
@@ -294,7 +285,7 @@ export class ProtoView {
   elementBinders:List<ElementBinder>;
   protoChangeDetector:ProtoChangeDetector;
   variableBindings: Map;
-  protoContextLocals:Map;
+  protoLocals:Map;
   textNodesWithBindingCount:int;
   elementsWithBindingCount:int;
   instantiateInPlace:boolean;
@@ -306,16 +297,19 @@ export class ProtoView {
   // List<Map<eventName, handler>>, indexed by binder index
   eventHandlers:List;
   bindingRecords:List;
+  parentProtoView:ProtoView;
+  _variableBindings:List;
 
   constructor(
       template,
       protoChangeDetector:ProtoChangeDetector,
-      shadowDomStrategy:ShadowDomStrategy) {
+      shadowDomStrategy:ShadowDomStrategy, parentProtoView:ProtoView = null) {
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
-    this.protoContextLocals = MapWrapper.create();
+    this.protoLocals = MapWrapper.create();
     this.protoChangeDetector = protoChangeDetector;
+    this.parentProtoView = parentProtoView;
     this.textNodesWithBindingCount = 0;
     this.elementsWithBindingCount = 0;
     this.instantiateInPlace = false;
@@ -327,6 +321,7 @@ export class ProtoView {
     this.stylePromises = [];
     this.eventHandlers = [];
     this.bindingRecords = [];
+    this._variableBindings = null;
   }
 
   // TODO(rado): hostElementInjector should be moved to hydrate phase.
@@ -340,6 +335,23 @@ export class ProtoView {
     for (var i = 0; i < VIEW_POOL_PREFILL; i++) {
       this._viewPool.push(this._instantiate(hostElementInjector, eventManager));
     }
+  }
+
+  // this work should be done the constructor of ProtoView once we separate
+  // ProtoView and ProtoViewBuilder
+  _getVariableBindings() {
+    if (isPresent(this._variableBindings)) {
+      return this._variableBindings;
+    }
+
+    this._variableBindings = isPresent(this.parentProtoView) ?
+      ListWrapper.clone(this.parentProtoView._getVariableBindings()) : [];
+
+    MapWrapper.forEach(this.protoLocals, (v, local) => {
+      ListWrapper.push(this._variableBindings, local);
+    });
+
+    return this._variableBindings;
   }
 
   _instantiate(hostElementInjector: ElementInjector, eventManager: EventManager): View {
@@ -369,9 +381,8 @@ export class ProtoView {
       viewNodes = [rootElementClone];
     }
 
-    var view = new View(this, viewNodes, this.protoContextLocals);
-    var changeDetector = this.protoChangeDetector.instantiate(view, this.bindingRecords);
-
+    var view = new View(this, viewNodes, this.protoLocals);
+    var changeDetector = this.protoChangeDetector.instantiate(view, this.bindingRecords, this._getVariableBindings());
     var binders = this.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
     var eventHandlers = ListWrapper.createFixedSize(binders.length);
@@ -514,7 +525,7 @@ export class ProtoView {
           } else {
             context = view.elementInjectors[injectorIdx].getDirectiveAtIndex(directiveIndex);
           }
-          expr.eval(new ContextWithVariableBindings(context, locals));
+          expr.eval(context, new Locals(view.locals, locals));
         });
       }
     }
@@ -522,7 +533,7 @@ export class ProtoView {
 
   bindVariable(contextName:string, templateName:string) {
     MapWrapper.set(this.variableBindings, contextName, templateName);
-    MapWrapper.set(this.protoContextLocals, templateName, null);
+    MapWrapper.set(this.protoLocals, templateName, null);
   }
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,

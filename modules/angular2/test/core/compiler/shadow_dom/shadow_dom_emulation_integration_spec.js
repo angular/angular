@@ -379,6 +379,6 @@ class MyComp {
 
 function createView(pv) {
   var view = pv.instantiate(null, null);
-  view.hydrate(new Injector([]), null, null, {});
+  view.hydrate(new Injector([]), null, null, {}, null);
   return view;
 }

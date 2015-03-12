@@ -5,8 +5,9 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
+import {Locals} from 'angular2/src/change_detection/parser/locals';
 
-import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, ContextWithVariableBindings, BindingRecord,
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord,
   PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
 
 import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
@@ -28,17 +29,29 @@ export function main() {
           return parser.parseBinding(exp, location);
         }
 
-        function createChangeDetector(memo:string, exp:string, context = null, registry = null) {
+        function convertLocalsToVariableBindings(locals) {
+          var variableBindings = [];
+          var loc = locals;
+          while(isPresent(loc)) {
+            MapWrapper.forEach(loc.current, (v, k) => ListWrapper.push(variableBindings, k));
+            loc = loc.parent;
+          }
+          return variableBindings;
+        }
+
+        function createChangeDetector(memo:string, exp:string, context = null, locals = null, registry = null) {
           var pcd = createProtoChangeDetector(registry);
           var dispatcher = new TestDispatcher();
-          var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast(exp), memo, memo)]);
-          cd.hydrate(context);
+
+          var variableBindings = convertLocalsToVariableBindings(locals);
+          var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast(exp), memo, memo)], variableBindings);
+          cd.hydrate(context, locals);
 
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
         }
 
-        function executeWatch(memo:string, exp:string, context = null) {
-          var res = createChangeDetector(memo, exp, context);
+        function executeWatch(memo:string, exp:string, context = null, locals = null) {
+          var res = createChangeDetector(memo, exp, context, locals);
           res["changeDetector"].detectChanges();
           return res["dispatcher"].log;
         }
@@ -180,8 +193,8 @@ export function main() {
             var ast = parser.parseInterpolation("B{{a}}A", "location");
 
             var dispatcher = new TestDispatcher();
-            var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast, "memo", "memo")]);
-            cd.hydrate(new TestData("value"));
+            var cd = pcd.instantiate(dispatcher, [new BindingRecord(ast, "memo", "memo")], null);
+            cd.hydrate(new TestData("value"), null);
 
             cd.detectChanges();
 
@@ -211,7 +224,7 @@ export function main() {
                 var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
 
                 var person = new Person('bob');
-                var c = createChangeDetector('name', 'name | pipe', person, registry);
+                var c = createChangeDetector('name', 'name | pipe', person, null, registry);
                 var cd = c["changeDetector"];
                 var dispatcher = c["dispatcher"];
 
@@ -234,7 +247,7 @@ export function main() {
                   new BindingRecord(ast("1 + 2"), "memo", "1"),
                   new BindingRecord(ast("10 + 20"), "memo", "1"),
                   new BindingRecord(ast("100 + 200"), "memo", "2")
-                ]);
+                ], null);
 
                 cd.detectChanges();
 
@@ -248,7 +261,7 @@ export function main() {
                   new BindingRecord(ast("a()"), "a", "1"),
                   new BindingRecord(ast("b()"), "b", "2"),
                   new BindingRecord(ast("c()"), "c", "2")
-                ]);
+                ], null);
 
                 var tr = new TestRecord();
                 tr.a = () => {
@@ -263,7 +276,7 @@ export function main() {
                   dispatcher.logValue('InvokeC');
                   return 'c'
                 };
-                cd.hydrate(tr);
+                cd.hydrate(tr, null);
 
                 cd.detectChanges();
 
@@ -280,8 +293,8 @@ export function main() {
               var dispatcher = new TestDispatcher();
               var cd = pcd.instantiate(dispatcher, [
                 new BindingRecord(ast("a"), "a", 1)
-              ]);
-              cd.hydrate(new TestData('value'));
+              ], null);
+              cd.hydrate(new TestData('value'), null);
 
               expect(() => {
                 cd.checkNoChanges();
@@ -295,8 +308,8 @@ export function main() {
               var pcd = createProtoChangeDetector();
               var cd = pcd.instantiate(new TestDispatcher(), [
                 new BindingRecord(ast("invalidProp", "someComponent"), "a", 1)
-              ]);
-              cd.hydrate(null);
+              ], null);
+              cd.hydrate(null, null);
 
               try {
                 cd.detectChanges();
@@ -309,38 +322,38 @@ export function main() {
             });
           });
 
-          describe("ContextWithVariableBindings", () => {
-            it('should read a field from ContextWithVariableBindings', () => {
-              var locals = new ContextWithVariableBindings(null,
+          describe("Locals", () => {
+            it('should read a value from locals', () => {
+              var locals = new Locals(null,
                 MapWrapper.createFromPairs([["key", "value"]]));
 
-              expect(executeWatch('key', 'key', locals))
+              expect(executeWatch('key', 'key', null, locals))
                 .toEqual(['key=value']);
             });
 
-            it('should invoke a function from ContextWithVariableBindings', () => {
-              var locals = new ContextWithVariableBindings(null,
+            it('should invoke a function from local', () => {
+              var locals = new Locals(null,
                 MapWrapper.createFromPairs([["key", () => "value"]]));
 
-              expect(executeWatch('key', 'key()', locals))
+              expect(executeWatch('key', 'key()', null, locals))
                 .toEqual(['key=value']);
             });
 
-            it('should handle nested ContextWithVariableBindings', () => {
-              var nested = new ContextWithVariableBindings(null,
+            it('should handle nested locals', () => {
+              var nested = new Locals(null,
                 MapWrapper.createFromPairs([["key", "value"]]));
-              var locals = new ContextWithVariableBindings(nested, MapWrapper.create());
+              var locals = new Locals(nested, MapWrapper.create());
 
-              expect(executeWatch('key', 'key', locals))
+              expect(executeWatch('key', 'key', null, locals))
                 .toEqual(['key=value']);
             });
 
-            it("should fall back to a regular field read when ContextWithVariableBindings " +
-            "does not have the requested field", () => {
-              var locals = new ContextWithVariableBindings(new Person("Jim"),
+            it("should fall back to a regular field read when the locals map" +
+              "does not have the requested field", () => {
+              var locals = new Locals(null,
                 MapWrapper.createFromPairs([["key", "value"]]));
 
-              expect(executeWatch('name', 'name', locals))
+              expect(executeWatch('name', 'name', new Person("Jim"), locals))
                 .toEqual(['name=Jim']);
             });
           });
@@ -350,10 +363,10 @@ export function main() {
 
             beforeEach(() => {
               var protoParent = createProtoChangeDetector();
-              parent = protoParent.instantiate(null, []);
+              parent = protoParent.instantiate(null, [], null);
 
               var protoChild = createProtoChangeDetector();
-              child = protoChild.instantiate(null, []);
+              child = protoChild.instantiate(null, [], null);
             });
 
             it("should add children", () => {
@@ -396,7 +409,7 @@ export function main() {
           });
 
           it("should change CHECK_ONCE to CHECKED", () => {
-            var cd = createProtoChangeDetector().instantiate(null, []);
+            var cd = createProtoChangeDetector().instantiate(null, [], null);
             cd.mode = CHECK_ONCE;
 
             cd.detectChanges();
@@ -405,7 +418,7 @@ export function main() {
           });
 
           it("should not change the CHECK_ALWAYS", () => {
-            var cd = createProtoChangeDetector().instantiate(null, []);
+            var cd = createProtoChangeDetector().instantiate(null, [], null);
             cd.mode = CHECK_ALWAYS;
 
             cd.detectChanges();
@@ -416,7 +429,7 @@ export function main() {
 
         describe("markPathToRootAsCheckOnce", () => {
           function changeDetector(mode, parent) {
-            var cd = createProtoChangeDetector().instantiate(null, []);
+            var cd = createProtoChangeDetector().instantiate(null, [], null);
             cd.mode = mode;
             if (isPresent(parent)) parent.addChild(cd);
             return cd;
@@ -448,20 +461,20 @@ export function main() {
             var c  = createChangeDetector("memo", "name");
             var cd = c["changeDetector"];
 
-            cd.hydrate("some context");
+            cd.hydrate("some context", null);
             expect(cd.hydrated()).toBe(true);
 
             cd.dehydrate();
             expect(cd.hydrated()).toBe(false);
 
-            cd.hydrate("other context");
+            cd.hydrate("other context", null);
             expect(cd.hydrated()).toBe(true);
           });
 
           it("should destroy all active pipes during dehyration", () => {
             var pipe = new OncePipe();
             var registry = new FakePipeRegistry('pipe', () => pipe);
-            var c  = createChangeDetector("memo", "name | pipe", new Person('bob'), registry);
+            var c  = createChangeDetector("memo", "name | pipe", new Person('bob'), null, registry);
             var cd = c["changeDetector"];
 
             cd.detectChanges();
@@ -477,7 +490,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new CountingPipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
+            var c  = createChangeDetector("memo", "name | pipe", ctx, null, registry);
             var cd = c["changeDetector"];
             var dispatcher = c["dispatcher"];
 
@@ -495,7 +508,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => new OncePipe());
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
+            var c  = createChangeDetector("memo", "name | pipe", ctx, null, registry);
             var cd = c["changeDetector"];
 
             cd.detectChanges();
@@ -513,7 +526,7 @@ export function main() {
             var registry = new FakePipeRegistry('pipe', () => pipe);
             var ctx = new Person("Megatron");
 
-            var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
+            var c  = createChangeDetector("memo", "name | pipe", ctx, null, registry);
             var cd = c["changeDetector"];
 
             cd.detectChanges();
@@ -528,7 +541,7 @@ export function main() {
           var registry = new FakePipeRegistry('pipe', () => new IdentityPipe())
           var ctx = new Person("Megatron");
 
-          var c  = createChangeDetector("memo", "name | pipe", ctx, registry);
+          var c  = createChangeDetector("memo", "name | pipe", ctx, null, registry);
           var cd = c["changeDetector"];
           var dispatcher = c["dispatcher"];
 
