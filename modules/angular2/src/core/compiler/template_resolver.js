@@ -33,6 +33,6 @@ export class TemplateResolver {
       }
     }
 
-    throw new BaseException(`No template found for ${stringify(component)}`);
+    throw new BaseException(`Only Components can be bootstrapped`);
   }
 }
