@@ -1,4 +1,15 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
@@ -56,37 +67,37 @@ export function main() {
       return compiler.compile(TestComponent);
     }
 
-    it('should not interpolate children', (done) => {
+    it('should not interpolate children', inject([AsyncTestCompleter], (async) => {
       var template = '<div>{{text}}<span non-bindable>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('foo{{text}}');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should ignore directives on child nodes', (done) => {
+    it('should ignore directives on child nodes', inject([AsyncTestCompleter], (async) => {
       var template = '<div non-bindable><span id=child test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
         var span = DOM.querySelector(view.nodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should trigger directives on the same node', (done) => {
+    it('should trigger directives on the same node', inject([AsyncTestCompleter], (async) => {
       var template = '<div><span id=child non-bindable test-dec>{{text}}</span></div>';
       compileWithTemplate(template).then((pv) => {
         createView(pv);
         cd.detectChanges();
         var span = DOM.querySelector(view.nodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
-        done();
+        async.done();
       });
-    });
+    }));
   })
 }
 

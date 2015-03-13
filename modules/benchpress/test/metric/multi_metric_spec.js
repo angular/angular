@@ -1,4 +1,15 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
@@ -15,28 +26,28 @@ export function main() {
 
   describe('multi metric', () => {
 
-    it('should merge descriptions', (done) => {
+    it('should merge descriptions', inject([AsyncTestCompleter], (async) => {
       createMetric(['m1', 'm2']).then( (m) => {
         expect(m.describe()).toEqual({
           'm1': 'describe', 'm2': 'describe'
         });
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should merge all beginMeasure calls', (done) => {
+    it('should merge all beginMeasure calls', inject([AsyncTestCompleter], (async) => {
       createMetric(['m1', 'm2'])
         .then( (m) => m.beginMeasure() )
         .then( (values) => {
           expect(values).toEqual([
             'm1_beginMeasure', 'm2_beginMeasure'
           ]);
-          done();
+          async.done();
         });
-    });
+    }));
 
     [false, true].forEach( (restartFlag) => {
-      it(`should merge all endMeasure calls for restart=${restartFlag}`, (done) => {
+      it(`should merge all endMeasure calls for restart=${restartFlag}`, inject([AsyncTestCompleter], (async) => {
         createMetric(['m1', 'm2'])
           .then( (m) => m.endMeasure(restartFlag) )
           .then( (values) => {
@@ -44,9 +55,9 @@ export function main() {
               'm1': { 'restart': restartFlag },
               'm2': { 'restart': restartFlag }
             });
-            done();
+            async.done();
           });
-      });
+      }));
     });
 
   });

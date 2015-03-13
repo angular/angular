@@ -1,4 +1,15 @@
-import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { DateWrapper, Json, RegExpWrapper, isPresent } from 'angular2/src/facade/lang';
 import { PromiseWrapper } from 'angular2/src/facade/async';
@@ -32,7 +43,7 @@ export function main() {
       return new Injector(bindings).get(JsonFileReporter);
     }
 
-    it('should write all data into a file', (done) => {
+    it('should write all data into a file', inject([AsyncTestCompleter], (async) => {
       createReporter({
         sampleId: 'someId',
         descriptions: [{ 'a': 2 }],
@@ -85,8 +96,8 @@ export function main() {
           }
         ]
       });
-      done();
-    });
+      async.done();
+    }));
 
   });
 }

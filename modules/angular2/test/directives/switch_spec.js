@@ -1,4 +1,15 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Injector} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection} from 'angular2/change_detection';
@@ -54,7 +65,7 @@ export function main() {
     }
 
     describe('switch value changes', () => {
-      it('should switch amongst when values', (done) => {
+      it('should switch amongst when values', inject([AsyncTestCompleter], (async) => {
         var template = '<div>' +
           '<ul [switch]="switchValue">' +
             '<template [switch-when]="\'a\'"><li>when a</li></template>' +
@@ -73,11 +84,11 @@ export function main() {
           cd.detectChanges();
           expect(DOM.getText(view.nodes[0])).toEqual('when b');
 
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should switch amongst when values with fallback to default', (done) => {
+      it('should switch amongst when values with fallback to default', inject([AsyncTestCompleter], (async) => {
         var template = '<div>' +
           '<ul [switch]="switchValue">' +
             '<li template="switch-when \'a\'">when a</li>' +
@@ -96,11 +107,11 @@ export function main() {
           cd.detectChanges();
           expect(DOM.getText(view.nodes[0])).toEqual('when default');
 
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should support multiple whens with the same value', (done) => {
+      it('should support multiple whens with the same value', inject([AsyncTestCompleter], (async) => {
         var template = '<div>' +
           '<ul [switch]="switchValue">' +
             '<template [switch-when]="\'a\'"><li>when a1;</li></template>' +
@@ -123,13 +134,13 @@ export function main() {
           cd.detectChanges();
           expect(DOM.getText(view.nodes[0])).toEqual('when b1;when b2;');
 
-          done();
+          async.done();
         });
-      });
+      }));
     });
 
     describe('when values changes', () => {
-      it('should switch amongst when values', (done) => {
+      it('should switch amongst when values', inject([AsyncTestCompleter], (async) => {
         var template = '<div>' +
           '<ul [switch]="switchValue">' +
             '<template [switch-when]="when1"><li>when 1;</li></template>' +
@@ -161,9 +172,9 @@ export function main() {
           cd.detectChanges();
           expect(DOM.getText(view.nodes[0])).toEqual('when default;');
 
-          done();
+          async.done();
         });
-      });
+      }));
     });
   });
 }

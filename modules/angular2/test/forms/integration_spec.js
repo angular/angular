@@ -1,5 +1,18 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
-  el, queryView, dispatchEvent} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  dispatchEvent,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  queryView,
+  xit,
+} from 'angular2/test_lib';
 
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -56,7 +69,7 @@ export function main() {
   }
 
   describe("integration tests", () => {
-    it("should initialize DOM elements with the given form object", (done) => {
+    it("should initialize DOM elements with the given form object", inject([AsyncTestCompleter], (async) => {
       var ctx = new MyComp(new ControlGroup({
         "login": new Control("loginValue")
       }));
@@ -68,11 +81,11 @@ export function main() {
       compile(MyComp, t, ctx, (view) => {
         var input = queryView(view, "input")
         expect(input.value).toEqual("loginValue");
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should update the control group values on DOM change", (done) => {
+    it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
       var form = new ControlGroup({
         "login": new Control("oldValue")
       });
@@ -89,11 +102,11 @@ export function main() {
         dispatchEvent(input, "change");
 
         expect(form.value).toEqual({"login": "updatedValue"});
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should update DOM elements when rebinding the control group", (done) => {
+    it("should update DOM elements when rebinding the control group", inject([AsyncTestCompleter], (async) => {
       var form = new ControlGroup({
         "login": new Control("oldValue")
       });
@@ -111,11 +124,11 @@ export function main() {
 
         var input = queryView(view, "input")
         expect(input.value).toEqual("newValue");
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should update DOM element when rebinding the control name", (done) => {
+    it("should update DOM element when rebinding the control name", inject([AsyncTestCompleter], (async) => {
       var ctx = new MyComp(new ControlGroup({
         "one": new Control("one"),
         "two": new Control("two")
@@ -133,12 +146,12 @@ export function main() {
         detectChanges(view);
 
         expect(input.value).toEqual("two");
-        done();
+        async.done();
       });
-    });
+    }));
 
     describe("different control types", () => {
-      it("should support type=checkbox", (done) => {
+      it("should support type=checkbox", inject([AsyncTestCompleter], (async) => {
         var ctx = new MyComp(new ControlGroup({"checkbox": new Control(true)}));
 
         var t = `<div [control-group]="form">
@@ -153,11 +166,11 @@ export function main() {
           dispatchEvent(input, "change");
 
           expect(ctx.form.value).toEqual({"checkbox" : false});
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it("should support custom value accessors", (done) => {
+      it("should support custom value accessors", inject([AsyncTestCompleter], (async) => {
         var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
 
         var t = `<div [control-group]="form">
@@ -172,13 +185,13 @@ export function main() {
           dispatchEvent(input, "change");
 
           expect(ctx.form.value).toEqual({"name" : "bb"});
-          done();
+          async.done();
         });
-      });
+      }));
     });
 
     describe("validations", () => {
-      it("should use validators defined in html",(done) => {
+      it("should use validators defined in html", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({"login": new Control("aa")});
         var ctx = new MyComp(form);
 
@@ -195,11 +208,11 @@ export function main() {
           dispatchEvent(input, "change");
 
           expect(form.valid).toEqual(false);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it("should use validators defined in the model",(done) => {
+      it("should use validators defined in the model", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({"login": new Control("aa", validators.required)});
         var ctx = new MyComp(form);
 
@@ -216,13 +229,13 @@ export function main() {
           dispatchEvent(input, "change");
 
           expect(form.valid).toEqual(false);
-          done();
+          async.done();
         });
-      });
+      }));
     });
 
     describe("nested forms", () => {
-      it("should init DOM with the given form object", (done) => {
+      it("should init DOM with the given form object",inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({
           "nested": new ControlGroup({
             "login": new Control("value")
@@ -239,11 +252,11 @@ export function main() {
         compile(MyComp, t, ctx, (view) => {
           var input = queryView(view, "input")
           expect(input.value).toEqual("value");
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it("should update the control group values on DOM change", (done) => {
+      it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({
           "nested": new ControlGroup({
             "login": new Control("value")
@@ -264,9 +277,9 @@ export function main() {
           dispatchEvent(input, "change");
 
           expect(form.value).toEqual({"nested" : {"login" : "updatedValue"}});
-          done();
+          async.done();
         });
-      });
+      }));
     });
   });
 }

@@ -1,4 +1,15 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  IS_DARTIUM,
+  it,
+} from 'angular2/test_lib';
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
@@ -33,37 +44,37 @@ export function main() {
       PromiseWrapper.then(request, onResponse, onError);
     }
 
-    it('should return a response from the definitions', (done) => {
+    it('should return a response from the definitions', inject([AsyncTestCompleter], (async) => {
       var url = '/foo';
       var response = 'bar';
       xhr.when(url, response);
-      expectResponse(xhr.get(url), url, response, done);
+      expectResponse(xhr.get(url), url, response, () => async.done());
       xhr.flush();
-    });
+    }));
 
-    it('should return an error from the definitions', (done) => {
+    it('should return an error from the definitions', inject([AsyncTestCompleter], (async) => {
       var url = '/foo';
       var response = null;
       xhr.when(url, response);
-      expectResponse(xhr.get(url), url, response, done);
+      expectResponse(xhr.get(url), url, response, () => async.done());
       xhr.flush();
-    });
+    }));
 
-    it('should return a response from the expectations', (done) => {
+    it('should return a response from the expectations', inject([AsyncTestCompleter], (async) => {
       var url = '/foo';
       var response = 'bar';
       xhr.expect(url, response);
-      expectResponse(xhr.get(url), url, response, done);
+      expectResponse(xhr.get(url), url, response, () => async.done());
       xhr.flush();
-    });
+    }));
 
-    it('should return an error from the expectations', (done) => {
+    it('should return an error from the expectations', inject([AsyncTestCompleter], (async) => {
       var url = '/foo';
       var response = null;
       xhr.expect(url, response);
-      expectResponse(xhr.get(url), url, response, done);
+      expectResponse(xhr.get(url), url, response, () => async.done());
       xhr.flush();
-    });
+    }));
 
     it('should not reuse expectations', () => {
       var url = '/foo';
@@ -76,14 +87,14 @@ export function main() {
       }).toThrowError('Unexpected request /foo');
     });
 
-    it('should return expectations before definitions', (done) => {
+    it('should return expectations before definitions', inject([AsyncTestCompleter], (async) => {
       var url = '/foo';
       xhr.when(url, 'when');
       xhr.expect(url, 'expect');
       expectResponse(xhr.get(url), url, 'expect');
-      expectResponse(xhr.get(url), url, 'when', done);
+      expectResponse(xhr.get(url), url, 'when', () => async.done());
       xhr.flush();
-    });
+    }));
 
     it('should throw when there is no definitions or expectations', () => {
       xhr.get('/foo');

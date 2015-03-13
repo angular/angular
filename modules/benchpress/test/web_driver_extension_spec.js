@@ -1,4 +1,15 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { StringMap, ListWrapper } from 'angular2/src/facade/collection';
 import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
@@ -17,22 +28,22 @@ export function main() {
 
   describe('WebDriverExtension.bindTo', () => {
 
-    it('should bind the extension that matches the capabilities', (done) => {
+    it('should bind the extension that matches the capabilities', inject([AsyncTestCompleter], (async) => {
       createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then( (m) => {
         expect(m.id).toEqual('m2');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should throw if there is no match', (done) => {
+    it('should throw if there is no match', inject([AsyncTestCompleter], (async) => {
       PromiseWrapper.catchError(
         createExtension(['m1'], {'browser': 'm2'}),
         (err) => {
           expect(isPresent(err)).toBe(true);
-          done();
+          async.done();
         }
       );
-    });
+    }));
 
   });
 }

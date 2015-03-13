@@ -1,4 +1,16 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  IS_DARTIUM,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -58,29 +70,29 @@ export function main() {
       return compiler.compile(TestComponent);
     }
 
-    it('should work in a template attribute', (done) => {
+    it('should work in a template attribute', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate('<div><copy-me template="if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
         cd.detectChanges();
 
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should work in a template element', (done) => {
+    it('should work in a template element', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate('<div><template [if]="booleanCondition"><copy-me>hello2</copy-me></template></div>').then((pv) => {
         createView(pv);
         cd.detectChanges();
 
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('hello2');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should toggle node when condition changes', (done) => {
+    it('should toggle node when condition changes', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate('<div><copy-me template="if booleanCondition">hello</copy-me></div>').then((pv) => {
         createView(pv);
 
@@ -100,11 +112,11 @@ export function main() {
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
         expect(DOM.getText(view.nodes[0])).toEqual('');
 
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should update several nodes with if', (done) => {
+    it('should update several nodes with if', inject([AsyncTestCompleter], (async) => {
       var templateString =
       '<div>' +
         '<copy-me template="if numberCondition + 1 >= 2">helloNumber</copy-me>' +
@@ -128,46 +140,46 @@ export function main() {
         cd.detectChanges();
         expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
         expect(DOM.getText(view.nodes[0])).toEqual('helloNumber');
-        done();
+        async.done();
       });
-    });
+    }));
 
 
     if (!IS_DARTIUM) {
-      it('should leave the element if the condition is a non-empty string (JS)', (done) => {
+      it('should leave the element if the condition is a non-empty string (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if stringCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should leave the element if the condition is an object (JS)', (done) => {
+      it('should leave the element if the condition is an object (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if objectCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should remove the element if the condition is null (JS)', (done) => {
+      it('should remove the element if the condition is null (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if nullCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           cd.detectChanges();
 
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should not add the element twice if the condition goes from true to true (JS)', (done) => {
+      it('should not add the element twice if the condition goes from true to true (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
@@ -180,11 +192,11 @@ export function main() {
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(1);
           expect(DOM.getText(view.nodes[0])).toEqual('hello');
 
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should not recreate the element if the condition goes from true to true (JS)', (done) => {
+      it('should not recreate the element if the condition goes from true to true (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
 
@@ -195,19 +207,19 @@ export function main() {
           cd.detectChanges();
           expect(DOM.hasClass(view.nodes[0].childNodes[1], "foo")).toBe(true);
 
-          done();
+          async.done();
         });
-      });
+      }));
     } else {
-      it('should not create the element if the condition is not a boolean (DART)', (done) => {
+      it('should not create the element if the condition is not a boolean (DART)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
           expect(function(){cd.detectChanges();}).toThrowError();
           expect(view.nodes[0].querySelectorAll('copy-me').length).toEqual(0);
           expect(DOM.getText(view.nodes[0])).toEqual('');
-          done();
+          async.done();
         });
-      });
+      }));
     }
 
   });

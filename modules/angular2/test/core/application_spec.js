@@ -1,4 +1,15 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xdescribe,
+  xit,
+} from 'angular2/test_lib';
 import {bootstrap, appDocumentToken, appElementToken}
     from 'angular2/src/core/application';
 import {Component} from 'angular2/src/core/annotations/annotations';
@@ -69,55 +80,56 @@ export function main() {
   });
 
   describe('bootstrap factory method', () => {
-    it('should throw if no element is found', (done) => {
+    it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
       PromiseWrapper.then(injectorPromise, null, (reason) => {
         expect(reason.message).toContain(
             'The app selector "hello-app" did not match any elements');
-        done();
+        async.done();
       });
-    });
+    }));
 
     it('should create an injector promise', () => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       expect(injectorPromise).not.toBe(null);
     });
 
-    it('should resolve an injector promise and contain bindings', (done) => {
+    it('should resolve an injector promise and contain bindings', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(appElementToken)).toBe(el);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should provide the application component in the injector', (done) => {
+    it('should provide the application component in the injector', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should display hello world', (done) => {
+    it('should display hello world', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
-        expect(injector.get(appElementToken)).toHaveText('hello world!');
-        done();
-      });
-    });
 
-    it('should support multiple calls to bootstrap', (done) => {
+        expect(injector.get(appElementToken)).toHaveText('hello world!');
+        async.done();
+      });
+    }));
+
+    it('should support multiple calls to bootstrap', inject([AsyncTestCompleter], (async) => {
       var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
       var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
       PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
         expect(injectors[0].get(appElementToken)).toHaveText('hello world!');
         expect(injectors[1].get(appElementToken)).toHaveText('hello world, again!');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should make the provided bindings available to the application component", (done) => {
+    it("should make the provided bindings available to the application component", inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp3, [
         testBindings,
         bind("appBinding").toValue("BoundValue")
@@ -125,25 +137,25 @@ export function main() {
 
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should avoid cyclic dependencies when root component requires Lifecycle through DI", (done) => {
+    it("should avoid cyclic dependencies when root component requires Lifecycle through DI", inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp4, testBindings);
 
       injectorPromise.then((injector) => {
         expect(injector.get(HelloRootCmp4).lc).toBe(injector.get(LifeCycle));
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it("should support shadow dom content tag", (done) => {
+    it("should support shadow dom content tag", inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmpContent, testBindings);
       injectorPromise.then((injector) => {
         expect(injector.get(appElementToken)).toHaveText('before: loading after: done');
-        done();
+        async.done();
       });
-    });
+    }));
   });
 }

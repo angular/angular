@@ -1,4 +1,15 @@
-import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
@@ -30,47 +41,47 @@ export function main() {
       return extension;
     }
 
-    it('should force gc via window.gc()', (done) => {
+    it('should force gc via window.gc()', inject([AsyncTestCompleter], (async) => {
       createExtension().gc().then( (_) => {
         expect(log).toEqual([['executeScript', 'window.gc()']]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.time()', (done) => {
+    it('should mark the timeline via console.time()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeBegin('someName').then( (_) => {
         expect(log).toEqual([['executeScript', `console.time('someName');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.timeEnd()', (done) => {
+    it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeEnd('someName').then( (_) => {
         expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.time() and console.timeEnd()', (done) => {
+    it('should mark the timeline via console.time() and console.timeEnd()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeEnd('name1', 'name2').then( (_) => {
         expect(log).toEqual([['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
     describe('readPerfLog', () => {
 
-      it('should execute a dummy script before reading them', (done) => {
+      it('should execute a dummy script before reading them', inject([AsyncTestCompleter], (async) => {
         // TODO(tbosch): This seems to be a bug in ChromeDriver:
         // Sometimes it does not report the newest events of the performance log
         // to the WebDriver client unless a script is executed...
         createExtension([]).readPerfLog().then( (_) => {
           expect(log).toEqual([ [ 'executeScript', '1+1' ], [ 'logs', 'performance' ] ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report FunctionCall records as "script"', (done) => {
+      it('should report FunctionCall records as "script"', inject([AsyncTestCompleter], (async) => {
         createExtension([
           durationRecord('FunctionCall', 1, 5)
         ]).readPerfLog().then( (events) => {
@@ -78,42 +89,42 @@ export function main() {
             normEvents.start('script', 1),
             normEvents.end('script', 5)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should ignore FunctionCalls from webdriver', (done) => {
+      it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
         createExtension([
           internalScriptRecord(1, 5)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report begin time', (done) => {
+      it('should report begin time', inject([AsyncTestCompleter], (async) => {
         createExtension([
           timeBeginRecord('someName', 12)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.markStart('someName', 12)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report end timestamps', (done) => {
+      it('should report end timestamps', inject([AsyncTestCompleter], (async) => {
         createExtension([
           timeEndRecord('someName', 12)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.markEnd('someName', 12)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report gc', (done) => {
+      it('should report gc', inject([AsyncTestCompleter], (async) => {
         createExtension([
           gcRecord(1, 3, 21)
         ]).readPerfLog().then( (events) => {
@@ -121,12 +132,12 @@ export function main() {
             normEvents.start('gc', 1, {'usedHeapSize': 0}),
             normEvents.end('gc', 3, {'usedHeapSize': -21}),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
       ['RecalculateStyles', 'Layout', 'UpdateLayerTree', 'Paint', 'Rasterize', 'CompositeLayers'].forEach( (recordType) => {
-        it(`should report ${recordType}`, (done) => {
+        it(`should report ${recordType}`, inject([AsyncTestCompleter], (async) => {
           createExtension([
             durationRecord(recordType, 0, 1)
           ]).readPerfLog().then( (events) => {
@@ -134,13 +145,13 @@ export function main() {
               normEvents.start('render', 0),
               normEvents.end('render', 1),
             ]);
-            done();
+            async.done();
           });
-        });
+        }));
       });
 
 
-      it('should walk children', (done) => {
+      it('should walk children', inject([AsyncTestCompleter], (async) => {
         createExtension([
           durationRecord('FunctionCall', 1, 5, [
             timeBeginRecord('someName', 2)
@@ -151,9 +162,9 @@ export function main() {
             normEvents.markStart('someName', 2),
             normEvents.end('script', 5)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
       it('should match safari browsers', () => {
         expect(createExtension().supports({

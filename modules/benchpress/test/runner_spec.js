@@ -1,4 +1,15 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 import {
   Runner, Sampler, SampleDescription,
   Validator, bind, Injector, Metric,
@@ -31,16 +42,16 @@ export function main() {
       return runner;
     }
 
-    it('should set SampleDescription.id', (done) => {
+    it('should set SampleDescription.id', inject([AsyncTestCompleter], (async) => {
       createRunner().sample({id: 'someId'})
         .then( (_) => injector.asyncGet(SampleDescription) )
         .then( (desc) => {
           expect(desc.id).toBe('someId');
-          done();
+          async.done();
         });
-    });
+    }));
 
-    it('should merge SampleDescription.description', (done) => {
+    it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
       createRunner([
         bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})
       ]).sample({id: 'someId', bindings: [
@@ -55,44 +66,44 @@ export function main() {
           'b': 2,
           'v': 11
         });
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should fill SampleDescription.metrics from the Metric', (done) => {
+    it('should fill SampleDescription.metrics from the Metric', inject([AsyncTestCompleter], (async) => {
       createRunner().sample({id: 'someId'})
         .then( (_) => injector.asyncGet(SampleDescription) )
         .then( (desc) => {
 
         expect(desc.metrics).toEqual({ 'm1': 'some metric' });
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should bind Options.EXECUTE', (done) => {
+    it('should bind Options.EXECUTE', inject([AsyncTestCompleter], (async) => {
       var execute = () => {};
       createRunner().sample({id: 'someId', execute: execute}).then( (_) => {
         expect(injector.get(Options.EXECUTE)).toEqual(execute);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should bind Options.PREPARE', (done) => {
+    it('should bind Options.PREPARE', inject([AsyncTestCompleter], (async) => {
       var prepare = () => {};
       createRunner().sample({id: 'someId', prepare: prepare}).then( (_) => {
         expect(injector.get(Options.PREPARE)).toEqual(prepare);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should bind Options.MICRO_ITERATIONS', (done) => {
+    it('should bind Options.MICRO_ITERATIONS', inject([AsyncTestCompleter], (async) => {
       createRunner().sample({id: 'someId', microIterations: 23}).then( (_) => {
         expect(injector.get(Options.MICRO_ITERATIONS)).toEqual(23);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should overwrite bindings per sample call', (done) => {
+    it('should overwrite bindings per sample call', inject([AsyncTestCompleter], (async) => {
       createRunner([
         bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1}),
       ]).sample({id: 'someId', bindings: [
@@ -101,10 +112,10 @@ export function main() {
          .then( (desc) => {
 
         expect(injector.get(SampleDescription).description['a']).toBe(2);
-        done();
+        async.done();
       });
 
-    });
+    }));
 
   });
 }

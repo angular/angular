@@ -1,4 +1,16 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, IS_NODEJS} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  IS_NODEJS,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
@@ -80,7 +92,7 @@ export function main() {
             });
         }
 
-        it('should support multiple content tags', (done) => {
+        it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div>B</div>' +
             '<div>C</div>' +
@@ -89,11 +101,11 @@ export function main() {
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
             expect(view.nodes).toHaveText('(A, BC)');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should redistribute only direct children', (done) => {
+        it('should redistribute only direct children', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div>B<div class="left">A</div></div>' +
             '<div>C</div>' +
@@ -101,11 +113,11 @@ export function main() {
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
             expect(view.nodes).toHaveText('(, BAC)');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should redistribute direct child viewcontainers when the light dom changes", (done) => {
+        it("should redistribute direct child viewcontainers when the light dom changes", inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div><div template="manual" class="left">A</div></div>' +
             '<div>B</div>' +
@@ -126,11 +138,11 @@ export function main() {
 
             expect(view.nodes).toHaveText('(, B)');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should redistribute when the light dom changes", (done) => {
+        it("should redistribute when the light dom changes", inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div template="manual" class="left">A</div>' +
             '<div>B</div>' +
@@ -151,11 +163,11 @@ export function main() {
 
             expect(view.nodes).toHaveText('(, B)');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should support nested components", (done) => {
+        it("should support nested components", inject([AsyncTestCompleter], (async) => {
           var temp = '<outer-with-indirect-nested>' +
             '<div>A</div>' +
             '<div>B</div>' +
@@ -164,11 +176,11 @@ export function main() {
           compile(temp, [OuterWithIndirectNestedComponent], (view, lc) => {
             expect(view.nodes).toHaveText('OUTER(SIMPLE(AB))');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should support nesting with content being direct child of a nested component", (done) => {
+        it("should support nesting with content being direct child of a nested component", inject([AsyncTestCompleter], (async) => {
           var temp = '<outer>' +
             '<div template="manual" class="left">A</div>' +
             '<div>B</div>' +
@@ -184,11 +196,11 @@ export function main() {
             lc.tick();
 
             expect(view.nodes).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should redistribute when the shadow dom changes', (done) => {
+        it('should redistribute when the shadow dom changes', inject([AsyncTestCompleter], (async) => {
           var temp = '<conditional-content>' +
             '<div class="left">A</div>' +
             '<div>B</div>' +
@@ -211,9 +223,9 @@ export function main() {
 
             expect(view.nodes).toHaveText('(, ABC)');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
         //Implement once NgElement support changing a class
         //it("should redistribute when a class has been added or removed");

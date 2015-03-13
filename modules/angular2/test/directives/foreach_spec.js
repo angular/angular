@@ -1,4 +1,15 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -60,17 +71,17 @@ export function main() {
 
     var TEMPLATE = '<div><copy-me template="foreach #item in items">{{item.toString()}};</copy-me></div>';
 
-    it('should reflect initial elements', (done) => {
+    it('should reflect initial elements', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('1;2;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should reflect added elements', (done) => {
+    it('should reflect added elements', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -79,11 +90,11 @@ export function main() {
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('1;2;3;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should reflect removed elements', (done) => {
+    it('should reflect removed elements', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -92,11 +103,11 @@ export function main() {
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('1;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should reflect moved elements', (done) => {
+    it('should reflect moved elements', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -106,11 +117,11 @@ export function main() {
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('2;1;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should reflect a mix of all changes (additions/removals/moves)', (done) => {
+    it('should reflect a mix of all changes (additions/removals/moves)', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         component.items = [0, 1, 2, 3, 4, 5];
@@ -120,9 +131,9 @@ export function main() {
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('6;2;7;0;4;8;');
-        done();
+        async.done();
       });
-    });
+    }));
 
     it('should iterate over an array of objects', () => {
       compileWithTemplate('<ul><li template="foreach #item in items">{{item["name"]}};</li></ul>').then((pv) => {
@@ -148,16 +159,16 @@ export function main() {
       });
     });
 
-    it('should gracefully handle nulls', (done) => {
+    it('should gracefully handle nulls', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate('<ul><li template="foreach #item in null">{{item}};</li></ul>').then((pv) => {
         createView(pv);
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should gracefully handle ref changing to null and back', (done) => {
+    it('should gracefully handle ref changing to null and back', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -170,11 +181,11 @@ export function main() {
         component.items = [1, 2, 3];
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('1;2;3;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should throw on ref changing to string', (done) => {
+    it('should throw on ref changing to string', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         cd.detectChanges();
@@ -182,54 +193,54 @@ export function main() {
 
         component.items = 'whaaa';
         expect(() => cd.detectChanges()).toThrowError();
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should works with duplicates', (done) => {
+    it('should works with duplicates', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
         createView(pv);
         var a = new Foo();
         component.items = [a, a];
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('foo;foo;');
-        done();
+        async.done();
       });
-    });
+    }));
 
-  it('should repeat over nested arrays', (done) => {
-    compileWithTemplate(
-        '<div><div template="foreach #item in items">' +
-          '<div template="foreach #subitem in item">' +
-          '{{subitem}};' +
-        '</div>|</div></div>'
-    ).then((pv) => {
-      createView(pv);
-      component.items = [['a', 'b'], ['c','d']];
-      cd.detectChanges();
-      cd.detectChanges();
-      cd.detectChanges();
-      expect(DOM.getText(view.nodes[0])).toEqual('a;b;|c;d;|');
-      done();
-    });
-  });
+    it('should repeat over nested arrays', inject([AsyncTestCompleter], (async) => {
+      compileWithTemplate(
+          '<div><div template="foreach #item in items">' +
+            '<div template="foreach #subitem in item">' +
+            '{{subitem}};' +
+          '</div>|</div></div>'
+      ).then((pv) => {
+        createView(pv);
+        component.items = [['a', 'b'], ['c','d']];
+        cd.detectChanges();
+        cd.detectChanges();
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('a;b;|c;d;|');
+        async.done();
+      });
+    }));
 
 
-  it('should display indices correctly', (done) => {
-    var INDEX_TEMPLATE =
-      '<div><copy-me template="foreach: var item in items; var i=index">{{i.toString()}}</copy-me></div>';
-    compileWithTemplate(INDEX_TEMPLATE).then((pv) => {
-      createView(pv);
-      component.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-      cd.detectChanges();
-      expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
+    it('should display indices correctly', inject([AsyncTestCompleter], (async) => {
+      var INDEX_TEMPLATE =
+        '<div><copy-me template="foreach: var item in items; var i=index">{{i.toString()}}</copy-me></div>';
+      compileWithTemplate(INDEX_TEMPLATE).then((pv) => {
+        createView(pv);
+        component.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
 
-      component.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
-      cd.detectChanges();
-      expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
-      done();
-    });
-  });
+        component.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
+        async.done();
+      });
+    }));
 
   });
 }

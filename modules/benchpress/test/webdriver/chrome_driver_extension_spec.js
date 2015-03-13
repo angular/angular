@@ -1,4 +1,15 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
@@ -34,111 +45,111 @@ export function main() {
       return extension;
     }
 
-    it('should force gc via window.gc()', (done) => {
+    it('should force gc via window.gc()', inject([AsyncTestCompleter], (async) => {
       createExtension().gc().then( (_) => {
         expect(log).toEqual([['executeScript', 'window.gc()']]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.time()', (done) => {
+    it('should mark the timeline via console.time()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeBegin('someName').then( (_) => {
         expect(log).toEqual([['executeScript', `console.time('someName');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.timeEnd()', (done) => {
+    it('should mark the timeline via console.timeEnd()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeEnd('someName').then( (_) => {
         expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should mark the timeline via console.time() and console.timeEnd()', (done) => {
+    it('should mark the timeline via console.time() and console.timeEnd()', inject([AsyncTestCompleter], (async) => {
       createExtension().timeEnd('name1', 'name2').then( (_) => {
         expect(log).toEqual([['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
-        done();
+        async.done();
       });
-    });
+    }));
 
     describe('readPerfLog', () => {
 
-      it('should execute a dummy script before reading them', (done) => {
+      it('should execute a dummy script before reading them', inject([AsyncTestCompleter], (async) => {
         // TODO(tbosch): This seems to be a bug in ChromeDriver:
         // Sometimes it does not report the newest events of the performance log
         // to the WebDriver client unless a script is executed...
         createExtension([]).readPerfLog().then( (_) => {
           expect(log).toEqual([ [ 'executeScript', '1+1' ], [ 'logs', 'performance' ] ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should normalize times to ms and forward ph and pid event properties', (done) => {
+      it('should normalize times to ms and forward ph and pid event properties', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.complete('FunctionCall', 1100, 5500, null)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.complete('script', 1.1, 5.5, null),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should normalize "tdur" to "dur"', (done) => {
+      it('should normalize "tdur" to "dur"', inject([AsyncTestCompleter], (async) => {
         var event = chromeTimelineEvents.create('X', 'FunctionCall', 1100, null);
         event['tdur'] = 5500;
         createExtension([event]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.complete('script', 1.1, 5.5, null),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report FunctionCall events as "script"', (done) => {
+      it('should report FunctionCall events as "script"', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.start('FunctionCall', 0)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.start('script', 0),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should ignore FunctionCalls from webdriver', (done) => {
+      it('should ignore FunctionCalls from webdriver', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.start('FunctionCall', 0, {'data': {'scriptName': 'InjectedScript'}})
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report begin timestamps', (done) => {
+      it('should report begin timestamps', inject([AsyncTestCompleter], (async) => {
         createExtension([
           blinkEvents.create('S', 'someName', 1000)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.markStart('someName', 1.0)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report end timestamps', (done) => {
+      it('should report end timestamps', inject([AsyncTestCompleter], (async) => {
         createExtension([
           blinkEvents.create('F', 'someName', 1000)
         ]).readPerfLog().then( (events) => {
           expect(events).toEqual([
             normEvents.markEnd('someName', 1.0)
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report gc', (done) => {
+      it('should report gc', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
           chromeTimelineEvents.end('GCEvent', 2000, {'usedHeapSizeAfter': 0}),
@@ -147,11 +158,11 @@ export function main() {
             normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
             normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should report major gc', (done) => {
+      it('should report major gc', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
           v8EventsOtherProcess.start('majorGC', 1100, null),
@@ -162,11 +173,11 @@ export function main() {
             normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
             normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': false}),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should ignore major gc from different processes', (done) => {
+      it('should ignore major gc from different processes', inject([AsyncTestCompleter], (async) => {
         createExtension([
           chromeTimelineEvents.start('GCEvent', 1000, {'usedHeapSizeBefore': 1000}),
           v8Events.start('majorGC', 1100, null),
@@ -177,12 +188,12 @@ export function main() {
             normEvents.start('gc', 1.0, {'usedHeapSize': 1000}),
             normEvents.end('gc', 2.0, {'usedHeapSize': 0, 'majorGc': true}),
           ]);
-          done();
+          async.done();
         });
-      });
+      }));
 
       ['RecalculateStyles', 'Layout', 'UpdateLayerTree', 'Paint', 'Rasterize', 'CompositeLayers'].forEach( (recordType) => {
-        it(`should report ${recordType} as "render"`, (done) => {
+        it(`should report ${recordType} as "render"`, inject([AsyncTestCompleter], (async) => {
           createExtension([
             chromeTimelineEvents.start(recordType, 1234),
             chromeTimelineEvents.end(recordType, 2345)
@@ -191,21 +202,21 @@ export function main() {
               normEvents.start('render', 1.234),
               normEvents.end('render', 2.345),
             ]);
-            done();
+            async.done();
           });
-        });
+        }));
       });
 
-      it('should throw an error on buffer overflow', (done) => {
+      it('should throw an error on buffer overflow', inject([AsyncTestCompleter], (async) => {
         PromiseWrapper.catchError(createExtension([
           chromeTimelineEvents.start('FunctionCall', 1234),
         ], 'Tracing.bufferUsage').readPerfLog(), (err) => {
           expect( () => {
             throw err;
           }).toThrowError('The DevTools trace buffer filled during the test!');
-          done();
+          async.done();
         });
-      });
+      }));
 
       it('should match chrome browsers', () => {
         expect(createExtension().supports({

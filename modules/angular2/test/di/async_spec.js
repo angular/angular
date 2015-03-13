@@ -1,4 +1,14 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 import {Injector, Inject, InjectPromise, bind, Key} from 'angular2/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -54,17 +64,17 @@ export function main() {
         expect(injector.asyncGet(UserList)).toBePromise();
       });
 
-      it('should return the injector', function (done) {
+      it('should return the injector', inject([AsyncTestCompleter], (async) => {
         var injector = new Injector([]);
         var p = injector.asyncGet(Injector);
         p.then(function (injector) {
           expect(injector).toBe(injector);
-          done();
+          async.done();
         });
-      });
+      }));
 
       it('should return a promise when instantiating a sync binding ' +
-      'with an async dependency', function (done) {
+      'with an async dependency', inject([AsyncTestCompleter], (async) => {
         var injector = new Injector([
           bind(UserList).toAsyncFactory(fetchUsers),
           UserController
@@ -73,11 +83,11 @@ export function main() {
         injector.asyncGet(UserController).then(function (userController) {
           expect(userController).toBeAnInstanceOf(UserController);
           expect(userController.list).toBeAnInstanceOf(UserList);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it("should create only one instance (async + async)", function (done) {
+      it("should create only one instance (async + async)", inject([AsyncTestCompleter], (async) => {
         var injector = new Injector([
           bind(UserList).toAsyncFactory(fetchUsers)
         ]);
@@ -87,11 +97,11 @@ export function main() {
 
         PromiseWrapper.all([ul1, ul2]).then(function (uls) {
           expect(uls[0]).toBe(uls[1]);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it("should create only one instance (sync + async)", function (done) {
+      it("should create only one instance (sync + async)", inject([AsyncTestCompleter], (async) => {
         var injector = new Injector([
           UserList
         ]);
@@ -104,11 +114,11 @@ export function main() {
 
         promise.then(function (ful) {
           expect(ful).toBe(ul);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should show the full path when error happens in a constructor', function (done) {
+      it('should show the full path when error happens in a constructor', inject([AsyncTestCompleter], (async) => {
         var injector = new Injector([
           UserController,
           bind(UserList).toAsyncFactory(function () {
@@ -119,9 +129,9 @@ export function main() {
         var promise = injector.asyncGet(UserController);
         PromiseWrapper.then(promise, null, function (e) {
           expect(e.message).toContain("Error during instantiation of UserList! (UserController -> UserList)");
-          done();
+          async.done();
         });
-      });
+      }));
     });
 
     describe("get", function () {

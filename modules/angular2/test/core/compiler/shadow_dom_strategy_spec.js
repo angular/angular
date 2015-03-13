@@ -1,4 +1,15 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  SpyObject,
+} from 'angular2/test_lib';
 
 import {
   NativeShadowDomStrategy,
@@ -114,7 +125,7 @@ export function main() {
       expect(styleElement).toHaveText(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
     });
 
-    it('should inline @import rules', (done) => {
+    it('should inline @import rules', inject([AsyncTestCompleter], (async) => {
       xhr.reply('http://base/one.css', '.one {}');
 
       var template = el('<div><style>@import "one.css";</style></div>');
@@ -133,9 +144,9 @@ export function main() {
       expect(styleElement).toHaveText('');
       parentpv.stylePromises[0].then((_) => {
         expect(styleElement).toHaveText('.one[_ngcontent-0] {\n\n}');
-        done();
+        async.done();
       });
-    });
+    }));
 
     it('should return the same style given the same component', () => {
       var template = el('<div><style>.foo {} :host {}</style></div>');

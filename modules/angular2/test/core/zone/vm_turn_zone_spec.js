@@ -1,4 +1,15 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, async, tick} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xdescribe,
+  xit,
+} from 'angular2/test_lib';
 import {Log, once} from 'angular2/test_lib';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
@@ -44,7 +55,7 @@ export function main() {
       });
 
 
-      it('should call onTurnStart and onTurnDone before and after each turn', (done) => {
+      it('should call onTurnStart and onTurnDone before and after each turn', inject([AsyncTestCompleter], (async) => {
         var a = PromiseWrapper.completer();
         var b = PromiseWrapper.completer();
 
@@ -59,9 +70,9 @@ export function main() {
 
         PromiseWrapper.all([a.promise, b.promise]).then((_) => {
           expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; onTurnDone; onTurnStart; b then; onTurnDone');
-          done();
+          async.done();
         });
-      });
+      }));
     });
 
     describe("runOutsideAngular", () => {
@@ -101,7 +112,7 @@ export function main() {
         }).toThrowError('bbb');
       });
 
-      it('should produce long stack traces', (done) => {
+      it('should produce long stack traces', inject([AsyncTestCompleter], (async) => {
         zone.initCallbacks({onErrorHandler: saveStackTrace});
 
         var c = PromiseWrapper.completer();
@@ -118,11 +129,11 @@ export function main() {
         c.promise.then((_) => {
           // then number of traces for JS and Dart is different
           expect(trace.length).toBeGreaterThan(1);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should produce long stack traces (when using promises)', (done) => {
+      it('should produce long stack traces (when using promises)', inject([AsyncTestCompleter], (async) => {
         zone.initCallbacks({onErrorHandler: saveStackTrace});
 
         var c = PromiseWrapper.completer();
@@ -139,11 +150,11 @@ export function main() {
         c.promise.then((_) => {
           // then number of traces for JS and Dart is different
           expect(trace.length).toBeGreaterThan(1);
-          done();
+          async.done();
         });
-      });
+      }));
 
-      it('should disable long stack traces', (done) => {
+      it('should disable long stack traces', inject([AsyncTestCompleter], (async) => {
         var zone = new VmTurnZone({enableLongStackTrace: false});
         zone.initCallbacks({onErrorHandler: saveStackTrace});
 
@@ -160,9 +171,9 @@ export function main() {
 
         c.promise.then((_) => {
           expect(trace.length).toEqual(1);
-          done();
+          async.done();
         });
-      });
+      }));
     });
   });
 }
