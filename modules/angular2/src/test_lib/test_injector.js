@@ -66,7 +66,7 @@ export function createTestInjector(bindings: List) {
   return rootInjector.createChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
 
-/*
+/**
  * Allows injecting dependencies in `beforeEach()` and `it()`.
  *
  * Example:
