@@ -1,6 +1,7 @@
 import {
   AsyncTestCompleter,
   beforeEach,
+  beforeEachBindings,
   ddescribe,
   describe,
   el,
@@ -15,16 +16,9 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Injector} from 'angular2/di';
-import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
 import {Template} from 'angular2/src/core/annotations/template';
 import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
@@ -33,25 +27,20 @@ import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Foreach} from 'angular2/src/directives/foreach';
 
+import {bind} from 'angular2/di';
+
 export function main() {
   describe('foreach', () => {
     var view, cd, compiler, component, tplResolver;
-    beforeEach(() => {
-      var urlResolver = new UrlResolver();
-      tplResolver = new MockTemplateResolver();
-      compiler = new Compiler(
-        dynamicChangeDetection,
-        new TemplateLoader(null, null),
-        new DirectiveMetadataReader(),
-        new Parser(new Lexer()),
-        new CompilerCache(),
-        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
-        tplResolver,
-        new ComponentUrlMapper(),
-        urlResolver,
-        new CssProcessor(null)
-      );
-    });
+
+    beforeEachBindings(() => [
+      bind(TemplateResolver).toClass(MockTemplateResolver),
+    ]);
+
+    beforeEach(inject([Compiler, TemplateResolver], (c, t) => {
+      compiler = c;
+      tplResolver = t;
+    }));
 
     function createView(pv) {
       component = new TestComponent();

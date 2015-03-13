@@ -1,6 +1,7 @@
 import {
   AsyncTestCompleter,
   beforeEach,
+  beforeEachBindings,
   ddescribe,
   describe,
   el,
@@ -17,29 +18,26 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+
+import {bind} from 'angular2/di';
 
 export function main() {
   describe('StyleInliner', () => {
-    var xhr, inliner;
-
-    beforeEach(() => {
-      xhr = new FakeXHR();
-      var urlResolver = new UrlResolver();
-      var styleUrlResolver = new StyleUrlResolver(urlResolver);
-      inliner = new StyleInliner(xhr, styleUrlResolver, urlResolver);
-    });
+    beforeEachBindings(() => [
+      bind(XHR).toClass(FakeXHR),
+    ]);
 
     describe('loading', () => {
-      it('should return a string when there is no import statement', () => {
+
+      it('should return a string when there is no import statement', inject([StyleInliner], (inliner) => {
         var css = '.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
         expect(loadedCss).not.toBePromise();
         expect(loadedCss).toEqual(css);
-      });
+      }));
 
-      it('should inline @import rules', inject([AsyncTestCompleter], (async) => {
+      it('should inline @import rules',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import url("one.css");.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
@@ -56,7 +54,8 @@ export function main() {
         );
       }));
 
-      it('should support url([unquoted url]) in @import rules', inject([AsyncTestCompleter], (async) => {
+      it('should support url([unquoted url]) in @import rules',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import url(one.css);.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
@@ -73,7 +72,8 @@ export function main() {
         );
       }));
 
-      it('should handle @import error gracefuly', inject([AsyncTestCompleter], (async) => {
+      it('should handle @import error gracefuly',
+        inject([StyleInliner, AsyncTestCompleter], (inliner, async) => {
         var css = '@import "one.css";.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
         expect(loadedCss).toBePromise();
@@ -89,7 +89,8 @@ export function main() {
         );
       }));
 
-      it('should inline multiple @import rules', inject([AsyncTestCompleter], (async) => {
+      it('should inline multiple @import rules',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '.one {}');
         xhr.reply('http://base/two.css', '.two {}');
         var css = '@import "one.css";@import "two.css";.main {}';
@@ -107,7 +108,8 @@ export function main() {
         );
       }));
 
-      it('should inline nested @import rules', inject([AsyncTestCompleter], (async) => {
+      it('should inline nested @import rules',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '@import "two.css";.one {}');
         xhr.reply('http://base/two.css', '.two {}');
         var css = '@import "one.css";.main {}';
@@ -125,7 +127,8 @@ export function main() {
         );
       }));
 
-      it('should handle circular dependencies gracefuly', inject([AsyncTestCompleter], (async) => {
+      it('should handle circular dependencies gracefuly',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '@import "two.css";.one {}');
         xhr.reply('http://base/two.css', '@import "one.css";.two {}');
         var css = '@import "one.css";.main {}';
@@ -143,7 +146,8 @@ export function main() {
         );
       }));
 
-      it('should handle invalid @import fracefuly', inject([AsyncTestCompleter], (async) => {
+      it('should handle invalid @import fracefuly',
+        inject([StyleInliner, AsyncTestCompleter], (inliner, async) => {
         // Invalid rule: the url is not quoted
         var css = '@import one.css;.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
@@ -162,7 +166,8 @@ export function main() {
     });
 
     describe('media query', () => {
-      it('should wrap inlined content in media query', inject([AsyncTestCompleter], (async) => {
+      it('should wrap inlined content in media query',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import "one.css" (min-width: 700px) and (orientation: landscape);';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
@@ -181,7 +186,8 @@ export function main() {
     });
 
     describe('url rewritting', () => {
-      it('should rewrite url in inlined content', inject([AsyncTestCompleter], (async) => {
+      it('should rewrite url in inlined content',
+        inject([XHR, StyleInliner, AsyncTestCompleter], (xhr, inliner, async) => {
         // it should rewrite both '@import' and 'url()'
         xhr.reply('http://base/one.css', '@import "./nested/two.css";.one {background-image: url("one.jpg");}');
         xhr.reply('http://base/nested/two.css', '.two {background-image: url("../img/two.jpg");}');
