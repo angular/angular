@@ -2,7 +2,7 @@ import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {int, isBlank, isPresent, Type, StringJoiner, assertionsEnabled} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
-import {Decorator, Component, Viewport} from '../../annotations/annotations';
+import {Decorator, Component, Viewport, DynamicComponent} from '../../annotations/annotations';
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import {ProtoView} from '../view';
@@ -30,6 +30,7 @@ export class CompileElement {
   decoratorDirectives:List<DirectiveMetadata>;
   viewportDirective:DirectiveMetadata;
   componentDirective:DirectiveMetadata;
+  hasNestedView:boolean;
   _allDirectives:List<DirectiveMetadata>;
   isViewRoot:boolean;
   hasBindings:boolean;
@@ -54,6 +55,7 @@ export class CompileElement {
     this.decoratorDirectives = null;
     this.viewportDirective = null;
     this.componentDirective = null;
+    this.hasNestedView = false;
     this._allDirectives = null;
     this.isViewRoot = false;
     this.hasBindings = false;
@@ -156,6 +158,9 @@ export class CompileElement {
     } else if (annotation instanceof Viewport) {
       this.viewportDirective = directive;
     } else if (annotation instanceof Component) {
+      this.componentDirective = directive;
+      this.hasNestedView = true;
+    } else if (annotation instanceof DynamicComponent) {
       this.componentDirective = directive;
     }
   }

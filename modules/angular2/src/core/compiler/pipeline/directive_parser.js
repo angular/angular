@@ -5,7 +5,7 @@ import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
 
 import {DirectiveMetadata} from '../directive_metadata';
-import {Component, Viewport} from '../../annotations/annotations';
+import {DynamicComponent, Component, Viewport} from '../../annotations/annotations';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
@@ -109,6 +109,9 @@ function updateMatchedProperties(matchedProperties, selector, directive) {
 
 // check if the directive is compatible with the current element
 function checkDirectiveValidity(directive, current, isTemplateElement) {
+  var isComponent = directive.annotation instanceof Component || directive.annotation instanceof DynamicComponent;
+  var alreadyHasComponent = isPresent(current.componentDirective);
+
   if (directive.annotation instanceof Viewport) {
     if (!isTemplateElement) {
       throw new BaseException(`Viewport directives need to be placed on <template> elements or elements ` +
@@ -118,7 +121,8 @@ function checkDirectiveValidity(directive, current, isTemplateElement) {
     }
   } else if (isTemplateElement) {
     throw new BaseException(`Only template directives are allowed on template elements - check ${current.elementDescription}`);
-  } else if ((directive.annotation instanceof Component) && isPresent(current.componentDirective)) {
+
+  } else if (isComponent && alreadyHasComponent) {
     throw new BaseException(`Multiple component directives not allowed on the same element - check ${current.elementDescription}`);
   }
 }

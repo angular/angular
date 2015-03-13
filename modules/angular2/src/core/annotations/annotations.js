@@ -236,6 +236,40 @@ export class Component extends Directive {
 /**
  * @publicModule angular2/angular2
  */
+export class DynamicComponent extends Directive {
+  services:any; //List;
+
+  @CONST()
+  constructor({
+    selector,
+    bind,
+    events,
+    services,
+    implementsTypes,
+    lifecycle
+    }:{
+      selector:string,
+      bind:any,
+      events:any,
+      services:List,
+      implementsTypes:List,
+      lifecycle:List
+    }={}) {
+    super({
+      selector: selector,
+      bind: bind,
+      events: events,
+      implementsTypes: implementsTypes,
+      lifecycle: lifecycle
+    });
+
+    this.services = services;
+  }
+}
+
+/**
+ * @publicModule angular2/angular2
+ */
 export class Decorator extends Directive {
   compileChildren: boolean;
   @CONST()

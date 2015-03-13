@@ -114,6 +114,7 @@ export function runCompilerCommonTests() {
           var compiler = createCompiler( (parent, current, control) => {
             if (DOM.hasClass(current.element, 'nested')) {
               current.componentDirective = reader.read(NestedComponent);
+              current.hasNestedView = true;
               current.inheritedProtoView = parent.inheritedProtoView;
               current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
             } else {
@@ -163,6 +164,7 @@ export function runCompilerCommonTests() {
 
         it('should allow recursive components', inject([AsyncTestCompleter], (async) => {
           var compiler = createCompiler( (parent, current, control) => {
+            current.hasNestedView = true;
             current.inheritedProtoView = new ProtoView(current.element, null, null);
             current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
             current.componentDirective = reader.read(RecursiveComponent);
@@ -191,6 +193,7 @@ export function runCompilerCommonTests() {
 
           var compiler = createCompiler((parent, current, control) => {
             if (DOM.hasClass(current.element, 'parent')) {
+              current.hasNestedView = true;
               current.componentDirective = reader.read(NestedComponent);
               current.inheritedProtoView = parent.inheritedProtoView;
               current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);

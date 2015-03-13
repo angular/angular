@@ -171,7 +171,7 @@ export class View {
         }
       }
 
-      if (isPresent(componentDirective)) {
+      if (isPresent(binders[i].nestedProtoView) && isPresent(componentDirective)) {
         this.componentChildViews[componentChildViewIndex++].hydrate(shadowDomAppInjector,
           elementInjector, this.lightDoms[i], elementInjector.getComponent(), null);
       }
@@ -441,7 +441,7 @@ export class ProtoView {
       // componentChildViews
       var lightDom = null;
       var bindingPropagationConfig = null;
-      if (isPresent(binder.componentDirective)) {
+      if (isPresent(binder.nestedProtoView) && isPresent(binder.componentDirective)) {
         var strategy = this.shadowDomStrategy;
         var childView = binder.nestedProtoView.instantiate(elementInjector, eventManager);
         changeDetector.addChild(childView.changeDetector);

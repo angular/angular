@@ -163,7 +163,7 @@ export class Compiler {
     var nestedPVPromises = [];
     for (var i = 0; i < compileElements.length; i++) {
       var ce = compileElements[i];
-      if (isPresent(ce.componentDirective)) {
+      if (ce.hasNestedView) {
         this._compileNestedProtoView(ce, nestedPVPromises);
       }
     }
