@@ -28,8 +28,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   query(String selector) => document.querySelector(selector);
 
-  Element querySelector(el, String selector) =>
-      el.querySelector(selector);
+  Element querySelector(el, String selector) => el.querySelector(selector);
 
   ElementList querySelectorAll(el, String selector) =>
       el.querySelectorAll(selector);
@@ -44,8 +43,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
-  createEvent(eventType) =>
-    new Event(eventType, canBubble: true);
+  createEvent(eventType) => new Event(eventType, canBubble: true);
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {
@@ -134,19 +132,19 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     element.classes.add(classname);
   }
   void removeClass(Element element, String classname) {
-      element.classes.remove(classname);
+    element.classes.remove(classname);
   }
   bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 
   setStyle(Element element, String stylename, String stylevalue) {
-      element.style.setProperty(stylename, stylevalue);
+    element.style.setProperty(stylename, stylevalue);
   }
   removeStyle(Element element, String stylename) {
-      element.style.removeProperty(stylename);
+    element.style.removeProperty(stylename);
   }
   getStyle(Element element, String stylename) {
-      return element.style.getPropertyValue(stylename);
+    return element.style.getPropertyValue(stylename);
   }
 
   String tagName(Element element) => element.tagName;
@@ -163,13 +161,12 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   void removeAttribute(Element element, String name) {
-      //there is no removeAttribute method as of now in Dart:
-      //https://code.google.com/p/dart/issues/detail?id=19934
-      element.attributes.remove(name);
+    //there is no removeAttribute method as of now in Dart:
+    //https://code.google.com/p/dart/issues/detail?id=19934
+    element.attributes.remove(name);
   }
 
-  Node templateAwareRoot(Element el) =>
-      el is TemplateElement ? el.content : el;
+  Node templateAwareRoot(Element el) => el is TemplateElement ? el.content : el;
 
   HtmlDocument createHtmlDocument() =>
       document.implementation.createHtmlDocument('fakeTitle');
@@ -181,13 +178,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
-  bool isTemplateElement(Element el) =>
-      el is TemplateElement;
-  bool isTextNode(Node node) =>
-      node.nodeType == Node.TEXT_NODE;
+  bool isTemplateElement(Element el) => el is TemplateElement;
+  bool isTextNode(Node node) => node.nodeType == Node.TEXT_NODE;
   bool isCommentNode(Node node) => node.nodeType == Node.COMMENT_NODE;
-  bool isElementNode(Node node) =>
-      node.nodeType == Node.ELEMENT_NODE;
+  bool isElementNode(Node node) => node.nodeType == Node.ELEMENT_NODE;
   bool hasShadowRoot(Node node) {
     return node is Element && node.shadowRoot != null;
   }

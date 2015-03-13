@@ -40,9 +40,7 @@ class Html5LibDomAdapter implements DomAdapter {
   String nodeName(node) {
     throw 'not implemented';
   }
-  String nodeValue(node) {
-    throw 'not implemented';
-  }
+  String nodeValue(node) => node.data;
   String type(node) {
     throw 'not implemented';
   }
@@ -50,9 +48,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  firstChild(el) => el is NodeList
-    ? el.first
-    : el.firstChild;
+  firstChild(el) => el is NodeList ? el.first : el.firstChild;
 
   nextSibling(el) {
     final parentNode = el.parentNode;
@@ -68,12 +64,8 @@ class Html5LibDomAdapter implements DomAdapter {
   parentElement(el) {
     throw 'not implemented';
   }
-  List childNodes(el) {
-    throw 'not implemented';
-  }
-  List childNodesAsList(el) {
-    throw 'not implemented';
-  }
+  List childNodes(el) => el.nodes;
+  List childNodesAsList(el) => el.nodes;
   clearNodes(el) {
     throw 'not implemented';
   }
@@ -101,9 +93,8 @@ class Html5LibDomAdapter implements DomAdapter {
   getText(el) {
     throw 'not implemented';
   }
-  setText(el, String value) {
-    throw 'not implemented';
-  }
+  setText(el, String value) => el.text = value;
+
   getValue(el) {
     throw 'not implemented';
   }
@@ -116,10 +107,7 @@ class Html5LibDomAdapter implements DomAdapter {
   setChecked(el, bool value) {
     throw 'not implemented';
   }
-  createTemplate(html) {
-    return createElement('template')
-      ..innerHtml = html;
-  }
+  createTemplate(html) => createElement('template')..innerHtml = html;
   createElement(tagName, [doc]) {
     return new Element.tag(tagName);
   }
@@ -154,8 +142,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  hasClass(element, String classname) =>
-    element.classes.contains(classname);
+  hasClass(element, String classname) => element.classes.contains(classname);
 
   setStyle(element, String stylename, String stylevalue) {
     throw 'not implemented';
@@ -169,7 +156,14 @@ class Html5LibDomAdapter implements DomAdapter {
 
   String tagName(element) => element.localName;
 
-  attributeMap(element) => element.attributes;
+  attributeMap(element) {
+    // `attributes` keys can be [AttributeName]s.
+    var map = <String, String>{};
+    element.attributes.forEach((key, value) {
+      map['$key'] = value;
+    });
+    return map;
+  }
   getAttribute(element, String attribute) {
     throw 'not implemented';
   }
@@ -180,9 +174,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  templateAwareRoot(el) => isTemplateElement(el)
-    ? el.nodes
-    : el;
+  templateAwareRoot(el) => el;
 
   createHtmlDocument() {
     throw 'not implemented';
@@ -199,14 +191,10 @@ class Html5LibDomAdapter implements DomAdapter {
   bool isTemplateElement(Element el) {
     return el != null && el.localName.toLowerCase() == 'template';
   }
-  bool isTextNode(node) {
-    throw 'not implemented';
-  }
-  bool isCommentNode(node) {
-    throw 'not implemented';
-  }
+  bool isTextNode(node) => node.nodeType == Node.TEXT_NODE;
+  bool isCommentNode(node) => node.nodeType == Node.COMMENT_NODE;
 
-  bool isElementNode(node) => node is Element;
+  bool isElementNode(node) => node.nodeType == Node.ELEMENT_NODE;
 
   bool hasShadowRoot(node) {
     throw 'not implemented';
