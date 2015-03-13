@@ -12,7 +12,7 @@ import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,
     ROW_WIDTH, HEIGHT} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
-import {Foreach} from 'angular2/directives';
+import {For} from 'angular2/directives';
 
 export class ScrollAreaComponent {
   _fullList:List<Offering>;
@@ -69,7 +69,7 @@ export function setupReflectorForScrollArea() {
         selector: 'scroll-area',
       }),
       new Template({
-        directives: [ScrollItemComponent, Foreach],
+        directives: [ScrollItemComponent, For],
         inline: `
           <div>
               <div id="scrollDiv"
@@ -78,7 +78,7 @@ export function setupReflectorForScrollArea() {
                   <div id="padding"></div>
                   <div id="inner">
                       <scroll-item
-                          template="foreach #item in visibleItems"
+                          template="for #item of visibleItems"
                           [offering]="item">
                       </scroll-item>
                   </div>

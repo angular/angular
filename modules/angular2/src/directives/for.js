@@ -5,12 +5,12 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 @Viewport({
-  selector: '[foreach][in]',
+  selector: '[for][of]',
   bind: {
-    'iterableChanges': 'in | iterableDiff'
+    'iterableChanges': 'of | iterableDiff'
   }
 })
-export class Foreach  {
+export class For  {
   viewContainer: ViewContainer;
   constructor(viewContainer:ViewContainer) {
     super();
@@ -34,13 +34,13 @@ export class Foreach  {
       (movedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(movedRecord, null))
     );
 
-    var insertTuples = Foreach.bulkRemove(recordViewTuples, this.viewContainer);
+    var insertTuples = For.bulkRemove(recordViewTuples, this.viewContainer);
 
     changes.forEachAddedItem(
       (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
     );
 
-    Foreach.bulkInsert(insertTuples, this.viewContainer);
+    For.bulkInsert(insertTuples, this.viewContainer);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this.perViewChange(insertTuples[i].view, insertTuples[i].record);

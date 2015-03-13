@@ -531,4 +531,4 @@ export class DartParseTreeWriter extends JavaScriptParseTreeWriter {
 }
 
 // see: https://www.dartlang.org/docs/dart-up-and-running/ch02.html for a full list.
-const DART_RESERVED_WORDS = ['if', 'switch'];
+const DART_RESERVED_WORDS = ['if', 'switch', 'for'];

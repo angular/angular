@@ -7,7 +7,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST}
     from './common';
-import {Foreach} from 'angular2/directives';
+import {For} from 'angular2/directives';
 
 export class HasStyle {
   style:Map;
@@ -163,10 +163,10 @@ export function setupReflectorForCells() {
         }
       }),
       new Template({
-          directives: [Foreach],
+          directives: [For],
           inline: `
             <div [style]="style">
-                <button template="foreach #stage in stages"
+                <button template="for #stage of stages"
                         [disabled]="stage.isDisabled"
                         [style]="stage.style"
                         on-click="setStage(stage)">

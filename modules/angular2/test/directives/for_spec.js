@@ -25,12 +25,12 @@ import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/anno
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
-import {Foreach} from 'angular2/src/directives/foreach';
+import {For} from 'angular2/src/directives/for';
 
 import {bind} from 'angular2/di';
 
 export function main() {
-  describe('foreach', () => {
+  describe('for', () => {
     var view, cd, compiler, component, tplResolver;
 
     beforeEachBindings(() => [
@@ -52,13 +52,13 @@ export function main() {
     function compileWithTemplate(html) {
       var template = new Template({
         inline: html,
-        directives: [Foreach]
+        directives: [For]
       });
       tplResolver.setTemplate(TestComponent, template);
       return compiler.compile(TestComponent);
     }
 
-    var TEMPLATE = '<div><copy-me template="foreach #item in items">{{item.toString()}};</copy-me></div>';
+    var TEMPLATE = '<div><copy-me template="for #item of items">{{item.toString()}};</copy-me></div>';
 
     it('should reflect initial elements', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(TEMPLATE).then((pv) => {
@@ -124,8 +124,8 @@ export function main() {
       });
     }));
 
-    it('should iterate over an array of objects', () => {
-      compileWithTemplate('<ul><li template="foreach #item in items">{{item["name"]}};</li></ul>').then((pv) => {
+    it('should iterate over an array of objects', inject([AsyncTestCompleter], (async) => {
+      compileWithTemplate('<ul><li template="for #item of items">{{item["name"]}};</li></ul>').then((pv) => {
         createView(pv);
 
         // INIT
@@ -145,11 +145,12 @@ export function main() {
         cd.detectChanges();
 
         expect(DOM.getText(view.nodes[0])).toEqual('shyam;');
+        async.done();
       });
-    });
+    }));
 
     it('should gracefully handle nulls', inject([AsyncTestCompleter], (async) => {
-      compileWithTemplate('<ul><li template="foreach #item in null">{{item}};</li></ul>').then((pv) => {
+      compileWithTemplate('<ul><li template="for #item of null">{{item}};</li></ul>').then((pv) => {
         createView(pv);
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('');
@@ -199,10 +200,13 @@ export function main() {
 
     it('should repeat over nested arrays', inject([AsyncTestCompleter], (async) => {
       compileWithTemplate(
-          '<div><div template="foreach #item in items">' +
-            '<div template="foreach #subitem in item">' +
-            '{{subitem}}-{{item.length}};' +
-          '</div>|</div></div>'
+        '<div>'+
+          '<div template="for #item of items">' +
+            '<div template="for #subitem of item">' +
+              '{{subitem}}-{{item.length}};' +
+            '</div>|'+
+          '</div>'+
+        '</div>'
       ).then((pv) => {
         createView(pv);
         component.items = [['a', 'b'], ['c']];
@@ -216,7 +220,7 @@ export function main() {
 
     it('should display indices correctly', inject([AsyncTestCompleter], (async) => {
       var INDEX_TEMPLATE =
-        '<div><copy-me template="foreach: var item in items; var i=index">{{i.toString()}}</copy-me></div>';
+        '<div><copy-me template="for: var item of items; var i=index">{{i.toString()}}</copy-me></div>';
       compileWithTemplate(INDEX_TEMPLATE).then((pv) => {
         createView(pv);
         component.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];

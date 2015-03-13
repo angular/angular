@@ -16,17 +16,17 @@ import {
 
 import {NO_CHANGE, Pipe} from './pipe';
 
-export class ArrayChangesFactory {
+export class IterableChangesFactory {
   supports(obj):boolean {
-    return ArrayChanges.supportsObj(obj);
+    return IterableChanges.supportsObj(obj);
   }
 
   create():Pipe {
-    return new ArrayChanges();
+    return new IterableChanges();
   }
 }
 
-export class ArrayChanges extends Pipe {
+export class IterableChanges extends Pipe {
   _collection;
   _length:int;
   _linkedRecords:_DuplicateMap;
@@ -66,7 +66,7 @@ export class ArrayChanges extends Pipe {
   }
 
   supports(obj):boolean {
-    return ArrayChanges.supportsObj(obj);
+    return IterableChanges.supportsObj(obj);
   }
 
   get collection() {

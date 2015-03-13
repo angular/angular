@@ -1,4 +1,4 @@
-import {bootstrap, Component, Template, Foreach} from 'angular2/angular2';
+import {bootstrap, Component, Template, For} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({
@@ -10,7 +10,7 @@ import {Store, Todo, TodoFactory} from './services/TodoStore';
 })
 @Template({
   url: 'todo.html',
-  directives: [Foreach]
+  directives: [For]
 })
 class TodoApp {
   todoStore: Store;
