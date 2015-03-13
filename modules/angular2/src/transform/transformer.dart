@@ -13,14 +13,14 @@ import 'common/options.dart';
 
 export 'common/options.dart';
 
-/// Removes the mirror-based initialization logic and replaces it with static
-/// logic.
+/// Replaces Angular 2 mirror use with generated code.
 class AngularTransformerGroup extends TransformerGroup {
   AngularTransformerGroup(TransformerOptions options) : super([
         [new DirectiveProcessor(options)],
         [new DirectiveLinker(options)],
-        [new BindGenerator(options), new ReflectionRemover(options)],
-        [new TemplateParser(options)]
+        [new BindGenerator(options)],
+        [new TemplateParser(options)],
+        [new ReflectionRemover(options)]
       ]) {
     formatter.init(new DartFormatter());
   }
