@@ -16,4 +16,4 @@ dependencies:
   html5lib: '^0.12.0'
   stack_trace: '^1.1.1'
 dev_dependencies:
-  guinness: "^0.1.16"
+  guinness: "^0.1.17"
