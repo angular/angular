@@ -6,7 +6,7 @@ import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
-import {If, Foreach} from 'angular2/directives';
+import {If, For} from 'angular2/directives';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
@@ -85,7 +85,7 @@ export function setupReflectorForApp() {
     'annotations': [
       new Component({selector: 'scroll-app'}),
       new Template({
-        directives: [ScrollAreaComponent, If, Foreach],
+        directives: [ScrollAreaComponent, If, For],
         inline: `
           <div>
             <div style="display: flex">
@@ -93,7 +93,7 @@ export function setupReflectorForApp() {
             </div>
             <div template="if scrollAreas.length > 0">
               <p>Following tables are only here to add weight to the UI:</p>
-              <scroll-area template="foreach #scrollArea in scrollAreas"></scroll-area>
+              <scroll-area template="for #scrollArea of scrollAreas"></scroll-area>
             </div>
           </div>`
       })]

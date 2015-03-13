@@ -18,7 +18,7 @@ export * from './src/change_detection/pipes/pipe';
 import {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector}
     from './src/change_detection/proto_change_detector';
 import {PipeRegistry} from './src/change_detection/pipes/pipe_registry';
-import {ArrayChangesFactory} from './src/change_detection/pipes/array_changes';
+import {IterableChangesFactory} from './src/change_detection/pipes/iterable_changes';
 import {KeyValueChangesFactory} from './src/change_detection/pipes/keyvalue_changes';
 import {NullPipeFactory} from './src/change_detection/pipes/null_pipe';
 
@@ -31,7 +31,7 @@ export class ChangeDetection {
 
 export var defaultPipes = {
   "iterableDiff" : [
-    new ArrayChangesFactory(),
+    new IterableChangesFactory(),
     new NullPipeFactory()
   ],
   "keyValDiff" : [

@@ -18,7 +18,7 @@
 
     <ul id="todo-list">
 
-      <li *foreach="#todo in todoStore.list">
+      <li *for="#todo of todoStore.list">
 
         <div class="view"
             [class.hidden]="todoEdit == todo">
