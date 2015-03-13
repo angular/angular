@@ -419,6 +419,23 @@ export function main() {
         })
       }));
 
+
+      it('should assign the element instance to a user-defined variable with camelCase using dash-case', inject([AsyncTestCompleter], (async) => {
+        tplResolver.setTemplate(MyComp,
+          new Template({inline: '<p><div var-super-alice><i>Hello</i></div></p>'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+          expect(view.locals).not.toBe(null);
+
+          var value = view.locals.get('superAlice');
+          expect(value).not.toBe(null);
+          expect(value.tagName.toLowerCase()).toEqual('div');
+
+          async.done();
+        })
+      }));
+
       it('should provide binding configuration config to the component', inject([AsyncTestCompleter], (async) => {
         tplResolver.setTemplate(MyComp, new Template({
           inline: '<push-cmp #cmp></push-cmp>',

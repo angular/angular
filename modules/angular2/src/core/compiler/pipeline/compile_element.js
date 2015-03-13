@@ -134,7 +134,7 @@ export class CompileElement {
     // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
-    MapWrapper.set(this.variableBindings, variableValue, variableName);
+    MapWrapper.set(this.variableBindings, variableValue, dashCaseToCamelCase(variableName));
   }
 
   addEventBinding(eventName:string, expression:AST) {
