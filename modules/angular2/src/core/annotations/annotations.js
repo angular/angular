@@ -245,21 +245,18 @@ export class DynamicComponent extends Directive {
     bind,
     events,
     services,
-    implementsTypes,
     lifecycle
     }:{
       selector:string,
-      bind:any,
-      events:any,
+      bind:Object,
+      events:Object,
       services:List,
-      implementsTypes:List,
       lifecycle:List
     }={}) {
     super({
       selector: selector,
       bind: bind,
       events: events,
-      implementsTypes: implementsTypes,
       lifecycle: lifecycle
     });
 

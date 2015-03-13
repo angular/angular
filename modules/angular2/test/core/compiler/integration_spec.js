@@ -15,13 +15,15 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Type, isPresent, BaseException, assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-import {Injector} from 'angular2/di';
+import {Injector, bind} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection,
   DynamicChangeDetection, Pipe, PipeRegistry} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
+import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
@@ -29,8 +31,9 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {EventManager} from 'angular2/src/core/events/event_manager';
 
-import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter} from 'angular2/src/core/annotations/di';
@@ -41,16 +44,16 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 
 export function main() {
   describe('integration tests', function() {
-    var compiler, tplResolver;
+    var directiveMetadataReader, shadowDomStrategy, compiler, tplResolver;
 
     function createCompiler(tplResolver, changedDetection) {
       var urlResolver = new UrlResolver();
       return new Compiler(changedDetection,
         new TemplateLoader(null, null),
-        new DirectiveMetadataReader(),
+        directiveMetadataReader,
         new Parser(new Lexer()),
         new CompilerCache(),
-        new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
+        shadowDomStrategy,
         tplResolver,
         new ComponentUrlMapper(),
         urlResolver,
@@ -60,6 +63,12 @@ export function main() {
 
     beforeEach( () => {
       tplResolver = new MockTemplateResolver();
+
+      directiveMetadataReader = new DirectiveMetadataReader();
+
+      var urlResolver = new UrlResolver();
+      shadowDomStrategy = new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver));
+
       compiler = createCompiler(tplResolver, dynamicChangeDetection);
     });
 
@@ -68,7 +77,15 @@ export function main() {
       function createView(pv) {
         ctx = new MyComp();
         view = pv.instantiate(null, null);
-        view.hydrate(new Injector([]), null, null, ctx, null);
+
+        view.hydrate(new Injector([
+          bind(Compiler).toValue(compiler),
+          bind(DirectiveMetadataReader).toValue(directiveMetadataReader),
+          bind(ShadowDomStrategy).toValue(shadowDomStrategy),
+          bind(EventManager).toValue(null),
+          PrivateComponentLoader
+        ]), null, null, ctx, null);
+
         cd = view.changeDetector;
       }
 
@@ -512,6 +529,25 @@ export function main() {
         });
       }));
 
+      it('should support dynamic components', inject([AsyncTestCompleter], (async) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<dynamic-comp #dynamic></dynamic-comp>',
+          directives: [DynamicComp]
+        }));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          var dynamicComponent = view.locals.get("dynamic");
+          expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
+
+          dynamicComponent.done.then((_) => {
+            cd.detectChanges();
+            expect(view.nodes).toHaveText('hello');
+            async.done();
+          });
+        });
+      }));
     });
 
     if (assertionsEnabled()) {
@@ -570,6 +606,30 @@ export function main() {
       }));
     }
   });
+}
+
+
+@DynamicComponent({
+  selector: 'dynamic-comp'
+})
+class DynamicComp {
+  done;
+  constructor(loader:PrivateComponentLoader, location:PrivateComponentLocation) {
+    this.done = loader.load(HelloCmp, location);
+  }
+}
+
+@Component({
+  selector: 'hello-cmp'
+})
+@Template({
+  inline: "{{greeting}}"
+})
+class HelloCmp {
+  greeting:string;
+  constructor() {
+    this.greeting = "hello";
+  }
 }
 
 @Decorator({

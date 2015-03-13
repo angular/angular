@@ -24,7 +24,7 @@ export class PrivateComponentLocation {
     var context = this._elementInjector.createPrivateComponent(type, annotation);
 
     var view = componentProtoView.instantiate(this._elementInjector, eventManager);
-    view.hydrate(this._elementInjector.getShadowDomAppInjector(), this._elementInjector, context);
+    view.hydrate(this._elementInjector.getShadowDomAppInjector(), this._elementInjector, null, context, null);
 
     shadowDomStrategy.attachTemplate(this._elt.domElement, view);
 
