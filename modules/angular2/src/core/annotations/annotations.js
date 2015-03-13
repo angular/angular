@@ -1,6 +1,10 @@
 import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 
+/**
+ * Directives allow you to attach behavior to the DOM elements. Directive is an abstract concept, instead use concrete
+ * directives such as: [Component], [Decorator] or [Viewport].
+ */
 @ABSTRACT()
 export class Directive {
   selector:any; //string;
