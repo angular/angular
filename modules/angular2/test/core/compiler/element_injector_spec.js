@@ -114,6 +114,7 @@ class DirectiveWithDestroy {
 
 export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var appInjector = new Injector([]);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -126,7 +127,7 @@ export function main() {
   }
 
   function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, preBuiltObjects = null) {
-    if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
+    if (isBlank(lightDomAppInjector)) lightDomAppInjector = appInjector;
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
     var inj = proto.instantiate(null, null);
@@ -446,7 +447,60 @@ export function main() {
         expect(inj.get(BindingPropagationConfig)).toEqual(config);
       });
     });
+    
+    describe("createPrivateComponent", () => {
+      it("should create a private component", () => {
+        var inj = injector([]);
+        inj.createPrivateComponent(SimpleDirective, null);
+        expect(inj.getPrivateComponent()).toBeAnInstanceOf(SimpleDirective);
+      });
 
+      it("should inject parent dependencies into the private component", () => {
+        var inj = parentChildInjectors([SimpleDirective], []);
+        inj.createPrivateComponent(NeedDirectiveFromAncestor, null);
+        expect(inj.getPrivateComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(inj.getPrivateComponent().dependency).toBeAnInstanceOf(SimpleDirective);
+      });
+
+      it("should not inject the proxy component into the children of the private component", () => {
+        var injWithPrivateComponent = injector([SimpleDirective]);
+        injWithPrivateComponent.createPrivateComponent(SomeOtherDirective, null);
+
+        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomInj = shadowDomProtoInjector.instantiate(null, injWithPrivateComponent);
+
+        expect(() => shadowDomInj.instantiateDirectives(appInjector, null, defaultPreBuiltObjects)).
+          toThrowError(new RegExp("No provider for SimpleDirective"));
+      });
+
+      it("should inject the private component into the children of the private component", () => {
+        var injWithPrivateComponent = injector([]);
+        injWithPrivateComponent.createPrivateComponent(SimpleDirective, null);
+
+        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomInjector = shadowDomProtoInjector.instantiate(null, injWithPrivateComponent);
+        shadowDomInjector.instantiateDirectives(appInjector, null, defaultPreBuiltObjects);
+
+        expect(shadowDomInjector.get(NeedDirectiveFromAncestor)).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(shadowDomInjector.get(NeedDirectiveFromAncestor).dependency).toBeAnInstanceOf(SimpleDirective);
+      });
+
+      it("should support rehydrating the private component", () => {
+        var inj = injector([]);
+        inj.createPrivateComponent(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}));
+        var dir = inj.getPrivateComponent();
+
+        inj.clearDirectives();
+
+        expect(inj.getPrivateComponent()).toBe(null);
+        expect(dir.onDestroyCounter).toBe(1);
+
+        inj.instantiateDirectives(null, null, null);
+
+        expect(inj.getPrivateComponent()).not.toBe(null);
+      });
+    });
+    
     describe('event emitters', () => {
       it('should be injectable and callable', () => {
         var called = false;

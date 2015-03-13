@@ -7,8 +7,9 @@ import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
-import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
+import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations';
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
+import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -24,6 +25,7 @@ class StaticKeys {
   ngElementId:number;
   viewContainerId:number;
   bindingPropagationConfigId:number;
+  privateComponentLocationId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
@@ -31,6 +33,7 @@ class StaticKeys {
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
+    this.privateComponentLocationId = Key.get(PrivateComponentLocation).id;
   }
 
   static instance() {
@@ -154,7 +157,6 @@ export class DirectiveBinding extends Binding {
     return ListWrapper.any(binding.dependencies, (d) => (d.eventEmitterName == eventName));
   }
 }
-
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
@@ -317,6 +319,8 @@ export class ElementInjector extends TreeNode {
   _obj9:any;
   _preBuiltObjects;
   _constructionCounter;
+  _privateComponent;
+  _privateComponentBinding:DirectiveBinding;
 
   constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
     super(parent);
@@ -366,6 +370,9 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._binding7) && p._binding7.callOnDestroy) {this._obj7.onDestroy();}
     if (isPresent(p._binding8) && p._binding8.callOnDestroy) {this._obj8.onDestroy();}
     if (isPresent(p._binding9) && p._binding9.callOnDestroy) {this._obj9.onDestroy();}
+    if (isPresent(this._privateComponentBinding) && this._privateComponentBinding.callOnDestroy) {
+      this._privateComponent.onDestroy();
+    }
 
     this._obj0 = null;
     this._obj1 = null;
@@ -377,6 +384,7 @@ export class ElementInjector extends TreeNode {
     this._obj7 = null;
     this._obj8 = null;
     this._obj9 = null;
+    this._privateComponent = null;
 
     this._constructionCounter = 0;
   }
@@ -399,6 +407,15 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);
     if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);
     if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
+    if (isPresent(this._privateComponentBinding)) {
+      this._privateComponent = this._new(this._privateComponentBinding);
+    }
+  }
+
+  createPrivateComponent(componentType:Type, annotation:Directive) {
+    this._privateComponentBinding = DirectiveBinding.createFromType(componentType, annotation);
+    this._privateComponent = this._new(this._privateComponentBinding);
+    return this._privateComponent;
   }
 
   _checkShadowDomAppInjector(shadowDomAppInjector:Injector) {
@@ -439,12 +456,24 @@ export class ElementInjector extends TreeNode {
     }
   }
 
+  getPrivateComponent() {
+    return this._privateComponent;
+  }
+
+  getShadowDomAppInjector() {
+    return this._shadowDomAppInjector;
+  }
+
   directParent(): ElementInjector {
     return this._proto.distanceToParent < 2 ? this.parent : null;
   }
 
   _isComponentKey(key:Key) {
     return this._proto._binding0IsComponent && key.id === this._proto._keyId0;
+  }
+
+  _isPrivateComponentKey(key:Key) {
+    return isPresent(this._privateComponentBinding) && key.id === this._privateComponentBinding.key.id;
   }
 
   _new(binding:Binding) {
@@ -545,6 +574,8 @@ export class ElementInjector extends TreeNode {
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
+    } else if (isPresent(this._host) && this._host._isPrivateComponentKey(key)) {
+      return this._host.getPrivateComponent();
     } else if (optional) {
       return this._appInjector(requestor).getOptional(key);
     } else {
@@ -570,6 +601,10 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
+
+    if (keyId === staticKeys.privateComponentLocationId) {
+      return new PrivateComponentLocation(this, this._preBuiltObjects.element, this._preBuiltObjects.view);
+    }
 
     //TODO add other objects as needed
     return _undefined;
