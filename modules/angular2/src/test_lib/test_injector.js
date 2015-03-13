@@ -66,22 +66,24 @@ export function createTestInjector(bindings: List) {
   return rootInjector.createChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
 
-/**
- * Allows injecting dependencies in beforeEach() and it().
+/*
+ * Allows injecting dependencies in `beforeEach()` and `it()`.
  *
  * Example:
  *
- *   beforeEach(inject([Dependency, AClass], (dep, object) => {
- *     // some code that uses `dep` and `object`
- *     // ...
- *   }));
+ * ```
+ * beforeEach(inject([Dependency, AClass], (dep, object) => {
+ *   // some code that uses `dep` and `object`
+ *   // ...
+ * }));
  *
- *   it('...', inject([AClass, AsyncTestCompleter], (object, async) => {
- *     object.doSomething().then(() => {
- *       expect(...);
- *       async.done();
- *     });
- *   })
+ * it('...', inject([AClass, AsyncTestCompleter], (object, async) => {
+ *   object.doSomething().then(() => {
+ *     expect(...);
+ *     async.done();
+ *   });
+ * })
+ * ```
  *
  * Notes:
  * - injecting an `AsyncTestCompleter` allow completing async tests - this is the equivalent of
