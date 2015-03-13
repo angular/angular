@@ -54,3 +54,15 @@ export class Attribute extends DependencyAnnotation {
     return this;
   }
 }
+
+/**
+ * The directive can inject an query that would reflect a list of ancestor directives
+ */
+export class Query extends DependencyAnnotation {
+  directive;
+  @CONST()
+  constructor(directive) {
+    super();
+    this.directive = directive;
+  }
+}

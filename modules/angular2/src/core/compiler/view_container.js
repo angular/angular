@@ -75,6 +75,11 @@ export class ViewContainer {
     return this._views.length;
   }
 
+  _siblingInjectorToLinkAfter(index: number) {
+    if (index == 0) return null;
+    return ListWrapper.last(this._views[index - 1].rootElementInjectors)
+  }
+
   hydrated() {
     return isPresent(this.appInjector);
   }
@@ -106,7 +111,7 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
     this.parentView.changeDetector.addChild(view.changeDetector);
-    this._linkElementInjectors(view);
+    this._linkElementInjectors(this._siblingInjectorToLinkAfter(atIndex), view);
 
     return view;
   }
@@ -133,15 +138,19 @@ export class ViewContainer {
     return detachedView;
   }
 
-  _linkElementInjectors(view) {
-    for (var i = 0; i < view.rootElementInjectors.length; ++i) {
-      view.rootElementInjectors[i].parent = this.elementInjector;
+  contentTagContainers() {
+    return this._views;
+  }
+
+  _linkElementInjectors(sibling, view) {
+    for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
+      view.rootElementInjectors[i].linkAfter(this.elementInjector, sibling);
     }
   }
 
   _unlinkElementInjectors(view) {
     for (var i = 0; i < view.rootElementInjectors.length; ++i) {
-      view.rootElementInjectors[i].parent = null;
+      view.rootElementInjectors[i].unlink();
     }
   }
 }

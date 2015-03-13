@@ -3,13 +3,14 @@ import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
+import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 import * as pclModule from 'angular2/src/core/compiler/private_component_location';
+import {QueryList} from './query_list';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -41,39 +42,123 @@ class StaticKeys {
   }
 }
 
-class TreeNode {
+export class TreeNode {
   _parent:TreeNode;
   _head:TreeNode;
   _tail:TreeNode;
   _next:TreeNode;
   constructor(parent:TreeNode) {
-    this._parent = parent;
     this._head = null;
     this._tail = null;
     this._next = null;
-    if (isPresent(parent)) parent._addChild(this);
+    if (isPresent(parent)) parent.addChild(this);
+  }
+
+  _assertConsistency() {
+    this._assertHeadBeforeTail();
+    this._assertTailReachable();
+    this._assertPresentInParentList();
+  }
+
+  _assertHeadBeforeTail() {
+    if (isBlank(this._tail) && isPresent(this._head)) throw new BaseException('null tail but non-null head');
+  }
+
+  _assertTailReachable() {
+    if (isBlank(this._tail)) return;
+    if (isPresent(this._tail._next)) throw new BaseException('node after tail');
+    var p = this._head;
+    while (isPresent(p) && p != this._tail) p = p._next;
+    if (isBlank(p) && isPresent(this._tail)) throw new BaseException('tail not reachable.')
+  }
+
+  _assertPresentInParentList() {
+    var p = this._parent;
+    if (isBlank(p)) {
+      return;
+    }
+    var cur = p._head;
+    while (isPresent(cur) && cur != this) cur = cur._next;
+    if (isBlank(cur)) throw new BaseException('node not reachable through parent.')
   }
 
   /**
    * Adds a child to the parent node. The child MUST NOT be a part of a tree.
    */
-  _addChild(child:TreeNode) {
+  addChild(child:TreeNode) {
     if (isPresent(this._tail)) {
       this._tail._next = child;
       this._tail = child;
     } else {
       this._tail = this._head = child;
     }
+    child._next = null;
+    child._parent = this;
+    this._assertConsistency();
+  }
+
+  /**
+   * Adds a child to the parent node after a given sibling.
+   * The child MUST NOT be a part of a tree and the sibling must be present.
+   */
+  addChildAfter(child:TreeNode, prevSibling:TreeNode) {
+    this._assertConsistency();
+    if (isBlank(prevSibling)) {
+      var prevHead = this._head;
+      this._head = child;
+      child._next = prevHead;
+      if (isBlank(this._tail)) this._tail = child;
+    } else if (isBlank(prevSibling._next)) {
+       this.addChild(child);
+       return;
+     } else {
+      prevSibling._assertPresentInParentList();
+      child._next = prevSibling._next;
+      prevSibling._next = child;
+    }
+    child._parent = this;
+    this._assertConsistency();
+  }
+
+  /**
+   * Detaches a node from the parent's tree.
+   */
+  remove() {
+    this._assertConsistency();
+    if (isBlank(this.parent)) return;
+    var nextSibling = this._next;
+    var prevSibling = this._findPrev();
+    if (isBlank(prevSibling)) {
+      this.parent._head = this._next;
+    } else {
+      prevSibling._next = this._next;
+    }
+    if (isBlank(nextSibling)) {
+      this._parent._tail = prevSibling;
+    }
+    this._parent._assertConsistency();
+    this._parent = null;
+    this._next = null;
+    this._assertConsistency();
+  }
+
+  /**
+   * Finds a previous sibling or returns null if first child.
+   * Assumes the node has a parent.
+   * TODO(rado): replace with DoublyLinkedList to avoid O(n) here.
+   */
+  _findPrev() {
+    var node = this.parent._head;
+    if (node == this) return null;
+    while (node._next !== this) node = node._next;
+    return node;
   }
 
   get parent() {
     return this._parent;
   }
 
-  set parent(node:TreeNode) {
-    this._parent = node;
-  }
-
+  // TODO(rado): replace with a function call, does too much work for a getter.
   get children() {
     var res = [];
     var child = this._head;
@@ -90,14 +175,28 @@ export class DirectiveDependency extends Dependency {
   eventEmitterName:string;
   propSetterName:string;
   attributeName:string;
+  queryDirective;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
-              properties:List, depth:int, eventEmitterName: string, propSetterName: string, attributeName:string) {
+              properties:List, depth:int, eventEmitterName: string,
+              propSetterName: string, attributeName:string, queryDirective) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
     this.propSetterName = propSetterName;
     this.attributeName = attributeName;
+    this.queryDirective = queryDirective;
+    this._verify();
+  }
+
+  _verify() {
+    var count = 0;
+    if (isPresent(this.eventEmitterName)) count++;
+    if (isPresent(this.propSetterName)) count++;
+    if (isPresent(this.queryDirective)) count++;
+    if (isPresent(this.attributeName)) count++;
+    if (count > 1) throw new BaseException(
+      'A directive injectable can contain only one of the following @EventEmitter, @PropertySetter, @Attribute or @Query.');
   }
 
   static createFrom(d:Dependency):Dependency {
@@ -106,6 +205,7 @@ export class DirectiveDependency extends Dependency {
     var propName = null;
     var attributeName = null;
     var properties = d.properties;
+    var queryDirective = null;
 
     for (var i = 0; i < properties.length; i++) {
       var property = properties[i];
@@ -119,11 +219,13 @@ export class DirectiveDependency extends Dependency {
         propName = property.propName;
       } else if (property instanceof Attribute) {
         attributeName = property.attributeName;
+      } else if (property instanceof Query) {
+        queryDirective = property.directive;
       }
     }
 
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties, depth,
-        eventName, propName, attributeName);
+        eventName, propName, attributeName, queryDirective);
   }
 }
 
@@ -338,6 +440,11 @@ export class ElementInjector extends TreeNode {
   _privateComponent;
   _privateComponentBinding:DirectiveBinding;
 
+  // Queries are added during construction or linking with a new parent.
+  // They are never removed.
+  _query0: QueryRef;
+  _query1: QueryRef;
+  _query2: QueryRef;
   constructor(proto:ProtoElementInjector, parent:ElementInjector) {
     super(parent);
     this._proto = proto;
@@ -358,6 +465,9 @@ export class ElementInjector extends TreeNode {
     this._obj8 = null;
     this._obj9 = null;
     this._constructionCounter = 0;
+
+    this._inheritQueries(parent);
+    this._buildQueries();
   }
 
   clearDirectives() {
@@ -523,6 +633,8 @@ export class ElementInjector extends TreeNode {
       default: throw `Directive ${binding.key.token} can only have up to 10 dependencies.`;
     }
 
+    this._addToQueries(obj, binding.key.token);
+
     return obj;
   }
 
@@ -534,10 +646,11 @@ export class ElementInjector extends TreeNode {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
     if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
+    if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
 
-  _buildEventEmitter(dep) {
+  _buildEventEmitter(dep: DirectiveDependency) {
     var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
     return (event) => {
       view.triggerEventHandlers(dep.eventEmitterName, event, this._proto.index);
@@ -560,6 +673,120 @@ export class ElementInjector extends TreeNode {
     } else {
       return null;
     }
+  }
+
+  _buildQueriesForDeps(deps: List<DirectiveDependency>) {
+    for (var i = 0; i < deps.length; i++) {
+      var dep = deps[i];
+      if (isPresent(dep.queryDirective)) {
+        this._createQueryRef(dep.queryDirective);
+      }
+    }
+  }
+
+  _createQueryRef(directive) {
+    var queryList = new QueryList();
+    if (isBlank(this._query0)) {this._query0 = new QueryRef(directive, queryList, this);}
+    else if (isBlank(this._query1)) {this._query1 = new QueryRef(directive, queryList, this);}
+    else if (isBlank(this._query2)) {this._query2 = new QueryRef(directive, queryList, this);}
+    else throw new QueryError();
+  }
+
+  _addToQueries(obj, token) {
+    if (isPresent(this._query0) && (this._query0.directive === token)) {this._query0.list.add(obj);}
+    if (isPresent(this._query1) && (this._query1.directive === token)) {this._query1.list.add(obj);}
+    if (isPresent(this._query2) && (this._query2.directive === token)) {this._query2.list.add(obj);}
+  }
+
+  // TODO(rado): unify with _addParentQueries.
+  _inheritQueries(parent: ElementInjector) {
+    if (isBlank(parent)) return;
+    if (isPresent(parent._query0)) {this._query0 = parent._query0;}
+    if (isPresent(parent._query1)) {this._query1 = parent._query1;}
+    if (isPresent(parent._query2)) {this._query2 = parent._query2;}
+  }
+
+  _buildQueries() {
+    if (isBlank(this._proto)) return;
+    var p = this._proto;
+    if (isPresent(p._binding0)) {this._buildQueriesForDeps(p._binding0.dependencies);}
+    if (isPresent(p._binding1)) {this._buildQueriesForDeps(p._binding1.dependencies);}
+    if (isPresent(p._binding2)) {this._buildQueriesForDeps(p._binding2.dependencies);}
+    if (isPresent(p._binding3)) {this._buildQueriesForDeps(p._binding3.dependencies);}
+    if (isPresent(p._binding4)) {this._buildQueriesForDeps(p._binding4.dependencies);}
+    if (isPresent(p._binding5)) {this._buildQueriesForDeps(p._binding5.dependencies);}
+    if (isPresent(p._binding6)) {this._buildQueriesForDeps(p._binding6.dependencies);}
+    if (isPresent(p._binding7)) {this._buildQueriesForDeps(p._binding7.dependencies);}
+    if (isPresent(p._binding8)) {this._buildQueriesForDeps(p._binding8.dependencies);}
+    if (isPresent(p._binding9)) {this._buildQueriesForDeps(p._binding9.dependencies);}
+  }
+
+  _findQuery(token) {
+    if (isPresent(this._query0) && this._query0.directive === token) {return this._query0;}
+    if (isPresent(this._query1) && this._query1.directive === token) {return this._query1;}
+    if (isPresent(this._query2) && this._query2.directive === token) {return this._query2;}
+    throw new BaseException(`Cannot find query for directive ${token}.`);
+  }
+
+  link(parent: ElementInjector) {
+    parent.addChild(this);
+    this._addParentQueries();
+  }
+
+  linkAfter(parent: ElementInjector, prevSibling: ElementInjector) {
+    parent.addChildAfter(this, prevSibling);
+    this._addParentQueries();
+  }
+
+  _addParentQueries() {
+    if (isPresent(this.parent._query0)) {this._addQueryToTree(this.parent._query0); this.parent._query0.update();}
+    if (isPresent(this.parent._query1)) {this._addQueryToTree(this.parent._query1); this.parent._query1.update();}
+    if (isPresent(this.parent._query2)) {this._addQueryToTree(this.parent._query2); this.parent._query2.update();}
+  }
+
+  unlink() {
+    var queriesToUpDate = [];
+    if (isPresent(this.parent._query0)) {this._pruneQueryFromTree(this.parent._query0); ListWrapper.push(queriesToUpDate, this.parent._query0);}
+    if (isPresent(this.parent._query1)) {this._pruneQueryFromTree(this.parent._query1); ListWrapper.push(queriesToUpDate, this.parent._query1);}
+    if (isPresent(this.parent._query2)) {this._pruneQueryFromTree(this.parent._query2); ListWrapper.push(queriesToUpDate, this.parent._query2);}
+
+    this.remove();
+
+    ListWrapper.forEach(queriesToUpDate, (q) => q.update());
+  }
+
+
+  _pruneQueryFromTree(query: QueryRef) {
+    this._removeQueryRef(query);
+
+    var child = this._head;
+    while (isPresent(child)) {
+      child._pruneQueryFromTree(query);
+      child = child._next;
+    }
+  }
+
+  _addQueryToTree(query: QueryRef) {
+    this._assignQueryRef(query);
+
+    var child = this._head;
+    while (isPresent(child)) {
+      child._addQueryToTree(query);
+      child = child._next;
+    }
+  }
+
+  _assignQueryRef(query: QueryRef) {
+    if (isBlank(this._query0)) {this._query0 = query; return;}
+    else if (isBlank(this._query1)) {this._query1 = query; return;}
+    else if (isBlank(this._query2)) {this._query2 = query; return;}
+    throw new QueryError();
+  }
+
+  _removeQueryRef(query: QueryRef) {
+    if (this._query0 == query) this._query0 = null;
+    if (this._query1 == query) this._query1 = null;
+    if (this._query2 == query) this._query2 = null;
   }
 
   /*
@@ -698,5 +925,47 @@ class OutOfBoundsAccess extends Error {
 
   toString() {
     return this.message;
+  }
+}
+
+class QueryError extends Error {
+  message:string;
+  // TODO(rado): pass the names of the active directives.
+  constructor() {
+    super();
+    this.message = 'Only 3 queries can be concurrently active in a template.';
+  }
+
+  toString() {
+    return this.message;
+  }
+}
+
+class QueryRef {
+  directive;
+  list: QueryList;
+  originator: ElementInjector;
+  constructor(directive, list: QueryList, originator: ElementInjector) {
+    this.directive = directive;
+    this.list = list;
+    this.originator = originator;
+  }
+
+  update() {
+    var aggregator = [];
+    this.visit(this.originator, aggregator);
+    this.list.reset(aggregator);
+  }
+
+  visit(inj: ElementInjector, aggregator) {
+    if (isBlank(inj)) return;
+    if (inj.hasDirective(this.directive)) {
+      ListWrapper.push(aggregator, inj.get(this.directive));
+    }
+    var child = inj._head;
+    while (isPresent(child)) {
+      this.visit(child, aggregator);
+      child = child._next;
+    }
   }
 }

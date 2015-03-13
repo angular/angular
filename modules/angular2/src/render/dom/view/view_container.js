@@ -122,6 +122,7 @@ export class ViewContainer {
     return r;
   }
 
+
   static moveViewNodesAfterSibling(sibling, view) {
     for (var i = view.rootNodes.length - 1; i >= 0; --i) {
       DOM.insertAfter(sibling, view.rootNodes[i]);

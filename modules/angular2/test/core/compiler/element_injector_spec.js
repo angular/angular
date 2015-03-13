@@ -1,9 +1,9 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
 import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper, List, StringMapWrapper} from 'angular2/src/facade/collection';
-import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
+import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from 'angular2/src/facade/collection';
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
+import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {ProtoView, View} from 'angular2/src/core/compiler/view';
@@ -13,6 +13,7 @@ import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig, Parser, Lexer} from 'angular2/change_detection';
 
 import {ViewRef, Renderer} from 'angular2/src/render/api';
+import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 class DummyDirective extends Directive {
   constructor({lifecycle} = {}) { super({lifecycle: lifecycle}); }
@@ -26,8 +27,22 @@ class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 class SimpleDirective {
 }
 
-
 class SomeOtherDirective {
+}
+
+var _constructionCount = 0;
+class CountingDirective {
+  count;
+  constructor() {
+    this.count = _constructionCount;
+    _constructionCount += 1;
+  }
+}
+
+class FancyCountingDirective extends CountingDirective {
+  constructor() {
+    super();
+  }
 }
 
 class NeedsDirective {
@@ -148,6 +163,13 @@ class NeedsAttributeNoType {
   }
 }
 
+class NeedsQuery {
+  query: QueryList;
+  constructor(@Query(CountingDirective) query: QueryList) {
+    this.query = query;
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -172,6 +194,17 @@ class DirectiveWithDestroy {
 
   onDestroy() {
     this.onDestroyCounter ++;
+  }
+}
+
+class TestNode extends TreeNode {
+  message: string;
+  constructor(parent:TestNode, message) {
+    super(parent);
+    this.message = message;
+  }
+  toString() {
+    return this.message;
   }
 }
 
@@ -234,6 +267,81 @@ export function main() {
 
     return shadow;
   }
+
+  describe('TreeNodes', () => {
+    var root, firstParent, lastParent, node;
+
+    /*
+      Build a tree of the following shape:
+      root
+        - p1
+          - c1
+          - c2
+        - p2
+          - c3
+     */
+    beforeEach(() => {
+      root = new TestNode(null, 'root');
+      var p1 = firstParent = new TestNode(root, 'p1');
+      var p2 = lastParent = new TestNode(root, 'p2');
+      node = new TestNode(p1, 'c1');
+      new TestNode(p1, 'c2');
+      new TestNode(p2, 'c3');
+    });
+
+    // depth-first pre-order.
+    function walk(node, f) {
+      if (isBlank(node)) return f;
+      f(node);
+      ListWrapper.forEach(node.children, (n) => walk(n, f));
+    }
+
+    function logWalk(node) {
+      var log = '';
+      walk(node, (n) => {
+        log += (log.length != 0 ? ', ' : '') + n.toString();
+      });
+      return log;
+    }
+
+    it('should support listing children', () => {
+      expect(logWalk(root)).toEqual('root, p1, c1, c2, p2, c3');
+    });
+
+    it('should support removing the first child node', () => {
+      firstParent.remove();
+
+      expect(firstParent.parent).toEqual(null);
+      expect(logWalk(root)).toEqual('root, p2, c3');
+    });
+
+    it('should support removing the last child node', () => {
+      lastParent.remove();
+
+      expect(logWalk(root)).toEqual('root, p1, c1, c2');
+    });
+
+    it('should support moving a node at the end of children', () => {
+      node.remove();
+      root.addChild(node);
+
+      expect(logWalk(root)).toEqual('root, p1, c2, p2, c3, c1');
+    });
+
+    it('should support moving a node in the beginning of children', () => {
+      node.remove();
+      lastParent.addChildAfter(node, null);
+
+      expect(logWalk(root)).toEqual('root, p1, c2, p2, c1, c3');
+    });
+
+    it('should support moving a node in the middle of children', () => {
+      node.remove();
+      lastParent.addChildAfter(node, firstParent);
+
+      expect(logWalk(root)).toEqual('root, p1, c2, c1, p2, c3');
+    });
+  });
 
   describe("ProtoElementInjector", () => {
     describe("direct parent", () => {
@@ -374,7 +482,7 @@ export function main() {
       });
 
       it("should not instantiate directives that depend on other directives in the containing component's ElementInjector", () => {
-        expect( () => {
+        expect(() => {
           hostShadowInjectors([SomeOtherDirective, SimpleDirective], [NeedsDirective]);
         }).toThrowError('No provider for SimpleDirective! (NeedsDirective -> SimpleDirective)')
       });
@@ -394,7 +502,7 @@ export function main() {
         var shadowAppInjector = new Injector([
           bind("service").toValue("service")
         ]);
-        expect( () => {
+        expect(() => {
           injector([SomeOtherDirective, NeedsService], null, shadowAppInjector);
         }).toThrowError('No provider for service! (NeedsService -> service)');
       });
@@ -434,7 +542,7 @@ export function main() {
 
       it("should throw when no SimpleDirective found", function () {
         expect(() => injector([NeedDirectiveFromParent])).
-            toThrowError('No provider for SimpleDirective! (NeedDirectiveFromParent -> SimpleDirective)');
+          toThrowError('No provider for SimpleDirective! (NeedDirectiveFromParent -> SimpleDirective)');
       });
 
       it("should inject null when no directive found", function () {
@@ -470,7 +578,7 @@ export function main() {
             DirectiveBinding.createFromBinding(bBneedsA, null)
           ]);
         }).toThrowError('Cannot instantiate cyclic dependency! ' +
-          '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
+        '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
       });
 
       it("should call onDestroy on directives subscribed to this event", function() {
@@ -675,6 +783,132 @@ export function main() {
       });
     });
 
+    describe('directive queries', () => {
+      var preBuildObjects = defaultPreBuiltObjects;
+      beforeEach(() => {
+        _constructionCount = 0;
+      });
+
+      function expectDirectives(query, type, expectedIndex) {
+        var currentCount = 0;
+        iterateListLike(query, (i) => {
+          expect(i).toBeAnInstanceOf(type);
+          expect(i.count).toBe(expectedIndex[currentCount]);
+          currentCount += 1;
+        });
+      }
+
+      it('should be injectable', () => {
+        var inj = injector([NeedsQuery], null, null, preBuildObjects);
+        expect(inj.get(NeedsQuery).query).toBeAnInstanceOf(QueryList);
+      });
+
+      it('should contain directives on the same injector', () => {
+        var inj = injector([NeedsQuery, CountingDirective], null, null, preBuildObjects);
+
+        expectDirectives(inj.get(NeedsQuery).query, CountingDirective, [0]);
+      });
+
+      // Dart's restriction on static types in (a is A) makes this feature hard to implement.
+      // Current proposal is to add second parameter the Query constructor to take a
+      // comparison function to support user-defined definition of matching.
+
+      //it('should support super class directives', () => {
+      //  var inj = injector([NeedsQuery, FancyCountingDirective], null, null, preBuildObjects);
+      //
+      //  expectDirectives(inj.get(NeedsQuery).query, FancyCountingDirective, [0]);
+      //});
+
+      it('should contain directives on the same and a child injector in construction order', () => {
+        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+
+        var parent = protoParent.instantiate(null);
+        var child = protoChild.instantiate(parent);
+        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+
+        expectDirectives(parent.get(NeedsQuery).query, CountingDirective, [0,1]);
+      });
+
+      it('should reflect unlinking an injector', () => {
+        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+
+        var parent = protoParent.instantiate(null);
+        var child = protoChild.instantiate(parent);
+        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+
+        child.unlink();
+
+        expectDirectives(parent.get(NeedsQuery).query, CountingDirective, [0]);
+      });
+
+      it('should reflect moving an injector as a last child', () => {
+        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild1 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoChild2 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+
+        var parent = protoParent.instantiate(null);
+        var child1 = protoChild1.instantiate(parent);
+        var child2 = protoChild2.instantiate(parent);
+
+        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child1.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child2.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+
+        child1.unlink();
+        child1.link(parent);
+
+        var queryList = parent.get(NeedsQuery).query;
+        expectDirectives(queryList, CountingDirective, [0, 2, 1]);
+      });
+
+      it('should reflect moving an injector as a first child', () => {
+        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild1 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoChild2 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+
+        var parent = protoParent.instantiate(null);
+        var child1 = protoChild1.instantiate(parent);
+        var child2 = protoChild2.instantiate(parent);
+
+        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child1.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child2.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+
+        child2.unlink();
+        child2.linkAfter(parent, null);
+
+        var queryList = parent.get(NeedsQuery).query;
+        expectDirectives(queryList, CountingDirective, [0, 2, 1]);
+      });
+
+      it('should support two concurrent queries for the same directive', () => {
+        var protoGrandParent = new ProtoElementInjector(null, 0, [NeedsQuery]);
+        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery]);
+        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+
+        var grandParent = protoGrandParent.instantiate(null);
+        var parent = protoParent.instantiate(grandParent);
+        var child = protoChild.instantiate(parent);
+
+        grandParent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+
+        var queryList1 = grandParent.get(NeedsQuery).query;
+        var queryList2 = parent.get(NeedsQuery).query;
+
+        expectDirectives(queryList1, CountingDirective, [0]);
+        expectDirectives(queryList2, CountingDirective, [0]);
+
+        child.unlink();
+        expectDirectives(queryList1, CountingDirective, []);
+        expectDirectives(queryList2, CountingDirective, []);
+      });
+    });
   });
 }
 
