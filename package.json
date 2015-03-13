@@ -39,7 +39,7 @@
     "css-parse": "2.0.0",
     "del": "~1",
     "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.10",
+    "dgeni-packages": "^0.10.11",
     "event-stream": "^3.1.5",
     "fs-extra": "^0.16.4",
     "glob": "^4.0.6",
