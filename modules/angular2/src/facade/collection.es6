@@ -4,6 +4,7 @@ export var List = global.Array;
 export var Map = global.Map;
 export var Set = global.Set;
 export var StringMap = global.Object;
+//export var Iterator = global.Iterator;
 
 export class MapWrapper {
   static create():Map { return new Map(); }
@@ -217,6 +218,32 @@ export function iterateListLike(obj, fn:Function) {
     }
   }
 }
+
+export class IteratorWrapper {
+  static iterator(iterable) {
+    return iterable[Symbol.iterator]();
+  }
+  static next(iterable) {
+    return iterable.next();
+  }
+  static value(iterable) {
+    return iterable.value();
+  }
+}
+
+export class IterableWrapper {
+  static iterator(iterable) {
+    return iterable[Symbol.iterator]();
+  }
+  static each(iterable, fn) {
+    var iterator = IteratorWrapper.iterator(iterable);
+    var item;
+    while (!((item = IteratorWrapper.next(iterator)).done)) {
+      fn(IteratorWrapper.value(item));
+    }
+  }
+}
+
 
 export class SetWrapper {
   static createFromList(lst:List) { return new Set(lst); }

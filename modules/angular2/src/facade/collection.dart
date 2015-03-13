@@ -162,6 +162,30 @@ void iterateListLike(iter, fn(item)) {
   }
 }
 
+class IteratorWrapper {
+  static Iterator iterator(iterable) {
+    return iterable.iterator;
+  }
+  static next(iterable) {
+    return iterable.moveNext();
+  }
+  static value(iterable) {
+    return iterable.current;
+  }
+}
+
+class IterableWrapper {
+  static Iterator iterator(iterable) {
+    return iterable.iterator;
+  }
+  static each(iterable, fn) {
+    assert(iterable is Iterable);
+    for (var item in iterable) {
+      fn(item);
+    }
+  }
+}
+
 class SetWrapper {
   static Set createFromList(List l) => new Set.from(l);
   static bool has(Set s, key) => s.contains(key);
