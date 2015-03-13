@@ -14,9 +14,7 @@ void setupReflection(reflector) {
       'parameters': const [const []],
       'annotations': const [
         const Component(selector: 'hello-app'),
-        const Template(inline: '{{greeting}}')
+        const Template(inline: '<button (click)=\"action()\">go</button>')
       ]
-    })
-    ..registerGetters({'greeting': (o) => o.greeting})
-    ..registerSetters({'greeting': (o, String v) => o.greeting = v});
+    });
 }

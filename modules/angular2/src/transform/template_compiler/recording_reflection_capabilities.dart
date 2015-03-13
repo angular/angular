@@ -1,16 +1,22 @@
-library angular2.src.transform.template_parser.recording_reflection_capabilities;
+library angular2.src.transform.template_compiler.recording_reflection_capabilities;
 
 import 'package:angular2/src/reflection/reflection_capabilities.dart';
 import 'package:angular2/src/reflection/types.dart';
 
+/// ReflectionCapabilities object that records requests for `getter`s,
+/// `setter`s, and `method`s so these can be code generated rather than
+/// reflectively accessed at runtime.
 class RecordingReflectionCapabilities implements ReflectionCapabilities {
+  /// The names of all requested `getter`s.
+  final List<String> getterNames = [];
+  /// The names of all requested `setter`s.
+  final List<String> setterNames = [];
+  /// The names of all requested `method`s.
+  final List<String> methodNames = [];
+
   void _notImplemented(String name) {
     throw 'Not implemented: $name';
   }
-
-  final List<String> getterNames = [];
-  final List<String> setterNames = [];
-  final List<String> methodNames = [];
 
   Function factory(Type type) => _notImplemented('factory');
 
