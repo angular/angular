@@ -2,7 +2,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, ContextWithVariableBindings, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  ChangeRecord, BindingRecord} from 'angular2/change_detection';
+  ChangeRecord, BindingRecord, uninitialized} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
 import {BindingPropagationConfig} from './binding_propagation_config';
@@ -682,12 +682,16 @@ class DirectiveMemento {
   }
 }
 
-class PropertyUpdate {
+export class PropertyUpdate {
   currentValue;
   previousValue;
 
   constructor(currentValue, previousValue) {
     this.currentValue = currentValue;
     this.previousValue = previousValue;
+  }
+
+  static createWithoutPrevious(currentValue) {
+    return new PropertyUpdate(currentValue, uninitialized);
   }
 }

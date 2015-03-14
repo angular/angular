@@ -12,8 +12,8 @@ export {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector,
 export {DynamicChangeDetector}
     from './src/change_detection/dynamic_change_detector';
 export * from './src/change_detection/pipes/pipe_registry';
+export {uninitialized} from './src/change_detection/change_detection_util';
 export * from './src/change_detection/pipes/pipe';
-
 
 import {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector}
     from './src/change_detection/proto_change_detector';

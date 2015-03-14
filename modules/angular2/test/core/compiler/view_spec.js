@@ -11,7 +11,7 @@ import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {int, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
-import {View} from 'angular2/src/core/compiler/view';
+import {View, PropertyUpdate} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
@@ -601,7 +601,7 @@ export function main() {
           expect(directive.c).toEqual(300);
         });
 
-        it('should provide a map of updated properties', () => {
+        it('should provide a map of updated properties using onChange callback', () => {
           var pv = new ProtoView(el('<div class="ng-binding"></div>'),
             new DynamicProtoChangeDetector(null), null);
 
@@ -612,16 +612,20 @@ export function main() {
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'));
           createViewAndChangeDetector(pv);
 
+          var directive = view.elementInjectors[0].get(DirectiveImplementingOnChange);
+
           ctx.a = 0;
           ctx.b = 0;
           cd.detectChanges();
 
+          expect(directive.changes).toEqual({
+            "a" : PropertyUpdate.createWithoutPrevious(0),
+            "b" : PropertyUpdate.createWithoutPrevious(0)
+          });
+
           ctx.a = 100;
           cd.detectChanges();
-
-          var directive = view.elementInjectors[0].get(DirectiveImplementingOnChange);
-          expect(directive.changes["a"].currentValue).toEqual(100);
-          expect(directive.changes["b"]).not.toBeDefined();
+          expect(directive.changes).toEqual({"a" : new PropertyUpdate(100, 0)});
         });
       });
     });
