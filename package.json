@@ -20,7 +20,9 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test-js && npm run test-dart",
+    "test-js": "./scripts/ci/test_js.sh",
+    "test-dart": "./scripts/ci/test_dart.sh",
     "postinstall": "./node_modules/.bin/bower install"
   },
   "dependencies": {
