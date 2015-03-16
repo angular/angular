@@ -5,7 +5,7 @@ import 'package:angular2/src/core/application.dart';
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/reflection/reflection_capabilities.dart';
 import 'bar.dart';
-import 'bar.ngDeps.dart' as i0;
+import 'bar.ng_deps.dart' as i0;
 
 bool _visited = false;
 void setupReflection(reflector) {

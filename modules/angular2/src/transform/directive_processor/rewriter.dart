@@ -31,7 +31,7 @@ String createNgDeps(String code, String path, {bool forceGenerate: false}) {
 }
 
 /// Visitor responsible for processing [CompilationUnit] and creating an
-/// associated .ngDeps.dart file.
+/// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object
     with SimpleAstVisitor<Object>, VisitorMixin {
   final PrintWriter writer;

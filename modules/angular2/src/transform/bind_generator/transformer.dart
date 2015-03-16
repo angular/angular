@@ -10,7 +10,7 @@ import 'package:barback/barback.dart';
 
 import 'generator.dart';
 
-/// Transformer responsible for reading .ngDeps.dart files and generating
+/// Transformer responsible for reading .ng_deps.dart files and generating
 /// setters from the "annotations" information in the generated
 /// `registerType` calls.
 ///
