@@ -1,4 +1,5 @@
 import {bootstrap, Component, Decorator, Template, NgElement} from 'angular2/angular2';
+import {Injectable} from 'angular2/di';
 
 // Angular 2.0 supports 3 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
@@ -52,7 +53,8 @@ class RedDec {
   }
 }
 
-// A service used by the HelloCmp component.
+// A service available to the Injector, used by the HelloCmp component.
+@Injectable()
 class GreetingService {
   greeting:string;
   constructor() {
