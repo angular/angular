@@ -52,6 +52,10 @@ export class Store {
     this.spliceOut(record);
   }
 
+  save(record: KeyModel) {
+    return this;
+  }
+
   removeBy(callback: Function) {
     var records = ListWrapper.filter(this.list, callback);
     ListWrapper.removeAll(this.list, records);
