@@ -135,6 +135,11 @@ export class ElementBinderBuilder extends CompileStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var elementBinder = null;
+    var parentElementBinder = null;
+    var distanceToParentBinder = this._getDistanceToParentBinder(parent, current);
+    if (isPresent(parent)) {
+      parentElementBinder = parent.inheritedElementBinder;
+    }
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
       var protoInjectorWasBuilt = isBlank(parent) ? true :
@@ -143,8 +148,9 @@ export class ElementBinderBuilder extends CompileStep {
       var currentProtoElementInjector = protoInjectorWasBuilt ?
           current.inheritedProtoElementInjector : null;
 
-      elementBinder = protoView.bindElement(currentProtoElementInjector,
-        current.componentDirective, current.viewportDirective);
+      elementBinder = protoView.bindElement(parentElementBinder, distanceToParentBinder,
+          currentProtoElementInjector, current.componentDirective, current.viewportDirective);
+      current.distanceToParentBinder = 0;
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
@@ -155,13 +161,21 @@ export class ElementBinderBuilder extends CompileStep {
       if (isPresent(current.eventBindings)) {
         this._bindEvents(protoView, current);
       }
+      if (isPresent(current.contentTagSelector)) {
+        elementBinder.contentTagSelector = current.contentTagSelector;
+      }
       var directives = current.getAllDirectives();
       this._bindDirectiveProperties(directives, current);
       this._bindDirectiveEvents(directives, current);
     } else if (isPresent(parent)) {
-      elementBinder = parent.inheritedElementBinder;
+      elementBinder = parentElementBinder;
+      current.distanceToParentBinder = distanceToParentBinder;
     }
     current.inheritedElementBinder = elementBinder;
+  }
+
+  _getDistanceToParentBinder(parent, current) {
+    return isPresent(parent) ? parent.distanceToParentBinder + 1 : 0;
   }
 
   _bindTextNodes(protoView, compileElement) {

@@ -68,7 +68,7 @@ export function main() {
       function createView(pv) {
         ctx = new MyComp();
         view = pv.instantiate(null, null);
-        view.hydrate(new Injector([]), null, ctx);
+        view.hydrate(new Injector([]), null, null, ctx);
         cd = view.changeDetector;
       }
 
@@ -479,7 +479,8 @@ export function main() {
           createView(pv);
           cd.detectChanges();
 
-          var subview = view.viewContainers[0].get(0);
+          // Note: viewContainers is a sparse array!
+          var subview = view.viewContainers[1].get(0);
           var childComponent = subview.contextWithLocals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 

@@ -1,10 +1,7 @@
-import {Decorator} from '../../annotations/annotations';
 import * as ldModule from './light_dom';
-import {Inject} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {NgElement} from 'angular2/src/core/dom/element';
 
 class ContentStrategy {
   nodes:List;
@@ -17,21 +14,14 @@ class ContentStrategy {
  * and thus does not affect redistribution.
  */
 class RenderedContent extends ContentStrategy {
-  static _lazyScriptTemplate;
   beginScript;
   endScript;
 
   constructor(contentEl) {
     super();
-    this._replaceContentElementWithScriptTags(contentEl);
+    this.beginScript = contentEl;
+    this.endScript = DOM.nextSibling(this.beginScript);
     this.nodes = [];
-  }
-
-  _scriptTemplate() {
-    if (!isPresent(RenderedContent._lazyScriptTemplate)) {
-      RenderedContent._lazyScriptTemplate = DOM.createScriptTag('type', 'ng/content');
-    }
-    return RenderedContent._lazyScriptTemplate;
   }
 
   // Inserts the nodes in between the start and end scripts.
@@ -40,16 +30,6 @@ class RenderedContent extends ContentStrategy {
     this.nodes = nodes;
     DOM.insertAllBefore(this.endScript, nodes);
     this._removeNodesUntil(ListWrapper.isEmpty(nodes) ? this.endScript : nodes[0]);
-  }
-
-  // Replaces the content tag with a pair of script tags
-  _replaceContentElementWithScriptTags(contentEl) {
-    this.beginScript = DOM.clone(this._scriptTemplate());
-    this.endScript = DOM.clone(this._scriptTemplate());
-
-    DOM.insertBefore(contentEl, this.beginScript);
-    DOM.insertBefore(contentEl, this.endScript);
-    DOM.removeChild(DOM.parentElement(contentEl), contentEl);
   }
 
   _removeNodesUntil(node) {
@@ -83,18 +63,17 @@ class IntermediateContent extends ContentStrategy {
 }
 
 
-@Decorator({
-  selector: 'content'
-})
 export class Content {
   select:string;
   _strategy:ContentStrategy;
+  contentStartElement;
 
-  constructor(@Inject(ldModule.DestinationLightDom) destinationLightDom, contentEl:NgElement) {
-    this.select = contentEl.getAttribute('select');
+  constructor(destinationLightDom:ldModule.LightDom, contentStartEl, selector:string) {
+    this.select = selector;
+    this.contentStartElement = contentStartEl;
     this._strategy = isPresent(destinationLightDom) ?
       new IntermediateContent(destinationLightDom) :
-      new RenderedContent(contentEl.domElement);
+      new RenderedContent(contentStartEl);
   }
 
   nodes():List {

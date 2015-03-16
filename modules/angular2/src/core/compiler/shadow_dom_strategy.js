@@ -1,4 +1,4 @@
-import {Type, isBlank, isPresent, int} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, int, StringWrapper, assertionsEnabled} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -6,7 +6,6 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import * as viewModule from './view';
 
-import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowCss} from './shadow_dom_emulation/shadow_css';
 
@@ -19,20 +18,30 @@ import * as NS from './pipeline/compile_step';
 import {CompileElement} from './pipeline/compile_element';
 import {CompileControl} from './pipeline/compile_control';
 
+var _EMPTY_STEP;
+
+// Note: fill _EMPTY_STEP to prevent
+// problems from cyclic dependencies
+function _emptyStep() {
+  if (isBlank(_EMPTY_STEP)) {
+    _EMPTY_STEP = new _EmptyCompileStep();
+  }
+  return _EMPTY_STEP;
+}
+
 export class ShadowDomStrategy {
   attachTemplate(el, view:viewModule.View) {}
   constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom { return null; }
-  polyfillDirectives():List<Type> { return []; }
 
   /**
    * An optional step that can modify the template style elements.
    *
    * @param {DirectiveMetadata} cmpMetadata
    * @param {string} templateUrl the template base URL
-   * @returns {CompileStep} a compile step to append to the compiler pipeline, null if not required.
+   * @returns {CompileStep} a compile step to append to the compiler pipeline
    */
   getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
-    return null;
+    return _emptyStep();
   }
 
   /**
@@ -41,9 +50,9 @@ export class ShadowDomStrategy {
    * This step could be used to modify the template in order to scope the styles.
    *
    * @param {DirectiveMetadata} cmpMetadata
-   * @returns {CompileStep} a compile step to append to the compiler pipeline, null if not required.
+   * @returns {CompileStep} a compile step to append to the compiler pipeline
    */
-  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep { return null; }
+  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep { return _emptyStep(); }
 
   /**
    * The application element does not go through the compiler pipeline.
@@ -87,14 +96,14 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     return new LightDom(lightDomView, shadowDomView, el);
   }
 
-  polyfillDirectives():List<Type> {
-    return [Content];
-  }
-
   getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
     return new _EmulatedUnscopedCssStep(cmpMetadata, templateUrl, this._styleUrlResolver,
       this._styleHost);
   }
+
+  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep {
+    return new _BaseEmulatedShadowDomStep();
+  }  
 }
 
 /**
@@ -156,7 +165,39 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
   }
 }
 
-class _ShimShadowDomStep extends NS.CompileStep {
+class _BaseEmulatedShadowDomStep extends NS.CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    if (current.ignoreBindings) {
+      return;
+    }
+    var nodeName = DOM.nodeName(current.element);
+    if (StringWrapper.equals(nodeName.toUpperCase(), 'CONTENT')) {
+      var attrs = current.attrs();
+      var selector = MapWrapper.get(attrs, 'select');
+      current.contentTagSelector = isPresent(selector) ? selector : '';
+
+      var contentStart = DOM.createScriptTag('type', 'ng/contentStart');
+      if (assertionsEnabled()) {
+        DOM.setAttribute(contentStart, 'select', current.contentTagSelector);
+      }
+      var contentEnd = DOM.createScriptTag('type', 'ng/contentEnd');
+      DOM.insertBefore(current.element, contentStart);
+      DOM.insertBefore(current.element, contentEnd);
+      DOM.remove(current.element);
+
+      current.element = contentStart;
+    }    
+  }
+
+}
+
+class _EmptyCompileStep extends NS.CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  }
+}
+
+
+class _ShimShadowDomStep extends _BaseEmulatedShadowDomStep {
   _contentAttribute: string;
 
   constructor(cmpMetadata: DirectiveMetadata) {
@@ -167,6 +208,7 @@ class _ShimShadowDomStep extends NS.CompileStep {
 
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    super.process(parent, current, control);
     if (current.ignoreBindings) {
       return;
     }

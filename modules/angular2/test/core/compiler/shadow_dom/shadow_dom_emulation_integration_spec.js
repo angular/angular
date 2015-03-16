@@ -92,6 +92,18 @@ export function main() {
             });
         }
 
+        it('should support simple components', inject([AsyncTestCompleter], (async) => {
+          var temp = '<simple>' +
+            '<div>A</div>' +
+            '</simple>';
+
+          compile(temp, [Simple], (view, lc) => {
+            expect(view.nodes).toHaveText('SIMPLE(A)');
+
+            async.done();
+          });
+        }));
+
         it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div>B</div>' +
@@ -367,6 +379,6 @@ class MyComp {
 
 function createView(pv) {
   var view = pv.instantiate(null, null);
-  view.hydrate(new Injector([]), null, {});
+  view.hydrate(new Injector([]), null, null, {});
   return view;
 }

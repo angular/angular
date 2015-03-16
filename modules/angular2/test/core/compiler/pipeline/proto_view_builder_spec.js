@@ -21,7 +21,7 @@ export function main() {
         if (isPresent(DOM.getAttribute(current.element, 'var-binding'))) {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
-        current.inheritedElementBinder = new ElementBinder(null, null, null);
+        current.inheritedElementBinder = new ElementBinder(0, null, 0, null, null, null);
       }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
     }
 

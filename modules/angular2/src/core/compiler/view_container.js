@@ -40,10 +40,10 @@ export class ViewContainer {
     this._eventManager = eventManager;
   }
 
-  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
+  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector, hostLightDom: ldModule.LightDom) {
     this.appInjector = appInjector;
     this.hostElementInjector = hostElementInjector;
-    this.hostLightDom = isPresent(hostElementInjector) ? hostElementInjector.get(ldModule.LightDom) : null;
+    this.hostLightDom = hostLightDom;
   }
 
   dehydrate() {
@@ -85,7 +85,7 @@ export class ViewContainer {
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
-    newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
+    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom, this.parentView.context);
 
     // new content tags might have appeared, we need to redistrubute.
     if (isPresent(this.hostLightDom)) {

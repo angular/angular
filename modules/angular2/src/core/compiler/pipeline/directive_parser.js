@@ -49,7 +49,8 @@ export class DirectiveParser extends CompileStep {
     var classList = current.classList();
 
     var cssSelector = new CssSelector();
-    cssSelector.setElement(DOM.nodeName(current.element));
+    var nodeName = DOM.nodeName(current.element);
+    cssSelector.setElement(nodeName);
     for (var i=0; i < classList.length; i++) {
       cssSelector.addClassName(classList[i]);
     }

@@ -5,7 +5,6 @@ import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
-import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
@@ -24,8 +23,6 @@ class StaticKeys {
   viewId:number;
   ngElementId:number;
   viewContainerId:number;
-  destinationLightDomId:number;
-  lightDomId:number;
   bindingPropagationConfigId:number;
 
   constructor() {
@@ -33,8 +30,6 @@ class StaticKeys {
     this.viewId = Key.get(viewModule.View).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
-    this.destinationLightDomId = Key.get(DestinationLightDom).id;
-    this.lightDomId = Key.get(LightDom).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
   }
 
@@ -166,14 +161,12 @@ export class PreBuiltObjects {
   view:viewModule.View;
   element:NgElement;
   viewContainer:ViewContainer;
-  lightDom:LightDom;
   bindingPropagationConfig:BindingPropagationConfig;
-  constructor(view, element:NgElement, viewContainer:ViewContainer, lightDom:LightDom,
+  constructor(view, element:NgElement, viewContainer:ViewContainer,
               bindingPropagationConfig:BindingPropagationConfig) {
     this.view = view;
     this.element = element;
     this.viewContainer = viewContainer;
-    this.lightDom = lightDom;
     this.bindingPropagationConfig = bindingPropagationConfig;
   }
 }
@@ -577,13 +570,6 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
-    if (keyId === staticKeys.destinationLightDomId) {
-      var p:ElementInjector = this.directParent();
-      return isPresent(p) ? p._preBuiltObjects.lightDom : null;
-    }
-    if (keyId === staticKeys.lightDomId)   {
-      return this._preBuiltObjects.lightDom;
-    }
 
     //TODO add other objects as needed
     return _undefined;

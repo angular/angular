@@ -3,8 +3,6 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import * as viewModule from '../view';
-import {ElementInjector} from '../element_injector';
-import {ViewContainer} from '../view_container';
 import {Content} from './content_tag';
 
 export class DestinationLightDom {}
@@ -12,11 +10,13 @@ export class DestinationLightDom {}
 
 class _Root {
   node;
-  injector:ElementInjector;
+  viewContainer;
+  content;
 
-  constructor(node, injector) {
+  constructor(node, viewContainer, content) {
     this.node = node;
-    this.injector = injector;
+    this.viewContainer = viewContainer;
+    this.content = content;
   }
 }
 
@@ -52,19 +52,18 @@ export class LightDom {
 
   // Collects the Content directives from the view and all its child views
   _collectAllContentTags(view: viewModule.View, acc:List<Content>):List<Content> {
-    var eis = view.elementInjectors;
-    for (var i = 0; i < eis.length; ++i) {
-      var ei = eis[i];
-      if (isBlank(ei)) continue;
-
-      if (ei.hasDirective(Content)) {
-        ListWrapper.push(acc, ei.get(Content));
-
-      } else if (ei.hasPreBuiltObject(ViewContainer)) {
-        var vc = ei.get(ViewContainer);
+    var contentTags = view.contentTags;
+    var vcs = view.viewContainers;
+    for (var i=0; i<vcs.length; i++) {
+      var vc = vcs[i];
+      var contentTag = contentTags[i];
+      if (isPresent(contentTag)) {
+        ListWrapper.push(acc, contentTag);  
+      }
+      if (isPresent(vc)) {
         ListWrapper.forEach(vc.contentTagContainers(), (view) => {
           this._collectAllContentTags(view, acc);
-        });
+        });              
       }
     }
     return acc;
@@ -76,21 +75,16 @@ export class LightDom {
   // - plain DOM nodes
   expandedDomNodes():List {
     var res = [];
-
+    
     var roots = this._roots();
     for (var i = 0; i < roots.length; ++i) {
 
       var root = roots[i];
-      var ei = root.injector;
 
-      if (isPresent(ei) && ei.hasPreBuiltObject(ViewContainer)) {
-        var vc = root.injector.get(ViewContainer);
-        res = ListWrapper.concat(res, vc.nodes());
-
-      } else if (isPresent(ei) && ei.hasDirective(Content)) {
-        var content = root.injector.get(Content);
-        res = ListWrapper.concat(res, content.nodes());
-
+      if (isPresent(root.viewContainer)) {
+        res = ListWrapper.concat(res, root.viewContainer.nodes());
+      } else if (isPresent(root.content)) {
+        res = ListWrapper.concat(res, root.content.nodes());
       } else {
         ListWrapper.push(res, root.node);
       }
@@ -103,10 +97,24 @@ export class LightDom {
   _roots() {
     if (isPresent(this.roots)) return this.roots;
 
-    var viewInj = this.lightDomView.elementInjectors;
-    this.roots = ListWrapper.map(this.nodes, (n) =>
-      new _Root(n, ListWrapper.find(viewInj,
-        (inj) => isPresent(inj) ? inj.forElement(n) : false)));
+    var viewContainers = this.lightDomView.viewContainers;
+    var contentTags = this.lightDomView.contentTags;
+
+    this.roots = ListWrapper.map(this.nodes, (n) => {
+      var foundVc = null;
+      var foundContentTag = null;
+      for (var i=0; i<viewContainers.length; i++) {
+        var vc = viewContainers[i];
+        var contentTag = contentTags[i];
+        if (isPresent(vc) && vc.templateElement === n) {
+          foundVc = vc;
+        }
+        if (isPresent(contentTag) && contentTag.contentStartElement === n) {
+          foundContentTag = contentTag;
+        }
+      }
+      return new _Root(n, foundVc, foundContentTag);
+    });
 
     return this.roots;
   }
@@ -119,10 +127,10 @@ function redistributeNodes(contents:List<Content>, nodes:List) {
     var select = content.select;
     var matchSelector = (n) => DOM.elementMatches(n, select);
 
-    if (isBlank(select)) {
+    // Empty selector is identical to <content/>
+    if (select.length === 0) {
       content.insert(nodes);
       ListWrapper.clear(nodes);
-
     } else {
       var matchingNodes = ListWrapper.filter(nodes, matchSelector);
       content.insert(matchingNodes);

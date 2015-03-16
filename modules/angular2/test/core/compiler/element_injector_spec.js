@@ -113,7 +113,7 @@ class DirectiveWithDestroy {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -283,7 +283,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -420,51 +420,30 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewContainer', function () {
         var viewContainer = new ViewContainer(null, null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
       });
 
       it('should return bindingPropagationConfig', function () {
         var config = new BindingPropagationConfig(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, null, config));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, config));
 
         expect(inj.get(BindingPropagationConfig)).toEqual(config);
-      });
-
-      describe("light DOM", () => {
-        var lightDom, parentPreBuiltObjects;
-
-        beforeEach(() => {
-          lightDom = new DummyLightDom();
-          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom, null);
-        });
-
-        it("should return light DOM from the current injector", function () {
-          var inj = injector([], null, null, parentPreBuiltObjects);
-
-          expect(inj.get(LightDom)).toEqual(lightDom);
-        });
-
-        it("should return null when parent's injector is a component boundary", function () {
-          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
-
-          expect(child.get(DestinationLightDom)).toBeNull();
-        });
       });
     });
 
@@ -476,7 +455,7 @@ export function main() {
         var pv = new ProtoView(null, null, null);
         pv.eventHandlers = [handlers];
         var view = new View(pv, null, MapWrapper.create());
-        var preBuildObject = new PreBuiltObjects(view, null, null, null, null);
+        var preBuildObject = new PreBuiltObjects(view, null, null, null);
         var inj = injector([NeedsEventEmitter], null, null, preBuildObject);
         inj.get(NeedsEventEmitter).click();
         expect(called).toEqual(true);
@@ -494,7 +473,7 @@ export function main() {
         var div = el('<div></div>');
         var ngElement = new NgElement(div);
 
-        var preBuildObject = new PreBuiltObjects(null, ngElement, null, null, null);
+        var preBuildObject = new PreBuiltObjects(null, ngElement, null, null);
         var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
         inj.get(NeedsPropertySetter).setProp('foobar');
 

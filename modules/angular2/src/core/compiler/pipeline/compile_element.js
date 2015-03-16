@@ -36,10 +36,12 @@ export class CompileElement {
   inheritedProtoView:ProtoView;
   inheritedProtoElementInjector:ProtoElementInjector;
   inheritedElementBinder:ElementBinder;
-  distanceToParentInjector:number;
+  distanceToParentInjector:int;
+  distanceToParentBinder:int;
   compileChildren: boolean;
   ignoreBindings: boolean;
   elementDescription: string; // e.g. '<div [class]="foo">' : used to provide context in case of error
+  contentTagSelector: string;
 
   constructor(element, compilationUnit = '') {
     this.element = element;
@@ -65,9 +67,11 @@ export class CompileElement {
     // an own elementBinder
     this.inheritedElementBinder = null;
     this.distanceToParentInjector = 0;
+    this.distanceToParentBinder = 0;
     this.compileChildren = true;
     // set to true to ignore all the bindings on the element
     this.ignoreBindings = false;
+    this.contentTagSelector = null;
     // description is calculated here as compilation steps may change the element
     var tplDesc = assertionsEnabled()? getElementDescription(element) : null;
     if (compilationUnit !== '') {

@@ -12,7 +12,7 @@ import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular
 function createView(nodes) {
   var view = new View(null, nodes, MapWrapper.create());
   var cd = new DynamicProtoChangeDetector(null).instantiate(view, []);
-  view.init(cd, [], [], [], [], [], [], []);
+  view.init(cd, [], [], [], [], [], [], [], [], []);
   return view;
 }
 
@@ -48,7 +48,7 @@ class HydrateAwareFakeView {
     return this.isHydrated;
   }
 
-  hydrate(_, __, ___) {
+  hydrate(_, __, ___, ____) {
     this.isHydrated = true;
   }
 
@@ -97,7 +97,7 @@ export function main() {
       }
 
       beforeEach(() => {
-        viewContainer.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null, null);
         var fillerView = createView([el('<filler>filler</filler>')]);
         viewContainer.insert(fillerView);
       });
@@ -213,11 +213,11 @@ export function main() {
       var fancyView;
       beforeEach(() => {
         var parser = new Parser(new Lexer());
-        viewContainer.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null, null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
           new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
-        pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
+        pv.bindElement(null, 0, new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null, null);
       });
