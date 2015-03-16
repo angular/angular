@@ -135,10 +135,10 @@ export class Directive {
   /**
    * Specifies which DOM events the directive listens to and what the action should be.
    *
-   * The `event` property defines a set of `event` to `method` key-value pairs:
+   * The `events` property defines a set of `event` to `method` key-value pairs:
    *
-   * - `event` specifies the DOM event that the directive listens to.
-   * - `onMethod` specifies the method to execute when the event occurs.
+   * - `event1` specifies the DOM event that the directive listens to.
+   * - `onMethod1` specifies the method to execute when the event occurs.
    *
    *
    * ## Syntax
@@ -146,7 +146,7 @@ export class Directive {
    * ```
    * @Directive({
    *   events: {
-   *     'event1': 'onMethod',
+   *     'event1': 'onMethod1',
    *     ...
    *   }
    * }
@@ -157,7 +157,7 @@ export class Directive {
    * ```
    * @Decorator({
    *   selector: 'input',
-   *   event: {
+   *   events: {
    *     'change': 'onChange'
    *   }
    * })
