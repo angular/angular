@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {Type, isBlank, isPresent, int, StringWrapper, assertionsEnabled} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -77,6 +78,7 @@ export class ShadowDomStrategy {
  * - styles are **not** scoped to their component and will apply to the whole document,
  * - you can **not** use shadow DOM specific selectors in the styles
  */
+@Injectable()
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
   _styleHost;
@@ -118,6 +120,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
  * - a common subset of shadow DOM selectors are supported,
  * - see `ShadowCss` for more information and limitations.
  */
+@Injectable()
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   _styleInliner: StyleInliner;
 
@@ -148,6 +151,7 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
  * The templates for the component are inserted in a Shadow Root created on the component element.
  * Hence they are strictly isolated.
  */
+@Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
 

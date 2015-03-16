@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
@@ -21,6 +22,7 @@ import {
  *
  * When an @import rules is inlined, it's url are rewritten.
  */
+@Injectable()
 export class StyleInliner {
   _xhr: XHR;
   _urlResolver: UrlResolver;

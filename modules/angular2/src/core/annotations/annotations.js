@@ -1,5 +1,6 @@
 import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {Injectable} from 'angular2/di';
 
 // type StringMap = {[idx: string]: string};
 
@@ -10,7 +11,7 @@ import {ListWrapper, List} from 'angular2/src/facade/collection';
  * @publicModule angular2/angular2
  */
 @ABSTRACT()
-export class Directive {
+export class Directive extends Injectable {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -189,6 +190,7 @@ export class Directive {
       lifecycle:List
     }={})
   {
+    super();
     this.selector = selector;
     this.bind = bind;
     this.events = events;

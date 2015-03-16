@@ -1,4 +1,5 @@
 import * as ldModule from './light_dom';
+import {Inject, Injectable} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -13,6 +14,7 @@ class ContentStrategy {
  * It is used when the content tag is not a direct child of another component,
  * and thus does not affect redistribution.
  */
+@Injectable()
 class RenderedContent extends ContentStrategy {
   beginScript;
   endScript;
