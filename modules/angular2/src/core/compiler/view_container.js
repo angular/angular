@@ -6,19 +6,19 @@ import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
-import * as ldModule from './shadow_dom_emulation/light_dom';
+import {LightDom} from './shadow_dom_emulation/light_dom';
 
 export class ViewContainer {
   parentView: viewModule.View;
   templateElement;
   defaultProtoView: viewModule.ProtoView;
   _views: List<viewModule.View>;
-  _lightDom: ldModule.LightDom;
+  _lightDom: LightDom;
   _eventManager: EventManager;
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
-  hostLightDom: ldModule.LightDom;
+  hostLightDom: LightDom;
 
   constructor(parentView: viewModule.View,
               templateElement,
@@ -40,7 +40,7 @@ export class ViewContainer {
     this._eventManager = eventManager;
   }
 
-  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector, hostLightDom: ldModule.LightDom) {
+  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector, hostLightDom: LightDom) {
     this.appInjector = appInjector;
     this.hostElementInjector = hostElementInjector;
     this.hostLightDom = hostLightDom;

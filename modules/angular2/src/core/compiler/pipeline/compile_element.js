@@ -5,7 +5,7 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {Decorator, Component, Viewport} from '../../annotations/annotations';
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
-import {ProtoView} from '../view';
+import * as viewModule from '../view';
 import {dashCaseToCamelCase} from './util';
 
 import {AST} from 'angular2/change_detection';
@@ -33,7 +33,7 @@ export class CompileElement {
   _allDirectives:List<DirectiveMetadata>;
   isViewRoot:boolean;
   hasBindings:boolean;
-  inheritedProtoView:ProtoView;
+  inheritedProtoView:viewModule.ProtoView;
   inheritedProtoElementInjector:ProtoElementInjector;
   inheritedElementBinder:ElementBinder;
   distanceToParentInjector:int;
