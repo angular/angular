@@ -108,3 +108,22 @@ export class DependencyAnnotation {
   constructor() {
   }
 }
+
+/**
+ * A class annotation that marks a class as available to `Injector`s for
+ * creation.
+ *
+ * ```
+ * class NeedsService {
+ *   constructor(svc:UsefulService) {}
+ * }
+ *
+ * @Injectable
+ * class UsefulService {}
+ * ```
+ */
+export class Injectable {
+  @CONST()
+  constructor() {
+  }
+}
