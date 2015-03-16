@@ -81,6 +81,7 @@ Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
 
 RecordingReflectionCapabilities _processTemplate(String templateCode) {
   var recordingCapabilities = new RecordingReflectionCapabilities();
+  var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = recordingCapabilities;
 
   var compilePipeline = new CompilePipeline(_createCompileSteps());
@@ -88,6 +89,7 @@ RecordingReflectionCapabilities _processTemplate(String templateCode) {
   // TODO(kegluneq): Need to parse this from a file when not inline.
   compilePipeline.process(template, templateCode);
 
+  reflector.reflectionCapabilities = savedReflectionCapabilities;
   return recordingCapabilities;
 }
 
