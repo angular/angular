@@ -2,7 +2,7 @@ import {int, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as eiModule from './element_injector';
 import {DirectiveMetadata} from './directive_metadata';
 import {List, StringMap} from 'angular2/src/facade/collection';
-import {ProtoView} from './view';
+import * as viewModule from './view';
 
 export class ElementBinder {
   protoElementInjector:eiModule.ProtoElementInjector;
@@ -10,7 +10,7 @@ export class ElementBinder {
   viewportDirective:DirectiveMetadata;
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
-  nestedProtoView: ProtoView;
+  nestedProtoView: viewModule.ProtoView;
   events:StringMap;
   contentTagSelector:string;
   parent:ElementBinder;

@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var madge = require('madge');
 var merge = require('merge');
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
@@ -465,6 +466,25 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
   args: CONFIG.formatDart.args
 }));
 
+// ------------
+// check circular dependencies in Node.js context
+gulp.task('build/checkCircularDependencies', function (done) {
+  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
+    format: 'es6',
+    paths: [CONFIG.dest.js.dev.es6],
+    extensions: ['.js', '.es6'],
+    onParseFile: function(data) {
+      data.src = data.src.replace(/import \* as/g, "//import * as");
+    }
+  });
+  var circularDependencies = dependencyObject.circular().getArray();
+  if (circularDependencies.length > 0) {
+    console.log(circularDependencies);
+    process.exit(1);
+  }
+  done();
+});
+
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
@@ -642,6 +662,7 @@ gulp.task('build.dart', function(done) {
 gulp.task('build.js.dev', function(done) {
   runSequence(
     ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
+    'build/checkCircularDependencies',
     done
   );
 });
