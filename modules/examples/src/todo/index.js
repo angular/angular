@@ -73,25 +73,25 @@ class TodoApp {
 
   showAll() {
     this.todoStore.list.forEach((todo) => {
-      todo.hidden = false;
+      todo.show = true;
     });
   }
 
   showActive() {
     this.todoStore.list.forEach((todo) => {
       if(todo.completed)
-        todo.hidden = true;
+        todo.show = false;
       else
-        todo.hidden = false;
+        todo.show = true;
     });
   }
 
   showCompleted() {
     this.todoStore.list.forEach((todo) => {
       if(todo.completed)
-        todo.hidden = false;
+        todo.show = true;
       else
-        todo.hidden = true;
+        todo.show = false;
     });
   }
 }

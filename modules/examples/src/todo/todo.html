@@ -21,7 +21,7 @@
       <li *foreach="#todo in todoStore.list">
 
         <div class="view"
-            [class.hidden]="todoEdit == todo || todo.hidden == true">
+            [class.hidden]="todoEdit == todo || todo.show == false">
 
           <input class="toggle" type="checkbox"
                  (click)="completeMe(todo)"
