@@ -140,7 +140,7 @@ class Pane {                      | Component controller class
 ```
 <div class="outer">
   <h1>{{title}}</h1>
-  <div class="inner" [hidden]="!visible">
+  <div class="inner" [hidden]="!open">
     <content></content>
   </div>
 </div>
