@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
@@ -23,6 +24,7 @@ import {CssProcessor} from './css_processor';
  * Used to prevent duplicate work and resolve cyclic dependencies.
  * @publicModule angular2/angular2
  */
+@Injectable()
 export class CompilerCache {
   _cache:Map;
   constructor() {
@@ -49,6 +51,7 @@ export class CompilerCache {
  * the CompilePipeline and the CompileSteps.
  * @publicModule angular2/angular2
  */
+@Injectable()
 export class Compiler {
   _reader: DirectiveMetadataReader;
   _parser:Parser;

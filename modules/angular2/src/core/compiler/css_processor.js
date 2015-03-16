@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {isPresent} from 'angular2/src/facade/lang';
@@ -15,6 +16,7 @@ import {DirectiveMetadata} from './directive_metadata';
  * - Apply any given transformers,
  * - Apply the shadow DOM strategy style step.
  */
+@Injectable()
 export class CssProcessor {
   _transformers: List<CssTransformer>;
 

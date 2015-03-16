@@ -1,6 +1,8 @@
+import {Injectable} from 'angular2/di';
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
+@Injectable()
 export class ExceptionHandler {
   call(error, stackTrace = null, reason = null) {
     var longStackTrace = isListLikeIterable(stackTrace) ? ListWrapper.join(stackTrace, "\n\n") : stackTrace;
