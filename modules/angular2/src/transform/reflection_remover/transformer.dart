@@ -14,9 +14,9 @@ import 'remove_reflection_capabilities.dart';
 /// The goal of this is to break the app's dependency on dart:mirrors.
 ///
 /// This transformer assumes that [DirectiveProcessor] and [DirectiveLinker]
-/// have already been run and that a .ngDeps.dart file has been generated for
+/// have already been run and that a .ng_deps.dart file has been generated for
 /// [options.entryPoint]. The instantiation of [ReflectionCapabilities] is
-/// replaced by calling `setupReflection` in that .ngDeps.dart file.
+/// replaced by calling `setupReflection` in that .ng_deps.dart file.
 class ReflectionRemover extends Transformer {
   final TransformerOptions options;
 

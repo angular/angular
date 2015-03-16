@@ -19,9 +19,9 @@ void allTests() {
 
   test('should generate a setter for a `bind` property in an annotation.',
       () async {
-    var inputPath = 'bind_generator/basic_bind_files/bar.ngDeps.dart';
+    var inputPath = 'bind_generator/basic_bind_files/bar.ng_deps.dart';
     var expected = formatter.format(
-        readFile('bind_generator/basic_bind_files/expected/bar.ngDeps.dart'));
+        readFile('bind_generator/basic_bind_files/expected/bar.ng_deps.dart'));
 
     var output = formatter
         .format(await createNgSetters(reader, new AssetId('a', inputPath)));
@@ -30,9 +30,10 @@ void allTests() {
 
   test('should generate a single setter when multiple annotations bind to the '
       'same property.', () async {
-    var inputPath = 'bind_generator/duplicate_bind_name_files/soup.ngDeps.dart';
+    var inputPath =
+        'bind_generator/duplicate_bind_name_files/soup.ng_deps.dart';
     var expected = formatter.format(readFile(
-        'bind_generator/duplicate_bind_name_files/expected/soup.ngDeps.dart'));
+        'bind_generator/duplicate_bind_name_files/expected/soup.ng_deps.dart'));
 
     var output = formatter
         .format(await createNgSetters(reader, new AssetId('a', inputPath)));

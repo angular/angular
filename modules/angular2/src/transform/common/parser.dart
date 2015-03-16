@@ -37,8 +37,8 @@ class Parser {
     return ngDeps;
   }
 
-  /// Parses the `.ngDeps.dart` file represented by [id] into an [NgDeps]
-  /// object. All `.ngDeps.dart` files imported by [id] are then parsed. The
+  /// Parses the `.ng_deps.dart` file represented by [id] into an [NgDeps]
+  /// object. All `.ng_deps.dart` files imported by [id] are then parsed. The
   /// results are added to [allDeps].
   Future<List<NgDeps>> _recurse(AssetId id,
       [List<NgDeps> allDeps, Set<AssetId> seen]) async {

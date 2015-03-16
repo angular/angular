@@ -10,7 +10,7 @@ import 'package:barback/barback.dart';
 
 import 'linker.dart';
 
-/// Transformer responsible for processing .ngDeps.dart files created by
+/// Transformer responsible for processing .ng_deps.dart files created by
 /// [DirectiveProcessor] and ensuring that the generated calls to
 /// `setupReflection` call the necessary `setupReflection` method in all
 /// dependencies.
