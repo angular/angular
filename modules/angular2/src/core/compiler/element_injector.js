@@ -587,6 +587,7 @@ export class ElementInjector extends TreeNode {
 
   _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
+    // TODO: View should not be injectable. Remove it.
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
