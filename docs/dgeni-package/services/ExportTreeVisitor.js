@@ -17,8 +17,10 @@ module.exports = function ExportTreeVisitor(ParseTreeVisitor, log) {
       ParseTreeVisitor.prototype.visitExportDeclaration.call(this, tree);
       log.silly('exit', this.currentExport);
 
-      // We are exiting the export declaration - store the export object
-      this.exports.push(this.currentExport);
+      if(this.currentExport) {
+        // We are exiting the export declaration - store the export object
+        this.exports.push(this.currentExport);
+      }
       this.currentExport = null;
     },
 
@@ -78,14 +80,15 @@ module.exports = function ExportTreeVisitor(ParseTreeVisitor, log) {
     },
 
     visitNamedExport: function(tree) {
-      if ( this.currentExport ) {
-        this.updateExport(tree);
+      this.currentExport = null;
+      // if ( this.currentExport ) {
+      //   this.updateExport(tree);
 
-        this.currentExport.namedExport = tree;
-        this.currentExport.name = 'NAMED_EXPORT';
-        // TODO: work out this bit!!
-        // We need to cope with any export specifiers in the named export
-      }
+      //   this.currentExport.namedExport = tree;
+      //   this.currentExport.name = 'NAMED_EXPORT';
+      //   // TODO: work out this bit!!
+      //   // We need to cope with any export specifiers in the named export
+      // }
     },
 
     // TODO - if the export is an expression, find the thing that is being

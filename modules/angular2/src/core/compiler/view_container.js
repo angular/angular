@@ -8,6 +8,9 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
 import * as ldModule from './shadow_dom_emulation/light_dom';
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class ViewContainer {
   parentView: viewModule.View;
   templateElement;

@@ -10,6 +10,10 @@ module.exports = new Package('angular-public', [basePackage])
   parseTagsProcessor.tagDefinitions.push({ name: 'publicModule' });
 })
 
+.config(function(processClassDocs) {
+  processClassDocs.ignorePrivateMembers = true;
+})
+
 // Configure file writing
 .config(function(writeFilesProcessor) {
   writeFilesProcessor.outputFolder  = 'dist/public_docs';

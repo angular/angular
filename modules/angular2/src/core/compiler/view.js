@@ -28,6 +28,7 @@ var VIEW_POOL_PREFILL = 0;
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
+ * @publicModule angular2/angular2
  */
 @IMPLEMENTS(ChangeDispatcher)
 export class View {
@@ -280,6 +281,9 @@ export class View {
   }
 }
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class ProtoView {
   element;
   elementBinders:List<ElementBinder>;
@@ -640,6 +644,9 @@ export class ProtoView {
   }
 }
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class ElementBindingMemento {
   _elementIndex:int;
   _setterName:string;
@@ -656,6 +663,9 @@ export class ElementBindingMemento {
   }
 }
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class DirectiveBindingMemento {
   _elementInjectorIndex:int;
   _directiveIndex:int;
@@ -712,6 +722,9 @@ class DirectiveMemento {
   }
 }
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class PropertyUpdate {
   currentValue;
   previousValue;
