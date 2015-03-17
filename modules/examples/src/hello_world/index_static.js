@@ -152,9 +152,9 @@ function setup() {
   });
 
   reflector.registerType(Content, {
-    "factory": (lightDom, el) => new Content(lightDom, el),
-    "parameters": [[DestinationLightDom], [NgElement]],
-    "annotations" : [new Decorator({selector: '[content]'})]
+    "factory": (lightDom, el, selector) => new Content(lightDom, el, selector),
+    "parameters": [[DestinationLightDom], [NgElement], [String]],
+    "annotations" : []
   });
 
   reflector.registerType(StyleInliner, {
