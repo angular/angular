@@ -492,17 +492,10 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
-gulp.task('docs/dgeni', function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/dgeni-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x.stack);
-    throw x;
-  }
-});
-
 var bower = require('bower');
+var jasmine = require('gulp-jasmine');
+var webserver = require('gulp-webserver');
+
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
@@ -514,36 +507,54 @@ gulp.task('docs/bower', function() {
   return bowerTask;
 });
 
-gulp.task('docs/assets', ['docs/bower'], function() {
-  return gulp.src('docs/bower_components/**/*')
-    .pipe(gulp.dest('dist/docs/lib'));
-});
 
-gulp.task('docs/app', function() {
-  return gulp.src('docs/app/**/*')
-    .pipe(gulp.dest('dist/docs'));
-});
+function createDocsTasks(public) {
+  var dgeniPackage = public ? './docs/public-docs-package' : './docs/dgeni-package';
+  var distDocsPath = public ? 'dist/public_docs' : 'dist/docs';
+  var taskPrefix = public ? 'public_docs' : 'docs';
 
-gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
-gulp.task('docs/watch', function() {
-  return gulp.watch('docs/app/**/*', ['docs/app']);
-});
+  gulp.task(taskPrefix + '/dgeni', function() {
+    try {
+      var dgeni = new Dgeni([require(dgeniPackage)]);
+      return dgeni.generate();
+    } catch(x) {
+      console.log(x.stack);
+      throw x;
+    }
+  });
 
-var jasmine = require('gulp-jasmine');
-gulp.task('docs/test', function () {
-  return gulp.src('docs/**/*.spec.js')
-      .pipe(jasmine({
-        includeStackTrace: true
+  gulp.task(taskPrefix + '/assets', ['docs/bower'], function() {
+    return gulp.src('docs/bower_components/**/*')
+      .pipe(gulp.dest(distDocsPath + '/lib'));
+  });
+
+  gulp.task(taskPrefix + '/app', function() {
+    return gulp.src('docs/app/**/*')
+      .pipe(gulp.dest(distDocsPath));
+  });
+
+  gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
+  gulp.task(taskPrefix + '/watch', function() {
+    return gulp.watch('docs/app/**/*', [taskPrefix + '/app']);
+  });
+
+  gulp.task(taskPrefix + '/test', function () {
+    return gulp.src('docs/**/*.spec.js')
+        .pipe(jasmine({
+          includeStackTrace: true
+        }));
+  });
+
+  gulp.task(taskPrefix + '/serve', function() {
+    gulp.src(distDocsPath + '/')
+      .pipe(webserver({
+        fallback: 'index.html'
       }));
-});
+  });
+}
 
-var webserver = require('gulp-webserver');
-gulp.task('docs/serve', function() {
-  gulp.src('dist/docs/')
-    .pipe(webserver({
-      fallback: 'index.html'
-    }));
-});
+createDocsTasks(true);
+createDocsTasks(false);
 
 // ------------------
 // karma tests
