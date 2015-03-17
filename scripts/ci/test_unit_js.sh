@@ -10,4 +10,4 @@ cd $SCRIPT_DIR/../..
 ./node_modules/.bin/gulp test.transpiler.unittest
 ./node_modules/.bin/gulp docs/test
 ./node_modules/.bin/gulp test.unit.js/ci --browsers=$KARMA_BROWSERS
-./node_modules/.bin/gulp test.unit.cjs
+./node_modules/.bin/gulp test.unit.cjs/ci

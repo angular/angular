@@ -3,6 +3,8 @@ var gulpPlugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
+var path = require('path');
+
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
 var clean = require('./tools/build/clean');
@@ -16,6 +18,7 @@ var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var rundartpackage = require('./tools/build/rundartpackage');
 var copy = require('./tools/build/copy');
+var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
@@ -606,8 +609,32 @@ gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
-gulp.task('test.unit.cjs', function (done) {
-  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine(/*{verbose: true, includeStackTrace: true}*/));
+gulp.task('test.unit.cjs/ci', function () {
+  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine({includeStackTrace: true, timeout: 1000}));
+});
+gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
+  //Run tests once
+  runSequence('test.unit.cjs/ci', function() {});
+  //Watcher to transpile file changed
+  gulp.watch(CONFIG.transpile.src.js.concat(['modules/**/*.cjs']), function(event) {
+    var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
+    gulp.src(relPath)
+      .pipe(gulpPlugins.rename({extname: '.'+ 'js'}))
+      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.js))
+      .pipe(gulpTraceur(CONFIG.transpile.options.js.cjs, file2moduleName))
+      .pipe(transformCJSTests())
+      .pipe(gulp.dest(CONFIG.dest.js.cjs + path.dirname(relPath.replace("modules", ""))));
+  });
+  //Watcher to run tests when dist/js/cjs/angular2 is updated by the first watcher (after clearing the node cache)
+  gulp.watch(CONFIG.dest.js.cjs + '/angular2/**/*.js', function(event) {
+    for (var id in require.cache) { 
+      if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
+        delete require.cache[id]; 
+      }
+    }
+    runSequence('test.unit.cjs/ci', function() {});
+  });
+  
 });
 
 // ------------------

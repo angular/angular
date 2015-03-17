@@ -137,7 +137,7 @@ $(npm bin)/gulp clean
 
 1. `$(npm bin)/gulp test.unit.js`: JS tests in a browser; runs in **watch mode** (i.e. karma
   watches the test files for changes and re-runs tests when files are updated).
-2. `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS (requires a build before)
+2. `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**
 3. `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
 
 If you prefer running tests in "single-run" mode rather than watch mode use
