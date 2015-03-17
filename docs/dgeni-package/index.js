@@ -13,6 +13,7 @@ var GUIDES_PATH = PARTIAL_PATH + '/guides';
 module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Register the services and file readers
+.factory(require('./services/modules'))
 .factory(require('./services/atParser'))
 .factory(require('./services/getJSDocComment'))
 .factory(require('./services/SourceFile'))
@@ -44,6 +45,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
+    { include: 'modules/*/*.js', basePath: 'modules' },
     { include: 'modules/*/src/**/*.js', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
