@@ -25,7 +25,7 @@ function createJs2DartPreprocessor(logger, basePath, config, emitter) {
         inputPath: file.originalPath,
         outputPath: file.path,
         moduleName: moduleName
-      }, content);
+      }, content, true);
 
       var transpiledContent = result.js;
       var sourceMap = result.sourceMap;

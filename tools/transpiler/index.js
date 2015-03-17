@@ -23,9 +23,9 @@ exports.reloadSources = function() {
   needsReload = true;
 };
 
-exports.compile = function compile(options, paths, source) {
+exports.compile = function compile(options, paths, source, reloadTraceur) {
   if (needsReload) {
-    reloadCompiler();
+    reloadCompiler(reloadTraceur);
     needsReload = false;
   }
   var inputPath, outputPath, moduleName;
@@ -73,8 +73,10 @@ exports.init = function() {
 
 // Transpile and evaluate the code in `src`.
 // Use existing traceur to compile our sources.
-function reloadCompiler() {
-  loadModule(TRACEUR_PATH, false);
+function reloadCompiler(reloadTraceur) {
+  if (reloadTraceur) {
+    loadModule(TRACEUR_PATH, false);
+  }
   glob.sync(__dirname + '/src/**/*.js').forEach(function(fileName) {
     loadModule(fileName, true);
   });
