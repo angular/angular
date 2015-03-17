@@ -9,7 +9,7 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
-import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
+import * as pclModule from 'angular2/src/core/compiler/private_component_location';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -33,7 +33,7 @@ class StaticKeys {
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
-    this.privateComponentLocationId = Key.get(PrivateComponentLocation).id;
+    this.privateComponentLocationId = Key.get(pclModule.PrivateComponentLocation).id;
   }
 
   static instance() {
@@ -603,7 +603,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
 
     if (keyId === staticKeys.privateComponentLocationId) {
-      return new PrivateComponentLocation(this, this._preBuiltObjects.element, this._preBuiltObjects.view);
+      return new pclModule.PrivateComponentLocation(this, this._preBuiltObjects.element, this._preBuiltObjects.view);
     }
 
     //TODO add other objects as needed

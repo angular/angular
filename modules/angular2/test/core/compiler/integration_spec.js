@@ -21,7 +21,7 @@ import {Lexer, Parser, dynamicChangeDetection,
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
@@ -67,7 +67,7 @@ export function main() {
       directiveMetadataReader = new DirectiveMetadataReader();
 
       var urlResolver = new UrlResolver();
-      shadowDomStrategy = new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver));
+      shadowDomStrategy = new EmulatedUnscopedShadowDomStrategy(new StyleUrlResolver(urlResolver), null);
 
       compiler = createCompiler(tplResolver, dynamicChangeDetection);
     });
@@ -247,7 +247,7 @@ export function main() {
 
           cd.detectChanges();
 
-          expect(view.nodes[0].shadowRoot.childNodes[0].nodeValue).toEqual('hello');
+          expect(view.nodes).toHaveText('hello');
           async.done();
         });
       }));
@@ -301,12 +301,12 @@ export function main() {
           ctx.ctxProp = 'some_id';
           cd.detectChanges();
           expect(view.nodes[0].id).toEqual('some_id');
-          expect(DOM.getInnerHTML(view.nodes[0].shadowRoot.childNodes[0])).toEqual('Matched on id with some_id');
+          expect(view.nodes).toHaveText('Matched on id with some_id');
 
           ctx.ctxProp = 'other_id';
           cd.detectChanges();
           expect(view.nodes[0].id).toEqual('other_id');
-          expect(DOM.getInnerHTML(view.nodes[0].shadowRoot.childNodes[0])).toEqual('Matched on id with other_id');
+          expect(view.nodes).toHaveText('Matched on id with other_id');
 
           async.done();
         });
@@ -534,7 +534,6 @@ export function main() {
           inline: '<dynamic-comp #dynamic></dynamic-comp>',
           directives: [DynamicComp]
         }));
-
         compiler.compile(MyComp).then((pv) => {
           createView(pv);
 
