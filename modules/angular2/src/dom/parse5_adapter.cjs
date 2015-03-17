@@ -366,9 +366,16 @@ export class Parse5DomAdapter extends DomAdapter {
   defaultDoc() {
     if (defDoc === null) {
       defDoc = StringMapWrapper.create();
+      defDoc.title = "Default title";
       StringMapWrapper.set(defDoc, "head", treeAdapter.createElement("head", null, []));
     }
     return defDoc;
+  }
+  getTitle() {
+    return this.defaultDoc().title || "";
+  }
+  setTitle(newTitle:string) {
+    this.defaultDoc().title = newTitle;
   }
   isTemplateElement(el:any):boolean {
     return this.isElementNode(el) && this.tagName(el) === "template";
