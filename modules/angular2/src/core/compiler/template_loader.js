@@ -10,6 +10,7 @@ import {UrlResolver} from './url_resolver';
 
 /**
  * Strategy to load component templates.
+ * @publicModule angular2/angular2
  */
 export class TemplateLoader {
   _xhr: XHR;
