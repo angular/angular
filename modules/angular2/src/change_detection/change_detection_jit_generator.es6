@@ -216,17 +216,6 @@ function assignmentTemplate(field:string, value:string) {
   return `${field} = ${value};`;
 }
 
-function invokeMethodTemplate(name:string, args:string, context:string, newValue:string) {
-  return `
-${TEMP_LOCAL} = ${UTIL}.findContext("${name}", ${context});
-if (${TEMP_LOCAL} instanceof ContextWithVariableBindings) {
-  ${newValue} = ${TEMP_LOCAL}.get('${name}').apply(null, [${args}]);
-} else {
-  ${newValue} = ${context}.${name}(${args});
-}
-`;
-}
-
 function localDefinitionsTemplate(names:List):string {
   return names.map((n) => `var ${n};`).join("\n");
 }
