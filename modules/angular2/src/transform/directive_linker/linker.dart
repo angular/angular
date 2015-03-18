@@ -2,34 +2,44 @@ library angular2.transform.directive_linker.linker;
 
 import 'dart:async';
 
+import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/ngdata.dart';
+import 'package:angular2/src/transform/common/parser.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 
-Future<String> linkNgDeps(Transform transform, String code, String path) async {
-  var commentIdx = code.lastIndexOf('//');
-  if (commentIdx < 0) return code;
+Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
+  var parser = new Parser(reader);
+  NgDeps ngDeps = await parser.parse(entryPoint);
 
-  var ngData = new NgData.fromJson(code.substring(commentIdx + 2));
+  if (ngDeps == null) return null;
+  if (ngDeps.imports.isEmpty) return ngDeps.code;
 
-  StringBuffer importBuf =
-      new StringBuffer(code.substring(0, ngData.importOffset));
-  StringBuffer declarationBuf = new StringBuffer(
-      code.substring(ngData.importOffset, ngData.registerOffset));
-  String tail = code.substring(ngData.registerOffset, commentIdx);
+  var allDeps = ngDeps.imports.toList()..addAll(ngDeps.exports);
+  var depList = await _processNgImports(
+      reader, entryPoint, allDeps.map((node) => node.uri.stringValue));
 
-  var ngDeps = await _processNgImports(transform, ngData.imports);
+  if (depList.isEmpty) return ngDeps.code;
 
-  for (var i = 0; i < ngDeps.length; ++i) {
-    importBuf.write('import \'${ngDeps[i]}\' as i${i};');
+  var importBuf = new StringBuffer();
+  var declarationBuf = new StringBuffer();
+  for (var i = 0; i < depList.length; ++i) {
+    importBuf.write('''
+        import '${depList[i]}' as i${i};
+    ''');
     declarationBuf.write('i${i}.${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME});');
   }
 
-  return '${importBuf}${declarationBuf}${tail}';
+  var code = ngDeps.code;
+  var importSeamIdx = ngDeps.imports.last.end;
+  var declarationSeamIdx = ngDeps.setupMethod.end - 1;
+  return '${code.substring(0, importSeamIdx)}'
+      '$importBuf'
+      '${code.substring(importSeamIdx, declarationSeamIdx)}'
+      '$declarationBuf'
+      '${code.substring(declarationSeamIdx)}';
 }
 
 String _toDepsUri(String importUri) =>
@@ -40,17 +50,16 @@ bool _isNotDartImport(String importUri) {
 }
 
 Future<List<String>> _processNgImports(
-    Transform transform, List<String> imports) async {
+    AssetReader reader, AssetId entryPoint, Iterable<String> imports) {
+  final nullFuture = new Future.value(null);
   var retVal = <String>[];
-
   return Future
       .wait(imports.where(_isNotDartImport).map(_toDepsUri).map((ngDepsUri) {
-    var importAsset = uriToAssetId(
-        transform.primaryInput.id, ngDepsUri, logger, null /* span */);
-    return transform.hasInput(importAsset).then((hasInput) {
-      if (hasInput) {
-        retVal.add(ngDepsUri);
-      }
+    var importAsset =
+        uriToAssetId(entryPoint, ngDepsUri, logger, null /* span */);
+    if (importAsset == entryPoint) return nullFuture;
+    return reader.hasInput(importAsset).then((hasInput) {
+      if (hasInput) retVal.add(ngDepsUri);
     });
   })).then((_) => retVal);
 }

@@ -2,6 +2,7 @@ library angular2.transform.directive_linker.transformer;
 
 import 'dart:async';
 
+import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -27,12 +28,11 @@ class DirectiveLinker extends Transformer {
     log.init(transform);
 
     try {
-      var assetCode = await transform.primaryInput.readAsString();
-      var assetPath = transform.primaryInput.id.path;
-      var transformedCode = await linkNgDeps(transform, assetCode, assetPath);
-      var formattedCode = formatter.format(transformedCode, uri: assetPath);
-      transform.addOutput(
-          new Asset.fromString(transform.primaryInput.id, formattedCode));
+      var assetId = transform.primaryInput.id;
+      var transformedCode =
+          await linkNgDeps(new AssetReader.fromTransform(transform), assetId);
+      var formattedCode = formatter.format(transformedCode, uri: assetId.path);
+      transform.addOutput(new Asset.fromString(assetId, formattedCode));
     } catch (ex, stackTrace) {
       log.logger.error('Linking ng directives failed.\n'
           'Exception: $ex\n'

@@ -4,7 +4,6 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/ngdata.dart';
 import 'package:angular2/src/transform/common/visitor_mixin.dart';
 import 'package:path/path.dart' as path;
 
@@ -42,7 +41,6 @@ class CreateNgDepsVisitor extends Object
   final FactoryTransformVisitor _factoryVisitor;
   final ParameterTransformVisitor _paramsVisitor;
   final AnnotationsTransformVisitor _metaVisitor;
-  final NgData _ngData = new NgData();
 
   /// The path to the file which we are parsing.
   final String importPath;
@@ -73,19 +71,16 @@ class CreateNgDepsVisitor extends Object
       _writeImport();
       wroteImport = true;
     }
-    _ngData.imports.add(node.uri.stringValue);
     return node.accept(_copyVisitor);
   }
 
   @override
   Object visitExportDirective(ExportDirective node) {
-    _ngData.imports.add(node.uri.stringValue);
     return node.accept(_copyVisitor);
   }
 
   void _openFunctionWrapper() {
     // TODO(kegluneq): Use a [PrintWriter] with a length getter.
-    _ngData.importOffset = writer.toString().length;
     writer.print('bool _visited = false;'
         'void ${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME}) {'
         'if (_visited) return; _visited = true;');
@@ -95,10 +90,7 @@ class CreateNgDepsVisitor extends Object
     if (foundNgDirectives) {
       writer.print(';');
     }
-    // TODO(kegluneq): Use a [PrintWriter] with a length getter.
-    _ngData.registerOffset = writer.toString().length;
     writer.print('}');
-    writer.print('// ${_ngData.toJson()}');
   }
 
   ConstructorDeclaration _getCtor(ClassDeclaration node) {
