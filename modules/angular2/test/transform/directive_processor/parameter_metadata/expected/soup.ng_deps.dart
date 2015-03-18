@@ -14,4 +14,4 @@ void setupReflection(reflector) {
       'parameters': const [const [Tasty, String], const [const Inject(Salt)]],
       'annotations': const [const Component(selector: '[soup]')]
     });
-} // {"version":1,"importOffset":104,"registerOffset":451,"imports":["package:angular2/src/core/annotations/annotations.dart"]}
+}
