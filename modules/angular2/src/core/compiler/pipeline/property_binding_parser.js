@@ -17,7 +17,7 @@ import {CompileControl} from './compile_control';
 // Group 7 = "#"
 // Group 8 = identifier after "#"
 var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+)');
+    '^(?:(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+))$');
 
 /**
  * Parses the property bindings on a single element.
