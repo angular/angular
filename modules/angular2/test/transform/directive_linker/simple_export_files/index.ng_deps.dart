@@ -4,7 +4,8 @@ import 'package:angular2/src/core/application.dart';
 import 'package:angular2/src/reflection/reflection_capabilities.dart';
 import 'bar.dart';
 
-void main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  bootstrap(MyComponent);
+bool _visited = false;
+void setupReflection(reflector) {
+  if (_visited) return;
+  _visited = true;
 }
