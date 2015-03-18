@@ -100,7 +100,7 @@ npm install
 $(npm bin)/webdriver-manager update
 
 # Install Dart packages
-pub install
+pub get
 ```
 
 **Optional**: In this document, we make use of project local `npm` package scripts and binaries
