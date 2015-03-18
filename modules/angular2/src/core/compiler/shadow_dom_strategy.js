@@ -1,12 +1,12 @@
-import {Type, isBlank, isPresent, int} from 'angular2/src/facade/lang';
+import {Injectable} from 'angular2/di';
+import {Type, isBlank, isPresent, int, StringWrapper, assertionsEnabled} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {View} from './view';
+import * as viewModule from './view';
 
-import {Content} from './shadow_dom_emulation/content_tag';
 import {LightDom} from './shadow_dom_emulation/light_dom';
 import {ShadowCss} from './shadow_dom_emulation/shadow_css';
 
@@ -15,24 +15,34 @@ import {StyleUrlResolver} from './style_url_resolver';
 
 import {DirectiveMetadata} from './directive_metadata';
 
-import {CompileStep} from './pipeline/compile_step';
+import * as NS from './pipeline/compile_step';
 import {CompileElement} from './pipeline/compile_element';
 import {CompileControl} from './pipeline/compile_control';
 
+var _EMPTY_STEP;
+
+// Note: fill _EMPTY_STEP to prevent
+// problems from cyclic dependencies
+function _emptyStep() {
+  if (isBlank(_EMPTY_STEP)) {
+    _EMPTY_STEP = new _EmptyCompileStep();
+  }
+  return _EMPTY_STEP;
+}
+
 export class ShadowDomStrategy {
-  attachTemplate(el, view:View) {}
-  constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom { return null; }
-  polyfillDirectives():List<Type> { return []; }
+  attachTemplate(el, view:viewModule.View) {}
+  constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom { return null; }
 
   /**
    * An optional step that can modify the template style elements.
    *
    * @param {DirectiveMetadata} cmpMetadata
    * @param {string} templateUrl the template base URL
-   * @returns {CompileStep} a compile step to append to the compiler pipeline, null if not required.
+   * @returns {CompileStep} a compile step to append to the compiler pipeline
    */
-  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): CompileStep {
-    return null;
+  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
+    return _emptyStep();
   }
 
   /**
@@ -41,9 +51,9 @@ export class ShadowDomStrategy {
    * This step could be used to modify the template in order to scope the styles.
    *
    * @param {DirectiveMetadata} cmpMetadata
-   * @returns {CompileStep} a compile step to append to the compiler pipeline, null if not required.
+   * @returns {CompileStep} a compile step to append to the compiler pipeline
    */
-  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): CompileStep { return null; }
+  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep { return _emptyStep(); }
 
   /**
    * The application element does not go through the compiler pipeline.
@@ -68,6 +78,7 @@ export class ShadowDomStrategy {
  * - styles are **not** scoped to their component and will apply to the whole document,
  * - you can **not** use shadow DOM specific selectors in the styles
  */
+@Injectable()
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
   _styleHost;
@@ -78,23 +89,23 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     this._styleHost = styleHost;
   }
 
-  attachTemplate(el, view:View){
+  attachTemplate(el, view:viewModule.View) {
     DOM.clearNodes(el);
     _moveViewNodesIntoParent(el, view);
   }
 
-  constructLightDom(lightDomView:View, shadowDomView:View, el): LightDom {
+  constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom {
     return new LightDom(lightDomView, shadowDomView, el);
   }
 
-  polyfillDirectives():List<Type> {
-    return [Content];
-  }
-
-  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): CompileStep {
+  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
     return new _EmulatedUnscopedCssStep(cmpMetadata, templateUrl, this._styleUrlResolver,
       this._styleHost);
   }
+
+  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep {
+    return new _BaseEmulatedShadowDomStep();
+  }  
 }
 
 /**
@@ -109,6 +120,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
  * - a common subset of shadow DOM selectors are supported,
  * - see `ShadowCss` for more information and limitations.
  */
+@Injectable()
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {
   _styleInliner: StyleInliner;
 
@@ -117,12 +129,12 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     this._styleInliner = styleInliner;
   }
 
-  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): CompileStep {
+  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
     return new _EmulatedScopedCssStep(cmpMetadata, templateUrl, this._styleInliner,
       this._styleUrlResolver, this._styleHost);
   }
 
-  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): CompileStep {
+  getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep {
     return new _ShimShadowDomStep(cmpMetadata);
   }
 
@@ -139,6 +151,7 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
  * The templates for the component are inserted in a Shadow Root created on the component element.
  * Hence they are strictly isolated.
  */
+@Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
   _styleUrlResolver: StyleUrlResolver;
 
@@ -147,16 +160,48 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     this._styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el, view:View){
+  attachTemplate(el, view:viewModule.View){
     _moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
   }
 
-  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): CompileStep {
+  getStyleCompileStep(cmpMetadata: DirectiveMetadata, templateUrl: string): NS.CompileStep {
     return new _NativeCssStep(templateUrl, this._styleUrlResolver);
   }
 }
 
-class _ShimShadowDomStep extends CompileStep {
+class _BaseEmulatedShadowDomStep extends NS.CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    if (current.ignoreBindings) {
+      return;
+    }
+    var nodeName = DOM.nodeName(current.element);
+    if (StringWrapper.equals(nodeName.toUpperCase(), 'CONTENT')) {
+      var attrs = current.attrs();
+      var selector = MapWrapper.get(attrs, 'select');
+      current.contentTagSelector = isPresent(selector) ? selector : '';
+
+      var contentStart = DOM.createScriptTag('type', 'ng/contentStart');
+      if (assertionsEnabled()) {
+        DOM.setAttribute(contentStart, 'select', current.contentTagSelector);
+      }
+      var contentEnd = DOM.createScriptTag('type', 'ng/contentEnd');
+      DOM.insertBefore(current.element, contentStart);
+      DOM.insertBefore(current.element, contentEnd);
+      DOM.remove(current.element);
+
+      current.element = contentStart;
+    }    
+  }
+
+}
+
+class _EmptyCompileStep extends NS.CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+  }
+}
+
+
+class _ShimShadowDomStep extends _BaseEmulatedShadowDomStep {
   _contentAttribute: string;
 
   constructor(cmpMetadata: DirectiveMetadata) {
@@ -167,6 +212,7 @@ class _ShimShadowDomStep extends CompileStep {
 
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    super.process(parent, current, control);
     if (current.ignoreBindings) {
       return;
     }
@@ -184,7 +230,7 @@ class _ShimShadowDomStep extends CompileStep {
   }
 }
 
-class _EmulatedUnscopedCssStep extends CompileStep {
+class _EmulatedUnscopedCssStep extends NS.CompileStep {
   _templateUrl: string;
   _styleUrlResolver: StyleUrlResolver;
   _styleHost;
@@ -213,7 +259,7 @@ class _EmulatedUnscopedCssStep extends CompileStep {
   }
 }
 
-class _EmulatedScopedCssStep extends CompileStep {
+class _EmulatedScopedCssStep extends NS.CompileStep {
   _templateUrl: string;
   _component: Type;
   _styleInliner: StyleInliner;
@@ -255,7 +301,7 @@ class _EmulatedScopedCssStep extends CompileStep {
   }
 }
 
-class _NativeCssStep extends CompileStep {
+class _NativeCssStep extends NS.CompileStep {
   _styleUrlResolver: StyleUrlResolver;
   _templateUrl: string;
 

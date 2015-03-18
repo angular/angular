@@ -1,12 +1,14 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
+import {Injectable} from 'angular2/di';
 import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {UrlResolver} from './url_resolver';
 
 /**
  * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL.
  */
+@Injectable()
 export class StyleUrlResolver {
   _resolver: UrlResolver;
 

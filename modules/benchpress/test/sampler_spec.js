@@ -1,4 +1,15 @@
-import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { isBlank, isPresent, BaseException, stringify, Date, DateWrapper } from 'angular2/src/facade/lang';
 import { ListWrapper, List } from 'angular2/src/facade/collection';
@@ -39,15 +50,17 @@ export function main() {
       if (isBlank(driverExtension)) {
         driverExtension = new MockDriverExtension([]);
       }
-      var bindings = ListWrapper.concat(Sampler.BINDINGS, [
+      var bindings = [
+        Options.DEFAULT_BINDINGS,
+        Sampler.BINDINGS,
         bind(Metric).toValue(metric),
         bind(Reporter).toValue(reporter),
         bind(WebDriverAdapter).toValue(driver),
         bind(WebDriverExtension).toValue(driverExtension),
         bind(Options.EXECUTE).toValue(execute),
         bind(Validator).toValue(validator),
-        bind(Sampler.TIME).toValue( () => DateWrapper.fromMillis(time++) )
-      ]);
+        bind(Options.NOW).toValue( () => DateWrapper.fromMillis(time++) )
+      ];
       if (isPresent(prepare)) {
         ListWrapper.push(bindings, bind(Options.PREPARE).toValue(prepare));
       }
@@ -58,7 +71,7 @@ export function main() {
       sampler = new Injector(bindings).get(Sampler);
     }
 
-    it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor', (done) => {
+    it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor', inject([AsyncTestCompleter], (async) => {
       var log = [];
       var count = 0;
       var driver = new MockDriverAdapter([], (callback) => {
@@ -79,12 +92,12 @@ export function main() {
       sampler.sample().then( (_) => {
         expect(count).toBe(4);
         expect(log).toEqual([0,1,2,3]);
-        done();
+        async.done();
       });
 
-    });
+    }));
 
-    it('should call prepare, gc, beginMeasure, execute, gc, endMeasure for every iteration', (done) => {
+    it('should call prepare, gc, beginMeasure, execute, gc, endMeasure for every iteration', inject([AsyncTestCompleter], (async) => {
       var workCount = 0;
       var log = [];
       createSampler({
@@ -115,11 +128,11 @@ export function main() {
           ['gc'],
           ['endMeasure', false, {'script': 1}],
         ]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should call execute, gc, endMeasure for every iteration if there is no prepare callback', (done) => {
+    it('should call execute, gc, endMeasure for every iteration if there is no prepare callback', inject([AsyncTestCompleter], (async) => {
       var log = [];
       var workCount = 0;
       createSampler({
@@ -143,11 +156,11 @@ export function main() {
           ['gc'],
           ['endMeasure', true, {'script': 1}],
         ]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should not gc if the flag is not set', (done) => {
+    it('should not gc if the flag is not set', inject([AsyncTestCompleter], (async) => {
       var log = [];
       createSampler({
         metric: createCountingMetric(),
@@ -158,11 +171,11 @@ export function main() {
       });
       sampler.sample().then( (_) => {
         expect(log).toEqual([]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should only collect metrics for execute and ignore metrics from prepare', (done) => {
+    it('should only collect metrics for execute and ignore metrics from prepare', inject([AsyncTestCompleter], (async) => {
       var scriptTime = 0;
       var iterationCount = 1;
       createSampler({
@@ -184,11 +197,11 @@ export function main() {
         expect(state.completeSample.length).toBe(2);
         expect(state.completeSample[0]).toEqual(mv(0, 1000, {'script': 10}));
         expect(state.completeSample[1]).toEqual(mv(1, 1001, {'script': 20}));
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should call the validator for every execution and store the valid sample', (done) => {
+    it('should call the validator for every execution and store the valid sample', inject([AsyncTestCompleter], (async) => {
       var log = [];
       var validSample = [{}];
 
@@ -213,11 +226,11 @@ export function main() {
           ['validate', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample]
         );
 
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should report the metric values', (done) => {
+    it('should report the metric values', inject([AsyncTestCompleter], (async) => {
       var log = [];
       var validSample = [{}];
       createSampler({
@@ -244,9 +257,9 @@ export function main() {
           ['reportSample', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample]
         );
 
-        done();
+        async.done();
       });
-    });
+    }));
 
   });
 }

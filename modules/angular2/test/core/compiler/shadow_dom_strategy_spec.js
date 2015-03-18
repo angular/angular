@@ -1,4 +1,15 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  it,
+  SpyObject,
+} from 'angular2/test_lib';
 
 import {
   NativeShadowDomStrategy,
@@ -45,10 +56,6 @@ export function main() {
       expect(shadowRoot).toHaveText('view');
     });
 
-    it('should should not transform template elements', () => {
-      expect(strategy.getTemplateCompileStep(null)).toBe(null);
-    });
-
     it('should rewrite style urls', () => {
       var step = strategy.getStyleCompileStep(null, 'http://base');
       var styleElement = DOM.createStyleElement('.one {background-image: url("img.jpg");}');
@@ -87,7 +94,7 @@ export function main() {
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);
-      expect(DOM.tagName(firstChild)).toEqual('DIV');
+      expect(DOM.tagName(firstChild).toLowerCase()).toEqual('div');
       expect(firstChild).toHaveText('view');
       expect(host).toHaveText('view');
     });
@@ -114,7 +121,7 @@ export function main() {
       expect(styleElement).toHaveText(".foo[_ngcontent-0] {\n\n}\n\n[_nghost-0] {\n\n}");
     });
 
-    it('should inline @import rules', (done) => {
+    it('should inline @import rules', inject([AsyncTestCompleter], (async) => {
       xhr.reply('http://base/one.css', '.one {}');
 
       var template = el('<div><style>@import "one.css";</style></div>');
@@ -133,9 +140,9 @@ export function main() {
       expect(styleElement).toHaveText('');
       parentpv.stylePromises[0].then((_) => {
         expect(styleElement).toHaveText('.one[_ngcontent-0] {\n\n}');
-        done();
+        async.done();
       });
-    });
+    }));
 
     it('should return the same style given the same component', () => {
       var template = el('<div><style>.foo {} :host {}</style></div>');
@@ -222,7 +229,7 @@ export function main() {
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);
-      expect(DOM.tagName(firstChild)).toEqual('DIV');
+      expect(DOM.tagName(firstChild).toLowerCase()).toEqual('div');
       expect(firstChild).toHaveText('view');
       expect(host).toHaveText('view');
     });

@@ -1,4 +1,4 @@
-import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveParser} from 'angular2/src/core/compiler/pipeline/directive_parser';
@@ -6,7 +6,7 @@ import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipel
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step';
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
-import {Component, Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
+import {Component, DynamicComponent, Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Lexer, Parser} from 'angular2/change_detection';
@@ -24,7 +24,9 @@ export function main() {
         SomeViewport,
         SomeViewport2,
         SomeComponent,
-        SomeComponent2
+        SomeComponent2,
+        SomeDynamicComponent,
+        SomeDynamicComponent2
       ];
     });
 
@@ -39,10 +41,14 @@ export function main() {
           if (isPresent(propertyBindings)) {
             StringMapWrapper.forEach(propertyBindings, (v, k) => {
               current.addPropertyBinding(k, parser.parseBinding(v, null));
+              MapWrapper.set(current.attrs(), k, v);
             });
           }
           if (isPresent(variableBindings)) {
-            current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
+            StringMapWrapper.forEach(variableBindings, (v, k) => {
+              current.addVariableBinding(k, v);
+              MapWrapper.set(current.attrs(), k, v);
+            });
           }
         }), new DirectiveParser(annotatedDirectives)]);
     }
@@ -89,7 +95,7 @@ export function main() {
            createPipeline().process(
              el('<div some-comp some-comp2></div>')
            );
-         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>'); 
+         }).toThrowError('Multiple component directives not allowed on the same element - check <div some-comp some-comp2>');
       });
 
       it('should not allow component directives on <template> elements', () => {
@@ -99,6 +105,29 @@ export function main() {
            );
          }).toThrowError('Only template directives are allowed on template elements - check <template some-comp>');
        });
+    });
+
+    describe("dynamic component directives", () => {
+      it('should detect dynamic component', () => {
+        var results = createPipeline().process(el('<div some-dynamic-comp></div>'));
+        expect(results[0].componentDirective).toEqual(reader.read(SomeDynamicComponent));
+      });
+
+      it('should not allow multiple dynamic component directives on the same element', () => {
+        expect( () => {
+          createPipeline().process(
+            el('<div some-dynamic-comp some-dynamic-comp2></div>')
+          );
+        }).toThrowError(new RegExp('Multiple component directives not allowed on the same element'));
+      });
+
+      it('should not allow component and dynamic directives on the same element', () => {
+        expect( () => {
+          createPipeline().process(
+            el('<div some-dynamic-comp some-comp></div>')
+          );
+        }).toThrowError(new RegExp('Multiple component directives not allowed on the same element'));
+      });
     });
 
     describe('viewport directives', () => {
@@ -232,8 +261,17 @@ class SomeComponent {}
 @Component({selector: '[some-comp2]'})
 class SomeComponent2 {}
 
+@DynamicComponent({selector: '[some-dynamic-comp]'})
+class SomeDynamicComponent {}
+
+@DynamicComponent({selector: '[some-dynamic-comp2]'})
+class SomeDynamicComponent2 {}
+
 @Component()
 @Template({
-    directives: [SomeDecorator, SomeViewport, SomeViewport2, SomeComponent, SomeComponent2]
+    directives: [SomeDecorator, SomeViewport, SomeViewport2,
+      SomeComponent, SomeComponent2,
+      SomeDynamicComponent, SomeDynamicComponent2
+    ]
 })
 class MyComp {}

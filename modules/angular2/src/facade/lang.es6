@@ -22,12 +22,6 @@ if (assertionsEnabled_) {
 }
 export {int};
 
-export class FIELD {
-  constructor(definition) {
-    this.definition = definition;
-  }
-}
-
 export class CONST {}
 export class ABSTRACT {}
 export class IMPLEMENTS {}
@@ -214,6 +208,10 @@ export class RegExpWrapper {
     return input.match(regExp.single);
   }
   static matcher(regExp, input) {
+    // Reset regex state for the case
+    // someone did not loop over all matches
+    // last time.
+    regExp.multiple.lastIndex = 0;
     return {
       re: regExp.multiple,
       input: input
@@ -275,7 +273,13 @@ export class DateWrapper {
   static fromMillis(ms) {
     return new Date(ms);
   }
+  static toMillis(date:Date) {
+    return date.getTime();
+  }
   static now() {
     return new Date();
+  }
+  static toJson(date) {
+    return date.toJSON();
   }
 }

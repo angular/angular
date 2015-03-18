@@ -2,7 +2,8 @@ library angular.core.facade.dom;
 
 import 'dart:html';
 import 'dart:js' show JsObject;
-import 'dom_adapter.dart' show setRootDomAdapter, DomAdapter;
+import 'dom_adapter.dart' show setRootDomAdapter;
+import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import '../facade/browser.dart';
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
@@ -13,14 +14,14 @@ class _IdentitySanitizer implements NodeTreeSanitizer {
 
 final _identitySanitizer = new _IdentitySanitizer();
 
-class BrowserDomAdapter extends DomAdapter {
+class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static void makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
   @override
   final attrToPropMap = const {
-    'inner-html': 'innerHtml',
+    'innerHtml': 'innerHtml',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
@@ -150,8 +151,9 @@ class BrowserDomAdapter extends DomAdapter {
 
   String tagName(Element element) => element.tagName;
 
-  Map<String, String> attributeMap(Element element) =>
-      element.attributes;
+  Map<String, String> attributeMap(Element element) {
+    return new Map.from(element.attributes);
+  }
 
   String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
@@ -173,6 +175,10 @@ class BrowserDomAdapter extends DomAdapter {
       document.implementation.createHtmlDocument('fakeTitle');
 
   HtmlDocument defaultDoc() => document;
+  String getTitle() => document.title;
+  void setTitle(String newTitle) {
+    document.title = newTitle;
+  }
   bool elementMatches(n, String selector) =>
       n is Element && n.matches(selector);
   bool isTemplateElement(Element el) =>
@@ -192,4 +198,7 @@ class BrowserDomAdapter extends DomAdapter {
   bool isStyleRule(CssRule rule) => rule is CssStyleRule;
   bool isMediaRule(CssRule rule) => rule is CssMediaRule;
   bool isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
+  String getHref(AnchorElement element) {
+    return element.href;
+  }
 }

@@ -64,6 +64,9 @@ module.exports = function(gulp, plugins, config) {
           if (line.match(/\/test\/core\/compiler\/view_.*spec\.dart/)) {
             return;
           }
+          if (line.match(/\/test_lib_spec\.dart/)) {
+            return;
+          }
         }
         if (line.match(/\[hint\]/)) {
           hintCount++;

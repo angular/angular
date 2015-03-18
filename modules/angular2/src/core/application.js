@@ -1,5 +1,5 @@
 import {Injector, bind, OpaqueToken} from 'angular2/di';
-import {Type, FIELD, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
@@ -14,7 +14,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
@@ -43,9 +43,7 @@ function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(appDocumentToken).toValue(DOM.defaultDoc()),
       bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
-        // TODO(rado): inspect annotation here and warn if there are bindings,
-        // lightDomServices, and other component annotations that are skipped
-        // for bootstrapping components.
+        // TODO(rado): investigate whether to support bindings on root component.
         return reader.read(appComponentType);
       }, [DirectiveMetadataReader]),
 
@@ -69,7 +67,7 @@ function _injectorBindings(appComponentType): List<Binding> {
           // the angular application. Thus the context and lightDomInjector are
           // empty.
           var view = appProtoView.instantiate(null, eventManager);
-          view.hydrate(injector, null, new Object());
+          view.hydrate(injector, null, null, new Object(), null);
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
@@ -84,7 +82,9 @@ function _injectorBindings(appComponentType): List<Binding> {
         var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
         return new EventManager(plugins, zone);
       }, [VmTurnZone]),
-      bind(ShadowDomStrategy).toClass(NativeShadowDomStrategy),
+      bind(ShadowDomStrategy).toFactory(
+          (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+          [StyleUrlResolver, appDocumentToken]),
       Compiler,
       CompilerCache,
       TemplateResolver,
@@ -117,18 +117,122 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
   return zone;
 }
 
-// Multiple calls to this method are allowed. Each application would only share
-// _rootInjector, which is not user-configurable by design, thus safe to share.
-export function bootstrap(appComponentType: Type, bindings: List<Binding>=null, givenBootstrapErrorReporter: Function=null): Promise {
+/**
+ * Bootstrapping for Angular applications.
+ *
+ * You instantiate an Angular application by explicitly specifying a component to use as the root component for your
+ * application via the `bootstrap()` method.
+ *
+ * ## Simple Example
+ *
+ * Assuming this `index.html`:
+ *
+ * ```html
+ * <html>
+ *   <!-- load Angular script tags here. -->
+ *   <body>
+ *     <my-app>loading...</my-app>
+ *   </body>
+ * </html>
+ * ```
+ *
+ * An application is bootstrapped inside an existing browser DOM, typically `index.html`. Unlike Angular 1, Angular 2
+ * does not compile/process bindings in `index.html`. This is mainly for security reasons, as well as architectural
+ * changes in Angular 2. This means that `index.html` can safely be processed using server-side technologies such as
+ * bindings. (which may use double-curly `{{ syntax }}` without collision from Angular 2 component double-curly
+ * `{{ syntax }}`.)
+ *
+ * We can use this script code:
+ *
+ * ```
+ * @Component({
+ *    selector: 'my-app'
+ * })
+ * @Template({
+ *    inline: 'Hello {{ name }}!'
+ * })
+ * class MyApp {
+ *   name:string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ *
+ * main() {
+ *   return bootstrap(MyApp);
+ * }
+ * ```
+ *
+ * When the app developer invokes `bootstrap()` with the root component `MyApp` as its argument, Angular performs the
+ * following tasks:
+ *
+ *  1. It uses the component's `selector` property to locate the DOM element which needs to be upgraded into
+ *     the angular component.
+ *  2. It creates a new child injector (from the primordial injector) and configures the injector with the component's
+ *     `services`. Optionally, you can also override the injector configuration for an app by invoking
+ *     `bootstrap` with the `componentServiceBindings` argument.
+ *  3. It creates a new [Zone] and connects it to the angular application's change detection domain instance.
+ *  4. It creates a shadow DOM on the selected component's host element and loads the template into it.
+ *  5. It instantiates the specified component.
+ *  6. Finally, Angular performs change detection to apply the initial data bindings for the application.
+ *
+ *
+ * ## Instantiating Multiple Applications on a Single Page
+ *
+ * There are two ways to do this.
+ *
+ *
+ * ### Isolated Applications
+ *
+ * Angular creates a new application each time that the `bootstrap()` method is invoked. When multiple applications
+ * are created for a page, Angular treats each application as independent within an isolated change detection and
+ * [Zone] domain. If you need to share data between applications, use the strategy described in the next
+ * section, "Applications That Share Change Detection."
+ *
+ *
+ * ### Applications That Share Change Detection
+ *
+ * If you need to bootstrap multiple applications that share common data, the applications must share a common
+ * change detection and zone. To do that, create a meta-component that lists the application components in its template.
+ * By only invoking the `bootstrap()` method once, with the meta-component as its argument, you ensure that only a single
+ * change detection zone is created and therefore data can be shared across the applications.
+ *
+ *
+ * ## Primordial Injector
+ *
+ * When working within a browser window, there are many singleton resources: cookies, title, location, and others.
+ * Angular services that represent these resources must likewise be shared across all Angular applications that
+ * occupy the same browser window.  For this reason, Angular creates exactly one global primordial injector which stores
+ * all shared services, and each angular application injector has the primordial injector as its parent.
+ *
+ * Each application has its own private injector as well. When there are multiple applications on a page, Angular treats
+ * each application injector's services as private to that application.
+ *
+ *
+ * # API
+ * - [appComponentType]: The root component which should act as the application. This is a reference to a [Type]
+ *   which is annotated with `@Component(...)`.
+ * - [componentServiceBindings]: An additional set of bindings that can be added to the [Component.services] to
+ *   override default injection behavior.
+ * - [errorReporter]: `function(exception:any, stackTrace:string)` a default error reporter for unhandled exceptions.
+ *
+ * Returns a [Promise] with the application`s private [Injector].
+ *
+ * @publicModule angular2/angular2
+ */
+export function bootstrap(appComponentType: Type,
+                          componentServiceBindings: List<Binding>=null,
+                          errorReporter: Function=null): Promise<Injector> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = _createVmZone(givenBootstrapErrorReporter);
+  var zone = _createVmZone(errorReporter);
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
-    var appInjector = _createAppInjector(appComponentType, bindings, zone);
+    var appInjector = _createAppInjector(appComponentType, componentServiceBindings, zone);
 
     PromiseWrapper.then(appInjector.asyncGet(appViewToken),
       (rootView) => {

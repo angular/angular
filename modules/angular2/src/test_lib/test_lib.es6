@@ -1,23 +1,166 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+import {bind} from 'angular2/di';
+
+import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+
+export {inject} from './test_injector';
+
 export {proxy} from 'rtts_assert/rtts_assert';
-export var describe = window.describe;
-export var xdescribe = window.xdescribe;
-export var ddescribe = window.ddescribe;
-export var it = window.it;
-export var xit = window.xit;
-export var iit = window.iit;
-export var beforeEach = window.beforeEach;
-export var afterEach = window.afterEach;
-export var expect = window.expect;
+
+var _global = typeof window === 'undefined' ? global : window;
+
+export var afterEach = _global.afterEach;
+export var expect = _global.expect;
+
 export var IS_DARTIUM = false;
+export var IS_NODEJS = typeof window === 'undefined';
+
+export class AsyncTestCompleter {
+  _done: Function;
+
+  constructor(done: Function) {
+    this._done = done;
+  }
+
+  done() {
+    this._done();
+  }
+}
+
+var jsmBeforeEach = _global.beforeEach;
+var jsmDescribe = _global.describe;
+var jsmDDescribe = _global.ddescribe;
+var jsmXDescribe = _global.xdescribe;
+var jsmIt = _global.it;
+var jsmIIt = _global.iit;
+var jsmXIt = _global.xit;
+
+var runnerStack = [];
+var inIt = false;
+
+var testBindings;
+
+class BeforeEachRunner {
+  constructor(parent: BeforeEachRunner) {
+    this._fns = [];
+    this._parent = parent;
+  }
+
+  beforeEach(fn: FunctionWithParamTokens) {
+    this._fns.push(fn);
+  }
+
+  run(injector) {
+    if (this._parent) this._parent.run();
+    this._fns.forEach((fn) => fn.execute(injector));
+  }
+}
+
+// Reset the test bindings before each test
+jsmBeforeEach(() => { testBindings = []; });
+
+function _describe(jsmFn, ...args) {
+  var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
+  var runner = new BeforeEachRunner(parentRunner);
+  runnerStack.push(runner);
+  var suite = jsmFn(...args);
+  runnerStack.pop();
+  return suite;
+}
+
+export function describe(...args) {
+  return _describe(jsmDescribe, ...args);
+}
+
+export function ddescribe(...args) {
+  return _describe(jsmDDescribe, ...args);
+}
+
+export function xdescribe(...args) {
+  return _describe(jsmXDescribe, ...args);
+}
+
+export function beforeEach(fn) {
+  if (runnerStack.length > 0) {
+    // Inside a describe block, beforeEach() uses a BeforeEachRunner
+    var runner = runnerStack[runnerStack.length - 1];
+    if (!(fn instanceof FunctionWithParamTokens)) {
+      fn = inject([], fn);
+    }
+    runner.beforeEach(fn);
+  } else {
+    // Top level beforeEach() are delegated to jasmine
+    jsmBeforeEach(fn);
+  }
+}
+
+/**
+ * Allows overriding default bindings defined in test_injector.js.
+ *
+ * The given function must return a list of DI bindings.
+ *
+ * Example:
+ *
+ *   beforeEachBindings(() => [
+ *     bind(Compiler).toClass(MockCompiler),
+ *     bind(SomeToken).toValue(myValue),
+ *   ]);
+ */
+export function beforeEachBindings(fn) {
+  jsmBeforeEach(() => {
+    var bindings = fn();
+    if (!bindings) return;
+    testBindings = [...testBindings, ...bindings];
+  });
+}
+
+function _it(jsmFn, name, fn) {
+  var runner = runnerStack[runnerStack.length - 1];
+
+  jsmFn(name, function(done) {
+    var async = false;
+
+    var completerBinding = bind(AsyncTestCompleter).toFactory(() => {
+      // Mark the test as async when an AsyncTestCompleter is injected in an it()
+      if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
+      async = true;
+      return new AsyncTestCompleter(done);
+    });
+
+    var injector = createTestInjector([...testBindings, completerBinding]);
+
+    runner.run(injector);
+
+    if (!(fn instanceof FunctionWithParamTokens)) {
+      fn = inject([], fn);
+    }
+    inIt = true;
+    fn.execute(injector);
+    inIt = false;
+
+    if (!async) done();
+  });
+}
+
+export function it(name, fn) {
+  return _it(jsmIt, name, fn);
+}
+
+export function xit(name, fn) {
+  return _it(jsmXIt, name, fn);
+}
+
+export function iit(name, fn) {
+  return _it(jsmIIt, name, fn);
+}
 
 // To make testing consistent between dart and js
-window.print = function(msg) {
-  if (window.dump) {
-    window.dump(msg);
+_global.print = function(msg) {
+  if (_global.dump) {
+    _global.dump(msg);
   } else {
-    window.console.log(msg);
+    _global.console.log(msg);
   }
 };
 
@@ -25,7 +168,7 @@ window.print = function(msg) {
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-window.Map.prototype.jasmineToString = function() {
+_global.Map.prototype.jasmineToString = function() {
   var m = this;
   if (!m) {
     return ''+m;
@@ -37,7 +180,7 @@ window.Map.prototype.jasmineToString = function() {
   return `{ ${res.join(',')} }`;
 }
 
-window.beforeEach(function() {
+_global.beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
     toEqual: function(util, customEqualityTesters) {
@@ -148,17 +291,25 @@ export class SpyObject {
   }
 }
 
-
 function elementText(n) {
   var hasNodes = (n) => {var children = DOM.childNodes(n); return children && children.length > 0;}
+  if (!IS_NODEJS) {
+    if (n instanceof Comment)         return '';
 
-  if (n instanceof Comment)         return '';
+    if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
+    if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
+      return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
+    if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
+    if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
 
-  if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
-  if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
-    return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
-  if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
-  if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
-
-  return n.textContent;
+    return n.textContent;
+  } else {
+    if (n instanceof Array) {
+      return n.map((nn) => elementText(nn)).join("");
+    } else if (hasNodes(n)) {
+      return elementText(DOM.childNodesAsList(n));
+    } else {
+      return DOM.getText(n);
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {Template} from 'angular2/src/core/annotations/template';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/facade/lang';
@@ -6,6 +7,7 @@ import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection
 import {reflector} from 'angular2/src/reflection/reflection';
 
 
+@Injectable()
 export class TemplateResolver {
   _cache: Map;
 

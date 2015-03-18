@@ -11,21 +11,24 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
+import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
 
-const ARIA_PREFIX = 'aria-';
+const ARIA_PREFIX = 'aria';
 var ariaSettersCache = StringMapWrapper.create();
 
 function ariaSetterFactory(attrName:string) {
   var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
+  var ariaAttrName;
 
   if (isBlank(setterFn)) {
+    ariaAttrName = camelCaseToDashCase(attrName);
     setterFn = function(element, value) {
       if (isPresent(value)) {
-        DOM.setAttribute(element, attrName, stringify(value));
+        DOM.setAttribute(element, ariaAttrName, stringify(value));
       } else {
-        DOM.removeAttribute(element, attrName);
+        DOM.removeAttribute(element, ariaAttrName);
       }
     };
     StringMapWrapper.set(ariaSettersCache, attrName, setterFn);
@@ -34,7 +37,6 @@ function ariaSetterFactory(attrName:string) {
   return setterFn;
 }
 
-const CLASS_ATTR = 'class';
 const CLASS_PREFIX = 'class.';
 var classSettersCache = StringMapWrapper.create();
 
@@ -55,22 +57,23 @@ function classSetterFactory(className:string) {
   return setterFn;
 }
 
-const STYLE_ATTR = 'style';
 const STYLE_PREFIX = 'style.';
 var styleSettersCache = StringMapWrapper.create();
 
 function styleSetterFactory(styleName:string, stylesuffix:string) {
   var cacheKey = styleName + stylesuffix;
   var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
+  var dashCasedStyleName;
 
   if (isBlank(setterFn)) {
+    dashCasedStyleName = camelCaseToDashCase(styleName);
     setterFn = function(element, value) {
       var valAsStr;
       if (isPresent(value)) {
         valAsStr = stringify(value);
-        DOM.setStyle(element, styleName, valAsStr + stylesuffix);
+        DOM.setStyle(element, dashCasedStyleName, valAsStr + stylesuffix);
       } else {
-        DOM.removeStyle(element, styleName);
+        DOM.removeStyle(element, dashCasedStyleName);
       }
     };
     StringMapWrapper.set(classSettersCache, cacheKey, setterFn);
@@ -132,6 +135,11 @@ export class ElementBinderBuilder extends CompileStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var elementBinder = null;
+    var parentElementBinder = null;
+    var distanceToParentBinder = this._getDistanceToParentBinder(parent, current);
+    if (isPresent(parent)) {
+      parentElementBinder = parent.inheritedElementBinder;
+    }
     if (current.hasBindings) {
       var protoView = current.inheritedProtoView;
       var protoInjectorWasBuilt = isBlank(parent) ? true :
@@ -140,8 +148,9 @@ export class ElementBinderBuilder extends CompileStep {
       var currentProtoElementInjector = protoInjectorWasBuilt ?
           current.inheritedProtoElementInjector : null;
 
-      elementBinder = protoView.bindElement(currentProtoElementInjector,
-        current.componentDirective, current.viewportDirective);
+      elementBinder = protoView.bindElement(parentElementBinder, distanceToParentBinder,
+          currentProtoElementInjector, current.componentDirective, current.viewportDirective);
+      current.distanceToParentBinder = 0;
 
       if (isPresent(current.textNodeBindings)) {
         this._bindTextNodes(protoView, current);
@@ -152,11 +161,21 @@ export class ElementBinderBuilder extends CompileStep {
       if (isPresent(current.eventBindings)) {
         this._bindEvents(protoView, current);
       }
-      this._bindDirectiveProperties(current.getAllDirectives(), current);
+      if (isPresent(current.contentTagSelector)) {
+        elementBinder.contentTagSelector = current.contentTagSelector;
+      }
+      var directives = current.getAllDirectives();
+      this._bindDirectiveProperties(directives, current);
+      this._bindDirectiveEvents(directives, current);
     } else if (isPresent(parent)) {
-      elementBinder = parent.inheritedElementBinder;
+      elementBinder = parentElementBinder;
+      current.distanceToParentBinder = distanceToParentBinder;
     }
     current.inheritedElementBinder = elementBinder;
+  }
+
+  _getDistanceToParentBinder(parent, current) {
+    return isPresent(parent) ? parent.distanceToParentBinder + 1 : 0;
   }
 
   _bindTextNodes(protoView, compileElement) {
@@ -182,7 +201,9 @@ export class ElementBinderBuilder extends CompileStep {
       } else {
         property = this._resolvePropertyName(property);
         //TODO(pk): special casing innerHtml, see: https://github.com/angular/angular/issues/789
-        if (DOM.hasProperty(compileElement.element, property) || StringWrapper.equals(property, 'innerHtml')) {
+        if (StringWrapper.equals(property, 'innerHTML')) {
+          setterFn = (element, value) => DOM.setInnerHTML(element, value);
+        } else if (DOM.hasProperty(compileElement.element, property) || StringWrapper.equals(property, 'innerHtml')) {
           setterFn = reflector.setter(property);
         }
       }
@@ -199,6 +220,19 @@ export class ElementBinderBuilder extends CompileStep {
     });
   }
 
+  _bindDirectiveEvents(directives: List<DirectiveMetadata>, compileElement: CompileElement) {
+    for (var directiveIndex = 0; directiveIndex < directives.length; directiveIndex++) {
+      var directive = directives[directiveIndex];
+      var annotation = directive.annotation;
+      if (isBlank(annotation.events)) continue;
+      var protoView = compileElement.inheritedProtoView;
+      StringMapWrapper.forEach(annotation.events, (action, eventName) => {
+        var expression = this._parser.parseAction(action, compileElement.elementDescription);
+        protoView.bindEvent(eventName, expression, directiveIndex);
+      });
+    }
+  }
+
   _bindDirectiveProperties(directives: List<DirectiveMetadata>,
                            compileElement: CompileElement) {
     var protoView = compileElement.inheritedProtoView;
@@ -208,12 +242,11 @@ export class ElementBinderBuilder extends CompileStep {
       var annotation = directive.annotation;
       if (isBlank(annotation.bind)) continue;
       StringMapWrapper.forEach(annotation.bind, (bindConfig, dirProp) => {
-        var bindConfigParts = this._splitBindConfig(bindConfig);
-        var elProp = bindConfigParts[0];
-        var pipes = ListWrapper.slice(bindConfigParts, 1, bindConfigParts.length);
+        var pipes = this._splitBindConfig(bindConfig);
+        var elProp = ListWrapper.removeAt(pipes, 0);
 
         var bindingAst = isPresent(compileElement.propertyBindings) ?
-          MapWrapper.get(compileElement.propertyBindings, elProp) :
+          MapWrapper.get(compileElement.propertyBindings, dashCaseToCamelCase(elProp)) :
             null;
 
         if (isBlank(bindingAst)) {
@@ -230,7 +263,7 @@ export class ElementBinderBuilder extends CompileStep {
             directiveIndex,
             fullExpAstWithBindPipes,
             dirProp,
-            reflector.setter(dirProp)
+            reflector.setter(dashCaseToCamelCase(dirProp))
           );
         }
       });
@@ -238,8 +271,7 @@ export class ElementBinderBuilder extends CompileStep {
   }
 
   _splitBindConfig(bindConfig:string) {
-    var parts = StringWrapper.split(bindConfig, RegExpWrapper.create("\\|"));
-    return ListWrapper.map(parts, (s) => s.trim());
+    return ListWrapper.map(bindConfig.split('|'), (s) => s.trim());
   }
 
   _resolvePropertyName(attrName:string) {

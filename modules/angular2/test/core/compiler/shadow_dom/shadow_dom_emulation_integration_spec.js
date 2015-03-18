@@ -1,4 +1,16 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  IS_NODEJS,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import {StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
@@ -38,12 +50,15 @@ export function main() {
     var urlResolver = new UrlResolver();
     var styleUrlResolver = new StyleUrlResolver(urlResolver);
     var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+    var strategies = {
+      "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
+      "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
+    }
+    if (!IS_NODEJS) {
+      StringMapWrapper.set(strategies, "native", new NativeShadowDomStrategy(styleUrlResolver));
+    }
 
-    StringMapWrapper.forEach({
-        "native" : new NativeShadowDomStrategy(styleUrlResolver),
-        "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
-        "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div')),
-      },
+    StringMapWrapper.forEach(strategies,
       (strategy, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
@@ -77,7 +92,19 @@ export function main() {
             });
         }
 
-        it('should support multiple content tags', (done) => {
+        it('should support simple components', inject([AsyncTestCompleter], (async) => {
+          var temp = '<simple>' +
+            '<div>A</div>' +
+            '</simple>';
+
+          compile(temp, [Simple], (view, lc) => {
+            expect(view.nodes).toHaveText('SIMPLE(A)');
+
+            async.done();
+          });
+        }));
+
+        it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div>B</div>' +
             '<div>C</div>' +
@@ -86,11 +113,11 @@ export function main() {
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
             expect(view.nodes).toHaveText('(A, BC)');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should redistribute only direct children', (done) => {
+        it('should redistribute only direct children', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div>B<div class="left">A</div></div>' +
             '<div>C</div>' +
@@ -98,11 +125,11 @@ export function main() {
 
           compile(temp, [MultipleContentTagsComponent], (view, lc) => {
             expect(view.nodes).toHaveText('(, BAC)');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should redistribute direct child viewcontainers when the light dom changes", (done) => {
+        it("should redistribute direct child viewcontainers when the light dom changes", inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div><div template="manual" class="left">A</div></div>' +
             '<div>B</div>' +
@@ -123,11 +150,11 @@ export function main() {
 
             expect(view.nodes).toHaveText('(, B)');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should redistribute when the light dom changes", (done) => {
+        it("should redistribute when the light dom changes", inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
             '<div template="manual" class="left">A</div>' +
             '<div>B</div>' +
@@ -148,11 +175,11 @@ export function main() {
 
             expect(view.nodes).toHaveText('(, B)');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should support nested components", (done) => {
+        it("should support nested components", inject([AsyncTestCompleter], (async) => {
           var temp = '<outer-with-indirect-nested>' +
             '<div>A</div>' +
             '<div>B</div>' +
@@ -161,11 +188,11 @@ export function main() {
           compile(temp, [OuterWithIndirectNestedComponent], (view, lc) => {
             expect(view.nodes).toHaveText('OUTER(SIMPLE(AB))');
 
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it("should support nesting with content being direct child of a nested component", (done) => {
+        it("should support nesting with content being direct child of a nested component", inject([AsyncTestCompleter], (async) => {
           var temp = '<outer>' +
             '<div template="manual" class="left">A</div>' +
             '<div>B</div>' +
@@ -181,37 +208,36 @@ export function main() {
             lc.tick();
 
             expect(view.nodes).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        // Enable once dom-write queue is implemented and onDehydrate is implemented
-        //it('should redistribute when the shadow dom changes', (done) => {
-        //  var temp = '<conditional-content>' +
-        //    '<div class="left">A</div>' +
-        //    '<div>B</div>' +
-        //    '<div>C</div>' +
-        //    '</conditional-content>';
-        //
-        //
-        //  compile(temp, (view, lc) => {
-        //    var cmp = view.elementInjectors[0].get(ConditionalContentComponent);
-        //
-        //    expect(view.nodes).toHaveText('(, ABC)');
-        //
-        //    cmp.showLeft();
-        //    lc.tick();
-        //
-        //    expect(view.nodes).toHaveText('(A, BC)');
-        //
-        //    cmp.hideLeft()
-        //    lc.tick();
-        //
-        //    expect(view.nodes).toHaveText('(, ABC)');
-        //
-        //    done();
-        //  });
-        //});
+        it('should redistribute when the shadow dom changes', inject([AsyncTestCompleter], (async) => {
+          var temp = '<conditional-content>' +
+            '<div class="left">A</div>' +
+            '<div>B</div>' +
+            '<div>C</div>' +
+            '</conditional-content>';
+
+
+          compile(temp, [ConditionalContentComponent, AutoViewportDirective], (view, lc) => {
+            var cmp = view.elementInjectors[0].get(ConditionalContentComponent);
+
+            expect(view.nodes).toHaveText('(, ABC)');
+
+            cmp.showLeft();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(A, BC)');
+
+            cmp.hideLeft();
+            lc.tick();
+
+            expect(view.nodes).toHaveText('(, ABC)');
+
+            async.done();
+          });
+        }));
 
         //Implement once NgElement support changing a class
         //it("should redistribute when a class has been added or removed");
@@ -297,7 +323,7 @@ class MultipleContentTagsComponent {
 
 @Component({selector: 'conditional-content'})
 @Template({
-  inline: '<div>(<div template="auto: cond"><content select=".left"></content></div>, <content></content>)</div>',
+  inline: '<div>(<div *auto="cond"><content select=".left"></content></div>, <content></content>)</div>',
   directives: [AutoViewportDirective]
 })
 class ConditionalContentComponent  {
@@ -353,6 +379,6 @@ class MyComp {
 
 function createView(pv) {
   var view = pv.instantiate(null, null);
-  view.hydrate(new Injector([]), null, {});
+  view.hydrate(new Injector([]), null, null, {}, null);
   return view;
 }

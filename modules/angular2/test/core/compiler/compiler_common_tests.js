@@ -1,4 +1,15 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, el, IS_DARTIUM} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  el,
+  expect,
+  iit,
+  inject,
+  IS_DARTIUM,
+  it,
+} from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
@@ -51,7 +62,7 @@ export function runCompilerCommonTests() {
             urlResolver, new ComponentUrlMapper());
         }
 
-        it('should run the steps and return the ProtoView of the root element', (done) => {
+        it('should run the steps and return the ProtoView of the root element', inject([AsyncTestCompleter], (async) => {
           var rootProtoView = new ProtoView(null, null, null);
           var compiler = createCompiler( (parent, current, control) => {
             current.inheritedProtoView = rootProtoView;
@@ -59,21 +70,21 @@ export function runCompilerCommonTests() {
           tplResolver.setTemplate(MainComponent, new Template({inline: '<div></div>'}));
           compiler.compile(MainComponent).then( (protoView) => {
             expect(protoView).toBe(rootProtoView);
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should use the inline template', (done) => {
+        it('should use the inline template', inject([AsyncTestCompleter], (async) => {
           var compiler = createCompiler( (parent, current, control) => {
             current.inheritedProtoView = new ProtoView(current.element, null, null);
           });
           compiler.compile(MainComponent).then( (protoView) => {
             expect(DOM.getInnerHTML(protoView.element)).toEqual('inline component');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should wait for async styles to be resolved', (done) => {
+        it('should wait for async styles to be resolved', inject([AsyncTestCompleter], (async) => {
           var styleResolved = false;
 
           var completer = PromiseWrapper.completer();
@@ -95,16 +106,17 @@ export function runCompilerCommonTests() {
           completer.resolve(null);
           pvPromise.then((protoView) => {
             expect(styleResolved).toEqual(true);
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should load nested components', (done) => {
+        it('should load nested components', inject([AsyncTestCompleter], (async) => {
           var compiler = createCompiler( (parent, current, control) => {
             if (DOM.hasClass(current.element, 'nested')) {
               current.componentDirective = reader.read(NestedComponent);
+              current.hasNestedView = true;
               current.inheritedProtoView = parent.inheritedProtoView;
-              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
             } else {
               current.inheritedProtoView = new ProtoView(current.element, null, null);
             }
@@ -113,11 +125,11 @@ export function runCompilerCommonTests() {
           compiler.compile(MainComponent).then( (protoView) => {
             var nestedView = protoView.elementBinders[0].nestedProtoView;
             expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should cache compiled components', (done) => {
+        it('should cache compiled components', inject([AsyncTestCompleter], (async) => {
           var compiler = createCompiler( (parent, current, control) => {
             current.inheritedProtoView = new ProtoView(current.element, null, null);
           });
@@ -128,16 +140,16 @@ export function runCompilerCommonTests() {
             return compiler.compile(MainComponent);
           }).then( (protoView) => {
             expect(firstProtoView).toBe(protoView);
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should re-use components being compiled', (done) => {
+        it('should re-use components being compiled', inject([AsyncTestCompleter], (async) => {
           var nestedElBinders = [];
           var compiler = createCompiler( (parent, current, control) => {
             current.inheritedProtoView = new ProtoView(current.element, null, null);
             if (DOM.hasClass(current.element, 'nested')) {
-              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
               current.componentDirective = reader.read(NestedComponent);
               ListWrapper.push(nestedElBinders, current.inheritedElementBinder);
             }
@@ -146,21 +158,22 @@ export function runCompilerCommonTests() {
             new Template({inline: '<div><div class="nested"></div><div class="nested"></div></div>'}));
           compiler.compile(MainComponent).then( (protoView) => {
             expect(nestedElBinders[0].nestedProtoView).toBe(nestedElBinders[1].nestedProtoView);
-            done();
+            async.done();
           });
-        });
+        }));
 
-        it('should allow recursive components', (done) => {
+        it('should allow recursive components', inject([AsyncTestCompleter], (async) => {
           var compiler = createCompiler( (parent, current, control) => {
+            current.hasNestedView = true;
             current.inheritedProtoView = new ProtoView(current.element, null, null);
-            current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+            current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
             current.componentDirective = reader.read(RecursiveComponent);
           });
           compiler.compile(RecursiveComponent).then( (protoView) => {
             expect(protoView.elementBinders[0].nestedProtoView).toBe(protoView);
-            done();
+            async.done();
           });
-        });
+        }));
       });
     });
 
@@ -176,13 +189,14 @@ export function runCompilerCommonTests() {
       }
 
       function createNestedComponentSpec(name, resolver: TemplateResolver, error:string = null) {
-        it(`should load nested components ${name}`, (done) => {
+        it(`should load nested components ${name}`, inject([AsyncTestCompleter], (async) => {
 
           var compiler = createCompiler((parent, current, control) => {
             if (DOM.hasClass(current.element, 'parent')) {
+              current.hasNestedView = true;
               current.componentDirective = reader.read(NestedComponent);
               current.inheritedProtoView = parent.inheritedProtoView;
-              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null);
+              current.inheritedElementBinder = current.inheritedProtoView.bindElement(null, 0, null);
             } else {
               current.inheritedProtoView = new ProtoView(current.element, null, null);
             }
@@ -193,14 +207,14 @@ export function runCompilerCommonTests() {
               var nestedView = protoView.elementBinders[0].nestedProtoView;
               expect(error).toBeNull();
               expect(DOM.getInnerHTML(nestedView.element)).toEqual('nested component');
-              done();
+              async.done();
             },
             function(compileError) {
               expect(compileError.message).toEqual(error);
-              done();
+              async.done();
             }
           );
-        });
+        }));
       }
 
       var templateResolver = new FakeTemplateResolver();
@@ -229,24 +243,22 @@ export function runCompilerCommonTests() {
       createNestedComponentSpec('(error -> sync)', templateResolver,
         'Failed to load the template for ParentComponent');
 
-      // TODO(vicb): Check why errors this fails with Dart
-      // TODO(vicb): The Promise is rejected with the correct error but an exc is thrown before
-      //templateResolver = new FakeTemplateResolver();
-      //templateResolver.setSync(ParentComponent);
-      //templateResolver.setError(NestedComponent);
-      //createNestedComponentSpec('(sync -> error)', templateResolver,
-      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
-      //
-      //templateResolver = new FakeTemplateResolver();
-      //templateResolver.setAsync(ParentComponent);
-      //templateResolver.setError(NestedComponent);
-      //createNestedComponentSpec('(async -> error)', templateResolver,
-      //  'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+      templateResolver = new FakeTemplateResolver();
+      templateResolver.setSync(ParentComponent);
+      templateResolver.setError(NestedComponent);
+      createNestedComponentSpec('(sync -> error)', templateResolver,
+        'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
+
+      templateResolver = new FakeTemplateResolver();
+      templateResolver.setAsync(ParentComponent);
+      templateResolver.setError(NestedComponent);
+      createNestedComponentSpec('(async -> error)', templateResolver,
+        'Failed to load the template for NestedComponent -> Failed to compile ParentComponent');
 
     });
 
     describe('URL resolution', () => {
-      it('should resolve template URLs by combining application, component and template URLs', (done) => {
+      it('should resolve template URLs by combining application, component and template URLs', inject([AsyncTestCompleter], (async) => {
         var steps = [new MockStep((parent, current, control) => {
           current.inheritedProtoView = new ProtoView(current.element, null, null);
         })];
@@ -265,9 +277,9 @@ export function runCompilerCommonTests() {
         tplResolver.setTemplate(MainComponent, template);
         compiler.compile(MainComponent).then((protoView) => {
           expect(tplLoader.getTemplateUrl(template)).toEqual('http://www.app.com/cmp/tpl.html');
-          done();
+          async.done();
         });
-      })
+      }))
     });
   });
 }

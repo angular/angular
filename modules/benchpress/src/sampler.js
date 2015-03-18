@@ -9,7 +9,7 @@ import { Reporter } from './reporter';
 import { WebDriverExtension } from './web_driver_extension';
 import { WebDriverAdapter } from './web_driver_adapter';
 
-import { Options } from './sample_options';
+import { Options } from './common_options';
 import { MeasureValues} from './measure_values';
 
 /**
@@ -23,8 +23,6 @@ import { MeasureValues} from './measure_values';
 export class Sampler {
   // TODO(tbosch): use static values when our transpiler supports them
   static get BINDINGS() { return _BINDINGS; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get TIME() { return _TIME; }
 
   _driver:WebDriverAdapter;
   _driverExtension:WebDriverExtension;
@@ -34,14 +32,14 @@ export class Sampler {
   _forceGc:boolean;
   _prepare:Function;
   _execute:Function;
-  _time:Function;
+  _now:Function;
 
   constructor({
-    driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, time
+    driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, now
   }:{
     driver: WebDriverAdapter,
     driverExtension: WebDriverExtension, metric: Metric, reporter: Reporter,
-    validator: Validator, prepare: Function, execute: Function, time: Function
+    validator: Validator, prepare: Function, execute: Function, now: Function
   }={}) {
     this._driver = driver;
     this._driverExtension = driverExtension;
@@ -51,7 +49,7 @@ export class Sampler {
     this._forceGc = forceGc;
     this._prepare = prepare;
     this._execute = execute;
-    this._time = time;
+    this._now = now;
   }
 
   sample():Promise<SampleState> {
@@ -96,7 +94,7 @@ export class Sampler {
   }
 
   _report(state:SampleState, metricValues:StringMap):Promise<SampleState> {
-    var measureValues = new MeasureValues(state.completeSample.length, this._time(), metricValues);
+    var measureValues = new MeasureValues(state.completeSample.length, this._now(), metricValues);
     var completeSample = ListWrapper.concat(state.completeSample, [measureValues]);
     var validSample = this._validator.validate(completeSample);
     var resultPromise = this._reporter.reportMeasureValues(measureValues);
@@ -118,11 +116,9 @@ export class SampleState {
   }
 }
 
-var _TIME = new OpaqueToken('Sampler.time');
-
 var _BINDINGS = [
   bind(Sampler).toFactory(
-    (driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, time) => new Sampler({
+    (driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, now) => new Sampler({
       driver: driver,
       driverExtension: driverExtension,
       reporter: reporter,
@@ -134,14 +130,11 @@ var _BINDINGS = [
       // special null object, which is expensive.
       prepare: prepare !== false ? prepare : null,
       execute: execute,
-      time: time
+      now: now
     }),
     [
       WebDriverAdapter, WebDriverExtension, Metric, Reporter, Validator,
-      Options.FORCE_GC, Options.PREPARE, Options.EXECUTE, _TIME
+      Options.FORCE_GC, Options.PREPARE, Options.EXECUTE, Options.NOW
     ]
-  ),
-  bind(Options.FORCE_GC).toValue(false),
-  bind(Options.PREPARE).toValue(false),
-  bind(_TIME).toValue( () => DateWrapper.now() )
+  )
 ];

@@ -267,6 +267,11 @@ export function main() {
       expect(injector.get(Car)).toBeAnInstanceOf(Car);
     });
 
+    it('should support null values', () => {
+      var injector = new Injector([bind('null').toValue(null)]);
+      expect(injector.get('null')).toBe(null);
+    });
+
     describe("default bindings", function () {
       it("should be used when no matching binding found", function () {
         var injector = new Injector([], {defaultBindings: true});

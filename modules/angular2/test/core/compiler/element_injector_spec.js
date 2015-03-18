@@ -1,15 +1,15 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy} from 'angular2/test_lib';
-import {isBlank, isPresent, FIELD, IMPLEMENTS} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
+import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, List, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter} from 'angular2/src/core/annotations/events';
+import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
-import {View} from 'angular2/src/core/compiler/view';
+import {ProtoView, View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
 
@@ -74,6 +74,17 @@ class NeedsEventEmitter {
   }
 }
 
+class NeedsPropertySetter {
+  propSetter;
+  constructor(@PropertySetter('title') propSetter: Function) {
+    this.propSetter = propSetter;
+  }
+
+  setProp(value) {
+    this.propSetter(value);
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -102,7 +113,8 @@ class DirectiveWithDestroy {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var appInjector = new Injector([]);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -115,10 +127,10 @@ export function main() {
   }
 
   function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, preBuiltObjects = null) {
-    if (isBlank(lightDomAppInjector)) lightDomAppInjector = new Injector([]);
+    if (isBlank(lightDomAppInjector)) lightDomAppInjector = appInjector;
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
-    var inj = proto.instantiate(null, null, null);
+    var inj = proto.instantiate(null, null);
     var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
 
     inj.instantiateDirectives(lightDomAppInjector, shadowDomAppInjector, preBuilt);
@@ -131,12 +143,12 @@ export function main() {
     var inj = new Injector([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
-    var parent = protoParent.instantiate(null, null, null);
+    var parent = protoParent.instantiate(null, null);
 
     parent.instantiateDirectives(inj, null, parentPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
-    var child = protoChild.instantiate(parent, null, null);
+    var child = protoChild.instantiate(parent, null);
     child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
 
     return child;
@@ -149,11 +161,11 @@ export function main() {
     var shadowInj = inj.createChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
-    var host = protoParent.instantiate(null, null, null);
+    var host = protoParent.instantiate(null, null);
     host.instantiateDirectives(inj, shadowInj, hostPreBuildObjects);
 
     var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings, false, 1);
-    var shadow = protoChild.instantiate(null, host, null);
+    var shadow = protoChild.instantiate(null, host);
     shadow.instantiateDirectives(shadowInj, null, null);
 
     return shadow;
@@ -186,9 +198,9 @@ export function main() {
         var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
         var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
 
-        var p = protoParent.instantiate(null, null, null);
-        var c1 = protoChild1.instantiate(p, null, null);
-        var c2 = protoChild2.instantiate(p, null, null);
+        var p = protoParent.instantiate(null, null);
+        var c1 = protoChild1.instantiate(p, null);
+        var c2 = protoChild2.instantiate(p, null);
 
         expect(humanize(p, [
           [p, 'parent'],
@@ -203,8 +215,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, null);
-          var c = protoChild.instantiate(p, null, null);
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
 
           expect(c.directParent()).toEqual(p);
         });
@@ -214,8 +226,8 @@ export function main() {
           var protoParent = new ProtoElementInjector(null, 0, []);
           var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
 
-          var p = protoParent.instantiate(null, null, null);
-          var c = protoChild.instantiate(p, null, null);
+          var p = protoParent.instantiate(null, null);
+          var c = protoChild.instantiate(p, null);
 
           expect(c.directParent()).toEqual(null);
         });
@@ -272,7 +284,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -409,64 +421,98 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
 
         expect(inj.get(View)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewContainer', function () {
         var viewContainer = new ViewContainer(null, null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
       });
 
       it('should return bindingPropagationConfig', function () {
         var config = new BindingPropagationConfig(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, null, config));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, config));
 
         expect(inj.get(BindingPropagationConfig)).toEqual(config);
       });
+    });
+    
+    describe("createPrivateComponent", () => {
+      it("should create a private component", () => {
+        var inj = injector([]);
+        inj.createPrivateComponent(SimpleDirective, null);
+        expect(inj.getPrivateComponent()).toBeAnInstanceOf(SimpleDirective);
+      });
 
-      describe("light DOM", () => {
-        var lightDom, parentPreBuiltObjects;
+      it("should inject parent dependencies into the private component", () => {
+        var inj = parentChildInjectors([SimpleDirective], []);
+        inj.createPrivateComponent(NeedDirectiveFromAncestor, null);
+        expect(inj.getPrivateComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(inj.getPrivateComponent().dependency).toBeAnInstanceOf(SimpleDirective);
+      });
 
-        beforeEach(() => {
-          lightDom = new DummyLightDom();
-          parentPreBuiltObjects = new PreBuiltObjects(null, null, null, lightDom, null);
-        });
+      it("should not inject the proxy component into the children of the private component", () => {
+        var injWithPrivateComponent = injector([SimpleDirective]);
+        injWithPrivateComponent.createPrivateComponent(SomeOtherDirective, null);
 
-        it("should return destination light DOM from the parent's injector", function () {
-          var child = parentChildInjectors([], [], parentPreBuiltObjects);
+        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomInj = shadowDomProtoInjector.instantiate(null, injWithPrivateComponent);
 
-          expect(child.get(DestinationLightDom)).toEqual(lightDom);
-        });
+        expect(() => shadowDomInj.instantiateDirectives(appInjector, null, defaultPreBuiltObjects)).
+          toThrowError(new RegExp("No provider for SimpleDirective"));
+      });
 
-        it("should return null when parent's injector is a component boundary", function () {
-          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
+      it("should inject the private component into the children of the private component", () => {
+        var injWithPrivateComponent = injector([]);
+        injWithPrivateComponent.createPrivateComponent(SimpleDirective, null);
 
-          expect(child.get(DestinationLightDom)).toBeNull();
-        });
+        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomInjector = shadowDomProtoInjector.instantiate(null, injWithPrivateComponent);
+        shadowDomInjector.instantiateDirectives(appInjector, null, defaultPreBuiltObjects);
 
-        it("should return source light DOM from the closest component boundary", function () {
-          var child = hostShadowInjectors([], [], parentPreBuiltObjects);
+        expect(shadowDomInjector.get(NeedDirectiveFromAncestor)).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(shadowDomInjector.get(NeedDirectiveFromAncestor).dependency).toBeAnInstanceOf(SimpleDirective);
+      });
 
-          expect(child.get(SourceLightDom)).toEqual(lightDom);
-        });
+      it("should support rehydrating the private component", () => {
+        var inj = injector([]);
+        inj.createPrivateComponent(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}));
+        var dir = inj.getPrivateComponent();
+
+        inj.clearDirectives();
+
+        expect(inj.getPrivateComponent()).toBe(null);
+        expect(dir.onDestroyCounter).toBe(1);
+
+        inj.instantiateDirectives(null, null, null);
+
+        expect(inj.getPrivateComponent()).not.toBe(null);
       });
     });
-
+    
     describe('event emitters', () => {
       it('should be injectable and callable', () => {
-        var inj = injector([NeedsEventEmitter]);
+        var called = false;
+        var handlers = StringMapWrapper.create();
+        StringMapWrapper.set(handlers, 'click', (e, view) => { called = true;});
+        var pv = new ProtoView(null, null, null);
+        pv.eventHandlers = [handlers];
+        var view = new View(pv, null, MapWrapper.create());
+        var preBuildObject = new PreBuiltObjects(view, null, null, null);
+        var inj = injector([NeedsEventEmitter], null, null, preBuildObject);
         inj.get(NeedsEventEmitter).click();
+        expect(called).toEqual(true);
       });
 
       it('should be queryable through hasEventEmitter', () => {
@@ -475,5 +521,19 @@ export function main() {
         expect(inj.hasEventEmitter('move')).toBe(false);
       });
     });
+
+    describe('property setter', () => {
+      it('should be injectable and callable', () => {
+        var div = el('<div></div>');
+        var ngElement = new NgElement(div);
+
+        var preBuildObject = new PreBuiltObjects(null, ngElement, null, null);
+        var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
+        inj.get(NeedsPropertySetter).setProp('foobar');
+
+        expect(div.title).toEqual('foobar');
+      });
+    });
+
   });
 }

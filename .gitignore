@@ -3,6 +3,7 @@
 packages/
 .buildlog
 node_modules
+bower_components
 .pub
 .DS_STORE
 

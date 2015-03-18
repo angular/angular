@@ -1,5 +1,6 @@
+import {Injectable} from 'angular2/di';
 import {List, ListWrapper, SetWrapper} from "angular2/src/facade/collection";
-import {int, FIELD, NumberWrapper, StringJoiner, StringWrapper} from "angular2/src/facade/lang";
+import {int, NumberWrapper, StringJoiner, StringWrapper} from "angular2/src/facade/lang";
 
 export const TOKEN_TYPE_CHARACTER  = 1;
 export const TOKEN_TYPE_IDENTIFIER = 2;
@@ -8,6 +9,7 @@ export const TOKEN_TYPE_STRING     = 4;
 export const TOKEN_TYPE_OPERATOR   = 5;
 export const TOKEN_TYPE_NUMBER     = 6;
 
+@Injectable()
 export class Lexer {
   text:string;
   tokenize(text:string):List {

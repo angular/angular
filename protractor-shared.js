@@ -1,5 +1,6 @@
 // load traceur runtime as our tests are written in es6
 require('traceur/bin/traceur-runtime.js');
+var fs = require('fs-extra');
 
 var argv = require('yargs')
     .usage('Angular e2e/perf test options.')
@@ -35,7 +36,7 @@ var browsers = argv['browsers'].split(',');
 var CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc'],
   'perfLoggingPrefs': {
-    'traceCategories': 'blink.console,disabled-by-default-devtools.timeline'
+    'traceCategories': 'v8,blink.console,disabled-by-default-devtools.timeline'
   }
 };
 
@@ -122,17 +123,25 @@ var getBenchmarkFiles = function (benchmark, spec) {
 };
 
 var config = exports.config = {
-  // Disable waiting for Angular as we don't have an integration layer yet...
-  // TODO(tbosch): Implement a proper debugging API for Ng2.0, remove this here
-  // and the sleeps in all tests.
   onPrepare: function() {
-    browser.ignoreSynchronization = true;
-    var _get = browser.get;
-    var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 7000 : 3000;
-    browser.get = function() {
-      var result = _get.apply(this, arguments);
-      browser.sleep(sleepInterval);
-      return result;
+    patchProtractorWait(browser);
+    // During benchmarking, we need to open a new browser
+    // for every benchmark, otherwise the numbers can get skewed
+    // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
+    if (argv['benchmark']) {
+      var originalBrowser = browser;
+      var _tmpBrowser;
+      beforeEach(function() {
+        global.browser = originalBrowser.forkNewDriverInstance();
+        patchProtractorWait(global.browser);
+        global.element = global.browser.element;
+        global.$ = global.browser.$;
+        global.$$ = global.browser.$$;
+      });
+      afterEach(function() {
+        global.browser.quit();
+        global.browser = originalBrowser;
+      });
     }
   },
 
@@ -166,6 +175,20 @@ var config = exports.config = {
   }
 };
 
+// Disable waiting for Angular as we don't have an integration layer yet...
+// TODO(tbosch): Implement a proper debugging API for Ng2.0, remove this here
+// and the sleeps in all tests.
+function patchProtractorWait(browser) {
+  browser.ignoreSynchronization = true;
+  var _get = browser.get;
+  var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 7000 : 3000;
+  browser.get = function() {
+    var result = _get.apply(this, arguments);
+    browser.sleep(sleepInterval);
+    return result;
+  }
+}
+
 exports.createBenchpressRunner = function(options) {
   var nodeUuid = require('node-uuid');
   var benchpress = require('./dist/js/cjs/benchpress/benchpress');
@@ -186,13 +209,21 @@ exports.createBenchpressRunner = function(options) {
   if (process.env.GIT_SHA) {
     runId = process.env.GIT_SHA + ' ' + runId;
   }
+  var resultsFolder = './dist/benchmark_results';
+  fs.ensureDirSync(resultsFolder);
   var bindings = [
     benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
     benchpress.bind(benchpress.Options.FORCE_GC).toValue(argv['force-gc']),
     benchpress.bind(benchpress.Options.DEFAULT_DESCRIPTION).toValue({
       'lang': options.lang,
       'runId': runId
-    })
+    }),
+    benchpress.MultiReporter.createBindings([
+      benchpress.ConsoleReporter,
+      benchpress.JsonFileReporter
+    ]),
+    benchpress.JsonFileReporter.BINDINGS,
+    benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
   if (argv['benchmark']) {
     bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));

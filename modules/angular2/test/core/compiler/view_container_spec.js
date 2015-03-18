@@ -10,8 +10,9 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular2/change_detection';
 
 function createView(nodes) {
-  var view = new View(null, nodes, new DynamicProtoChangeDetector(null), MapWrapper.create());
-  view.init([], [], [], [], [], [], []);
+  var view = new View(null, nodes, MapWrapper.create());
+  var cd = new DynamicProtoChangeDetector(null).instantiate(view, [], null);
+  view.init(cd, [], [], [], [], [], [], [], [], []);
   return view;
 }
 
@@ -47,7 +48,8 @@ class HydrateAwareFakeView {
     return this.isHydrated;
   }
 
-  hydrate(_, __, ___) {
+
+  hydrate(_, __, ___, ____, _____) {
     this.isHydrated = true;
   }
 
@@ -71,8 +73,9 @@ export function main() {
       parentView = createView([dom.childNodes[0]]);
       protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null),
         new NativeShadowDomStrategy(null));
-      elementInjector = new ElementInjector(null, null, null, null);
-      viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector, null);
+      elementInjector = new ElementInjector(null, null, null);
+      viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
+        null);
       customViewWithOneNode = createView([el('<div>single</div>')]);
       customViewWithTwoNodes = createView([el('<div>one</div>'), el('<div>two</div>')]);
     });
@@ -95,7 +98,7 @@ export function main() {
       }
 
       beforeEach(() => {
-        viewContainer.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null, null);
         var fillerView = createView([el('<filler>filler</filler>')]);
         viewContainer.insert(fillerView);
       });
@@ -211,11 +214,11 @@ export function main() {
       var fancyView;
       beforeEach(() => {
         var parser = new Parser(new Lexer());
-        viewContainer.hydrate(new Injector([]), null);
+        viewContainer.hydrate(new Injector([]), null, null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
           new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
-        pv.bindElement(new ProtoElementInjector(null, 1, [SomeDirective]));
+        pv.bindElement(null, 0, new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null, null);
       });

@@ -1,15 +1,16 @@
-import {FIELD, isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter} from 'angular2/src/core/annotations/events';
-import {View, ProtoView} from 'angular2/src/core/compiler/view';
-import {LightDom, SourceLightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
+import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations'
-import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config'
+import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations';
+import {BindingPropagationConfig} from 'angular2/src/core/compiler/binding_propagation_config';
+import * as pclModule from 'angular2/src/core/compiler/private_component_location';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -23,18 +24,16 @@ class StaticKeys {
   viewId:number;
   ngElementId:number;
   viewContainerId:number;
-  destinationLightDomId:number;
-  sourceLightDomId:number;
   bindingPropagationConfigId:number;
+  privateComponentLocationId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(View), 'static')
-    this.viewId = Key.get(View).id;
+    this.viewId = Key.get(viewModule.View).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
-    this.destinationLightDomId = Key.get(DestinationLightDom).id;
-    this.sourceLightDomId = Key.get(SourceLightDom).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
+    this.privateComponentLocationId = Key.get(pclModule.PrivateComponentLocation).id;
   }
 
   static instance() {
@@ -90,34 +89,37 @@ class TreeNode {
 export class DirectiveDependency extends Dependency {
   depth:int;
   eventEmitterName:string;
+  propSetterName:string;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
-              properties:List, depth:int, eventEmitterName: string) {
+              properties:List, depth:int, eventEmitterName: string, propSetterName: string) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
+    this.propSetterName = propSetterName;
   }
 
   static createFrom(d:Dependency):Dependency {
-    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
-      d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._eventEmitterName(d.properties));
-  }
+    var depth = 0;
+    var eventName = null;
+    var propName = null;
+    var properties = d.properties;
 
-  static _depth(properties):int {
-    if (properties.length == 0) return 0;
-    if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
-    if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
-    return 0;
-  }
-
-  static _eventEmitterName(properties):string {
     for (var i = 0; i < properties.length; i++) {
-      if (properties[i] instanceof EventEmitter) {
-        return properties[i].eventName;
+      var property = properties[i];
+      if (property instanceof Parent) {
+        depth = 1;
+      } else if (property instanceof Ancestor) {
+        depth = MAX_DEPTH;
+      } else if (property instanceof EventEmitter) {
+        eventName = property.eventName;
+      } else if (property instanceof PropertySetter) {
+        propName = property.propName;
       }
     }
-    return null;
+
+    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties, depth,
+        eventName, propName);
   }
 }
 
@@ -146,20 +148,17 @@ export class DirectiveBinding extends Binding {
   }
 }
 
-
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
-  view:View;
+  view:viewModule.View;
   element:NgElement;
   viewContainer:ViewContainer;
-  lightDom:LightDom;
   bindingPropagationConfig:BindingPropagationConfig;
-  constructor(view, element:NgElement, viewContainer:ViewContainer, lightDom:LightDom,
+  constructor(view, element:NgElement, viewContainer:ViewContainer,
               bindingPropagationConfig:BindingPropagationConfig) {
     this.view = view;
     this.element = element;
     this.viewContainer = viewContainer;
-    this.lightDom = lightDom;
     this.bindingPropagationConfig = bindingPropagationConfig;
   }
 }
@@ -208,7 +207,7 @@ export class ProtoElementInjector  {
   _keyId9:int;
   parent:ProtoElementInjector;
   index:int;
-  view:View;
+  view:viewModule.View;
   distanceToParent:number;
 
   /** Whether the element is exported as $implicit. */
@@ -256,8 +255,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector, eventCallbacks):ElementInjector {
-    return new ElementInjector(this, parent, host, eventCallbacks);
+  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
+    return new ElementInjector(this, parent, host);
   }
 
   directParent(): ProtoElementInjector {
@@ -310,8 +309,10 @@ export class ElementInjector extends TreeNode {
   _obj9:any;
   _preBuiltObjects;
   _constructionCounter;
-  _eventCallbacks;
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector, eventCallbacks: Map) {
+  _privateComponent;
+  _privateComponentBinding:DirectiveBinding;
+
+  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
     super(parent);
     if (isPresent(parent) && isPresent(host)) {
       throw new BaseException('Only either parent or host is allowed');
@@ -329,7 +330,6 @@ export class ElementInjector extends TreeNode {
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
-    this._eventCallbacks = eventCallbacks;
     this._obj0 = null;
     this._obj1 = null;
     this._obj2 = null;
@@ -360,6 +360,9 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._binding7) && p._binding7.callOnDestroy) {this._obj7.onDestroy();}
     if (isPresent(p._binding8) && p._binding8.callOnDestroy) {this._obj8.onDestroy();}
     if (isPresent(p._binding9) && p._binding9.callOnDestroy) {this._obj9.onDestroy();}
+    if (isPresent(this._privateComponentBinding) && this._privateComponentBinding.callOnDestroy) {
+      this._privateComponent.onDestroy();
+    }
 
     this._obj0 = null;
     this._obj1 = null;
@@ -371,6 +374,7 @@ export class ElementInjector extends TreeNode {
     this._obj7 = null;
     this._obj8 = null;
     this._obj9 = null;
+    this._privateComponent = null;
 
     this._constructionCounter = 0;
   }
@@ -393,6 +397,15 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);
     if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);
     if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
+    if (isPresent(this._privateComponentBinding)) {
+      this._privateComponent = this._new(this._privateComponentBinding);
+    }
+  }
+
+  createPrivateComponent(componentType:Type, annotation:Directive) {
+    this._privateComponentBinding = DirectiveBinding.createFromType(componentType, annotation);
+    this._privateComponent = this._new(this._privateComponentBinding);
+    return this._privateComponent;
   }
 
   _checkShadowDomAppInjector(shadowDomAppInjector:Injector) {
@@ -433,12 +446,24 @@ export class ElementInjector extends TreeNode {
     }
   }
 
+  getPrivateComponent() {
+    return this._privateComponent;
+  }
+
+  getShadowDomAppInjector() {
+    return this._shadowDomAppInjector;
+  }
+
   directParent(): ElementInjector {
     return this._proto.distanceToParent < 2 ? this.parent : null;
   }
 
   _isComponentKey(key:Key) {
     return this._proto._binding0IsComponent && key.id === this._proto._keyId0;
+  }
+
+  _isPrivateComponentKey(key:Key) {
+    return isPresent(this._privateComponentBinding) && key.id === this._privateComponentBinding.key.id;
   }
 
   _new(binding:Binding) {
@@ -488,18 +513,22 @@ export class ElementInjector extends TreeNode {
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
+    if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
 
   _buildEventEmitter(dep) {
     var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    if (isPresent(this._eventCallbacks)) {
-      var callback = MapWrapper.get(this._eventCallbacks, dep.eventEmitterName);
-      if (isPresent(callback)) {
-        return ProtoView.buildInnerCallback(callback, view);
-      }
-    }
-    return (_) => {};
+    return (event) => {
+      view.triggerEventHandlers(dep.eventEmitterName, event, this._proto.index);
+    };
+  }
+
+  _buildPropSetter(dep) {
+    var ngElement = this._getPreBuiltObjectByKeyId(StaticKeys.instance().ngElementId);
+    var domElement = ngElement.domElement;
+    var setter = reflector.setter(dep.propSetterName);
+    return function(v) { setter(domElement, v) };
   }
 
   /*
@@ -535,6 +564,8 @@ export class ElementInjector extends TreeNode {
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
+    } else if (isPresent(this._host) && this._host._isPrivateComponentKey(key)) {
+      return this._host.getPrivateComponent();
     } else if (optional) {
       return this._appInjector(requestor).getOptional(key);
     } else {
@@ -560,12 +591,9 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
-    if (keyId === staticKeys.destinationLightDomId) {
-      var p:ElementInjector = this.directParent();
-      return isPresent(p) ? p._preBuiltObjects.lightDom : null;
-    }
-    if (keyId === staticKeys.sourceLightDomId)   {
-      return this._host._preBuiltObjects.lightDom;
+
+    if (keyId === staticKeys.privateComponentLocationId) {
+      return new pclModule.PrivateComponentLocation(this, this._preBuiltObjects.element, this._preBuiltObjects.view);
     }
 
     //TODO add other objects as needed

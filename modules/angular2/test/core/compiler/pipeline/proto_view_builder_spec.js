@@ -1,5 +1,6 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {dynamicChangeDetection} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {ProtoViewBuilder} from 'angular2/src/core/compiler/pipeline/proto_view_builder';
@@ -14,13 +15,13 @@ export function main() {
   describe('ProtoViewBuilder', () => {
     function createPipeline(variableBindings = null) {
       return new CompilePipeline([new MockStep((parent, current, control) => {
-        if (isPresent(current.element.getAttribute('viewroot'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
           current.isViewRoot = true;
         }
-        if (isPresent(current.element.getAttribute('var-binding'))) {
+        if (isPresent(DOM.getAttribute(current.element, 'var-binding'))) {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
-        current.inheritedElementBinder = new ElementBinder(null, null, null);
+        current.inheritedElementBinder = new ElementBinder(0, null, 0, null, null, null);
       }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
     }
 
@@ -48,6 +49,15 @@ export function main() {
       expect(results[1].inheritedElementBinder.nestedProtoView).toBe(results[2].inheritedProtoView);
     });
 
+    it('should set the parent proto view', () => {
+      var element = el('<div viewroot><template><a viewroot></a></template></div>');
+      var results = createPipeline().process(element);
+
+      var parentProtoView = results[1].inheritedProtoView;
+      var nestedProtoView = results[2].inheritedProtoView;
+      expect(nestedProtoView.parentProtoView).toBe(parentProtoView);
+    });
+
     it('should bind variables to the nested ProtoView', () => {
       var element = el('<div viewroot><template var-binding><a viewroot></a></template></div>');
       var results = createPipeline({
@@ -70,7 +80,7 @@ export function main() {
       }).process(element);
 
       var protoView = results[0].inheritedProtoView;
-      expect(protoView.protoContextLocals).toEqual(MapWrapper.createFromStringMap({
+      expect(protoView.protoLocals).toEqual(MapWrapper.createFromStringMap({
         'map2': null,
         'map1': null
       }));

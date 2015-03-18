@@ -4,9 +4,10 @@ export const RECORD_TYPE_SELF = 0;
 export const RECORD_TYPE_CONST = 1;
 export const RECORD_TYPE_PRIMITIVE_OP = 2;
 export const RECORD_TYPE_PROPERTY = 3;
-export const RECORD_TYPE_INVOKE_METHOD = 4;
-export const RECORD_TYPE_INVOKE_CLOSURE = 5;
-export const RECORD_TYPE_KEYED_ACCESS = 6;
+export const RECORD_TYPE_LOCAL = 4;
+export const RECORD_TYPE_INVOKE_METHOD = 5;
+export const RECORD_TYPE_INVOKE_CLOSURE = 6;
+export const RECORD_TYPE_KEYED_ACCESS = 7;
 export const RECORD_TYPE_PIPE = 8;
 export const RECORD_TYPE_INTERPOLATE = 9;
 

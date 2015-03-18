@@ -8,7 +8,7 @@ dependency_overrides:
   angular2:
     path: ../angular2
 dev_dependencies:
-  guinness: ">=0.1.16 <0.2.0"
+  guinness: ">=0.1.17 <0.2.0"
   benchpress:
     path: ../benchpress
 transformers:

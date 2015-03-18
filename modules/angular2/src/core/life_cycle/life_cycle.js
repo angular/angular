@@ -1,8 +1,10 @@
+import {Injectable} from 'angular2/di';
 import {ChangeDetector} from 'angular2/change_detection';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {isPresent} from 'angular2/src/facade/lang';
 
+@Injectable()
 export class LifeCycle {
   _errorHandler;
   _changeDetector:ChangeDetector;

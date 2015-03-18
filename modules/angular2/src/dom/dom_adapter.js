@@ -201,6 +201,12 @@ export class DomAdapter {
   defaultDoc() {
     throw _abstract();
   }
+  getTitle() {
+    throw _abstract();
+  }
+  setTitle(newTitle:string) {
+    throw _abstract();
+  }
   elementMatches(n, selector:string):boolean {
     throw _abstract();
   }
@@ -232,6 +238,15 @@ export class DomAdapter {
     throw _abstract();
   }
   isKeyframesRule(rule): boolean {
+    throw _abstract();
+  }
+  getHref(element): string {
+    throw _abstract();
+  }
+  resolveAndSetHref(element, baseUrl:string, href:string) {
+    throw _abstract();
+  }
+  cssToRules(css:string): List {
     throw _abstract();
   }
 }

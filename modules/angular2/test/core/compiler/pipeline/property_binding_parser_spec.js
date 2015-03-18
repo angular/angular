@@ -68,12 +68,21 @@ export function main() {
       // "(click[])" is not an expected syntax and is only used to validate the regexp
       results = createPipeline().process(el('<div (click[])="b()"></div>'));
       expect(MapWrapper.get(results[0].eventBindings, 'click[]').source).toEqual('b()');
+    });
 
+    it('should parse event handlers using () syntax as actions', () => {
+      var results = createPipeline().process(el('<div (click)="foo=bar"></div>'));
+      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('foo=bar');
     });
 
     it('should detect on- syntax', () => {
       var results = createPipeline().process(el('<div on-click="b()"></div>'));
       expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+    });
+
+    it('should parse event handlers using on- syntax as actions', () => {
+      var results = createPipeline().process(el('<div on-click="foo=bar"></div>'));
+      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('foo=bar');
     });
   });
 }

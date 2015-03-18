@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, Map, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {ElementBinderBuilder} from 'angular2/src/core/compiler/pipeline/element_binder_builder';
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
@@ -29,13 +29,13 @@ export function main() {
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
             var hasBinding = false;
-            if (isPresent(current.element.getAttribute('text-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'text-binding'))) {
               MapWrapper.forEach(textNodeBindings, (v,k) => {
                 current.addTextNodeBinding(k, parser.parseBinding(v, null));
               });
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('prop-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'prop-binding'))) {
               if (isPresent(propertyBindings)) {
                 MapWrapper.forEach(propertyBindings, (v,k) => {
                   current.addPropertyBinding(k, parser.parseBinding(v, null));
@@ -43,13 +43,13 @@ export function main() {
               }
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('event-binding'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'event-binding'))) {
               MapWrapper.forEach(eventBindings, (v,k) => {
                 current.addEventBinding(k, parser.parseAction(v, null));
               });
               hasBinding = true;
             }
-            if (isPresent(current.element.getAttribute('directives'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'directives'))) {
               hasBinding = true;
               for (var i=0; i<directives.length; i++) {
                 var dirMetadata = reflector.read(directives[i]);
@@ -61,13 +61,13 @@ export function main() {
               DOM.addClass(current.element, 'ng-binding');
             }
             if (isPresent(protoElementInjector) &&
-                (isPresent(current.element.getAttribute('text-binding')) ||
-                 isPresent(current.element.getAttribute('prop-binding')) ||
-                 isPresent(current.element.getAttribute('directives')) ||
-                 isPresent(current.element.getAttribute('event-binding')))) {
+                (isPresent(DOM.getAttribute(current.element, 'text-binding')) ||
+                 isPresent(DOM.getAttribute(current.element, 'prop-binding')) ||
+                 isPresent(DOM.getAttribute(current.element, 'directives')) ||
+                 isPresent(DOM.getAttribute(current.element, 'event-binding')))) {
               current.inheritedProtoElementInjector = protoElementInjector;
             }
-            if (isPresent(current.element.getAttribute('viewroot'))) {
+            if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
               current.isViewRoot = true;
               current.inheritedProtoView = new ProtoView(
                 current.element,
@@ -83,7 +83,7 @@ export function main() {
     function instantiateView(protoView) {
       evalContext = new Context();
       view = protoView.instantiate(null, null);
-      view.hydrate(new Injector([]), null, evalContext);
+      view.hydrate(new Injector([]), null, null, evalContext, null);
       changeDetector = view.changeDetector;
     }
 
@@ -137,7 +137,6 @@ export function main() {
 
       expect(pv.elementBinders[1].protoElementInjector).toBeNull();
     });
-
 
     it('should store the component directive', () => {
       var directives = [SomeComponentDirective];
@@ -339,11 +338,11 @@ export function main() {
 
       evalContext.prop1 = 'red';
       changeDetector.detectChanges();
-      expect(view.nodes[0].style.color).toEqual('red');
+      expect(DOM.getStyle(view.nodes[0], 'color')).toEqual('red');
 
       evalContext.prop1 = 'blue';
       changeDetector.detectChanges();
-      expect(view.nodes[0].style.color).toEqual('blue');
+      expect(DOM.getStyle(view.nodes[0], 'color')).toEqual('blue');
     });
 
     it('should bind style with a dot and suffix', () => {
@@ -379,8 +378,28 @@ export function main() {
       var results = pipeline.process(el('<div viewroot event-binding></div>'));
       var pv = results[0].inheritedProtoView;
 
-      var ast = MapWrapper.get(pv.elementBinders[0].events, 'event1');
-      expect(ast.eval(null)).toBe(2);
+      var eventMap = StringMapWrapper.get(pv.elementBinders[0].events, 'event1');
+      var ast = MapWrapper.get(eventMap, -1);
+      expect(ast.eval(null, null)).toBe(2);
+    });
+
+    it('should bind directive events', () => {
+      var directives = [SomeDecoratorWithEvent];
+      var protoElementInjector = new ProtoElementInjector(null, 0, directives, true);
+      var pipeline = createPipeline({
+        directives: directives,
+        protoElementInjector: protoElementInjector
+      });
+      var results = pipeline.process(el('<div viewroot directives></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      var directiveEvents = pv.elementBinders[0].events;
+      var eventMap = StringMapWrapper.get(directiveEvents, 'event');
+      // Get the cb AST for the directive at index 0 (SomeDecoratorWithEvent)
+      var ast = MapWrapper.get(eventMap, 0);
+
+      var context = new SomeDecoratorWithEvent();
+      expect(ast.eval(context, null)).toEqual('onEvent() callback');
     });
 
     it('should bind directive properties', () => {
@@ -513,6 +532,20 @@ class SomeDecoratorDirectiveWithBinding {
   constructor() {
     this.decorProp = null;
     this.decorProp2 = null;
+  }
+}
+
+@Decorator({
+  events: {'event': 'onEvent($event)'}
+})
+class SomeDecoratorWithEvent {
+  $event: string;
+
+  constructor() {
+    this.$event = 'onEvent'
+  }
+  onEvent(event) {
+    return `${event}() callback`;
   }
 }
 

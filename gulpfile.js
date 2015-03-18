@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var madge = require('madge');
 var merge = require('merge');
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
@@ -19,6 +20,7 @@ var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
+var transformCJSTests = require('./tools/build/transformCJSTests');
 var util = require('./tools/build/util');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
@@ -34,7 +36,7 @@ var _COMPILER_CONFIG_JS_DEFAULT = {
   modules: 'instantiate'
 };
 
-var _HTLM_DEFAULT_SCRIPTS_JS = [
+var _HTML_DEFAULT_SCRIPTS_JS = [
   {src: gulpTraceur.RUNTIME_PATH, mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       mimeType: 'text/javascript', copy: true},
@@ -205,16 +207,21 @@ var CONFIG = {
     },
     scriptsPerFolder: {
       js: {
-        '**': _HTLM_DEFAULT_SCRIPTS_JS,
+        '**': _HTML_DEFAULT_SCRIPTS_JS,
         'benchmarks/**':
           [
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTLM_DEFAULT_SCRIPTS_JS),
+          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
         'benchmarks_external/**':
           [
             { src: 'node_modules/angular/angular.js', mimeType: 'text/javascript', copy: true },
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTLM_DEFAULT_SCRIPTS_JS)
+          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
+        'benchmarks_external/**/*polymer*/**':
+          [
+            { src: 'bower_components/polymer/lib/polymer.html', copyOnly: true },
+            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
+          ]
       },
       dart: {
         '**': _HTML_DEFAULT_SCRIPTS_DART,
@@ -228,8 +235,26 @@ var CONFIG = {
   formatDart: {
     packageName: 'dart_style',
     args: ['dart_style:format', '-w', 'dist/dart']
+  },
+  test: {
+    js: {
+      cjs: [
+        '/angular2/test/change_detection/**/*_spec.js',
+        '/angular2/test/core/annotations/**/*_spec.js',
+        '/angular2/test/core/compiler/**/*_spec.js',
+        '/angular2/test/di/**/*_spec.js',
+        '/angular2/test/directives/**/*_spec.js',
+        '/angular2/test/facade/**/*_spec.js',
+        '/angular2/test/forms/**/*_spec.js',
+        '/angular2/test/mock/**/*_spec.js',
+        '/angular2/test/reflection/**/*_spec.js',
+        '/angular2/test/services/**/*_spec.js',
+        '/angular2/test/test_lib/**/*_spec.js'
+      ]
+    }
   }
 };
+CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
 
 // ------------
 // clean
@@ -299,12 +324,15 @@ gulp.task('build/transpile.js.prod', function(done) {
 });
 
 gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.js,
+  src: CONFIG.transpile.src.js.concat(['modules/**/*.cjs']),
   dest: CONFIG.dest.js.cjs,
   outputExt: 'js',
   options: CONFIG.transpile.options.js.cjs,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
+gulp.task('build/transformCJSTests', function() {
+  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js').pipe(transformCJSTests()).pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
+});
 
 gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.dart,
@@ -446,6 +474,25 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
   args: CONFIG.formatDart.args
 }));
 
+// ------------
+// check circular dependencies in Node.js context
+gulp.task('build/checkCircularDependencies', function (done) {
+  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
+    format: 'es6',
+    paths: [CONFIG.dest.js.dev.es6],
+    extensions: ['.js', '.es6'],
+    onParseFile: function(data) {
+      data.src = data.src.replace(/import \* as/g, "//import * as");
+    }
+  });
+  var circularDependencies = dependencyObject.circular().getArray();
+  if (circularDependencies.length > 0) {
+    console.log(circularDependencies);
+    process.exit(1);
+  }
+  done();
+});
+
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
@@ -481,17 +528,10 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
-gulp.task('docs/dgeni', function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/dgeni-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x.stack);
-    throw x;
-  }
-});
-
 var bower = require('bower');
+var jasmine = require('gulp-jasmine');
+var webserver = require('gulp-webserver');
+
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
@@ -503,36 +543,54 @@ gulp.task('docs/bower', function() {
   return bowerTask;
 });
 
-gulp.task('docs/assets', ['docs/bower'], function() {
-  return gulp.src('docs/bower_components/**/*')
-    .pipe(gulp.dest('dist/docs/lib'));
-});
 
-gulp.task('docs/app', function() {
-  return gulp.src('docs/app/**/*')
-    .pipe(gulp.dest('dist/docs'));
-});
+function createDocsTasks(public) {
+  var dgeniPackage = public ? './docs/public-docs-package' : './docs/dgeni-package';
+  var distDocsPath = public ? 'dist/public_docs' : 'dist/docs';
+  var taskPrefix = public ? 'public_docs' : 'docs';
 
-gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
-gulp.task('docs/watch', function() {
-  return gulp.watch('docs/app/**/*', ['docs/app']);
-});
+  gulp.task(taskPrefix + '/dgeni', function() {
+    try {
+      var dgeni = new Dgeni([require(dgeniPackage)]);
+      return dgeni.generate();
+    } catch(x) {
+      console.log(x.stack);
+      throw x;
+    }
+  });
 
-var jasmine = require('gulp-jasmine');
-gulp.task('docs/test', function () {
-  return gulp.src('docs/**/*.spec.js')
-      .pipe(jasmine({
-        includeStackTrace: true
+  gulp.task(taskPrefix + '/assets', ['docs/bower'], function() {
+    return gulp.src('docs/bower_components/**/*')
+      .pipe(gulp.dest(distDocsPath + '/lib'));
+  });
+
+  gulp.task(taskPrefix + '/app', function() {
+    return gulp.src('docs/app/**/*')
+      .pipe(gulp.dest(distDocsPath));
+  });
+
+  gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
+  gulp.task(taskPrefix + '/watch', function() {
+    return gulp.watch('docs/app/**/*', [taskPrefix + '/app']);
+  });
+
+  gulp.task(taskPrefix + '/test', function () {
+    return gulp.src('docs/**/*.spec.js')
+        .pipe(jasmine({
+          includeStackTrace: true
+        }));
+  });
+
+  gulp.task(taskPrefix + '/serve', function() {
+    gulp.src(distDocsPath + '/')
+      .pipe(webserver({
+        fallback: 'index.html'
       }));
-});
+  });
+}
 
-var webserver = require('gulp-webserver');
-gulp.task('docs/serve', function() {
-  gulp.src('dist/docs/')
-    .pipe(webserver({
-      fallback: 'index.html'
-    }));
-});
+createDocsTasks(true);
+createDocsTasks(false);
 
 // ------------------
 // karma tests
@@ -555,6 +613,9 @@ gulp.task('test.unit.js/ci', function (done) {
 gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+});
+gulp.task('test.unit.cjs', function (done) {
+  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine(/*{verbose: true, includeStackTrace: true}*/));
 });
 
 // ------------------
@@ -609,6 +670,7 @@ gulp.task('build.dart', function(done) {
 gulp.task('build.js.dev', function(done) {
   runSequence(
     ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
+    'build/checkCircularDependencies',
     done
   );
 });
@@ -624,6 +686,7 @@ gulp.task('build.js.cjs', function(done) {
   runSequence(
     ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
     ['build/linknodemodules.js.cjs'],
+    'build/transformCJSTests',
     done
   );
 });

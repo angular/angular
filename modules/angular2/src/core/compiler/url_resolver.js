@@ -1,6 +1,8 @@
+import {Injectable} from 'angular2/di';
 import {isPresent, isBlank, RegExpWrapper, BaseException} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+@Injectable()
 export class UrlResolver {
   static a;
 
@@ -12,8 +14,8 @@ export class UrlResolver {
 
   resolve(baseUrl: string, url: string): string {
     if (isBlank(baseUrl)) {
-      UrlResolver.a.href = url;
-      return UrlResolver.a.href;
+      DOM.resolveAndSetHref(UrlResolver.a, url, null);
+      return DOM.getHref(UrlResolver.a);
     }
 
     if (isBlank(url) || url == '') return baseUrl;
@@ -28,8 +30,8 @@ export class UrlResolver {
       return url;
     }
 
-    UrlResolver.a.href = baseUrl + '/../' + url;
-    return UrlResolver.a.href;
+    DOM.resolveAndSetHref(UrlResolver.a, baseUrl, url);
+    return DOM.getHref(UrlResolver.a);
   }
 }
 

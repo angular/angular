@@ -35,7 +35,8 @@ export class ProtoViewBuilder extends CompileStep {
     if (current.isViewRoot) {
       var protoChangeDetector = this.changeDetection.createProtoChangeDetector('dummy');
       inheritedProtoView = new ProtoView(current.element, protoChangeDetector,
-        this._shadowDomStrategy);
+        this._shadowDomStrategy, this._getParentProtoView(parent));
+
       if (isPresent(parent)) {
         if (isPresent(parent.inheritedElementBinder.nestedProtoView)) {
           throw new BaseException('Only one nested view per element is allowed');
@@ -55,16 +56,20 @@ export class ProtoViewBuilder extends CompileStep {
       inheritedProtoView = parent.inheritedProtoView;
     }
 
-    // The view's contextWithLocals needs to have a full set of variable names at construction time
+    // The view's locals needs to have a full set of variable names at construction time
     // in order to prevent new variables from being set later in the lifecycle. Since we don't want
     // to actually create variable bindings for the $implicit bindings, add to the
-    // protoContextLocals manually.
+    // protoLocals manually.
     if (isPresent(current.variableBindings)) {
       MapWrapper.forEach(current.variableBindings, (mappedName, varName) => {
-        MapWrapper.set(inheritedProtoView.protoContextLocals, mappedName, null);
+        MapWrapper.set(inheritedProtoView.protoLocals, mappedName, null);
       });
     }
 
     current.inheritedProtoView = inheritedProtoView;
+  }
+
+  _getParentProtoView(parent:CompileElement) {
+    return isPresent(parent) ? parent.inheritedProtoView : null;
   }
 }

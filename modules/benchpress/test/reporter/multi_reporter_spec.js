@@ -1,4 +1,15 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  afterEach,
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  describe,
+  expect,
+  iit,
+  inject,
+  it,
+  xit,
+} from 'angular2/test_lib';
 
 import { List, ListWrapper, StringMap } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
@@ -16,7 +27,7 @@ export function main() {
 
   describe('multi reporter', () => {
 
-    it('should reportMeasureValues to all', (done) => {
+    it('should reportMeasureValues to all', inject([AsyncTestCompleter], (async) => {
       var mv = new MeasureValues(0, DateWrapper.now(), {});
       createReporters(['m1', 'm2'])
         .then( (r) => r.reportMeasureValues(mv) )
@@ -26,11 +37,11 @@ export function main() {
           {'id': 'm1', 'values': mv},
           {'id': 'm2', 'values': mv}
         ]);
-        done();
+        async.done();
       });
-    });
+    }));
 
-    it('should reportSample to call', (done) => {
+    it('should reportSample to call', inject([AsyncTestCompleter], (async) => {
       var completeSample = [
         new MeasureValues(0, DateWrapper.now(), {}),
         new MeasureValues(1, DateWrapper.now(), {})
@@ -45,9 +56,9 @@ export function main() {
           {'id': 'm1', 'completeSample': completeSample, 'validSample': validSample},
           {'id': 'm2', 'completeSample': completeSample, 'validSample': validSample}
         ]);
-        done();
+        async.done();
       })
-    });
+    }));
 
   });
 }

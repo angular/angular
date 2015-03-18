@@ -1,14 +1,15 @@
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
-import {DomAdapter, setRootDomAdapter} from './dom_adapter';
+import {setRootDomAdapter} from './dom_adapter';
+import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
 var _attrToPropMap = {
-  'inner-html': 'innerHTML',
+  'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
+  'tabindex': 'tabIndex'
 };
 
-export class BrowserDomAdapter extends DomAdapter {
+export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() {
     setRootDomAdapter(new BrowserDomAdapter());
   }
@@ -79,7 +80,9 @@ export class BrowserDomAdapter extends DomAdapter {
     return res;
   }
   clearNodes(el) {
-    el.innerHTML = '';
+    for (var i = 0; i < el.childNodes.length; i++) {
+      this.remove(el.childNodes[i]);
+    }
   }
   appendChild(el, node) {
     el.appendChild(node);
@@ -215,6 +218,12 @@ export class BrowserDomAdapter extends DomAdapter {
   defaultDoc() {
     return document;
   }
+  getTitle() {
+    return document.title;
+  }
+  setTitle(newTitle:string) {
+    document.title = newTitle;
+  }
   elementMatches(n, selector:string):boolean {
     return n instanceof HTMLElement && n.matches(selector);
   }
@@ -257,5 +266,8 @@ export class BrowserDomAdapter extends DomAdapter {
   }
   isKeyframesRule(rule): boolean {
     return rule.type === CSSRule.KEYFRAMES_RULE;
+  }
+  getHref(el:Element): string {
+    return el.href;
   }
 }

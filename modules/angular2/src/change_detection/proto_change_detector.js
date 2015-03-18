@@ -34,6 +34,7 @@ import {
   ProtoRecord,
   RECORD_TYPE_SELF,
   RECORD_TYPE_PROPERTY,
+  RECORD_TYPE_LOCAL,
   RECORD_TYPE_INVOKE_METHOD,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
@@ -45,36 +46,44 @@ import {
 
 export class ProtoChangeDetector  {
   addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
-  instantiate(dispatcher:any):ChangeDetector{
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List):ChangeDetector{
     return null;
   }
 }
 
+export class BindingRecord {
+  ast:AST;
+  bindingMemento:any;
+  directiveMemento:any;
+
+  constructor(ast:AST, bindingMemento:any, directiveMemento:any) {
+    this.ast = ast;
+    this.bindingMemento = bindingMemento;
+    this.directiveMemento = directiveMemento;
+  }
+}
+
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
-  _records:List<ProtoRecord>;
-  _recordBuilder:ProtoRecordBuilder;
   _pipeRegistry:PipeRegistry;
+  _records:List<ProtoRecord>;
 
   constructor(pipeRegistry:PipeRegistry) {
     super();
     this._pipeRegistry = pipeRegistry;
-    this._records = null;
-    this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
-  }
-
-  instantiate(dispatcher:any) {
-    this._createRecordsIfNecessary();
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List) {
+    this._createRecordsIfNecessary(bindingRecords, variableBindings);
     return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records);
   }
 
-  _createRecordsIfNecessary() {
+  _createRecordsIfNecessary(bindingRecords:List, variableBindings:List) {
     if (isBlank(this._records)) {
-      var records = this._recordBuilder.records;
-      this._records = coalesce(records);
+      var recordBuilder = new ProtoRecordBuilder();
+      ListWrapper.forEach(bindingRecords, (r) => {
+        recordBuilder.addAst(r.ast, r.bindingMemento, r.directiveMemento, variableBindings);
+      });
+      this._records = coalesce(recordBuilder.records);
     }
   }
 }
@@ -82,29 +91,27 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
 var _jitProtoChangeDetectorClassCounter:number = 0;
 export class JitProtoChangeDetector extends ProtoChangeDetector {
   _factory:Function;
-  _recordBuilder:ProtoRecordBuilder;
   _pipeRegistry;
 
   constructor(pipeRegistry) {
     super();
     this._pipeRegistry = pipeRegistry;
     this._factory = null;
-    this._recordBuilder = new ProtoRecordBuilder();
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
-    this._recordBuilder.addAst(ast, bindingMemento, directiveMemento);
-  }
-
-  instantiate(dispatcher:any) {
-    this._createFactoryIfNecessary();
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List) {
+    this._createFactoryIfNecessary(bindingRecords, variableBindings);
     return this._factory(dispatcher, this._pipeRegistry);
   }
 
-  _createFactoryIfNecessary() {
+  _createFactoryIfNecessary(bindingRecords:List, variableBindings:List) {
     if (isBlank(this._factory)) {
+      var recordBuilder = new ProtoRecordBuilder();
+      ListWrapper.forEach(bindingRecords, (r) => {
+        recordBuilder.addAst(r.ast, r.bindingMemento, r.directiveMemento, variableBindings);
+      });
       var c = _jitProtoChangeDetectorClassCounter++;
-      var records = coalesce(this._recordBuilder.records);
+      var records = coalesce(recordBuilder.records);
       var typeName = `ChangeDetector${c}`;
       this._factory = new ChangeDetectorJITGenerator(typeName, records).generate();
     }
@@ -118,13 +125,13 @@ class ProtoRecordBuilder {
     this.records = [];
   }
 
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null) {
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null, variableBindings:List = null) {
     var last = ListWrapper.last(this.records);
     if (isPresent(last) && last.directiveMemento == directiveMemento) {
       last.lastInDirective = false;
     }
 
-    var pr = _ConvertAstIntoProtoRecords.convert(ast, bindingMemento, directiveMemento, this.records.length);
+    var pr = _ConvertAstIntoProtoRecords.convert(ast, bindingMemento, directiveMemento, this.records.length, variableBindings);
     if (! ListWrapper.isEmpty(pr)) {
       var last = ListWrapper.last(pr);
       last.lastInBinding = true;
@@ -139,19 +146,21 @@ class _ConvertAstIntoProtoRecords {
   protoRecords:List;
   bindingMemento:any;
   directiveMemento:any;
+  variableBindings:List;
   contextIndex:number;
   expressionAsString:string;
 
-  constructor(bindingMemento:any, directiveMemento:any, contextIndex:number, expressionAsString:string) {
+  constructor(bindingMemento:any, directiveMemento:any, contextIndex:number, expressionAsString:string, variableBindings:List) {
     this.protoRecords = [];
     this.bindingMemento = bindingMemento;
     this.directiveMemento = directiveMemento;
     this.contextIndex = contextIndex;
     this.expressionAsString = expressionAsString;
+    this.variableBindings = variableBindings;
   }
 
-  static convert(ast:AST, bindingMemento:any, directiveMemento:any, contextIndex:number) {
-    var c = new _ConvertAstIntoProtoRecords(bindingMemento, directiveMemento, contextIndex, ast.toString());
+  static convert(ast:AST, bindingMemento:any, directiveMemento:any, contextIndex:number, variableBindings:List) {
+    var c = new _ConvertAstIntoProtoRecords(bindingMemento, directiveMemento, contextIndex, ast.toString(), variableBindings);
     ast.visit(c);
     return c.protoRecords;
   }
@@ -172,13 +181,22 @@ class _ConvertAstIntoProtoRecords {
 
   visitAccessMember(ast:AccessMember) {
     var receiver = ast.receiver.visit(this);
-    return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
+    if (isPresent(this.variableBindings) && ListWrapper.contains(this.variableBindings, ast.name)) {
+      return this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
+    } else {
+      return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
+    }
   }
 
-  visitMethodCall(ast:MethodCall) {
+  visitMethodCall(ast:MethodCall) {;
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
-    return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
+    if (isPresent(this.variableBindings) && ListWrapper.contains(this.variableBindings, ast.name)) {
+      var target = this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
+      return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, "closure", null, args, null, target);
+    } else {
+      return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
+    }
   }
 
   visitFunctionCall(ast:FunctionCall) {

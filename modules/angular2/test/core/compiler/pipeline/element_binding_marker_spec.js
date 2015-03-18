@@ -101,7 +101,6 @@ export function main() {
       }).process(el('<div></div>'));
       assertBinding(results[0], true);
     });
-
   });
 }
 

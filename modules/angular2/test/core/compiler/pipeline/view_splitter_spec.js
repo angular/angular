@@ -25,6 +25,7 @@ export function main() {
       it('should move the content into a new <template> element and mark that as viewRoot', () => {
         var rootElement = el('<div><template if="true">a</template></div>');
         var results = createPipeline().process(rootElement);
+
         expect(DOM.getOuterHTML(results[1].element)).toEqual('<template if="true"></template>');
         expect(results[1].isViewRoot).toBe(false);
         expect(DOM.getOuterHTML(results[2].element)).toEqual('<template>a</template>');
@@ -60,7 +61,7 @@ export function main() {
 
       it('should work with top-level template node', () => {
         var rootElement = DOM.createTemplate('<div template>x</div>');
-        var originalChild = rootElement.content.childNodes[0];
+        var originalChild = DOM.content(rootElement).childNodes[0];
         var results = createPipeline().process(rootElement);
 
         expect(results[0].element).toBe(rootElement);
@@ -119,7 +120,7 @@ export function main() {
 
       it('should work with top-level template node', () => {
         var rootElement = DOM.createTemplate('<div *foo>x</div>');
-        var originalChild = rootElement.content.childNodes[0];
+        var originalChild = DOM.content(rootElement).childNodes[0];
         var results = createPipeline().process(rootElement);
 
         expect(results[0].element).toBe(rootElement);
