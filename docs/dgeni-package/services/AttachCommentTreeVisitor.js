@@ -16,7 +16,8 @@ module.exports = function AttachCommentTreeVisitor(ParseTreeVisitor, log) {
 
       if (this.currentComment) log.silly('comment: ' +
           this.currentComment.range.start.line + ' - ' +
-          this.currentComment.range.end.line);
+          this.currentComment.range.end.line + ' : ' +
+          this.currentComment.range.toString());
 
       ParseTreeVisitor.prototype.visit.call(this, tree);
     },
@@ -24,14 +25,18 @@ module.exports = function AttachCommentTreeVisitor(ParseTreeVisitor, log) {
     // Really we ought to subclass ParseTreeVisitor but this is fiddly in ES5 so
     // it is easier to simply override the prototype's method on the instance
     visitAny: function(tree) {
-      if (tree && tree.location && tree.location.start && this.currentComment) {
-        if (this.currentComment.range.end.offset < tree.location.start.offset) {
-          log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
+      if (tree && tree.location && tree.location.start && this.currentComment &&
+        this.currentComment.range.end.offset < tree.location.start.offset) {
+        log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
+        while (this.currentComment &&
+                  this.currentComment.range.end.offset < tree.location.start.offset) {
+          log.silly('comment: ' + this.currentComment.range.start.line + ' - ' +
+                                 this.currentComment.range.end.line + ' : ' +
+                                 this.currentComment.range.toString());
           tree.commentBefore = this.currentComment;
           this.currentComment.treeAfter = tree;
           this.index++;
           this.currentComment = this.comments[this.index];
-          if (this.currentComment) log.silly('comment: ' + this.currentComment.range.start.line + ' - ' + this.currentComment.range.end.line);
         }
       }
       return ParseTreeVisitor.prototype.visitAny.call(this, tree);
