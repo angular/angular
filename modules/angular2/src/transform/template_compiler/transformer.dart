@@ -1,4 +1,4 @@
-library angular2.src.transform.template_parser.transformer;
+library angular2.src.transform.template_compiler.transformer;
 
 import 'dart:async';
 
@@ -14,14 +14,14 @@ import 'generator.dart';
 
 /// [Transformer] responsible for detecting and processing Angular 2 templates.
 ///
-/// [TemplateParser] uses the Angular 2 `Compiler` to process the templates,
+/// [TemplateComplier] uses the Angular 2 `Compiler` to process the templates,
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
-class TemplateParser extends Transformer {
+class TemplateComplier extends Transformer {
   final TransformerOptions options;
 
-  TemplateParser(this.options);
+  TemplateComplier(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);

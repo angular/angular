@@ -7,7 +7,7 @@ import 'directive_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
-import 'template_parser/transformer.dart';
+import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/options.dart';
 
@@ -19,7 +19,7 @@ class AngularTransformerGroup extends TransformerGroup {
         [new DirectiveProcessor(options)],
         [new DirectiveLinker(options)],
         [new BindGenerator(options)],
-        [new TemplateParser(options)],
+        [new TemplateComplier(options)],
         [new ReflectionRemover(options)]
       ]) {
     formatter.init(new DartFormatter());
