@@ -314,6 +314,14 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
 
+var ts2dart = require('gulp-ts2dart');
+gulp.task('build/transpile.dart.experimental', function() {
+  gulp.src('modules/**/*.ts')
+      .pipe(ts2dart.transpile())
+      .pipe(ts2dart.format())
+      .pipe(gulp.dest(CONFIG.dest.dart))
+});
+
 // ------------
 // html
 
