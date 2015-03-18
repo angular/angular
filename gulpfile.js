@@ -25,6 +25,7 @@ var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var transformCJSTests = require('./tools/build/transformCJSTests');
+var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
@@ -117,7 +118,9 @@ var CONFIG = {
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
-      dart: ['modules/**/*.js']
+      dart: ['modules/**/*.js'],
+      // Migrating to TypeScript, one package at a time. See http://goo.gl/RzzVxn
+      ts2dart: ['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js']
     },
     options: {
       js: {
@@ -346,6 +349,27 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   options: CONFIG.transpile.options.dart,
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
+
+gulp.task('build/transpile.dart.ts2dart', function() {
+  return gulp.src(CONFIG.transpile.src.ts2dart)
+      .pipe(ts2dart.transpile())
+      .pipe(gulp.dest('dist/dart.ts2dart'))
+});
+gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
+  pub: DART_SDK.PUB,
+  packageName: CONFIG.formatDart.packageName,
+  args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
+}));
+
+// Temporary tasks for development on ts2dart. Will likely fail.
+gulp.task('build/transpile.dart.ts2dart.all', function() {
+  return gulp.src(CONFIG.transpile.src.dart)
+      .pipe(ts2dart.transpile())
+      .pipe(gulp.dest('dist/dart.ts2dart'));
+});
+gulp.task('ts2dart', function(done) {
+ runSequence('build/transpile.dart.ts2dart.all', 'build/format.dart.ts2dart', done);
+});
 
 // ------------
 // html
@@ -690,9 +714,9 @@ gulp.task('tests/transform.dart', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
-    ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
+    ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
-    'build/format.dart',
+    ['build/format.dart.ts2dart', 'build/format.dart'],
     'build/pubspec.dart',
     done
   );

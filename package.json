@@ -54,6 +54,7 @@
     "gulp-sourcemaps": "1.3.*",
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.16.*",
+    "gulp-ts2dart": "^1.0.0",
     "gulp-webserver": "^0.8.7",
     "js-yaml": "^3.2.7",
     "karma": "^0.12.23",
