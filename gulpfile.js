@@ -350,26 +350,12 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
 
-gulp.task('build/transpile.dart.ts2dart', function() {
-  return gulp.src(CONFIG.transpile.src.dart)
+var ts2dart = require('gulp-ts2dart');
+gulp.task('build/transpile.dart.experimental', function() {
+  gulp.src('modules/**/*.ts')
       .pipe(ts2dart.transpile())
-      .pipe(gulp.dest('dist/dart.ts2dart'))
-});
-gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
-  pub: DART_SDK.PUB,
-  packageName: CONFIG.formatDart.packageName,
-  args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
-}));
-
-// Temporary tasks for development on ts2dart. Will likely fail.
-gulp.task('build/transpile.dart.ts2dart.all', function() {
-  return gulp.src(CONFIG.transpile.src.js)
-      .pipe(ts2dart.transpile())
-      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
-      .pipe(gulp.dest('dist/dart.ts2dart'));
-});
-gulp.task('ts2dart', function(done) {
- runSequence('build/transpile.dart.ts2dart.all', 'build/format.dart.ts2dart', done);
+      .pipe(ts2dart.format())
+      .pipe(gulp.dest(CONFIG.dest.dart))
 });
 
 // ------------
