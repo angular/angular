@@ -7,51 +7,73 @@ import {Injectable} from 'angular2/di';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * Directive is an abstract concept, instead use concrete directives such as: [Component], [Decorator] or [Viewport].
+ * Directive is an abstract concept, instead use concrete directives: [Component], [DynamicComponent], [Decorator] 
+ * or [Viewport].
  *
  * A directive consists of a single directive annotation and a controller class. When the directive's [selector] matches
  * elements in the DOM, the following steps occur:
  *
- * 1. For each directive, the [elementInjector] resolves the directive's constructor arguments.
+ * 1. For each directive, the [ElementInjector] attempts to resolve the directive's constructor arguments.
  * 2. Angular instantiates directives for each matched element using [ElementInjector].
  *
- * Angular guarantees the following constraints:
- * - Directives are instantiated in a depth-first order, according to the order in which they appear in the [View].
- * - Injection cannot cross a Shadow DOM boundary. Angular looks for directives in the current template only.
- *
- * The constructor arguments for a directive may be:
- *  - other directives, as annotated by:
- *    - `@Ancestor() d:Type`: any directive that matches the type between the current element (excluded) and the Shadow DOM root.
- *    - `@Parent() d:Type`: any directive that matches the type on a direct parent element only.
- *    - `d:Type`: a directive on the current element only.
- *    - `@Children query:Query<Type>`: A live collection of direct child directives.
- *    - `@Descendants query:Query<Type>`: A live collection of any child directives.
- *  - element specific special objects:
- *    - [NgElement] (DEPRECATED: replacment coming)
- *    - [ViewContainer] (Only for [Viewport])
- *    - [BindingPropagation] Used for controlling change detection
- *  - Component level injectables as declared by [Component.services] of a parent compontent.
- *
- *
- *
+ * ## Understanding How Injection Works
+ * 
+ * There are three stages of injection resolution.
+ * - *Pre-existing Injectors*: 
+ *   - The terminal [Injector] cannot resolve dependencies. It either throws an error or, if the dependency was 
+ *     specified as `@Optional`, returns `null`.
+ *   - The primordial injector resolves browser singleton resources, such as: cookies, title, location, and others.
+ * - *Component Injectors*: Each `@Component` has its own [Injector], and they follow the same parent-child hierachy 
+ *     as the components in the DOM.
+ * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an [ElementInjector] 
+ *  which follow the same parent-child hiercachy as the DOM elements themselves.
+ * 
+ * When resolving dependencies, the current injector is asked to resolve the dependency first, and if it does not 
+ * have it, it delegates to the parent injector. 
+ * 
+ * Angular then resolves dependencies as follows, according to the order in which they appear in the [View]:
+ * 
+ * 1. Dependencies on element injectors and their parents until it encounters a Shadow DOM boundary
+ * 2. Dependencies on component injectors and their parents until it encounters the root component
+ * 3. Dependencies on pre-existing injectors
+ * 
+ * 
+ * The [ElementInjector] can inject other directives, element-specific special objects, or can delegate to the parent 
+ * injector.
+ * 
+ * To inject other directives, declare the constructor parameter as:
+ *    - `directive:DirectiveType`: a directive on the current element only
+ *    - `@Ancestor() d:Type`: any directive that matches the type between the current element (excluded) and the Shadow DOM root [TODO: what does (excluded) mean? Does this apply to the @Parent annotation also?]
+ *    - `@Parent() d:Type`: any directive that matches the type on a direct parent element only
+ *    - `@Children query:Query<Type>`: A live collection of direct child directives
+ *    - `@Descendants query:Query<Type>`: A live collection of any child directives
+ * 
+ * To inject element-specific special objects, declare the constructor parameter as:
+ *    - `element: NgElement` to obtain a DOM element (DEPRECATED: replacment coming)
+ *    - `viewContainer: ViewContainer` to control child template instantiation, for [Viewport] directives only
+ *    - `bindingPropagation: BindingPropagation` to control change detection in a more granular way
+ * 
  * ## Example
  *
- * Assuming this HTML structure:
+ * The following example demonstrates how dependency injection resolves constructor arguments in practice.
+ *
+ *
+ * Assume this HTML structure:
  *
  * ```
- * <div marker="1">
- *   <div marker="2">
- *     <div marker="3" example>
- *       <div marker="4">
- *         <div marker="5"></div>
+ * <div dependency="1">
+ *   <div dependency="2">
+ *     <div dependency="3" my-directive>
+ *       <div dependency="4">
+ *         <div dependency="5"></div>
  *       </div>
- *       <div marker="6"></div>
+ *       <div dependency="6"></div>
  *     </div>
  *   </div>
  * </div>
  * ```
  *
- * With the following `Marker` decorator and `SomeService` class:
+ * With the following `dependency` decorator and `SomeService` injectable class.
  *
  * ```
  * @Injectable()
@@ -59,98 +81,102 @@ import {Injectable} from 'angular2/di';
  * }
  *
  * @Decorator({
- *   selector: '[marker]',
+ *   selector: '[dependency]',
  *   bind: {
- *     'id':'marker'
+ *     'id':'dependency'
  *   }
  * })
- * class Marker {
+ * class Dependency {
  *   id:string;
  * }
  * ```
  *
- * We would like to demonstrate how we can inject different instances into a directive. In each case injecting
- * is as simple as asking for the type in the constructor.
- *
+ * Let's step through the different ways in which `MyDirective` could be declared...
  *
  * ### No injection
  *
- * A directive can have a constructor with no arguments in which case nothing is injected into it.
+ * Here the constructor is declared with no arguments, so nothing is injected into `MyDirective`.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
  *   constructor() {
  *   }
  * }
  * ```
  *
+ * This directive would return nothing for the example code above. [TODO: True? We spent a lot of time talking about 
+ * errors but in this case, there's nothing to error on, right? I don't understand the diff between "returns" and "injects" 
+ * when the example is showing a directive not the template. Which is the correct verb?]
  *
- * ### Injecting from application injector
+ * ### Component-level injection
  *
  * Directives can inject any injectable instance from the closest component injector or any of its parents.
- * To inject from component injector the directive list the dependency as such:
+ *
+ * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type from the parent
+ * component's injector.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(someService:SomeService) {
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(someService: SomeService) {
  *   }
  * }
  * ```
  *
+ * This directive would return `dependency=3` for the example code above. [TODO: True? Is "return" the right verb?]
+ * 
+ * ### Injecting a directive from the current element
  *
- * ### Injecting directive from current element
- *
- * Directives can inject other directives declared on the current element. If no such type is found the injection will
- * delegate to component injector which will throw an error (or optionally return null as described below).
+ * Directives can inject other directives declared on the current element.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(marker:Marker) {
- *     expect(marker.id).toEqual(2);
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(dependency: Dependency) {
+ *     expect(dependency.id).toEqual(2);
  *   }
  * }
  * ```
+ * This directive would also return `dependency=3` for the example code above. [TODO: True? Why is this the same?]
+ * 
  *
+ * ### Injecting a directive from a direct parent element
  *
- * ### Injecting directive from parent element
- *
- * Directives can inject other directives declared on parent element. If no such type is found the injection will
- * delegate to component injector which will throw.
+ * Directives can inject other directives declared on a direct parent element. By definition, a directive with a 
+ * `@Parent` annotation does not attempt to resolve dependencies for the current element, even if this would satisfy
+ * the dependency. [TODO: did I get the subject/verb right?]
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(@Parent() marker:Marker) {
- *     expect(marker.id).toEqual(2);
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(@Parent() dependency: Dependency) {
+ *     expect(dependency.id).toEqual(2);
  *   }
  * }
  * ```
+ * This directive would return `dependency=2` for the example code above. [TODO: True?]
+ * 
+ * ### Injecting a directive from any ancestor elements
  *
- * The `@Parent` annotation will explicitly skip the current element, even if the current element could satisfy
- * the dependency.
+ * Directives can inject other directives declared on any ancestor element, i.e. on the parent element and its parents.  
+ * By definition, a directive with an `@Ancestor` annotation does not attempt to resolve dependencies for the current 
+ * element, even if this would satisfy the dependency. [TODO: did I get the subject/verb right? ]
  *
- *
- * ### Injecting directive from ancestor element.
- *
- * Directives can inject other directives declared on ancestor (parent plus its parents) elements. If no such type is
- * found the injection will delegate to component injector which will throw.
- *
+ *  Unlike the `@Parent` which only checks the parent `@Ancestor` checks the parent, as well as its
+ * parents recursivly. If `dependency="2"` would not be present this injection would return `dependency="1"`.
+
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(@Ancestor() marker:Marker) {
- *     expect(marker.id).toEqual(2);
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(@Ancestor() dependency: Dependency) {
+ *     expect(dependency.id).toEqual(2);
  *   }
  * }
  * ```
- *
- * The `@Ancestor` annotation will explicitly skip the current element, even if the current element could satisfy
- * the dependency. Unlike the `@Parent` which only checks the parent `@Ancestor` checks the parent, as well as its
- * parents recursivly. If `marker="2"` would not be preset this injection would return `marker="1"`.
- *
+ * 
+ * This directive would also return `dependency=2` for the example code above. If `dependency=2` hadn't been declared 
+ * on the parent `div`, this directive would return `d[TODO: True?]
  *
  * ### Injecting query of child directives. [PENDING IMPLEMENTATION]
  *
@@ -159,10 +185,10 @@ import {Injectable} from 'angular2/di';
  * which can than be filled once the data is needed.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(@Children() markers:Query<Maker>) {
- *     // markers will eventuall contain: [4, 6]
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(@Children() dependencys:Query<Maker>) {
+ *     // dependencys will eventuall contain: [4, 6]
  *     // this will upbate if children are added/removed/moved,
  *     // for example by having for or if.
  *   }
@@ -175,10 +201,10 @@ import {Injectable} from 'angular2/di';
  * Similar to `@Children` but also includ childre of those children.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
- *   constructor(@Children() markers:Query<Maker>) {
- *     // markers will eventuall contain: [4, 5, 6]
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
+ *   constructor(@Children() dependencys:Query<Maker>) {
+ *     // dependencys will eventuall contain: [4, 5, 6]
  *     // this will upbate if children are added/removed/moved,
  *     // for example by having for or if.
  *   }
@@ -192,8 +218,8 @@ import {Injectable} from 'angular2/di';
  * use case angular supports `@Optional` injection.
  *
  * ```
- * @Decorator({ selector: '[example]' })
- * class Example {
+ * @Decorator({ selector: '[my-directive]' })
+ * class MyDirective {
  *   constructor(@Optional() @Ancestor() form:Form) {
  *     // this will search for a Form directive above itself,
  *     // and inject null if not found
@@ -523,6 +549,72 @@ export class Component extends Directive {
 }
 
 /**
+ * DynamicComponents allow loading child components impretivly.
+ * 
+ * A Component can be made of other compontents. This recursive nature must be resolved synchronously during the 
+ * component template processing. This means that all templates are resolved synchronously. This prevents lazy loading
+ * of code or delayed binding of views to the components. 
+ * 
+ * A DynamicComponent is a placeholder into which a regular component can be loaded imperativly and thus breaking
+ * the all components must be resolved synchronously restriction. Once loaded the component is premanent.
+ * 
+ * 
+ * ## Example
+ * @DynamicComponent({
+ *   selector: 'dynamic-comp'
+ * })
+ * class DynamicComp {
+ *   done;
+ *   constructor(loader:PrivateComponentLoader, location:PrivateComponentLocation) {
+ *     this.done = loader.load(HelloCmp, location);
+ *   }
+ * }
+ * 
+ * @Component({
+ *   selector: 'hello-cmp'
+ * })
+ * @Template({
+ *   inline: "{{greeting}}"
+ * })
+ * class HelloCmp {
+ *   greeting:string;
+ *   constructor() {
+ *     this.greeting = "hello";
+ *   }
+ * }
+ * 
+ * 
+ * @publicModule angular2/annotations
+ */
+export class DynamicComponent extends Directive {
+  services:any; //List;
+
+  @CONST()
+  constructor({
+    selector,
+    bind,
+    events,
+    services,
+    lifecycle
+    }:{
+      selector:string,
+      bind:Object,
+      events:Object,
+      services:List,
+      lifecycle:List
+    }={}) {
+    super({
+      selector: selector,
+      bind: bind,
+      events: events,
+      lifecycle: lifecycle
+    });
+
+    this.services = services;
+  }
+}
+
+/**
  * Decorators allow attaching behavior to DOM elements in a composable manner.
  *
  * Decorators:
@@ -576,37 +668,6 @@ export class Component extends Directive {
  * }
  * ```
  * @publicModule angular2/annotations
- */
-export class DynamicComponent extends Directive {
-  services:any; //List;
-
-  @CONST()
-  constructor({
-    selector,
-    bind,
-    events,
-    services,
-    lifecycle
-    }:{
-      selector:string,
-      bind:Object,
-      events:Object,
-      services:List,
-      lifecycle:List
-    }={}) {
-    super({
-      selector: selector,
-      bind: bind,
-      events: events,
-      lifecycle: lifecycle
-    });
-
-    this.services = services;
-  }
-}
-
-/**
- * @publicModule angular2/angular2
  */
 export class Decorator extends Directive {
   compileChildren: boolean;
