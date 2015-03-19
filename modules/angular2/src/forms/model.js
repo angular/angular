@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {nullValidator, controlGroupValidator} from './validators';
+import {Validators} from './validators';
 
 export const VALID = "VALID";
 export const INVALID = "INVALID";
@@ -26,7 +26,7 @@ export class AbstractControl {
   _parent:ControlGroup;
   validator:Function;
 
-  constructor(validator:Function = nullValidator) {
+  constructor(validator:Function) {
     this.validator = validator;
     this._updateNeeded = true;
     this._pristine = true;
@@ -76,7 +76,7 @@ export class AbstractControl {
 }
 
 export class Control extends AbstractControl {
-  constructor(value:any, validator:Function = nullValidator) {
+  constructor(value:any, validator:Function = Validators.nullValidator) {
     super(validator);
     this._value = value;
   }
@@ -101,7 +101,7 @@ export class ControlGroup extends AbstractControl {
   controls;
   optionals;
 
-  constructor(controls, optionals = null, validator:Function = controlGroupValidator) {
+  constructor(controls, optionals = null, validator:Function = Validators.group) {
     super(validator);
     this.controls = controls;
     this.optionals = isPresent(optionals) ? optionals : {};

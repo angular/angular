@@ -4,7 +4,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
-import * as validators from './validators';
+import {Validators} from './validators';
 
 @CONST()
 export class ControlValueAccessor {
@@ -79,7 +79,7 @@ export class ControlDirective {
     this._el = el;
     this.controlName = null;
     this.type = null;
-    this.validator = validators.nullValidator;
+    this.validator = Validators.nullValidator;
   }
 
   // TODO: vsavkin this should be moved into the constructor once static bindings
@@ -92,7 +92,7 @@ export class ControlDirective {
     this._groupDirective.addDirective(this);
 
     var c = this._control();
-    c.validator = validators.compose([c.validator, this.validator]);
+    c.validator = Validators.compose([c.validator, this.validator]);
 
     if (isBlank(this.valueAccessor)) {
       this.valueAccessor = controlValueAccessorFor(this.type);

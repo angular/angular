@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'angular2/test_lib';
-import {ControlGroup, Control, required, compose, controlGroupValidator, nullValidator} from 'angular2/forms';
+import {ControlGroup, Control, Validators} from 'angular2/forms';
 
 export function main() {
   function validator(key:string, error:any){
@@ -13,31 +13,31 @@ export function main() {
   describe("Validators", () => {
     describe("required", () => {
       it("should error on an empty string", () => {
-        expect(required(new Control(""))).toEqual({"required" : true});
+        expect(Validators.required(new Control(""))).toEqual({"required" : true});
       });
 
       it("should error on null", () => {
-        expect(required(new Control(null))).toEqual({"required" : true});
+        expect(Validators.required(new Control(null))).toEqual({"required" : true});
       });
 
       it("should not error on a non-empty string", () => {
-        expect(required(new Control("not empty"))).toEqual(null);
+        expect(Validators.required(new Control("not empty"))).toEqual(null);
       });
     });
 
     describe("compose", () => {
       it("should collect errors from all the validators", () => {
-        var c = compose([validator("a", true), validator("b", true)]);
+        var c = Validators.compose([validator("a", true), validator("b", true)]);
         expect(c(new Control(""))).toEqual({"a" : true, "b" : true});
       });
 
       it("should run validators left to right", () => {
-        var c = compose([validator("a", 1), validator("a", 2)]);
+        var c = Validators.compose([validator("a", 1), validator("a", 2)]);
         expect(c(new Control(""))).toEqual({"a" : 2});
       });
 
       it("should return null when no errors", () => {
-        var c = compose([nullValidator, nullValidator]);
+        var c = Validators.compose([Validators.nullValidator, Validators.nullValidator]);
         expect(c(new Control(""))).toEqual(null);
       });
     });
@@ -48,7 +48,7 @@ export function main() {
         var two = new Control("one", validator("b", true));
         var g = new ControlGroup({"one" : one, "two" : two});
 
-        expect(controlGroupValidator(g)).toEqual({
+        expect(Validators.group(g)).toEqual({
           "a" : [one],
           "b" : [two]
         });
@@ -59,7 +59,7 @@ export function main() {
         var two = new Control("two");
         var g = new ControlGroup({"one" : one, "two" : two});
 
-        expect(controlGroupValidator(g)).toEqual({
+        expect(Validators.group(g)).toEqual({
           "a": [one]
         });
       });
@@ -69,7 +69,7 @@ export function main() {
           "one" : new Control("one")
         });
 
-        expect(controlGroupValidator(g)).toEqual(null);
+        expect(Validators.group(g)).toEqual(null);
       });
     });
   });

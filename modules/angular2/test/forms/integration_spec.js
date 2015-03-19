@@ -31,9 +31,7 @@ import {Injector} from 'angular2/di';
 
 import {Component, Decorator, Template} from 'angular2/angular2';
 import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
-  ControlValueAccessor, RequiredValidatorDirective} from 'angular2/forms';
-
-import * as validators from 'angular2/src/forms/validators';
+  ControlValueAccessor, RequiredValidatorDirective, Validators} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {
@@ -261,7 +259,7 @@ export function main() {
         }));
 
         it("should use validators defined in the model", inject([AsyncTestCompleter], (async) => {
-          var form = new ControlGroup({"login": new Control("aa", validators.required)});
+          var form = new ControlGroup({"login": new Control("aa", Validators.required)});
           var ctx = new MyComp(form);
 
           var t = `<div [control-group]="form">

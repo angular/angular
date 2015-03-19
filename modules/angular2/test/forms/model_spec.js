@@ -1,24 +1,23 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el} from 'angular2/test_lib';
-import {ControlGroup, Control, OptionalControl} from 'angular2/forms';
-import * as validations from 'angular2/forms';
+import {ControlGroup, Control, OptionalControl, Validators} from 'angular2/forms';
 
 export function main() {
   describe("Form Model", () => {
     describe("Control", () => {
       describe("validator", () => {
         it("should run validator with the initial value", () => {
-          var c = new Control("value", validations.required);
+          var c = new Control("value", Validators.required);
           expect(c.valid).toEqual(true);
         });
 
         it("should rerun the validator when the value changes", () => {
-          var c = new Control("value", validations.required);
+          var c = new Control("value", Validators.required);
           c.updateValue(null);
           expect(c.valid).toEqual(false);
         });
 
         it("should return errors", () => {
-          var c = new Control(null, validations.required);
+          var c = new Control(null, Validators.required);
           expect(c.errors).toEqual({"required" : true});
         });
       });
@@ -83,7 +82,7 @@ export function main() {
       describe("validator", () => {
         it("should run the validator with the initial value (valid)", () => {
           var g = new ControlGroup({
-            "one": new Control('value', validations.required)
+            "one": new Control('value', Validators.required)
           });
 
           expect(g.valid).toEqual(true);
@@ -92,7 +91,7 @@ export function main() {
         });
 
         it("should run the validator with the initial value (invalid)", () => {
-          var one = new Control(null, validations.required);
+          var one = new Control(null, Validators.required);
           var g = new ControlGroup({"one": one});
 
           expect(g.valid).toEqual(false);
@@ -101,7 +100,7 @@ export function main() {
         });
 
         it("should run the validator with the value changes", () => {
-          var c = new Control(null, validations.required);
+          var c = new Control(null, Validators.required);
           var g = new ControlGroup({"one": c});
 
           c.updateValue("some value");
@@ -174,10 +173,10 @@ export function main() {
           expect(group.value).toEqual({"required" : "requiredValue", "optional" : "optionalValue"});
         });
 
-        it("should not run validations on an inactive component", () => {
+        it("should not run Validators on an inactive component", () => {
           var group = new ControlGroup({
-            "required": new Control("requiredValue", validations.required),
-            "optional": new Control("", validations.required)
+            "required": new Control("requiredValue", Validators.required),
+            "optional": new Control("", Validators.required)
           }, {
             "optional": false
           });
