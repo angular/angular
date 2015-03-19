@@ -214,6 +214,31 @@ export function main() {
         cd.detectChanges();
         cd.detectChanges();
         expect(DOM.getText(view.nodes[0])).toEqual('a-2;b-2;|c-1;|');
+
+        component.items = [['e'], ['f', 'g']];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('e-1;|f-2;g-2;|');
+
+        async.done();
+      });
+    }));
+
+    it('should repeat over nested arrays with no intermediate element', inject([AsyncTestCompleter], (async) => {
+      compileWithTemplate(
+          '<div><template [for] #item [of]="items">' +
+            '<div template="for #subitem of item">' +
+            '{{subitem}}-{{item.length}};' +
+          '</div></template></div>'
+      ).then((pv) => {
+        createView(pv);
+
+        component.items = [['a', 'b'], ['c']];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('a-2;b-2;c-1;');
+
+        component.items = [['e'], ['f', 'g']];
+        cd.detectChanges();
+        expect(DOM.getText(view.nodes[0])).toEqual('e-1;f-2;g-2;');
         async.done();
       });
     }));

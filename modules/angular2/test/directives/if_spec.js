@@ -116,6 +116,39 @@ export function main() {
       });
     }));
 
+    it('should handle nested if correctly', inject([AsyncTestCompleter], (async) => {
+      compileWithTemplate('<div><template [if]="booleanCondition"><copy-me *if="nestedBooleanCondition">hello</copy-me></template></div>').then((pv) => {
+        createView(pv);
+
+        component.booleanCondition = false;
+        cd.detectChanges();
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.nodes[0])).toEqual('');
+
+        component.booleanCondition = true;
+        cd.detectChanges();
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+
+        component.nestedBooleanCondition = false;
+        cd.detectChanges();
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.nodes[0])).toEqual('');
+
+        component.nestedBooleanCondition = true;
+        cd.detectChanges();
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+
+        component.booleanCondition = false;
+        cd.detectChanges();
+        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.nodes[0])).toEqual('');
+
+        async.done();
+      });
+    }));
+
     it('should update several nodes with if', inject([AsyncTestCompleter], (async) => {
       var templateString =
       '<div>' +
@@ -195,11 +228,13 @@ export function main() {
 @Component({selector: 'test-cmp'})
 class TestComponent {
   booleanCondition: boolean;
+  nestedBooleanCondition: boolean;
   numberCondition: number;
   stringCondition: string;
   functionCondition: Function;
   constructor() {
     this.booleanCondition = true;
+    this.nestedBooleanCondition = true;
     this.numberCondition = 1;
     this.stringCondition = "foo";
     this.functionCondition = function(s, n){
