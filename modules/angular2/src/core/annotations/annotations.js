@@ -556,7 +556,7 @@ export class Component extends Directive {
 }
 
 /**
- * A directive used for dynamically loading components.
+ * Directive used for dynamically loading components.
  *
  * Regular angular components are statically resolved. DynamicComponent allows to you resolve a component at runtime
  * instead by providing a placeholder into which a regular angular component can be dynamically loaded. Once loaded,
@@ -637,9 +637,9 @@ export class DynamicComponent extends Directive {
 /**
  * Directive that attaches behavior to DOM elements.
  *
- * A decorator directive attaches behavior to a DOM element in a composable manner. 
+ * A decorator directive attaches behavior to a DOM element in a composable manner.
  * (see: http://en.wikipedia.org/wiki/Composition_over_inheritance)
- * 
+ *
  * Decorators:
  * - are simplest form of [Directive]s.
  * - are best used as a composition pattern ()
@@ -652,7 +652,7 @@ export class DynamicComponent extends Directive {
  *
  * ## Example
  *
- * Here we use a decorator directive to simply define basic tool-tip behavior. 
+ * Here we use a decorator directive to simply define basic tool-tip behavior.
  *
  * ```
  * @Decorator({
@@ -685,9 +685,9 @@ export class DynamicComponent extends Directive {
  *   }
  * }
  * ```
- * In our HTML template, we can then add this behavior to a `<div>` or any other element with the `tooltip` selector, 
+ * In our HTML template, we can then add this behavior to a `<div>` or any other element with the `tooltip` selector,
  * like so:
- * 
+ *
  *  ```
  * <div tooltip="some text here"></div>
  * ```
@@ -728,24 +728,45 @@ export class Decorator extends Directive {
 }
 
 /**
- * Viewport is used for controlling the instatiation of inline templates. [TODO: needs co-work :)]
+ * Directive that controls the instantiation, destruction, and positioning of inline template elements.
  *
- * Viewport consist of a controller which can inject [ViewContainer]. A [ViewContainer] represents a location in the
- * current view where child views can be inserted. [ViewContainer] is created as a result of `<template>` element.
+ * A viewport directive uses a [ViewContainer] to instantiate, insert, move, and destroy views at runtime.
+ * The [ViewContainer] is created as a result of `<template>` element, and represents a location in the current view
+ * where these actions are performed.
  *
- * NOTE: `<template>` directives can be created in shorthand form as `<TAG template="...">` or `<TAG *key="...">`
+ * Views are always created as children of the current [View], and as siblings of the `<template>` element. Thus a
+ * directive in a child view cannot inject the viewport directive that created it.
  *
- * ## Example
+ * Since viewport directives are common in Angular, and using the full `<template>` element syntax is wordy, Angular
+ * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are equivalent.
  *
- * Given folowing inline template, let's implement the `unless` behavior.
+ * Thus,
  *
  * ```
  * <ul>
- *   <li *unless="expr"></li>
+ *   <li *foo="bar" title="text"></li>
  * </ul>
  * ```
  *
- * Can be implemented using:
+ * Expands in use to:
+ *
+ * ```
+ * <ul>
+ *   <template [foo]="bar">
+ *     <li title="text"></li>
+ *   </template>
+ * </ul>
+ * ```
+ *
+ * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for the `Viewport`
+ * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
+ *
+ *
+ * ## Example
+ *
+ * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
+ *
+ * Here is a simple viewport directive that triggers on an `unless` selector:
  *
  * ```
  * @Viewport({
@@ -754,7 +775,7 @@ export class Decorator extends Directive {
  *     'condition': 'unless'
  *   }
  * })
- * export class If {
+ * export class Unless {
  *   viewContainer: ViewContainer;
  *   prevCondition: boolean;
  *
@@ -775,20 +796,14 @@ export class Decorator extends Directive {
  * }
  * ```
  *
- * To better undarstand what is hapening, remember that angular converts the above template to:
- *
+ * We can then use this `unless` selector in a template:
  * ```
  * <ul>
- *   <template [unless]="exp">
- *     <li></li>
- *   </template>
+ *   <li *unless="expr"></li>
  * </ul>
  * ```
  *
- * Notice that the `*unless="exp"` got hoisted to `<template>`. This means that the `Viewport` controller is instantiated
- * on the `<template>` element rather thna the `<li>` element.
- *
- * Once the viewport insntantiates the child view the result is:
+ * Once the viewport instantiates the child view, the shorthand notation for the template expands and the result is:
  *
  * ```
  * <ul>
@@ -799,9 +814,8 @@ export class Decorator extends Directive {
  * </ul>
  * ```
  *
- * The key thing to notice here is that `<li>` instance is a sibling of `<template>` not a child. For this reason
- * it is not possible to inject `Viewport` directive into other directives, (`Viweport` directives are always on
- * `<template>` elements which are leafs.)
+ * Note also that although the `<li></li>` template still exists inside the `<template></template>`, the instantiated
+ * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  *
  *
  * @publicModule angular2/annotations
@@ -831,7 +845,7 @@ export class Viewport extends Directive {
 //TODO(misko): turn into LifecycleEvent class once we switch to TypeScript;
 
 /**
- * Specify that a directive should be notified whenever a [View] that contains it is destroyed.
+ * Notify a directive whenever a [View] that contains it is destroyed.
  *
  * ## Example
  *
@@ -852,7 +866,7 @@ export const onDestroy = "onDestroy";
 
 
 /**
- * Specify that a directive should be notified when any of its bindings have changed.
+ * Notify a directive when any of its bindings have changed.
  *
  * ## Example:
  *
