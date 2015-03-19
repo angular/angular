@@ -193,6 +193,31 @@ export function main() {
           });
         }));
 
+        it("should support select", inject([AsyncTestCompleter], (async) => {
+          var ctx = new MyComp(new ControlGroup({"city": new Control("SF")}));
+
+          var t = `<div [control-group]="form">
+                      <select control="city">
+                        <option value="SF"></option>
+                        <option value="NYC"></option>
+                      </select>
+                    </div>`;
+
+          compile(MyComp, t, ctx, (view) => {
+            var select = queryView(view, "select")
+            var sfOption = queryView(view, "option")
+            expect(select.value).toEqual('SF');
+            expect(sfOption.selected).toBe(true);
+
+            select.value = 'NYC';
+            dispatchEvent(select, "change");
+
+            expect(ctx.form.value).toEqual({"city" : 'NYC'});
+            expect(sfOption.selected).toBe(false);
+            async.done();
+          });
+        }));
+
         it("should support custom value accessors", inject([AsyncTestCompleter], (async) => {
           var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
 
