@@ -22,6 +22,32 @@ export function main() {
           expect(c.errors).toEqual({"required" : true});
         });
       });
+
+      describe("pristine", () => {
+        it("should be true after creating a control", () => {
+          var c = new Control("value");
+          expect(c.pristine).toEqual(true);
+        });
+
+        it("should be false after changing the value of the control", () => {
+          var c = new Control("value");
+          c.updateValue("new value");
+          expect(c.pristine).toEqual(false);
+        });
+      });
+
+      describe("dirty", () => {
+        it("should be false after creating a control", () => {
+          var c = new Control("value");
+          expect(c.dirty).toEqual(false);
+        });
+
+        it("should be true after changing the value of the control", () => {
+          var c = new Control("value");
+          c.updateValue("new value");
+          expect(c.dirty).toEqual(true);
+        });
+      });
     });
 
     describe("ControlGroup", () => {
@@ -82,6 +108,23 @@ export function main() {
 
           expect(g.valid).toEqual(true);
           expect(g.errors).toEqual(null);
+        });
+      });
+
+      describe("pristine", () => {
+        it("should be true after creating a control", () => {
+          var c = new Control('value');
+          var g = new ControlGroup({"one": c});
+
+          expect(g.pristine).toEqual(true);
+        });
+
+        it("should be false after changing the value of the control", () => {
+          var c = new Control('value');
+          var g = new ControlGroup({"one": c});
+          c.updateValue('new value');
+
+          expect(g.pristine).toEqual(false);
         });
       });
 

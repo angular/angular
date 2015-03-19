@@ -11,6 +11,8 @@ export const INVALID = "INVALID";
 //  get status():string;
 //  get valid():boolean;
 //  get errors():Map;
+//  get pristine():boolean;
+//  get dirty():boolean;
 //  updateValue(value:any){}
 //  setParent(parent){}
 //}
@@ -19,13 +21,15 @@ export class AbstractControl {
   _value:any;
   _status:string;
   _errors;
-  _dirty:boolean;
+  _updateNeeded:boolean;
+  _pristine:boolean;
   _parent:ControlGroup;
   validator:Function;
 
   constructor(validator:Function = nullValidator) {
     this.validator = validator;
-    this._dirty = true;
+    this._updateNeeded = true;
+    this._pristine = true;
   }
 
   get value() {
@@ -46,6 +50,15 @@ export class AbstractControl {
   get errors() {
     this._updateIfNeeded();
     return this._errors;
+  }
+
+  get pristine() {
+    this._updateIfNeeded();
+    return this._pristine;
+  }
+
+  get dirty() {
+    return ! this.pristine;
   }
 
   setParent(parent){
@@ -70,13 +83,14 @@ export class Control extends AbstractControl {
 
   updateValue(value:any) {
     this._value = value;
-    this._dirty = true;
+    this._updateNeeded = true;
+    this._pristine = false;
     this._updateParent();
   }
 
   _updateIfNeeded() {
-    if (this._dirty) {
-      this._dirty = false;
+    if (this._updateNeeded) {
+      this._updateNeeded = false;
       this._errors = this.validator(this);
       this._status = isPresent(this._errors) ? INVALID : VALID;
     }
@@ -95,12 +109,12 @@ export class ControlGroup extends AbstractControl {
   }
 
   include(controlName:string) {
-    this._dirty = true;
+    this._updateNeeded = true;
     StringMapWrapper.set(this.optionals, controlName, true);
   }
 
   exclude(controlName:string) {
-    this._dirty = true;
+    this._updateNeeded = true;
     StringMapWrapper.set(this.optionals, controlName, false);
   }
 
@@ -116,26 +130,39 @@ export class ControlGroup extends AbstractControl {
   }
 
   _updateIfNeeded() {
-    if (this._dirty) {
-      this._dirty = false;
+    if (this._updateNeeded) {
+      this._updateNeeded = false;
       this._value = this._reduceValue();
+      this._pristine = this._reducePristine();
       this._errors = this.validator(this);
       this._status = isPresent(this._errors) ? INVALID : VALID;
     }
   }
 
   _reduceValue() {
-    var newValue = {};
+    return this._reduceChildren({}, (acc, control, name) => {
+      acc[name] = control.value;
+      return acc;
+    });
+  }
+
+  _reducePristine() {
+    return this._reduceChildren(true,
+      (acc, control, name) => acc && control.pristine);
+  }
+
+  _reduceChildren(initValue, fn:Function) {
+    var res = initValue;
     StringMapWrapper.forEach(this.controls, (control, name) => {
       if (this._included(name)) {
-        newValue[name] = control.value;
+        res = fn(res, control, name);
       }
     });
-    return newValue;
+    return res;
   }
 
   _controlChanged() {
-    this._dirty = true;
+    this._updateNeeded = true;
     this._updateParent();
   }
 
