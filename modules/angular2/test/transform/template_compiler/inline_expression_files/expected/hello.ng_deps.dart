@@ -18,5 +18,5 @@ void setupReflection(reflector) {
       ]
     })
     ..registerGetters({'greeting': (o) => o.greeting})
-    ..registerSetters({'greeting': (o, String v) => o.greeting = v});
+    ..registerSetters({'greeting': (o, v) => o.greeting = v});
 }

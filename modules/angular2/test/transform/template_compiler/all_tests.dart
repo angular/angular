@@ -17,9 +17,10 @@ void allTests() {
   AssetReader reader = new TestAssetReader();
 
   test('should parse simple expressions in inline templates.', () async {
-    var inputPath = 'template_compiler/inline_expression_files/hello.ngDeps.dart';
+    var inputPath =
+        'template_compiler/inline_expression_files/hello.ng_deps.dart';
     var expected = readFile(
-        'template_compiler/inline_expression_files/expected/hello.ngDeps.dart');
+        'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
     var output = await processTemplates(reader, new AssetId('a', inputPath));
     output = formatter.format(output);
     expected = formatter.format(expected);
@@ -27,9 +28,9 @@ void allTests() {
   });
 
   test('should parse simple methods in inline templates.', () async {
-    var inputPath = 'template_compiler/inline_method_files/hello.ngDeps.dart';
+    var inputPath = 'template_compiler/inline_method_files/hello.ng_deps.dart';
     var expected = readFile(
-        'template_compiler/inline_method_files/expected/hello.ngDeps.dart');
+        'template_compiler/inline_method_files/expected/hello.ng_deps.dart');
     var output = await processTemplates(reader, new AssetId('a', inputPath));
     output = formatter.format(output);
     expected = formatter.format(expected);
