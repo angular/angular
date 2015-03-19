@@ -182,7 +182,7 @@ Angular specific command line options when running protractor (e.g. force gc, ..
 * `tools/*`: tools that are needed to build Angular
 * `dist/*`: build files are placed here.
 
-### File endings
+### File suffixes
 
 * `*.js`: javascript files that get transpiled to Dart and EcmaScript 5
 * `*.es6`: javascript files that get transpiled only to EcmaScript 5
