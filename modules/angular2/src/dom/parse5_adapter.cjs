@@ -52,7 +52,7 @@ export class Parse5DomAdapter extends DomAdapter {
       }
     };
     var matcher = new SelectorMatcher();
-    matcher.addSelectable(CssSelector.parse(selector));
+    matcher.addSelectables(CssSelector.parse(selector));
     _recursive(res, el, selector, matcher);
     return res;
   }
@@ -64,7 +64,7 @@ export class Parse5DomAdapter extends DomAdapter {
       var result = false;
       if (matcher == null) {
         matcher = new SelectorMatcher();
-        matcher.addSelectable(CssSelector.parse(selector));
+        matcher.addSelectables(CssSelector.parse(selector));
       }
 
       var cssSelector = new CssSelector();

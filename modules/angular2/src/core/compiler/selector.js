@@ -9,7 +9,9 @@ var _SELECTOR_REGEXP =
     RegExpWrapper.create('(\\:not\\()|' + //":not("
     '([-\\w]+)|' +    // "tag"
     '(?:\\.([-\\w]+))|' +                   // ".class"
-    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])'); // "[name]", "[name=value]" or "[name*=value]"
+    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' + // "[name]", "[name=value]" or "[name*=value]"
+    '(?:\\))|' + // ")"
+    '(\\s*,\\s*)');  // ","
 
 /**
  * A css selector contains an element name,
@@ -21,7 +23,15 @@ export class CssSelector {
   classNames:List;
   attrs:List;
   notSelector: CssSelector;
-  static parse(selector:string): CssSelector {
+  static parse(selector:string): List<CssSelector> {
+    var results = ListWrapper.create();
+    var _addResult = (res, cssSel) => {
+      if (isPresent(cssSel.notSelector) && isBlank(cssSel.element) 
+        && ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
+        cssSel.element = "*";
+      }
+      ListWrapper.push(res, cssSel);
+    }
     var cssSelector = new CssSelector();
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
     var match;
@@ -43,13 +53,13 @@ export class CssSelector {
       if (isPresent(match[4])) {
         current.addAttribute(match[4], match[5]);
       }
+      if (isPresent(match[6])) {
+        _addResult(results, cssSelector);
+        cssSelector = current = new CssSelector();
+      }
     }
-    if (isPresent(cssSelector.notSelector) && isBlank(cssSelector.element) 
-      && ListWrapper.isEmpty(cssSelector.classNames) && ListWrapper.isEmpty(cssSelector.attrs)) {
-      cssSelector.element = "*";
-    }
-
-    return cssSelector;
+    _addResult(results, cssSelector);
+    return results;
   }
 
   constructor() {
@@ -119,6 +129,7 @@ export class SelectorMatcher {
   _classPartialMap:Map;
   _attrValueMap:Map;
   _attrValuePartialMap:Map;
+  _listContexts:List;
   constructor() {
     this._elementMap = MapWrapper.create();
     this._elementPartialMap = MapWrapper.create();
@@ -128,6 +139,19 @@ export class SelectorMatcher {
 
     this._attrValueMap = MapWrapper.create();
     this._attrValuePartialMap = MapWrapper.create();
+
+    this._listContexts = ListWrapper.create();
+  }
+
+  addSelectables(cssSelectors:List<CssSelector>, callbackCtxt) {
+    var listContext = null;
+    if (cssSelectors.length > 1) {
+      listContext= new SelectorListContext(cssSelectors);
+      ListWrapper.push(this._listContexts, listContext);
+    }
+    for (var i = 0; i < cssSelectors.length; i++) {
+      this.addSelectable(cssSelectors[i], callbackCtxt, listContext);
+    }
   }
 
   /**
@@ -135,12 +159,12 @@ export class SelectorMatcher {
    * @param cssSelector A css selector
    * @param callbackCtxt An opaque object that will be given to the callback of the `match` function
    */
-  addSelectable(cssSelector:CssSelector, callbackCtxt) {
+  addSelectable(cssSelector, callbackCtxt, listContext: SelectorListContext) {
     var matcher = this;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
-    var selectable = new SelectorContext(cssSelector, callbackCtxt);
+    var selectable = new SelectorContext(cssSelector, callbackCtxt, listContext);
 
 
     if (isPresent(element)) {
@@ -215,6 +239,10 @@ export class SelectorMatcher {
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
 
+    for (var i = 0; i < this._listContexts.length; i++) {
+      this._listContexts[i].alreadyMatched = false;
+    }
+
     result = this._matchTerminal(this._elementMap, element, cssSelector, matchedCallback) || result;
     result = this._matchPartial(this._elementPartialMap, element, cssSelector, matchedCallback) || result;
 
@@ -282,26 +310,41 @@ export class SelectorMatcher {
 }
 
 
+class SelectorListContext {
+  selectors: List<CssSelector>;
+  alreadyMatched: boolean;
+
+  constructor(selectors:List<CssSelector>) {
+    this.selectors = selectors;
+    this.alreadyMatched = false;
+  }
+}
+
 // Store context to pass back selector and context when a selector is matched
 class SelectorContext {
   selector:CssSelector;
   notSelector:CssSelector;
   cbContext; // callback context
+  listContext: SelectorListContext;
 
-  constructor(selector:CssSelector, cbContext) {
+  constructor(selector:CssSelector, cbContext, listContext: SelectorListContext) {
     this.selector = selector;
     this.notSelector = selector.notSelector;
     this.cbContext = cbContext;
+    this.listContext = listContext;
   }
 
   finalize(cssSelector: CssSelector, callback) {
     var result = true;
-    if (isPresent(this.notSelector)) {
+    if (isPresent(this.notSelector) && (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
       var notMatcher = new SelectorMatcher();
-      notMatcher.addSelectable(this.notSelector, null);
+      notMatcher.addSelectable(this.notSelector, null, null);
       result = !notMatcher.match(cssSelector, null);
     }
-    if (result && isPresent(callback)) {
+    if (result && isPresent(callback) && (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
+      if (isPresent(this.listContext)) {
+        this.listContext.alreadyMatched = true;
+      }
       callback(this.selector, this.cbContext);
     }
     return result;

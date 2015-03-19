@@ -36,8 +36,8 @@ export class DirectiveParser extends CompileStep {
     this._selectorMatcher = new SelectorMatcher();
     for (var i=0; i<directives.length; i++) {
       var directiveMetadata = directives[i];
-      selector=CssSelector.parse(directiveMetadata.annotation.selector);
-      this._selectorMatcher.addSelectable(selector, directiveMetadata);
+      selector = CssSelector.parse(directiveMetadata.annotation.selector);
+      this._selectorMatcher.addSelectables(selector, directiveMetadata);
     }
   }
 
