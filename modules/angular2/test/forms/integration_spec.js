@@ -24,14 +24,17 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
+import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Injector} from 'angular2/di';
 
-import {Component, Decorator, Template} from 'angular2/angular2';
+import {Component, Decorator, Template, PropertySetter} from 'angular2/angular2';
 import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
-  ControlValueAccessor, RequiredValidatorDirective, Validators} from 'angular2/forms';
+  ControlValueAccessor, RequiredValidatorDirective, CheckboxControlDecorator,
+  DefaultControlDecorator, Validators} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {
@@ -56,11 +59,13 @@ export function main() {
 
     tplResolver.setTemplate(componentType, new Template({
       inline: template,
-      directives: [ControlGroupDirective, ControlDirective, WrappedValue, RequiredValidatorDirective]
+      directives: [ControlGroupDirective, ControlDirective, WrappedValue, RequiredValidatorDirective,
+        CheckboxControlDecorator, DefaultControlDecorator]
     }));
 
     compiler.compile(componentType).then((pv) => {
-      var view = pv.instantiate(null, null);
+      var eventManager = new EventManager([new DomEventsPlugin()], new FakeVmTurnZone());
+      var view = pv.instantiate(null, eventManager);
       view.hydrate(new Injector([]), null, null, context, null);
       detectChanges(view);
       callback(view);
@@ -346,21 +351,41 @@ class MyComp {
   }
 }
 
-class WrappedValueAccessor extends ControlValueAccessor {
-  readValue(el){
-    return el.value.substring(1, el.value.length - 1);
+
+@Decorator({
+  selector:'[wrapped-value]',
+  events: {
+    'change' : 'handleOnChange($event.target.value)'
+  }
+})
+class WrappedValue extends ControlValueAccessor {
+  _setProperty:Function;
+  onChange:Function;
+
+  constructor(cd:ControlDirective, @PropertySetter('value') setProperty:Function) {
+    this._setProperty = setProperty;
+    cd.valueAccessor = this;
   }
 
-  writeValue(el, value):void {
-    el.value = `!${value}!`;
+  writeValue(value) {
+    this._setProperty(`!${value}!`);
+  }
+
+  handleOnChange(value) {
+    this.onChange(value.substring(1, value.length - 1));
   }
 }
 
-@Decorator({
-  selector:'[wrapped-value]'
-})
-class WrappedValue {
-  constructor(cd:ControlDirective) {
-    cd.valueAccessor = new WrappedValueAccessor();
+class FakeVmTurnZone extends VmTurnZone {
+  constructor() {
+    super({enableLongStackTrace: false});
+  }
+
+  run(fn) {
+    fn();
+  }
+
+  runOutsideAngular(fn) {
+    fn();
   }
 }
