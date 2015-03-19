@@ -33,8 +33,8 @@ import {Injector} from 'angular2/di';
 
 import {Component, Decorator, Template, PropertySetter} from 'angular2/angular2';
 import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
-  ControlValueAccessor, RequiredValidatorDirective, CheckboxControlDecorator,
-  DefaultControlDecorator, Validators} from 'angular2/forms';
+  ControlValueAccessor, RequiredValidatorDirective, CheckboxControlValueAccessor,
+  DefaultValueAccessor, Validators} from 'angular2/forms';
 
 export function main() {
   function detectChanges(view) {
@@ -60,7 +60,7 @@ export function main() {
     tplResolver.setTemplate(componentType, new Template({
       inline: template,
       directives: [ControlGroupDirective, ControlDirective, WrappedValue, RequiredValidatorDirective,
-        CheckboxControlDecorator, DefaultControlDecorator]
+        CheckboxControlValueAccessor, DefaultValueAccessor]
     }));
 
     compiler.compile(componentType).then((pv) => {
@@ -72,24 +72,24 @@ export function main() {
     });
   }
 
-  describe("integration tests", () => {
-    it("should initialize DOM elements with the given form object", inject([AsyncTestCompleter], (async) => {
-      var ctx = new MyComp(new ControlGroup({
-        "login": new Control("loginValue")
-      }));
+  if (DOM.supportsDOMEvents()) {
+    describe("integration tests", () => {
+      it("should initialize DOM elements with the given form object", inject([AsyncTestCompleter], (async) => {
+        var ctx = new MyComp(new ControlGroup({
+          "login": new Control("loginValue")
+        }));
 
-      var t = `<div [control-group]="form">
+        var t = `<div [control-group]="form">
                 <input type="text" control="login">
               </div>`;
 
-      compile(MyComp, t, ctx, (view) => {
-        var input = queryView(view, "input")
-        expect(input.value).toEqual("loginValue");
-        async.done();
-      });
-    }));
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("loginValue");
+          async.done();
+        });
+      }));
 
-    if (DOM.supportsDOMEvents()) {
       it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({
           "login": new Control("oldValue")
@@ -110,55 +110,110 @@ export function main() {
           async.done();
         });
       }));
-    }
 
-    it("should update DOM elements when rebinding the control group", inject([AsyncTestCompleter], (async) => {
-      var form = new ControlGroup({
-        "login": new Control("oldValue")
-      });
-      var ctx = new MyComp(form);
+      it("should update DOM elements when rebinding the control group", inject([AsyncTestCompleter], (async) => {
+        var form = new ControlGroup({
+          "login": new Control("oldValue")
+        });
+        var ctx = new MyComp(form);
 
-      var t = `<div [control-group]="form">
+        var t = `<div [control-group]="form">
                 <input type="text" control="login">
               </div>`;
 
-      compile(MyComp, t, ctx, (view) => {
-        ctx.form = new ControlGroup({
-          "login": new Control("newValue")
+        compile(MyComp, t, ctx, (view) => {
+          ctx.form = new ControlGroup({
+            "login": new Control("newValue")
+          });
+          detectChanges(view);
+
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("newValue");
+          async.done();
         });
-        detectChanges(view);
+      }));
 
-        var input = queryView(view, "input")
-        expect(input.value).toEqual("newValue");
-        async.done();
-      });
-    }));
+      it("should update DOM element when rebinding the control name", inject([AsyncTestCompleter], (async) => {
+        var ctx = new MyComp(new ControlGroup({
+          "one": new Control("one"),
+          "two": new Control("two")
+        }), "one");
 
-    it("should update DOM element when rebinding the control name", inject([AsyncTestCompleter], (async) => {
-      var ctx = new MyComp(new ControlGroup({
-        "one": new Control("one"),
-        "two": new Control("two")
-      }), "one");
-
-      var t = `<div [control-group]="form">
+        var t = `<div [control-group]="form">
                 <input type="text" [control]="name">
               </div>`;
 
-      compile(MyComp, t, ctx, (view) => {
-        var input = queryView(view, "input")
-        expect(input.value).toEqual("one");
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("one");
 
-        ctx.name = "two";
-        detectChanges(view);
+          ctx.name = "two";
+          detectChanges(view);
 
-        expect(input.value).toEqual("two");
-        async.done();
-      });
-    }));
+          expect(input.value).toEqual("two");
+          async.done();
+        });
+      }));
 
-    if (DOM.supportsDOMEvents()) {
       describe("different control types", () => {
-        it("should support type=checkbox", inject([AsyncTestCompleter], (async) => {
+        it("should support <input type=text>", inject([AsyncTestCompleter], (async) => {
+          var ctx = new MyComp(new ControlGroup({"text": new Control("old")}));
+
+          var t = `<div [control-group]="form">
+                    <input type="text" control="text">
+                  </div>`;
+
+          compile(MyComp, t, ctx, (view) => {
+            var input = queryView(view, "input")
+            expect(input.value).toEqual("old");
+
+            input.value = "new";
+            dispatchEvent(input, "input");
+
+            expect(ctx.form.value).toEqual({"text": "new"});
+            async.done();
+          });
+        }));
+
+        it("should support <input> without type", inject([AsyncTestCompleter], (async) => {
+          var ctx = new MyComp(new ControlGroup({"text": new Control("old")}));
+
+          var t = `<div [control-group]="form">
+                    <input control="text">
+                  </div>`;
+
+          compile(MyComp, t, ctx, (view) => {
+            var input = queryView(view, "input")
+            expect(input.value).toEqual("old");
+
+            input.value = "new";
+            dispatchEvent(input, "input");
+
+            expect(ctx.form.value).toEqual({"text": "new"});
+            async.done();
+          });
+        }));
+
+        it("should support <textarea>", inject([AsyncTestCompleter], (async) => {
+          var ctx = new MyComp(new ControlGroup({"text": new Control('old')}));
+
+          var t = `<div [control-group]="form">
+                    <textarea control="text"></textarea>
+                  </div>`;
+
+          compile(MyComp, t, ctx, (view) => {
+            var textarea = queryView(view, "textarea")
+            expect(textarea.value).toEqual("old");
+
+            textarea.value = "new";
+            dispatchEvent(textarea, "input");
+
+            expect(ctx.form.value).toEqual({"text": 'new'});
+            async.done();
+          });
+        }));
+
+        it("should support <type=checkbox>", inject([AsyncTestCompleter], (async) => {
           var ctx = new MyComp(new ControlGroup({"checkbox": new Control(true)}));
 
           var t = `<div [control-group]="form">
@@ -172,31 +227,12 @@ export function main() {
             input.checked = false;
             dispatchEvent(input, "change");
 
-            expect(ctx.form.value).toEqual({"checkbox" : false});
+            expect(ctx.form.value).toEqual({"checkbox": false});
             async.done();
           });
         }));
 
-        it("should support textarea", inject([AsyncTestCompleter], (async) => {
-          var ctx = new MyComp(new ControlGroup({"text": new Control('old')}));
-
-          var t = `<div [control-group]="form">
-                    <textarea control="text"></textarea>
-                  </div>`;
-
-          compile(MyComp, t, ctx, (view) => {
-            var textarea = queryView(view, "textarea")
-            expect(textarea.value).toEqual("old");
-
-            textarea.value = "new";
-            dispatchEvent(textarea, "change");
-
-            expect(ctx.form.value).toEqual({"text" : 'new'});
-            async.done();
-          });
-        }));
-
-        it("should support select", inject([AsyncTestCompleter], (async) => {
+        it("should support <select>", inject([AsyncTestCompleter], (async) => {
           var ctx = new MyComp(new ControlGroup({"city": new Control("SF")}));
 
           var t = `<div [control-group]="form">
@@ -215,7 +251,7 @@ export function main() {
             select.value = 'NYC';
             dispatchEvent(select, "change");
 
-            expect(ctx.form.value).toEqual({"city" : 'NYC'});
+            expect(ctx.form.value).toEqual({"city": 'NYC'});
             expect(sfOption.selected).toBe(false);
             async.done();
           });
@@ -235,7 +271,7 @@ export function main() {
             input.value = "!bb!";
             dispatchEvent(input, "change");
 
-            expect(ctx.form.value).toEqual({"name" : "bb"});
+            expect(ctx.form.value).toEqual({"name": "bb"});
             async.done();
           });
         }));
@@ -284,31 +320,29 @@ export function main() {
           });
         }));
       });
-    }
 
-    describe("nested forms", () => {
-      it("should init DOM with the given form object",inject([AsyncTestCompleter], (async) => {
-        var form = new ControlGroup({
-          "nested": new ControlGroup({
-            "login": new Control("value")
-          })
-        });
-        var ctx = new MyComp(form);
+      describe("nested forms", () => {
+        it("should init DOM with the given form object", inject([AsyncTestCompleter], (async) => {
+          var form = new ControlGroup({
+            "nested": new ControlGroup({
+              "login": new Control("value")
+            })
+          });
+          var ctx = new MyComp(form);
 
-        var t = `<div [control-group]="form">
+          var t = `<div [control-group]="form">
                     <div control-group="nested">
                       <input type="text" control="login">
                     </div>
                 </div>`;
 
-        compile(MyComp, t, ctx, (view) => {
-          var input = queryView(view, "input")
-          expect(input.value).toEqual("value");
-          async.done();
-        });
-      }));
+          compile(MyComp, t, ctx, (view) => {
+            var input = queryView(view, "input")
+            expect(input.value).toEqual("value");
+            async.done();
+          });
+        }));
 
-      if (DOM.supportsDOMEvents()) {
         it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
           var form = new ControlGroup({
             "nested": new ControlGroup({
@@ -329,13 +363,13 @@ export function main() {
             input.value = "updatedValue";
             dispatchEvent(input, "change");
 
-            expect(form.value).toEqual({"nested" : {"login" : "updatedValue"}});
+            expect(form.value).toEqual({"nested": {"login": "updatedValue"}});
             async.done();
           });
         }));
-      }
+      });
     });
-  });
+  }
 }
 
 @Component({
@@ -358,11 +392,12 @@ class MyComp {
     'change' : 'handleOnChange($event.target.value)'
   }
 })
-class WrappedValue extends ControlValueAccessor {
+class WrappedValue {
   _setProperty:Function;
   onChange:Function;
 
   constructor(cd:ControlDirective, @PropertySetter('value') setProperty:Function) {
+    super();
     this._setProperty = setProperty;
     cd.valueAccessor = this;
   }

@@ -1,27 +1,28 @@
 import {Template, Component, Decorator, Ancestor, onChange, PropertySetter} from 'angular2/angular2';
 import {Optional} from 'angular2/di';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
 import {Validators} from './validators';
 
-export class ControlValueAccessor {
-  writeValue(value):void{}
-  set onChange(fn){}
-}
+//export interface ControlValueAccessor {
+//  writeValue(value):void{}
+//  set onChange(fn){}
+//}
 
 @Decorator({
   selector: '[control]',
   events: {
-    'change' : 'onChange($event.target.value)'
+    'change' : 'onChange($event.target.value)',
+    'input' : 'onChange($event.target.value)'
   }
 })
-export class DefaultControlDecorator extends ControlValueAccessor {
+export class DefaultValueAccessor {
   _setValueProperty:Function;
   onChange:Function;
 
   constructor(@PropertySetter('value') setValueProperty:Function) {
+    super();
     this._setValueProperty = setValueProperty;
     this.onChange = (_) => {};
   }
@@ -33,19 +34,20 @@ export class DefaultControlDecorator extends ControlValueAccessor {
 
 @Decorator({
   selector: 'input[type=checkbox]', //should be input[type=checkbox][control]
+  // change the selector once https://github.com/angular/angular/issues/1025 is fixed
   events: {
     'change' : 'onChange($event.target.checked)'
   }
 })
-export class CheckboxControlDecorator extends ControlValueAccessor {
+export class CheckboxControlValueAccessor {
   _setCheckedProperty:Function;
   onChange:Function;
 
   constructor(cd:ControlDirective, @PropertySetter('checked') setCheckedProperty:Function) {
+    super();
     this._setCheckedProperty = setCheckedProperty;
     this.onChange = (_) => {};
-    //TODO: vsavkin ControlDirective should inject CheckboxControlDirective
-    cd.valueAccessor = this;
+    cd.valueAccessor = this; //ControlDirective should inject CheckboxControlDirective
   }
 
   writeValue(value) {
@@ -64,11 +66,11 @@ export class ControlDirective {
   _groupDirective:ControlGroupDirective;
 
   controlName:string;
-  valueAccessor:ControlValueAccessor;
+  valueAccessor:any; //ControlValueAccessor
 
   validator:Function;
 
-  constructor(@Ancestor() groupDirective:ControlGroupDirective, valueAccessor:DefaultControlDecorator)  {
+  constructor(@Ancestor() groupDirective:ControlGroupDirective, valueAccessor:DefaultValueAccessor)  {
     this._groupDirective = groupDirective;
     this.controlName = null;
     this.valueAccessor = valueAccessor;
@@ -97,10 +99,6 @@ export class ControlDirective {
 
   _setUpUpdateControlValue() {
     this.valueAccessor.onChange = (newValue) => this._control().updateValue(newValue);
-  }
-
-  _updateControlValue(newValue) {
-    this._control().updateValue(newValue);
   }
 
   _control() {
@@ -158,5 +156,5 @@ export class ControlGroupDirective {
 }
 
 export var FormDirectives = [
-  ControlGroupDirective, ControlDirective, CheckboxControlDecorator, DefaultControlDecorator
+  ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor
 ];
