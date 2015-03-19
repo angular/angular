@@ -95,23 +95,22 @@ Next, install the modules and packages needed to build Angular and run tests:
 ```shell
 # Install Angular project dependencies (package.json)
 npm install
-
-# Ensure protractor has the latest webdriver
-$(npm bin)/webdriver-manager update
-
-# Install Dart packages
-pub get
 ```
 
 **Optional**: In this document, we make use of project local `npm` package scripts and binaries
 (stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
-particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by
-globally installing these two packages as follows:
+particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
+
+*Option 1*: globally installing these two packages as follows:
 
 * `npm install -g gulp` (you might need to prefix this command with `sudo`)
 * `npm install -g protractor` (you might need to prefix this command with `sudo`)
 
-Since global installs can become stale, we avoid their use in these instructions.
+Since global installs can become stale, and required versions can vary by project, we avoid their
+use in these instructions.
+
+*Option 2*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
+[Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
 ## Build commands
 
@@ -133,22 +132,35 @@ $(npm bin)/gulp clean
 
 ## Running Tests Locally
 
-### Basic tests
+### Full test suite
 
-1. `$(npm bin)/gulp test.unit.js`: JS tests in a browser; runs in **watch mode** (i.e. karma
-  watches the test files for changes and re-runs tests when files are updated).
-2. `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**
-3. `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
+* `npm test`: full test suite for both JS and Dart versions of Angular. These are the same tests as
+  those run on Travis.
+
+You can selectively run either the JS or Dart versions as follows:
+
+* `$(npm bin)/gulp test.all.js`
+* `$(npm bin)/gulp test.all.dart`
+
+### Unit tests
+
+You can run just the unit tests as follows:
+
+* `$(npm bin)/gulp test.unit.js`: JS tests in a browser; runs in **watch mode** (i.e. karma
+   watches the test files for changes and re-runs tests when files are updated).
+* `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**.
+* `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
 
 If you prefer running tests in "single-run" mode rather than watch mode use
 
 * `$(npm bin)/gulp test.unit.js/ci`
+* `$(npm bin)/gulp test.unit.cjs/ci`
 * `$(npm bin)/gulp test.unit.dart/ci`
 
-**Note**: If you want to only run a single test you can alter the test you wish
-to run by changing `it` to `iit` or `describe` to `ddescribe`. This will only
-run that individual test and make it much easier to debug. `xit` and `xdescribe`
-can also be useful to exclude a test and a group of tests respectively.
+**Note**: If you want to only run a single test you can alter the test you wish to run by changing
+`it` to `iit` or `describe` to `ddescribe`. This will only run that individual test and make it
+much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
+tests respectively.
 
 **Note** for transpiler tests: The karma preprocessor is setup in a way so that after every test
 run the transpiler is reloaded. With that it is possible to make changes to the preprocessor and
@@ -232,4 +244,3 @@ on the `debugger;` statement.
 You can then step into the code and add watches.
 The `debugger;` statement is needed because WebStorm will stop in a transpiled file. Breakpoints in
 the original source files are not supported at the moment.
-

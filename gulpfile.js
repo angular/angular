@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
+var shell = require('gulp-shell');
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
@@ -26,6 +27,7 @@ var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var transformCJSTests = require('./tools/build/transformCJSTests');
 var util = require('./tools/build/util');
 
+// Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
 // configuration
@@ -431,7 +433,11 @@ gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
 // ------------
 // pubspec
 
-gulp.task('build/pubspec.dart', pubget(gulp, gulpPlugins, {
+// Run a top-level `pub get` for this project.
+gulp.task('pubget.dart', pubget.dir(gulp, gulpPlugins, { dir: '.', command: DART_SDK.PUB }));
+
+// Run `pub get` over CONFIG.dest.dart
+gulp.task('build/pubspec.dart', pubget.subDir(gulp, gulpPlugins, {
   dir: CONFIG.dest.dart,
   command: DART_SDK.PUB
 }));
@@ -588,6 +594,22 @@ createDocsTasks(true);
 createDocsTasks(false);
 
 // ------------------
+// CI tests suites
+
+gulp.task('test.js', function(done) {
+  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
+              'test.unit.cjs/ci', done);
+});
+
+gulp.task('test.dart', function(done) {
+  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci', done);
+});
+
+// Reuse the Travis scripts
+// TODO: rename test_*.sh to test_all_*.sh
+gulp.task('test.all.js', shell.task(['./scripts/ci/test_js.sh']))
+gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']))
+
 // karma tests
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
