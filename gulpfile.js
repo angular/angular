@@ -316,7 +316,7 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
 
 var ts2dart = require('gulp-ts2dart');
 gulp.task('build/transpile.dart.experimental', function() {
-  gulp.src('modules/**/*.ts')
+  gulp.src('modules/**/*.js')
       .pipe(ts2dart.transpile())
       .pipe(ts2dart.format())
       .pipe(gulp.dest(CONFIG.dest.dart))
