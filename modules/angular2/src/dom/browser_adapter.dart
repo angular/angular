@@ -83,8 +83,8 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void setText(Node el, String value) {
     el.text = value;
   }
-  String getValue(InputElement el) => el.value;
-  void setValue(InputElement el, String value) {
+  String getValue(el) => el.value;
+  void setValue(el, String value) {
     el.value = value;
   }
   bool getChecked(InputElement el) => el.checked;

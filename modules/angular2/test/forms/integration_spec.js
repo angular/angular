@@ -174,6 +174,25 @@ export function main() {
           });
         }));
 
+        it("should support textarea", inject([AsyncTestCompleter], (async) => {
+          var ctx = new MyComp(new ControlGroup({"text": new Control('old')}));
+
+          var t = `<div [control-group]="form">
+                    <textarea control="text"></textarea>
+                  </div>`;
+
+          compile(MyComp, t, ctx, (view) => {
+            var textarea = queryView(view, "textarea")
+            expect(textarea.value).toEqual("old");
+
+            textarea.value = "new";
+            dispatchEvent(textarea, "change");
+
+            expect(ctx.form.value).toEqual({"text" : 'new'});
+            async.done();
+          });
+        }));
+
         it("should support custom value accessors", inject([AsyncTestCompleter], (async) => {
           var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
 

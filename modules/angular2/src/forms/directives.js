@@ -77,6 +77,8 @@ export class ControlDirective {
   constructor(@Ancestor() groupDirective:ControlGroupDirective, el:NgElement)  {
     this._groupDirective = groupDirective;
     this._el = el;
+    this.controlName = null;
+    this.type = null;
     this.validator = validators.nullValidator;
   }
 
