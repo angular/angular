@@ -29,8 +29,13 @@ class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
       var suffix = type != null ? ', ' : '';
       visitNodeListWithSeparatorAndSuffix(metadata, ', ', suffix);
     }
-    if (_withParameterTypes) {
-      visitNodeWithSuffix(type, ' ');
+    var needCompileTimeConstants = !_withParameterNames;
+    if (_withParameterTypes && type != null) {
+      visitNodeWithSuffix(type.name, ' ');
+      if (!needCompileTimeConstants) {
+        // Types with arguments are not compile-time constants.
+        visitNodeWithSuffix(type.typeArguments, ' ');
+      }
     }
     if (_withParameterNames) {
       visitNode(name);

@@ -17,7 +17,7 @@ export 'common/options.dart';
 class AngularTransformerGroup extends TransformerGroup {
   AngularTransformerGroup(TransformerOptions options) : super([
         [new DirectiveProcessor(options)],
-        [new DirectiveLinker(options)],
+        [new DirectiveLinker()],
         [new BindGenerator(options)],
         [new TemplateComplier(options)],
         [new ReflectionRemover(options)]

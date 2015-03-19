@@ -16,17 +16,13 @@ import 'visitors.dart';
 /// If no Angular 2 `Directive`s are found in [code], returns the empty
 /// string unless [forceGenerate] is true, in which case an empty ngDeps
 /// file is created.
-String createNgDeps(String code, String path, {bool forceGenerate: false}) {
+String createNgDeps(String code, String path) {
   // TODO(kegluneq): Shortcut if we can determine that there are no
-  // [Directive]s present.
+  // [Directive]s present, taking into account `export`s.
   var writer = new PrintStringWriter();
   var visitor = new CreateNgDepsVisitor(writer, path);
   parseCompilationUnit(code, name: path).accept(visitor);
-  if (visitor.foundNgDirectives || forceGenerate) {
-    return writer.toString();
-  } else {
-    return '';
-  }
+  return '$writer';
 }
 
 /// Visitor responsible for processing [CompilationUnit] and creating an
@@ -35,8 +31,8 @@ class CreateNgDepsVisitor extends Object
     with SimpleAstVisitor<Object>, VisitorMixin {
   final PrintWriter writer;
   final _Tester _tester = const _Tester();
-  bool foundNgDirectives = false;
-  bool wroteImport = false;
+  bool _foundNgDirectives = false;
+  bool _wroteImport = false;
   final ToSourceVisitor _copyVisitor;
   final FactoryTransformVisitor _factoryVisitor;
   final ParameterTransformVisitor _paramsVisitor;
@@ -61,33 +57,35 @@ class CreateNgDepsVisitor extends Object
     return null;
   }
 
-  void _writeImport() {
+  /// Write the import to the file the .ng_deps.dart file is based on if it
+  /// has not yet been written.
+  void _maybeWriteImport() {
+    if (_wroteImport) return;
+    _wroteImport = true;
     writer.print('''import '${path.basename(importPath)}';''');
   }
 
   @override
   Object visitImportDirective(ImportDirective node) {
-    if (!wroteImport) {
-      _writeImport();
-      wroteImport = true;
-    }
+    _maybeWriteImport();
     return node.accept(_copyVisitor);
   }
 
   @override
   Object visitExportDirective(ExportDirective node) {
+    _maybeWriteImport();
     return node.accept(_copyVisitor);
   }
 
   void _openFunctionWrapper() {
-    // TODO(kegluneq): Use a [PrintWriter] with a length getter.
+    _maybeWriteImport();
     writer.print('bool _visited = false;'
         'void ${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME}) {'
         'if (_visited) return; _visited = true;');
   }
 
   void _closeFunctionWrapper() {
-    if (foundNgDirectives) {
+    if (_foundNgDirectives) {
       writer.print(';');
     }
     writer.print('}');
@@ -135,10 +133,10 @@ class CreateNgDepsVisitor extends Object
     if (shouldProcess) {
       var ctor = _getCtor(node);
 
-      if (!foundNgDirectives) {
+      if (!_foundNgDirectives) {
         // The receiver for cascaded calls.
         writer.print(REFLECTOR_VAR_NAME);
-        foundNgDirectives = true;
+        _foundNgDirectives = true;
       }
       writer.print('..registerType(');
       visitNode(node.name);
@@ -168,7 +166,14 @@ class CreateNgDepsVisitor extends Object
   }
 
   @override
-  Object visitLibraryDirective(LibraryDirective node) => _nodeToSource(node);
+  Object visitLibraryDirective(LibraryDirective node) {
+    if (node != null && node.name != null) {
+      writer.print('library ');
+      _nodeToSource(node.name);
+      writer.print('$DEPS_EXTENSION;');
+    }
+    return null;
+  }
 
   @override
   Object visitPartOfDirective(PartOfDirective node) {
@@ -194,6 +199,7 @@ class _Tester {
     var metaName = meta.name.toString();
     return metaName == 'Component' ||
         metaName == 'Decorator' ||
+        metaName == 'Injectable' ||
         metaName == 'Template';
   }
 }

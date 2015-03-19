@@ -81,7 +81,7 @@ class Rewriter {
 
   String _commentedNode(AstNode node) {
     // TODO(kegluneq): Return commented code once we generate all needed code.
-    return _code.substring(node.offset, node.end);
+    return '/*${_code.substring(node.offset, node.end)}*/';
   }
 }
 
