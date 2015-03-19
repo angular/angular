@@ -17,6 +17,7 @@ import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
 import 'package:barback/barback.dart';
+import 'package:code_transformers/assets.dart';
 
 import 'recording_reflection_capabilities.dart';
 
@@ -28,11 +29,12 @@ import 'recording_reflection_capabilities.dart';
 Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
   var parser = new Parser(reader);
   NgDeps ngDeps = await parser.parse(entryPoint);
+  var extractor = new _TemplateExtractor(reader, entryPoint);
 
   var registrations = new StringBuffer();
-  ngDeps.registeredTypes.forEach((rType) {
-    _processRegisteredType(reader, rType).forEach((String templateText) {
-      var values = _processTemplate(templateText);
+  for (var rType in ngDeps.registeredTypes) {
+    (await extractor.extractTemplates(rType))
+        .forEach((RecordingReflectionCapabilities values) {
       var calls = _generateGetters('${rType.typeName}', values.getterNames);
       if (calls.isNotEmpty) {
         registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'
@@ -49,7 +51,7 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
             '({${calls.join(', ')}})');
       }
     });
-  });
+  }
 
   var code = ngDeps.code;
   if (registrations.length == 0) return code;
@@ -60,82 +62,123 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
 }
 
 Iterable<String> _generateGetters(String typeName, List<String> getterNames) {
-  return getterNames.map((prop) {
-    // TODO(kegluneq): Include `typeName` where possible.
-    return ''''$prop': (o) => o.$prop''';
-  });
+  // TODO(kegluneq): Include `typeName` where possible.
+  return getterNames.map((prop) => '''
+        '$prop': (o) => o.$prop
+    ''');
 }
 
 Iterable<String> _generateSetters(String typeName, List<String> setterName) {
-  return setterName.map((prop) {
-    return ''''$prop': (o, v) => o.$prop = v''';
-  });
+  return setterName.map((prop) => '''
+      '$prop': (o, v) => o.$prop = v
+  ''');
 }
 
 Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
-  return methodNames.map((methodName) {
-    return ''''$methodName': (o, List args) =>
-        Function.apply(o.$methodName, args)''';
-  });
+  return methodNames.map((methodName) => '''
+      '$methodName': (o, List args) => Function.apply(o.$methodName, args)
+  ''');
 }
 
-RecordingReflectionCapabilities _processTemplate(String templateCode) {
-  var recordingCapabilities = new RecordingReflectionCapabilities();
-  var savedReflectionCapabilities = reflector.reflectionCapabilities;
-  reflector.reflectionCapabilities = recordingCapabilities;
+/// Extracts `inline` and `url` values from `Template` annotations, reads
+/// template code if necessary, and determines what values will be
+/// reflectively accessed from that template.
+class _TemplateExtractor {
+  final AssetReader _reader;
+  final AssetId _entryPoint;
+  final CompilePipeline _pipeline;
+  final _TemplateExtractVisitor _visitor = new _TemplateExtractVisitor();
 
-  var compilePipeline = new CompilePipeline(_createCompileSteps());
-  var template = DOM.createTemplate(templateCode);
-  // TODO(kegluneq): Need to parse this from a file when not inline.
-  compilePipeline.process(template, templateCode);
+  _TemplateExtractor(this._reader, this._entryPoint)
+      : _pipeline = new CompilePipeline(_createCompileSteps());
 
-  reflector.reflectionCapabilities = savedReflectionCapabilities;
-  return recordingCapabilities;
-}
+  static List<CompileStep> _createCompileSteps() {
+    var parser = new ng.Parser(new ng.Lexer());
+    // TODO(kegluneq): Add other compile steps from default_steps.dart.
+    return [
+      new ViewSplitter(parser),
+      new PropertyBindingParser(parser),
+      new TextInterpolationParser(parser)
+    ];
+  }
 
-List<CompileStep> _createCompileSteps() {
-  var parser = new ng.Parser(new ng.Lexer());
-  // TODO(kegluneq): Add other compile steps from default_steps.dart.
-  return [
-    new ViewSplitter(parser),
-    new PropertyBindingParser(parser),
-    new TextInterpolationParser(parser)
-  ];
-}
+  Future<List<RecordingReflectionCapabilities>> extractTemplates(
+      RegisteredType t) async {
+    return (await _processRegisteredType(t)).map(_processTemplate).toList();
+  }
 
-List<String> _processRegisteredType(AssetReader reader, RegisteredType t) {
-  var visitor = new _TemplateExtractVisitor(reader);
-  t.annotations.accept(visitor);
-  return visitor.templateText;
+  RecordingReflectionCapabilities _processTemplate(String templateCode) {
+    var recordingCapabilities = new RecordingReflectionCapabilities();
+    var savedReflectionCapabilities = reflector.reflectionCapabilities;
+    reflector.reflectionCapabilities = recordingCapabilities;
+
+    _pipeline.process(DOM.createTemplate(templateCode), templateCode);
+
+    reflector.reflectionCapabilities = savedReflectionCapabilities;
+    return recordingCapabilities;
+  }
+
+  Future<List<String>> _processRegisteredType(RegisteredType t) async {
+    _visitor.reset();
+    t.annotations.accept(_visitor);
+    var toReturn = _visitor.inlineValues;
+    for (var url in _visitor.urlValues) {
+      var templateText = await _readUrlTemplate(url);
+      if (templateText != null) {
+        toReturn.add(templateText);
+      }
+    }
+    return toReturn;
+  }
+
+  // TODO(kegluneq): Rewrite these to `inline` where possible.
+  // See [https://github.com/angular/angular/issues/1035].
+  Future<String> _readUrlTemplate(String url) async {
+    var assetId = uriToAssetId(_entryPoint, url, logger, null);
+    var templateExists = await _reader.hasInput(assetId);
+    if (!templateExists) {
+      logger.error('Could not read template at uri $url from $_entryPoint');
+      return null;
+    }
+    return await _reader.readAsString(assetId);
+  }
 }
 
 /// Visitor responsible for processing the `annotations` property of a
 /// [RegisterType] object and pulling out template text.
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
-  final List<String> templateText = [];
-  final AssetReader _reader;
+  final List<String> inlineValues = [];
+  final List<String> urlValues = [];
 
-  _TemplateExtractVisitor(this._reader);
+  void reset() {
+    inlineValues.clear();
+    urlValues.clear();
+  }
 
   @override
   Object visitNamedExpression(NamedExpression node) {
     // TODO(kegluneq): Remove this limitation.
-    if (node.name is Label && node.name.label is SimpleIdentifier) {
-      var keyString = '${node.name.label}';
-      if (keyString == 'inline') {
-        if (node.expression is SimpleStringLiteral) {
-          templateText.add(stringLiteralToString(node.expression));
-        } else {
-          logger.error(
-              'Angular 2 currently only supports string literals in directives',
-              ' Source: ${node}');
-        }
-      }
-    } else {
+    if (node.name is! Label || node.name.label is! SimpleIdentifier) {
       logger.error(
           'Angular 2 currently only supports simple identifiers in directives',
           ' Source: ${node}');
+      return null;
     }
-    return super.visitNamedExpression(node);
+    var keyString = '${node.name.label}';
+    if (keyString == 'inline' || keyString == 'url') {
+      if (node.expression is! SimpleStringLiteral) {
+        logger.error(
+            'Angular 2 currently only supports string literals in directives',
+            ' Source: ${node}');
+        return null;
+      }
+      var valueString = stringLiteralToString(node.expression);
+      if (keyString == 'url') {
+        urlValues.add(valueString);
+      } else {
+        inlineValues.add(valueString);
+      }
+    }
+    return null;
   }
 }

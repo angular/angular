@@ -12,8 +12,7 @@ void setupReflection(reflector) {
     ..registerType(MyComponent, {
       'factory': (MyContext c) => new MyComponent(c),
       'parameters': const [const [MyContext]],
-      'annotations': const [
-        const Component(componentServices: const [MyContext])
-      ]
+      'annotations':
+          const [const Component(componentServices: const [MyContext])]
     });
 }

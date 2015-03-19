@@ -42,8 +42,9 @@ class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
     ClassDeclaration clazz =
         node.getAncestor((node) => node is ClassDeclaration);
     _fieldNameToType.clear();
-    clazz.members.where((member) => member is FieldDeclaration).forEach(
-        (FieldDeclaration field) {
+    clazz.members
+        .where((member) => member is FieldDeclaration)
+        .forEach((FieldDeclaration field) {
       var type = field.fields.type;
       if (type != null) {
         field.fields.variables.forEach((VariableDeclaration decl) {
