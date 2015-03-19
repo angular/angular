@@ -7,7 +7,6 @@ import {
   expect,
   iit,
   inject,
-  IS_NODEJS,
   it,
   xit,
 } from 'angular2/test_lib';
@@ -54,7 +53,7 @@ export function main() {
       "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
       "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
     }
-    if (!IS_NODEJS) {
+    if (DOM.supportsNativeShadowDOM()) {
       StringMapWrapper.set(strategies, "native", new NativeShadowDomStrategy(styleUrlResolver));
     }
 

@@ -11,9 +11,9 @@ import {
   inject,
   it,
   queryView,
-  xit,
-  IS_NODEJS
+  xit
 } from 'angular2/test_lib';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -86,7 +86,7 @@ export function main() {
       });
     }));
 
-    if (!IS_NODEJS) {
+    if (DOM.supportsDOMEvents()) {
       it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({
           "login": new Control("oldValue")
@@ -153,7 +153,7 @@ export function main() {
       });
     }));
 
-    if (!IS_NODEJS) {
+    if (DOM.supportsDOMEvents()) {
       describe("different control types", () => {
         it("should support type=checkbox", inject([AsyncTestCompleter], (async) => {
           var ctx = new MyComp(new ControlGroup({"checkbox": new Control(true)}));
@@ -305,7 +305,7 @@ export function main() {
         });
       }));
 
-      if (!IS_NODEJS) {
+      if (DOM.supportsDOMEvents()) {
         it("should update the control group values on DOM change", inject([AsyncTestCompleter], (async) => {
           var form = new ControlGroup({
             "nested": new ControlGroup({

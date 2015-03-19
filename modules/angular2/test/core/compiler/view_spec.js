@@ -1,4 +1,4 @@
-import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy, IS_NODEJS} from 'angular2/test_lib';
+import {describe, xit, it, expect, beforeEach, ddescribe, iit, el, proxy} from 'angular2/test_lib';
 import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angular2/src/core/compiler/view';
 import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedScopedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -444,7 +444,7 @@ export function main() {
         });
       });
 
-      if (!IS_NODEJS) {
+      if (DOM.supportsDOMEvents()) {
         describe('event handlers', () => {
           var view, ctx, called, receivedEvent, dispatchedEvent;
 

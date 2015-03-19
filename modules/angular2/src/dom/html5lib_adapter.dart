@@ -223,4 +223,13 @@ class Html5LibDomAdapter implements DomAdapter {
   List cssToRules(String css) {
     throw 'not implemented';
   }
+  List getDistributedNodes(Node) {
+    throw 'not implemented';
+  }
+  bool supportsDOMEvents() {
+    throw 'not implemented';
+  }
+  bool supportsNativeShadowDOM() {
+    throw 'not implemented';
+  }
 }

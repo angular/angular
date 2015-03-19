@@ -14,7 +14,6 @@ export var afterEach = _global.afterEach;
 export var expect = _global.expect;
 
 export var IS_DARTIUM = false;
-export var IS_NODEJS = typeof window === 'undefined';
 
 export class AsyncTestCompleter {
   _done: Function;
@@ -293,23 +292,26 @@ export class SpyObject {
 
 function elementText(n) {
   var hasNodes = (n) => {var children = DOM.childNodes(n); return children && children.length > 0;}
-  if (!IS_NODEJS) {
-    if (n instanceof Comment)         return '';
 
-    if (n instanceof Array)           return n.map((nn) => elementText(nn)).join("");
-    if (n instanceof Element && DOM.tagName(n) == 'CONTENT')
-      return elementText(Array.prototype.slice.apply(n.getDistributedNodes()));
-    if (DOM.hasShadowRoot(n))             return elementText(DOM.childNodesAsList(n.shadowRoot));
-    if (hasNodes(n))                  return elementText(DOM.childNodesAsList(n));
-
-    return n.textContent;
-  } else {
-    if (n instanceof Array) {
-      return n.map((nn) => elementText(nn)).join("");
-    } else if (hasNodes(n)) {
-      return elementText(DOM.childNodesAsList(n));
-    } else {
-      return DOM.getText(n);
-    }
+  if (n instanceof Array) {
+    return n.map((nn) => elementText(nn)).join("");
   }
+
+  if (DOM.isCommentNode(n)) {
+    return '';
+  }
+
+  if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
+    return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
+  }
+
+  if (DOM.hasShadowRoot(n)) {
+    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
+  }
+
+  if (hasNodes(n)) {
+    return elementText(DOM.childNodesAsList(n));
+  }
+
+  return DOM.getText(n);
 }

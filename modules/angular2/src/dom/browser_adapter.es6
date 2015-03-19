@@ -234,7 +234,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return node.nodeType === Node.TEXT_NODE;
   }
   isCommentNode(node:Node):boolean {
-    return node.nodeType === Node.TEXT_NODE;
+    return node.nodeType === Node.COMMENT_NODE;
   }
   isElementNode(node:Node):boolean {
     return node.nodeType === Node.ELEMENT_NODE;
