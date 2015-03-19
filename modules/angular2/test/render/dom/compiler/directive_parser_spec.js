@@ -17,6 +17,7 @@ export function main() {
       annotatedDirectives = [
         someComponent,
         someComponent2,
+        someComponent3,
         someViewport,
         someViewport2,
         someDecorator,
@@ -54,6 +55,13 @@ export function main() {
       var results = process(el('<div some-decor></div>'));
       expect(results[0].directives[0].directiveIndex).toBe(
         annotatedDirectives.indexOf(someDecorator)
+      );
+    });
+
+    it('should detect directives with multiple attributes', () => {
+      var results = process(el('<input type=text control=one></input>'));
+      expect(results[0].directives[0].directiveIndex).toBe(
+        annotatedDirectives.indexOf(someComponent3)
       );
     });
 
@@ -187,6 +195,12 @@ var someComponent = new DirectiveMetadata({
 var someComponent2 = new DirectiveMetadata({
   selector: '[some-comp2]',
   id: 'someComponent2',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var someComponent3 = new DirectiveMetadata({
+  selector: 'input[type=text][control]',
+  id: 'someComponent3',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 

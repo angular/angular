@@ -25,6 +25,7 @@ export function main() {
         SomeViewport2,
         SomeComponent,
         SomeComponent2,
+        SomeComponent3,
         SomeDynamicComponent,
         SomeDynamicComponent2
       ];
@@ -105,6 +106,13 @@ export function main() {
            );
          }).toThrowError('Only template directives are allowed on template elements - check <template some-comp>');
        });
+
+      it('should detect them with multiple attributes', () => {
+        var results = createPipeline().process(el('<input type=text control=one></input>'));
+        var dirs = results[0].getAllDirectives();
+        expect(dirs.length).toEqual(1);
+        expect(dirs[0]).toEqual(reader.read(SomeComponent3));
+      });
     });
 
     describe("dynamic component directives", () => {
@@ -261,6 +269,9 @@ class SomeComponent {}
 @Component({selector: '[some-comp2]'})
 class SomeComponent2 {}
 
+@Component({selector: 'input[type=text][control]'})
+class SomeComponent3 {}
+
 @DynamicComponent({selector: '[some-dynamic-comp]'})
 class SomeDynamicComponent {}
 
@@ -270,7 +281,7 @@ class SomeDynamicComponent2 {}
 @Component()
 @Template({
     directives: [SomeDecorator, SomeViewport, SomeViewport2,
-      SomeComponent, SomeComponent2,
+      SomeComponent, SomeComponent2, SomeComponent3,
       SomeDynamicComponent, SomeDynamicComponent2
     ]
 })
