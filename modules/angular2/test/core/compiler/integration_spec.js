@@ -2,6 +2,7 @@ import {
   AsyncTestCompleter,
   beforeEach,
   ddescribe,
+  xdescribe,
   describe,
   el,
   expect,
@@ -566,61 +567,57 @@ export function main() {
       }));
     });
 
-    if (assertionsEnabled()) {
+    xdescribe('Missing directive checks', () => {
 
-      function expectCompileError(inlineTpl, errMessage, done) {
-        tplResolver.setTemplate(MyComp, new Template({inline: inlineTpl}));
-        PromiseWrapper.then(compiler.compile(MyComp),
-          (value) => {
-            throw new BaseException("Test failure: should not have come here as an exception was expected");
-          },
-          (err) => {
-            expect(err.message).toEqual(errMessage);
-            done();
-          }
-        );
+      if (assertionsEnabled()) {
+
+        function expectCompileError(inlineTpl, errMessage, done) {
+          tplResolver.setTemplate(MyComp, new Template({inline: inlineTpl}));
+          PromiseWrapper.then(compiler.compile(MyComp),
+            (value) => {
+              throw new BaseException("Test failure: should not have come here as an exception was expected");
+            },
+            (err) => {
+              expect(err.message).toEqual(errMessage);
+              done();
+            }
+          );
+        }
+
+        it('should raise an error if no directive is registered for a template with template bindings', inject([AsyncTestCompleter], (async) => {
+          expectCompileError(
+            '<div><div template="if: foo"></div></div>',
+            'Missing directive to handle \'if\' in <div template="if: foo">',
+            () => async.done()
+          );
+        }));
+
+        it('should raise an error for missing template directive (1)', inject([AsyncTestCompleter], (async) => {
+          expectCompileError(
+            '<div><template foo></template></div>',
+            'Missing directive to handle: <template foo>',
+            () => async.done()
+          );
+        }));
+
+        it('should raise an error for missing template directive (2)', inject([AsyncTestCompleter], (async) => {
+          expectCompileError(
+            '<div><template *if="condition"></template></div>',
+            'Missing directive to handle: <template *if="condition">',
+            () => async.done()
+          );
+        }));
+
+        it('should raise an error for missing template directive (3)', inject([AsyncTestCompleter], (async) => {
+          expectCompileError(
+            '<div *if="condition"></div>',
+            'Missing directive to handle \'if\' in MyComp: <div *if="condition">',
+            () => async.done()
+          );
+        }));
       }
+    });
 
-      it('should raise an error if no directive is registered for an unsupported DOM property', inject([AsyncTestCompleter], (async) => {
-        expectCompileError(
-          '<div [some-prop]="foo"></div>',
-          'Missing directive to handle \'some-prop\' in MyComp: <div [some-prop]="foo">',
-          () => async.done()
-        );
-      }));
-
-      it('should raise an error if no directive is registered for a template with template bindings', inject([AsyncTestCompleter], (async) => {
-        expectCompileError(
-          '<div><div template="if: foo"></div></div>',
-          'Missing directive to handle \'if\' in <div template="if: foo">',
-          () => async.done()
-        );
-      }));
-
-      it('should raise an error for missing template directive (1)', inject([AsyncTestCompleter], (async) => {
-        expectCompileError(
-          '<div><template foo></template></div>',
-          'Missing directive to handle: <template foo>',
-          () => async.done()
-        );
-      }));
-
-      it('should raise an error for missing template directive (2)', inject([AsyncTestCompleter], (async) => {
-        expectCompileError(
-          '<div><template *if="condition"></template></div>',
-          'Missing directive to handle: <template *if="condition">',
-          () => async.done()
-        );
-      }));
-
-      it('should raise an error for missing template directive (3)', inject([AsyncTestCompleter], (async) => {
-        expectCompileError(
-          '<div *if="condition"></div>',
-          'Missing directive to handle \'if\' in MyComp: <div *if="condition">',
-          () => async.done()
-        );
-      }));
-    }
   });
 }
 

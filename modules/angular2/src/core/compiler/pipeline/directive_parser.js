@@ -1,5 +1,5 @@
 import {isPresent, isBlank, BaseException, assertionsEnabled, RegExpWrapper} from 'angular2/src/facade/lang';
-import {List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {SelectorMatcher} from '../selector';
 import {CssSelector} from '../selector';
@@ -9,9 +9,6 @@ import {DynamicComponent, Component, Viewport} from '../../annotations/annotatio
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-
-import {isSpecialProperty} from './element_binder_builder';
-import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
 
 var PROPERTY_BINDING_REGEXP = RegExpWrapper.create('^ *([^\\s\\|]+)');
 
@@ -60,51 +57,13 @@ export class DirectiveParser extends CompileStep {
     });
 
     // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
-    // only be present on <template> elements any more!
+    // only be present on <template> elements!
     var isTemplateElement = DOM.isTemplateElement(current.element);
-    var matchedProperties; // StringMap - used in dev mode to store all properties that have been matched
 
     this._selectorMatcher.match(cssSelector, (selector, directive) => {
-      matchedProperties = updateMatchedProperties(matchedProperties, selector, directive);
-      checkDirectiveValidity(directive, current, isTemplateElement);
-      current.addDirective(directive);
+      current.addDirective(checkDirectiveValidity(directive, current, isTemplateElement));
     });
-
-    // raise error if some directives are missing
-    checkMissingDirectives(current, matchedProperties, isTemplateElement);
   }
-}
-
-// calculate all the properties that are used or interpreted by all directives
-// those properties correspond to the directive selectors and the directive bindings
-function updateMatchedProperties(matchedProperties, selector, directive) {
-  if (assertionsEnabled()) {
-    var attrs = selector.attrs;
-    if (!isPresent(matchedProperties)) {
-      matchedProperties = StringMapWrapper.create();
-    }
-    if (isPresent(attrs)) {
-      for (var idx = 0; idx<attrs.length; idx+=2) {
-        // attribute name is stored on even indexes
-        StringMapWrapper.set(matchedProperties, dashCaseToCamelCase(attrs[idx]), true);
-      }
-    }
-    // some properties can be used by the directive, so we need to register them
-    if (isPresent(directive.annotation) && isPresent(directive.annotation.bind)) {
-      var bindMap = directive.annotation.bind;
-      StringMapWrapper.forEach(bindMap, (value, key) => {
-        // value is the name of the property that is interpreted
-        // e.g. 'myprop' or 'myprop | double' when a pipe is used to transform the property
-
-        // keep the property name and remove the pipe
-        var bindProp = RegExpWrapper.firstMatch(PROPERTY_BINDING_REGEXP, value);
-        if (isPresent(bindProp) && isPresent(bindProp[1])) {
-          StringMapWrapper.set(matchedProperties, dashCaseToCamelCase(bindProp[1]), true);
-        }
-      });
-    }
-  }
-  return matchedProperties;
 }
 
 // check if the directive is compatible with the current element
@@ -125,26 +84,6 @@ function checkDirectiveValidity(directive, current, isTemplateElement) {
   } else if (isComponent && alreadyHasComponent) {
     throw new BaseException(`Multiple component directives not allowed on the same element - check ${current.elementDescription}`);
   }
-}
 
-// validates that there is no missing directive - dev mode only
-function checkMissingDirectives(current, matchedProperties, isTemplateElement) {
-  if (assertionsEnabled()) {
-    var ppBindings=current.propertyBindings;
-    if (isPresent(ppBindings)) {
-      // check that each property corresponds to a real property or has been matched by a directive
-      MapWrapper.forEach(ppBindings, (expression, prop) => {
-        if (!DOM.hasProperty(current.element, prop) && !isSpecialProperty(prop)) {
-          if (!isPresent(matchedProperties) || !isPresent(StringMapWrapper.get(matchedProperties, prop))) {
-            throw new BaseException(`Missing directive to handle '${camelCaseToDashCase(prop)}' in ${current.elementDescription}`);
-          }
-        }
-      });
-    }
-    // template only store directives as attribute when they are not bound to expressions
-    // so we have to validate the expression case too (e.g. !if="condition")
-    if (isTemplateElement && !current.isViewRoot && !isPresent(current.viewportDirective)) {
-      throw new BaseException(`Missing directive to handle: ${current.elementDescription}`);
-    }
-  }
+  return directive;
 }

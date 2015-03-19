@@ -93,12 +93,16 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   return setterFn;
 }
 
-// tells if an attribute is handled by the ElementBinderBuilder step
-export function isSpecialProperty(propName:string) {
-  return StringWrapper.startsWith(propName, ATTRIBUTE_PREFIX)
-        || StringWrapper.startsWith(propName, CLASS_PREFIX)
-        || StringWrapper.startsWith(propName, STYLE_PREFIX)
-        || StringMapWrapper.contains(DOM.attrToPropMap, propName);
+const ROLE_ATTR = 'role';
+function roleSetter(element, value) {
+  if (isString(value)) {
+    DOM.setAttribute(element, ROLE_ATTR, value);
+  } else {
+    DOM.removeAttribute(element, ROLE_ATTR);
+    if (isPresent(value)) {
+      throw new BaseException("Invalid role attribute, only string values are allowed, got '" + stringify(value) + "'");
+    }
+  }
 }
 
 /**
