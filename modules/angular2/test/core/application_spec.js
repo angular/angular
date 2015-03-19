@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {bootstrap, appDocumentToken, appElementToken}
     from 'angular2/src/core/application';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {Component, Decorator} from 'angular2/src/core/annotations/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -64,6 +64,12 @@ class HelloRootCmp4 {
   }
 }
 
+@Component({selector: 'hello-app'})
+class HelloRootMissingTemplate { }
+
+@Decorator({selector: 'hello-app'})
+class HelloRootDirectiveIsNotCmp { }
+
 export function main() {
   var fakeDoc, el, el2, testBindings, lightDom;
 
@@ -80,6 +86,23 @@ export function main() {
   });
 
   describe('bootstrap factory method', () => {
+    it('should throw if no Template found', inject([AsyncTestCompleter], (async) => {
+      var injectorPromise = bootstrap(HelloRootMissingTemplate, testBindings, (e,t) => {throw e;});
+      PromiseWrapper.then(injectorPromise, null, (reason) => {
+        expect(reason.message).toContain('No template found for HelloRootMissingTemplate');
+        async.done();
+      });
+    }));
+
+    it('should throw if bootstrapped Directive is not a Component', inject([AsyncTestCompleter], (async) => {
+      var injectorPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e,t) => {throw e;});
+      PromiseWrapper.then(injectorPromise, null, (reason) => {
+          expect(reason.message).toContain('Only Components can be bootstrapped; ' +
+					   'Directive of HelloRootDirectiveIsNotCmp is not a Component');
+          async.done();
+      });
+    }));
+
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
       PromiseWrapper.then(injectorPromise, null, (reason) => {

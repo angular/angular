@@ -1,5 +1,5 @@
 import {Injector, bind, OpaqueToken} from 'angular2/di';
-import {Type, isBlank, isPresent, BaseException, assertionsEnabled, print} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, BaseException, assertionsEnabled, print, stringify} from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
@@ -25,6 +25,7 @@ import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {Component} from 'angular2/src/core/annotations/annotations';
 
 var _rootInjector: Injector;
 
@@ -58,6 +59,12 @@ function _injectorBindings(appComponentType): List<Binding> {
 
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
         appComponentAnnotatedType, strategy, eventManager) => {
+        var annotation = appComponentAnnotatedType.annotation;
+        if(!isBlank(annotation) && !(annotation instanceof Component)) {
+          var type = appComponentAnnotatedType.type;
+          throw new BaseException(`Only Components can be bootstrapped; ` +
+                                  `Directive of ${stringify(type)} is not a Component`);
+        }
         return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
