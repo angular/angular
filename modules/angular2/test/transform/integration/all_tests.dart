@@ -8,6 +8,10 @@ import 'package:dart_style/dart_style.dart';
 
 import '../common/read_file.dart';
 
+main() {
+  allTests();
+}
+
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
     ['web/index.dart'],
@@ -39,7 +43,10 @@ void allTests() {
         '../../../lib/src/core/annotations/annotations.dart',
     'angular2|lib/src/core/application.dart': '../common/application.dart',
     'angular2|lib/src/reflection/reflection_capabilities.dart':
-        '../common/reflection_capabilities.dart'
+        '../common/reflection_capabilities.dart',
+    'angular2|lib/di.dart': '../../../lib/di.dart',
+    'angular2|lib/src/di/annotations.dart':
+        '../../../lib/src/di/annotations.dart',
   };
 
   var tests = [
