@@ -106,6 +106,18 @@ export function main() {
       expect(matched).toEqual([s1[0],1]);
     });
 
+    it('should select by many attributes and independent of the value', () => {
+      matcher.addSelectables(s1 = CssSelector.parse('input[type=text][control]'), 1);
+
+      var cssSelector = new CssSelector();
+      cssSelector.setElement('input');
+      cssSelector.addAttribute('type', 'text');
+      cssSelector.addAttribute('control', 'one');
+
+      expect(matcher.match(cssSelector, selectableCollector)).toEqual(true);
+      expect(matched).toEqual([s1[0], 1]);
+    });
+
     it('should select independent of the order in the css selector', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr].someClass'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('.someClass[someAttr]'), 2);
@@ -203,6 +215,14 @@ export function main() {
       expect(cssSelector.classNames).toEqual(['someclass']);
 
       expect(cssSelector.toString()).toEqual('sometag.someclass[attrname=attrvalue]');
+    });
+
+    it('should detect multiple attributes', () => {
+      var cssSelector = CssSelector.parse('input[type=text][control]')[0];
+      expect(cssSelector.element).toEqual('input');
+      expect(cssSelector.attrs).toEqual(['type', 'text', 'control', '']);
+
+      expect(cssSelector.toString()).toEqual('input[type=text][control]');
     });
 
     it('should detect :not', () => {
