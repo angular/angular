@@ -24,17 +24,11 @@ module.exports = function ExportTreeVisitor(ParseTreeVisitor, log) {
       this.currentExport = null;
     },
 
-    visitVariableStatement: function(tree) {
-      if ( this.currentExport ) {
-        this.updateExport(tree);
-        this.currentExport.name = "VARIABLE_STATEMENT";
-      }
-    },
-
     visitVariableDeclaration: function(tree) {
       if ( this.currentExport ) {
         this.updateExport(tree);
-        this.currentExport.name = tree.lvalue;
+        this.currentExport.docType = 'var';
+        this.currentExport.name = tree.lvalue.identifierToken.value;
         this.currentExport.variableDeclaration = tree;
       }
     },

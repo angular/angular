@@ -26,6 +26,15 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .factory(require('./readers/atScript'))
 .factory(require('./readers/ngdoc'))
 
+.factory('EXPORT_DOC_TYPES', function() {
+  return [
+    'class',
+    'function',
+    'var',
+    'const'
+  ];
+})
+
 
 // Register the processors
 .processor(require('./processors/generateDocsFromComments'))
@@ -82,15 +91,10 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 
 // Configure ids and paths
-.config(function(computeIdsProcessor, computePathsProcessor) {
+.config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: [
-      'class',
-      'function',
-      'NAMED_EXPORT',
-      'VARIABLE_STATEMENT'
-    ],
+    docTypes: EXPORT_DOC_TYPES,
     idTemplate: '${moduleDoc.id}.${name}',
     getAliases: function(doc) { return [doc.id]; }
   });
@@ -123,12 +127,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   });
 
   computePathsProcessor.pathTemplates.push({
-    docTypes: [
-      'class',
-      'function',
-      'NAMED_EXPORT',
-      'VARIABLE_STATEMENT'
-    ],
+    docTypes: EXPORT_DOC_TYPES,
     pathTemplate: '${moduleDoc.path}/${name}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${path}/index.html'
   });
