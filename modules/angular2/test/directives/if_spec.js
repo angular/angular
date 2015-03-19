@@ -145,40 +145,7 @@ export function main() {
     }));
 
 
-    if (!IS_DARTIUM) {
-      it('should leave the element if the condition is a non-empty string (JS)', inject([AsyncTestCompleter], (async) => {
-        compileWithTemplate('<div><copy-me template="if stringCondition">hello</copy-me></div>').then((pv) => {
-          createView(pv);
-          cd.detectChanges();
-
-          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-          expect(DOM.getText(view.nodes[0])).toEqual('hello');
-          async.done();
-        });
-      }));
-
-      it('should leave the element if the condition is an object (JS)', inject([AsyncTestCompleter], (async) => {
-        compileWithTemplate('<div><copy-me template="if objectCondition">hello</copy-me></div>').then((pv) => {
-          createView(pv);
-          cd.detectChanges();
-
-          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-          expect(DOM.getText(view.nodes[0])).toEqual('hello');
-          async.done();
-        });
-      }));
-
-      it('should remove the element if the condition is null (JS)', inject([AsyncTestCompleter], (async) => {
-        compileWithTemplate('<div><copy-me template="if nullCondition">hello</copy-me></div>').then((pv) => {
-          createView(pv);
-          cd.detectChanges();
-
-          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-          expect(DOM.getText(view.nodes[0])).toEqual('');
-          async.done();
-        });
-      }));
-
+    if (!IS_DARTIUM) {;
       it('should not add the element twice if the condition goes from true to true (JS)', inject([AsyncTestCompleter], (async) => {
         compileWithTemplate('<div><copy-me template="if numberCondition">hello</copy-me></div>').then((pv) => {
           createView(pv);
@@ -231,8 +198,6 @@ class TestComponent {
   numberCondition: number;
   stringCondition: string;
   functionCondition: Function;
-  objectCondition: any;
-  nullCondition: any;
   constructor() {
     this.booleanCondition = true;
     this.numberCondition = 1;
@@ -240,7 +205,5 @@ class TestComponent {
     this.functionCondition = function(s, n){
       return s == "foo" && n == 1;
     };
-    this.objectCondition = {};
-    this.nullCondition = null;
   }
 }
