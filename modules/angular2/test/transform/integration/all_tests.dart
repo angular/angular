@@ -2,16 +2,17 @@ library angular2.test.transform.integration;
 
 import 'dart:io';
 import 'package:angular2/src/dom/html_adapter.dart';
+import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:guinness/guinness.dart';
 
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
-    'web/index.dart', reflectionEntryPoint: 'web/index.dart'));
+    'web/index.dart',
+    reflectionEntryPoint: 'web/index.dart', modeName: TRANSFORM_MODE));
 
 class IntegrationTestConfig {
   final String name;

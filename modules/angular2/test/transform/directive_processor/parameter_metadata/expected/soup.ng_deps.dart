@@ -1,4 +1,4 @@
-library dinner.soup;
+library dinner.soup.ng_deps.dart;
 
 import 'soup.dart';
 import 'package:angular2/src/core/annotations/annotations.dart';

@@ -13,9 +13,14 @@ class TransformerOptions {
   /// application's [ReflectionCapabilities] are set.
   final String reflectionEntryPoint;
 
-  TransformerOptions._internal(this.entryPoint, this.reflectionEntryPoint);
+  /// The `BarbackMode#name` we are running in.
+  final String modeName;
 
-  factory TransformerOptions(String entryPoint, {String reflectionEntryPoint}) {
+  TransformerOptions._internal(
+      this.entryPoint, this.reflectionEntryPoint, this.modeName);
+
+  factory TransformerOptions(String entryPoint,
+      {String reflectionEntryPoint, String modeName: 'release'}) {
     if (entryPoint == null) {
       throw new ArgumentError.notNull(ENTRY_POINT_PARAM);
     } else if (entryPoint.isEmpty) {
@@ -24,6 +29,7 @@ class TransformerOptions {
     if (reflectionEntryPoint == null || entryPoint.isEmpty) {
       reflectionEntryPoint = entryPoint;
     }
-    return new TransformerOptions._internal(entryPoint, reflectionEntryPoint);
+    return new TransformerOptions._internal(
+        entryPoint, reflectionEntryPoint, modeName);
   }
 }

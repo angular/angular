@@ -16,9 +16,7 @@ import 'linker.dart';
 /// `setupReflection` call the necessary `setupReflection` method in all
 /// dependencies.
 class DirectiveLinker extends Transformer {
-  final TransformerOptions options;
-
-  DirectiveLinker(this.options);
+  DirectiveLinker();
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
@@ -28,10 +26,11 @@ class DirectiveLinker extends Transformer {
     log.init(transform);
 
     try {
+      var reader = new AssetReader.fromTransform(transform);
       var assetId = transform.primaryInput.id;
-      var transformedCode =
-          await linkNgDeps(new AssetReader.fromTransform(transform), assetId);
-      var formattedCode = formatter.format(transformedCode, uri: assetId.path);
+      var assetPath = assetId.path;
+      var transformedCode = await linkNgDeps(reader, assetId);
+      var formattedCode = formatter.format(transformedCode, uri: assetPath);
       transform.addOutput(new Asset.fromString(assetId, formattedCode));
     } catch (ex, stackTrace) {
       log.logger.error('Linking ng directives failed.\n'

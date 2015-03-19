@@ -15,5 +15,7 @@ dependencies:
   dart_style: '^0.1.3'
   html: '^0.12.0'
   stack_trace: '^1.1.1'
+transformers:
+  - angular2/src/transform/di_transformer
 dev_dependencies:
   guinness: "^0.1.17"

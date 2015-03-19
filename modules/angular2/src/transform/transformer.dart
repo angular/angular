@@ -9,20 +9,27 @@ import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
 import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
+import 'common/names.dart';
 import 'common/options.dart';
 
 export 'common/options.dart';
 
 /// Replaces Angular 2 mirror use with generated code.
 class AngularTransformerGroup extends TransformerGroup {
-  AngularTransformerGroup(TransformerOptions options) : super([
-        [new DirectiveProcessor(options)],
-        [new DirectiveLinker(options)],
+  AngularTransformerGroup._(phases) : super(phases) {
+    formatter.init(new DartFormatter());
+  }
+
+  factory AngularTransformerGroup(TransformerOptions options) {
+    var phases = [[new DirectiveProcessor(options)], [new DirectiveLinker()]];
+    if (options.modeName == TRANSFORM_MODE) {
+      phases.addAll([
         [new BindGenerator(options)],
         [new TemplateComplier(options)],
         [new ReflectionRemover(options)]
-      ]) {
-    formatter.init(new DartFormatter());
+      ]);
+    }
+    return new AngularTransformerGroup._(phases);
   }
 
   factory AngularTransformerGroup.asPlugin(BarbackSettings settings) {
@@ -33,5 +40,6 @@ class AngularTransformerGroup extends TransformerGroup {
 TransformerOptions _parseOptions(BarbackSettings settings) {
   var config = settings.configuration;
   return new TransformerOptions(config[ENTRY_POINT_PARAM],
-      reflectionEntryPoint: config[REFLECTION_ENTRY_POINT_PARAM]);
+      reflectionEntryPoint: config[REFLECTION_ENTRY_POINT_PARAM],
+      modeName: settings.mode.name);
 }

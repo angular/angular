@@ -32,14 +32,13 @@ class DirectiveProcessor extends Transformer {
     log.init(transform);
 
     try {
-      var assetCode = await transform.primaryInput.readAsString();
-      var ngDepsSrc = createNgDeps(assetCode, transform.primaryInput.id.path,
-          forceGenerate: transform.primaryInput.id.path == options.entryPoint);
+      var asset = transform.primaryInput;
+      var assetCode = await asset.readAsString();
+      var ngDepsSrc = createNgDeps(assetCode, asset.id.path);
       if (ngDepsSrc != null && ngDepsSrc.isNotEmpty) {
         var ngDepsAssetId =
             transform.primaryInput.id.changeExtension(DEPS_EXTENSION);
-        var exists = await transform.hasInput(ngDepsAssetId);
-        if (exists) {
+        if (await transform.hasInput(ngDepsAssetId)) {
           log.logger.error('Clobbering ${ngDepsAssetId}. '
               'This probably will not end well');
         }
