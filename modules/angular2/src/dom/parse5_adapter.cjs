@@ -3,7 +3,7 @@ var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 
-var cssParse = require('css-parse');
+var cssParse = require('css').parse;
 
 var url = require('url');
 
@@ -252,6 +252,9 @@ export class Parse5DomAdapter extends DomAdapter {
   getShadowRoot(el) {
     return el.shadowRoot;
   }
+  getDistributedNodes(el) {
+    throw _notImplemented('getDistributedNodes');
+  }
   clone(node) {
     var temp = treeAdapter.createElement("template", null, []);
     treeAdapter.appendChild(temp, node);
@@ -384,7 +387,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return treeAdapter.isTextNode(node);
   }
   isCommentNode(node):boolean {
-    throw treeAdapter.isCommentNode(node);
+    return treeAdapter.isCommentNode(node);
   }
   isElementNode(node):boolean {
     return node ? treeAdapter.isElementNode(node) : false;
@@ -454,6 +457,12 @@ export class Parse5DomAdapter extends DomAdapter {
       rules = this._buildRules(parsedCSS.stylesheet.rules, css);
     }
     return rules;
+  }
+  supportsDOMEvents(): boolean {
+    return false;
+  }
+  supportsNativeShadowDOM(): boolean {
+    return false;
   }
 }
 

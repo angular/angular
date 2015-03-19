@@ -24,6 +24,7 @@ class IMPLEMENTS {
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;
+bool isFunction(obj) => obj is Function;
 
 String stringify(obj) => obj.toString();
 

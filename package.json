@@ -39,7 +39,7 @@
     "angular": "1.3.5",
     "bower": "^1.3.12",
     "canonical-path": "0.0.2",
-    "css-parse": "2.0.0",
+    "css": "mlaval/css#issue65",
     "del": "~1",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.11",
