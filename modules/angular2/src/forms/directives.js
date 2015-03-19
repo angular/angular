@@ -1,4 +1,4 @@
-import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
+import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/angular2';
 import {Optional} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';

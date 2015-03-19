@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/core';
+import {Decorator} from 'angular2/angular2';
 
 import {ControlDirective} from 'angular2/forms';
 import * as validators from 'angular2/forms';

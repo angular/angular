@@ -1,4 +1,4 @@
-import {bootstrap, Component, Template} from 'angular2/core';
+import {bootstrap, Component, Template} from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 

@@ -29,7 +29,7 @@ import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Injector} from 'angular2/di';
 
-import {Component, Decorator, Template} from 'angular2/core';
+import {Component, Decorator, Template} from 'angular2/angular2';
 import {ControlGroupDirective, ControlDirective, Control, ControlGroup, OptionalControl,
   ControlValueAccessor, RequiredValidatorDirective} from 'angular2/forms';
 
