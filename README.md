@@ -36,6 +36,7 @@ comments in the source `modules/examples/src/hello_world/index.js`.
 You can build this example as either JS or Dart app:
 
 * JS:
+  * `$(npm bin)/gulp build.js.dev`, and
   * `$(npm bin)/gulp serve.js.dev`, and
   * open `localhost:8000/examples/src/hello_world/` in Chrome.
 * Dart:
