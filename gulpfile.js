@@ -343,11 +343,11 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
 }));
 
 var ts2dart = require('gulp-ts2dart');
-gulp.task('build/transpile.dart.experimental', function() {
-  gulp.src('modules/**/*.ts')
+gulp.task('build/transpile.dart.ts2dart', function() {
+  gulp.src('modules/angular2/src/di/*.js')
       .pipe(ts2dart.transpile())
       .pipe(ts2dart.format())
-      .pipe(gulp.dest(CONFIG.dest.dart))
+      .pipe(gulp.dest('dist/dart.ts2dart'))
 });
 
 // ------------
@@ -649,7 +649,7 @@ gulp.task('tests/transform.dart', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
-    ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
+    ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
     'build/format.dart',
     'build/pubspec.dart',
