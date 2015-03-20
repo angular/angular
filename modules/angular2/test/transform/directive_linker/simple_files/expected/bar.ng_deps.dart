@@ -1,4 +1,4 @@
-library bar;
+library bar.ng_deps.dart;
 
 import 'bar.dart';
 import 'package:angular2/src/core/annotations/annotations.dart';

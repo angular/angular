@@ -1,4 +1,4 @@
-library web_foo;
+library web_foo.ng_deps.dart;
 
 import 'index.dart';
 import 'package:angular2/src/core/application.dart';
