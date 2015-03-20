@@ -116,7 +116,7 @@ export function main() {
       }));
 
       it('should consume binding to aria-* attributes', inject([AsyncTestCompleter], (async) => {
-        tplResolver.setTemplate(MyComp, new Template({inline: '<div [aria-label]="ctxProp"></div>'}));
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div [attr.aria-label]="ctxProp"></div>'}));
 
         compiler.compile(MyComp).then((pv) => {
           createView(pv);

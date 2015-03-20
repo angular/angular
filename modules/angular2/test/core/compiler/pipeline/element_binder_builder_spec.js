@@ -218,7 +218,7 @@ export function main() {
 
     it('should bind to aria-* attributes when exp evaluates to strings', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'aria-label': 'prop1'
+        'attr.aria-label': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -243,7 +243,7 @@ export function main() {
 
     it('should bind to aria-* attributes when exp evaluates to booleans', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'aria-busy': 'prop1'
+        'attr.aria-busy': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -264,7 +264,7 @@ export function main() {
 
     it('should bind to ARIA role attribute', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'role': 'prop1'
+        'attr.role': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -289,7 +289,7 @@ export function main() {
 
     it('should throw for a non-string ARIA role', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'role': 'prop1'
+        'attr.role': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -301,6 +301,31 @@ export function main() {
         evalContext.prop1 = 1; //invalid, non-string role
         changeDetector.detectChanges();
       }).toThrowError("Invalid role attribute, only string values are allowed, got '1'");
+    });
+
+    it('should bind to any attribute', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'attr.foo-bar': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 'baz';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toEqual('baz');
+
+      evalContext.prop1 = 123;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toEqual('123');
+
+      evalContext.prop1 = null;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toBeNull();
     });
 
     it('should bind class with a dot', () => {

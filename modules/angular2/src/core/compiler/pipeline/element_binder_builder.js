@@ -15,23 +15,34 @@ import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
 
 var DOT_REGEXP = RegExpWrapper.create('\\.');
 
-const ARIA_PREFIX = 'aria';
-var ariaSettersCache = StringMapWrapper.create();
+const ATTRIBUTE_PREFIX = 'attr.';
+var attributeSettersCache = StringMapWrapper.create();
 
-function ariaSetterFactory(attrName:string) {
-  var setterFn = StringMapWrapper.get(ariaSettersCache, attrName);
-  var ariaAttrName;
+function _isValidAttributeValue(attrName:string, value: any) {
+  if (attrName == "role") {
+    return isString(value);
+  } else {
+    return isPresent(value);
+  }
+}
+
+function attributeSetterFactory(attrName:string) {
+  var setterFn = StringMapWrapper.get(attributeSettersCache, attrName);
+  var dashCasedAttributeName;
 
   if (isBlank(setterFn)) {
-    ariaAttrName = camelCaseToDashCase(attrName);
+    dashCasedAttributeName = camelCaseToDashCase(attrName);
     setterFn = function(element, value) {
-      if (isPresent(value)) {
-        DOM.setAttribute(element, ariaAttrName, stringify(value));
+      if (_isValidAttributeValue(dashCasedAttributeName, value)) {
+        DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
       } else {
-        DOM.removeAttribute(element, ariaAttrName);
+        DOM.removeAttribute(element, dashCasedAttributeName);
+        if (isPresent(value)) {
+          throw new BaseException("Invalid " + dashCasedAttributeName + " attribute, only string values are allowed, got '" + stringify(value) + "'");
+        }
       }
     };
-    StringMapWrapper.set(ariaSettersCache, attrName, setterFn);
+    StringMapWrapper.set(attributeSettersCache, attrName, setterFn);
   }
 
   return setterFn;
@@ -82,21 +93,9 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   return setterFn;
 }
 
-const ROLE_ATTR = 'role';
-function roleSetter(element, value) {
-  if (isString(value)) {
-    DOM.setAttribute(element, ROLE_ATTR, value);
-  } else {
-    DOM.removeAttribute(element, ROLE_ATTR);
-    if (isPresent(value)) {
-      throw new BaseException("Invalid role attribute, only string values are allowed, got '" + stringify(value) + "'");
-    }
-  }
-}
-
 // tells if an attribute is handled by the ElementBinderBuilder step
 export function isSpecialProperty(propName:string) {
-  return StringWrapper.startsWith(propName, ARIA_PREFIX)
+  return StringWrapper.startsWith(propName, ATTRIBUTE_PREFIX)
         || StringWrapper.startsWith(propName, CLASS_PREFIX)
         || StringWrapper.startsWith(propName, STYLE_PREFIX)
         || StringMapWrapper.contains(DOM.attrToPropMap, propName);
@@ -188,10 +187,8 @@ export class ElementBinderBuilder extends CompileStep {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
       var setterFn, styleParts, styleSuffix;
 
-      if (StringWrapper.startsWith(property, ARIA_PREFIX)) {
-        setterFn = ariaSetterFactory(property);
-      } else if (StringWrapper.equals(property, ROLE_ATTR)) {
-        setterFn = roleSetter;
+      if (StringWrapper.startsWith(property, ATTRIBUTE_PREFIX)) {
+        setterFn = attributeSetterFactory(StringWrapper.substring(property, ATTRIBUTE_PREFIX.length));
       } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
         setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
       } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
