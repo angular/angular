@@ -549,14 +549,14 @@ export class Component extends Directive {
 }
 
 /**
- * DynamicComponents allow loading child components impretivly.
+ * DynamicComponents allow loading child components imperatively.
  * 
- * A Component can be made of other compontents. This recursive nature must be resolved synchronously during the 
+ * A Component can be made of other components. This recursive nature must be resolved synchronously during the 
  * component template processing. This means that all templates are resolved synchronously. This prevents lazy loading
  * of code or delayed binding of views to the components. 
  * 
- * A DynamicComponent is a placeholder into which a regular component can be loaded imperativly and thus breaking
- * the all components must be resolved synchronously restriction. Once loaded the component is premanent.
+ * A DynamicComponent is a placeholder into which a regular component can be loaded imperatively and thus breaking
+ * the all components must be resolved synchronously restriction. Once loaded the component is permanent.
  * 
  * 
  * ## Example
