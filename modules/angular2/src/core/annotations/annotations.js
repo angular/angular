@@ -134,7 +134,7 @@ import {Injectable} from 'angular2/di';
  * @Decorator({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(dependency: Dependency) {
- *     expect(dependency.id).toEqual(2);
+ *     expect(dependency.id).toEqual(3);
  *   }
  * }
  * ```
