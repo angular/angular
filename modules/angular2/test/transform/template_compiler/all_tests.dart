@@ -6,7 +6,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:unittest/unittest.dart';
+import 'package:guinness/guinness.dart';
 
 import '../common/read_file.dart';
 
@@ -16,7 +16,7 @@ void allTests() {
   Html5LibDomAdapter.makeCurrent();
   AssetReader reader = new TestAssetReader();
 
-  test('should parse simple expressions in inline templates.', () async {
+  it('should parse simple expressions in inline templates.', () async {
     var inputPath =
         'template_compiler/inline_expression_files/hello.ng_deps.dart';
     var expected = readFile(
@@ -24,16 +24,16 @@ void allTests() {
     var output = await processTemplates(reader, new AssetId('a', inputPath));
     output = formatter.format(output);
     expected = formatter.format(expected);
-    expect(output, equals(expected));
+    expect(output).toEqual(expected);
   });
 
-  test('should parse simple methods in inline templates.', () async {
+  it('should parse simple methods in inline templates.', () async {
     var inputPath = 'template_compiler/inline_method_files/hello.ng_deps.dart';
     var expected = readFile(
         'template_compiler/inline_method_files/expected/hello.ng_deps.dart');
     var output = await processTemplates(reader, new AssetId('a', inputPath));
     output = formatter.format(output);
     expected = formatter.format(expected);
-    expect(output, equals(expected));
+    expect(output).toEqual(expected);
   });
 }

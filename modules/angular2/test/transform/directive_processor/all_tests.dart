@@ -7,7 +7,7 @@ import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
-import 'package:unittest/unittest.dart';
+import 'package:guinness/guinness.dart';
 import 'package:unittest/vm_config.dart';
 
 import '../common/read_file.dart';
@@ -15,12 +15,12 @@ import '../common/read_file.dart';
 var formatter = new DartFormatter();
 
 void allTests() {
-  test('should preserve parameter annotations as const instances.', () {
+  it('should preserve parameter annotations as const instances.', () {
     var inputPath = 'parameter_metadata/soup.dart';
     var expected = _readFile('parameter_metadata/expected/soup.ng_deps.dart');
     var output =
         formatter.format(createNgDeps(_readFile(inputPath), inputPath));
-    expect(output, equals(expected));
+    expect(output).toEqual(expected);
   });
 }
 
