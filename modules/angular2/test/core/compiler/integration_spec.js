@@ -186,6 +186,20 @@ export function main() {
         });
       }));
 
+      it('should ignore bindings to unknown properties', inject([AsyncTestCompleter], (async) => {
+        tplResolver.setTemplate(MyComp, new Template({inline: '<div unknown="{{ctxProp}}"></div>'}));
+
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          ctx.ctxProp = 'Some value';
+          cd.detectChanges();
+          expect(DOM.hasProperty(view.nodes[0], 'unknown')).toBeFalsy();
+
+          async.done();
+        });
+      }));
+
       it('should consume directive watch expression change.', inject([AsyncTestCompleter], (async) => {
         var tpl =
           '<div>' +

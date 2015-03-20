@@ -78,6 +78,9 @@ function setupReflector() {
     "value0": (a,v) => a.value0 = v, "value1": (a,v) => a.value1 = v,
     "value2": (a,v) => a.value2 = v, "value3": (a,v) => a.value3 = v, "value4": (a,v) => a.value4 = v,
 
+    "attr0": (a,v) => a.attr0 = v, "attr1": (a,v) => a.attr1 = v,
+    "attr2": (a,v) => a.attr2 = v, "attr3": (a,v) => a.attr3 = v, "attr4": (a,v) => a.attr4 = v,
+
     "prop": (a,v) => a.prop = v
   });
 }

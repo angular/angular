@@ -93,17 +93,6 @@ function styleSetterFactory(styleName:string, stylesuffix:string) {
   return setterFn;
 }
 
-const ROLE_ATTR = 'role';
-function roleSetter(element, value) {
-  if (isString(value)) {
-    DOM.setAttribute(element, ROLE_ATTR, value);
-  } else {
-    DOM.removeAttribute(element, ROLE_ATTR);
-    if (isPresent(value)) {
-      throw new BaseException("Invalid role attribute, only string values are allowed, got '" + stringify(value) + "'");
-    }
-  }
-}
 
 /**
  * Creates the ElementBinders and adds watches to the
@@ -199,19 +188,19 @@ export class ElementBinderBuilder extends CompileStep {
         styleParts = StringWrapper.split(property, DOT_REGEXP);
         styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
         setterFn = styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
+      } else if (StringWrapper.equals(property, 'innerHtml')) {
+        setterFn = (element, value) => DOM.setInnerHTML(element, value);
       } else {
         property = this._resolvePropertyName(property);
-        //TODO(pk): special casing innerHtml, see: https://github.com/angular/angular/issues/789
-        if (StringWrapper.equals(property, 'innerHTML')) {
-          setterFn = (element, value) => DOM.setInnerHTML(element, value);
-        } else if (DOM.hasProperty(compileElement.element, property) || StringWrapper.equals(property, 'innerHtml')) {
-          setterFn = reflector.setter(property);
+        var propertySetterFn = reflector.setter(property);
+        setterFn = function(receiver, value) {
+          if (DOM.hasProperty(receiver, property)) {
+            return propertySetterFn(receiver, value);
+          }
         }
       }
 
-      if (isPresent(setterFn)) {
-        protoView.bindElementProperty(expression.ast, property, setterFn);
-      }
+      protoView.bindElementProperty(expression.ast, property, setterFn);
     });
   }
 

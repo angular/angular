@@ -139,6 +139,9 @@ export function setupReflector() {
     'aatStatusWidth': (o, v) => o.aatStatusWidth = v,
     'bundles': (o, v) => o.bundles = v,
     'bundlesWidth': (o, v) => o.bundlesWidth = v,
+    'if': (o, v) => {},
+    'of': (o, v) => {},
+    'cellWidth': (o, v) => o.cellWidth = v,
     evt: (o, v) => null,
     'style': (o, m) => {
       //if (isBlank(m)) return;
