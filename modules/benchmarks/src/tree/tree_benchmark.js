@@ -206,6 +206,7 @@ function setupReflector() {
     'initData': (a,v) => a.initData = v,
     'data': (a,v) => a.data = v,
     'condition': (a,v) => a.condition = v,
+    'if': (a,v) => a['if'] = v,
   });
 }
 
