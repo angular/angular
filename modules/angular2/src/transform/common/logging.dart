@@ -10,6 +10,11 @@ void init(Transform t) {
   _logger = new BuildLogger(t);
 }
 
+/// Sets [logger] directly. Used for testing - in general use [init].
+void setLogger(BuildLogger logger) {
+  _logger = logger;
+}
+
 /// The logger the transformer should use for messaging.
 BuildLogger get logger {
   if (_logger == null) {

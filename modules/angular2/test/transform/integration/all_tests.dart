@@ -96,17 +96,6 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'
-    }),
-    new IntegrationTestConfig(
-        'should ensure that dependencies are property chained.',
-        inputs: {
-      'a|web/index.dart': 'chained_deps_files/index.dart',
-      'a|web/foo.dart': 'chained_deps_files/foo.dart',
-      'a|web/bar.dart': 'chained_deps_files/bar.dart'
-    },
-        outputs: {
-      'a|web/bar.ng_deps.dart': 'chained_deps_files/expected/bar.ng_deps.dart',
-      'a|web/foo.ng_deps.dart': 'chained_deps_files/expected/foo.ng_deps.dart'
     })
   ];
 
