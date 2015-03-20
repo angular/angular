@@ -27,7 +27,7 @@ export class Injector {
   _defaultBindings:boolean;
   _asyncStrategy: _AsyncInjectorStrategy;
   _syncStrategy:_SyncInjectorStrategy;
-  constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
+  constructor(bindings:List, parent=null, defaultBindings=false) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
