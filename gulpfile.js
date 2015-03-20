@@ -344,10 +344,20 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
 
 var ts2dart = require('gulp-ts2dart');
 gulp.task('build/transpile.dart.ts2dart', function() {
-  gulp.src('modules/angular2/src/di/*.js')
+  gulp.src(['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js'])
       .pipe(ts2dart.transpile())
-      .pipe(ts2dart.format())
       .pipe(gulp.dest('dist/dart.ts2dart'))
+});
+gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
+  pub: DART_SDK.PUB,
+  packageName: CONFIG.formatDart.packageName,
+  args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
+}));
+gulp.task('ts2dart', function(done) {
+  runSequence(
+    ['build/transpile.dart.ts2dart', 'build/format.dart.ts2dart'],
+    done
+  );
 });
 
 // ------------
