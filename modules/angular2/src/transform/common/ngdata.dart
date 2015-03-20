@@ -1,4 +1,4 @@
-library angular2.src.transform.common.ng_data;
+library angular2.transform.common.ng_data;
 
 import 'dart:convert';
 

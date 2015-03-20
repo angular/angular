@@ -1,4 +1,4 @@
-library angular2.src.transform.common.logging;
+library angular2.transform.common.logging;
 
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';

@@ -1,4 +1,4 @@
-library angular2.src.transform;
+library angular2.transform;
 
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';

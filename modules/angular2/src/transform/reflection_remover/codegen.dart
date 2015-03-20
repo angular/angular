@@ -1,4 +1,4 @@
-library angular2.src.transform.reflection_remover.codegen;
+library angular2.transform.reflection_remover.codegen;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:barback/barback.dart';

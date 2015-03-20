@@ -1,4 +1,4 @@
-library angular2.src.transform.directive_linker.linker;
+library angular2.transform.directive_linker.linker;
 
 import 'dart:async';
 

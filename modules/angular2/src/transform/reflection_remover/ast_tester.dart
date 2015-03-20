@@ -1,4 +1,4 @@
-library angular2.src.transform.reflection_remover.ast_tester;
+library angular2.transform.reflection_remover.ast_tester;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';

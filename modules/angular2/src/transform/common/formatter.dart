@@ -1,4 +1,4 @@
-library angular2.src.transform.common.formatter;
+library angular2.transform.common.formatter;
 
 import 'package:dart_style/dart_style.dart';
 

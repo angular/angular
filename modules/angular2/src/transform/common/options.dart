@@ -1,4 +1,4 @@
-library angular2.src.transform.common.options;
+library angular2.transform.common.options;
 
 const ENTRY_POINT_PARAM = 'entry_point';
 const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_point';

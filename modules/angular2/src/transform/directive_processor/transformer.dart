@@ -1,4 +1,4 @@
-library angular2.src.transform.directive_processor.transformer;
+library angular2.transform.directive_processor.transformer;
 
 import 'dart:async';
 

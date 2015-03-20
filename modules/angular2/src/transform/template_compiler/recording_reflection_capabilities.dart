@@ -1,4 +1,4 @@
-library angular2.src.transform.template_compiler.recording_reflection_capabilities;
+library angular2.transform.template_compiler.recording_reflection_capabilities;
 
 import 'package:angular2/src/reflection/reflection_capabilities.dart';
 import 'package:angular2/src/reflection/types.dart';
