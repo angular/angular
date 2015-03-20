@@ -1,7 +1,7 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 
 /**
- * @publicModule angular2/angular2
+ * @publicModule angular2/annotations
  */
 export class Template {
   url:any; //string;
