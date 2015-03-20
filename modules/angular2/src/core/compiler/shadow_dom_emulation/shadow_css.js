@@ -512,11 +512,13 @@ var _cssColonHostRe = RegExpWrapper.create('(' + _polyfillHost + _parenSuffix, '
 var _cssColonHostContextRe = RegExpWrapper.create('(' + _polyfillHostContext + _parenSuffix, 'im');
 var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 var _shadowDOMSelectorsRe = [
-  RegExpWrapper.create('/shadow/'),
-  RegExpWrapper.create('/shadow-deep/'),
+  RegExpWrapper.create('>>>'),
   RegExpWrapper.create('::shadow'),
-  RegExpWrapper.create('/deep/'),
   RegExpWrapper.create('::content'),
+  // Deprecated selectors
+  RegExpWrapper.create('/deep/'), // former >>>
+  RegExpWrapper.create('/shadow-deep/'), // former /deep/
+  RegExpWrapper.create('/shadow/'), // former ::shadow
 ];
 var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
 var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');

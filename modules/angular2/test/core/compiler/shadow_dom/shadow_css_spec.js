@@ -108,5 +108,10 @@ export function main() {
       var css = s('x /deep/ y {}', 'a');
       expect(css).toEqual('x[a] y[a] {}');
     });
+
+    it('should handle >>>', () => {
+      var css = s('x >>> y {}', 'a');
+      expect(css).toEqual('x[a] y[a] {}');
+    });
   });
 }
