@@ -1,4 +1,4 @@
-library angular2.src.transform;
+library angular2.transform;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';

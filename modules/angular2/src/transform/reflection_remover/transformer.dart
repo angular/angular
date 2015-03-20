@@ -1,4 +1,4 @@
-library angular2.src.transform.reflection_remover.transformer;
+library angular2.transform.reflection_remover.transformer;
 
 import 'dart:async';
 import 'package:angular2/src/transform/common/logging.dart' as log;

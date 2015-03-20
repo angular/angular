@@ -1,4 +1,4 @@
-library angular2.src.transform.common;
+library angular2.transform.common;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';

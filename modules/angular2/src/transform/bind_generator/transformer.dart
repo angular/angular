@@ -1,4 +1,4 @@
-library angular2.src.transform.bind_generator.transformer;
+library angular2.transform.bind_generator.transformer;
 
 import 'dart:async';
 import 'package:angular2/src/transform/common/asset_reader.dart';

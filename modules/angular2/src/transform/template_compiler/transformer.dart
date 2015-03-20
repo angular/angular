@@ -1,4 +1,4 @@
-library angular2.src.transform.template_compiler.transformer;
+library angular2.transform.template_compiler.transformer;
 
 import 'dart:async';
 

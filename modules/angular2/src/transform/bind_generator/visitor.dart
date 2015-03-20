@@ -1,4 +1,4 @@
-library angular2.src.transform.bind_generator.visitor;
+library angular2.transform.bind_generator.visitor;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/logging.dart';

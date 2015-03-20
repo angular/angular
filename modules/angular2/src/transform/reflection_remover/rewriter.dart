@@ -1,4 +1,4 @@
-library angular2.src.transform.reflection_remover.rewriter;
+library angular2.transform.reflection_remover.rewriter;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/logging.dart';

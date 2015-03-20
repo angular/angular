@@ -1,4 +1,4 @@
-library angular2.src.transform.common.parser;
+library angular2.transform.common.parser;
 
 import 'dart:async';
 

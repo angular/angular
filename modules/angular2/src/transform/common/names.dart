@@ -1,4 +1,4 @@
-library angular2.src.transform.common.names;
+library angular2.transform.common.names;
 
 const SETUP_METHOD_NAME = 'setupReflection';
 const REFLECTOR_VAR_NAME = 'reflector';
