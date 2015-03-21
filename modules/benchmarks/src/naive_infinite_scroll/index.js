@@ -25,7 +25,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
-import {If, Foreach} from 'angular2/directives';
+import {If, For} from 'angular2/directives';
 import {App, setupReflectorForApp} from './app';
 import {ScrollAreaComponent, setupReflectorForScrollArea} from './scroll_area';
 import {ScrollItemComponent, setupReflectorForScrollItem} from './scroll_item';
@@ -170,13 +170,13 @@ export function setupReflectorForAngular() {
     })]
   });
 
-  reflector.registerType(Foreach, {
-    'factory': (vp) => new Foreach(vp),
+  reflector.registerType(For, {
+    'factory': (vp) => new For(vp),
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
-      selector: '[foreach]',
+      selector: '[for]',
       bind: {
-        'iterableChanges': 'in | iterableDiff'
+        'iterableChanges': 'of | iterableDiff'
       }
     })]
   });
