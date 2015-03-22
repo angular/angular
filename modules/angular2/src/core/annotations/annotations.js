@@ -660,7 +660,7 @@ export class DynamicComponent extends Directive {
  *   bind: {
  *     'text': 'tooltip'
  *   },
- *   event: {
+ *   events: {
  *     'onmouseenter': 'onMouseEnter()',
  *     'onmouseleave': 'onMouseLeave()'
  *   }
