@@ -1,5 +1,4 @@
-import {int, isPresent, isBlank, Type, BaseException, StringWrapper, RegExpWrapper, isString, stringify} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/dom/dom_adapter';
+import {int, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -11,88 +10,8 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {dashCaseToCamelCase, camelCaseToDashCase} from './util';
-
-var DOT_REGEXP = RegExpWrapper.create('\\.');
-
-const ATTRIBUTE_PREFIX = 'attr.';
-var attributeSettersCache = StringMapWrapper.create();
-
-function _isValidAttributeValue(attrName:string, value: any) {
-  if (attrName == "role") {
-    return isString(value);
-  } else {
-    return isPresent(value);
-  }
-}
-
-function attributeSetterFactory(attrName:string) {
-  var setterFn = StringMapWrapper.get(attributeSettersCache, attrName);
-  var dashCasedAttributeName;
-
-  if (isBlank(setterFn)) {
-    dashCasedAttributeName = camelCaseToDashCase(attrName);
-    setterFn = function(element, value) {
-      if (_isValidAttributeValue(dashCasedAttributeName, value)) {
-        DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
-      } else {
-        DOM.removeAttribute(element, dashCasedAttributeName);
-        if (isPresent(value)) {
-          throw new BaseException("Invalid " + dashCasedAttributeName + " attribute, only string values are allowed, got '" + stringify(value) + "'");
-        }
-      }
-    };
-    StringMapWrapper.set(attributeSettersCache, attrName, setterFn);
-  }
-
-  return setterFn;
-}
-
-const CLASS_PREFIX = 'class.';
-var classSettersCache = StringMapWrapper.create();
-
-function classSetterFactory(className:string) {
-  var setterFn = StringMapWrapper.get(classSettersCache, className);
-
-  if (isBlank(setterFn)) {
-    setterFn = function(element, value) {
-      if (value) {
-        DOM.addClass(element, className);
-      } else {
-        DOM.removeClass(element, className);
-      }
-    };
-    StringMapWrapper.set(classSettersCache, className, setterFn);
-  }
-
-  return setterFn;
-}
-
-const STYLE_PREFIX = 'style.';
-var styleSettersCache = StringMapWrapper.create();
-
-function styleSetterFactory(styleName:string, stylesuffix:string) {
-  var cacheKey = styleName + stylesuffix;
-  var setterFn = StringMapWrapper.get(styleSettersCache, cacheKey);
-  var dashCasedStyleName;
-
-  if (isBlank(setterFn)) {
-    dashCasedStyleName = camelCaseToDashCase(styleName);
-    setterFn = function(element, value) {
-      var valAsStr;
-      if (isPresent(value)) {
-        valAsStr = stringify(value);
-        DOM.setStyle(element, dashCasedStyleName, valAsStr + stylesuffix);
-      } else {
-        DOM.removeStyle(element, dashCasedStyleName);
-      }
-    };
-    StringMapWrapper.set(classSettersCache, cacheKey, setterFn);
-  }
-
-  return setterFn;
-}
-
+import {dashCaseToCamelCase} from './util';
+import {setterFactory} from '../property_setter_factory'
 
 /**
  * Creates the ElementBinders and adds watches to the
@@ -178,28 +97,7 @@ export class ElementBinderBuilder extends CompileStep {
 
   _bindElementProperties(protoView, compileElement) {
     MapWrapper.forEach(compileElement.propertyBindings, (expression, property) => {
-      var setterFn, styleParts, styleSuffix;
-
-      if (StringWrapper.startsWith(property, ATTRIBUTE_PREFIX)) {
-        setterFn = attributeSetterFactory(StringWrapper.substring(property, ATTRIBUTE_PREFIX.length));
-      } else if (StringWrapper.startsWith(property, CLASS_PREFIX)) {
-        setterFn = classSetterFactory(StringWrapper.substring(property, CLASS_PREFIX.length));
-      } else if (StringWrapper.startsWith(property, STYLE_PREFIX)) {
-        styleParts = StringWrapper.split(property, DOT_REGEXP);
-        styleSuffix = styleParts.length > 2 ? ListWrapper.get(styleParts, 2) : '';
-        setterFn = styleSetterFactory(ListWrapper.get(styleParts, 1), styleSuffix);
-      } else if (StringWrapper.equals(property, 'innerHtml')) {
-        setterFn = (element, value) => DOM.setInnerHTML(element, value);
-      } else {
-        property = this._resolvePropertyName(property);
-        var propertySetterFn = reflector.setter(property);
-        setterFn = function(receiver, value) {
-          if (DOM.hasProperty(receiver, property)) {
-            return propertySetterFn(receiver, value);
-          }
-        }
-      }
-
+      var setterFn = setterFactory(property);
       protoView.bindElementProperty(expression.ast, property, setterFn);
     });
   }
@@ -262,10 +160,5 @@ export class ElementBinderBuilder extends CompileStep {
 
   _splitBindConfig(bindConfig:string) {
     return ListWrapper.map(bindConfig.split('|'), (s) => s.trim());
-  }
-
-  _resolvePropertyName(attrName:string) {
-    var mappedPropName = StringMapWrapper.get(DOM.attrToPropMap, attrName);
-    return isPresent(mappedPropName) ? mappedPropName : attrName;
   }
 }

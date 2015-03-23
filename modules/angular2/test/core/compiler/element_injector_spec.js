@@ -1,6 +1,7 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
 import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List, StringMapWrapper} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
@@ -76,12 +77,33 @@ class NeedsEventEmitter {
 
 class NeedsPropertySetter {
   propSetter;
-  constructor(@PropertySetter('title') propSetter: Function) {
+  roleSetter;
+  classSetter;
+  styleSetter;
+  unitSetter;
+  constructor(@PropertySetter('title') propSetter: Function, @PropertySetter('attr.role') roleSetter: Function,
+    @PropertySetter('class.active') classSetter: Function, @PropertySetter('style.width') styleSetter: Function,
+    @PropertySetter('style.height.px') unitSetter: Function) {
     this.propSetter = propSetter;
+    this.roleSetter = roleSetter;
+    this.classSetter = classSetter;
+    this.styleSetter = styleSetter;
+    this.unitSetter = unitSetter;
   }
-
   setProp(value) {
     this.propSetter(value);
+  }
+  setRole(value) {
+    this.roleSetter(value);
+  }
+  setClass(value) {
+    this.classSetter(value);
+  }
+  setStyle(value) {
+    this.styleSetter(value);
+  }
+  setStyleWithUnit(value) {
+    this.unitSetter(value);
   }
 }
 
@@ -529,9 +551,18 @@ export function main() {
 
         var preBuildObject = new PreBuiltObjects(null, ngElement, null, null);
         var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
-        inj.get(NeedsPropertySetter).setProp('foobar');
+        var component = inj.get(NeedsPropertySetter);
+        component.setProp('foobar');
+        component.setRole('button');
+        component.setClass(true);
+        component.setStyle('40px')
+        component.setStyleWithUnit(50);
 
         expect(div.title).toEqual('foobar');
+        expect(DOM.getAttribute(div, 'role')).toEqual('button');
+        expect(DOM.hasClass(div, 'active')).toEqual(true);
+        expect(DOM.getStyle(div, 'width')).toEqual('40px');
+        expect(DOM.getStyle(div, 'height')).toEqual('50px');
       });
     });
 
