@@ -24,6 +24,7 @@ var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var transformCJSTests = require('./tools/build/transformCJSTests');
+var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
@@ -115,7 +116,10 @@ var CONFIG = {
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
-      dart: ['modules/**/*.js']
+      dart: ['modules/**/*.js'],
+      // Migrating to TypeScript, one package at a time.
+      // See https://docs.google.com/document/d/14RJLhu6uuv7NchFkAb6PKzOOO0L7l3Z507eKWzkEUhQ/edit
+      ts2dart: ['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js']
     },
     options: {
       js: {
@@ -345,9 +349,8 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
 
-var ts2dart = require('gulp-ts2dart');
 gulp.task('build/transpile.dart.ts2dart', function() {
-  return gulp.src(['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js'])
+  return gulp.src(CONFIG.transpile.src.ts2dart)
       .pipe(ts2dart.transpile())
       .pipe(gulp.dest('dist/dart.ts2dart'))
 });
@@ -356,8 +359,15 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
   packageName: CONFIG.formatDart.packageName,
   args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
 }));
+
+// Temporary tasks for development on ts2dart. Will likely fail.
+gulp.task('build/transpile.dart.ts2dart.all', function() {
+  return gulp.src(CONFIG.transpile.src.dart)
+      .pipe(ts2dart.transpile())
+      .pipe(gulp.dest('dist/dart.ts2dart'));
+});
 gulp.task('ts2dart', function(done) {
- runSequence('build/transpile.dart.ts2dart', 'build/format.dart.ts2dart', done);
+ runSequence('build/transpile.dart.ts2dart.all', 'build/format.dart.ts2dart', done);
 });
 
 // ------------
