@@ -32,7 +32,7 @@ export function setterFactory(property: string): Function {
         if (DOM.hasProperty(receiver, property)) {
           return propertySetterFn(receiver, value);
         }
-      }
+      };
       StringMapWrapper.set(propertySettersCache, property, setterFn);
     }
   }
@@ -61,7 +61,7 @@ function attributeSetterFactory(attrName:string): Function {
         DOM.setAttribute(element, dashCasedAttributeName, stringify(value));
       } else {
         if (isPresent(value)) {
-          throw new BaseException("Invalid " + dashCasedAttributeName + 
+          throw new BaseException("Invalid " + dashCasedAttributeName +
             " attribute, only string values are allowed, got '" + stringify(value) + "'");
         }
         DOM.removeAttribute(element, dashCasedAttributeName);
@@ -78,13 +78,14 @@ var classSettersCache = StringMapWrapper.create();
 
 function classSetterFactory(className:string): Function {
   var setterFn = StringMapWrapper.get(classSettersCache, className);
-
+  var dashCasedClassName;
   if (isBlank(setterFn)) {
+    dashCasedClassName = camelCaseToDashCase(className);
     setterFn = function(element, value) {
       if (value) {
-        DOM.addClass(element, className);
+        DOM.addClass(element, dashCasedClassName);
       } else {
-        DOM.removeClass(element, className);
+        DOM.removeClass(element, dashCasedClassName);
       }
     };
     StringMapWrapper.set(classSettersCache, className, setterFn);
