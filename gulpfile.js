@@ -29,9 +29,13 @@ var transformCJSTests = require('./tools/build/transformCJSTests');
 var tsc = require('gulp-typescript');
 var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
+var bundler = require('./tools/build/bundle');
+var concat = require('gulp-concat');
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
+
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
+
 // -----------------------
 // configuration
 
@@ -787,7 +791,71 @@ gulp.task('build.js.cjs', function(done) {
   );
 });
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
+var bundleConfig = {
+  paths: {
+    "*": "dist/js/prod/es6/*.es6",
+    "rx/*": "node_modules/rx/*.js"
+  }
+};
+
+// production build
+gulp.task('bundle.js.prod', ['build.js.prod'], function() {
+  return bundler.bundle(
+    bundleConfig,
+    'angular2/angular2',
+    './dist/build/angular2.js',
+    {
+      sourceMaps: true
+    });
+});
+
+gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
+  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.js'])
+    .pipe(concat('angular2.js'))
+    .pipe(gulp.dest('dist/bundle'));
+});
+
+// minified production build
+// TODO: minify zone.js?
+gulp.task('bundle.js.min', ['build.js.prod'], function() {
+  return bundler.bundle(
+    bundleConfig,
+    'angular2/angular2',
+    './dist/build/angular2.min.js',
+    {
+      sourceMaps: true,
+      minify: true
+    });
+});
+
+gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
+  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.min.js'])
+    .pipe(concat('angular2.min.js'))
+    .pipe(gulp.dest('dist/bundle'));
+});
+
+// development build
+gulp.task('bundle.js.dev', ['build.js.dev'], function() {
+  return bundler.bundle(
+    merge(true, bundleConfig, {
+     "*": "dist/js/dev/es6/*.es6"
+    }),
+    'angular2/angular2',
+    './dist/build/angular2.dev.js',
+    {
+      sourceMaps: true
+    });
+});
+
+gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
+  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.dev.js'])
+    .pipe(concat('angular2.dev.js'))
+    .pipe(gulp.dest('dist/bundle'));
+});
+
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
+
+gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps']);
 
 gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
