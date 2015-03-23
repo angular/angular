@@ -1,7 +1,7 @@
 library angular2.test.transform.directive_processor.all_tests;
 
 import 'package:barback/barback.dart';
-import 'package:angular2/src/dom/html5lib_adapter.dart';
+import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';

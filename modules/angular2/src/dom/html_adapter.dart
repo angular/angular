@@ -1,8 +1,8 @@
-library angular2.dom.html5adapter;
+library angular2.dom.htmlAdapter;
 
 import 'dom_adapter.dart';
-import 'package:html5lib/parser.dart' as parser;
-import 'package:html5lib/dom.dart';
+import 'package:html/parser.dart' as parser;
+import 'package:html/dom.dart';
 
 class Html5LibDomAdapter implements DomAdapter {
   static void makeCurrent() {
