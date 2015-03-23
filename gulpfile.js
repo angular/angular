@@ -357,10 +357,7 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
   args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
 }));
 gulp.task('ts2dart', function(done) {
- runSequence(
-    'build/transpile.dart.ts2dart', 'build/format.dart.ts2dart',
-    done
-  );
+ runSequence('build/transpile.dart.ts2dart', 'build/format.dart.ts2dart', done);
 });
 
 // ------------
