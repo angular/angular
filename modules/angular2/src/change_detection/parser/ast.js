@@ -446,6 +446,72 @@ export class AstVisitor {
   visitPrefixNot(ast:PrefixNot) {}
 }
 
+export class AstTransformer {
+  visitImplicitReceiver(ast:ImplicitReceiver) {
+    return new ImplicitReceiver();
+  }
+
+  visitInterpolation(ast:Interpolation) {
+    return new Interpolation(ast.strings, this.visitAll(ast.expressions));
+  }
+
+  visitLiteralPrimitive(ast:LiteralPrimitive) {
+    return new LiteralPrimitive(ast.value);
+  }
+
+  visitAccessMember(ast:AccessMember) {
+    return new AccessMember(ast.receiver.visit(this), ast.name, ast.getter, ast.setter);
+  }
+
+  visitMethodCall(ast:MethodCall) {
+    return new MethodCall(ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
+  }
+
+  visitFunctionCall(ast:FunctionCall) {
+    return new FunctionCall(ast.target.visit(this), this.visitAll(ast.args));
+  }
+
+  visitLiteralArray(ast:LiteralArray) {
+    return new LiteralArray(this.visitAll(ast.expressions));
+  }
+
+  visitLiteralMap(ast:LiteralMap) {
+    return new LiteralMap(ast.keys, this.visitAll(ast.values));
+  }
+
+  visitBinary(ast:Binary) {
+    return new Binary(ast.operation, ast.left.visit(this), ast.right.visit(this));
+  }
+
+  visitPrefixNot(ast:PrefixNot) {
+    return new PrefixNot(ast.expression.visit(this));
+  }
+
+  visitConditional(ast:Conditional) {
+    return new Conditional(
+      ast.condition.visit(this),
+      ast.trueExp.visit(this),
+      ast.falseExp.visit(this)
+    );
+  }
+
+  visitPipe(ast:Pipe) {
+    return new Pipe(ast.exp.visit(this), ast.name, this.visitAll(ast.args), ast.inBinding);
+  }
+
+  visitKeyedAccess(ast:KeyedAccess) {
+    return new KeyedAccess(ast.obj.visit(this), ast.key.visit(this));
+  }
+
+  visitAll(asts:List) {
+    var res = ListWrapper.createFixedSize(asts.length);
+    for (var i = 0; i < asts.length; ++i) {
+      res[i] = asts[i].visit(this);
+    }
+    return res;
+  }
+}
+
 var _evalListCache = [[],[0],[0,0],[0,0,0],[0,0,0,0],[0,0,0,0,0],
   [0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0]];
