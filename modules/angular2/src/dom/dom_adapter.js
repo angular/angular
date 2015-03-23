@@ -147,6 +147,9 @@ export class DomAdapter {
   getShadowRoot(el) {
     throw _abstract();
   }
+  getHost(el) {
+    throw _abstract();
+  }
   getDistributedNodes(el) {
     throw _abstract();
   }
@@ -229,6 +232,9 @@ export class DomAdapter {
     throw _abstract();
   }
   hasShadowRoot(node):boolean {
+    throw _abstract();
+  }
+  isShadowRoot(node):boolean {
     throw _abstract();
   }
   importIntoDoc(node) {

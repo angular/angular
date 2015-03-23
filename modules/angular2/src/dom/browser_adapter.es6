@@ -158,6 +158,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getShadowRoot(el:HTMLElement): ShadowRoot {
     return el.shadowRoot;
   }
+  getHost(el:HTMLElement): HTMLElement {
+    return el.host;
+  }
   clone(node:Node) {
     return node.cloneNode(true);
   }
@@ -244,6 +247,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   hasShadowRoot(node):boolean {
     return node instanceof HTMLElement && isPresent(node.shadowRoot);
+  }
+  isShadowRoot(node):boolean {
+    return node instanceof ShadowRoot;
   }
   importIntoDoc(node:Node) {
     var result = document.importNode(node, true);

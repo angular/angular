@@ -19,6 +19,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
 import {Template} from 'angular2/src/core/annotations/template';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 
 @Component({selector: 'hello-app'})
 @Template({inline: '{{greeting}} world!'})
@@ -178,6 +179,22 @@ export function main() {
       injectorPromise.then((injector) => {
         expect(injector.get(appElementToken)).toHaveText('before: loading after: done');
         async.done();
+      });
+    }));
+
+    it('should register each application with the testability registry', inject([AsyncTestCompleter], (async) => {
+      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
+      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
+
+      PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
+        var registry = injectors[0].get(TestabilityRegistry);
+        PromiseWrapper.all([
+            injectors[0].asyncGet(Testability),
+            injectors[1].asyncGet(Testability)]).then((testabilities) => {
+          expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
+          expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
+          async.done();
+        });
       });
     }));
   });
