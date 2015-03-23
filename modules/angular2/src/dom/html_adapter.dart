@@ -120,6 +120,15 @@ class Html5LibDomAdapter implements DomAdapter {
   createStyleElement(String css, [doc]) {
     throw 'not implemented';
   }
+  createShadowRoot(el) {
+    throw 'not implemented';
+  }
+  getShadowRoot(el) {
+    throw 'not implemented';
+  }
+  getHost(el) {
+    throw 'not implemented';
+  }
   clone(node) {
     throw 'not implemented';
   }
@@ -197,6 +206,9 @@ class Html5LibDomAdapter implements DomAdapter {
   bool isElementNode(node) => node.nodeType == Node.ELEMENT_NODE;
 
   bool hasShadowRoot(node) {
+    throw 'not implemented';
+  }
+  bool isShadowRoot(node) {
     throw 'not implemented';
   }
   importIntoDoc(node) {

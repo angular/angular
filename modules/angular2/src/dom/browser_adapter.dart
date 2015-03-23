@@ -123,6 +123,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   ShadowRoot createShadowRoot(Element el) => el.createShadowRoot();
   ShadowRoot getShadowRoot(Element el) => el.shadowRoot;
+  Element getHost(Element el) => (el as ShadowRoot).host;
   clone(Node node) => node.clone(true);
   bool hasProperty(Element element, String name) =>
       new JsObject.fromBrowserObject(element).hasProperty(name);
@@ -187,6 +188,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   bool isElementNode(Node node) => node.nodeType == Node.ELEMENT_NODE;
   bool hasShadowRoot(Node node) {
     return node is Element && node.shadowRoot != null;
+  }
+  bool isShadowRoot(Node node) {
+    return node is ShadowRoot;
   }
   Node importIntoDoc(Node node) {
     return document.importNode(node, true);

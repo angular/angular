@@ -25,6 +25,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
+import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 
 import {If, For} from 'angular2/directives';
 import {App, setupReflectorForApp} from './app';
@@ -292,6 +293,18 @@ export function setupReflectorForAngular() {
     "factory": (lightDom, el) => new Content(lightDom, el),
     "parameters": [[DestinationLightDom], [NgElement]],
     "annotations" : [new Decorator({selector: '[content]'})]
+  });
+
+  reflector.registerType(TestabilityRegistry, {
+    "factory": () => new TestabilityRegistry(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(Testability, {
+    "factory": () => new Testability(),
+    "parameters": [],
+    "annotations": []
   });
 
   reflector.registerType(StyleInliner, {

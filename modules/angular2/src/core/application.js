@@ -27,12 +27,14 @@ import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
+import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
 var _rootBindings = [
-  bind(Reflector).toValue(reflector)
+  bind(Reflector).toValue(reflector),
+  TestabilityRegistry
 ];
 
 export var appViewToken = new OpaqueToken('AppView');
@@ -57,9 +59,12 @@ function _injectorBindings(appComponentType): List<Binding> {
         }
         return element;
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
-
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, strategy, eventManager) => {
+        appComponentAnnotatedType, strategy, eventManager, testability, registry) => {
+
+        // We need to do this here to ensure that we create Testability and
+        // it's ready on the window for users.
+        registry.registerApplication(appElement, testability);
         var annotation = appComponentAnnotatedType.annotation;
         if(!isBlank(annotation) && !(annotation instanceof Component)) {
           var type = appComponentAnnotatedType.type;
@@ -79,7 +84,7 @@ function _injectorBindings(appComponentType): List<Binding> {
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          ShadowDomStrategy, EventManager]),
+          ShadowDomStrategy, EventManager, Testability, TestabilityRegistry]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),
@@ -109,6 +114,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       StyleInliner,
       bind(CssProcessor).toFactory(() => new CssProcessor(null), []),
       PrivateComponentLoader,
+      Testability,
   ];
 }
 

@@ -252,6 +252,9 @@ export class Parse5DomAdapter extends DomAdapter {
   getShadowRoot(el) {
     return el.shadowRoot;
   }
+  getHost(el) {
+    return el.host;
+  }
   getDistributedNodes(el) {
     throw _notImplemented('getDistributedNodes');
   }
@@ -394,6 +397,9 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   hasShadowRoot(node):boolean {
     return isPresent(node.shadowRoot);
+  }
+  isShadowRoot(node): boolean {
+    return this.getShadowRoot(node) == node;
   }
   importIntoDoc(node) {
     return this.clone(node);
