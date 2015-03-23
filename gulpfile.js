@@ -347,7 +347,7 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
 
 var ts2dart = require('gulp-ts2dart');
 gulp.task('build/transpile.dart.ts2dart', function() {
-  gulp.src(['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js'])
+  return gulp.src(['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js'])
       .pipe(ts2dart.transpile())
       .pipe(gulp.dest('dist/dart.ts2dart'))
 });
@@ -357,8 +357,8 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
   args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
 }));
 gulp.task('ts2dart', function(done) {
-  runSequence(
-    ['build/transpile.dart.ts2dart', 'build/format.dart.ts2dart'],
+ runSequence(
+    'build/transpile.dart.ts2dart', 'build/format.dart.ts2dart',
     done
   );
 });
@@ -688,7 +688,7 @@ gulp.task('build/packages.dart', function(done) {
   runSequence(
     ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
-    'build/format.dart',
+    ['build/format.dart.ts2dart', 'build/format.dart'],
     'build/pubspec.dart',
     done
   );
