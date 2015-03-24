@@ -30,11 +30,18 @@ module.exports = function AttachCommentTreeVisitor(ParseTreeVisitor, log) {
         log.silly('tree: ' + tree.constructor.name + ' - ' + tree.location.start.line);
         while (this.currentComment &&
                   this.currentComment.range.end.offset < tree.location.start.offset) {
-          log.silly('comment: ' + this.currentComment.range.start.line + ' - ' +
-                                 this.currentComment.range.end.line + ' : ' +
-                                 this.currentComment.range.toString());
-          tree.commentBefore = this.currentComment;
-          this.currentComment.treeAfter = tree;
+          var commentText = this.currentComment.range.toString();
+
+          // Only store the comment if it is JSDOC style (e.g. /** some comment */)
+          if (/^\/\*\*([\w\W]*)\*\/$/.test(commentText)) {
+            log.info('comment: ' + this.currentComment.range.start.line + ' - ' +
+                                   this.currentComment.range.end.line + ' : ' +
+                                   commentText);
+
+            tree.commentBefore = this.currentComment;
+            this.currentComment.treeAfter = tree;
+          }
+
           this.index++;
           this.currentComment = this.comments[this.index];
         }
