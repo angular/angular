@@ -54,8 +54,6 @@ class _CssProcessorStep extends CompileStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     if (DOM.tagName(current.element) == 'STYLE') {
-      current.ignoreBindings = true;
-
       if (isPresent(this._transformers)) {
         var styleEl = current.element;
         for (var i = 0; i < this._transformers.length; i++) {
@@ -66,6 +64,10 @@ class _CssProcessorStep extends CompileStep {
       if (isPresent(this._strategyStep)) {
         this._strategyStep.process(parent, current, control);
       }
+
+      // Style elements should not be further processed by the compiler, as they can not contain
+      // bindings. Skipping further compiler steps allow speeding up the compilation process.
+      control.ignoreCurrentElement();
     }
   }
 }
