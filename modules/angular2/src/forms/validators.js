@@ -8,7 +8,7 @@ export class Validators {
     return isBlank(c.value) || c.value == "" ? {"required": true} : null;
   }
 
-  static nullValidator(c:modelModule.Control) {
+  static nullValidator(c:any) {
     return null;
   }
 

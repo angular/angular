@@ -1,4 +1,5 @@
 import {isPresent} from 'angular2/src/facade/lang';
+import {Observable, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
 
@@ -21,39 +22,32 @@ export class AbstractControl {
   _value:any;
   _status:string;
   _errors;
-  _updateNeeded:boolean;
   _pristine:boolean;
   _parent:ControlGroup;
   validator:Function;
 
   constructor(validator:Function) {
     this.validator = validator;
-    this._updateNeeded = true;
     this._pristine = true;
   }
 
   get value() {
-    this._updateIfNeeded();
     return this._value;
   }
 
   get status() {
-    this._updateIfNeeded();
     return this._status;
   }
 
   get valid() {
-    this._updateIfNeeded();
     return this._status === VALID;
   }
 
   get errors() {
-    this._updateIfNeeded();
     return this._errors;
   }
 
   get pristine() {
-    this._updateIfNeeded();
     return this._pristine;
   }
 
@@ -65,35 +59,38 @@ export class AbstractControl {
     this._parent = parent;
   }
 
-  _updateIfNeeded() {
-  }
-
   _updateParent() {
     if (isPresent(this._parent)){
-      this._parent._controlChanged();
+      this._parent._updateValue();
     }
   }
 }
 
 export class Control extends AbstractControl {
+  valueChanges:Observable;
+  _valueChangesController;
+
   constructor(value:any, validator:Function = Validators.nullValidator) {
     super(validator);
-    this._value = value;
+    this._setValueErrorsStatus(value);
+
+    this._valueChangesController = ObservableWrapper.createController();
+    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
   }
 
   updateValue(value:any) {
-    this._value = value;
-    this._updateNeeded = true;
+    this._setValueErrorsStatus(value);
     this._pristine = false;
+
+    ObservableWrapper.callNext(this._valueChangesController, this._value);
+
     this._updateParent();
   }
 
-  _updateIfNeeded() {
-    if (this._updateNeeded) {
-      this._updateNeeded = false;
-      this._errors = this.validator(this);
-      this._status = isPresent(this._errors) ? INVALID : VALID;
-    }
+  _setValueErrorsStatus(value)  {
+    this._value = value;
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
   }
 }
 
@@ -101,21 +98,29 @@ export class ControlGroup extends AbstractControl {
   controls;
   optionals;
 
+  valueChanges:Observable;
+  _valueChangesController;
+
   constructor(controls, optionals = null, validator:Function = Validators.group) {
     super(validator);
     this.controls = controls;
     this.optionals = isPresent(optionals) ? optionals : {};
+
+    this._valueChangesController = ObservableWrapper.createController();
+    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
+
     this._setParentForControls();
+    this._setValueErrorsStatus();
   }
 
   include(controlName:string) {
-    this._updateNeeded = true;
     StringMapWrapper.set(this.optionals, controlName, true);
+    this._updateValue();
   }
 
   exclude(controlName:string) {
-    this._updateNeeded = true;
     StringMapWrapper.set(this.optionals, controlName, false);
+    this._updateValue();
   }
 
   contains(controlName:string) {
@@ -129,14 +134,19 @@ export class ControlGroup extends AbstractControl {
     });
   }
 
-  _updateIfNeeded() {
-    if (this._updateNeeded) {
-      this._updateNeeded = false;
-      this._value = this._reduceValue();
-      this._pristine = this._reducePristine();
-      this._errors = this.validator(this);
-      this._status = isPresent(this._errors) ? INVALID : VALID;
-    }
+  _updateValue() {
+    this._setValueErrorsStatus();
+    this._pristine = false;
+
+    ObservableWrapper.callNext(this._valueChangesController, this._value);
+
+    this._updateParent();
+  }
+
+  _setValueErrorsStatus()  {
+    this._value = this._reduceValue();
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
   }
 
   _reduceValue() {
@@ -144,11 +154,6 @@ export class ControlGroup extends AbstractControl {
       acc[name] = control.value;
       return acc;
     });
-  }
-
-  _reducePristine() {
-    return this._reduceChildren(true,
-      (acc, control, name) => acc && control.pristine);
   }
 
   _reduceChildren(initValue, fn:Function) {
@@ -159,11 +164,6 @@ export class ControlGroup extends AbstractControl {
       }
     });
     return res;
-  }
-
-  _controlChanged() {
-    this._updateNeeded = true;
-    this._updateParent();
   }
 
   _included(controlName:string):boolean {
