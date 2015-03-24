@@ -26,6 +26,7 @@ import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {Component} from 'angular2/src/core/annotations/annotations';
+import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 
 var _rootInjector: Injector;
 
@@ -107,6 +108,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       StyleUrlResolver,
       StyleInliner,
       bind(CssProcessor).toFactory(() => new CssProcessor(null), []),
+      PrivateComponentLoader,
   ];
 }
 

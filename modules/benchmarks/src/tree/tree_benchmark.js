@@ -17,6 +17,7 @@ import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -29,6 +30,8 @@ import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
 
 import {If} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
+
+import {EventManager} from 'angular2/src/core/events/event_manager';
 
 function setupReflector() {
   // TODO: Put the general calls to reflector.register... in a shared file
@@ -187,6 +190,19 @@ function setupReflector() {
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
     "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(EventManager, {
+    "factory": () => new EventManager([], null),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(PrivateComponentLoader, {
+    "factory": (compiler, strategy, eventMgr, reader) =>
+      new PrivateComponentLoader(compiler, strategy, eventMgr, reader),
+    "parameters": [[Compiler], [ShadowDomStrategy], [EventManager], [DirectiveMetadataReader]],
     "annotations": []
   });
 
