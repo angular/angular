@@ -717,13 +717,13 @@ export class Decorator extends Directive {
       compileChildren:boolean
     }={})
   {
-    this.compileChildren = compileChildren;
     super({
         selector: selector,
         bind: bind,
         events: events,
         lifecycle: lifecycle
     });
+    this.compileChildren = compileChildren;
   }
 }
 

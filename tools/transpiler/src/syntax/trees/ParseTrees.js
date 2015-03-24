@@ -63,7 +63,7 @@ export class NamedParameterList extends ParseTree {
    * @param {Array.<ParseTree>} parameterNameAndValues
    */
   constructor(location, parameterNameAndValues) {
-    this.location = location;
+    super(location);
     this.parameterNameAndValues = parameterNameAndValues;
   }
 
@@ -105,7 +105,7 @@ export class ObjectPatternBindingElement extends ParseTree {
    * @param {ParseTree} initializer
    */
   constructor(location, binding, initializer) {
-    this.location = location;
+    super(location);
     this.binding = binding;
     this.initializer = initializer;
   }
@@ -144,7 +144,7 @@ export class ImplementsDeclaration extends ParseTree {
    * @param {Array.<ParseTree>} interfaces
    */
   constructor(location, interfaces) {
-    this.location = location;
+    super(location);
     this.interfaces = interfaces;
   }
 

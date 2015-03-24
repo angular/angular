@@ -4,8 +4,8 @@ import {TypeName, ImportSpecifier, ImportedBinding, BindingIdentifier} from 'tra
 import {PERIOD, IMPORT, STAR, AS, FROM, CLOSE_ANGLE, OPEN_ANGLE, COMMA, OPEN_CURLY, CLOSE_CURLY, COLON} from 'traceur/src/syntax/TokenType';
 
 export class Parser extends TraceurParser {
-  constructor(file, errorReporter = new SyntaxErrorReporter()) {
-    super(file, errorReporter);
+  constructor(file, errorReporter = new SyntaxErrorReporter(), options) {
+    super(file, errorReporter, options);
   }
 
   // TODO: add support for object type literals to traceur!
