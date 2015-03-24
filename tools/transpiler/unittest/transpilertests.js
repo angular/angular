@@ -111,15 +111,17 @@ describe('transpile to es6', function() {
   it('should allow super() calls when transpiling to ES6 with source maps', function() {
     options = merge(options, {sourceMaps: true});
     var result = compiler.compile(options, "test.js",
-      "class Test {" +
+      "class Base {}\n" +
+      "class Test extends Base {" +
       "  constructor() { super(); }" +
       "}");
-    expect(result.js).toBe("class Test {\n" +
+    expect(result.js).toBe("class Base {}\n" +
+      "class Test extends Base {\n" +
       "  constructor() {\n"+
       "    super();\n"+
       "  }\n"+
-      "}\n\n"+
-      "//# sourceMappingURL=test.map\n");
+      "}\n"+
+      "//# sourceMappingURL=test.js.map\n");
   });
 
   it('should convert types to expressions', function() {
