@@ -89,6 +89,10 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   ];
 })
 
+// Add in a custom tag that we use when generating public docs
+.config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push({ name: 'publicModule' });
+})
 
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
