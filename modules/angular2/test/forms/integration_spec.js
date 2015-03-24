@@ -397,7 +397,6 @@ class WrappedValue {
   onChange:Function;
 
   constructor(cd:ControlDirective, @PropertySetter('value') setProperty:Function) {
-    super();
     this._setProperty = setProperty;
     cd.valueAccessor = this;
   }
