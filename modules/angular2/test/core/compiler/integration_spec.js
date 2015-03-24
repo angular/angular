@@ -581,6 +581,9 @@ export function main() {
       }));
     });
 
+    // Disabled until a solution is found, refs:
+    // - https://github.com/angular/angular/issues/776
+    // - https://github.com/angular/angular/commit/81f3f32
     xdescribe('Missing directive checks', () => {
 
       if (assertionsEnabled()) {
