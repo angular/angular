@@ -22,7 +22,6 @@ export class DefaultValueAccessor {
   onChange:Function;
 
   constructor(@PropertySetter('value') setValueProperty:Function) {
-    super();
     this._setValueProperty = setValueProperty;
     this.onChange = (_) => {};
   }
@@ -44,7 +43,6 @@ export class CheckboxControlValueAccessor {
   onChange:Function;
 
   constructor(cd:ControlDirective, @PropertySetter('checked') setCheckedProperty:Function) {
-    super();
     this._setCheckedProperty = setCheckedProperty;
     this.onChange = (_) => {};
     cd.valueAccessor = this; //ControlDirective should inject CheckboxControlDirective
@@ -126,7 +124,6 @@ export class ControlGroupDirective {
   _directives:List<ControlDirective>;
 
   constructor(@Optional() @Ancestor() groupDirective:ControlGroupDirective) {
-    super();
     this._groupDirective = groupDirective;
     this._directives = ListWrapper.create();
   }

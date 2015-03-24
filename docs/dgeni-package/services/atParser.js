@@ -34,13 +34,18 @@ module.exports = function atParser(AttachCommentTreeVisitor, SourceFile, Traceur
     var sourceFile = new SourceFile(moduleName, fileInfo.content);
     var comments = [];
     var moduleTree;
-    var parser = new TraceurParser(sourceFile);
+    var errorReporter = {
+      reportError: function(position, message) {
+      }
+    };
+
+    traceurOptions.setFromObject(service.traceurOptions);
+    var parser = new TraceurParser(sourceFile, errorReporter, traceurOptions);
 
     // Configure the parser
     parser.handleComment = function(range) {
       comments.push({ range: range });
     };
-    traceurOptions.setFromObject(service.traceurOptions);
 
     try {
       // Parse the file as a module, attaching the comments

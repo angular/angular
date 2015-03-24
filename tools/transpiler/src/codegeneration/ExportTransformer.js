@@ -51,6 +51,7 @@ function getIndexOfFirstNonImportStatement(items) {
  */
 export class ExportTransformer extends ParseTreeTransformer {
   constructor(idGenerator, reporter) {
+    super(idGenerator);
     this.reporter_ = reporter;
     this.importedVars_ = null;
     this.collectedExports_ = null;

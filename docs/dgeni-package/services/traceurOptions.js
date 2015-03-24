@@ -1,3 +1,4 @@
 module.exports = function traceurOptions() {
-  return System.get(System.map.traceur + '/src/Options.js').options;
+  var Options = System.get(System.map.traceur + "/src/Options.js").Options;
+  return new Options();
 };
