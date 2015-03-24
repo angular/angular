@@ -40,12 +40,9 @@ exports.compile = function compile(options, paths, source, reloadTraceur) {
   moduleName = moduleName || inputPath;
   moduleName = moduleName.replace(/\.\w*$/, '');
 
-  var localOptions = extend(options, {
-    moduleName: moduleName
-  });
   var CompilerCls = System.get('transpiler/src/compiler').Compiler;
 
-  var compiler = new CompilerCls(localOptions);
+  var compiler = new CompilerCls(options, moduleName);
   var result = {
     js: compiler.compile(source, inputPath, outputPath),
     sourceMap: null
@@ -56,7 +53,7 @@ exports.compile = function compile(options, paths, source, reloadTraceur) {
     result.sourceMap = JSON.parse(sourceMapString);
   }
 
-  if (localOptions.outputLanguage === 'es6' && source.indexOf('$traceurRuntime') === -1) {
+  if (options.outputLanguage === 'es6' && source.indexOf('$traceurRuntime') === -1) {
     assert(result.js.indexOf('$traceurRuntime') === -1,
       'Transpile to ES6 must not add references to $traceurRuntime, '
         + inputPath + ' is transpiled to:\n' + result.js);
@@ -94,7 +91,6 @@ function reloadCompiler(reloadTraceur) {
   useRttsAssertModuleForConvertingTypesToExpressions();
   supportSuperCallsInEs6Patch();
   convertTypesToExpressionsInEs6Patch();
-  removeNonStaticFieldDeclarationsInEs6Patch();
   disableGetterSetterAssertionPatch();
   patchCommonJSModuleTransformerToSupportExportStar();
 }
@@ -111,9 +107,7 @@ function loadModule(filepath, transpile) {
       .replace(__dirname, 'transpiler')
       .replace(/\\/g, '/')
       .replace(/\.\w*$/, '');
-    data = (new traceur.NodeCompiler(
-      extend(SELF_COMPILE_OPTIONS, { moduleName: moduleName } )
-    )).compile(data, filepath, filepath);
+    data = traceur.compile(data, SELF_COMPILE_OPTIONS, moduleName);
   }
 
   ('global', eval)(data);
@@ -157,27 +151,12 @@ function convertTypesToExpressionsInEs6Patch() {
   PureES6Transformer.prototype.transform = function() {
     if (!this._patched) {
       this._patched = true;
+      var self = this;
       this.treeTransformers_.splice(0,0, function(tree) {
-        return new TypeToExpressionTransformer(new UniqueIdentifierGenerator(), this.reporter_).transformAny(tree);
+        return new TypeToExpressionTransformer(new UniqueIdentifierGenerator(), self.reporter_, self.options_).transformAny(tree);
       });
     }
     return _transform.apply(this, arguments);
-  };
-}
-
-// TODO(tbosch): Don't write field declarations in classes when we output to ES6.
-// This just patches the writer and does not support moving initializers to the constructor.
-// See src/codegeneration/ClassTransformer.js for how to support initializers as well.
-// see https://github.com/google/traceur-compiler/issues/1708
-function removeNonStaticFieldDeclarationsInEs6Patch() {
-  var traceurVersion = System.map['traceur'];
-  var ParseTreeWriter = System.get(traceurVersion+'/src/outputgeneration/ParseTreeWriter').ParseTreeWriter;
-  var options = System.get(traceurVersion + "/src/Options.js").options;
-  var _visitPropertyVariableDeclaration = ParseTreeWriter.prototype.visitPropertyVariableDeclaration;
-  ParseTreeWriter.prototype.visitPropertyVariableDeclaration = function() {
-    if (options.outputLanguage !== 'es6') {
-      return _visitPropertyVariableDeclaration.apply(this, arguments);
-    }
   };
 }
 
