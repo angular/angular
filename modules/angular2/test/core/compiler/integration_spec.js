@@ -451,30 +451,57 @@ export function main() {
         })
       }));
 
-      it('should provide binding configuration config to the component', inject([AsyncTestCompleter], (async) => {
-        tplResolver.setTemplate(MyComp, new Template({
-          inline: '<push-cmp #cmp></push-cmp>',
-          directives: [[[PushBasedComp]]]
+      describe("BindingPropagationConfig", () => {
+        it("can be used to disable the change detection of the component's template",
+          inject([AsyncTestCompleter], (async) => {
+
+          tplResolver.setTemplate(MyComp, new Template({
+            inline: '<push-cmp #cmp></push-cmp>',
+            directives: [[[PushBasedComp]]]
+          }));
+
+          compiler.compile(MyComp).then((pv) => {
+            createView(pv);
+
+            var cmp = view.locals.get('cmp');
+
+            cd.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(1);
+
+            cd.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(1);
+
+            cmp.propagate();
+
+            cd.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(2);
+            async.done();
+          })
         }));
 
-        compiler.compile(MyComp).then((pv) => {
-          createView(pv);
+        it('should not affect updating properties on the component', inject([AsyncTestCompleter], (async) => {
+          tplResolver.setTemplate(MyComp, new Template({
+            inline: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
+            directives: [[[PushBasedComp]]]
+          }));
 
-          var cmp = view.locals.get('cmp');
+          compiler.compile(MyComp).then((pv) => {
+            createView(pv);
 
-          cd.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+            var cmp = view.locals.get('cmp');
 
-          cd.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+            ctx.ctxProp = "one";
+            cd.detectChanges();
+            expect(cmp.prop).toEqual("one");
 
-          cmp.propagate();
+            ctx.ctxProp = "two";
+            cd.detectChanges();
+            expect(cmp.prop).toEqual("two");
 
-          cd.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
-          async.done();
-        })
-      }));
+            async.done();
+          })
+        }));
+      });
 
       it('should create a component that injects a @Parent', inject([AsyncTestCompleter], (async) => {
         tplResolver.setTemplate(MyComp, new Template({
@@ -673,11 +700,17 @@ class MyDir {
   }
 }
 
-@Component({selector: 'push-cmp'})
+@Component({
+  selector: 'push-cmp',
+  bind: {
+    'prop': 'prop'
+  }
+})
 @Template({inline: '{{field}}'})
 class PushBasedComp {
   numberOfChecks:number;
   bpc:BindingPropagationConfig;
+  prop;
 
   constructor(bpc:BindingPropagationConfig) {
     this.numberOfChecks = 0;

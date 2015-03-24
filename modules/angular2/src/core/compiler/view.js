@@ -449,7 +449,7 @@ export class ProtoView {
         lightDom = strategy.constructLightDom(view, childView, element);
         strategy.attachTemplate(element, childView);
 
-        bindingPropagationConfig = new BindingPropagationConfig(changeDetector);
+        bindingPropagationConfig = new BindingPropagationConfig(childView.changeDetector);
 
         ListWrapper.push(componentChildViews, childView);
       }
