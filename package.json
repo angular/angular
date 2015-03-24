@@ -27,6 +27,7 @@
     "es6-module-loader": "^0.9.2",
     "systemjs": "^0.9.1",
     "traceur": "0.0.82",
+    "rx": "2.4.6",
     "which": "~1",
     "zone.js": "0.4.0",
     "googleapis": "1.0.x",

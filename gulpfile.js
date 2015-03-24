@@ -50,6 +50,8 @@ var _HTML_DEFAULT_SCRIPTS_JS = [
   {src: 'node_modules/zone.js/long-stack-trace-zone.js', mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/systemjs/dist/system.src.js', mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/systemjs/lib/extension-register.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/systemjs/lib/extension-cjs.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/rx/dist/rx.all.js', mimeType: 'text/javascript', copy: true},
   {src: 'tools/build/snippets/runtime_paths.js', mimeType: 'text/javascript', copy: true},
   {
     inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.error.bind(console))',

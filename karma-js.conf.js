@@ -18,6 +18,8 @@ module.exports = function(config) {
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
+      'node_modules/systemjs/lib/extension-cjs.js',
+      'node_modules/rx/dist/rx.all.js',
       'node_modules/zone.js/zone.js',
       'node_modules/zone.js/long-stack-trace-zone.js',
 

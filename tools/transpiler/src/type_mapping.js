@@ -5,6 +5,8 @@ export var typeMapping = {
   'string': 'String',
   'any': 'dynamic',
   'Promise': 'Future',
+  'Observable': 'Stream',
+  'ObservableController': 'StreamController',
   'Date': 'DateTime',
   'StringMap': 'Map'
 };

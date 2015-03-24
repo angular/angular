@@ -1,7 +1,7 @@
 library angular.core.facade.async;
 
 import 'dart:async';
-export 'dart:async' show Future;
+export 'dart:async' show Future, Stream, StreamController, StreamSubscription;
 
 class PromiseWrapper {
   static Future resolve(obj) => new Future.value(obj);
@@ -29,6 +29,32 @@ class PromiseWrapper {
 
   static bool isPromise(maybePromise) {
     return maybePromise is Future;
+  }
+}
+
+class ObservableWrapper {
+  static StreamSubscription subscribe(Stream s, Function onNext, [onError, onComplete]) {
+    return s.listen(onNext, onError: onError, onDone: onComplete, cancelOnError: true);
+  }
+
+  static StreamController createController() {
+    return new StreamController.broadcast();
+  }
+
+  static Stream createObservable(StreamController controller) {
+    return controller.stream;
+  }
+
+  static void callNext(StreamController controller, value) {
+    controller.add(value);
+  }
+
+  static void callThrow(StreamController controller, error) {
+    controller.addError(error);
+  }
+
+  static void callReturn(StreamController controller) {
+    controller.close();
   }
 }
 

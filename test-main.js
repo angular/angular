@@ -1,6 +1,7 @@
 // Use "register" extension from systemjs.
 // That's what Traceur outputs: `System.register()`.
 register(System);
+cjs(System);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50;
 
@@ -14,7 +15,8 @@ System.baseURL = '/base/modules/';
 // So that we can import packages like `core/foo`, instead of `core/src/foo`.
 System.paths = {
   '*': './*.js',
-  'transpiler/*': '../tools/transpiler/*.js'
+  'transpiler/*': '../tools/transpiler/*.js',
+  'rx/*': '../node_modules/rx/*.js'
 }
 
 // Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
