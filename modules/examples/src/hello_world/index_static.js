@@ -19,6 +19,8 @@ import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {EventManager} from 'angular2/src/core/events/event_manager';
+import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 
 import {reflector} from 'angular2/src/reflection/reflection';
 
@@ -167,6 +169,19 @@ function setup() {
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
     "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(EventManager, {
+    "factory": () => new EventManager([], null),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(PrivateComponentLoader, {
+    "factory": (compiler, strategy, eventMgr, reader) =>
+      new PrivateComponentLoader(compiler, strategy, eventMgr, reader),
+    "parameters": [[Compiler], [ShadowDomStrategy], [EventManager], [DirectiveMetadataReader]],
     "annotations": []
   });
 
