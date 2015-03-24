@@ -326,7 +326,7 @@ export class Directive extends Injectable {
    *
    *
    *
-   * ## Bindings With Pipes:
+   * ## Bindings With Pipes
    *
    * You can also use pipes when writing binding definitions for a directive.
    *

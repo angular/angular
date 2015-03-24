@@ -2,15 +2,11 @@ import {CONST} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/di';
 
 /**
- * The directive can only be injected from the parent element.
+ * Specifies that an injector should retrieve a dependency from the direct parent.
  * 
  * ## Example
  * 
- * ```
- * <div dependency="1">
- *   <div dependency="2" my-directive></div>
- * </div>
- * ```
+ * Here is a simple directive that retrieves a dependency from its parent element.
  * 
  * ```
  * @Decorator({
@@ -34,8 +30,15 @@ import {DependencyAnnotation} from 'angular2/di';
  * }
  * ```
  * 
- * In the above example the `@Parent()` annotation forces the injector to retrieve the dependency from the
- * parent element (even thought the current element could resolve it).
+ * We use this with the following HTML template:
+ * 
+ * ```
+ * <div dependency="1">
+ *   <div dependency="2" my-directive></div>
+ * </div>
+ * ```
+ * The `@Parent()` annotation in our constructor forces the injector to retrieve the dependency from the
+ * parent element (even thought the current element could resolve it): Angular injects `dependency=1`.
  *
  * @publicModule angular2/annotations
  */
@@ -47,20 +50,14 @@ export class Parent extends DependencyAnnotation {
 }
 
 /**
- * The directive can only be injected from the ancestor (any element between parent element and shadow root).
+ * Specifies that an injector should retrieve a dependency from any ancestor element.
+ * 
+ * An ancestor is any element between the parent element and shadow root.
  *
  * 
  * ## Example
  * 
- * ```
- * <div dependency="1">
- *   <div dependency="2">
- *     <div>
- *       <div dependency="3" my-directive></div>
- *     </div>
- *   </div>
- * </div>
- * ```
+ * Here is a simple directive that retrieves a dependency from an ancestor element.
  * 
  * ```
  * @Decorator({
@@ -83,12 +80,26 @@ export class Parent extends DependencyAnnotation {
  *   };
  * }
  * ```
+ *
+ *  We use this with the following HTML template:
  * 
- * In the above example the `@Ancestor()` annotation forces the injector to retrieve the dependency from the
- * first ancestor. 
- * - The current element `dependency="3"` is skipped
+ * ```
+ * <div dependency="1">
+ *   <div dependency="2">
+ *     <div>
+ *       <div dependency="3" my-directive></div>
+ *     </div>
+ *   </div>
+ * </div>
+ * ```
+ * 
+ * The `@Ancestor()` annotation in our constructor forces the injector to retrieve the dependency from the
+ * nearest ancestor element: 
+ * - The current element `dependency="3"` is skipped because it is not an ancestor.
  * - Next parent has no directives `<div>`
- * - Next parent has the `Dependency` directive and so the dependency is satisfied.
+ * - Next parent has the `Dependency` directive and so the dependency is satisfied. 
+ * 
+ * Angular injects `dependency=2`.
  *
  * @publicModule angular2/annotations
  */
