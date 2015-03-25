@@ -1,7 +1,7 @@
 library angular2.test.transform.integration;
 
 import 'dart:io';
-import 'package:angular2/src/dom/html5lib_adapter.dart';
+import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
