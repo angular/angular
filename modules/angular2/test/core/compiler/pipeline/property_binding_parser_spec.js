@@ -46,6 +46,12 @@ export function main() {
       expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('{{b}}');
     });
 
+    it('should detect static attributes', () => {
+      var results = createPipeline().process(el('<div a="b" c></div>'));
+      expect(MapWrapper.get(results[0].attributes, 'a')).toEqual('b');
+      expect(MapWrapper.get(results[0].attributes, 'c')).toEqual('');
+    });
+
     it('should detect var- syntax', () => {
       var results = createPipeline().process(el('<template var-a="b"></template>'));
       expect(MapWrapper.get(results[0].variableBindings, 'b')).toEqual('a');

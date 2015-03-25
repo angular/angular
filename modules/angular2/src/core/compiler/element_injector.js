@@ -3,7 +3,7 @@ import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
+import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
@@ -90,19 +90,22 @@ export class DirectiveDependency extends Dependency {
   depth:int;
   eventEmitterName:string;
   propSetterName:string;
+  attributeName:string;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
-              properties:List, depth:int, eventEmitterName: string, propSetterName: string) {
+              properties:List, depth:int, eventEmitterName: string, propSetterName: string, attributeName:string) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
     this.eventEmitterName = eventEmitterName;
     this.propSetterName = propSetterName;
+    this.attributeName = attributeName;
   }
 
   static createFrom(d:Dependency):Dependency {
     var depth = 0;
     var eventName = null;
     var propName = null;
+    var attributeName = null;
     var properties = d.properties;
 
     for (var i = 0; i < properties.length; i++) {
@@ -115,11 +118,13 @@ export class DirectiveDependency extends Dependency {
         eventName = property.eventName;
       } else if (property instanceof PropertySetter) {
         propName = property.propName;
+      } else if (property instanceof Attribute) {
+        attributeName = property.attributeName;
       }
     }
 
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties, depth,
-        eventName, propName);
+        eventName, propName, attributeName);
   }
 }
 
@@ -209,6 +214,7 @@ export class ProtoElementInjector  {
   index:int;
   view:viewModule.View;
   distanceToParent:number;
+  attributes:Map;
 
   /** Whether the element is exported as $implicit. */
   exportElement:boolean;
@@ -514,6 +520,7 @@ export class ElementInjector extends TreeNode {
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
     if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
+    if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
 
@@ -529,6 +536,15 @@ export class ElementInjector extends TreeNode {
     var domElement = ngElement.domElement;
     var setter = setterFactory(dep.propSetterName);
     return function(v) { setter(domElement, v) };
+  }
+
+  _buildAttribute(dep): string {
+    var attributes = this._proto.attributes;
+    if (isPresent(attributes) && MapWrapper.contains(attributes, dep.attributeName)) {
+      return MapWrapper.get(attributes, dep.attributeName);
+    } else {
+      return null;
+    }
   }
 
   /*

@@ -72,6 +72,8 @@ export class PropertyBindingParser extends CompileStep {
         var ast = this._parseInterpolation(attrValue, desc);
         if (isPresent(ast)) {
           current.addPropertyBinding(attrName, ast);
+        } else {
+          current.addAttribute(attrName, attrValue);
         }
       }
     });

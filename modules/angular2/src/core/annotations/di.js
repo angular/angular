@@ -26,3 +26,15 @@ export class PropertySetter extends DependencyAnnotation {
     this.propName = propName;
   }
 }
+
+/**
+ * The directive can inject the value of an attribute of the host element
+ */
+export class Attribute extends DependencyAnnotation {
+  attributeName: string;
+  @CONST()
+  constructor(attributeName) {
+    super();
+    this.attributeName = attributeName;
+  }
+}

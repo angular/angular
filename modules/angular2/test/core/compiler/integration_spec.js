@@ -37,7 +37,7 @@ import {EventManager} from 'angular2/src/core/events/event_manager';
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter} from 'angular2/src/core/annotations/di';
+import {EventEmitter, Attribute} from 'angular2/src/core/annotations/di';
 
 import {If} from 'angular2/src/directives/if';
 
@@ -606,6 +606,26 @@ export function main() {
           });
         });
       }));
+
+      it('should support static attributes', inject([AsyncTestCompleter], (async) => {
+        tplResolver.setTemplate(MyComp, new Template({
+          inline: '<input static type="text" title></input>',
+          directives: [NeedsAttribute]
+        }));
+        compiler.compile(MyComp).then((pv) => {
+          createView(pv);
+
+          var injector = view.elementInjectors[0];
+          var needsAttribute = injector.get(NeedsAttribute);
+          expect(needsAttribute.typeAttribute).toEqual('text');
+          expect(needsAttribute.titleAttribute).toEqual('');
+          expect(needsAttribute.fooAttribute).toEqual(null);
+
+          async.done();
+        });
+      }));
+
+
     });
 
     // Disabled until a solution is found, refs:
@@ -901,4 +921,18 @@ class DecoratorListeningEvent {
 })
 class IdComponent {
   id: string;
+}
+
+@Decorator({
+  selector: '[static]'
+})
+class NeedsAttribute {
+  typeAttribute;
+  titleAttribute;
+  fooAttribute;
+  constructor(@Attribute('type') typeAttribute: string, @Attribute('title') titleAttribute: string, @Attribute('foo') fooAttribute: string) {
+    this.typeAttribute = typeAttribute;
+    this.titleAttribute = titleAttribute;
+    this.fooAttribute = fooAttribute;
+  }
 }
