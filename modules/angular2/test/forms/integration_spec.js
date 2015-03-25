@@ -111,6 +111,24 @@ export function main() {
         });
       }));
 
+      it("should work with single controls", inject([AsyncTestCompleter], (async) => {
+        var control = new Control("loginValue");
+        var ctx = new MyComp(control);
+
+        var t = `<div><input type="text" [control]="form"></div>`;
+
+        compile(MyComp, t, ctx, (view) => {
+          var input = queryView(view, "input")
+          expect(input.value).toEqual("loginValue");
+
+          input.value = "updatedValue";
+          dispatchEvent(input, "change");
+
+          expect(control.value).toEqual("updatedValue");
+          async.done();
+        });
+      }));
+
       it("should update DOM elements when rebinding the control group", inject([AsyncTestCompleter], (async) => {
         var form = new ControlGroup({
           "login": new Control("oldValue")
@@ -376,7 +394,7 @@ export function main() {
   selector: "my-comp"
 })
 class MyComp {
-  form:ControlGroup;
+  form:any;
   name:string;
 
   constructor(form = null, name = null) {

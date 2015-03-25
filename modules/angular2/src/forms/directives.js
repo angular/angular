@@ -59,20 +59,20 @@ export class CheckboxControlValueAccessor {
   lifecycle: [onChange],
   selector: '[control]',
   bind: {
-    'controlName' : 'control'
+    'controlOrName' : 'control'
   }
 })
 export class ControlDirective {
   _groupDirective:ControlGroupDirective;
 
-  controlName:string;
+  controlOrName:any;
   valueAccessor:any; //ControlValueAccessor
 
   validator:Function;
 
-  constructor(@Ancestor() groupDirective:ControlGroupDirective, valueAccessor:DefaultValueAccessor)  {
+  constructor(@Optional() @Ancestor() groupDirective:ControlGroupDirective, valueAccessor:DefaultValueAccessor)  {
     this._groupDirective = groupDirective;
-    this.controlName = null;
+    this.controlOrName = null;
     this.valueAccessor = valueAccessor;
     this.validator = Validators.nullValidator;
   }
@@ -84,7 +84,9 @@ export class ControlDirective {
   }
 
   _initialize() {
-    this._groupDirective.addDirective(this);
+    if(isPresent(this._groupDirective)) {
+      this._groupDirective.addDirective(this);
+    }
 
     var c = this._control();
     c.validator = Validators.compose([c.validator, this.validator]);
@@ -102,7 +104,11 @@ export class ControlDirective {
   }
 
   _control() {
-    return this._groupDirective.findControl(this.controlName);
+    if (isString(this.controlOrName)) {
+      return this._groupDirective.findControl(this.controlOrName);
+    } else {
+      return this.controlOrName;
+    }
   }
 }
 
