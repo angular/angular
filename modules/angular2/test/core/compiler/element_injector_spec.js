@@ -4,7 +4,7 @@ import {ListWrapper, MapWrapper, List, StringMapWrapper} from 'angular2/src/faca
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter} from 'angular2/src/core/annotations/di';
+import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {ProtoView, View} from 'angular2/src/core/compiler/view';
@@ -107,6 +107,17 @@ class NeedsPropertySetter {
   }
 }
 
+class NeedsAttribute {
+  typeAttribute;
+  titleAttribute;
+  fooAttribute;
+  constructor(@Attribute('type') typeAttribute: string, @Attribute('title') titleAttribute: string, @Attribute('foo') fooAttribute: string) {
+    this.typeAttribute = typeAttribute;
+    this.titleAttribute = titleAttribute;
+    this.fooAttribute = fooAttribute;
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -148,10 +159,11 @@ export function main() {
     return [lookupName(tree), children];
   }
 
-  function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, preBuiltObjects = null) {
+  function injector(bindings, lightDomAppInjector = null, shadowDomAppInjector = null, preBuiltObjects = null, attributes = null) {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = appInjector;
 
     var proto = new ProtoElementInjector(null, 0, bindings, isPresent(shadowDomAppInjector));
+    proto.attributes = attributes;
     var inj = proto.instantiate(null, null);
     var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
 
@@ -563,6 +575,21 @@ export function main() {
         expect(DOM.hasClass(div, 'active')).toEqual(true);
         expect(DOM.getStyle(div, 'width')).toEqual('40px');
         expect(DOM.getStyle(div, 'height')).toEqual('50px');
+      });
+    });
+
+    describe('static', () => {
+      it('should be injectable', () => {
+        var attributes = MapWrapper.create();
+        MapWrapper.set(attributes, 'type', 'text');
+        MapWrapper.set(attributes, 'title', '');
+
+        var inj = injector([NeedsAttribute], null, null, null, attributes);
+        var needsAttribute = inj.get(NeedsAttribute);
+
+        expect(needsAttribute.typeAttribute).toEqual('text');
+        expect(needsAttribute.titleAttribute).toEqual('');
+        expect(needsAttribute.fooAttribute).toEqual(null);
       });
     });
 

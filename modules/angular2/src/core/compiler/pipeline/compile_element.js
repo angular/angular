@@ -22,6 +22,7 @@ export class CompileElement {
   textNodeBindings:Map;
   propertyBindings:Map;
   eventBindings:Map;
+  attributes:Map;
 
   /// Store directive name to template name mapping.
   /// Directive name is what the directive exports the variable as
@@ -142,6 +143,13 @@ export class CompileElement {
       this.eventBindings = MapWrapper.create();
     }
     MapWrapper.set(this.eventBindings, eventName, expression);
+  }
+
+  addAttribute(attributeName:string, attributeValue:string) {
+    if (isBlank(this.attributes)) {
+      this.attributes = MapWrapper.create();
+    }
+    MapWrapper.set(this.attributes, attributeName, attributeValue);
   }
 
   addDirective(directive:DirectiveMetadata) {

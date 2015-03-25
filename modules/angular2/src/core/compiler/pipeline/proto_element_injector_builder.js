@@ -59,6 +59,7 @@ export class ProtoElementInjectorBuilder extends CompileStep {
           current.inheritedProtoElementInjector.exportImplicitName = exportImplicitName;
         }
       }
+      current.inheritedProtoElementInjector.attributes = current.attributes;
 
     } else {
       current.inheritedProtoElementInjector = parentProtoElementInjector;
