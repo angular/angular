@@ -126,7 +126,8 @@ export class IterableChanges extends Pipe {
 
     var record:CollectionChangeRecord = this._itHead;
     var mayBeDirty:boolean = false;
-    var index:int, item;
+    var index:int;
+    var item;
 
     if (ListWrapper.isList(collection)) {
       var list = collection;
