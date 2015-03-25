@@ -144,7 +144,7 @@ export function main() {
           .toThrowError('Cannot instantiate UserList synchronously. It is provided as a promise!');
       });
 
-      it('should throw when instantiating a sync binding with an dependency', function () {
+      it('should throw when instantiating a sync binding with an async dependency', function () {
         var injector = new Injector([
           bind(UserList).toAsyncFactory(fetchUsers),
           UserController
@@ -153,6 +153,19 @@ export function main() {
         expect(() => injector.get(UserController))
           .toThrowError('Cannot instantiate UserList synchronously. It is provided as a promise! (UserController -> UserList)');
       });
+
+      it('should not throw when instantiating a sync binding with a resolved async dependency',
+        inject([AsyncTestCompleter], (async) => {
+        var injector = new Injector([
+          bind(UserList).toAsyncFactory(fetchUsers),
+          UserController
+        ]);
+
+        injector.asyncGet(UserList).then(() => {
+          expect(() => { injector.get(UserController); }).not.toThrow();
+          async.done();
+        });
+      }));
 
       it('should resolve synchronously when an async dependency requested as a promise', function () {
         var injector = new Injector([
