@@ -1,4 +1,4 @@
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {isPresent} from 'angular2/src/facade/lang';
 import * as modelModule from './model';
 
@@ -24,6 +24,15 @@ export class FormBuilder {
     }
   }
 
+  array(controlsConfig:List, validator:Function = null):modelModule.ControlArray  {
+    var controls = ListWrapper.map(controlsConfig, (c) => this._createControl(c));
+    if (isPresent(validator)) {
+      return new modelModule.ControlArray(controls, validator);
+    } else {
+      return new modelModule.ControlArray(controls);
+    }
+  }
+
   _reduceControls(controlsConfig) {
     var controls = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig, controlName) => {
@@ -33,7 +42,9 @@ export class FormBuilder {
   }
 
   _createControl(controlConfig) {
-    if (controlConfig instanceof modelModule.Control || controlConfig instanceof modelModule.ControlGroup) {
+    if (controlConfig instanceof modelModule.Control ||
+      controlConfig instanceof modelModule.ControlGroup ||
+      controlConfig instanceof modelModule.ControlArray) {
       return controlConfig;
 
     } else if (ListWrapper.isList(controlConfig)) {

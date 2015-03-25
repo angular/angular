@@ -26,14 +26,28 @@ export class Validators {
     var res = {};
     StringMapWrapper.forEach(c.controls, (control, name) => {
       if (c.contains(name) && isPresent(control.errors)) {
-        StringMapWrapper.forEach(control.errors, (value, error) => {
-          if (!StringMapWrapper.contains(res, error)) {
-            res[error] = [];
-          }
-          ListWrapper.push(res[error], control);
-        });
+        Validators._mergeErrors(control, res);
       }
     });
     return StringMapWrapper.isEmpty(res) ? null : res;
+  }
+
+  static array(c:modelModule.ControlArray) {
+    var res = {};
+    ListWrapper.forEach(c.controls, (control) => {
+      if (isPresent(control.errors)) {
+        Validators._mergeErrors(control, res);
+      }
+    });
+    return StringMapWrapper.isEmpty(res) ? null : res;
+  }
+
+  static _mergeErrors(control, res) {
+    StringMapWrapper.forEach(control.errors, (value, error) => {
+      if (!StringMapWrapper.contains(res, error)) {
+        res[error] = [];
+      }
+      ListWrapper.push(res[error], control);
+    });
   }
 }

@@ -60,5 +60,18 @@ export function main() {
       expect(g.controls["login"].validator).toBe(Validators.nullValidator);
       expect(g.validator).toBe(Validators.group);
     });
+
+    it("should create control arrays", () => {
+      var c = b.control("three");
+      var a = b.array([
+        "one",
+        ["two", Validators.required],
+        c,
+        b.array(['four'])
+      ]);
+
+      expect(a.value).toEqual(['one', 'two', 'three', ['four']]);
+    });
   });
 }
+

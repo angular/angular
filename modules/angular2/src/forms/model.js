@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {Observable, ObservableWrapper} from 'angular2/src/facade/async';
-import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
 
 export const VALID = "VALID";
@@ -23,8 +23,11 @@ export class AbstractControl {
   _status:string;
   _errors;
   _pristine:boolean;
-  _parent:ControlGroup;
+  _parent:any; /* ControlGroup | ControlArray */
   validator:Function;
+
+  valueChanges:Observable;
+  _valueChangesController;
 
   constructor(validator:Function) {
     this.validator = validator;
@@ -67,9 +70,6 @@ export class AbstractControl {
 }
 
 export class Control extends AbstractControl {
-  valueChanges:Observable;
-  _valueChangesController;
-
   constructor(value:any, validator:Function = Validators.nullValidator) {
     super(validator);
     this._setValueErrorsStatus(value);
@@ -97,9 +97,6 @@ export class Control extends AbstractControl {
 export class ControlGroup extends AbstractControl {
   controls;
   optionals;
-
-  valueChanges:Observable;
-  _valueChangesController;
 
   constructor(controls, optionals = null, validator:Function = Validators.group) {
     super(validator);
@@ -169,5 +166,66 @@ export class ControlGroup extends AbstractControl {
   _included(controlName:string):boolean {
     var isOptional = StringMapWrapper.contains(this.optionals, controlName);
     return !isOptional || StringMapWrapper.get(this.optionals, controlName);
+  }
+}
+
+export class ControlArray extends AbstractControl {
+  controls:List;
+
+  constructor(controls:List, validator:Function = Validators.array) {
+    super(validator);
+    this.controls = controls;
+
+    this._valueChangesController = ObservableWrapper.createController();
+    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
+
+    this._setParentForControls();
+    this._setValueErrorsStatus();
+  }
+
+  at(index:number) {
+    return this.controls[index];
+  }
+
+  push(control) {
+    ListWrapper.push(this.controls, control);
+    control.setParent(this);
+    this._updateValue();
+  }
+
+  insert(index:number, control) {
+    ListWrapper.insert(this.controls, index, control);
+    control.setParent(this);
+    this._updateValue();
+  }
+
+  removeAt(index:number) {
+    ListWrapper.removeAt(this.controls, index);
+    this._updateValue();
+  }
+
+  get length() {
+    return this.controls.length;
+  }
+
+  _updateValue() {
+    this._setValueErrorsStatus();
+    this._pristine = false;
+
+    ObservableWrapper.callNext(this._valueChangesController, this._value);
+
+    this._updateParent();
+  }
+
+  _setParentForControls() {
+    ListWrapper.forEach(this.controls, (control) => {
+      control.setParent(this);
+    });
+  }
+
+  _setValueErrorsStatus()  {
+    this._value = ListWrapper.map(this.controls, (c) => c.value);
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
   }
 }

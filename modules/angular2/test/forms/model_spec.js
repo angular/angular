@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el,
   AsyncTestCompleter, inject} from 'angular2/test_lib';
-import {ControlGroup, Control, OptionalControl, Validators} from 'angular2/forms';
+import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';;
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -49,6 +49,32 @@ export function main() {
           c.updateValue("new value");
           expect(c.dirty).toEqual(true);
         });
+      });
+
+      describe("valueChanges", () => {
+        var c;
+
+        beforeEach(() => {
+          c = new Control("old");
+        });
+
+        it("should fire an event after the value has been updated",  inject([AsyncTestCompleter], (async) => {
+          ObservableWrapper.subscribe(c.valueChanges, (value) => {
+            expect(c.value).toEqual('new');
+            expect(value).toEqual('new');
+            async.done();
+          });
+          c.updateValue("new");
+        }));
+
+        it("should return a cold observable",  inject([AsyncTestCompleter], (async) => {
+          c.updateValue("will be ignored");
+          ObservableWrapper.subscribe(c.valueChanges, (value) => {
+            expect(value).toEqual('new');
+            async.done();
+          });
+          c.updateValue("new");
+        }));
       });
     });
 
@@ -190,36 +216,8 @@ export function main() {
 
           expect(group.valid).toEqual(false);
         });
-      });
 
-      describe("valueChanges", () => {
-        describe("Control", () => {
-          var c;
-
-          beforeEach(() => {
-            c = new Control("old");
-          });
-
-          it("should fire an event after the value has been updated",  inject([AsyncTestCompleter], (async) => {
-            ObservableWrapper.subscribe(c.valueChanges, (value) => {
-              expect(c.value).toEqual('new');
-              expect(value).toEqual('new');
-              async.done();
-            });
-            c.updateValue("new");
-          }));
-
-          it("should return a cold observable",  inject([AsyncTestCompleter], (async) => {
-            c.updateValue("will be ignored");
-            ObservableWrapper.subscribe(c.valueChanges, (value) => {
-              expect(value).toEqual('new');
-              async.done();
-            });
-            c.updateValue("new");
-          }));
-        });
-
-        describe("ControlGroup", () => {
+        describe("valueChanges", () => {
           var g, c1, c2;
 
           beforeEach(() => {
@@ -297,6 +295,162 @@ export function main() {
 
           xit("should not fire an event when an excluded control is updated", inject([AsyncTestCompleter], (async) => {
             // hard to test without hacking zones
+          }));
+        });
+      });
+
+      describe("ControlArray", () => {
+        describe("adding/removing", () => {
+          var a;
+          var c1, c2, c3;
+
+          beforeEach(() => {
+            a = new ControlArray([]);
+            c1 = new Control(1);
+            c2 = new Control(2);
+            c3 = new Control(3);
+          });
+
+          it("should support pushing", () => {
+            a.push(c1);
+            expect(a.length).toEqual(1);
+            expect(a.controls).toEqual([c1]);
+          });
+
+          it("should support removing", () => {
+            a.push(c1);
+            a.push(c2);
+            a.push(c3);
+
+            a.removeAt(1);
+
+            expect(a.controls).toEqual([c1, c3]);
+          });
+
+          it("should support inserting", () => {
+            a.push(c1);
+            a.push(c3);
+
+            a.insert(1, c2);
+
+            expect(a.controls).toEqual([c1, c2, c3]);
+          });
+        });
+
+        describe("value", () => {
+          it("should be the reduced value of the child controls", () => {
+            var a = new ControlArray([new Control(1), new Control(2)]);
+            expect(a.value).toEqual([1, 2]);
+          });
+
+          it("should be an empty array when there are no child controls", () => {
+            var a = new ControlArray([]);
+            expect(a.value).toEqual([]);
+          });
+        });
+
+        describe("validator", () => {
+          it("should run the validator with the initial value (valid)", () => {
+            var a = new ControlArray([
+              new Control(1, Validators.required),
+              new Control(2, Validators.required)
+            ]);
+
+            expect(a.valid).toBe(true);
+            expect(a.errors).toBe(null);
+          });
+
+          it("should run the validator with the initial value (invalid)", () => {
+            var a = new ControlArray([
+              new Control(1, Validators.required),
+              new Control(null, Validators.required),
+              new Control(2, Validators.required)
+            ]);
+
+            expect(a.valid).toBe(false);
+            expect(a.errors).toEqual({"required": [a.controls[1]]});
+          });
+
+          it("should run the validator when the value changes", () => {
+            var a = new ControlArray([]);
+            var c = new Control(null, Validators.required);
+            a.push(c);
+            expect(a.valid).toBe(false);
+
+            c.updateValue("some value");
+
+            expect(a.valid).toBe(true);
+            expect(a.errors).toBe(null);
+          });
+        });
+
+        describe("pristine", () => {
+          it("should be true after creating a control", () => {
+            var a = new ControlArray([new Control(1)]);
+            expect(a.pristine).toBe(true);
+          });
+
+          it("should be false after changing the value of the control", () => {
+            var c = new Control(1);
+            var a = new ControlArray([c]);
+
+            c.updateValue('new value');
+
+            expect(a.pristine).toEqual(false);
+          });
+        });
+
+        describe("valueChanges", () => {
+          var a, c1, c2;
+
+          beforeEach(() => {
+            c1 = new Control("old1");
+            c2 = new Control("old2")
+            a = new ControlArray([c1, c2]);
+          });
+
+          it("should fire an event after the value has been updated", inject([AsyncTestCompleter], (async) => {
+            ObservableWrapper.subscribe(a.valueChanges, (value) => {
+              expect(a.value).toEqual(['new1', 'old2']);
+              expect(value).toEqual(['new1', 'old2']);
+              async.done();
+            });
+            c1.updateValue("new1");
+          }));
+
+          it("should fire an event after the control's observable fired an event", inject([AsyncTestCompleter], (async) => {
+            var controlCallbackIsCalled = false;
+
+            ObservableWrapper.subscribe(c1.valueChanges, (value) => {
+              controlCallbackIsCalled = true;
+            });
+
+            ObservableWrapper.subscribe(a.valueChanges, (value) => {
+              expect(controlCallbackIsCalled).toBe(true);
+              async.done();
+            });
+
+            c1.updateValue("new1");
+          }));
+
+          it("should fire an event when a control is removed", inject([AsyncTestCompleter], (async) => {
+            ObservableWrapper.subscribe(a.valueChanges, (value) => {
+              expect(value).toEqual(['old1']);
+              async.done();
+            });
+
+            a.removeAt(1);
+          }));
+
+          it("should fire an event when a control is added", inject([AsyncTestCompleter], (async) => {
+            a.removeAt(1);
+
+            ObservableWrapper.subscribe(a.valueChanges, (value) => {
+              expect(value).toEqual(['old1', 'old2']);
+              async.done();
+            });
+
+            a.push(c2);
           }));
         });
       });
