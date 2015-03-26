@@ -163,6 +163,9 @@ var config = exports.config = {
     'dist/js/cjs/**/node_modules/**',
   ],
 
+  // Let's see if this resolves issus with benchpress.
+  restartBrowserBetweenTests: true,
+
   multiCapabilities: browsers.map(function(browserName) {
     var caps = BROWSER_CAPS[browserName];
     console.log('Testing against', browserName);
