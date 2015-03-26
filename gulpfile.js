@@ -365,6 +365,7 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
 gulp.task('build/transpile.dart.ts2dart.all', function() {
   return gulp.src(CONFIG.transpile.src.js)
       .pipe(ts2dart.transpile())
+      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
       .pipe(gulp.dest('dist/dart.ts2dart'));
 });
 gulp.task('ts2dart', function(done) {
@@ -673,14 +674,14 @@ gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
   });
   //Watcher to run tests when dist/js/cjs/angular2 is updated by the first watcher (after clearing the node cache)
   gulp.watch(CONFIG.dest.js.cjs + '/angular2/**/*.js', function(event) {
-    for (var id in require.cache) { 
+    for (var id in require.cache) {
       if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
-        delete require.cache[id]; 
+        delete require.cache[id];
       }
     }
     runSequence('test.unit.cjs/ci', function() {});
   });
-  
+
 });
 
 // ------------------
