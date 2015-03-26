@@ -69,6 +69,9 @@ class StringMapWrapper {
   static void set(Map map, key, value) {
     map[key] = value;
   }
+  static void delete(Map m, k) {
+      m.remove(k);
+  }
   static void forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
