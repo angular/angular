@@ -20,9 +20,11 @@ trap killServer EXIT
 # wait for server to come up!
 sleep 10
 
-SELENIUM_STDERR=$LOGS_DIR/selenium_standalone_stderr.txt
-SELENIUM_SDDOUT=$LOGS_DIR/selenium_standalone_stdout.txt
-./node_modules/.bin/webdriver-manager start &
+echo "Starting Selenium Standalone Server"
+echo "Java version"
+java -version
+
+java -jar node_modules/protractor/selenium/selenium-server-standalone-2.45.0.jar -Dwebdriver.chrome.driver=node_modules/protractor/selenium/chromedriver -debug &
 
 # Wait for selenium standalone to come up
 sleep 5

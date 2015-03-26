@@ -20,14 +20,17 @@ trap killServer EXIT
 # wait for server to come up!
 sleep 10
 
+echo "Starting Selenium Standalone Server"
+echo "Java version"
+java -version
+
 # Let protractor use default browser unless one is specified.
 OPTIONS="";
 if [[ -n "$E2E_BROWSERS" ]]; then
   OPTIONS="--browsers=$E2E_BROWSERS";
 fi
 
-SELENIUM_LOG=$LOGS_DIR/selenium_standalone_log.txt
-./node_modules/.bin/webdriver-manager start &
+java -jar node_modules/protractor/selenium/selenium-server-standalone-2.45.0.jar -Dwebdriver.chrome.driver=node_modules/protractor/selenium/chromedriver -debug &
 
 # Wait for selenium standalone to come up
 sleep 5
