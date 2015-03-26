@@ -6,7 +6,7 @@ import {Decorator, Component, Viewport, DynamicComponent} from '../../annotation
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
 import * as viewModule from '../view';
-import {dashCaseToCamelCase} from './util';
+import {dashCaseToCamelCase} from '../string_utils';
 
 import {AST} from 'angular2/change_detection';
 

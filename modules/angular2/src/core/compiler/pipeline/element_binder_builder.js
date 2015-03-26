@@ -10,7 +10,7 @@ import {DirectiveMetadata} from '../directive_metadata';
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
-import {dashCaseToCamelCase} from './util';
+import {dashCaseToCamelCase} from '../string_utils';
 import {setterFactory} from '../property_setter_factory'
 
 /**
