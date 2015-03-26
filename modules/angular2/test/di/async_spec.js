@@ -161,7 +161,7 @@ export function main() {
           UserController
         ]);
 
-        injector.asyncGet(UserList).then(() => {
+        injector.asyncGet(UserList).then((_) => {
           expect(() => { injector.get(UserController); }).not.toThrow();
           async.done();
         });
