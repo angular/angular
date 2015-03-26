@@ -6,6 +6,7 @@ var traceur = require('gulp-traceur');
 var rename = require('gulp-rename');
 var sourcemaps = require('gulp-sourcemaps');
 var through2 = require('through2');
+var ts = require('gulp-typescript');
 var fs = require('fs');
 var path = require('path');
 
@@ -47,7 +48,22 @@ if (!module.parent) {
 
 function run(config) {
   var src = ['!node_modules', '!node_modules/**', './**/*.es6'];
-  return gulp.src(src, {cwd: config.src})
+  var transpiler;
+  if (config.typescript) {
+    transpiler = ts({
+      target: 'ES5',
+      module: /*system.js*/'commonjs',
+      allowNonTsExtensions: true,
+      typescript: require('typescript')
+    }).js;
+  } else {
+    transpiler = traceur({
+      modules: config.modules,
+      sourceMaps: true
+    });
+  }
+
+  gulp.src(src, {cwd: config.src})
     .pipe(rename(function(file) {
       file.extname = file.extname.replace('.es6', '.js');
     }))
@@ -69,10 +85,7 @@ function run(config) {
         done();
       });
     }))
-    .pipe(traceur({
-      modules: config.modules,
-      sourceMaps: true
-    }))
+    .pipe(transpiler)
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(config.dest));
 };

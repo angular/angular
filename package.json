@@ -56,6 +56,7 @@
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.16.*",
     "gulp-ts2dart": "^1.0.0",
+    "gulp-typescript": "^2.5.0",
     "gulp-webserver": "^0.8.7",
     "js-yaml": "^3.2.7",
     "karma": "^0.12.23",
@@ -77,6 +78,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
+    "typescript": "mprobst/TypeScript#decorators_min",
     "vinyl": "^0.4.6",
     "yargs": "2.3.*"
   }
