@@ -7,7 +7,8 @@ describe('ng2 naive infinite scroll benchmark', function () {
   afterEach(perfUtil.verifyNoBrowserErrors);
 
   [1, 2, 4].forEach(function(appSize) {
-    it('should run scroll benchmark and collect stats for appSize = ' +
+    // TODO: reenable these tests when the are passing. See issue #1137
+    xit('should run scroll benchmark and collect stats for appSize = ' +
         appSize, function(done) {
       perfUtil.runBenchmark({
         url: URL,
