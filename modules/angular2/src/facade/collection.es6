@@ -62,6 +62,7 @@ export class StringMapWrapper {
     }
     return true;
   }
+  static delete(map, key) { delete map[key]; }
   static forEach(map, callback) {
     for (var prop in map) {
       if (map.hasOwnProperty(prop)) {
