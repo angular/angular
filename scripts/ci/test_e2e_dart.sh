@@ -29,4 +29,4 @@ java -jar node_modules/protractor/selenium/selenium-server-standalone-2.45.0.jar
 # Wait for selenium standalone to come up
 sleep 5
 
-./node_modules/.bin/protractor protractor-dart2js.conf.js --browsers=${E2E_BROWSERS:-Dartium}
+./node_modules/.bin/protractor protractor-dart2js.conf.js --browsers=ChromeDownloaded

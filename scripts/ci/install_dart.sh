@@ -13,6 +13,7 @@ echo Fetch Dart channel: ${DART_CHANNEL}
 URL_PREFIX=https://storage.googleapis.com/dart-archive/channels/${DART_CHANNEL}/release/latest
 DART_SDK_URL="$URL_PREFIX/sdk/dartsdk-$ARCH-release.zip"
 DARTIUM_URL="$URL_PREFIX/dartium/dartium-$ARCH-release.zip"
+CHROMIUM_URL="https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux/322438/chrome-linux.zip"
 
 download_and_unzip() {
   ZIPFILE=${1/*\//}
@@ -22,6 +23,7 @@ download_and_unzip() {
 # TODO: do these downloads in parallel
 download_and_unzip $DART_SDK_URL
 download_and_unzip $DARTIUM_URL
+download_and_unzip $CHROMIUM_URL
 
 echo Fetched new dart version $(<dart-sdk/version)
 

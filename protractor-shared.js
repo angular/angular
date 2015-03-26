@@ -64,6 +64,17 @@ var BROWSER_CAPS = {
       browser: 'ALL'
     }
   },
+  ChromeDownloaded: {
+    browserName: 'chrome',
+    chromeOptions: mergeInto(CHROME_OPTIONS, {
+      'mobileEmulation': CHROME_MOBILE_EMULATION,
+      'binary': 'chromium/chrome'
+    }),
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
   ChromeDesktop: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
