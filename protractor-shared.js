@@ -6,24 +6,28 @@ var argv = require('yargs')
     .usage('Angular e2e/perf test options.')
     .options({
       'sample-size': {
-        describe: 'sample size',
+        describe: 'Used for perf: sample size.',
         default: 20
       },
       'force-gc': {
-        describe: 'force gc.',
+        describe: 'Used for perf: force gc.',
         default: false,
         type: 'boolean'
       },
       'benchmark': {
-        describe: 'whether to run the benchmarks',
+        describe: 'If true, run only the performance benchmarks. If false, run only the e2e tests.',
+        default: false
+      },
+      'dryrun': {
+        describe: 'If true, only run performance benchmarks once.',
         default: false
       },
       'browsers': {
-        describe: 'comma separated list of preconfigured browsers to use',
+        describe: 'Comma separated list of preconfigured browsers to use.',
         default: 'ChromeDesktop'
       },
       'spec': {
-        describe: 'comma separated file patterns to test',
+        describe: 'Comma separated file patterns to test. By default, globs all test/perf files.',
         default: false
       }
     })
@@ -107,7 +111,7 @@ var BROWSER_CAPS = {
   }
 };
 
-var getBenchmarkFiles = function (benchmark, spec) {
+var getTestFiles = function (benchmark, spec) {
   var specFiles = [];
   var perfFiles = [];
   if (spec.length) {
@@ -119,11 +123,14 @@ var getBenchmarkFiles = function (benchmark, spec) {
     specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
     perfFiles.push('dist/js/cjs/**/e2e_test/**/*_perf.js');
   }
-  return benchmark ? perfFiles : specFiles.concat(perfFiles);
+  return benchmark ? perfFiles : specFiles;
 };
 
 var config = exports.config = {
   onPrepare: function() {
+    // TODO(juliemr): remove this hack and use the config option
+    // restartBrowserBetweenTests once that is not hanging.
+    // See https://github.com/angular/protractor/issues/1983
     patchProtractorWait(browser);
     // During benchmarking, we need to open a new browser
     // for every benchmark, otherwise the numbers can get skewed
@@ -139,13 +146,13 @@ var config = exports.config = {
         global.$$ = global.browser.$$;
       });
       afterEach(function() {
-        global.browser.quit();
-        global.browser = originalBrowser;
+       global.browser.quit();
+       global.browser = originalBrowser;
       });
     }
   },
 
-  specs: getBenchmarkFiles(argv['benchmark'], argv['spec']),
+  specs: getTestFiles(argv['benchmark'], argv['spec']),
 
   exclude: [
     'dist/js/cjs/**/node_modules/**',
@@ -164,7 +171,7 @@ var config = exports.config = {
 
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: argv['benchmark'] ? 1200000 : 30000
+    defaultTimeoutInterval: argv['benchmark'] ? 1200000 : 60000
   },
   params: {
     benchmark: {
@@ -225,7 +232,7 @@ exports.createBenchpressRunner = function(options) {
     benchpress.JsonFileReporter.BINDINGS,
     benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
-  if (argv['benchmark']) {
+  if (!argv['dryrun']) {
     bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));
     bindings.push(benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(argv['sample-size']));
   } else {

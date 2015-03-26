@@ -27,3 +27,4 @@ if [[ -n "$E2E_BROWSERS" ]]; then
 fi
 
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS
+./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS --benchmark --dryrun

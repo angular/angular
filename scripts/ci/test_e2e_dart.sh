@@ -21,3 +21,4 @@ trap killServer EXIT
 sleep 10
 
 ./node_modules/.bin/protractor protractor-dart2js.conf.js --browsers=${E2E_BROWSERS:-Dartium}
+./node_modules/.bin/protractor protractor-dart2js.conf.js --benchmark --dryrun --browsers=${E2E_BROWSERS:-Dartium}
