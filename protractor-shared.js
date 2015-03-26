@@ -110,14 +110,14 @@ var BROWSER_CAPS = {
 var getBenchmarkFiles = function (benchmark, spec) {
   var specFiles = [];
   var perfFiles = [];
-  // if (spec.length) {
-  //   spec.split(',').forEach(function (name) {
-  //     specFiles.push('dist/js/cjs/**/e2e_test/' + name)
-  //     perfFiles.push('dist/js/cjs/**/e2e_test/' + name)
-  //   });
-  // } else {
-    // specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
-    perfFiles.push('dist/js/cjs/**/e2e_test/**/tree_perf.js');
+  if (spec.length) {
+    spec.split(',').forEach(function (name) {
+      specFiles.push('dist/js/cjs/**/e2e_test/' + name)
+      perfFiles.push('dist/js/cjs/**/e2e_test/' + name)
+    });
+  } else {
+    specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
+    perfFiles.push('dist/js/cjs/**/e2e_test/**/*_perf.js');
   // }
   return benchmark ? perfFiles : specFiles.concat(perfFiles);
 };
