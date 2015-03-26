@@ -120,9 +120,7 @@ var CONFIG = {
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
-      dart: ['modules/**/*.js'],
-      // Migrating to TypeScript, one package at a time. See http://goo.gl/RzzVxn
-      ts2dart: ['modules/angular2/src/di/*.js', 'modules/angular2/test/di/*.js', 'modules/angular2/src/test_lib/*.js']
+      dart: ['modules/**/*.js']
     },
     options: {
       js: {
@@ -353,7 +351,7 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
 }));
 
 gulp.task('build/transpile.dart.ts2dart', function() {
-  return gulp.src(CONFIG.transpile.src.ts2dart)
+  return gulp.src(CONFIG.transpile.src.dart)
       .pipe(ts2dart.transpile())
       .pipe(gulp.dest('dist/dart.ts2dart'))
 });
@@ -365,7 +363,7 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
 
 // Temporary tasks for development on ts2dart. Will likely fail.
 gulp.task('build/transpile.dart.ts2dart.all', function() {
-  return gulp.src(CONFIG.transpile.src.dart)
+  return gulp.src(CONFIG.transpile.src.js)
       .pipe(ts2dart.transpile())
       .pipe(gulp.dest('dist/dart.ts2dart'));
 });
