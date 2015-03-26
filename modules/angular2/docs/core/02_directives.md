@@ -322,8 +322,8 @@ Assume the following DOM structure for `my_app.html`:
     <fieldset>                 |
        <field primary></field> |
        <field></field>         |
-    </div>                     |
-  </fieldset>                  |
+    </fieldset>                |
+  </div>                       |
 </form>                        |  
 ```
 
