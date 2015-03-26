@@ -45,7 +45,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Configure the log service
 .config(function(log) {
-  log.level = 'info';
+  log.level = 'warning';
 })
 
 
