@@ -222,6 +222,18 @@ export function main() {
 
         expect(protoChild.directParent()).toEqual(null);
       });
+
+      it("should allow for direct access using getDirectiveBindingAtIndex", function () {
+        var binding = DirectiveBinding.createFromBinding(
+          bind(SimpleDirective).toClass(SimpleDirective), null);
+        var proto = new ProtoElementInjector(null, 0, [binding]);
+
+        expect(proto.getDirectiveBindingAtIndex(0)).toBeAnInstanceOf(DirectiveBinding);
+        expect(() => proto.getDirectiveBindingAtIndex(-1)).toThrowError(
+          'Index -1 is out-of-bounds.');
+        expect(() => proto.getDirectiveBindingAtIndex(10)).toThrowError(
+          'Index 10 is out-of-bounds.');
+      });
     });
   });
 
@@ -416,17 +428,6 @@ export function main() {
         expect(() => inj.getDirectiveAtIndex(-1)).toThrowError(
           'Index -1 is out-of-bounds.');
         expect(() => inj.getDirectiveAtIndex(10)).toThrowError(
-          'Index 10 is out-of-bounds.');
-      });
-
-      it("should allow for direct access using getBindingAtIndex", function () {
-        var inj = injector([
-          DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
-        ]);
-        expect(inj.getDirectiveBindingAtIndex(0)).toBeAnInstanceOf(DirectiveBinding);
-        expect(() => inj.getDirectiveBindingAtIndex(-1)).toThrowError(
-          'Index -1 is out-of-bounds.');
-        expect(() => inj.getDirectiveBindingAtIndex(10)).toThrowError(
           'Index 10 is out-of-bounds.');
       });
 

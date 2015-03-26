@@ -47,7 +47,7 @@ import {
 
 export class ProtoChangeDetector  {
   addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List):ChangeDetector{
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMemento:List):ChangeDetector{
     return null;
   }
 }
@@ -73,9 +73,9 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
     this._pipeRegistry = pipeRegistry;
   }
 
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List) {
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMementos:List) {
     this._createRecordsIfNecessary(bindingRecords, variableBindings);
-    return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records);
+    return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records, directiveMementos);
   }
 
   _createRecordsIfNecessary(bindingRecords:List, variableBindings:List) {
@@ -100,12 +100,12 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
     this._factory = null;
   }
 
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List) {
-    this._createFactoryIfNecessary(bindingRecords, variableBindings);
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMementos:List) {
+    this._createFactoryIfNecessary(bindingRecords, variableBindings, directiveMementos);
     return this._factory(dispatcher, this._pipeRegistry);
   }
 
-  _createFactoryIfNecessary(bindingRecords:List, variableBindings:List) {
+  _createFactoryIfNecessary(bindingRecords:List, variableBindings:List, directiveMementos:List) {
     if (isBlank(this._factory)) {
       var recordBuilder = new ProtoRecordBuilder();
       ListWrapper.forEach(bindingRecords, (r) => {
@@ -114,7 +114,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
       var c = _jitProtoChangeDetectorClassCounter++;
       var records = coalesce(recordBuilder.records);
       var typeName = `ChangeDetector${c}`;
-      this._factory = new ChangeDetectorJITGenerator(typeName, records).generate();
+      this._factory = new ChangeDetectorJITGenerator(typeName, records, directiveMementos).generate();
     }
   }
 }

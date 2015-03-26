@@ -34,8 +34,9 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   prevContexts:List;
 
   protos:List<ProtoRecord>;
+  directiveMementos:List;
 
-  constructor(dispatcher:any, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>) {
+  constructor(dispatcher:any, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>, directiveMementos:List) {
     super();
     this.dispatcher = dispatcher;
     this.pipeRegistry = pipeRegistry;
@@ -52,6 +53,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.locals = null;
 
     this.protos = protoRecords;
+    this.directiveMementos = directiveMementos;
   }
 
   hydrate(context:any, locals:any) {
@@ -98,6 +100,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
         this.dispatcher.onRecordChange(proto.directiveMemento, updatedRecords);
         updatedRecords = null;
+      }
+    }
+  }
+
+  notifyOnAllChangesDone() {
+    var mementos = this.directiveMementos;
+    for (var i = mementos.length - 1; i >= 0; --i) {
+      var memento = mementos[i];
+      if (memento.notifyOnAllChangesDone) {
+        this.dispatcher.onAllChangesDone(memento);
       }
     }
   }

@@ -64,6 +64,7 @@ import {
  *   }
  * }
  *
+ * ChangeDetector0.prototype.notifyOnAllChangesDone = function() {}
  *
  * ChangeDetector0.prototype.hydrate = function(context, locals) {
  *   this.context = context;
@@ -96,31 +97,35 @@ var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
 var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 var PROTOS_ACCESSOR = "this.protos";
+var MEMENTOS_ACCESSOR = "this.directiveMementos";
 var CONTEXT_ACCESSOR = "this.context";
 var CHANGE_LOCAL = "change";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var TEMP_LOCAL = "temp";
 
-function typeTemplate(type:string, cons:string, detectChanges:string, setContext:string):string {
+function typeTemplate(type:string, cons:string, detectChanges:string,
+                      notifyOnAllChangesDone:string, setContext:string):string {
   return `
 ${cons}
 ${detectChanges}
+${notifyOnAllChangesDone}
 ${setContext};
 
 return function(dispatcher, pipeRegistry) {
-  return new ${type}(dispatcher, pipeRegistry, protos);
+  return new ${type}(dispatcher, pipeRegistry, protos, directiveMementos);
 }
 `;
 }
 
 function constructorTemplate(type:string, fieldsDefinitions:string):string {
   return `
-var ${type} = function ${type}(dispatcher, pipeRegistry, protos) {
+var ${type} = function ${type}(dispatcher, pipeRegistry, protos, directiveMementos) {
 ${ABSTRACT_CHANGE_DETECTOR}.call(this);
 ${DISPATCHER_ACCESSOR} = dispatcher;
 ${PIPE_REGISTRY_ACCESSOR} = pipeRegistry;
 ${PROTOS_ACCESSOR} = protos;
+${MEMENTOS_ACCESSOR} = directiveMementos;
 ${fieldsDefinitions}
 }
 
@@ -155,6 +160,18 @@ ${type}.prototype.detectChangesInRecords = function(throwOnChange) {
   ${body}
 }
 `;
+}
+
+function notifyOnAllChangesDoneTemplate(type:string, body:string):string {
+  return `
+${type}.prototype.notifyOnAllChangesDone = function() {
+  ${body}
+}
+`;
+}
+
+function onAllChangesDoneTemplate(index:number):string {
+  return `${DISPATCHER_ACCESSOR}.onAllChangesDone(${MEMENTOS_ACCESSOR}[${index}]);`;
 }
 
 
@@ -247,14 +264,16 @@ function addSimpleChangeRecordTemplate(protoIndex:number, oldValue:string, newVa
 export class ChangeDetectorJITGenerator {
   typeName:string;
   records:List<ProtoRecord>;
+  directiveMementos:List;
   localNames:List<String>;
   changeNames:List<String>;
   fieldNames:List<String>;
   pipeNames:List<String>;
 
-  constructor(typeName:string, records:List<ProtoRecord>) {
+  constructor(typeName:string, records:List<ProtoRecord>, directiveMementos:List) {
     this.typeName = typeName;
     this.records = records;
+    this.directiveMementos = directiveMementos;
 
     this.localNames = this.getLocalNames(records);
     this.changeNames = this.getChangeNames(this.localNames);
@@ -284,8 +303,10 @@ export class ChangeDetectorJITGenerator {
   }
 
   generate():Function {
-    var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(), this.genHydrate());
-    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos', text)(AbstractChangeDetector, ChangeDetectionUtil, this.records);
+    var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(),
+      this.genNotifyOnAllChangesDone(), this.genHydrate());
+    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos', 'directiveMementos', text)
+      (AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveMementos);
   }
 
   genConstructor():string {
@@ -317,6 +338,20 @@ export class ChangeDetectorJITGenerator {
   genDetectChanges():string {
     var body = this.genBody();
     return detectChangesTemplate(this.typeName, body);
+  }
+
+  genNotifyOnAllChangesDone():string {
+    var notifications = [];
+    var mementos = this.directiveMementos;
+
+    for (var i = mementos.length - 1; i >= 0; --i) {
+      var memento = mementos[i];
+      if (memento.notifyOnAllChangesDone) {
+        notifications.push(onAllChangesDoneTemplate(i));
+      }
+    }
+
+    return notifyOnAllChangesDoneTemplate(this.typeName, notifications.join(";\n"));
   }
 
   genBody():string {

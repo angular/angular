@@ -900,3 +900,23 @@ export const onDestroy = "onDestroy";
  * @publicModule angular2/annotations
  */
 export const onChange = "onChange";
+
+/**
+ * Notify a directive when the bindings of all its children have been changed.
+ *
+ * ## Example:
+ *
+ * ```
+ * @Decorator({
+ *   selector: '[class-set]',
+ * })
+ * class ClassSet {
+ *
+ *   onAllChangesDone() {
+ *   }
+ *
+ * }
+ *  ```
+ * @publicModule angular2/annotations
+ */
+export const onAllChangesDone = "onAllChangesDone";

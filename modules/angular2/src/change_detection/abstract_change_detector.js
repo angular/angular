@@ -42,11 +42,13 @@ export class AbstractChangeDetector extends ChangeDetector {
 
     this.detectChangesInRecords(throwOnChange);
     this._detectChangesInChildren(throwOnChange);
+    this.notifyOnAllChangesDone();
 
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
   detectChangesInRecords(throwOnChange:boolean){}
+  notifyOnAllChangesDone(){}
 
   _detectChangesInChildren(throwOnChange:boolean) {
     var children = this.children;

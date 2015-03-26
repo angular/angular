@@ -3,7 +3,7 @@ import {ProtoView, ElementPropertyMemento, DirectivePropertyMemento} from 'angul
 import {ProtoElementInjector, ElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {EmulatedScopedShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, Decorator, Viewport, Directive, onChange} from 'angular2/src/core/annotations/annotations';
+import {Component, Decorator, Viewport, Directive, onChange, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
 import {EventEmitter} from 'angular2/src/core/annotations/di';
@@ -627,6 +627,21 @@ export function main() {
           cd.detectChanges();
           expect(directive.changes).toEqual({"a" : new PropertyUpdate(100, 0)});
         });
+        
+        it('should invoke the onAllChangesDone callback', () => {
+          var pv = new ProtoView(el('<div class="ng-binding"></div>'),
+            new DynamicProtoChangeDetector(null), null);
+
+          pv.bindElement(null, 0, new ProtoElementInjector(null, 0, [
+            DirectiveBinding.createFromType(DirectiveImplementingOnAllChangesDone, new Directive({lifecycle: [onAllChangesDone]}))
+          ]));
+
+          createViewAndChangeDetector(pv);
+          cd.detectChanges();
+
+          var directive = view.elementInjectors[0].get(DirectiveImplementingOnAllChangesDone);
+          expect(directive.onAllChangesDoneCalled).toBe(true);
+        });
       });
     });
 
@@ -675,6 +690,14 @@ class DirectiveImplementingOnChange {
   onChange(changes) {
     this.c = this.a + this.b;
     this.changes = changes;
+  }
+}
+
+class DirectiveImplementingOnAllChangesDone {
+  onAllChangesDoneCalled;
+
+  onAllChangesDone() {
+    this.onAllChangesDoneCalled = true;
   }
 }
 

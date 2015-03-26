@@ -105,7 +105,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
   var parser = new Parser(new Lexer());
 
   var parentProto = changeDetection.createProtoChangeDetector('parent');
-  var parentCd = parentProto.instantiate(dispatcher, [], []);
+  var parentCd = parentProto.instantiate(dispatcher, [], [], []);
 
   var proto = changeDetection.createProtoChangeDetector("proto");
   var bindingRecords = [
@@ -126,7 +126,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
     for (var j = 0; j < 10; ++j) {
       obj.setField(j, i);
     }
-    var cd = proto.instantiate(dispatcher, bindingRecords, []);
+    var cd = proto.instantiate(dispatcher, bindingRecords, [], []);
     cd.hydrate(obj, null);
     parentCd.addChild(cd);
   }

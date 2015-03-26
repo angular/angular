@@ -7,7 +7,7 @@ import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotat
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/dom/element';
-import {Directive, onChange, onDestroy} from 'angular2/src/core/annotations/annotations';
+import {Directive, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 import * as pclModule from 'angular2/src/core/compiler/private_component_location';
 import {setterFactory} from './property_setter_factory';
@@ -131,11 +131,13 @@ export class DirectiveDependency extends Dependency {
 export class DirectiveBinding extends Binding {
   callOnDestroy:boolean;
   callOnChange:boolean;
+  callOnAllChangesDone:boolean;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
     this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
+    this.callOnAllChangesDone = isPresent(annotation) && annotation.hasLifecycleHook(onAllChangesDone);
   }
 
   static createFromBinding(b:Binding, annotation:Directive):Binding {
@@ -216,6 +218,8 @@ export class ProtoElementInjector  {
   distanceToParent:number;
   attributes:Map;
 
+  numberOfDirectives:number;
+
   /** Whether the element is exported as $implicit. */
   exportElement:boolean;
 
@@ -244,6 +248,7 @@ export class ProtoElementInjector  {
     this._binding8 = null; this._keyId8 = null;
     this._binding9 = null; this._keyId9 = null;
 
+    this.numberOfDirectives = bindings.length;
     var length = bindings.length;
 
     if (length > 0) {this._binding0 = this._createBinding(bindings[0]); this._keyId0 = this._binding0.key.id;}
@@ -280,6 +285,20 @@ export class ProtoElementInjector  {
 
   get hasBindings():boolean {
     return isPresent(this._binding0);
+  }
+
+  getDirectiveBindingAtIndex(index:int) {
+    if (index == 0) return this._binding0;
+    if (index == 1) return this._binding1;
+    if (index == 2) return this._binding2;
+    if (index == 3) return this._binding3;
+    if (index == 4) return this._binding4;
+    if (index == 5) return this._binding5;
+    if (index == 6) return this._binding6;
+    if (index == 7) return this._binding7;
+    if (index == 8) return this._binding8;
+    if (index == 9) return this._binding9;
+    throw new OutOfBoundsAccess(index);
   }
 
   hasEventEmitter(eventName: string) {
@@ -648,18 +667,7 @@ export class ElementInjector extends TreeNode {
   }
 
   getDirectiveBindingAtIndex(index:int) {
-    var p = this._proto;
-    if (index == 0) return p._binding0;
-    if (index == 1) return p._binding1;
-    if (index == 2) return p._binding2;
-    if (index == 3) return p._binding3;
-    if (index == 4) return p._binding4;
-    if (index == 5) return p._binding5;
-    if (index == 6) return p._binding6;
-    if (index == 7) return p._binding7;
-    if (index == 8) return p._binding8;
-    if (index == 9) return p._binding9;
-    throw new OutOfBoundsAccess(index);
+    return this._proto.getDirectiveBindingAtIndex(index);
   }
 
   hasInstances() {

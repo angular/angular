@@ -11,7 +11,7 @@ import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular
 
 function createView(nodes) {
   var view = new View(null, nodes, MapWrapper.create());
-  var cd = new DynamicProtoChangeDetector(null).instantiate(view, [], null);
+  var cd = new DynamicProtoChangeDetector(null).instantiate(view, [], null, []);
   view.init(cd, [], [], [], [], [], [], [], [], []);
   return view;
 }
