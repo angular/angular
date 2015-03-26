@@ -27,7 +27,7 @@ java -version
 # Let protractor use default browser unless one is specified.
 OPTIONS="";
 if [[ -n "$E2E_BROWSERS" ]]; then
-  OPTIONS="--browsers=ChromeDownloaded;
+  OPTIONS="--browsers=ChromeDownloaded";
 fi
 
 java -jar node_modules/protractor/selenium/selenium-server-standalone-2.45.0.jar -Dwebdriver.chrome.driver=node_modules/protractor/selenium/chromedriver &

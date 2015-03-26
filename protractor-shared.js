@@ -129,7 +129,7 @@ var getBenchmarkFiles = function (benchmark, spec) {
   } else {
     specFiles.push('dist/js/cjs/**/e2e_test/**/*_spec.js');
     perfFiles.push('dist/js/cjs/**/e2e_test/**/*_perf.js');
-  // }
+  }
   return benchmark ? perfFiles : specFiles.concat(perfFiles);
 };
 
