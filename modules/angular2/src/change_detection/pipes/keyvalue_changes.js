@@ -107,9 +107,9 @@ export class KeyValueChanges extends Pipe {
       var newSeqRecord;
       if (oldSeqRecord !== null && key === oldSeqRecord.key) {
         newSeqRecord = oldSeqRecord;
-        if (!looseIdentical(value, oldSeqRecord._currentValue)) {
-          oldSeqRecord._previousValue = oldSeqRecord._currentValue;
-          oldSeqRecord._currentValue = value;
+        if (!looseIdentical(value, oldSeqRecord.currentValue)) {
+          oldSeqRecord.previousValue = oldSeqRecord.currentValue;
+          oldSeqRecord.currentValue = value;
           this._addToChanges(oldSeqRecord);
         }
       } else {
@@ -124,7 +124,7 @@ export class KeyValueChanges extends Pipe {
         } else {
           newSeqRecord = new KVChangeRecord(key);
           MapWrapper.set(records, key, newSeqRecord);
-          newSeqRecord._currentValue = value;
+          newSeqRecord.currentValue = value;
           this._addToAdditions(newSeqRecord);
         }
       }
@@ -158,11 +158,11 @@ export class KeyValueChanges extends Pipe {
       }
 
       for (record = this._changesHead; record !== null; record = record._nextChanged) {
-        record._previousValue = record._currentValue;
+        record.previousValue = record.currentValue;
       }
 
       for (record = this._additionsHead; record != null; record = record._nextAdded) {
-        record._previousValue = record._currentValue;
+        record.previousValue = record.currentValue;
       }
 
       // todo(vicb) once assert is supported
@@ -215,8 +215,8 @@ export class KeyValueChanges extends Pipe {
     }
 
     for (var rec:KVChangeRecord = this._removalsHead; rec !== null; rec = rec._nextRemoved) {
-      rec._previousValue = rec._currentValue;
-      rec._currentValue = null;
+      rec.previousValue = rec.currentValue;
+      rec.currentValue = null;
       MapWrapper.delete(this._records, rec.key);
     }
   }
@@ -351,8 +351,8 @@ export class KeyValueChanges extends Pipe {
 
 export class KVChangeRecord {
   key;
-  _previousValue;
-  _currentValue;
+  previousValue;
+  currentValue;
 
   _nextPrevious:KVChangeRecord;
   _next:KVChangeRecord;
@@ -363,8 +363,8 @@ export class KVChangeRecord {
 
   constructor(key) {
     this.key = key;
-    this._previousValue = null;
-    this._currentValue = null;
+    this.previousValue = null;
+    this.currentValue = null;
 
     this._nextPrevious = null;
     this._next = null;
@@ -375,9 +375,9 @@ export class KVChangeRecord {
   }
 
   toString():string {
-    return looseIdentical(this._previousValue, this._currentValue) ?
+    return looseIdentical(this.previousValue, this.currentValue) ?
       stringify(this.key) :
-      (stringify(this.key) + '[' + stringify(this._previousValue) + '->' +
-        stringify(this._currentValue) + ']');
+      (stringify(this.key) + '[' + stringify(this.previousValue) + '->' +
+        stringify(this.currentValue) + ']');
   }
 }
