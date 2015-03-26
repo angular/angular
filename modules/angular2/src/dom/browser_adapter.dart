@@ -67,6 +67,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void removeChild(Element el, Node node) {
     node.remove();
   }
+  void replaceChild(Node el, Node newNode, Node oldNode) {
+    oldNode.replaceWith(newNode);
+  }
   Element remove(Element el) {
     return el..remove();
   }
