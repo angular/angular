@@ -23,7 +23,7 @@ sleep 10
 echo "Starting Selenium Standalone Server"
 echo "Java version"
 java -version 
-
+ 
 java -jar node_modules/protractor/selenium/selenium-server-standalone-2.45.0.jar -Dwebdriver.chrome.driver=node_modules/protractor/selenium/chromedriver &
 
 # Wait for selenium standalone to come up
