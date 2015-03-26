@@ -26,4 +26,10 @@ if [[ -n "$E2E_BROWSERS" ]]; then
   OPTIONS="--browsers=$E2E_BROWSERS";
 fi
 
+SELENIUM_LOG=$LOGS_DIR/selenium_standalone_log.txt
+./node_modules/.bin/webdriver-manager start &
+
+# Wait for selenium standalone to come up
+sleep 5
+
 ./node_modules/.bin/protractor protractor-js.conf.js $OPTIONS

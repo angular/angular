@@ -123,6 +123,7 @@ var getBenchmarkFiles = function (benchmark, spec) {
 };
 
 var config = exports.config = {
+  seleniumAddress: 'http://localhost:4444/wd/hub',
   onPrepare: function() {
     patchProtractorWait(browser);
     // During benchmarking, we need to open a new browser
