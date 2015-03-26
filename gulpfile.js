@@ -717,7 +717,10 @@ gulp.task('build/packages.dart', function(done) {
   runSequence(
     ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
-    ['build/format.dart.ts2dart', 'build/format.dart'],
+    // the two format steps don't need to be sequential, but we have seen flakiness in
+    // dartstyle:format with connecting to localhost.
+    'build/format.dart.ts2dart',
+    'build/format.dart',
     'build/pubspec.dart',
     done
   );
