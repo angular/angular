@@ -90,6 +90,9 @@ export class DomAdapter {
   removeChild(el, node) {
     throw _abstract();
   }
+  replaceChild(el, newNode, oldNode) {
+    throw _abstract();
+  }
   remove(el) {
     throw _abstract();
   }
