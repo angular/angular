@@ -200,7 +200,7 @@ export function main() {
 
             expect(dispatcher.log).toEqual(["memo=BvalueA"]);
           });
- 
+
           describe("change notification", () => {
             describe("simple checks", () => {
               it("should pass a change record to the dispatcher", () => {
@@ -284,7 +284,7 @@ export function main() {
               });
             });
           });
-          
+
           describe("enforce no new changes", () => {
             it("should throw when a record gets changed after it has been checked", () => {
               var pcd = createProtoChangeDetector();
@@ -583,7 +583,7 @@ class OncePipe extends Pipe {
 
   constructor() {
     super();
-    this.called = false;;
+    this.called = false;
     this.destroyCalled = false;
   }
 

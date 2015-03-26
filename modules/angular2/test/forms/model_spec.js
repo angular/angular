@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el,
   AsyncTestCompleter, inject} from 'angular2/test_lib';
-import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';;
+import {ControlGroup, Control, ControlArray, Validators} from 'angular2/forms';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 

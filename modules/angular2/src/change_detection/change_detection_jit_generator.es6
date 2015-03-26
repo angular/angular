@@ -360,7 +360,7 @@ export class ChangeDetectorJITGenerator {
     var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
     var notify = this.genNotify(r);
 
-    var check = referenceCheckTemplate(assignment, newValue, oldValue, change, r.lastInBinding ? addRecord : '', notify);;
+    var check = referenceCheckTemplate(assignment, newValue, oldValue, change, r.lastInBinding ? addRecord : '', notify);
     if (r.isPureFunction()) {
       return this.ifChangedGuard(r, check);
     } else {
