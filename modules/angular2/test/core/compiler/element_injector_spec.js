@@ -79,14 +79,16 @@ class NeedsPropertySetter {
   propSetter;
   roleSetter;
   classSetter;
+  classWithDashSetter;
   styleSetter;
   unitSetter;
   constructor(@PropertySetter('title') propSetter: Function, @PropertySetter('attr.role') roleSetter: Function,
-    @PropertySetter('class.active') classSetter: Function, @PropertySetter('style.width') styleSetter: Function,
-    @PropertySetter('style.height.px') unitSetter: Function) {
+    @PropertySetter('class.active') classSetter: Function, @PropertySetter('class.foo-bar') classWithDashSetter: Function,
+    @PropertySetter('style.width') styleSetter: Function, @PropertySetter('style.height.px') unitSetter: Function) {
     this.propSetter = propSetter;
     this.roleSetter = roleSetter;
     this.classSetter = classSetter;
+    this.classWithDashSetter = classWithDashSetter;
     this.styleSetter = styleSetter;
     this.unitSetter = unitSetter;
   }
@@ -568,12 +570,14 @@ export function main() {
         component.setProp('foobar');
         component.setRole('button');
         component.setClass(true);
+        component.classWithDashSetter(true);
         component.setStyle('40px')
         component.setStyleWithUnit(50);
 
         expect(div.title).toEqual('foobar');
         expect(DOM.getAttribute(div, 'role')).toEqual('button');
         expect(DOM.hasClass(div, 'active')).toEqual(true);
+        expect(DOM.hasClass(div, 'foo-bar')).toEqual(true);
         expect(DOM.getStyle(div, 'width')).toEqual('40px');
         expect(DOM.getStyle(div, 'height')).toEqual('50px');
       });
