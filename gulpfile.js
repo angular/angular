@@ -323,6 +323,15 @@ gulp.task('build/transpile.js.prod.es5', function() {
   });
 });
 
+gulp.task('build/transpile.js.prod.es5.ts', function() {
+  return es5build({
+    src: CONFIG.dest.js.prod.es6 + '/angular2/src/facade/',
+    dest: CONFIG.dest.js.prod.es5,
+    modules: 'instantiate',
+    typescript: true
+  });
+});
+
 gulp.task('build/transpile.js.prod', function(done) {
   runSequence(
     'build/transpile.js.prod.es6',
@@ -361,11 +370,10 @@ gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
   packageName: CONFIG.formatDart.packageName,
   args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
 }));
-gulp.task('ts2dart', function(done) {
-  runSequence(
-    ['build/transpile.dart.ts2dart', 'build/format.dart.ts2dart'],
-    done
-  );
+
+// Temporary tasks for migration to TypeScript. Will likely fail.
+gulp.task('as2ts', function(done) {
+ runSequence('build/transpile.js.prod.es6', 'build/transpile.js.prod.es5.ts', done);
 });
 
 // ------------
