@@ -140,7 +140,7 @@ var config = exports.config = {
     // During benchmarking, we need to open a new browser
     // for every benchmark, otherwise the numbers can get skewed
     // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
-    if (argv['benchmark']) {
+    // if (argv['benchmark']) {
       var originalBrowser = browser;
       var _tmpBrowser;
       beforeEach(function() {
@@ -154,7 +154,7 @@ var config = exports.config = {
         global.browser.quit();
         global.browser = originalBrowser;
       });
-    }
+    // }
   },
 
   specs: getBenchmarkFiles(argv['benchmark'], argv['spec']),
@@ -162,9 +162,6 @@ var config = exports.config = {
   exclude: [
     'dist/js/cjs/**/node_modules/**',
   ],
-
-  // Let's see if this resolves issus with benchpress.
-  restartBrowserBetweenTests: true,
 
   multiCapabilities: browsers.map(function(browserName) {
     var caps = BROWSER_CAPS[browserName];
