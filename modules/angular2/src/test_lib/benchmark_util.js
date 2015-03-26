@@ -16,7 +16,7 @@ export function getStringParameter(name:string) {
   for (var i=0; i<els.length; i++) {
     el = els[i];
     var type = DOM.type(el);
-    if ((type !== 'radio' && type !== 'checkbox') || DOM.getChecked(el)) {
+    if ((type != 'radio' && type != 'checkbox') || DOM.getChecked(el)) {
       value = DOM.getValue(el);
       break;
     }
