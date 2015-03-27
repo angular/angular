@@ -11,10 +11,13 @@ describe('ng2 change detection benchmark', function () {
       url: URL,
       buttons: ['#ng2ChangeDetectionDynamic'],
       id: 'ng2.changeDetection.dynamic',
-      params: [{
-        name: 'numberOfChecks', value: 900000
-      }],
-      microIterations: 20
+      params: [
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
+      ],
+      microMetrics: {
+        'detectChangesAvg': 'avg time to detect changes (ms)'
+      }
     }).then(done, done.fail);
   });
 
@@ -23,10 +26,13 @@ describe('ng2 change detection benchmark', function () {
       url: URL,
       buttons: ['#ng2ChangeDetectionJit'],
       id: 'ng2.changeDetection.jit',
-      params: [{
-        name: 'numberOfChecks', value: 900000
-      }],
-      microIterations: 20
+      params: [
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
+      ],
+      microMetrics: {
+        'detectChangesAvg': 'avg time to detect changes (ms)'
+      }
     }).then(done, done.fail);
   });
 
@@ -35,10 +41,13 @@ describe('ng2 change detection benchmark', function () {
       url: URL,
       buttons: ['#baselineChangeDetection'],
       id: 'baseline.changeDetection',
-      params: [{
-        name: 'numberOfChecks', value: 900000
-      }],
-      microIterations: 20
+      params: [
+        {name: 'numberOfChecks', value: 900000},
+        {name: 'iterations', value: 20, scale: 'linear'}
+      ],
+      microMetrics: {
+        'detectChangesAvg': 'avg time to detect changes (ms)'
+      }
     }).then(done, done.fail);
   });
 

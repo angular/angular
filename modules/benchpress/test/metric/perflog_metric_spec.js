@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import { List, ListWrapper } from 'angular2/src/facade/collection';
+import { List, ListWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 import { isPresent, isBlank } from 'angular2/src/facade/lang';
 
@@ -27,20 +27,23 @@ export function main() {
   var commandLog;
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
-  function createMetric(perfLogs, microIterations = 0, perfLogFeatures = null) {
+  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null) {
     commandLog = [];
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures = new PerfLogFeatures({render: true, gc: true});
     }
+    if (isBlank(microMetrics)) {
+      microMetrics = StringMapWrapper.create();
+    }
     var bindings = [
       Options.DEFAULT_BINDINGS,
       PerflogMetric.BINDINGS,
+      bind(Options.MICRO_METRICS).toValue(microMetrics),
       bind(PerflogMetric.SET_TIMEOUT).toValue( (fn, millis) => {
         ListWrapper.push(commandLog, ['setTimeout', millis]);
         fn();
       }),
-      bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures)),
-      bind(Options.MICRO_ITERATIONS).toValue(microIterations)
+      bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
     return new Injector(bindings).get(PerflogMetric);
   }
@@ -48,12 +51,12 @@ export function main() {
   describe('perflog metric', () => {
 
     it('should describe itself based on the perfLogFeatrues', () => {
-      expect(createMetric([[]], 0, new PerfLogFeatures()).describe()).toEqual({
+      expect(createMetric([[]], null, new PerfLogFeatures()).describe()).toEqual({
         'scriptTime': 'script execution time in ms, including gc and render',
         'pureScriptTime': 'script execution time in ms, without gc nor render'
       });
 
-      expect(createMetric([[]], 0, new PerfLogFeatures({
+      expect(createMetric([[]], null, new PerfLogFeatures({
         render: true,
         gc: false
       })).describe()).toEqual({
@@ -70,6 +73,13 @@ export function main() {
         'gcAmount': 'gc amount in kbytes',
         'majorGcTime': 'time of major gcs in ms'
       });
+    });
+
+    it('should describe itself based on micro metrics', () => {
+      var description = createMetric([[]], {
+        'myMicroMetric': 'someDesc'
+      }).describe();
+      expect(description['myMicroMetric']).toEqual('someDesc');
     });
 
     describe('beginMeasure', () => {
@@ -194,10 +204,10 @@ export function main() {
 
     describe('aggregation', () => {
 
-      function aggregate(events, microIterations = 0) {
+      function aggregate(events, microMetrics = null) {
         ListWrapper.insert(events, 0, eventFactory.markStart('benchpress0', 0));
         ListWrapper.push(events, eventFactory.markEnd('benchpress0', 10));
-        var metric = createMetric([events], microIterations);
+        var metric = createMetric([events], microMetrics);
         return metric
           .beginMeasure().then( (_) => metric.endMeasure(false) );
       }
@@ -319,25 +329,34 @@ export function main() {
         });
       }));
 
-      describe('microIterations', () => {
+      describe('microMetrics', () => {
 
-        it('should not report microScriptTimeAvg if microIterations = 0', inject([AsyncTestCompleter], (async) => {
+        it('should report micro metrics', inject([AsyncTestCompleter], (async) => {
           aggregate([
-            eventFactory.start('script', 0),
-            eventFactory.end('script', 5)
-          ], 0).then((data) => {
-            expect(isPresent(data['microScriptTimeAvg'])).toBe(false);
+            eventFactory.markStart('mm1', 0),
+            eventFactory.markEnd('mm1', 5),
+          ], {'mm1': 'micro metric 1'}).then((data) => {
+            expect(data['mm1']).toBe(5.0);
             async.done();
           });
         }));
 
-        it('should report microScriptTimeAvg', inject([AsyncTestCompleter], (async) => {
+        it('should ignore micro metrics that were not specified', inject([AsyncTestCompleter], (async) => {
           aggregate([
-            eventFactory.start('script', 0),
-            eventFactory.end('script', 5)
-          ], 4).then((data) => {
-            expect(data['scriptTime']).toBe(5);
-            expect(data['microScriptTimeAvg']).toBe(5/4);
+            eventFactory.markStart('mm1', 0),
+            eventFactory.markEnd('mm1', 5),
+          ]).then((data) => {
+            expect(data['mm1']).toBeFalsy();
+            async.done();
+          });
+        }));
+
+        it('should report micro metric averages', inject([AsyncTestCompleter], (async) => {
+          aggregate([
+            eventFactory.markStart('mm1*20', 0),
+            eventFactory.markEnd('mm1*20', 5),
+          ], {'mm1': 'micro metric 1'}).then((data) => {
+            expect(data['mm1']).toBe(5/20);
             async.done();
           });
         }));

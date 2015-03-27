@@ -1,7 +1,7 @@
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Injector} from 'angular2/di';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 var count = 0;
@@ -49,8 +49,14 @@ export function main() {
     }
   }
 
-  bindAction('#instantiate', instantiate);
-  bindAction('#instantiateDirectives', instantiateDirectives);
+  bindAction(
+    '#instantiate',
+    () => microBenchmark('instantiateAvg', iterations, instantiate)
+  );
+  bindAction(
+    '#instantiateDirectives',
+    () => microBenchmark('instantiateAvg', iterations, instantiateDirectives)
+  );
 }
 
 class A {
