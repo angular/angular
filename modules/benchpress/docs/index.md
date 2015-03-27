@@ -185,7 +185,7 @@ When looking into the DevTools Timeline, we see a marker as well:
 
 # Detailed overview
 
-![Overview](overview.svg)
+![Overview](overview.png)
 
 Definitions:
 
