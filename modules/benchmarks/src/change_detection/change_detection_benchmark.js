@@ -1,7 +1,7 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 import {
@@ -172,7 +172,10 @@ export function main () {
     }
   }
   runBaselineChangeDetection();
-  bindAction('#baselineChangeDetection', baselineChangeDetection);
+  bindAction(
+    '#baselineChangeDetection',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, baselineChangeDetection)
+  );
 
 
   // -- DYNAMIC
@@ -183,7 +186,10 @@ export function main () {
     }
   }
   ng2DynamicChangeDetector.detectChanges();
-  bindAction('#ng2ChangeDetectionDynamic', ng2ChangeDetectionDynamic);
+  bindAction(
+    '#ng2ChangeDetectionDynamic',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, ng2ChangeDetectionDynamic)
+  );
 
 
   // -- JIT
@@ -198,7 +204,10 @@ export function main () {
     }
 
     ng2JitChangeDetector.detectChanges();
-    bindAction('#ng2ChangeDetectionJit', ng2ChangeDetectionJit);
+    bindAction(
+      '#ng2ChangeDetectionJit',
+      () => microBenchmark('detectChangesAvg', numberOfRuns, ng2ChangeDetectionJit)
+    );
   } else {
     bindAction('#ng2ChangeDetectionJit', () => {});
   }

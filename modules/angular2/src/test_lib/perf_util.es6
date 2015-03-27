@@ -23,26 +23,21 @@ function runBenchmark(config) {
   return getScaleFactor(browser.params.benchmark.scaling).then(function(scaleFactor) {
     var description = {};
     var urlParams = [];
-    var microIterations = config.microIterations || 0;
-    var params = config.params || [];
-    if (microIterations) {
-      params = params.concat([{
-        name: 'iterations', value: microIterations, scale: 'linear'
-      }]);
+    if (config.params) {
+      config.params.forEach(function(param) {
+        var name = param.name;
+        var value = applyScaleFactor(param.value, scaleFactor, param.scale);
+        urlParams.push(name + '=' + value);
+        description[name] = value;
+      });
     }
-    params.forEach(function(param) {
-      var name = param.name;
-      var value = applyScaleFactor(param.value, scaleFactor, param.scale);
-      urlParams.push(name + '=' + value);
-      description[name] = value;
-    });
     var url = encodeURI(config.url + '?' + urlParams.join('&'));
     browser.get(url);
     return benchpressRunner.sample({
       id: config.id,
       execute: config.work,
       prepare: config.prepare,
-      microIterations: microIterations,
+      microMetrics: config.microMetrics,
       bindings: [
         benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue(description)
       ]

@@ -1,6 +1,6 @@
 import {Injector, Key} from "angular2/di";
 import {reflector} from 'angular2/src/reflection/reflection';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 var count = 0;
@@ -77,10 +77,22 @@ export function main() {
     }
   }
 
-  bindAction('#getByToken', getByToken);
-  bindAction('#getByKey', getByKey);
-  bindAction('#getChild', getChild);
-  bindAction('#instantiate', instantiate);
+  bindAction(
+    '#getByToken',
+    () => microBenchmark('injectAvg', iterations, getByToken)
+  );
+  bindAction(
+    '#getByKey',
+    () => microBenchmark('injectAvg', iterations, getByKey)
+  );
+  bindAction(
+    '#getChild',
+    () => microBenchmark('injectAvg', iterations, getChild)
+  );
+  bindAction(
+    '#instantiate',
+    () => microBenchmark('injectAvg', iterations, instantiate)
+  );
 }
 
 

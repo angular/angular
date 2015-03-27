@@ -96,9 +96,9 @@ export function main() {
       });
     }));
 
-    it('should bind Options.MICRO_ITERATIONS', inject([AsyncTestCompleter], (async) => {
-      createRunner().sample({id: 'someId', microIterations: 23}).then( (_) => {
-        expect(injector.get(Options.MICRO_ITERATIONS)).toEqual(23);
+    it('should bind Options.MICRO_METRICS', inject([AsyncTestCompleter], (async) => {
+      createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then( (_) => {
+        expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
         async.done();
       });
     }));
