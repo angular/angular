@@ -1,6 +1,6 @@
 var perfUtil = require('angular2/src/test_lib/perf_util');
 
-describe('ng2 tree benchmark', function () {
+xdescribe('ng2 tree benchmark', function () {
 
   var URL = 'benchmarks/src/tree/tree_benchmark.html';
 
