@@ -21,7 +21,7 @@ describe('ng2 naive infinite scroll benchmark', function () {
               function() { return false; });
             }, 10000);
         },
-        params: [{
+        params: [{ 
           name: 'appSize', value: appSize
         }, {
           name: 'iterationCount', value: 20, scale: 'linear'

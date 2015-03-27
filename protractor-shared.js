@@ -64,6 +64,17 @@ var BROWSER_CAPS = {
       browser: 'ALL'
     }
   },
+  ChromeDownloaded: {
+    browserName: 'chrome',
+    chromeOptions: mergeInto(CHROME_OPTIONS, {
+      'mobileEmulation': CHROME_MOBILE_EMULATION,
+      'binary': 'chromium/chrome'
+    }),
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
   ChromeDesktop: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
@@ -123,12 +134,13 @@ var getBenchmarkFiles = function (benchmark, spec) {
 };
 
 var config = exports.config = {
+  seleniumAddress: 'http://localhost:4444/wd/hub',
   onPrepare: function() {
     patchProtractorWait(browser);
     // During benchmarking, we need to open a new browser
     // for every benchmark, otherwise the numbers can get skewed
     // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
-    if (argv['benchmark']) {
+    // if (argv['benchmark']) {
       var originalBrowser = browser;
       var _tmpBrowser;
       beforeEach(function() {
@@ -142,7 +154,7 @@ var config = exports.config = {
         global.browser.quit();
         global.browser = originalBrowser;
       });
-    }
+    // }
   },
 
   specs: getBenchmarkFiles(argv['benchmark'], argv['spec']),
