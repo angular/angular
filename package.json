@@ -29,7 +29,7 @@
     "rx": "2.4.6",
     "traceur": "0.0.87",
     "which": "~1",
-    "zone.js": "0.4.0",
+    "zone.js": "0.4.2",
     "googleapis": "1.0.x",
     "node-uuid": "1.4.x",
     "selenium-webdriver": "2.45.1"
