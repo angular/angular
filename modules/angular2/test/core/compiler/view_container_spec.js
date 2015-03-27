@@ -228,7 +228,7 @@ export function main() {
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(elementInjector));
 
-        expect(parentView.changeDetector.children.length).toBe(1);
+        expect(parentView.changeDetector.lightDomChildren.length).toBe(1);
       });
 
       it('dehydrating should update rootElementInjectors and parent change detector', () => {
@@ -236,7 +236,7 @@ export function main() {
         viewContainer.remove();
         ListWrapper.forEach(fancyView.rootElementInjectors, (inj) =>
             expect(inj.parent).toBe(null));
-        expect(parentView.changeDetector.children.length).toBe(0);
+        expect(parentView.changeDetector.lightDomChildren.length).toBe(0);
         expect(viewContainer.length).toBe(0);
       });
     });

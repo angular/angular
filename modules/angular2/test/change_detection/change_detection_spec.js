@@ -62,6 +62,12 @@ export function main() {
         }
 
         describe(`${name} change detection`, () => {
+          var dispatcher;
+
+          beforeEach(() => {
+            dispatcher = new TestDispatcher();
+          });
+
           it('should do simple watching', () => {
             var person = new Person("misko");
             var c = createChangeDetector('name', 'name', person);
@@ -197,7 +203,6 @@ export function main() {
             var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
 
-            var dispatcher = new TestDispatcher();
             var cd = instantiate(pcd, dispatcher, [new BindingRecord(ast, "memo", null)]);
             cd.hydrate(new TestData("value"), null);
 
@@ -250,7 +255,6 @@ export function main() {
               it("should notify the dispatcher when a group of records changes", () => {
                 var pcd = createProtoChangeDetector();
 
-                var dispatcher = new TestDispatcher();
                 var cd = instantiate(pcd, dispatcher, [
                   new BindingRecord(ast("1 + 2"), "memo", dirMemento1),
                   new BindingRecord(ast("10 + 20"), "memo", dirMemento1),
@@ -264,7 +268,7 @@ export function main() {
 
               it("should notify the dispatcher before switching to the next group", () => {
                 var pcd = createProtoChangeDetector();
-                var dispatcher = new TestDispatcher();
+
                 var cd = instantiate(pcd, dispatcher, [
                   new BindingRecord(ast("a()"), "a", dirMemento1),
                   new BindingRecord(ast("b()"), "b", dirMemento2),
@@ -294,41 +298,60 @@ export function main() {
 
             describe("onAllChangesDone", () => {
               it("should notify the dispatcher about processing all the children", () => {
-                var pcd = createProtoChangeDetector();
-                var dispatcher = new TestDispatcher();
-
                 var memento1 = new FakeDirectiveMemento(1, false);
                 var memento2 = new FakeDirectiveMemento(2, true);
 
-                var cd = pcd.instantiate(dispatcher, [
-                  new BindingRecord(ast("1"), "a", memento1),
-                  new BindingRecord(ast("2"), "b", memento2)
-                ], null, [memento1, memento2]);
+                var pcd = createProtoChangeDetector();
+                var cd = pcd.instantiate(dispatcher, [], null, [memento1, memento2]);
 
                 cd.hydrate(null, null);
 
                 cd.detectChanges();
 
-                expect(dispatcher.loggedOnAllChangesDone).toEqual([memento2]);
+                expect(dispatcher.loggedValues).toEqual([
+                  ["onAllChangesDone", memento2]
+                ]);
               });
 
               it("should notify in reverse order so the child is always notified before the parent", () => {
-                var pcd = createProtoChangeDetector();
-                var dispatcher = new TestDispatcher();
-
                 var memento1 = new FakeDirectiveMemento(1, true);
                 var memento2 = new FakeDirectiveMemento(2, true);
 
-                var cd = pcd.instantiate(dispatcher, [
-                  new BindingRecord(ast("1"), "a", memento1),
-                  new BindingRecord(ast("2"), "b", memento2)
-                ], null, [memento1, memento2]);
+                var pcd = createProtoChangeDetector();
+                var cd = pcd.instantiate(dispatcher, [], null, [memento1, memento2]);
 
                 cd.hydrate(null, null);
 
                 cd.detectChanges();
 
-                expect(dispatcher.loggedOnAllChangesDone).toEqual([memento2, memento1]);
+                expect(dispatcher.loggedValues).toEqual([
+                  ["onAllChangesDone", memento2],
+                  ["onAllChangesDone", memento1]
+                ]);
+              });
+
+              it("should notify the dispatcher before processing shadow dom children", () => {
+                var memento = new FakeDirectiveMemento(1, true);
+
+                var pcd = createProtoChangeDetector();
+                var shadowDomChildPCD = createProtoChangeDetector();
+
+                var parent = pcd.instantiate(dispatcher, [], null, [memento]);
+                var child = shadowDomChildPCD.instantiate(dispatcher, [
+                  new BindingRecord(ast("1"), "a", memento)], null, []);
+                parent.addShadowDomChild(child);
+
+                parent.hydrate(null, null);
+                child.hydrate(null, null);
+
+                parent.detectChanges();
+
+                // loggedValues contains everything that the dispatcher received
+                // the first value is the directive memento passed into onAllChangesDone
+                expect(dispatcher.loggedValues).toEqual([
+                  ["onAllChangesDone", memento],
+                  [1]
+                ]);
               });
             });
           });
@@ -417,18 +440,25 @@ export function main() {
               child = instantiate(protoChild, null, []);
             });
 
-            it("should add children", () => {
+            it("should add light dom children", () => {
               parent.addChild(child);
 
-              expect(parent.children.length).toEqual(1);
-              expect(parent.children[0]).toBe(child);
+              expect(parent.lightDomChildren.length).toEqual(1);
+              expect(parent.lightDomChildren[0]).toBe(child);
             });
 
-            it("should remove children", () => {
+            it("should add shadow dom children", () => {
+              parent.addShadowDomChild(child);
+
+              expect(parent.shadowDomChildren.length).toEqual(1);
+              expect(parent.shadowDomChildren[0]).toBe(child);
+            });
+
+            it("should remove light dom children", () => {
               parent.addChild(child);
               parent.removeChild(child);
 
-              expect(parent.children).toEqual([]);
+              expect(parent.lightDomChildren).toEqual([]);
             });
           });
         });
@@ -799,7 +829,7 @@ class TestDispatcher extends ChangeDispatcher {
   }
 
   onAllChangesDone(directiveMemento) {
-    ListWrapper.push(this.loggedOnAllChangesDone, directiveMemento);
+    ListWrapper.push(this.loggedValues, ["onAllChangesDone", directiveMemento]);
   }
 
   _asString(value) {

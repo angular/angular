@@ -350,6 +350,7 @@ export class ProtoView {
     }
   }
 
+  //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of ProtoView once we separate
   // ProtoView and ProtoViewBuilder
   _getVariableBindings() {
@@ -367,6 +368,7 @@ export class ProtoView {
     return this._variableBindings;
   }
 
+  //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of ProtoView once we separate
   // ProtoView and ProtoViewBuilder
   _getDirectiveMementos() {
