@@ -263,8 +263,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   }
 }
 
-var _singleElementList = [null];
-
 function isSame(a, b) {
   if (a === b) return true;
   if (a instanceof String && b instanceof String && a == b) return true;
