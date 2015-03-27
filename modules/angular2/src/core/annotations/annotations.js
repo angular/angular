@@ -854,7 +854,7 @@ export class Viewport extends Directive {
  *   ...,
  *   lifecycle: [ onDestroy ]
  * })
- * class ClassSet implements OnDestroy {
+ * class ClassSet {
  *   onDestroy() {
  *     // invoked to notify directive of the containing view destruction.
  *   }
@@ -867,6 +867,11 @@ export const onDestroy = "onDestroy";
 
 /**
  * Notify a directive when any of its bindings have changed.
+ *
+ * This method is called right after the directive's bindings have been checked,
+ * and before any of its children's bindings have been checked.
+ *
+ * It is invoked only if at least one of the directive's bindings has changed.
  *
  * ## Example:
  *
