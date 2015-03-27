@@ -1,4 +1,4 @@
-library angular2.src.transform.directive_processor.transformer;
+library angular2.transform.directive_processor.transformer;
 
 import 'dart:async';
 
@@ -11,10 +11,10 @@ import 'package:barback/barback.dart';
 import 'rewriter.dart';
 
 /// Transformer responsible for processing all .dart assets and creating
-/// .ngDeps.dart files which register @Injectable annotated classes with the
+/// .ng_deps.dart files which register @Injectable annotated classes with the
 /// reflector.
 ///
-/// This will also create .ngDeps.dart files for classes annotated
+/// This will also create .ng_deps.dart files for classes annotated
 /// with @Component, @Template, @Decorator, etc.
 ///
 /// This transformer is the first phase in a two-phase transform. It should

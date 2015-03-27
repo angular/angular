@@ -1,4 +1,5 @@
 import {List} from 'angular2/src/facade/collection';
+import {Locals} from './parser/locals';
 
 export class ChangeRecord {
   bindingMemento:any;
@@ -55,7 +56,7 @@ export class ChangeDetector {
   addChild(cd:ChangeDetector) {}
   removeChild(cd:ChangeDetector) {}
   remove() {}
-  hydrate(context:any) {}
+  hydrate(context:any, locals:Locals) {}
   dehydrate() {}
   markPathToRootAsCheckOnce() {}
 

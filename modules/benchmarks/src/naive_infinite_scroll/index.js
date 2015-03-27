@@ -24,8 +24,9 @@ import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
+import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 
-import {If, Foreach} from 'angular2/directives';
+import {If, For} from 'angular2/directives';
 import {App, setupReflectorForApp} from './app';
 import {ScrollAreaComponent, setupReflectorForScrollArea} from './scroll_area';
 import {ScrollItemComponent, setupReflectorForScrollItem} from './scroll_item';
@@ -33,6 +34,8 @@ import {CompanyNameComponent, OpportunityNameComponent, OfferingNameComponent,
     AccountCellComponent, StageButtonsComponent, FormattedCellComponent,
     setupReflectorForCells}
         from './cells';
+
+import {EventManager} from 'angular2/src/core/events/event_manager';
 
 export function main() {
   setupReflector();
@@ -139,6 +142,9 @@ export function setupReflector() {
     'aatStatusWidth': (o, v) => o.aatStatusWidth = v,
     'bundles': (o, v) => o.bundles = v,
     'bundlesWidth': (o, v) => o.bundlesWidth = v,
+    'if': (o, v) => {},
+    'of': (o, v) => {},
+    'cellWidth': (o, v) => o.cellWidth = v,
     evt: (o, v) => null,
     'style': (o, m) => {
       //if (isBlank(m)) return;
@@ -170,13 +176,13 @@ export function setupReflectorForAngular() {
     })]
   });
 
-  reflector.registerType(Foreach, {
-    'factory': (vp) => new Foreach(vp),
+  reflector.registerType(For, {
+    'factory': (vp) => new For(vp),
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
-      selector: '[foreach]',
+      selector: '[for]',
       bind: {
-        'iterableChanges': 'in | iterableDiff'
+        'iterableChanges': 'of | iterableDiff'
       }
     })]
   });
@@ -298,6 +304,19 @@ export function setupReflectorForAngular() {
   reflector.registerType(CssProcessor, {
     "factory": () => new CssProcessor(null),
     "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(EventManager, {
+    "factory": () => new EventManager([], null),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(PrivateComponentLoader, {
+    "factory": (compiler, strategy, eventMgr, reader) =>
+      new PrivateComponentLoader(compiler, strategy, eventMgr, reader),
+    "parameters": [[Compiler], [ShadowDomStrategy], [EventManager], [DirectiveMetadataReader]],
     "annotations": []
   });
 }

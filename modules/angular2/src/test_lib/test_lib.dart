@@ -18,7 +18,6 @@ import './test_injector.dart';
 export './test_injector.dart' show inject;
 
 bool IS_DARTIUM = true;
-bool IS_NODEJS = false;
 
 List _testBindings = [];
 Injector _injector;
@@ -165,11 +164,11 @@ String elementText(n) {
   }
 
   if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
-    return elementText(n.getDistributedNodes());
+    return elementText(DOM.getDistributedNodes(n));
   }
 
   if (DOM.hasShadowRoot(n)) {
-    return elementText(DOM.childNodesAsList(n.shadowRoot));
+    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
   }
 
   if (hasNodes(n)) {

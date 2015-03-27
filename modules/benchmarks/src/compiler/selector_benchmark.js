@@ -20,7 +20,7 @@ export function main() {
   }
   fixedMatcher = new SelectorMatcher();
   for (var i=0; i<count; i++) {
-    fixedMatcher.addSelectable(fixedSelectors[i], i);
+    fixedMatcher.addSelectables(fixedSelectors[i], i);
   }
 
   function parse() {
@@ -34,7 +34,7 @@ export function main() {
   function addSelectable() {
     var matcher = new SelectorMatcher();
     for (var i=0; i<count; i++) {
-      matcher.addSelectable(fixedSelectors[i], i);
+      matcher.addSelectables(fixedSelectors[i], i);
     }
     return matcher;
   }
@@ -42,7 +42,7 @@ export function main() {
   function match() {
     var matchCount = 0;
     for (var i=0; i<count; i++) {
-      fixedMatcher.match(fixedSelectors[i], (selector, selected) => {
+      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => {
         matchCount += selected;
       });
     }

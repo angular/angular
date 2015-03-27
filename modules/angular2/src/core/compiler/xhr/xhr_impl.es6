@@ -1,6 +1,8 @@
+import {Injectable} from 'angular2/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {XHR} from './xhr';
 
+@Injectable()
 export class XHRImpl extends XHR {
   get(url: string): Promise<string> {
     var completer = PromiseWrapper.completer();

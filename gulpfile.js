@@ -1,7 +1,11 @@
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
+var shell = require('gulp-shell');
 var runSequence = require('run-sequence');
+var madge = require('madge');
 var merge = require('merge');
+var path = require('path');
+
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 
 var clean = require('./tools/build/clean');
@@ -15,13 +19,16 @@ var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var rundartpackage = require('./tools/build/rundartpackage');
 var copy = require('./tools/build/copy');
+var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var transformCJSTests = require('./tools/build/transformCJSTests');
+var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 
+// Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
 // configuration
@@ -43,6 +50,8 @@ var _HTML_DEFAULT_SCRIPTS_JS = [
   {src: 'node_modules/zone.js/long-stack-trace-zone.js', mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/systemjs/dist/system.src.js', mimeType: 'text/javascript', copy: true},
   {src: 'node_modules/systemjs/lib/extension-register.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/systemjs/lib/extension-cjs.js', mimeType: 'text/javascript', copy: true},
+  {src: 'node_modules/rx/dist/rx.all.js', mimeType: 'text/javascript', copy: true},
   {src: 'tools/build/snippets/runtime_paths.js', mimeType: 'text/javascript', copy: true},
   {
     inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.error.bind(console))',
@@ -238,9 +247,17 @@ var CONFIG = {
   test: {
     js: {
       cjs: [
+        '/angular2/test/change_detection/**/*_spec.js',
+        '/angular2/test/core/annotations/**/*_spec.js',
         '/angular2/test/core/compiler/**/*_spec.js',
+        '/angular2/test/di/**/*_spec.js',
         '/angular2/test/directives/**/*_spec.js',
-        '/angular2/test/forms/**/*_spec.js'
+        '/angular2/test/facade/**/*_spec.js',
+        '/angular2/test/forms/**/*_spec.js',
+        '/angular2/test/mock/**/*_spec.js',
+        '/angular2/test/reflection/**/*_spec.js',
+        '/angular2/test/services/**/*_spec.js',
+        '/angular2/test/test_lib/**/*_spec.js'
       ]
     }
   }
@@ -333,6 +350,28 @@ gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.dart
 }));
 
+gulp.task('build/transpile.dart.ts2dart', function() {
+  return gulp.src(CONFIG.transpile.src.dart)
+      .pipe(ts2dart.transpile())
+      .pipe(gulp.dest('dist/dart.ts2dart'))
+});
+gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
+  pub: DART_SDK.PUB,
+  packageName: CONFIG.formatDart.packageName,
+  args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
+}));
+
+// Temporary tasks for development on ts2dart. Will likely fail.
+gulp.task('build/transpile.dart.ts2dart.all', function() {
+  return gulp.src(CONFIG.transpile.src.js)
+      .pipe(ts2dart.transpile())
+      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
+      .pipe(gulp.dest('dist/dart.ts2dart'));
+});
+gulp.task('ts2dart', function(done) {
+ runSequence('build/transpile.dart.ts2dart.all', 'build/format.dart.ts2dart', done);
+});
+
 // ------------
 // html
 
@@ -419,7 +458,11 @@ gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
 // ------------
 // pubspec
 
-gulp.task('build/pubspec.dart', pubget(gulp, gulpPlugins, {
+// Run a top-level `pub get` for this project.
+gulp.task('pubget.dart', pubget.dir(gulp, gulpPlugins, { dir: '.', command: DART_SDK.PUB }));
+
+// Run `pub get` over CONFIG.dest.dart
+gulp.task('build/pubspec.dart', pubget.subDir(gulp, gulpPlugins, {
   dir: CONFIG.dest.dart,
   command: DART_SDK.PUB
 }));
@@ -457,6 +500,25 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
   args: CONFIG.formatDart.args
 }));
 
+// ------------
+// check circular dependencies in Node.js context
+gulp.task('build/checkCircularDependencies', function (done) {
+  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
+    format: 'es6',
+    paths: [CONFIG.dest.js.dev.es6],
+    extensions: ['.js', '.es6'],
+    onParseFile: function(data) {
+      data.src = data.src.replace(/import \* as/g, "//import * as");
+    }
+  });
+  var circularDependencies = dependencyObject.circular().getArray();
+  if (circularDependencies.length > 0) {
+    console.log(circularDependencies);
+    process.exit(1);
+  }
+  done();
+});
+
 // ------------------
 // web servers
 gulp.task('serve.js.dev', jsserve(gulp, gulpPlugins, {
@@ -492,17 +554,10 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
-gulp.task('docs/dgeni', function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/dgeni-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x.stack);
-    throw x;
-  }
-});
-
 var bower = require('bower');
+var jasmine = require('gulp-jasmine');
+var webserver = require('gulp-webserver');
+
 gulp.task('docs/bower', function() {
   var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
   bowerTask.on('log', function (result) {
@@ -514,38 +569,72 @@ gulp.task('docs/bower', function() {
   return bowerTask;
 });
 
-gulp.task('docs/assets', ['docs/bower'], function() {
-  return gulp.src('docs/bower_components/**/*')
-    .pipe(gulp.dest('dist/docs/lib'));
-});
 
-gulp.task('docs/app', function() {
-  return gulp.src('docs/app/**/*')
-    .pipe(gulp.dest('dist/docs'));
-});
+function createDocsTasks(public) {
+  var dgeniPackage = public ? './docs/public-docs-package' : './docs/dgeni-package';
+  var distDocsPath = public ? 'dist/public_docs' : 'dist/docs';
+  var taskPrefix = public ? 'public_docs' : 'docs';
 
-gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
-gulp.task('docs/watch', function() {
-  return gulp.watch('docs/app/**/*', ['docs/app']);
-});
+  gulp.task(taskPrefix + '/dgeni', function() {
+    try {
+      var dgeni = new Dgeni([require(dgeniPackage)]);
+      return dgeni.generate();
+    } catch(x) {
+      console.log(x.stack);
+      throw x;
+    }
+  });
 
-var jasmine = require('gulp-jasmine');
-gulp.task('docs/test', function () {
-  return gulp.src('docs/**/*.spec.js')
-      .pipe(jasmine({
-        includeStackTrace: true
+  gulp.task(taskPrefix + '/assets', ['docs/bower'], function() {
+    return gulp.src('docs/bower_components/**/*')
+      .pipe(gulp.dest(distDocsPath + '/lib'));
+  });
+
+  gulp.task(taskPrefix + '/app', function() {
+    return gulp.src('docs/app/**/*')
+      .pipe(gulp.dest(distDocsPath));
+  });
+
+  gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
+  gulp.task(taskPrefix + '/watch', function() {
+    return gulp.watch('docs/app/**/*', [taskPrefix + '/app']);
+  });
+
+  gulp.task(taskPrefix + '/test', function () {
+    return gulp.src('docs/**/*.spec.js')
+        .pipe(jasmine({
+          includeStackTrace: true
+        }));
+  });
+
+  gulp.task(taskPrefix + '/serve', function() {
+    gulp.src(distDocsPath + '/')
+      .pipe(webserver({
+        fallback: 'index.html'
       }));
-});
+  });
+}
 
-var webserver = require('gulp-webserver');
-gulp.task('docs/serve', function() {
-  gulp.src('dist/docs/')
-    .pipe(webserver({
-      fallback: 'index.html'
-    }));
-});
+createDocsTasks(true);
+createDocsTasks(false);
 
 // ------------------
+// CI tests suites
+
+gulp.task('test.js', function(done) {
+  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
+              'test.unit.cjs/ci', done);
+});
+
+gulp.task('test.dart', function(done) {
+  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci', done);
+});
+
+// Reuse the Travis scripts
+// TODO: rename test_*.sh to test_all_*.sh
+gulp.task('test.all.js', shell.task(['./scripts/ci/test_js.sh']))
+gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']))
+
 // karma tests
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
@@ -567,8 +656,32 @@ gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
-gulp.task('test.unit.cjs', function (done) {
-  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine(/*{verbose: true, includeStackTrace: true}*/));
+gulp.task('test.unit.cjs/ci', function () {
+  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine({includeStackTrace: true, timeout: 1000}));
+});
+gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
+  //Run tests once
+  runSequence('test.unit.cjs/ci', function() {});
+  //Watcher to transpile file changed
+  gulp.watch(CONFIG.transpile.src.js.concat(['modules/**/*.cjs']), function(event) {
+    var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
+    gulp.src(relPath)
+      .pipe(gulpPlugins.rename({extname: '.'+ 'js'}))
+      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.js))
+      .pipe(gulpTraceur(CONFIG.transpile.options.js.cjs, file2moduleName))
+      .pipe(transformCJSTests())
+      .pipe(gulp.dest(CONFIG.dest.js.cjs + path.dirname(relPath.replace("modules", ""))));
+  });
+  //Watcher to run tests when dist/js/cjs/angular2 is updated by the first watcher (after clearing the node cache)
+  gulp.watch(CONFIG.dest.js.cjs + '/angular2/**/*.js', function(event) {
+    for (var id in require.cache) {
+      if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
+        delete require.cache[id];
+      }
+    }
+    runSequence('test.unit.cjs/ci', function() {});
+  });
+
 });
 
 // ------------------
@@ -602,8 +715,11 @@ gulp.task('tests/transform.dart', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
-    ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
+    ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'tests/transform.dart',
+    // the two format steps don't need to be sequential, but we have seen flakiness in
+    // dartstyle:format with connecting to localhost.
+    'build/format.dart.ts2dart',
     'build/format.dart',
     'build/pubspec.dart',
     done
@@ -623,6 +739,7 @@ gulp.task('build.dart', function(done) {
 gulp.task('build.js.dev', function(done) {
   runSequence(
     ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
+    'build/checkCircularDependencies',
     done
   );
 });

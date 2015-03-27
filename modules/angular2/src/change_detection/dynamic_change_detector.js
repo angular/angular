@@ -1,22 +1,23 @@
 import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {ContextWithVariableBindings} from './parser/context_with_variable_bindings';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {PipeRegistry} from './pipes/pipe_registry';
-import {ChangeDetectionUtil, SimpleChange, uninitialized} from './change_detection_util';
+import {ChangeDetectionUtil, uninitialized} from './change_detection_util';
 
 
 import {
   ProtoRecord,
   RECORD_TYPE_SELF,
   RECORD_TYPE_PROPERTY,
+  RECORD_TYPE_LOCAL,
   RECORD_TYPE_INVOKE_METHOD,
   RECORD_TYPE_CONST,
   RECORD_TYPE_INVOKE_CLOSURE,
   RECORD_TYPE_PRIMITIVE_OP,
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
+  RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
@@ -26,6 +27,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   dispatcher:any;
   pipeRegistry;
 
+  locals:any;
   values:List;
   changes:List;
   pipes:List;
@@ -47,12 +49,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     ListWrapper.fill(this.changes, false);
+    this.locals = null;
 
     this.protos = protoRecords;
   }
 
-  hydrate(context:any) {
+  hydrate(context:any, locals:any) {
     this.values[0] = context;
+    this.locals = locals;
   }
 
   dehydrate() {
@@ -61,6 +65,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.changes, false);
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
+    this.locals = null;
   }
 
   _destroyPipes() {
@@ -99,7 +104,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _check(proto:ProtoRecord) {
     try {
-      if (proto.mode == RECORD_TYPE_PIPE) {
+      if (proto.mode === RECORD_TYPE_PIPE || proto.mode === RECORD_TYPE_BINDING_PIPE) {
         return this._pipeCheck(proto);
       } else {
         return this._referenceCheck(proto);
@@ -143,26 +148,15 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
       case RECORD_TYPE_PROPERTY:
         var context = this._readContext(proto);
-        var c = ChangeDetectionUtil.findContext(proto.name, context);
-        if (c instanceof ContextWithVariableBindings) {
-          return c.get(proto.name);
-        } else {
-          var propertyGetter:Function = proto.funcOrValue;
-          return propertyGetter(c);
-        }
-        break;
+        return proto.funcOrValue(context);
+
+      case RECORD_TYPE_LOCAL:
+        return this.locals.get(proto.name);
 
       case RECORD_TYPE_INVOKE_METHOD:
         var context = this._readContext(proto);
         var args = this._readArgs(proto);
-        var c = ChangeDetectionUtil.findContext(proto.name, context);
-        if (c instanceof ContextWithVariableBindings) {
-          return FunctionWrapper.apply(c.get(proto.name), args);
-        } else {
-          var methodInvoker:Function = proto.funcOrValue;
-          return methodInvoker(c, args);
-        }
-        break;
+        return proto.funcOrValue(context, args);
 
       case RECORD_TYPE_KEYED_ACCESS:
         var arg = this._readArgs(proto)[0];
@@ -209,7 +203,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isPresent(storedPipe)) {
       storedPipe.onDestroy();
     }
-    var pipe = this.pipeRegistry.get(proto.name, context);
+
+    // Currently, only pipes that used in bindings in the template get
+    // the bindingPropagationConfig of the encompassing component.
+    //
+    // In the future, pipes declared in the bind configuration should
+    // be able to access the bindingPropagationConfig of that component.
+    var bpc = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.bindingPropagationConfig : null;
+    var pipe = this.pipeRegistry.get(proto.name, context, bpc);
     this._writePipe(proto, pipe);
     return pipe;
   }

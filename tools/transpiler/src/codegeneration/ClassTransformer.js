@@ -38,6 +38,7 @@ import {
  */
 export class ClassTransformer extends ParseTreeTransformer {
   constructor(idGenerator, reporter) {
+    super(idGenerator);
     this.reporter_ = reporter;
   }
 

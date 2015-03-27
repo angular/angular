@@ -38,6 +38,10 @@ export function isString(obj):boolean {
   return typeof obj === "string";
 }
 
+export function isFunction(obj):boolean {
+  return typeof obj === "function";
+}
+
 export function stringify(token):string {
   if (typeof token === 'string') {
     return token;
@@ -208,6 +212,10 @@ export class RegExpWrapper {
     return input.match(regExp.single);
   }
   static matcher(regExp, input) {
+    // Reset regex state for the case
+    // someone did not loop over all matches
+    // last time.
+    regExp.multiple.lastIndex = 0;
     return {
       re: regExp.multiple,
       input: input

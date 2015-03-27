@@ -17,7 +17,7 @@ import {CompileControl} from './compile_control';
 // Group 7 = "#"
 // Group 8 = identifier after "#"
 var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+)');
+    '^(?:(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+))$');
 
 /**
  * Parses the property bindings on a single element.
@@ -66,12 +66,14 @@ export class PropertyBindingParser extends CompileStep {
           MapWrapper.set(newAttrs, bindParts[5], attrValue);
         } else if (isPresent(bindParts[6])) {
           // match: (event)
-          current.addEventBinding(bindParts[6], this._parseBinding(attrValue, desc));
+          current.addEventBinding(bindParts[6], this._parseAction(attrValue, desc));
         }
       } else {
         var ast = this._parseInterpolation(attrValue, desc);
         if (isPresent(ast)) {
           current.addPropertyBinding(attrName, ast);
+        } else {
+          current.addAttribute(attrName, attrValue);
         }
       }
     });

@@ -1,10 +1,11 @@
 library angular2.test.transform.integration;
 
 import 'dart:io';
+import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/transformer.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:unittest/unittest.dart';
+import 'package:guinness/guinness.dart';
 
 import '../common/read_file.dart';
 
@@ -24,6 +25,8 @@ class IntegrationTestConfig {
 }
 
 void allTests() {
+  Html5LibDomAdapter.makeCurrent();
+
   /*
    * Each test has its own directory for inputs & an `expected` directory for
    * expected outputs.
@@ -47,10 +50,10 @@ void allTests() {
       'a|web/bar.dart': 'simple_annotation_files/bar.dart'
     },
         outputs: {
-      'a|web/bar.ngDeps.dart':
-          'simple_annotation_files/expected/bar.ngDeps.dart',
-      'a|web/index.ngDeps.dart':
-          'simple_annotation_files/expected/index.ngDeps.dart'
+      'a|web/bar.ng_deps.dart':
+          'simple_annotation_files/expected/bar.ng_deps.dart',
+      'a|web/index.ng_deps.dart':
+          'simple_annotation_files/expected/index.ng_deps.dart'
     }),
     new IntegrationTestConfig(
         'should generate proper code for a Component using a selector defined '
@@ -61,7 +64,7 @@ void allTests() {
       'a|web/bar.dart': 'two_deps_files/bar.dart'
     },
         outputs: {
-      'a|web/bar.ngDeps.dart': 'two_deps_files/expected/bar.ngDeps.dart'
+      'a|web/bar.ng_deps.dart': 'two_deps_files/expected/bar.ng_deps.dart'
     }),
     new IntegrationTestConfig(
         'should generate proper code for a Component declaring a '
@@ -72,7 +75,7 @@ void allTests() {
       'a|web/bar.dart': 'list_of_types_files/bar.dart'
     },
         outputs: {
-      'a|web/bar.ngDeps.dart': 'list_of_types_files/expected/bar.ngDeps.dart'
+      'a|web/bar.ng_deps.dart': 'list_of_types_files/expected/bar.ng_deps.dart'
     }),
     new IntegrationTestConfig(
         'should generate a factory for a class with no declared ctor.',
@@ -81,7 +84,7 @@ void allTests() {
       'a|web/bar.dart': 'synthetic_ctor_files/bar.dart'
     },
         outputs: {
-      'a|web/bar.ngDeps.dart': 'synthetic_ctor_files/expected/bar.ngDeps.dart'
+      'a|web/bar.ng_deps.dart': 'synthetic_ctor_files/expected/bar.ng_deps.dart'
     }),
     new IntegrationTestConfig('should preserve multiple annotations.',
         inputs: {
@@ -91,18 +94,8 @@ void allTests() {
           '../../../lib/src/core/annotations/template.dart'
     },
         outputs: {
-      'a|web/bar.ngDeps.dart': 'two_annotations_files/expected/bar.ngDeps.dart'
-    }),
-    new IntegrationTestConfig(
-        'should ensure that dependencies are property chained.',
-        inputs: {
-      'a|web/index.dart': 'chained_deps_files/index.dart',
-      'a|web/foo.dart': 'chained_deps_files/foo.dart',
-      'a|web/bar.dart': 'chained_deps_files/bar.dart'
-    },
-        outputs: {
-      'a|web/bar.ngDeps.dart': 'chained_deps_files/expected/bar.ngDeps.dart',
-      'a|web/foo.ngDeps.dart': 'chained_deps_files/expected/foo.ngDeps.dart'
+      'a|web/bar.ng_deps.dart':
+          'two_annotations_files/expected/bar.ng_deps.dart'
     })
   ];
 

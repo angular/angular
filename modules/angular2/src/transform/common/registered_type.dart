@@ -1,4 +1,4 @@
-library angular2.src.transform.common.registered_type;
+library angular2.transform.common.registered_type;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/names.dart';

@@ -1,6 +1,6 @@
 import {ABSTRACT} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isFunction} from 'angular2/src/facade/lang';
 import {DomAdapter} from './dom_adapter';
 
 /**
@@ -8,6 +8,9 @@ import {DomAdapter} from './dom_adapter';
  */
 @ABSTRACT()
 export class GenericBrowserDomAdapter extends DomAdapter {
+  getDistributedNodes(el) {
+    return el.getDistributedNodes();
+  }
   resolveAndSetHref(el, baseUrl:string, href:string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
   }
@@ -33,5 +36,11 @@ export class GenericBrowserDomAdapter extends DomAdapter {
     }
     this.remove(style);
     return rules;
+  }
+  supportsDOMEvents(): boolean {
+    return true;
+  }
+  supportsNativeShadowDOM(): boolean {
+    return isFunction(this.defaultDoc().body.createShadowRoot);
   }
 }

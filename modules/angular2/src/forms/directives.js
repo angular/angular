@@ -1,58 +1,55 @@
-import {Template, Component, Decorator, NgElement, Ancestor, onChange} from 'angular2/core';
+import {Template, Component, Decorator, Ancestor, onChange, PropertySetter} from 'angular2/angular2';
 import {Optional} from 'angular2/di';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
-import * as validators from './validators';
+import {Validators} from './validators';
 
-@CONST()
-export class ControlValueAccessor {
-  readValue(el){}
-  writeValue(el, value):void {}
-}
+//export interface ControlValueAccessor {
+//  writeValue(value):void{}
+//  set onChange(fn){}
+//}
 
-@CONST()
-class DefaultControlValueAccessor extends ControlValueAccessor {
-  constructor() {
-    super();
+@Decorator({
+  selector: '[control]',
+  events: {
+    'change' : 'onChange($event.target.value)',
+    'input' : 'onChange($event.target.value)'
+  }
+})
+export class DefaultValueAccessor {
+  _setValueProperty:Function;
+  onChange:Function;
+
+  constructor(@PropertySetter('value') setValueProperty:Function) {
+    this._setValueProperty = setValueProperty;
+    this.onChange = (_) => {};
   }
 
-  readValue(el) {
-    return DOM.getValue(el);
-  }
-
-  writeValue(el, value):void {
-    DOM.setValue(el,value);
-  }
-}
-
-@CONST()
-class CheckboxControlValueAccessor extends ControlValueAccessor {
-  constructor() {
-    super();
-  }
-
-  readValue(el):boolean {
-    return DOM.getChecked(el);
-  }
-
-  writeValue(el, value:boolean):void {
-    DOM.setChecked(el, value);
+  writeValue(value) {
+    this._setValueProperty(value);
   }
 }
 
-var controlValueAccessors = {
-  "checkbox" : new CheckboxControlValueAccessor(),
-  "text" : new DefaultControlValueAccessor()
-};
+@Decorator({
+  selector: 'input[type=checkbox]', //should be input[type=checkbox][control]
+  // change the selector once https://github.com/angular/angular/issues/1025 is fixed
+  events: {
+    'change' : 'onChange($event.target.checked)'
+  }
+})
+export class CheckboxControlValueAccessor {
+  _setCheckedProperty:Function;
+  onChange:Function;
 
-function controlValueAccessorFor(controlType:string):ControlValueAccessor {
-  var accessor = StringMapWrapper.get(controlValueAccessors, controlType);
-  if (isPresent(accessor)) {
-    return accessor;
-  } else {
-    return StringMapWrapper.get(controlValueAccessors, "text");
+  constructor(cd:ControlDirective, @PropertySetter('checked') setCheckedProperty:Function) {
+    this._setCheckedProperty = setCheckedProperty;
+    this.onChange = (_) => {};
+    cd.valueAccessor = this; //ControlDirective should inject CheckboxControlDirective
+  }
+
+  writeValue(value) {
+    this._setCheckedProperty(value);
   }
 }
 
@@ -60,24 +57,22 @@ function controlValueAccessorFor(controlType:string):ControlValueAccessor {
   lifecycle: [onChange],
   selector: '[control]',
   bind: {
-    'controlName' : 'control',
-    'type' : 'type'
+    'controlOrName' : 'control'
   }
 })
 export class ControlDirective {
   _groupDirective:ControlGroupDirective;
-  _el:NgElement;
 
-  controlName:string;
-  type:string;
-  valueAccessor:ControlValueAccessor;
+  controlOrName:any;
+  valueAccessor:any; //ControlValueAccessor
 
   validator:Function;
 
-  constructor(@Ancestor() groupDirective:ControlGroupDirective, el:NgElement)  {
+  constructor(@Optional() @Ancestor() groupDirective:ControlGroupDirective, valueAccessor:DefaultValueAccessor)  {
     this._groupDirective = groupDirective;
-    this._el = el;
-    this.validator = validators.nullValidator;
+    this.controlOrName = null;
+    this.valueAccessor = valueAccessor;
+    this.validator = Validators.nullValidator;
   }
 
   // TODO: vsavkin this should be moved into the constructor once static bindings
@@ -87,29 +82,31 @@ export class ControlDirective {
   }
 
   _initialize() {
-    this._groupDirective.addDirective(this);
-
-    var c = this._control();
-    c.validator = validators.compose([c.validator, this.validator]);
-
-    if (isBlank(this.valueAccessor)) {
-      this.valueAccessor = controlValueAccessorFor(this.type);
+    if(isPresent(this._groupDirective)) {
+      this._groupDirective.addDirective(this);
     }
 
+    var c = this._control();
+    c.validator = Validators.compose([c.validator, this.validator]);
+
     this._updateDomValue();
-    DOM.on(this._el.domElement, "change", (_) => this._updateControlValue());
+    this._setUpUpdateControlValue();
   }
 
   _updateDomValue() {
-    this.valueAccessor.writeValue(this._el.domElement, this._control().value);
+    this.valueAccessor.writeValue(this._control().value);
   }
 
-  _updateControlValue() {
-    this._control().updateValue(this.valueAccessor.readValue(this._el.domElement));
+  _setUpUpdateControlValue() {
+    this.valueAccessor.onChange = (newValue) => this._control().updateValue(newValue);
   }
 
   _control() {
-    return this._groupDirective.findControl(this.controlName);
+    if (isString(this.controlOrName)) {
+      return this._groupDirective.findControl(this.controlOrName);
+    } else {
+      return this.controlOrName;
+    }
   }
 }
 
@@ -127,7 +124,6 @@ export class ControlGroupDirective {
   _directives:List<ControlDirective>;
 
   constructor(@Optional() @Ancestor() groupDirective:ControlGroupDirective) {
-    super();
     this._groupDirective = groupDirective;
     this._directives = ListWrapper.create();
   }
@@ -163,5 +159,5 @@ export class ControlGroupDirective {
 }
 
 export var FormDirectives = [
-  ControlGroupDirective, ControlDirective
+  ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor
 ];

@@ -37,7 +37,8 @@ export class ElementBindingMarker extends CompileStep {
       (isPresent(current.eventBindings) && MapWrapper.size(current.eventBindings)>0) ||
       (isPresent(current.decoratorDirectives) && current.decoratorDirectives.length > 0) ||
       isPresent(current.viewportDirective) ||
-      isPresent(current.componentDirective);
+      isPresent(current.componentDirective) || 
+      isPresent(current.contentTagSelector);
 
     if (hasBindings) {
       var element = current.element;

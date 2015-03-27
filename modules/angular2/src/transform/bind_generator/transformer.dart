@@ -1,4 +1,4 @@
-library angular2.src.transform.bind_generator.transformer;
+library angular2.transform.bind_generator.transformer;
 
 import 'dart:async';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -10,7 +10,7 @@ import 'package:barback/barback.dart';
 
 import 'generator.dart';
 
-/// Transformer responsible for reading .ngDeps.dart files and generating
+/// Transformer responsible for reading .ng_deps.dart files and generating
 /// setters from the "annotations" information in the generated
 /// `registerType` calls.
 ///

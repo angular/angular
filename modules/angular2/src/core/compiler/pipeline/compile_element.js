@@ -2,11 +2,11 @@ import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {int, isBlank, isPresent, Type, StringJoiner, assertionsEnabled} from 'angular2/src/facade/lang';
 import {DirectiveMetadata} from '../directive_metadata';
-import {Decorator, Component, Viewport} from '../../annotations/annotations';
+import {Decorator, Component, Viewport, DynamicComponent} from '../../annotations/annotations';
 import {ElementBinder} from '../element_binder';
 import {ProtoElementInjector} from '../element_injector';
-import {ProtoView} from '../view';
-import {dashCaseToCamelCase} from './util';
+import * as viewModule from '../view';
+import {dashCaseToCamelCase} from '../string_utils';
 
 import {AST} from 'angular2/change_detection';
 
@@ -22,6 +22,7 @@ export class CompileElement {
   textNodeBindings:Map;
   propertyBindings:Map;
   eventBindings:Map;
+  attributes:Map;
 
   /// Store directive name to template name mapping.
   /// Directive name is what the directive exports the variable as
@@ -30,16 +31,19 @@ export class CompileElement {
   decoratorDirectives:List<DirectiveMetadata>;
   viewportDirective:DirectiveMetadata;
   componentDirective:DirectiveMetadata;
+  hasNestedView:boolean;
   _allDirectives:List<DirectiveMetadata>;
   isViewRoot:boolean;
   hasBindings:boolean;
-  inheritedProtoView:ProtoView;
+  inheritedProtoView:viewModule.ProtoView;
   inheritedProtoElementInjector:ProtoElementInjector;
   inheritedElementBinder:ElementBinder;
-  distanceToParentInjector:number;
+  distanceToParentInjector:int;
+  distanceToParentBinder:int;
   compileChildren: boolean;
   ignoreBindings: boolean;
   elementDescription: string; // e.g. '<div [class]="foo">' : used to provide context in case of error
+  contentTagSelector: string;
 
   constructor(element, compilationUnit = '') {
     this.element = element;
@@ -52,6 +56,7 @@ export class CompileElement {
     this.decoratorDirectives = null;
     this.viewportDirective = null;
     this.componentDirective = null;
+    this.hasNestedView = false;
     this._allDirectives = null;
     this.isViewRoot = false;
     this.hasBindings = false;
@@ -65,9 +70,11 @@ export class CompileElement {
     // an own elementBinder
     this.inheritedElementBinder = null;
     this.distanceToParentInjector = 0;
+    this.distanceToParentBinder = 0;
     this.compileChildren = true;
     // set to true to ignore all the bindings on the element
     this.ignoreBindings = false;
+    this.contentTagSelector = null;
     // description is calculated here as compilation steps may change the element
     var tplDesc = assertionsEnabled()? getElementDescription(element) : null;
     if (compilationUnit !== '') {
@@ -128,7 +135,7 @@ export class CompileElement {
     // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
-    MapWrapper.set(this.variableBindings, variableValue, variableName);
+    MapWrapper.set(this.variableBindings, variableValue, dashCaseToCamelCase(variableName));
   }
 
   addEventBinding(eventName:string, expression:AST) {
@@ -136,6 +143,13 @@ export class CompileElement {
       this.eventBindings = MapWrapper.create();
     }
     MapWrapper.set(this.eventBindings, eventName, expression);
+  }
+
+  addAttribute(attributeName:string, attributeValue:string) {
+    if (isBlank(this.attributes)) {
+      this.attributes = MapWrapper.create();
+    }
+    MapWrapper.set(this.attributes, attributeName, attributeValue);
   }
 
   addDirective(directive:DirectiveMetadata) {
@@ -152,6 +166,9 @@ export class CompileElement {
     } else if (annotation instanceof Viewport) {
       this.viewportDirective = directive;
     } else if (annotation instanceof Component) {
+      this.componentDirective = directive;
+      this.hasNestedView = true;
+    } else if (annotation instanceof DynamicComponent) {
       this.componentDirective = directive;
     }
   }

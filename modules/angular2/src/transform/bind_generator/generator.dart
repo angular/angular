@@ -1,4 +1,4 @@
-library angular2.src.transform.bind_generator.generator;
+library angular2.transform.bind_generator.generator;
 
 import 'dart:async';
 

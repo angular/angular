@@ -187,7 +187,7 @@ Example:
 <pre>
 ```
 <ul>
-  <li template="foreach: #item in items">
+  <li template="for: #item of items">
     {{item}}
   </li>
 </ul>
@@ -201,8 +201,8 @@ Example:
 <pre>
 ```
 <ul>
-  <template def-foreach:"item"
-            bind-foreach-in="items">
+  <template def-for:"item"
+            bind-for-in="items">
     <li>
       {{item}}
     </li>
@@ -221,8 +221,8 @@ Example:
 
 <pre>
 ```
-<template #foreach="item"
-          [foreach-in]="items">
+<template #for="item"
+          [for-in]="items">
   _some_content_to_repeat_
 </template>
 ```
@@ -234,8 +234,8 @@ Example:
 Example:
 <pre>
 ```
-<template def-foreach="item"
-          bind-foreach-in="items">
+<template def-for="item"
+          bind-for-in="items">
   _some_content_to_repeat_
 </template>
 ```
@@ -408,22 +408,22 @@ NOTE: Only Viewport directives can be placed on the template element. (Decorator
 ### Template Microsyntax
 
 Often times it is necessary to encode a lot of different bindings into a template to control how the instantiation
-of the templates occurs. One such example is `foreach`.
+of the templates occurs. One such example is `for`.
 
 ```
 <form #foo=form>
 </form>
 <ul>
-  <template foreach #person [in]="people" #i="index">
+  <template for #person [in]="people" #i="index">
     <li>{{i}}. {{person}}<li>
   </template>
 </ul>
 ```
 
 Where:
-* `foreach` triggers the foreach directive.
-* `[in]="people"` binds an iterable object to the `foreach` controller.
-* `#person` exports the implicit `foreach` item.
+* `for` triggers the for directive.
+* `[in]="people"` binds an iterable object to the `for` controller.
+* `#person` exports the implicit `for` item.
 * `#i=index` exports item index as `i`.
 
 The above example is explicit but quite wordy. For this reason in most situations a short hand version of the
@@ -431,7 +431,7 @@ syntax is preferable.
 
 ```
 <ul>
-  <li template="foreach; #person; in=people; #i=index;">{{i}}. {{person}}<li>
+  <li template="for; #person; in=people; #i=index;">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -441,18 +441,27 @@ which allows us to further shorten the text.
 
 ```
 <ul>
-  <li template="foreach #person in people #i=index">{{i}}. {{person}}<li>
+  <li template="for #person of people #i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
-We can also optionally use `var` instead of `#` and add `:` to `foreach` which creates the following recommended
-microsyntax for `foreach`.
+We can also optionally use `var` instead of `#` and add `:` to `for` which creates the following recommended
+microsyntax for `for`.
 
 ```
 <ul>
-  <li template="foreach: var person in people; var i=index">{{i}}. {{person}}<li>
+  <li template="for: var person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
+
+Finally, we can move the `for` keyword to the left hand side and prefix it with `*` as so:
+
+```
+<ul>
+  <li *for="var person of people; var i=index">{{i}}. {{person}}<li>
+</ul>
+```
+
 
 The format is intentionally defined freely, so that developers of directives can build an expressive microsyntax for
 their directives. The following code describes a more formal definition.

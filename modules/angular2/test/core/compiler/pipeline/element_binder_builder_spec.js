@@ -83,7 +83,7 @@ export function main() {
     function instantiateView(protoView) {
       evalContext = new Context();
       view = protoView.instantiate(null, null);
-      view.hydrate(new Injector([]), null, evalContext);
+      view.hydrate(new Injector([]), null, null, evalContext, null);
       changeDetector = view.changeDetector;
     }
 
@@ -218,7 +218,7 @@ export function main() {
 
     it('should bind to aria-* attributes when exp evaluates to strings', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'aria-label': 'prop1'
+        'attr.aria-label': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -243,7 +243,7 @@ export function main() {
 
     it('should bind to aria-* attributes when exp evaluates to booleans', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'aria-busy': 'prop1'
+        'attr.aria-busy': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -264,7 +264,7 @@ export function main() {
 
     it('should bind to ARIA role attribute', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'role': 'prop1'
+        'attr.role': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -289,7 +289,7 @@ export function main() {
 
     it('should throw for a non-string ARIA role', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
-        'role': 'prop1'
+        'attr.role': 'prop1'
       });
       var pipeline = createPipeline({propertyBindings: propertyBindings});
       var results = pipeline.process(el('<div viewroot prop-binding></div>'));
@@ -301,6 +301,31 @@ export function main() {
         evalContext.prop1 = 1; //invalid, non-string role
         changeDetector.detectChanges();
       }).toThrowError("Invalid role attribute, only string values are allowed, got '1'");
+    });
+
+    it('should bind to any attribute', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'attr.foo-bar': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<div viewroot prop-binding></div>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = 'baz';
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toEqual('baz');
+
+      evalContext.prop1 = 123;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toEqual('123');
+
+      evalContext.prop1 = null;
+      changeDetector.detectChanges();
+      expect(DOM.getAttribute(view.nodes[0], 'foo-bar')).toBeNull();
     });
 
     it('should bind class with a dot', () => {
@@ -323,6 +348,28 @@ export function main() {
       changeDetector.detectChanges();
       expect(view.nodes[0].className).toEqual('foo ng-binding');
     });
+
+    it('should properly bind to class containing "-" using the class. syntax', () => {
+      var propertyBindings = MapWrapper.createFromStringMap({
+        'class.foo-bar': 'prop1'
+      });
+      var pipeline = createPipeline({propertyBindings: propertyBindings});
+      var results = pipeline.process(el('<input class="foo" viewroot prop-binding>'));
+      var pv = results[0].inheritedProtoView;
+
+      expect(pv.elementBinders[0].hasElementPropertyBindings).toBe(true);
+
+      instantiateView(pv);
+
+      evalContext.prop1 = true;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].className).toEqual('foo ng-binding foo-bar');
+
+      evalContext.prop1 = false;
+      changeDetector.detectChanges();
+      expect(view.nodes[0].className).toEqual('foo ng-binding');
+    });
+
 
     it('should bind style with a dot', () => {
       var propertyBindings = MapWrapper.createFromStringMap({
@@ -380,7 +427,7 @@ export function main() {
 
       var eventMap = StringMapWrapper.get(pv.elementBinders[0].events, 'event1');
       var ast = MapWrapper.get(eventMap, -1);
-      expect(ast.eval(null)).toBe(2);
+      expect(ast.eval(null, null)).toBe(2);
     });
 
     it('should bind directive events', () => {
@@ -399,7 +446,7 @@ export function main() {
       var ast = MapWrapper.get(eventMap, 0);
 
       var context = new SomeDecoratorWithEvent();
-      expect(ast.eval(context)).toEqual('onEvent() callback');
+      expect(ast.eval(context, null)).toEqual('onEvent() callback');
     });
 
     it('should bind directive properties', () => {
@@ -539,7 +586,6 @@ class SomeDecoratorDirectiveWithBinding {
   events: {'event': 'onEvent($event)'}
 })
 class SomeDecoratorWithEvent {
-  // Added here so that we don't have to wrap the content in a ContextWithVariableBindings
   $event: string;
 
   constructor() {
@@ -614,7 +660,7 @@ class DoublePipeFactory {
     return true;
   }
 
-  create() {
+  create(bpc) {
     return new DoublePipe();
   }
 }

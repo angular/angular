@@ -1,4 +1,4 @@
-library angular2.src.transform;
+library angular2.transform;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
@@ -55,7 +55,7 @@ abstract class DirectiveRegistry {
 const setupReflectionMethodName = 'setupReflection';
 
 const _libraryDeclaration = '''
-library angular2.src.transform.generated;
+library  angular2.transform.generated;
 ''';
 
 const _reflectorImport = '''

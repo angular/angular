@@ -56,10 +56,6 @@ export function main() {
       expect(shadowRoot).toHaveText('view');
     });
 
-    it('should should not transform template elements', () => {
-      expect(strategy.getTemplateCompileStep(null)).toBe(null);
-    });
-
     it('should rewrite style urls', () => {
       var step = strategy.getStyleCompileStep(null, 'http://base');
       var styleElement = DOM.createStyleElement('.one {background-image: url("img.jpg");}');

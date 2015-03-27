@@ -1,6 +1,5 @@
 import {ChangeDetection, Parser} from 'angular2/change_detection';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent} from 'angular2/src/facade/lang';
 
 import {PropertyBindingParser} from './property_binding_parser';
 import {TextInterpolationParser} from './text_interpolation_parser';
@@ -32,6 +31,7 @@ export function createDefaultSteps(
   var steps = [
     new ViewSplitter(parser),
     cssProcessor.getCompileStep(compiledComponent, shadowDomStrategy, templateUrl),
+    shadowDomStrategy.getTemplateCompileStep(compiledComponent),
     new PropertyBindingParser(parser),
     new DirectiveParser(directives),
     new TextInterpolationParser(parser),
@@ -40,11 +40,6 @@ export function createDefaultSteps(
     new ProtoElementInjectorBuilder(),
     new ElementBinderBuilder(parser),
   ];
-
-  var shadowDomStep = shadowDomStrategy.getTemplateCompileStep(compiledComponent);
-  if (isPresent(shadowDomStep)) {
-    ListWrapper.push(steps, shadowDomStep);
-  }
 
   return steps;
 }

@@ -1,8 +1,8 @@
 export {AST} from './src/change_detection/parser/ast';
 export {Lexer} from './src/change_detection/parser/lexer';
 export {Parser} from './src/change_detection/parser/parser';
-export {ContextWithVariableBindings}
-    from './src/change_detection/parser/context_with_variable_bindings';
+export {Locals}
+  from './src/change_detection/parser/locals';
 export {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError}
     from './src/change_detection/exceptions';
 export {ChangeRecord, ChangeDispatcher, ChangeDetector,
@@ -11,6 +11,8 @@ export {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector,
     from './src/change_detection/proto_change_detector';
 export {DynamicChangeDetector}
     from './src/change_detection/dynamic_change_detector';
+export {BindingPropagationConfig}
+    from './src/change_detection/binding_propagation_config';
 export * from './src/change_detection/pipes/pipe_registry';
 export {uninitialized} from './src/change_detection/change_detection_util';
 export * from './src/change_detection/pipes/pipe';
@@ -18,7 +20,7 @@ export * from './src/change_detection/pipes/pipe';
 import {ProtoChangeDetector, DynamicProtoChangeDetector, JitProtoChangeDetector}
     from './src/change_detection/proto_change_detector';
 import {PipeRegistry} from './src/change_detection/pipes/pipe_registry';
-import {ArrayChangesFactory} from './src/change_detection/pipes/array_changes';
+import {IterableChangesFactory} from './src/change_detection/pipes/iterable_changes';
 import {KeyValueChangesFactory} from './src/change_detection/pipes/keyvalue_changes';
 import {NullPipeFactory} from './src/change_detection/pipes/null_pipe';
 
@@ -31,7 +33,7 @@ export class ChangeDetection {
 
 export var defaultPipes = {
   "iterableDiff" : [
-    new ArrayChangesFactory(),
+    new IterableChangesFactory(),
     new NullPipeFactory()
   ],
   "keyValDiff" : [

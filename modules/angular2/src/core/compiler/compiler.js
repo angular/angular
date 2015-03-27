@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
@@ -11,7 +12,6 @@ import {CompileElement} from './pipeline/compile_element';
 import {createDefaultSteps} from './pipeline/default_steps';
 import {TemplateLoader} from './template_loader';
 import {TemplateResolver} from './template_resolver';
-import {DirectiveMetadata} from './directive_metadata';
 import {Template} from '../annotations/template';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {CompileStep} from './pipeline/compile_step';
@@ -22,7 +22,9 @@ import {CssProcessor} from './css_processor';
 /**
  * Cache that stores the ProtoView of the template of a component.
  * Used to prevent duplicate work and resolve cyclic dependencies.
+ * @publicModule angular2/angular2
  */
+@Injectable()
 export class CompilerCache {
   _cache:Map;
   constructor() {
@@ -47,7 +49,9 @@ export class CompilerCache {
  * The compiler loads and translates the html templates of components into
  * nested ProtoViews. To decompose its functionality it uses
  * the CompilePipeline and the CompileSteps.
+ * @publicModule angular2/angular2
  */
+@Injectable()
 export class Compiler {
   _reader: DirectiveMetadataReader;
   _parser:Parser;
@@ -56,7 +60,6 @@ export class Compiler {
   _templateLoader:TemplateLoader;
   _compiling:Map<Type, Promise>;
   _shadowDomStrategy: ShadowDomStrategy;
-  _shadowDomDirectives: List<DirectiveMetadata>;
   _templateResolver: TemplateResolver;
   _componentUrlMapper: ComponentUrlMapper;
   _urlResolver: UrlResolver;
@@ -80,11 +83,6 @@ export class Compiler {
     this._templateLoader = templateLoader;
     this._compiling = MapWrapper.create();
     this._shadowDomStrategy = shadowDomStrategy;
-    this._shadowDomDirectives = [];
-    var types = shadowDomStrategy.polyfillDirectives();
-    for (var i = 0; i < types.length; i++) {
-      ListWrapper.push(this._shadowDomDirectives, reader.read(types[i]));
-    }
     this._templateResolver = templateResolver;
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
@@ -93,12 +91,8 @@ export class Compiler {
   }
 
   createSteps(component:Type, template: Template):List<CompileStep> {
-    // Merge directive metadata (from the template and from the shadow dom strategy)
-    var dirMetadata = [];
-    var tplMetadata = ListWrapper.map(this._flattenDirectives(template),
+    var dirMetadata = ListWrapper.map(this._flattenDirectives(template),
       (d) => this._reader.read(d));
-    dirMetadata = ListWrapper.concat(dirMetadata, tplMetadata);
-    dirMetadata = ListWrapper.concat(dirMetadata, this._shadowDomDirectives);
 
     var cmpMetadata = this._reader.read(component);
 
@@ -172,7 +166,7 @@ export class Compiler {
     var nestedPVPromises = [];
     for (var i = 0; i < compileElements.length; i++) {
       var ce = compileElements[i];
-      if (isPresent(ce.componentDirective)) {
+      if (ce.hasNestedView) {
         this._compileNestedProtoView(ce, nestedPVPromises);
       }
     }

@@ -1,6 +1,6 @@
 import {isBlank} from 'angular2/src/facade/lang';
 
-export function arrayChangesAsString({collection, previous, additions, moves, removals}) {
+export function iterableChangesAsString({collection, previous, additions, moves, removals}) {
   if (isBlank(collection)) collection = [];
   if (isBlank(previous)) previous = [];
   if (isBlank(additions)) additions = [];

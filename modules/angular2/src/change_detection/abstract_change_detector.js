@@ -1,15 +1,18 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {BindingPropagationConfig} from './binding_propagation_config';
 import {ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
 
 export class AbstractChangeDetector extends ChangeDetector {
   children:List;
   parent:ChangeDetector;
   mode:string;
+  bindingPropagationConfig:BindingPropagationConfig;
 
   constructor() {
     super();
     this.children = [];
+    this.bindingPropagationConfig = new BindingPropagationConfig(this);
     this.mode = CHECK_ALWAYS;
   }
 

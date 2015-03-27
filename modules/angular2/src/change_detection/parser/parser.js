@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
@@ -32,6 +33,7 @@ var _implicitReceiver = new ImplicitReceiver();
 var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
 var QUOTE_REGEXP = RegExpWrapper.create("'");
 
+@Injectable()
 export class Parser {
   _lexer:Lexer;
   _reflector:Reflector;
@@ -56,7 +58,7 @@ export class Parser {
     if (ListWrapper.isEmpty(pipes)) return bindingAst;
 
     var res = ListWrapper.reduce(pipes,
-      (result, currentPipeName) => new Pipe(result, currentPipeName, []),
+      (result, currentPipeName) => new Pipe(result, currentPipeName, [], false),
       bindingAst.ast);
     return new ASTWithSource(res, bindingAst.source, bindingAst.location);
   }
@@ -218,7 +220,7 @@ class _ParseAST {
       while (this.optionalCharacter($COLON)) {
         ListWrapper.push(args, this.parseExpression());
       }
-      result = new Pipe(result, name, args);
+      result = new Pipe(result, name, args, true);
     }
     return result;
   }

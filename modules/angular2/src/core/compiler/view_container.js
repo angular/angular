@@ -6,19 +6,22 @@ import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {EventManager} from 'angular2/src/core/events/event_manager';
-import * as ldModule from './shadow_dom_emulation/light_dom';
+import {LightDom} from './shadow_dom_emulation/light_dom';
 
+/**
+ * @publicModule angular2/angular2
+ */
 export class ViewContainer {
   parentView: viewModule.View;
   templateElement;
   defaultProtoView: viewModule.ProtoView;
   _views: List<viewModule.View>;
-  _lightDom: ldModule.LightDom;
+  _lightDom: LightDom;
   _eventManager: EventManager;
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
-  hostLightDom: ldModule.LightDom;
+  hostLightDom: LightDom;
 
   constructor(parentView: viewModule.View,
               templateElement,
@@ -40,10 +43,10 @@ export class ViewContainer {
     this._eventManager = eventManager;
   }
 
-  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
+  hydrate(appInjector: Injector, hostElementInjector: eiModule.ElementInjector, hostLightDom: LightDom) {
     this.appInjector = appInjector;
     this.hostElementInjector = hostElementInjector;
-    this.hostLightDom = isPresent(hostElementInjector) ? hostElementInjector.get(ldModule.LightDom) : null;
+    this.hostLightDom = hostLightDom;
   }
 
   dehydrate() {
@@ -85,7 +88,8 @@ export class ViewContainer {
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
-    newView.hydrate(this.appInjector, this.hostElementInjector, this.parentView.context);
+    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom, 
+      this.parentView.context, this.parentView.locals);
 
     // new content tags might have appeared, we need to redistrubute.
     if (isPresent(this.hostLightDom)) {
@@ -126,7 +130,7 @@ export class ViewContainer {
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     if (isBlank(this._lightDom)) {
-      ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
+      ViewContainer.removeViewNodes(detachedView);
     } else {
       this._lightDom.redistribute();
     }
@@ -169,8 +173,11 @@ export class ViewContainer {
     }
   }
 
-  static removeViewNodesFromParent(parent, view) {
-    for (var i = view.nodes.length - 1; i >= 0; --i) {
+  static removeViewNodes(view) {
+    var len = view.nodes.length;
+    if (len == 0) return;
+    var parent = view.nodes[0].parentNode;
+    for (var i = len - 1; i >= 0; --i) {
       DOM.removeChild(parent, view.nodes[i]);
     }
   }

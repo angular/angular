@@ -16,12 +16,12 @@ export function main() {
         ]
       });
 
-      expect(r.get("type", "some object")).toBe(secondPipe);
+      expect(r.get("type", "some object", null)).toBe(secondPipe);
     });
 
     it("should throw when no matching type", () => {
       var r = new PipeRegistry({});
-      expect(() => r.get("unknown", "some object")).toThrowError(
+      expect(() => r.get("unknown", "some object", null)).toThrowError(
         `Cannot find a pipe for type 'unknown' object 'some object'`
       );
     });
@@ -31,7 +31,7 @@ export function main() {
         "type" : []
       });
 
-      expect(() => r.get("type", "some object")).toThrowError(
+      expect(() => r.get("type", "some object", null)).toThrowError(
         `Cannot find a pipe for type 'type' object 'some object'`
       );
     });
@@ -51,7 +51,7 @@ class PipeFactory {
     return this.shouldSupport;
   }
 
-  create():Pipe {
+  create(bpc):Pipe {
     return this.pipe;
   }
 }

@@ -3,7 +3,7 @@ var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 
-var cssParse = require('css-parse');
+var cssParse = require('css').parse;
 
 var url = require('url');
 
@@ -52,7 +52,7 @@ export class Parse5DomAdapter extends DomAdapter {
       }
     };
     var matcher = new SelectorMatcher();
-    matcher.addSelectable(CssSelector.parse(selector));
+    matcher.addSelectables(CssSelector.parse(selector));
     _recursive(res, el, selector, matcher);
     return res;
   }
@@ -64,7 +64,7 @@ export class Parse5DomAdapter extends DomAdapter {
       var result = false;
       if (matcher == null) {
         matcher = new SelectorMatcher();
-        matcher.addSelectable(CssSelector.parse(selector));
+        matcher.addSelectables(CssSelector.parse(selector));
       }
 
       var cssSelector = new CssSelector();
@@ -252,6 +252,9 @@ export class Parse5DomAdapter extends DomAdapter {
   getShadowRoot(el) {
     return el.shadowRoot;
   }
+  getDistributedNodes(el) {
+    throw _notImplemented('getDistributedNodes');
+  }
   clone(node) {
     var temp = treeAdapter.createElement("template", null, []);
     treeAdapter.appendChild(temp, node);
@@ -366,9 +369,16 @@ export class Parse5DomAdapter extends DomAdapter {
   defaultDoc() {
     if (defDoc === null) {
       defDoc = StringMapWrapper.create();
+      defDoc.title = "Default title";
       StringMapWrapper.set(defDoc, "head", treeAdapter.createElement("head", null, []));
     }
     return defDoc;
+  }
+  getTitle() {
+    return this.defaultDoc().title || "";
+  }
+  setTitle(newTitle:string) {
+    this.defaultDoc().title = newTitle;
   }
   isTemplateElement(el:any):boolean {
     return this.isElementNode(el) && this.tagName(el) === "template";
@@ -377,7 +387,7 @@ export class Parse5DomAdapter extends DomAdapter {
     return treeAdapter.isTextNode(node);
   }
   isCommentNode(node):boolean {
-    throw treeAdapter.isCommentNode(node);
+    return treeAdapter.isCommentNode(node);
   }
   isElementNode(node):boolean {
     return node ? treeAdapter.isElementNode(node) : false;
@@ -447,6 +457,12 @@ export class Parse5DomAdapter extends DomAdapter {
       rules = this._buildRules(parsedCSS.stylesheet.rules, css);
     }
     return rules;
+  }
+  supportsDOMEvents(): boolean {
+    return false;
+  }
+  supportsNativeShadowDOM(): boolean {
+    return false;
   }
 }
 

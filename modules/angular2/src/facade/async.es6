@@ -1,5 +1,6 @@
-import {int, global} from 'angular2/src/facade/lang';
+import {int, global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
+import Rx from 'rx/dist/rx.all';
 
 export var Promise = global.Promise;
 
@@ -49,5 +50,49 @@ export class PromiseWrapper {
 
   static isPromise(maybePromise):boolean {
     return maybePromise instanceof Promise;
+  }
+}
+
+
+/**
+ * Use Rx.Observable but provides an adapter to make it work as specified here:
+ * https://github.com/jhusain/observable-spec
+ *
+ * Once a reference implementation of the spec is available, switch to it.
+ */
+export var Observable = Rx.Observable;
+export var ObservableController = Rx.Subject;
+
+export class ObservableWrapper {
+  static createController():Rx.Subject {
+    return new Rx.Subject();
+  }
+
+  static createObservable(subject:Rx.Subject):Observable {
+    return subject;
+  }
+
+  static subscribe(observable:Observable, generatorOrOnNext, onThrow = null, onReturn = null) {
+    if (isPresent(generatorOrOnNext.next)) {
+      return observable.observeOn(Rx.Scheduler.timeout).subscribe(
+        (value) => generatorOrOnNext.next(value),
+        (error) => generatorOrOnNext.throw(error),
+        () => generatorOrOnNext.return()
+      );
+    } else {
+      return observable.observeOn(Rx.Scheduler.timeout).subscribe(generatorOrOnNext, onThrow, onReturn);
+    }
+  }
+
+  static callNext(subject:Rx.Subject, value:any) {
+    subject.onNext(value);
+  }
+
+  static callThrow(subject:Rx.Subject, error:any) {
+    subject.onError(error);
+  }
+
+  static callReturn(subject:Rx.Subject) {
+    subject.onCompleted();
   }
 }

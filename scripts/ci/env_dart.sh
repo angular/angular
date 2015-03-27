@@ -1,4 +1,4 @@
-#!/bin/false
+#!/bin/bash
 set -e -o pipefail
 
 if [[ -z $ENV_SET ]]; then

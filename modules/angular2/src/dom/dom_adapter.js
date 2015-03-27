@@ -144,6 +144,9 @@ export class DomAdapter {
   getShadowRoot(el) {
     throw _abstract();
   }
+  getDistributedNodes(el) {
+    throw _abstract();
+  }
   clone(node) {
     throw _abstract();
   }
@@ -247,6 +250,12 @@ export class DomAdapter {
     throw _abstract();
   }
   cssToRules(css:string): List {
+    throw _abstract();
+  }
+  supportsDOMEvents(): boolean {
+    throw _abstract();
+  }
+  supportsNativeShadowDOM(): boolean {
     throw _abstract();
   }
 }

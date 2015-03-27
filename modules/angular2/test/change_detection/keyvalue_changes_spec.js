@@ -54,6 +54,24 @@ export function main() {
         }));
       });
 
+      it('should expose previous and current value', () => {
+        var previous, current;
+
+        MapWrapper.set(m, 1, 10);
+        changes.check(m);
+
+        MapWrapper.set(m, 1, 20);
+        changes.check(m);
+
+        changes.forEachChangedItem((record) => {
+          previous = record.previousValue;
+          current = record.currentValue;
+        })
+
+        expect(previous).toEqual(10);
+        expect(current).toEqual(20);
+      });
+
       it('should do basic map watching', () => {
         changes.check(m);
 

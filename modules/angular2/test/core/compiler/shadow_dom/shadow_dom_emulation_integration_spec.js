@@ -7,7 +7,6 @@ import {
   expect,
   iit,
   inject,
-  IS_NODEJS,
   it,
   xit,
 } from 'angular2/test_lib';
@@ -54,7 +53,7 @@ export function main() {
       "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
       "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
     }
-    if (!IS_NODEJS) {
+    if (DOM.supportsNativeShadowDOM()) {
       StringMapWrapper.set(strategies, "native", new NativeShadowDomStrategy(styleUrlResolver));
     }
 
@@ -91,6 +90,18 @@ export function main() {
               assertions(view, lc);
             });
         }
+
+        it('should support simple components', inject([AsyncTestCompleter], (async) => {
+          var temp = '<simple>' +
+            '<div>A</div>' +
+            '</simple>';
+
+          compile(temp, [Simple], (view, lc) => {
+            expect(view.nodes).toHaveText('SIMPLE(A)');
+
+            async.done();
+          });
+        }));
 
         it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
           var temp = '<multiple-content-tags>' +
@@ -367,6 +378,6 @@ class MyComp {
 
 function createView(pv) {
   var view = pv.instantiate(null, null);
-  view.hydrate(new Injector([]), null, {});
+  view.hydrate(new Injector([]), null, null, {}, null);
   return view;
 }

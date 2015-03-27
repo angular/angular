@@ -13,6 +13,7 @@ var GUIDES_PATH = PARTIAL_PATH + '/guides';
 module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Register the services and file readers
+.factory(require('./services/modules'))
 .factory(require('./services/atParser'))
 .factory(require('./services/getJSDocComment'))
 .factory(require('./services/SourceFile'))
@@ -25,6 +26,15 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .factory(require('./readers/atScript'))
 .factory(require('./readers/ngdoc'))
 
+.factory('EXPORT_DOC_TYPES', function() {
+  return [
+    'class',
+    'function',
+    'var',
+    'const'
+  ];
+})
+
 
 // Register the processors
 .processor(require('./processors/generateDocsFromComments'))
@@ -35,7 +45,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Configure the log service
 .config(function(log) {
-  log.level = 'info';
+  log.level = 'warning';
 })
 
 
@@ -44,6 +54,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
+    { include: 'modules/*/*.js', basePath: 'modules' },
     { include: 'modules/*/src/**/*.js', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
@@ -78,17 +89,16 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   ];
 })
 
+// Add in a custom tag that we use when generating public docs
+.config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push({ name: 'publicModule' });
+})
 
 // Configure ids and paths
-.config(function(computeIdsProcessor, computePathsProcessor) {
+.config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: [
-      'class',
-      'function',
-      'NAMED_EXPORT',
-      'VARIABLE_STATEMENT'
-    ],
+    docTypes: EXPORT_DOC_TYPES,
     idTemplate: '${moduleDoc.id}.${name}',
     getAliases: function(doc) { return [doc.id]; }
   });
@@ -121,12 +131,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   });
 
   computePathsProcessor.pathTemplates.push({
-    docTypes: [
-      'class',
-      'function',
-      'NAMED_EXPORT',
-      'VARIABLE_STATEMENT'
-    ],
+    docTypes: EXPORT_DOC_TYPES,
     pathTemplate: '${moduleDoc.path}/${name}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${path}/index.html'
   });
