@@ -154,7 +154,7 @@ var CONFIG = {
       cjs: {
         src: [
           'modules/**/*.md', '!modules/**/*.dart.md', 'modules/**/*.png',
-          'modules/**/*.cjs'
+          'modules/**/*.cjs', 'modules/**/package.json'
         ],
         pipes: {
           '**/*.cjs': gulpPlugins.rename({extname: '.js'}),
