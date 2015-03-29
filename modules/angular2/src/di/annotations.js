@@ -107,6 +107,10 @@ export class DependencyAnnotation {
   @CONST()
   constructor() {
   }
+
+  get token() {
+    return null;
+  }
 }
 
 /**

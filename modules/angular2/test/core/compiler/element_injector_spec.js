@@ -79,6 +79,16 @@ class NeedsEventEmitter {
   }
 }
 
+class NeedsEventEmitterNoType {
+  clickEmitter;
+  constructor(@EventEmitter('click') clickEmitter) {
+    this.clickEmitter = clickEmitter;
+  }
+  click() {
+    this.clickEmitter(null);
+  }
+}
+
 class NeedsPropertySetter {
   propSetter;
   roleSetter;
@@ -110,6 +120,17 @@ class NeedsPropertySetter {
   }
   setStyleWithUnit(value) {
     this.unitSetter(value);
+  }
+}
+
+class NeedsPropertySetterNoType {
+  propSetter;
+  constructor(@PropertySetter('title') propSetter) {
+    this.propSetter = propSetter;
+  }
+
+  setProp(value) {
+    this.propSetter(value);
   }
 }
 
@@ -545,21 +566,40 @@ export function main() {
     });
 
     describe('event emitters', () => {
-      it('should be injectable and callable', () => {
-        var called = false;
+
+      function createpreBuildObject(eventName, eventHandler) {
         var handlers = StringMapWrapper.create();
-        StringMapWrapper.set(handlers, 'click', (e, view) => { called = true;});
+        StringMapWrapper.set(handlers, eventName, eventHandler);
         var pv = new ProtoView(null, null, null);
         pv.eventHandlers = [handlers];
         var view = new View(pv, null, MapWrapper.create());
-        var preBuildObject = new PreBuiltObjects(view, null, null, null);
+        return new PreBuiltObjects(view, null, null, null);
+      }
+
+      it('should be injectable and callable', () => {
+        var called = false;
+        var preBuildObject = createpreBuildObject('click', (e, view) => { called = true;});
         var inj = injector([NeedsEventEmitter], null, null, preBuildObject);
         inj.get(NeedsEventEmitter).click();
         expect(called).toEqual(true);
       });
 
+      it('should be injectable and callable without specifying param type annotation', () => {
+        var called = false;
+        var preBuildObject = createpreBuildObject('click', (e, view) => { called = true;});
+        var inj = injector([NeedsEventEmitterNoType], null, null, preBuildObject);
+        inj.get(NeedsEventEmitterNoType).click();
+        expect(called).toEqual(true);
+      });
+
       it('should be queryable through hasEventEmitter', () => {
         var inj = injector([NeedsEventEmitter]);
+        expect(inj.hasEventEmitter('click')).toBe(true);
+        expect(inj.hasEventEmitter('move')).toBe(false);
+      });
+
+      it('should be queryable through hasEventEmitter without specifying param type annotation', () => {
+        var inj = injector([NeedsEventEmitterNoType]);
         expect(inj.hasEventEmitter('click')).toBe(true);
         expect(inj.hasEventEmitter('move')).toBe(false);
       });
@@ -577,7 +617,7 @@ export function main() {
         component.setRole('button');
         component.setClass(true);
         component.classWithDashSetter(true);
-        component.setStyle('40px')
+        component.setStyle('40px');
         component.setStyleWithUnit(50);
 
         expect(div.title).toEqual('foobar');
@@ -586,6 +626,16 @@ export function main() {
         expect(DOM.hasClass(div, 'foo-bar')).toEqual(true);
         expect(DOM.getStyle(div, 'width')).toEqual('40px');
         expect(DOM.getStyle(div, 'height')).toEqual('50px');
+      });
+
+      it('should be injectable and callable without specifying param type annotation', () => {
+        var div = el('<div></div>');
+        var preBuildObject = new PreBuiltObjects(null, new NgElement(div), null, null);
+        var inj = injector([NeedsPropertySetterNoType], null, null, preBuildObject);
+        var component = inj.get(NeedsPropertySetterNoType);
+        component.setProp('foobar');
+
+        expect(div.title).toEqual('foobar');
       });
     });
 

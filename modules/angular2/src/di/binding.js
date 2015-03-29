@@ -135,7 +135,11 @@ function _extractToken(typeOrFunc, annotations) {
       optional = true;
 
     } else if (paramAnnotation instanceof DependencyAnnotation) {
+      if (isPresent(paramAnnotation.token)) {
+       token = paramAnnotation.token;
+      }
       ListWrapper.push(depProps, paramAnnotation);
+
     } else if (paramAnnotation.name === "string") {
       token = paramAnnotation;
     }

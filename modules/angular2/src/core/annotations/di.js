@@ -12,6 +12,10 @@ export class EventEmitter extends DependencyAnnotation {
     super();
     this.eventName = eventName;
   }
+
+  get token() {
+    return Function;
+  }
 }
 
 /**
@@ -24,6 +28,10 @@ export class PropertySetter extends DependencyAnnotation {
   constructor(propName) {
     super();
     this.propName = propName;
+  }
+
+  get token() {
+    return Function;
   }
 }
 
