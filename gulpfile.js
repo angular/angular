@@ -149,14 +149,6 @@ var CONFIG = {
           typeAssertions: false,
           modules: 'commonjs'
         })
-      },
-      dart: {
-        sourceMaps: true,
-        annotations: true, // parse annotations
-        types: true, // parse types
-        script: false, // parse as a module
-        memberVariables: true, // parse class fields
-        outputLanguage: 'dart'
       }
     }
   },
@@ -379,34 +371,11 @@ gulp.task('build/transformCJSTests', function() {
   return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js').pipe(transformCJSTests()).pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
 });
 
-gulp.task('build/transpile.dart', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.dart,
-  dest: CONFIG.dest.dart,
-  outputExt: 'dart',
-  options: CONFIG.transpile.options.dart,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.dart
-}));
-
-gulp.task('build/transpile.dart.ts2dart', function() {
+gulp.task('build/transpile.dart', function(done) {
   return gulp.src(CONFIG.transpile.src.dart)
       .pipe(ts2dart.transpile())
-      .pipe(gulp.dest('dist/dart.ts2dart'))
-});
-gulp.task('build/format.dart.ts2dart', rundartpackage(gulp, gulpPlugins, {
-  pub: DART_SDK.PUB,
-  packageName: CONFIG.formatDart.packageName,
-  args: ['dart_style:format', '-w', 'dist/dart.ts2dart']
-}));
-
-// Temporary tasks for development on ts2dart. Will likely fail.
-gulp.task('build/transpile.dart.ts2dart.all', function() {
-  return gulp.src(CONFIG.transpile.src.js)
-      .pipe(ts2dart.transpile())
       .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
-      .pipe(gulp.dest('dist/dart.ts2dart'));
-});
-gulp.task('ts2dart', function(done) {
- runSequence('build/transpile.dart.ts2dart.all', 'build/format.dart.ts2dart', done);
+      .pipe(gulp.dest(CONFIG.dest.dart));
 });
 
 // ------------
@@ -761,18 +730,13 @@ gulp.task('test.transpiler.unittest', function (done) {
       }))
 });
 
-
-
 // -----------------
 // orchestrated targets
 
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
-    ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
-    // the two format steps don't need to be sequential, but we have seen flakiness in
-    // dartstyle:format with connecting to localhost.
-    'build/format.dart.ts2dart',
+    ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'build/format.dart',
     'build/pubspec.dart',
     done
