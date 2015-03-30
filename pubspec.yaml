@@ -1,8 +1,7 @@
 name: angular
 environment:
-  sdk: '>=1.9.0-dev.8.0 <2.0.0'
+  sdk: '>=1.9.0 <2.0.0'
 dependencies:
-  stack_trace: '>=1.1.1 <1.2.0'
-
+  stack_trace: '^1.1.1'
 dev_dependencies:
-  guinness: ">=0.1.17 <0.2.0"
+  guinness: '^0.1.17'
