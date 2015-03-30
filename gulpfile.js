@@ -24,7 +24,9 @@ var karma = require('karma').server;
 var minimist = require('minimist');
 var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
+var sourcemaps = require('gulp-sourcemaps');
 var transformCJSTests = require('./tools/build/transformCJSTests');
+var tsc = require('gulp-typescript');
 var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 
@@ -120,6 +122,7 @@ var CONFIG = {
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
+      ts: ['modules/**/*.ts'],
       dart: ['modules/**/*.js']
     },
     options: {
@@ -296,6 +299,25 @@ gulp.task('build/transpile.js.dev.es6', transpile(gulp, gulpPlugins, {
   options: CONFIG.transpile.options.js.dev,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
+
+
+gulp.task('build/transpile.ts.dev.es5', function() {
+  var tsResult = gulp.src(CONFIG.transpile.src.ts)
+                     .pipe(sourcemaps.init())
+                     .pipe(tsc({
+
+                       target: 'ES5',
+                       module: 'commonjs',
+                       typescript: require('typescript'),
+                       noEmitOnError: true
+                     }))
+                     .js;
+  return merge([
+    tsResult.js.pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(CONFIG.dest.js.dev.es5)),
+    tsResult.js.pipe(gulp.dest(CONFIG.dest.js.dev.es5))
+  ]);
+});
 
 gulp.task('build/transpile.js.dev.es5', function() {
   return es5build({
