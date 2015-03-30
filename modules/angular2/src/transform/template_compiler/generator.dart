@@ -33,8 +33,8 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
 
   var registrations = new StringBuffer();
   for (var rType in ngDeps.registeredTypes) {
-    (await extractor.extractTemplates(rType)).forEach(
-        (RecordingReflectionCapabilities values) {
+    (await extractor.extractTemplates(rType))
+        .forEach((RecordingReflectionCapabilities values) {
       var calls = _generateGetters('${rType.typeName}', values.getterNames);
       if (calls.isNotEmpty) {
         registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'

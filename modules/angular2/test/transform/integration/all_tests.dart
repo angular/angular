@@ -116,9 +116,8 @@ void allTests() {
         return value.endsWith('dart') ? formatter.format(code) : code;
       });
     });
-    testPhases(config.name, [
-      [transform]
-    ], config.assetPathToInputPath, config.assetPathToExpectedOutputPath, []);
+    testPhases(config.name, [[transform]], config.assetPathToInputPath,
+        config.assetPathToExpectedOutputPath, []);
   }
 }
 

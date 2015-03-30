@@ -13,8 +13,7 @@ void setupReflection(reflector) {
       'factory':
           (prefix.MyContext c, String inValue) => new MyComponent(c, inValue),
       'parameters': const [const [prefix.MyContext], const [String]],
-      'annotations': const [
-        const Component(selector: prefix.preDefinedSelector)
-      ]
+      'annotations':
+          const [const Component(selector: prefix.preDefinedSelector)]
     });
 }
