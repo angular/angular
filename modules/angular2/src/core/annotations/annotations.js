@@ -456,7 +456,7 @@ export class Directive extends Injectable {
  * - loads the selected template into the shadow DOM.
  * - creates a child [Injector] which is configured with the [Component.services].
  *
- * All template expressions and statments are then evaluted against the component instance.
+ * All template expressions and statements are then evaluted against the component instance.
  *
  * For details on the `@Template` annotation, see [Template].
  *
