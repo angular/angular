@@ -10,8 +10,8 @@ import {
   xdescribe,
   xit,
 } from 'angular2/test_lib';
-import {bootstrap, appDocumentToken, appElementToken}
-    from 'angular2/src/core/application';
+import {bootstrap} from 'angular2/src/core/application';
+import {appDocumentToken, appElementToken} from 'angular2/src/core/application_tokens';
 import {Component, Decorator} from 'angular2/src/core/annotations/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';

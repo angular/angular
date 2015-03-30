@@ -28,6 +28,13 @@ import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {
+  appViewToken,
+  appChangeDetectorToken,
+  appElementToken,
+  appComponentAnnotatedTypeToken,
+  appDocumentToken,
+} from './application_tokens';
 
 var _rootInjector: Injector;
 
@@ -36,12 +43,6 @@ var _rootBindings = [
   bind(Reflector).toValue(reflector),
   TestabilityRegistry
 ];
-
-export var appViewToken = new OpaqueToken('AppView');
-export var appChangeDetectorToken = new OpaqueToken('AppChangeDetector');
-export var appElementToken = new OpaqueToken('AppElement');
-export var appComponentAnnotatedTypeToken = new OpaqueToken('AppComponentAnnotatedType');
-export var appDocumentToken = new OpaqueToken('AppDocument');
 
 function _injectorBindings(appComponentType): List<Binding> {
   return [
