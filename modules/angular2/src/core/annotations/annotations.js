@@ -410,7 +410,7 @@ export class Directive extends Injectable {
   /**
    * Specifies a set of lifecycle events in which the directive participates.
    *
-   * See: [onChange], [onDestroy] for details.
+   * See: [onChange], [onDestroy], [onAllChangesDone] for details.
    */
   lifecycle:List; //List<LifecycleEvent>
 
@@ -437,7 +437,7 @@ export class Directive extends Injectable {
   /**
    * Returns true if a directive participates in a given [LifecycleEvent].
    *
-   * See: [onChange], [onDestroy] for details.
+   * See: [onChange], [onDestroy], [onAllChangesDone] for details.
    */
   hasLifecycleHook(hook:string):boolean {
     return isPresent(this.lifecycle) ? ListWrapper.contains(this.lifecycle, hook) : false;
@@ -851,7 +851,7 @@ export class Viewport extends Directive {
  * ```
  * @Decorator({
  *   ...,
- *   lifecycle: [ onDestroy ]
+ *   lifecycle: [onDestroy]
  * })
  * class ClassSet {
  *   onDestroy() {
@@ -880,7 +880,8 @@ export const onDestroy = "onDestroy";
  *   bind: {
  *     'propA': 'propA'
  *     'propB': 'propB'
- *   }
+ *   },
+ *   lifecycle: [onChange]
  * })
  * class ClassSet {
  *   propA;
@@ -908,6 +909,7 @@ export const onChange = "onChange";
  * ```
  * @Decorator({
  *   selector: '[class-set]',
+ *   lifecycle: [onAllChangesDone]
  * })
  * class ClassSet {
  *
