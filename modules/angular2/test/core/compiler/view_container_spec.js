@@ -11,7 +11,7 @@ import {DynamicProtoChangeDetector, ChangeDetector, Lexer, Parser} from 'angular
 
 function createView(nodes) {
   var view = new View(null, nodes, MapWrapper.create());
-  var cd = new DynamicProtoChangeDetector(null).instantiate(view, [], null, []);
+  var cd = new DynamicProtoChangeDetector(null, null).instantiate(view, [], null, []);
   view.init(cd, [], [], [], [], [], [], [], [], []);
   return view;
 }
@@ -71,7 +71,7 @@ export function main() {
       dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null),
+      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null, null),
         new NativeShadowDomStrategy(null));
       elementInjector = new ElementInjector(null, null, null);
       viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
@@ -217,7 +217,7 @@ export function main() {
         viewContainer.hydrate(new Injector([]), null, null);
 
         var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
-          new DynamicProtoChangeDetector(null), new NativeShadowDomStrategy(null));
+          new DynamicProtoChangeDetector(null, null), new NativeShadowDomStrategy(null));
         pv.bindElement(null, 0, new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));
         fancyView = pv.instantiate(null, null);

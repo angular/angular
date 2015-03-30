@@ -3,7 +3,8 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {ProtoRecord} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
 import {NO_CHANGE} from './pipes/pipe';
-import {ChangeRecord, ChangeDetector, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from './interfaces';
+import {ChangeRecord, ChangeDetector} from './interfaces';
+import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
 export var uninitialized = new Object();
 
@@ -161,6 +162,10 @@ export class ChangeDetectionUtil {
 
   static simpleChangeRecord(memento:any, previousValue:any, currentValue:any):ChangeRecord {
     return _changeRecord(memento, _simpleChange(previousValue, currentValue));
+  }
+
+  static changeDetectionMode(strategy:string) {
+    return strategy == ON_PUSH ? CHECK_ONCE : CHECK_ALWAYS;
   }
 
   static addRecord(updatedRecords:List, changeRecord:ChangeRecord):List {

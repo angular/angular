@@ -8,7 +8,7 @@ import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord,
-  PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED} from 'angular2/change_detection';
+  PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT} from 'angular2/change_detection';
 
 import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
 
@@ -18,8 +18,8 @@ import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/c
 export function main() {
   describe("change detection", () => {
     StringMapWrapper.forEach(
-      { "dynamic": (registry = null) => new DynamicProtoChangeDetector(registry),
-        "JIT": (registry = null) => new JitProtoChangeDetector(registry)
+      { "dynamic": (registry = null, strategy = null) => new DynamicProtoChangeDetector(registry, strategy),
+        "JIT": (registry = null, strategy = null) => new JitProtoChangeDetector(registry, strategy)
       }, (createProtoChangeDetector, name) => {
 
         if (name == "JIT" && IS_DARTIUM) return;
@@ -464,6 +464,25 @@ export function main() {
         });
 
         describe("mode", () => {
+          it("should set the mode to CHECK_ALWAYS when the default change detection is used", () => {
+            var proto = createProtoChangeDetector(null, DEFAULT);
+            var cd = proto.instantiate(null, [], [], []);
+
+            expect(cd.mode).toEqual(null);
+
+            cd.hydrate(null, null);
+
+            expect(cd.mode).toEqual(CHECK_ALWAYS);
+          });
+
+          it("should set the mode to CHECK_ONCE when the push change detection is used", () => {
+            var proto = createProtoChangeDetector(null, ON_PUSH);
+            var cd = proto.instantiate(null, [], [], []);
+            cd.hydrate(null, null);
+
+            expect(cd.mode).toEqual(CHECK_ONCE);
+          });
+
           it("should not check a detached change detector", () => {
             var c = createChangeDetector('name', 'a', new TestData("value"));
             var cd = c["changeDetector"];

@@ -18,7 +18,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
 import {Lexer, Parser, dynamicChangeDetection,
-  DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig} from 'angular2/change_detection';
+  DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig, ON_PUSH} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -723,7 +723,8 @@ class MyDir {
   selector: 'push-cmp',
   bind: {
     'prop': 'prop'
-  }
+  },
+  changeDetection:ON_PUSH
 })
 @Template({inline: '{{field}}'})
 class PushBasedComp {
@@ -734,7 +735,6 @@ class PushBasedComp {
   constructor(bpc:BindingPropagationConfig) {
     this.numberOfChecks = 0;
     this.bpc = bpc;
-    bpc.shouldBePropagated();
   }
 
   get field(){

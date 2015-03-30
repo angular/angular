@@ -481,6 +481,17 @@ export class Directive extends Injectable {
  */
 export class Component extends Directive {
   /**
+   * Defines the used change detection strategy.
+   *
+   * When a component is instantiated, Angular creates a change detector, which is responsible for propagating
+   * the component's bindings.
+   *
+   * The changeDetection property defines if the change detection will be checked every time or only when the component
+   * tell it too.
+   */
+  changeDetection:string;
+
+  /**
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
    * The [services] defined in the Component annotation allow you to configure a set of bindings for the component's
@@ -534,13 +545,15 @@ export class Component extends Directive {
     bind,
     events,
     services,
-    lifecycle
+    lifecycle,
+    changeDetection
     }:{
-      selector:String,
+      selector:string,
       bind:Object,
       events:Object,
       services:List,
-      lifecycle:List
+      lifecycle:List,
+      changeDetection:string
     }={})
   {
     super({
@@ -550,6 +563,7 @@ export class Component extends Directive {
       lifecycle: lifecycle
     });
 
+    this.changeDetection = changeDetection;
     this.services = services;
   }
 }

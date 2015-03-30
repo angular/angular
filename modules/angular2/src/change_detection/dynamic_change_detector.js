@@ -35,8 +35,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   protos:List<ProtoRecord>;
   directiveMementos:List;
+  changeControlStrategy:string;
 
-  constructor(dispatcher:any, pipeRegistry:PipeRegistry, protoRecords:List<ProtoRecord>, directiveMementos:List) {
+  constructor(changeControlStrategy:string, dispatcher:any, pipeRegistry:PipeRegistry,
+              protoRecords:List<ProtoRecord>, directiveMementos:List) {
     super();
     this.dispatcher = dispatcher;
     this.pipeRegistry = pipeRegistry;
@@ -54,9 +56,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
     this.protos = protoRecords;
     this.directiveMementos = directiveMementos;
+    this.changeControlStrategy = changeControlStrategy;
   }
 
   hydrate(context:any, locals:any) {
+    this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
     this.values[0] = context;
     this.locals = locals;
   }

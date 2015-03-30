@@ -1,4 +1,5 @@
-import {ChangeDetector, CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './interfaces';
+import {ChangeDetector} from './interfaces';
+import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
 
 /**
  * @publicModule angular2/angular2

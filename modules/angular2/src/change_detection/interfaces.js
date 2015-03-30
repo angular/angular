@@ -1,5 +1,19 @@
 import {List} from 'angular2/src/facade/collection';
 import {Locals} from './parser/locals';
+import {AST} from './parser/ast';
+
+export class ProtoChangeDetector  {
+  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMemento:List):ChangeDetector{
+    return null;
+  }
+}
+
+export class ChangeDetection {
+  createProtoChangeDetector(name:string, changeControlStrategy:string):ProtoChangeDetector{
+    return null;
+  }
+}
 
 export class ChangeRecord {
   bindingMemento:any;
@@ -19,31 +33,6 @@ export class ChangeRecord {
     return this.change.previousValue;
   }
 }
-
-
-/**
- * CHECK_ONCE means that after calling detectChanges the mode of the change detector
- * will become CHECKED.
- */
-export const CHECK_ONCE="CHECK_ONCE";
-
-/**
- * CHECKED means that the change detector should be skipped until its mode changes to
- * CHECK_ONCE or CHECK_ALWAYS.
- */
-export const CHECKED="CHECKED";
-
-/**
- * CHECK_ALWAYS means that after calling detectChanges the mode of the change detector
- * will remain CHECK_ALWAYS.
- */
-export const CHECK_ALWAYS="ALWAYS_CHECK";
-
-/**
- * DETACHED means that the change detector sub tree is not a part of the main tree and
- * should be skipped.
- */
-export const DETACHED="DETACHED";
 
 export class ChangeDispatcher {
   onRecordChange(directiveMemento, records:List<ChangeRecord>) {}

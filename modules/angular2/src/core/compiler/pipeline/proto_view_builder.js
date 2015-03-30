@@ -8,6 +8,8 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {ShadowDomStrategy} from '../shadow_dom_strategy';
+import {DirectiveMetadata} from '../directive_metadata';
+import {Component} from 'angular2/src/core/annotations/annotations';
 
 /**
  * Creates ProtoViews and forwards variable bindings from parent to children.
@@ -24,8 +26,12 @@ import {ShadowDomStrategy} from '../shadow_dom_strategy';
 export class ProtoViewBuilder extends CompileStep {
   changeDetection:ChangeDetection;
   _shadowDomStrategy:ShadowDomStrategy;
-  constructor(changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
+  _compiledComponent:DirectiveMetadata;
+
+  constructor(compiledComponent:DirectiveMetadata,
+              changeDetection:ChangeDetection, shadowDomStrategy:ShadowDomStrategy) {
     super();
+    this._compiledComponent = compiledComponent;
     this._shadowDomStrategy = shadowDomStrategy;
     this.changeDetection = changeDetection;
   }
@@ -33,7 +39,10 @@ export class ProtoViewBuilder extends CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var inheritedProtoView = null;
     if (current.isViewRoot) {
-      var protoChangeDetector = this.changeDetection.createProtoChangeDetector('dummy');
+      var componentAnnotation:Component = this._compiledComponent.annotation;
+      var protoChangeDetector = this.changeDetection.createProtoChangeDetector('dummy',
+        componentAnnotation.changeDetection);
+
       inheritedProtoView = new ProtoView(current.element, protoChangeDetector,
         this._shadowDomStrategy, this._getParentProtoView(parent));
 

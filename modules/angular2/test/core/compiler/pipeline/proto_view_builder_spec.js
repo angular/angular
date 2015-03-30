@@ -4,16 +4,20 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {dynamicChangeDetection} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {ProtoViewBuilder} from 'angular2/src/core/compiler/pipeline/proto_view_builder';
+import {Component} from 'angular2/annotations';
 import {CompilePipeline} from 'angular2/src/core/compiler/pipeline/compile_pipeline';
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 import {CompileStep} from 'angular2/src/core/compiler/pipeline/compile_step'
 import {CompileControl} from 'angular2/src/core/compiler/pipeline/compile_control';
+import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('ProtoViewBuilder', () => {
     function createPipeline(variableBindings = null) {
+      var component = new DirectiveMetadata(null, new Component());
+
       return new CompilePipeline([new MockStep((parent, current, control) => {
         if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
           current.isViewRoot = true;
@@ -22,7 +26,7 @@ export function main() {
           current.variableBindings = MapWrapper.createFromStringMap(variableBindings);
         }
         current.inheritedElementBinder = new ElementBinder(0, null, 0, null, null, null);
-      }), new ProtoViewBuilder(dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
+      }), new ProtoViewBuilder(component, dynamicChangeDetection, new NativeShadowDomStrategy(null))]);
     }
 
     it('should not create a ProtoView when the isViewRoot flag is not set', () => {

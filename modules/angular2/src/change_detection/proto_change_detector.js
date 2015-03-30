@@ -22,7 +22,7 @@ import {
   PrefixNot
   } from './parser/ast';
 
-import {ChangeRecord, ChangeDispatcher, ChangeDetector} from './interfaces';
+import {ChangeRecord, ChangeDispatcher, ChangeDetector, ProtoChangeDetector} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
@@ -45,13 +45,6 @@ import {
   RECORD_TYPE_INTERPOLATE
   } from './proto_record';
 
-export class ProtoChangeDetector  {
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMemento:List):ChangeDetector{
-    return null;
-  }
-}
-
 export class BindingRecord {
   ast:AST;
   bindingMemento:any;
@@ -67,15 +60,18 @@ export class BindingRecord {
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _pipeRegistry:PipeRegistry;
   _records:List<ProtoRecord>;
+  _changeControlStrategy:string;
 
-  constructor(pipeRegistry:PipeRegistry) {
+  constructor(pipeRegistry:PipeRegistry, changeControlStrategy:string) {
     super();
     this._pipeRegistry = pipeRegistry;
+    this._changeControlStrategy = changeControlStrategy;
   }
 
   instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMementos:List) {
     this._createRecordsIfNecessary(bindingRecords, variableBindings);
-    return new DynamicChangeDetector(dispatcher, this._pipeRegistry, this._records, directiveMementos);
+    return new DynamicChangeDetector(this._changeControlStrategy, dispatcher,
+      this._pipeRegistry, this._records, directiveMementos);
   }
 
   _createRecordsIfNecessary(bindingRecords:List, variableBindings:List) {
@@ -93,11 +89,13 @@ var _jitProtoChangeDetectorClassCounter:number = 0;
 export class JitProtoChangeDetector extends ProtoChangeDetector {
   _factory:Function;
   _pipeRegistry;
+  _changeControlStrategy:string;
 
-  constructor(pipeRegistry) {
+  constructor(pipeRegistry, changeControlStrategy:string) {
     super();
     this._pipeRegistry = pipeRegistry;
     this._factory = null;
+    this._changeControlStrategy = changeControlStrategy;
   }
 
   instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMementos:List) {
@@ -114,7 +112,8 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
       var c = _jitProtoChangeDetectorClassCounter++;
       var records = coalesce(recordBuilder.records);
       var typeName = `ChangeDetector${c}`;
-      this._factory = new ChangeDetectorJITGenerator(typeName, records, directiveMementos).generate();
+      this._factory = new ChangeDetectorJITGenerator(typeName, this._changeControlStrategy, records,
+        directiveMementos).generate();
     }
   }
 }

@@ -24,74 +24,10 @@ import {
  * that "emulates" what the developer would write by hand to implement the same
  * kind of behaviour.
  *
- * For example: An expression `address.city` will result in the following class:
- *
- * var ChangeDetector0 = function ChangeDetector0(dispatcher, protos) {
- *   AbstractChangeDetector.call(this);
- *   this.dispatcher = dispatcher;
- *   this.protos = protos;
- *
- *   this.context = ChangeDetectionUtil.unitialized();
- *   this.address0 = ChangeDetectionUtil.unitialized();
- *   this.city1 = ChangeDetectionUtil.unitialized();
- * }
- * ChangeDetector0.prototype = Object.create(AbstractChangeDetector.prototype);
- *
- * ChangeDetector0.prototype.detectChangesInRecords = function(throwOnChange) {
- *   var address0;
- *   var city1;
- *   var change;
- *   var changes = null;
- *   var temp;
- *   var context = this.context;
- *
- *   address0 = context.address;
- *   if (address0 !== this.address0) {
- *     this.address0 = address0;
- *   }
- *
- *   city1 = address0.city;
- *   if (city1 !== this.city1) {
- *     changes = ChangeDetectionUtil.addRecord(changes,
- *       ChangeDetectionUtil.simpleChangeRecord(this.protos[1].bindingMemento, this.city1, city1));
- *     this.city1 = city1;
- *   }
- *
- *   if (changes.length > 0) {
- *     if(throwOnChange) ChangeDetectionUtil.throwOnChange(this.protos[1], changes[0]);
- *     this.dispatcher.onRecordChange('address.city', changes);
- *     changes = null;
- *   }
- * }
- *
- * ChangeDetector0.prototype.callOnAllChangesDone = function() {}
- *
- * ChangeDetector0.prototype.hydrate = function(context, locals) {
- *   this.context = context;
- *   this.locals = locals;
- * }
- *
- * ChangeDetector0.prototype.dehydrate = function(context) {
- *   this.context = ChangeDetectionUtil.unitialized();
- *   this.address0 = ChangeDetectionUtil.unitialized();
- *   this.city1 = ChangeDetectionUtil.unitialized();
- *   this.locals = null;
- * }
- *
- * ChangeDetector0.prototype.hydrated = function() {
- *   return this.context !== ChangeDetectionUtil.unitialized();
- * }
- *
- * return ChangeDetector0;
- *
- *
- * The only thing the generated class depends on is the super class AbstractChangeDetector.
- *
  * The implementation comprises two parts:
  * * ChangeDetectorJITGenerator has the logic of how everything fits together.
  * * template functions (e.g., constructorTemplate) define what code is generated.
 */
-
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";
 var DISPATCHER_ACCESSOR = "this.dispatcher";
@@ -102,6 +38,7 @@ var CONTEXT_ACCESSOR = "this.context";
 var CHANGE_LOCAL = "change";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
+var MODE_ACCESSOR = "this.mode";
 var TEMP_LOCAL = "temp";
 
 function typeTemplate(type:string, cons:string, detectChanges:string,
@@ -137,9 +74,10 @@ function pipeOnDestroyTemplate(pipeNames:List) {
   return pipeNames.map((p) => `${p}.onDestroy()`).join("\n");
 }
 
-function hydrateTemplate(type:string, fieldsDefinitions:string, pipeOnDestroy:string):string {
+function hydrateTemplate(type:string, mode:string, fieldsDefinitions:string, pipeOnDestroy:string):string {
   return `
 ${type}.prototype.hydrate = function(context, locals) {
+  ${MODE_ACCESSOR} = "${mode}";
   ${CONTEXT_ACCESSOR} = context;
   ${LOCALS_ACCESSOR} = locals;
 }
@@ -265,13 +203,15 @@ export class ChangeDetectorJITGenerator {
   typeName:string;
   records:List<ProtoRecord>;
   directiveMementos:List;
-  localNames:List<String>;
-  changeNames:List<String>;
-  fieldNames:List<String>;
-  pipeNames:List<String>;
+  localNames:List<string>;
+  changeNames:List<string>;
+  fieldNames:List<string>;
+  pipeNames:List<string>;
+  changeDetectionStrategy:stirng;
 
-  constructor(typeName:string, records:List<ProtoRecord>, directiveMementos:List) {
+  constructor(typeName:string, changeDetectionStrategy:string, records:List<ProtoRecord>, directiveMementos:List) {
     this.typeName = typeName;
+    this.changeDetectionStrategy = changeDetectionStrategy;
     this.records = records;
     this.directiveMementos = directiveMementos;
 
@@ -281,7 +221,7 @@ export class ChangeDetectorJITGenerator {
     this.pipeNames = this.getPipeNames(this.localNames);
   }
 
-  getLocalNames(records:List<ProtoRecord>):List<String> {
+  getLocalNames(records:List<ProtoRecord>):List<string> {
     var index = 0;
     var names = records.map((r) => {
       var sanitizedName = r.name.replace(new RegExp("\\W", "g"), '');
@@ -290,15 +230,15 @@ export class ChangeDetectorJITGenerator {
     return ["context"].concat(names);
   }
 
-  getChangeNames(localNames:List<String>):List<String> {
+  getChangeNames(localNames:List<string>):List<string> {
     return localNames.map((n) => `change_${n}`);
   }
 
-  getFieldNames(localNames:List<String>):List<String> {
+  getFieldNames(localNames:List<string>):List<string> {
     return localNames.map((n) => `this.${n}`);
   }
 
-  getPipeNames(localNames:List<String>):List<String> {
+  getPipeNames(localNames:List<string>):List<string> {
     return localNames.map((n) => `this.${n}_pipe`);
   }
 
@@ -314,7 +254,8 @@ export class ChangeDetectorJITGenerator {
   }
 
   genHydrate():string {
-    return hydrateTemplate(this.typeName, this.genFieldDefinitions(),
+    var mode = ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy);
+    return hydrateTemplate(this.typeName, mode, this.genFieldDefinitions(),
       pipeOnDestroyTemplate(this.getNonNullPipeNames()));
   }
 
@@ -325,7 +266,7 @@ export class ChangeDetectorJITGenerator {
     return fieldDefinitionsTemplate(fields);
   }
 
-  getNonNullPipeNames():List<String> {
+  getNonNullPipeNames():List<string> {
     var pipes = [];
     this.records.forEach((r) => {
       if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {

@@ -36,9 +36,9 @@ export function createDefaultSteps(
     new DirectiveParser(directives),
     new TextInterpolationParser(parser),
     new ElementBindingMarker(),
-    new ProtoViewBuilder(changeDetection, shadowDomStrategy),
+    new ProtoViewBuilder(compiledComponent, changeDetection, shadowDomStrategy),
     new ProtoElementInjectorBuilder(),
-    new ElementBinderBuilder(parser),
+    new ElementBinderBuilder(parser)
   ];
 
   return steps;
