@@ -14,6 +14,8 @@ import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_d
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 
+class DummyDirective extends Directive { constructor({lifecycle}) { super({lifecycle}); } }
+
 @proxy
 @IMPLEMENTS(View)
 class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
@@ -445,10 +447,10 @@ export function main() {
           '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
       });
 
-      it("should call onDestroy on directives subscribed to this event", function () {
-        var inj = injector([
-          DirectiveBinding.createFromType(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}))
-        ]);
+      it("should call onDestroy on directives subscribed to this event", function() {
+        var inj = injector([DirectiveBinding.createFromType(
+            DirectiveWithDestroy,
+            new DummyDirective({lifecycle: [onDestroy]}))]);
         var destroy = inj.get(DirectiveWithDestroy);
         inj.clearDirectives();
         expect(destroy.onDestroyCounter).toBe(1);
@@ -484,7 +486,7 @@ export function main() {
         expect(inj.get(BindingPropagationConfig)).toEqual(config);
       });
     });
-    
+
     describe("createPrivateComponent", () => {
       it("should create a private component", () => {
         var inj = injector([]);
@@ -524,7 +526,9 @@ export function main() {
 
       it("should support rehydrating the private component", () => {
         var inj = injector([]);
-        inj.createPrivateComponent(DirectiveWithDestroy, new Directive({lifecycle: [onDestroy]}));
+        inj.createPrivateComponent(
+            DirectiveWithDestroy,
+            new DummyDirective({lifecycle: [onDestroy]}));
         var dir = inj.getPrivateComponent();
 
         inj.clearDirectives();
@@ -537,7 +541,7 @@ export function main() {
         expect(inj.getPrivateComponent()).not.toBe(null);
       });
     });
-    
+
     describe('event emitters', () => {
       it('should be injectable and callable', () => {
         var called = false;
