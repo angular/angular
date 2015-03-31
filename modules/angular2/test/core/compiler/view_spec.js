@@ -18,7 +18,7 @@ import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_mana
 import {reflector} from 'angular2/src/reflection/reflection';
 
 class DummyDirective extends Directive {
-  constructor({lifecycle = []}) { super({lifecycle}); }
+  constructor({lifecycle = []} = {}) { super({lifecycle: lifecycle}); }
 }
 
 @proxy

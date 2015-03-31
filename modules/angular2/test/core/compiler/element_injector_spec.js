@@ -14,7 +14,9 @@ import {LightDom, DestinationLightDom} from 'angular2/src/core/compiler/shadow_d
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 
-class DummyDirective extends Directive { constructor({lifecycle}) { super({lifecycle}); } }
+class DummyDirective extends Directive {
+  constructor({lifecycle = []} = {}) { super({lifecycle: lifecycle}); }
+}
 
 @proxy
 @IMPLEMENTS(View)
