@@ -22,7 +22,7 @@ import {appDocumentToken} from 'angular2/src/core/application_tokens';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/mock/xhr_mock';
 import {MockVmTurnZone} from 'angular2/src/mock/vm_turn_zone_mock';
 
 import {TestBed} from './test_bed';
@@ -76,7 +76,7 @@ function _getAppBindings() {
     Parser,
     Lexer,
     ExceptionHandler,
-    bind(XHR).toClass(XHRMock),
+    bind(XHR).toClass(MockXHR),
     ComponentUrlMapper,
     UrlResolver,
     StyleUrlResolver,

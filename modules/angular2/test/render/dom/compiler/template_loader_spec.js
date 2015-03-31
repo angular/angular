@@ -16,14 +16,14 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 import {Template} from 'angular2/src/render/api';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/mock/xhr_mock';
 
 export function main() {
   describe('TemplateLoader', () => {
     var loader, xhr;
 
     beforeEach(() => {
-      xhr = new XHRMock()
+      xhr = new MockXHR();
       loader = new TemplateLoader(xhr, new FakeUrlResolver());
     });
 

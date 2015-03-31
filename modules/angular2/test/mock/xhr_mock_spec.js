@@ -10,16 +10,16 @@ import {
   IS_DARTIUM,
   it,
 } from 'angular2/test_lib';
-import {XHRMock} from 'angular2/src/mock/xhr_mock';
+import {MockXHR} from 'angular2/src/mock/xhr_mock';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';
 
 export function main() {
-  describe('XHRMock', () => {
+  describe('MockXHR', () => {
     var xhr;
 
     beforeEach(() => {
-      xhr = new XHRMock();
+      xhr = new MockXHR();
     });
 
     function expectResponse(request: Promise, url: string, response: string, done = null) {
