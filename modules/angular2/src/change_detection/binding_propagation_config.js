@@ -2,7 +2,7 @@ import {ChangeDetector} from './interfaces';
 import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
 
 /**
- * @publicModule angular2/angular2
+ * @publicModule angular2/change_detection
  */
 export class BindingPropagationConfig {
   _cd:ChangeDetector;

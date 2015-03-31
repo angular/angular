@@ -30,6 +30,9 @@ function _emptyStep() {
   return _EMPTY_STEP;
 }
 
+/**
+ * @publicModule angular2/template
+ */
 export class ShadowDomStrategy {
   attachTemplate(el, view:viewModule.View) {}
   constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom { return null; }
@@ -77,6 +80,8 @@ export class ShadowDomStrategy {
  * Notes:
  * - styles are **not** scoped to their component and will apply to the whole document,
  * - you can **not** use shadow DOM specific selectors in the styles
+ * 
+ * @publicModule angular2/template
  */
 @Injectable()
 export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
@@ -119,6 +124,8 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
  * - styles are scoped to their component and will apply only to it,
  * - a common subset of shadow DOM selectors are supported,
  * - see `ShadowCss` for more information and limitations.
+ * 
+ * @publicModule angular2/template
  */
 @Injectable()
 export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomStrategy {

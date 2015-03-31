@@ -3,7 +3,14 @@ import {Observable, ObservableController, ObservableWrapper} from 'angular2/src/
 import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
 
+/**
+ * @publicModule angular2/forms
+ */
 export const VALID = "VALID";
+
+/**
+ * @publicModule angular2/forms
+ */
 export const INVALID = "INVALID";
 
 //interface IControl {
@@ -18,6 +25,9 @@ export const INVALID = "INVALID";
 //  setParent(parent){}
 //}
 
+/**
+ * @publicModule angular2/forms
+ */
 export class AbstractControl {
   _value:any;
   _status:string;
@@ -69,6 +79,9 @@ export class AbstractControl {
   }
 }
 
+/**
+ * @publicModule angular2/forms
+ */
 export class Control extends AbstractControl {
   constructor(value:any, validator:Function = Validators.nullValidator) {
     super(validator);
@@ -94,6 +107,9 @@ export class Control extends AbstractControl {
   }
 }
 
+/**
+ * @publicModule angular2/forms
+ */
 export class ControlGroup extends AbstractControl {
   controls:StringMap;
   _optionals:StringMap;
@@ -169,6 +185,9 @@ export class ControlGroup extends AbstractControl {
   }
 }
 
+/**
+ * @publicModule angular2/forms
+ */
 export class ControlArray extends AbstractControl {
   controls:List;
 

@@ -3,6 +3,9 @@ import {isPresent} from 'angular2/src/facade/lang';
 import * as modelModule from './model';
 
 
+/**
+ * @publicModule angular2/forms
+ */
 export class FormBuilder {
   group(controlsConfig, extra = null):modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);

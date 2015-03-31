@@ -4,6 +4,9 @@ import {View} from 'angular2/src/core/compiler/view';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
+/**
+ * @publicModule angular2/directives
+ */
 @Viewport({
   selector: '[for][of]',
   bind: {
