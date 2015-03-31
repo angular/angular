@@ -9,7 +9,7 @@ import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {LightDom} from './shadow_dom_emulation/light_dom';
 
 /**
- * @publicModule angular2/angular2
+ * @publicModule angular2/template
  */
 export class ViewContainer {
   parentView: viewModule.View;

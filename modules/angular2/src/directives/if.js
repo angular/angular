@@ -2,6 +2,9 @@ import {Viewport} from 'angular2/src/core/annotations/annotations';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {isBlank} from 'angular2/src/facade/lang';
 
+/**
+ * @publicModule angular2/directives
+ */
 @Viewport({
   selector: '[if]',
   bind: {
