@@ -38,7 +38,9 @@ module.exports = function ExportTreeVisitor(ParseTreeVisitor, log) {
         this.updateExport(tree);
         this.currentExport.name = tree.name.identifierToken.value;
         this.currentExport.functionKind = tree.functionKind;
-        this.currentExport.parameters = tree.parameterList.parameters;
+        this.currentExport.parameters = tree.parameterList.parameters.map(function(param) {
+          return param.location.toString();
+        });
         this.currentExport.typeAnnotation = tree.typeAnnotation;
         this.currentExport.annotations = tree.annotations;
         this.currentExport.docType = 'function';

@@ -1,13 +1,18 @@
-{% extends 'layout/base.template.html' %}
+{% include "lib/paramList.html" -%}
+{% extends 'layout/base.template.html' -%}
 
 {% block body %}
-<h1>{$ doc.name $} <span class="type">class</span></h1>
+<h1 class="class export">{$ doc.name $} <span class="type">class</span></h1>
 <p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></p>
 <p>{$ doc.description | marked $}</p>
 
 <h2>Members</h2>
-{% for member in doc.members %}
-  <h3>{$ member.name $}</h3>
+{%- if doc.constructorDoc %}
+  <h3>{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h3>
+  <p>{$ doc.constructorDoc.description | marked $}</p>
+{% endif -%}
+{%- for member in doc.members %}
+  <h3>{$ member.name $}{$ paramList(member.params) $}</h3>
   <p>{$ member.description | marked $}</p>
 {% endfor %}
 
