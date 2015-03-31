@@ -16,9 +16,13 @@ import {
 } from 'traceur/src/codegeneration/PlaceholderParser.js';
 
 export class TypeToExpressionTransformer extends ParseTreeTransformer {
+  // Not used. Just required to call super() by traceur.
   constructor(idGenerator, reporter, options) {
     super(idGenerator, reporter);
-    this.options_ = options;
+  }
+
+  typeModule() {
+    return parseExpression([this.getOptions().outputLanguage === 'es6' ? 'assert' : '$traceurRuntime']);
   }
 
   transformTypeName(tree) {
@@ -30,14 +34,14 @@ export class TypeToExpressionTransformer extends ParseTreeTransformer {
   }
 
   transformPredefinedType(tree) {
-    return parseExpression `assert.type.${tree.typeToken})`;
+    return parseExpression `${this.typeModule()}.type.${tree.typeToken})`;
   }
 
   transformTypeReference(tree) {
     var typeName = this.transformAny(tree.typeName);
     var args = this.transformAny(tree.args);
     var argumentList = new ArgumentList(tree.location, [typeName, ...args]);
-    return parseExpression `assert.genericType(${argumentList})`;
+    return parseExpression `${this.typeModule()}.genericType(${argumentList})`;
   }
 
   transformTypeArguments(tree) {
