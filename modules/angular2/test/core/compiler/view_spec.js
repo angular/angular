@@ -17,6 +17,10 @@ import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
 import {reflector} from 'angular2/src/reflection/reflection';
 
+class DummyDirective extends Directive {
+  constructor({lifecycle = []}) { super({lifecycle}); }
+}
+
 @proxy
 @IMPLEMENTS(ViewContainer)
 class FakeViewContainer {
@@ -351,7 +355,7 @@ export function main() {
               el('<div dec class="ng-binding">hello shadow dom</div>'),
               new DynamicProtoChangeDetector(null),
               null);
-            subpv.bindElement(null, 0, 
+            subpv.bindElement(null, 0,
               new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
             var pv = createComponentWithSubPV(subpv);
 
@@ -376,7 +380,7 @@ export function main() {
             el('<div dec class="ng-binding">hello shadow dom</div>'),
             new DynamicProtoChangeDetector(null),
             null);
-          subpv.bindElement(null, 0, 
+          subpv.bindElement(null, 0,
             new ProtoElementInjector(null, 0, [ServiceDependentDecorator]));
           var pv = createComponentWithSubPV(subpv);
 
@@ -587,7 +591,8 @@ export function main() {
             new DynamicProtoChangeDetector(null), null);
 
           pv.bindElement(null, 0, new ProtoElementInjector(null, 0, [
-            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange,
+                new DummyDirective({lifecycle: [onChange]}))
           ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'));
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'));
@@ -606,7 +611,8 @@ export function main() {
             new DynamicProtoChangeDetector(null), null);
 
           pv.bindElement(null, 0, new ProtoElementInjector(null, 0, [
-            DirectiveBinding.createFromType(DirectiveImplementingOnChange, new Directive({lifecycle: [onChange]}))
+            DirectiveBinding.createFromType(DirectiveImplementingOnChange,
+                new DummyDirective({lifecycle: [onChange]}))
           ]));
           pv.bindDirectiveProperty( 0, parser.parseBinding('a', null), 'a', reflector.setter('a'));
           pv.bindDirectiveProperty( 0, parser.parseBinding('b', null), 'b', reflector.setter('b'));
@@ -627,13 +633,14 @@ export function main() {
           cd.detectChanges();
           expect(directive.changes).toEqual({"a" : new PropertyUpdate(100, 0)});
         });
-        
+
         it('should invoke the onAllChangesDone callback', () => {
           var pv = new ProtoView(el('<div class="ng-binding"></div>'),
             new DynamicProtoChangeDetector(null), null);
 
           pv.bindElement(null, 0, new ProtoElementInjector(null, 0, [
-            DirectiveBinding.createFromType(DirectiveImplementingOnAllChangesDone, new Directive({lifecycle: [onAllChangesDone]}))
+            DirectiveBinding.createFromType(DirectiveImplementingOnAllChangesDone,
+                new DummyDirective({lifecycle: [onAllChangesDone]}))
           ]));
 
           createViewAndChangeDetector(pv);
