@@ -3,7 +3,6 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {ProtoRecord} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
 import {NO_CHANGE} from './pipes/pipe';
-import {ChangeRecord, ChangeDetector} from './interfaces';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
 export var uninitialized = new Object();
@@ -40,31 +39,7 @@ var _simpleChanges = [
   new SimpleChange(null, null),
   new SimpleChange(null, null),
   new SimpleChange(null, null)
-]
-
-var _changeRecordsIndex = 0;
-var _changeRecords = [
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null),
-  new ChangeRecord(null, null)
-]
+];
 
 function _simpleChange(previousValue, currentValue) {
   var index = _simpleChangesIndex++ % 20;
@@ -73,16 +48,6 @@ function _simpleChange(previousValue, currentValue) {
   s.currentValue = currentValue;
   return s;
 }
-
-function _changeRecord(bindingMemento, change) {
-  var index = _changeRecordsIndex++ % 20;
-  var s = _changeRecords[index];
-  s.bindingMemento = bindingMemento;
-  s.change = change;
-  return s;
-}
-
-var _singleElementList = [null];
 
 export class ChangeDetectionUtil {
   static unitialized() {
@@ -152,33 +117,19 @@ export class ChangeDetectionUtil {
     throw new ExpressionChangedAfterItHasBeenChecked(proto, change);
   }
 
-  static simpleChange(previousValue:any, currentValue:any):SimpleChange {
-    return _simpleChange(previousValue, currentValue);
-  }
-
-  static changeRecord(memento:any, change:any):ChangeRecord {
-    return _changeRecord(memento, change);
-  }
-
-  static simpleChangeRecord(memento:any, previousValue:any, currentValue:any):ChangeRecord {
-    return _changeRecord(memento, _simpleChange(previousValue, currentValue));
-  }
-
   static changeDetectionMode(strategy:string) {
     return strategy == ON_PUSH ? CHECK_ONCE : CHECK_ALWAYS;
   }
 
-  static addRecord(updatedRecords:List, changeRecord:ChangeRecord):List {
-    if (isBlank(updatedRecords)) {
-      updatedRecords = _singleElementList;
-      updatedRecords[0] = changeRecord;
+  static simpleChange(previousValue:any, currentValue:any):SimpleChange {
+    return _simpleChange(previousValue, currentValue);
+  }
 
-    } else if (updatedRecords === _singleElementList) {
-      updatedRecords = [_singleElementList[0], changeRecord];
-
-    } else {
-      ListWrapper.push(updatedRecords, changeRecord);
+  static addChange(changes, bindingMemento, change){
+    if (isBlank(changes)) {
+      changes = {};
     }
-    return updatedRecords;
+    changes[bindingMemento.propertyName] = change;
+    return changes;
   }
 }

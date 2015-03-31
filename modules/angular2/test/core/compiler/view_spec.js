@@ -7,11 +7,11 @@ import {Component, Decorator, Viewport, Directive, onChange, onAllChangesDone} f
 import {Lexer, Parser, DynamicProtoChangeDetector,
   ChangeDetector} from 'angular2/change_detection';
 import {EventEmitter} from 'angular2/src/core/annotations/di';
-import {List, MapWrapper} from 'angular2/src/facade/collection';
+import {List, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {int, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
-import {View, PropertyUpdate} from 'angular2/src/core/compiler/view';
+import {View} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
@@ -624,14 +624,13 @@ export function main() {
           ctx.b = 0;
           cd.detectChanges();
 
-          expect(directive.changes).toEqual({
-            "a" : PropertyUpdate.createWithoutPrevious(0),
-            "b" : PropertyUpdate.createWithoutPrevious(0)
-          });
+          expect(directive.changes["a"].currentValue).toEqual(0);
+          expect(directive.changes["b"].currentValue).toEqual(0);
 
           ctx.a = 100;
           cd.detectChanges();
-          expect(directive.changes).toEqual({"a" : new PropertyUpdate(100, 0)});
+          expect(directive.changes["a"].currentValue).toEqual(100);
+          expect(StringMapWrapper.contains(directive.changes, "b")).toBe(false);
         });
 
         it('should invoke the onAllChangesDone callback', () => {

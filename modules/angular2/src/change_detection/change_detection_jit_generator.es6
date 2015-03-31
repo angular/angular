@@ -40,6 +40,7 @@ var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var MODE_ACCESSOR = "this.mode";
 var TEMP_LOCAL = "temp";
+var CURRENT_PROTO = "currentProto";
 
 function typeTemplate(type:string, cons:string, detectChanges:string,
                       notifyOnAllChangesDone:string, setContext:string):string {
@@ -113,12 +114,13 @@ function onAllChangesDoneTemplate(index:number):string {
 }
 
 
-function bodyTemplate(localDefinitions:string, changeDefinitions:string, records:string):string {
+function detectChangesBodyTemplate(localDefinitions:string, changeDefinitions:string, records:string):string {
   return `
 ${localDefinitions}
 ${changeDefinitions}
 var ${TEMP_LOCAL};
 var ${CHANGE_LOCAL};
+var ${CURRENT_PROTO};
 var ${CHANGES_LOCAL} = null;
 
 context = ${CONTEXT_ACCESSOR};
@@ -126,19 +128,11 @@ ${records}
 `;
 }
 
-function notifyTemplate(index:number):string{
-  return  `
-if (${CHANGES_LOCAL} && ${CHANGES_LOCAL}.length > 0) {
-  if(throwOnChange) ${UTIL}.throwOnChange(${PROTOS_ACCESSOR}[${index}], ${CHANGES_LOCAL}[0]);
-  ${DISPATCHER_ACCESSOR}.onRecordChange(${PROTOS_ACCESSOR}[${index}].directiveMemento, ${CHANGES_LOCAL});
-  ${CHANGES_LOCAL} = null;
-}
-`;
-}
-
-function pipeCheckTemplate(context:string, bindingPropagationConfig:string, pipe:string, pipeType:string,
-                                  value:string, change:string, addRecord:string, notify:string):string{
+function pipeCheckTemplate(protoIndex:number, context:string, bindingPropagationConfig:string, pipe:string, pipeType:string,
+                           oldValue:string, newValue:string, change:string, invokeMementoAndAddChange:string,
+                           addToChanges, lastInDirective:string):string{
   return `
+${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 if (${pipe} === ${UTIL}.unitialized()) {
   ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${bindingPropagationConfig});
 } else if (!${pipe}.supports(${context})) {
@@ -146,25 +140,29 @@ if (${pipe} === ${UTIL}.unitialized()) {
   ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${bindingPropagationConfig});
 }
 
-${CHANGE_LOCAL} = ${pipe}.transform(${context});
-if (! ${UTIL}.noChangeMarker(${CHANGE_LOCAL})) {
-  ${value} = ${CHANGE_LOCAL};
+${newValue} = ${pipe}.transform(${context});
+if (! ${UTIL}.noChangeMarker(${newValue})) {
   ${change} = true;
-  ${addRecord}
+  ${invokeMementoAndAddChange}
+  ${addToChanges}
+  ${oldValue} = ${newValue};
 }
-${notify}
+${lastInDirective}
 `;
 }
 
-function referenceCheckTemplate(assignment, newValue, oldValue, change, addRecord, notify) {
+function referenceCheckTemplate(protoIndex:number, assignment:string, oldValue:string, newValue:string, change:string,
+                                invokeMementoAndAddChange:string, addToChanges:string, lastInDirective:string):string {
   return `
+${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 ${assignment}
 if (${newValue} !== ${oldValue} || (${newValue} !== ${newValue}) && (${oldValue} !== ${oldValue})) {
   ${change} = true;
-  ${addRecord}
+  ${invokeMementoAndAddChange}
+  ${addToChanges}
   ${oldValue} = ${newValue};
 }
-${notify}
+${lastInDirective}
 `;
 }
 
@@ -193,9 +191,25 @@ if (${cond}) {
 `;
 }
 
-function addSimpleChangeRecordTemplate(protoIndex:number, oldValue:string, newValue:string) {
-  return `${CHANGES_LOCAL} = ${UTIL}.addRecord(${CHANGES_LOCAL},
-    ${UTIL}.simpleChangeRecord(${PROTOS_ACCESSOR}[${protoIndex}].bindingMemento, ${oldValue}, ${newValue}));`;
+function addToChangesTemplate(oldValue:string, newValue:string):string {
+  return `${CHANGES_LOCAL} = ${UTIL}.addChange(${CHANGES_LOCAL}, ${CURRENT_PROTO}.bindingMemento, ${UTIL}.simpleChange(${oldValue}, ${newValue}));`;
+}
+
+function invokeBindingMemento(oldValue:string, newValue:string):string {
+  return `
+if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
+
+${DISPATCHER_ACCESSOR}.invokeMementoFor(${CURRENT_PROTO}.bindingMemento, ${newValue});
+  `;
+}
+
+function lastInDirectiveTemplate(protoIndex:number):string{
+  return  `
+if (${CHANGES_LOCAL}) {
+  ${DISPATCHER_ACCESSOR}.onChange(${PROTOS_ACCESSOR}[${protoIndex}].directiveMemento, ${CHANGES_LOCAL});
+}
+${CHANGES_LOCAL} = null;
+`;
 }
 
 
@@ -277,7 +291,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   genDetectChanges():string {
-    var body = this.genBody();
+    var body = this.genDetectChangesBody();
     return detectChangesTemplate(this.typeName, body);
   }
 
@@ -295,9 +309,9 @@ export class ChangeDetectorJITGenerator {
     return callOnAllChangesDoneTemplate(this.typeName, notifications.join(";\n"));
   }
 
-  genBody():string {
+  genDetectChangesBody():string {
     var rec = this.records.map((r) => this.genRecord(r)).join("\n");
-    return bodyTemplate(this.genLocalDefinitions(), this.genChangeDefinitions(), rec);
+    return detectChangesBodyTemplate(this.genLocalDefinitions(), this.genChangeDefinitions(), rec);
   }
 
   genLocalDefinitions():string {
@@ -318,27 +332,33 @@ export class ChangeDetectorJITGenerator {
 
   genPipeCheck(r:ProtoRecord):string {
     var context = this.localNames[r.contextIndex];
-    var pipe = this.pipeNames[r.selfIndex];
-    var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
+    var newValue = this.localNames[r.selfIndex];
     var change = this.changeNames[r.selfIndex];
+
+    var pipe = this.pipeNames[r.selfIndex];
     var bpc = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.bindingPropagationConfig" : "null";
 
-    var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
-    var notify = this.genNotify(r);
+    var invokeMemento = this.getInvokeMementoAndAddChangeTemplate(r);
+    var addToChanges = this.genAddToChanges(r);
+    var lastInDirective = this.genLastInDirective(r);
 
-    return pipeCheckTemplate(context, bpc, pipe, r.name, newValue, change, addRecord, notify);
+    return pipeCheckTemplate(r.selfIndex - 1, context, bpc, pipe, r.name, oldValue, newValue, change,
+      invokeMemento, addToChanges, lastInDirective);
   }
 
   genReferenceCheck(r:ProtoRecord):string {
-    var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
+    var newValue = this.localNames[r.selfIndex];
     var change = this.changeNames[r.selfIndex];
     var assignment = this.genUpdateCurrentValue(r);
-    var addRecord = addSimpleChangeRecordTemplate(r.selfIndex - 1, oldValue, newValue);
-    var notify = this.genNotify(r);
 
-    var check = referenceCheckTemplate(assignment, newValue, oldValue, change, r.lastInBinding ? addRecord : '', notify);
+    var invokeMemento = this.getInvokeMementoAndAddChangeTemplate(r);
+    var addToChanges = this.genAddToChanges(r);
+    var lastInDirective = this.genLastInDirective(r);
+
+    var check = referenceCheckTemplate(r.selfIndex - 1, assignment, oldValue, newValue, change,
+      invokeMemento, addToChanges, lastInDirective);
     if (r.isPureFunction()) {
       return this.ifChangedGuard(r, check);
     } else {
@@ -405,8 +425,22 @@ export class ChangeDetectorJITGenerator {
     return JSON.stringify(value);
   }
 
-  genNotify(r):string{
-    return r.lastInDirective ? notifyTemplate(r.selfIndex - 1) : '';
+  getInvokeMementoAndAddChangeTemplate(r:ProtoRecord):string {
+    var newValue = this.localNames[r.selfIndex];
+    var oldValue = this.fieldNames[r.selfIndex];
+    return r.lastInBinding ? invokeBindingMemento(oldValue, newValue) : "";
+  }
+
+  genAddToChanges(r:ProtoRecord):string {
+    var newValue = this.localNames[r.selfIndex];
+    var oldValue = this.fieldNames[r.selfIndex];
+    var callOnChange = r.directiveMemento && r.directiveMemento.callOnChange;
+    return callOnChange ? addToChangesTemplate(oldValue, newValue) : "";
+  }
+
+  genLastInDirective(r:ProtoRecord):string{
+    var callOnChange = r.directiveMemento && r.directiveMemento.callOnChange;
+    return r.lastInDirective && callOnChange ? lastInDirectiveTemplate(r.selfIndex - 1) : '';
   }
 
   genArgs(r:ProtoRecord):string {

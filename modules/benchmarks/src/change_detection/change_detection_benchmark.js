@@ -109,16 +109,16 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
 
   var proto = changeDetection.createProtoChangeDetector("proto");
   var bindingRecords = [
-    new BindingRecord(parser.parseBinding('field0', null), "memo", 0),
-    new BindingRecord(parser.parseBinding('field1', null), "memo", 1),
-    new BindingRecord(parser.parseBinding('field2', null), "memo", 2),
-    new BindingRecord(parser.parseBinding('field3', null), "memo", 3),
-    new BindingRecord(parser.parseBinding('field4', null), "memo", 4),
-    new BindingRecord(parser.parseBinding('field5', null), "memo", 5),
-    new BindingRecord(parser.parseBinding('field6', null), "memo", 6),
-    new BindingRecord(parser.parseBinding('field7', null), "memo", 7),
-    new BindingRecord(parser.parseBinding('field8', null), "memo", 8),
-    new BindingRecord(parser.parseBinding('field9', null), "memo", 9)
+    new BindingRecord(parser.parseBinding('field0', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field1', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field2', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field3', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field4', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field5', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field6', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field7', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field8', null), "memo", null),
+    new BindingRecord(parser.parseBinding('field9', null), "memo", null)
   ];
 
   for (var i = 0; i < iterations; ++i) {
@@ -215,6 +215,6 @@ export function main () {
 
 
 class DummyDispatcher extends ChangeDispatcher {
-  onRecordChange(record, context) {
+  invokeMementoFor(binding, newValue) {
   }
 }

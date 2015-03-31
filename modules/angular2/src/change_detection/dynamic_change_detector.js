@@ -89,21 +89,31 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   detectChangesInRecords(throwOnChange:boolean) {
     var protos:List<ProtoRecord> = this.protos;
 
-    var updatedRecords = null;
+    var changes = null;
+    var currentDirectiveMemento = null;
+
     for (var i = 0; i < protos.length; ++i) {
       var proto:ProtoRecord = protos[i];
-      var change = this._check(proto);
-
-      if (isPresent(change)) {
-        var record = ChangeDetectionUtil.changeRecord(proto.bindingMemento, change);
-        updatedRecords = ChangeDetectionUtil.addRecord(updatedRecords, record);
+      if (isBlank(currentDirectiveMemento)) {
+        currentDirectiveMemento = proto.directiveMemento;
       }
 
-      if (proto.lastInDirective && isPresent(updatedRecords)) {
-        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, updatedRecords[0]);
+      var change = this._check(proto);
+      if (isPresent(change)) {
+        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+        this.dispatcher.invokeMementoFor(proto.bindingMemento, change.currentValue);
 
-        this.dispatcher.onRecordChange(proto.directiveMemento, updatedRecords);
-        updatedRecords = null;
+        if (isPresent(currentDirectiveMemento) && currentDirectiveMemento.callOnChange) {
+          changes = ChangeDetectionUtil.addChange(changes, proto.bindingMemento, change);
+        }
+      }
+
+      if (proto.lastInDirective) {
+        if (isPresent(changes)) {
+          this.dispatcher.onChange(currentDirectiveMemento, changes);
+        }
+        currentDirectiveMemento = null;
+        changes = null;
       }
     }
   }
@@ -285,3 +295,6 @@ function isSame(a, b) {
   if ((a !== a) && (b !== b)) return true;
   return false;
 }
+
+
+

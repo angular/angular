@@ -10,8 +10,6 @@ import {Locals} from 'angular2/src/change_detection/parser/locals';
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord,
   PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT} from 'angular2/change_detection';
 
-import {ChangeDetectionUtil} from 'angular2/src/change_detection/change_detection_util';
-
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
 
 
@@ -129,21 +127,21 @@ export function main() {
           it("should support literal array", () => {
             var c = createChangeDetector('array', '[1,2]');
             c["changeDetector"].detectChanges();
-            expect(c["dispatcher"].loggedValues).toEqual([[[1, 2]]]);
+            expect(c["dispatcher"].loggedValues).toEqual([[1, 2]]);
 
             c = createChangeDetector('array', '[1,a]', new TestData(2));
             c["changeDetector"].detectChanges();
-            expect(c["dispatcher"].loggedValues).toEqual([[[1, 2]]]);
+            expect(c["dispatcher"].loggedValues).toEqual([[1, 2]]);
           });
 
           it("should support literal maps", () => {
             var c = createChangeDetector('map', '{z:1}');
             c["changeDetector"].detectChanges();
-            expect(c["dispatcher"].loggedValues[0][0]['z']).toEqual(1);
+            expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
 
             c = createChangeDetector('map', '{z:a}', new TestData(1));
             c["changeDetector"].detectChanges();
-            expect(c["dispatcher"].loggedValues[0][0]['z']).toEqual(1);
+            expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
           });
 
           it("should support binary operations", () => {
@@ -221,11 +219,7 @@ export function main() {
 
                 cd.detectChanges();
 
-                var changeRecord = dispatcher.changeRecords[0][0];
-
-                expect(changeRecord.bindingMemento).toEqual('name');
-                expect(changeRecord.change.currentValue).toEqual('bob');
-                expect(changeRecord.change.previousValue).toEqual(ChangeDetectionUtil.unitialized());
+                expect(dispatcher.loggedValues).toEqual(['bob']);
               });
             });
 
@@ -240,59 +234,43 @@ export function main() {
 
                 cd.detectChanges();
 
-                var changeRecord = dispatcher.changeRecords[0][0];
-
-                expect(changeRecord.bindingMemento).toEqual('name');
-                expect(changeRecord.change.currentValue).toEqual('bob state:0');
-                expect(changeRecord.change.previousValue).toEqual(ChangeDetectionUtil.unitialized());
+                expect(dispatcher.loggedValues).toEqual(['bob state:0']);
               });
             });
 
-            describe("group changes", () => {
-              var dirMemento1 = new FakeDirectiveMemento(1);
-              var dirMemento2 = new FakeDirectiveMemento(2);
+            describe("onChange", () => {
+              var dirMemento1 = new FakeDirectiveMemento(1, false, true);
+              var dirMemento2 = new FakeDirectiveMemento(2, false, true);
+              var dirMementoNoOnChange = new FakeDirectiveMemento(3, false, false);
+              var memo1 = new FakeBindingMemento("memo1");
+              var memo2 = new FakeBindingMemento("memo2");
 
               it("should notify the dispatcher when a group of records changes", () => {
                 var pcd = createProtoChangeDetector();
 
                 var cd = instantiate(pcd, dispatcher, [
-                  new BindingRecord(ast("1 + 2"), "memo", dirMemento1),
-                  new BindingRecord(ast("10 + 20"), "memo", dirMemento1),
-                  new BindingRecord(ast("100 + 200"), "memo", dirMemento2)
+                  new BindingRecord(ast("1 + 2"), memo1, dirMemento1),
+                  new BindingRecord(ast("10 + 20"), memo2, dirMemento1),
+                  new BindingRecord(ast("100 + 200"), memo1, dirMemento2)
                 ]);
 
                 cd.detectChanges();
 
-                expect(dispatcher.loggedValues).toEqual([[3, 30], [300]]);
+                expect(dispatcher.loggedOnChange).toEqual([{'memo1': 3, 'memo2': 30}, {'memo1': 300}]);
               });
 
-              it("should notify the dispatcher before switching to the next group", () => {
+              it("should not notify the dispatcher when callOnChange is false", () => {
                 var pcd = createProtoChangeDetector();
 
                 var cd = instantiate(pcd, dispatcher, [
-                  new BindingRecord(ast("a()"), "a", dirMemento1),
-                  new BindingRecord(ast("b()"), "b", dirMemento2),
-                  new BindingRecord(ast("c()"), "c", dirMemento2)
+                  new BindingRecord(ast("1"), memo1, dirMemento1),
+                  new BindingRecord(ast("2"), memo1, dirMementoNoOnChange),
+                  new BindingRecord(ast("3"), memo1, dirMemento2)
                 ]);
-
-                var tr = new TestRecord();
-                tr.a = () => {
-                  dispatcher.logValue('InvokeA');
-                  return 'a'
-                };
-                tr.b = () => {
-                  dispatcher.logValue('InvokeB');
-                  return 'b'
-                };
-                tr.c = () => {
-                  dispatcher.logValue('InvokeC');
-                  return 'c'
-                };
-                cd.hydrate(tr, null);
 
                 cd.detectChanges();
 
-                expect(dispatcher.loggedValues).toEqual(['InvokeA', ['a'], 'InvokeB', 'InvokeC', ['b', 'c']]);
+                expect(dispatcher.loggedOnChange).toEqual([{'memo1': 1}, {'memo1': 3}]);
               });
             });
 
@@ -350,7 +328,7 @@ export function main() {
                 // the first value is the directive memento passed into onAllChangesDone
                 expect(dispatcher.loggedValues).toEqual([
                   ["onAllChangesDone", memento],
-                  [1]
+                  1
                 ]);
               });
             });
@@ -800,55 +778,52 @@ class TestData {
 class FakeDirectiveMemento {
   value:any;
   callOnAllChangesDone:boolean;
+  callOnChange:boolean;
 
-  constructor(value, callOnAllChangesDone:boolean = false) {
+  constructor(value, callOnAllChangesDone:boolean = false, callOnChange:boolean = false) {
     this.value = value;
     this.callOnAllChangesDone = callOnAllChangesDone;
+    this.callOnChange = callOnChange;
+  }
+}
+
+class FakeBindingMemento {
+  propertyName:string;
+
+  constructor(propertyName:string) {
+    this.propertyName = propertyName;
   }
 }
 
 class TestDispatcher extends ChangeDispatcher {
   log:List;
   loggedValues:List;
-  changeRecords:List;
-  loggedOnAllChangesDone:List;
-  onChange:Function;
+  loggedOnChange:List;
 
   constructor() {
     super();
-    this.log = null;
-    this.loggedValues = null;
-    this.loggedOnAllChangesDone = null;
-    this.onChange = (_, __) => {};
     this.clear();
   }
 
   clear() {
     this.log = ListWrapper.create();
     this.loggedValues = ListWrapper.create();
-    this.loggedOnAllChangesDone = ListWrapper.create();
-    this.changeRecords = ListWrapper.create();
+    this.loggedOnChange = ListWrapper.create();
   }
 
-  logValue(value) {
-    ListWrapper.push(this.loggedValues, value);
-  }
-
-  onRecordChange(directiveMemento, changeRecords:List) {
-    var value = changeRecords[0].change.currentValue;
-    var memento = changeRecords[0].bindingMemento;
-    ListWrapper.push(this.log, memento + '=' + this._asString(value));
-
-    var values = ListWrapper.map(changeRecords, (r) => r.change.currentValue);
-    ListWrapper.push(this.loggedValues, values);
-
-    ListWrapper.push(this.changeRecords, changeRecords);
-
-    this.onChange(directiveMemento, changeRecords);
+  onChange(directiveMemento, changes) {
+    var r = {};
+    StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
+    ListWrapper.push(this.loggedOnChange, r);
   }
 
   onAllChangesDone(directiveMemento) {
     ListWrapper.push(this.loggedValues, ["onAllChangesDone", directiveMemento]);
+  }
+
+  invokeMementoFor(memento, value) {
+    ListWrapper.push(this.log, `${memento}=${this._asString(value)}`);
+    ListWrapper.push(this.loggedValues, value);
   }
 
   _asString(value) {

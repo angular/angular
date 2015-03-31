@@ -230,57 +230,31 @@ export class View {
     handler(eventObj, this);
   }
 
-  onRecordChange(directiveMemento, records:List) {
-    this._invokeMementos(records);
-    if (directiveMemento instanceof DirectiveMemento) {
-      this._notifyDirectiveAboutChanges(directiveMemento, records);
-    }
-  }
-
-  onAllChangesDone(directiveMemento) {
+  onAllChangesDone(directiveMemento:DirectiveMemento) {
     var dir = directiveMemento.directive(this.elementInjectors);
     dir.onAllChangesDone();
   }
 
-  _invokeMementos(records:List) {
-    for(var i = 0; i < records.length; ++i) {
-      this._invokeMementoFor(records[i]);
-    }
-  }
-
-  _notifyDirectiveAboutChanges(directiveMemento, records:List) {
+  onChange(directiveMemento:DirectiveMemento, changes) {
     var dir = directiveMemento.directive(this.elementInjectors);
-    if (directiveMemento.callOnChange) {
-      dir.onChange(this._collectChanges(records));
-    }
+    dir.onChange(changes);
   }
 
-    // dispatch to element injector or text nodes based on context
-  _invokeMementoFor(record:ChangeRecord) {
-    var memento = record.bindingMemento;
+  // dispatch to element injector or text nodes based on context
+  invokeMementoFor(memento:any, currentValue:any) {
     if (memento instanceof DirectiveBindingMemento) {
       var directiveMemento:DirectiveBindingMemento = memento;
-      directiveMemento.invoke(record, this.elementInjectors);
+      directiveMemento.invoke(currentValue, this.elementInjectors);
 
     } else if (memento instanceof ElementBindingMemento) {
       var elementMemento:ElementBindingMemento = memento;
-      elementMemento.invoke(record, this.bindElements);
+      elementMemento.invoke(currentValue, this.bindElements);
 
     } else {
       // we know it refers to _textNodes.
       var textNodeIndex:number = memento;
-      DOM.setText(this.textNodes[textNodeIndex], record.currentValue);
+      DOM.setText(this.textNodes[textNodeIndex], currentValue);
     }
-  }
-
-  _collectChanges(records:List) {
-    var changes = StringMapWrapper.create();
-    for(var i = 0; i < records.length; ++i) {
-      var record = records[i];
-      var propertyUpdate = new PropertyUpdate(record.currentValue, record.previousValue);
-      StringMapWrapper.set(changes, record.bindingMemento._setterName, propertyUpdate);
-    }
-    return changes;
   }
 }
 
@@ -604,7 +578,7 @@ export class ProtoView {
       elBinder.hasElementPropertyBindings = true;
       this.elementsWithBindingCount++;
     }
-    var memento = new ElementBindingMemento(this.elementsWithBindingCount-1, setterName, setter);
+    var memento = new ElementBindingMemento(this.elementsWithBindingCount-1, setter);
     ListWrapper.push(this.bindingRecords, new BindingRecord(expression, memento, null));
   }
 
@@ -697,17 +671,15 @@ export class ProtoView {
  */
 export class ElementBindingMemento {
   _elementIndex:int;
-  _setterName:string;
   _setter:SetterFn;
-  constructor(elementIndex:int, setterName:string, setter:SetterFn) {
+  constructor(elementIndex:int, setter:SetterFn) {
     this._elementIndex = elementIndex;
-    this._setterName = setterName;
     this._setter = setter;
   }
 
-  invoke(record:ChangeRecord, bindElements:List) {
+  invoke(currentValue:any, bindElements:List) {
     var element = bindElements[this._elementIndex];
-    this._setter(element, record.currentValue);
+    this._setter(element, currentValue);
   }
 }
 
@@ -716,23 +688,23 @@ export class ElementBindingMemento {
 export class DirectiveBindingMemento {
   _elementInjectorIndex:int;
   _directiveIndex:int;
-  _setterName:string;
+  propertyName:string;
   _setter:SetterFn;
   constructor(
       elementInjectorIndex:number,
       directiveIndex:number,
-      setterName:string,
+      propertyName:string,
       setter:SetterFn) {
     this._elementInjectorIndex = elementInjectorIndex;
     this._directiveIndex = directiveIndex;
-    this._setterName = setterName;
+    this.propertyName = propertyName;
     this._setter = setter;
   }
 
-  invoke(record:ChangeRecord, elementInjectors:List<ElementInjector>) {
+  invoke(currentValue:any, elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
     var directive = elementInjector.getDirectiveAtIndex(this._directiveIndex);
-    this._setter(directive, record.currentValue);
+    this._setter(directive, currentValue);
   }
 }
 
@@ -753,21 +725,5 @@ class DirectiveMemento {
   directive(elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
     return elementInjector.getDirectiveAtIndex(this._directiveIndex);
-  }
-}
-
-/**
- */
-export class PropertyUpdate {
-  currentValue;
-  previousValue;
-
-  constructor(currentValue, previousValue) {
-    this.currentValue = currentValue;
-    this.previousValue = previousValue;
-  }
-
-  static createWithoutPrevious(currentValue) {
-    return new PropertyUpdate(currentValue, uninitialized);
   }
 }
