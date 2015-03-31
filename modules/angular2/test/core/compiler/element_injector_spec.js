@@ -15,7 +15,7 @@ import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 
 class DummyDirective extends Directive {
-  constructor({lifecycle = []} = {}) { super({lifecycle: lifecycle}); }
+  constructor({lifecycle} = {}) { super({lifecycle: lifecycle}); }
 }
 
 @proxy
