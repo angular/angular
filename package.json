@@ -56,7 +56,7 @@
     "gulp-sourcemaps": "1.3.*",
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.17.*",
-    "gulp-ts2dart": "^1.0.0",
+    "gulp-ts2dart": "^1.0.6",
     "gulp-typescript": "ivogabe/gulp-typescript#3422fbff06532ccc57368f3b4c8801de8f72ef27",
     "gulp-webserver": "^0.8.7",
     "js-yaml": "^3.2.7",
