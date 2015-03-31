@@ -104,11 +104,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  notifyOnAllChangesDone() {
+  callOnAllChangesDone() {
     var mementos = this.directiveMementos;
     for (var i = mementos.length - 1; i >= 0; --i) {
       var memento = mementos[i];
-      if (memento.notifyOnAllChangesDone) {
+      if (memento.callOnAllChangesDone) {
         this.dispatcher.onAllChangesDone(memento);
       }
     }
