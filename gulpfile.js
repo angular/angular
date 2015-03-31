@@ -157,10 +157,9 @@ var CONFIG = {
       cjs: {
         src: [
           'modules/**/*.md', '!modules/**/*.dart.md', 'modules/**/*.png',
-          'modules/**/*.cjs', 'modules/**/package.json'
+          'modules/**/package.json'
         ],
         pipes: {
-          '**/*.cjs': gulpPlugins.rename({extname: '.js'}),
           '**/*.js.md': gulpPlugins.rename(function(file) {
             file.basename = file.basename.substring(0, file.basename.lastIndexOf('.'));
           }),
