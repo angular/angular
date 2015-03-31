@@ -4,6 +4,9 @@ import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {isPresent} from 'angular2/src/facade/lang';
 
+/**
+ * @publicModule angular2/change_detection
+ */
 @Injectable()
 export class LifeCycle {
   _errorHandler;

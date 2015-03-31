@@ -3,6 +3,9 @@ import {stringify, looseIdentical, isJsObject} from 'angular2/src/facade/lang';
 
 import {NO_CHANGE, Pipe} from './pipe';
 
+/**
+ * @publicModule angular2/pipes
+ */
 export class KeyValueChangesFactory {
   supports(obj):boolean {
     return KeyValueChanges.supportsObj(obj);
@@ -13,6 +16,9 @@ export class KeyValueChangesFactory {
   }
 }
 
+/**
+ * @publicModule angular2/pipes
+ */
 export class KeyValueChanges extends Pipe {
   _records:Map;
 
@@ -349,6 +355,9 @@ export class KeyValueChanges extends Pipe {
 
 
 
+/**
+ * @publicModule angular2/pipes
+ */
 export class KVChangeRecord {
   key;
   previousValue;

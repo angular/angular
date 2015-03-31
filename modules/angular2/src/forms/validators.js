@@ -3,6 +3,9 @@ import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collectio
 
 import * as modelModule from './model';
 
+/**
+ * @publicModule angular2/forms
+ */
 export class Validators {
   static required(c:modelModule.Control) {
     return isBlank(c.value) || c.value == "" ? {"required": true} : null;

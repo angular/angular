@@ -2,6 +2,9 @@ import {Injectable} from 'angular2/di';
 import {isPresent, print} from 'angular2/src/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
+/**
+ * @publicModule angular2/angular2
+ */
 @Injectable()
 export class ExceptionHandler {
   call(error, stackTrace = null, reason = null) {
