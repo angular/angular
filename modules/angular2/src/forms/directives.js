@@ -32,8 +32,7 @@ export class DefaultValueAccessor {
 }
 
 @Decorator({
-  selector: 'input[type=checkbox]', //should be input[type=checkbox][control]
-  // change the selector once https://github.com/angular/angular/issues/1025 is fixed
+  selector: 'input[type=checkbox][control]',
   events: {
     'change' : 'onChange($event.target.checked)'
   }
