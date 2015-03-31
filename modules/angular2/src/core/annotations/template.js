@@ -1,6 +1,34 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 
 /**
+ * Declare the available HTML templates for an application.
+ *
+ * Each angular component requires a single `@Component` and at least one `@Template` annotation. The @Template
+ * annotation specifies the HTML template to use, and lists the directives that are active within the template.
+ *
+ * When a component is instantiated, the template is loaded into the component's shadow root, and the
+ * expressions and statements in the template are evaluated against the component.
+ *
+ * For details on the `@Component` annotation, see [Component].
+ *
+ * ## Example
+ *
+ * ```
+ * @Component({
+ *   selector: 'greet'
+ * })
+ * @Template({
+ *   inline: 'Hello {{name}}!'
+ * })
+ * class Greet {
+ *   name: string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
+ *
  * @publicModule angular2/annotations
  */
 export class Template {

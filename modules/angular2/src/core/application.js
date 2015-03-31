@@ -148,8 +148,8 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * An application is bootstrapped inside an existing browser DOM, typically `index.html`. Unlike Angular 1, Angular 2
  * does not compile/process bindings in `index.html`. This is mainly for security reasons, as well as architectural
  * changes in Angular 2. This means that `index.html` can safely be processed using server-side technologies such as
- * bindings. (which may use double-curly `{{ syntax }}` without collision from Angular 2 component double-curly
- * `{{ syntax }}`.)
+ * bindings. Bindings can thus use double-curly `{{ syntax }}` without collision from Angular 2 component double-curly
+ * `{{ syntax }}`.
  *
  * We can use this script code:
  *
@@ -204,8 +204,8 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *
  * If you need to bootstrap multiple applications that share common data, the applications must share a common
  * change detection and zone. To do that, create a meta-component that lists the application components in its template.
- * By only invoking the `bootstrap()` method once, with the meta-component as its argument, you ensure that only a single
- * change detection zone is created and therefore data can be shared across the applications.
+ * By only invoking the `bootstrap()` method once, with the meta-component as its argument, you ensure that only a
+ * single change detection zone is created and therefore data can be shared across the applications.
  *
  *
  * ## Primordial Injector

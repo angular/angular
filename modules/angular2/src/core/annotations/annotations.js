@@ -445,18 +445,17 @@ export class Directive extends Injectable {
 }
 
 /**
- * Declare template views for an Angular application.
+ * Declare reusable UI building blocks for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@Template` annotation. This allows Angular to
- * encapsulate state information and templates. These form the fundamental reusable building blocks for developing an
- * application. There can only be one component per DOM element.
+ * Each angular component requires a single `@Component` and at least one `@Template` annotation. The @Component
+ * annotation specifies when a component is instantiated, and which properties and events it binds to.
  *
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
  * - creates a child [Injector] which is configured with the [Component.services].
  *
- * All template expressions and statments are then evaluted against the component instance.
+ * All template expressions and statements are then evaluated against the component instance.
  *
  * For details on the `@Template` annotation, see [Template].
  *
