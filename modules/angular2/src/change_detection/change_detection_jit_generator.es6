@@ -64,7 +64,7 @@ import {
  *   }
  * }
  *
- * ChangeDetector0.prototype.notifyOnAllChangesDone = function() {}
+ * ChangeDetector0.prototype.callOnAllChangesDone = function() {}
  *
  * ChangeDetector0.prototype.hydrate = function(context, locals) {
  *   this.context = context;
@@ -162,9 +162,9 @@ ${type}.prototype.detectChangesInRecords = function(throwOnChange) {
 `;
 }
 
-function notifyOnAllChangesDoneTemplate(type:string, body:string):string {
+function callOnAllChangesDoneTemplate(type:string, body:string):string {
   return `
-${type}.prototype.notifyOnAllChangesDone = function() {
+${type}.prototype.callOnAllChangesDone = function() {
   ${body}
 }
 `;
@@ -304,7 +304,7 @@ export class ChangeDetectorJITGenerator {
 
   generate():Function {
     var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(),
-      this.genNotifyOnAllChangesDone(), this.genHydrate());
+      this.genCallOnAllChangesDone(), this.genHydrate());
     return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos', 'directiveMementos', text)
       (AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveMementos);
   }
@@ -340,18 +340,18 @@ export class ChangeDetectorJITGenerator {
     return detectChangesTemplate(this.typeName, body);
   }
 
-  genNotifyOnAllChangesDone():string {
+  genCallOnAllChangesDone():string {
     var notifications = [];
     var mementos = this.directiveMementos;
 
     for (var i = mementos.length - 1; i >= 0; --i) {
       var memento = mementos[i];
-      if (memento.notifyOnAllChangesDone) {
+      if (memento.callOnAllChangesDone) {
         notifications.push(onAllChangesDoneTemplate(i));
       }
     }
 
-    return notifyOnAllChangesDoneTemplate(this.typeName, notifications.join(";\n"));
+    return callOnAllChangesDoneTemplate(this.typeName, notifications.join(";\n"));
   }
 
   genBody():string {

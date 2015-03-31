@@ -780,11 +780,11 @@ class TestData {
 
 class FakeDirectiveMemento {
   value:any;
-  notifyOnAllChangesDone:boolean;
+  callOnAllChangesDone:boolean;
 
-  constructor(value, notifyOnAllChangesDone:boolean = false) {
+  constructor(value, callOnAllChangesDone:boolean = false) {
     this.value = value;
-    this.notifyOnAllChangesDone = notifyOnAllChangesDone;
+    this.callOnAllChangesDone = callOnAllChangesDone;
   }
 }
 

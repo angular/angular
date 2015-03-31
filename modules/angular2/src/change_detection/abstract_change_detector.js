@@ -51,7 +51,7 @@ export class AbstractChangeDetector extends ChangeDetector {
 
     this._detectChangesInLightDomChildren(throwOnChange);
 
-    this.notifyOnAllChangesDone();
+    this.callOnAllChangesDone();
 
     this._detectChangesInShadowDomChildren(throwOnChange);
 
@@ -59,7 +59,7 @@ export class AbstractChangeDetector extends ChangeDetector {
   }
 
   detectChangesInRecords(throwOnChange:boolean){}
-  notifyOnAllChangesDone(){}
+  callOnAllChangesDone(){}
 
   _detectChangesInLightDomChildren(throwOnChange:boolean) {
     var c = this.lightDomChildren;

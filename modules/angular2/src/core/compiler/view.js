@@ -249,9 +249,7 @@ export class View {
 
   _notifyDirectiveAboutChanges(directiveMemento, records:List) {
     var dir = directiveMemento.directive(this.elementInjectors);
-    var binding = directiveMemento.directiveBinding(this.elementInjectors);
-
-    if (binding.callOnChange) {
+    if (directiveMemento.callOnChange) {
       dir.onChange(this._collectChanges(records));
     }
   }
@@ -663,7 +661,8 @@ export class ProtoView {
     if (!MapWrapper.contains(this._directiveMementosMap, id)) {
       var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
       MapWrapper.set(this._directiveMementosMap, id,
-        new DirectiveMemento(elementInjectorIndex, directiveIndex, binding.callOnAllChangesDone));
+        new DirectiveMemento(elementInjectorIndex, directiveIndex,
+          binding.callOnAllChangesDone, binding.callOnChange));
     }
   
     return MapWrapper.get(this._directiveMementosMap, id);
@@ -740,22 +739,20 @@ export class DirectiveBindingMemento {
 class DirectiveMemento {
   _elementInjectorIndex:number;
   _directiveIndex:number;
-  notifyOnAllChangesDone:boolean;
+  callOnAllChangesDone:boolean;
+  callOnChange:boolean;
 
-  constructor(elementInjectorIndex:number, directiveIndex:number, notifyOnAllChangesDone:boolean) {
+  constructor(elementInjectorIndex:number, directiveIndex:number, callOnAllChangesDone:boolean,
+              callOnChange:boolean) {
     this._elementInjectorIndex = elementInjectorIndex;
     this._directiveIndex = directiveIndex;
-    this.notifyOnAllChangesDone = notifyOnAllChangesDone;
+    this.callOnAllChangesDone = callOnAllChangesDone;
+    this.callOnChange = callOnChange;
   }
 
   directive(elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
     return elementInjector.getDirectiveAtIndex(this._directiveIndex);
-  }
-
-  directiveBinding(elementInjectors:List<ElementInjector>) {
-    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    return elementInjector.getDirectiveBindingAtIndex(this._directiveIndex);
   }
 }
 
