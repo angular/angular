@@ -56,8 +56,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   type(node:string) {
     return node.type;
   }
-  content(node:HTMLTemplateElement):Node {
-    return node.content;
+  content(node:HTMLElement):Node {
+    if (this.hasProperty(node, "content")) {
+      return node.content;  
+    } else {
+      return node;  
+    }
   }
   firstChild(el):Node {
     return el.firstChild;
@@ -216,10 +220,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return element.removeAttribute(attribute);
   }
   templateAwareRoot(el) {
-    return el instanceof HTMLTemplateElement ? el.content : el;
+    return this.isTemplateElement(el) ? this.content(el) : el;
   }
   createHtmlDocument() {
-    return document.implementation.createHTMLDocument();
+    return document.implementation.createHTMLDocument('fakeTitle');
   }
   defaultDoc() {
     return document;
@@ -234,7 +238,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return n instanceof HTMLElement && n.matches(selector);
   }
   isTemplateElement(el:any):boolean {
-    return el instanceof HTMLTemplateElement;
+    return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
   }
   isTextNode(node:Node):boolean {
     return node.nodeType === Node.TEXT_NODE;
@@ -255,10 +259,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     var result = document.importNode(node, true);
     // Workaround WebKit https://bugs.webkit.org/show_bug.cgi?id=137619
     if (this.isTemplateElement(result) &&
-        !result.content.childNodes.length && node.content.childNodes.length) {
-      var childNodes = node.content.childNodes;
+        !this.content(result).childNodes.length && this.content(node).childNodes.length) {
+      var childNodes = this.content(node).childNodes;
       for (var i = 0; i < childNodes.length; ++i) {
-        result.content.appendChild(
+        this.content(result).appendChild(
             this.importIntoDoc(childNodes[i]));
       }
     }
