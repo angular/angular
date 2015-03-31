@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {StringWrapper, isBlank, BaseException} from 'angular2/src/facade/lang';
@@ -9,6 +10,7 @@ import * as getTestabilityModule from 'angular2/src/core/testability/get_testabi
  * the browser and by services such as Protractor. Each bootstrapped Angular
  * application on the page will have an instance of Testability.
  */
+@Injectable()
 export class Testability {
   _pendingCount: number;
   _callbacks: List;
@@ -53,6 +55,7 @@ export class Testability {
   }
 }
 
+@Injectable()
 export class TestabilityRegistry {
   _applications: Map;
 
