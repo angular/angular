@@ -7,7 +7,6 @@ var merge = require('merge');
 var path = require('path');
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
-
 var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
 var html = require('./tools/build/html');
@@ -126,7 +125,7 @@ var CONFIG = {
   srcFolderInsertion: SRC_FOLDER_INSERTION,
   transpile: {
     src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6'],
+      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/angular2/src/facade/*.es6'],
       ts: ['modules/**/*.ts'],
       dart: ['modules/**/*.js']
     },
@@ -143,7 +142,8 @@ var CONFIG = {
         }),
         cjs: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
           typeAssertionModule: 'rtts_assert/rtts_assert',
-          typeAssertions: true,
+          // Don't use type assertions since this is partly transpiled by typescript
+          typeAssertions: false,
           modules: 'commonjs'
         })
       },
@@ -296,6 +296,26 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // ------------
 // transpile
 
+gulp.task('build/transpile.ts.cjs', function() {
+  var tsResult = gulp.src(CONFIG.transpile.src.ts)
+      .pipe(sourcemaps.init())
+      .pipe(tsc({
+        target: 'ES5',
+        module: /*system.js*/'commonjs',
+        allowNonTsExtensions: false,
+        typescript: require('typescript'),
+        //declarationFiles: true,
+        noEmitOnError: true
+      }));
+  var dest = gulp.dest(CONFIG.dest.js.cjs);
+  return merge([
+    // Write external sourcemap next to the js file
+    tsResult.js.pipe(sourcemaps.write('.')).pipe(dest),
+    tsResult.js.pipe(dest),
+    tsResult.dts.pipe(dest),
+  ]);
+});
+
 gulp.task('build/transpile.js.dev.es6', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.js,
   dest: CONFIG.dest.js.dev.es6,
@@ -314,8 +334,7 @@ gulp.task('build/transpile.ts.dev.es5', function() {
                        module: 'commonjs',
                        typescript: require('typescript'),
                        noEmitOnError: true
-                     }))
-                     .js;
+                     }));
   return merge([
     tsResult.js.pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(CONFIG.dest.js.dev.es5)),
@@ -785,7 +804,7 @@ gulp.task('build.js.prod', function(done) {
 
 gulp.task('build.js.cjs', function(done) {
   runSequence(
-    ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
+    ['build/transpile.js.cjs', 'build/transpile.ts.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
     ['build/linknodemodules.js.cjs'],
     'build/transformCJSTests',
     done

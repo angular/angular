@@ -84,7 +84,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
-    "typescript": "Microsoft/TypeScript#cebe42b81fbeeaf68c8e228dda5e602ab94e151b",
+    "typescript": "alexeagle/TypeScript#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
     "vinyl": "^0.4.6",
     "yargs": "2.3.*"
   }
