@@ -8,25 +8,19 @@ import 'package:angular2/src/reflection/types.dart';
 /// reflectively accessed at runtime.
 class RecordingReflectionCapabilities implements ReflectionCapabilities {
   /// The names of all requested `getter`s.
-  final List<String> getterNames = [];
+  final List<String> getterNames = <String>[];
   /// The names of all requested `setter`s.
-  final List<String> setterNames = [];
+  final List<String> setterNames = <String>[];
   /// The names of all requested `method`s.
-  final List<String> methodNames = [];
+  final List<String> methodNames = <String>[];
 
-  void _notImplemented(String name) {
-    throw 'Not implemented: $name';
-  }
+  _notImplemented(String name) => throw 'Not implemented: $name';
 
   Function factory(Type type) => _notImplemented('factory');
 
   List<List> parameters(typeOrFunc) => _notImplemented('parameters');
 
   List annotations(typeOrFunc) => _notImplemented('annotations');
-
-  static GetterFn _nullGetter = (Object p) => null;
-  static SetterFn _nullSetter = (Object p, v) => null;
-  static MethodFn _nullMethod = (Object p, List a) => null;
 
   GetterFn getter(String name) {
     getterNames.add(name);
@@ -43,3 +37,7 @@ class RecordingReflectionCapabilities implements ReflectionCapabilities {
     return _nullMethod;
   }
 }
+
+_nullGetter(Object p) => null;
+_nullSetter(Object p, v) => null;
+_nullMethod(Object p, List a) => null;

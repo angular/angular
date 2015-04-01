@@ -77,7 +77,7 @@ class _ReflectorVisitor extends Object with SimpleAstVisitor<Expression> {
 
   @override
   Expression visitPropertyAccess(PropertyAccess node) {
-    if (node == null || node.target == null) return;
+    if (node == null || node.target == null) return null;
     return node.target;
   }
 
