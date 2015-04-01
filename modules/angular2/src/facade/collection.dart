@@ -1,6 +1,6 @@
 library facade.collection;
 
-import 'dart:collection' show HashMap, IterableBase, Iterator;
+import 'dart:collection' show IterableBase, Iterator;
 export 'dart:core' show Map, List, Set;
 import 'dart:math' show max, min;
 
@@ -30,10 +30,10 @@ class IterableMap extends IterableBase<List> {
 }
 
 class MapWrapper {
-  static HashMap create() => new HashMap();
-  static HashMap clone(Map m) => new HashMap.from(m);
-  static HashMap createFromStringMap(Map m) => new Map.from(m);
-  static HashMap createFromPairs(List pairs) => pairs.fold({}, (m, p) {
+  static Map create() => {};
+  static Map clone(Map m) => new Map.from(m);
+  static Map createFromStringMap(Map m) => m;
+  static Map createFromPairs(List pairs) => pairs.fold({}, (m, p) {
     m[p[0]] = p[1];
     return m;
   });
@@ -63,7 +63,7 @@ class MapWrapper {
 }
 
 class StringMapWrapper {
-  static HashMap create() => new HashMap();
+  static Map create() => {};
   static bool contains(Map map, key) => map.containsKey(key);
   static get(Map map, key) => map[key];
   static void set(Map map, key, value) {
@@ -75,8 +75,8 @@ class StringMapWrapper {
   static void forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
   }
-  static HashMap merge(Map a, Map b) {
-    var m = new HashMap.from(a);
+  static Map merge(Map a, Map b) {
+    var m = new Map.from(a);
     b.forEach((k, v) => m[k] = v);
     return m;
   }
