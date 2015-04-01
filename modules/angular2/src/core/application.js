@@ -270,4 +270,4 @@ function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zon
   return _rootInjector.createChild(mergedBindings);
 }
 
-// Silly change 2
+// Silly change 2 3
