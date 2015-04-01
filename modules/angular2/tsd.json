@@ -1,0 +1,82 @@
+{
+  "version": "v4",
+  "repo": "angular/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"
+    },
+    "hammerjs/hammerjs.d.ts": {
+      "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"
+    },
+    "jasmine/jasmine.d.ts": {
+      "commit": "055b3172e8eb374a75826710c4d08677872620d3"
+    },
+    "rx/rx.all.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx-lite.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.aggregates.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.time.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.time-lite.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.async.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.async-lite.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.binding.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.binding-lite.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.coincidence.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.coincidence-lite.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.experimental.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.joinpatterns.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.virtualtime.d.ts" : {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.testing.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.backpressure.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "rx/rx.backpressure-lite.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+
+    "selenium-webdriver/selenium-webdriver.d.ts": {
+      "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"
+    },
+    "touch-events/touch-events.d.ts": {
+      "commit": "055b3172e8eb374a75826710c4d08677872620d3"
+    },
+    "zone/zone.d.ts": {
+      "commit": "055b3172e8eb374a75826710c4d08677872620d3"
+    }
+  }
+}
