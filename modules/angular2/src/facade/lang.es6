@@ -67,24 +67,20 @@ export class StringWrapper {
     return s.charCodeAt(index);
   }
 
-  static split(s:string, regExp:RegExp) {
-    return s.split(regExp.multiple);
+  static split(s:string, regExp) {
+    return s.split(regExp);
   }
 
   static equals(s:string, s2:string):boolean {
     return s === s2;
   }
 
-  static replace(s:string, from , replace:string): string {
-    if (typeof(from) === "string") {
-      return s.replace(from, replace);
-    } else {
-      return s.replace(from.single, replace);
-    }
+  static replace(s:string, from: string, replace:string): string {
+    return s.replace(from, replace);
   }
 
   static replaceAll(s:string, from:RegExp, replace:string):string {
-    return s.replace(from.multiple, replace);
+    return s.replace(from, replace);
   }
 
   static startsWith(s:string, start:string) {
@@ -96,7 +92,7 @@ export class StringWrapper {
   }
 
   static replaceAllMapped(s:string, from:RegExp, cb:Function): string {
-    return s.replace(from.multiple, function(...matches) {
+    return s.replace(from, function(...matches) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
@@ -188,36 +184,25 @@ export class NumberWrapper {
   }
 }
 
-export var RegExp;
-if (assertionsEnabled_) {
-  RegExp = assert.define('RegExp', function(obj) {
-    assert(obj).is(assert.structure({
-      single: _global.RegExp,
-      multiple: _global.RegExp
-    }));
-  });
-} else {
-  RegExp = {};
-}
+export var RegExp = _global.RegExp;
 
 export class RegExpWrapper {
   static create(regExpStr, flags:string = ''):RegExp {
     flags = flags.replace(/g/g, '');
-    return {
-      multiple: new _global.RegExp(regExpStr, flags + 'g'),
-      single: new _global.RegExp(regExpStr, flags)
-    };
+    return new _global.RegExp(regExpStr, flags + 'g');
   }
   static firstMatch(regExp, input) {
-    return input.match(regExp.single);
+    // Reset multimatch regex state
+    regExp.lastIndex = 0;
+    return regExp.exec(input);
   }
   static matcher(regExp, input) {
     // Reset regex state for the case
     // someone did not loop over all matches
     // last time.
-    regExp.multiple.lastIndex = 0;
+    regExp.lastIndex = 0;
     return {
-      re: regExp.multiple,
+      re: regExp,
       input: input
     };
   }
@@ -241,7 +226,7 @@ export var BaseException = Error;
 // JS has NaN !== NaN
 export function looseIdentical(a, b):boolean {
   return a === b ||
-         typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
+    typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
 }
 
 // JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
