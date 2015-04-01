@@ -67,10 +67,14 @@ export class View {
     return isPresent(this.context);
   }
 
-  _hydrateContext(newContext, locals) {
+  _setContextAndLocals(newContext, locals) {
     this.context = newContext;
     this.locals.parent = locals;
-    this.changeDetector.hydrate(this.context, this.locals);
+    this.changeDetector.hydrate(this.context, this.locals, this.elementInjectors);
+  }
+
+  _hydrateChangeDetector() {
+    this.changeDetector.hydrate(this.context, this.locals, this.elementInjectors);
   }
 
   _dehydrateContext() {
@@ -117,7 +121,8 @@ export class View {
     if (this.hydrated()) throw new BaseException('The view is already hydrated.');
 
     this.render = renderComponentViewRefs[renderComponentIndex++];
-    this._hydrateContext(context, locals);
+
+    this._setContextAndLocals(context, locals);
 
     // viewContainers
     for (var i = 0; i < this.viewContainers.length; i++) {
@@ -173,6 +178,7 @@ export class View {
         componentChildViewIndex++;
       }
     }
+    this._hydrateChangeDetector();
     this.proto.renderer.setEventDispatcher(this.render, this);
     return renderComponentIndex;
   }
@@ -222,22 +228,9 @@ export class View {
     this.dispatchEvent(binderIndex, eventName, locals);
   }
 
-  onAllChangesDone(directiveMemento:DirectiveMemento) {
-    var dir = directiveMemento.directive(this.elementInjectors);
-    dir.onAllChangesDone();
-  }
-
-  onChange(directiveMemento:DirectiveMemento, changes) {
-    var dir = directiveMemento.directive(this.elementInjectors);
-    dir.onChange(changes);
-  }
-
   // dispatch to element injector or text nodes based on context
   invokeMementoFor(memento:any, currentValue:any) {
-    if (memento instanceof DirectiveBindingMemento) {
-      var directiveMemento:DirectiveBindingMemento = memento;
-      directiveMemento.invoke(currentValue, this.elementInjectors);
-    } else if (memento instanceof ElementBindingMemento) {
+    if (memento instanceof ElementBindingMemento) {
       var elementMemento:ElementBindingMemento = memento;
       this.proto.renderer.setElementProperty(
         this.render, elementMemento.elementIndex, elementMemento.propertyName, currentValue
@@ -461,7 +454,7 @@ export class DirectiveBindingMemento {
   _elementInjectorIndex:int;
   _directiveIndex:int;
   propertyName:string;
-  _setter:SetterFn;
+  setter:SetterFn;
   constructor(
       elementInjectorIndex:number,
       directiveIndex:number,
@@ -470,13 +463,13 @@ export class DirectiveBindingMemento {
     this._elementInjectorIndex = elementInjectorIndex;
     this._directiveIndex = directiveIndex;
     this.propertyName = propertyName;
-    this._setter = setter;
+    this.setter = setter;
   }
 
   invoke(currentValue:any, elementInjectors:List<ElementInjector>) {
     var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
     var directive = elementInjector.getDirectiveAtIndex(this._directiveIndex);
-    this._setter(directive, currentValue);
+    this.setter(directive, currentValue);
   }
 }
 
@@ -485,6 +478,10 @@ class DirectiveMemento {
   _directiveIndex:number;
   callOnAllChangesDone:boolean;
   callOnChange:boolean;
+
+  get name() {
+    return `${this._elementInjectorIndex}_${this._directiveIndex}`;
+  }
 
   constructor(elementInjectorIndex:number, directiveIndex:number, callOnAllChangesDone:boolean,
               callOnChange:boolean) {

@@ -76,16 +76,23 @@ function pipeOnDestroyTemplate(pipeNames:List) {
   return pipeNames.map((p) => `${p}.onDestroy()`).join("\n");
 }
 
-function hydrateTemplate(type:string, mode:string, fieldsDefinitions:string, pipeOnDestroy:string):string {
+function hydrateTemplate(type:string, mode:string, fieldDefinitions:string, pipeOnDestroy:string,
+                         directiveFieldNames:List<String>):string {
+  var directiveInit = "";
+  for(var i = 0; i < directiveFieldNames.length; ++i) {
+    directiveInit += `${directiveFieldNames[i]} = this.directiveMementos[${i}].directive(directives);\n`;
+  }
+
   return `
-${type}.prototype.hydrate = function(context, locals) {
+${type}.prototype.hydrate = function(context, locals, directives) {
   ${MODE_ACCESSOR} = "${mode}";
   ${CONTEXT_ACCESSOR} = context;
   ${LOCALS_ACCESSOR} = locals;
+  ${directiveInit}
 }
 ${type}.prototype.dehydrate = function() {
   ${pipeOnDestroy}
-  ${fieldsDefinitions}
+  ${fieldDefinitions}
   ${LOCALS_ACCESSOR} = null;
 }
 ${type}.prototype.hydrated = function() {
@@ -110,8 +117,8 @@ ${type}.prototype.callOnAllChangesDone = function() {
 `;
 }
 
-function onAllChangesDoneTemplate(index:number):string {
-  return `${DISPATCHER_ACCESSOR}.onAllChangesDone(${MEMENTOS_ACCESSOR}[${index}]);`;
+function onAllChangesDoneTemplate(directive:string):string {
+  return `${directive}.onAllChangesDone();`;
 }
 
 
@@ -130,7 +137,7 @@ ${records}
 }
 
 function pipeCheckTemplate(protoIndex:number, context:string, bindingPropagationConfig:string, pipe:string, pipeType:string,
-                           oldValue:string, newValue:string, change:string, invokeMementoAndAddChange:string,
+                           oldValue:string, newValue:string, change:string, invokeMemento:string,
                            addToChanges, lastInDirective:string):string{
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
@@ -144,7 +151,7 @@ if (${pipe} === ${UTIL}.unitialized()) {
 ${newValue} = ${pipe}.transform(${context});
 if (! ${UTIL}.noChangeMarker(${newValue})) {
   ${change} = true;
-  ${invokeMementoAndAddChange}
+  ${invokeMemento}
   ${addToChanges}
   ${oldValue} = ${newValue};
 }
@@ -153,13 +160,13 @@ ${lastInDirective}
 }
 
 function referenceCheckTemplate(protoIndex:number, assignment:string, oldValue:string, newValue:string, change:string,
-                                invokeMementoAndAddChange:string, addToChanges:string, lastInDirective:string):string {
+                                invokeMemento:string, addToChanges:string, lastInDirective:string):string {
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 ${assignment}
 if (${newValue} !== ${oldValue} || (${newValue} !== ${newValue}) && (${oldValue} !== ${oldValue})) {
   ${change} = true;
-  ${invokeMementoAndAddChange}
+  ${invokeMemento}
   ${addToChanges}
   ${oldValue} = ${newValue};
 }
@@ -196,20 +203,26 @@ function addToChangesTemplate(oldValue:string, newValue:string):string {
   return `${CHANGES_LOCAL} = ${UTIL}.addChange(${CHANGES_LOCAL}, ${CURRENT_PROTO}.bindingMemento, ${UTIL}.simpleChange(${oldValue}, ${newValue}));`;
 }
 
-function invokeBindingMemento(oldValue:string, newValue:string):string {
+function updateDirectiveTemplate(oldValue:string, newValue:string, directiveProperty:string):string {
   return `
 if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
+${directiveProperty} = ${newValue};
+  `;
+}
 
+function updateElementTemplate(oldValue:string, newValue:string):string {
+  return `
+if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
 ${DISPATCHER_ACCESSOR}.invokeMementoFor(${CURRENT_PROTO}.bindingMemento, ${newValue});
   `;
 }
 
-function lastInDirectiveTemplate(protoIndex:number):string{
+function notifyOnChangesTemplate(directive:string):string{
   return  `
-if (${CHANGES_LOCAL}) {
-  ${DISPATCHER_ACCESSOR}.onChange(${PROTOS_ACCESSOR}[${protoIndex}].directiveMemento, ${CHANGES_LOCAL});
+if(${CHANGES_LOCAL}) {
+  ${directive}.onChange(${CHANGES_LOCAL});
+  ${CHANGES_LOCAL} = null;
 }
-${CHANGES_LOCAL} = null;
 `;
 }
 
@@ -271,13 +284,22 @@ export class ChangeDetectorJITGenerator {
   genHydrate():string {
     var mode = ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy);
     return hydrateTemplate(this.typeName, mode, this.genFieldDefinitions(),
-      pipeOnDestroyTemplate(this.getNonNullPipeNames()));
+      pipeOnDestroyTemplate(this.getNonNullPipeNames()), this.getDirectiveFieldNames());
+  }
+
+  getDirectiveFieldNames():List<string> {
+    return this.directiveMementos.map((d) => this.getDirective(d));
+  }
+
+  getDirective(memento) {
+    return `this.directive_${memento.name}`;
   }
 
   genFieldDefinitions() {
     var fields = [];
     fields = fields.concat(this.fieldNames);
     fields = fields.concat(this.getNonNullPipeNames());
+    fields = fields.concat(this.getDirectiveFieldNames());
     return fieldDefinitionsTemplate(fields);
   }
 
@@ -303,7 +325,8 @@ export class ChangeDetectorJITGenerator {
     for (var i = mementos.length - 1; i >= 0; --i) {
       var memento = mementos[i];
       if (memento.callOnAllChangesDone) {
-        notifications.push(onAllChangesDoneTemplate(i));
+        var directive = `this.directive_${memento.name}`;
+        notifications.push(onAllChangesDoneTemplate(directive));
       }
     }
 
@@ -340,9 +363,9 @@ export class ChangeDetectorJITGenerator {
     var pipe = this.pipeNames[r.selfIndex];
     var bpc = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.bindingPropagationConfig" : "null";
 
-    var invokeMemento = this.getInvokeMementoAndAddChangeTemplate(r);
+    var invokeMemento = this.genUpdateDirectiveOrElement(r);
     var addToChanges = this.genAddToChanges(r);
-    var lastInDirective = this.genLastInDirective(r);
+    var lastInDirective = this.genNotifyOnChanges(r);
 
     return pipeCheckTemplate(r.selfIndex - 1, context, bpc, pipe, r.name, oldValue, newValue, change,
       invokeMemento, addToChanges, lastInDirective);
@@ -354,9 +377,9 @@ export class ChangeDetectorJITGenerator {
     var change = this.changeNames[r.selfIndex];
     var assignment = this.genUpdateCurrentValue(r);
 
-    var invokeMemento = this.getInvokeMementoAndAddChangeTemplate(r);
+    var invokeMemento = this.genUpdateDirectiveOrElement(r);
     var addToChanges = this.genAddToChanges(r);
-    var lastInDirective = this.genLastInDirective(r);
+    var lastInDirective = this.genNotifyOnChanges(r);
 
     var check = referenceCheckTemplate(r.selfIndex - 1, assignment, oldValue, newValue, change,
       invokeMemento, addToChanges, lastInDirective);
@@ -426,10 +449,18 @@ export class ChangeDetectorJITGenerator {
     return JSON.stringify(value);
   }
 
-  getInvokeMementoAndAddChangeTemplate(r:ProtoRecord):string {
+  genUpdateDirectiveOrElement(r:ProtoRecord):string {
+    if (! r.lastInBinding) return "";
+
     var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
-    return r.lastInBinding ? invokeBindingMemento(oldValue, newValue) : "";
+
+    if (isPresent(r.directiveMemento)) {
+      var directiveProperty = `${this.getDirective(r.directiveMemento)}.${r.bindingMemento.propertyName}`;
+      return updateDirectiveTemplate(oldValue, newValue, directiveProperty);
+    } else {
+      return updateElementTemplate(oldValue, newValue);
+    }
   }
 
   genAddToChanges(r:ProtoRecord):string {
@@ -439,9 +470,13 @@ export class ChangeDetectorJITGenerator {
     return callOnChange ? addToChangesTemplate(oldValue, newValue) : "";
   }
 
-  genLastInDirective(r:ProtoRecord):string{
+  genNotifyOnChanges(r:ProtoRecord):string{
     var callOnChange = r.directiveMemento && r.directiveMemento.callOnChange;
-    return r.lastInDirective && callOnChange ? lastInDirectiveTemplate(r.selfIndex - 1) : '';
+    if (r.lastInDirective && callOnChange) {
+      return notifyOnChangesTemplate(this.getDirective(r.directiveMemento));
+    } else {
+      return "";
+    }
   }
 
   genArgs(r:ProtoRecord):string {

@@ -5,6 +5,6 @@ class ChangeDetectorJITGenerator {
   }
 
   generate() {
-    throw "Not supported in Dart";
+    throw "Jit Change Detection is not supported in Dart";
   }
 }

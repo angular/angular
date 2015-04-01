@@ -34,6 +34,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   prevContexts:List;
 
   protos:List<ProtoRecord>;
+  directives:any;
   directiveMementos:List;
   changeControlStrategy:string;
 
@@ -53,16 +54,18 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.prevContexts, uninitialized);
     ListWrapper.fill(this.changes, false);
     this.locals = null;
+    this.directives = null;
 
     this.protos = protoRecords;
     this.directiveMementos = directiveMementos;
     this.changeControlStrategy = changeControlStrategy;
   }
 
-  hydrate(context:any, locals:any) {
+  hydrate(context:any, locals:any, directives:any) {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.changeControlStrategy);
     this.values[0] = context;
     this.locals = locals;
+    this.directives = directives;
   }
 
   dehydrate() {
@@ -90,29 +93,18 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var protos:List<ProtoRecord> = this.protos;
 
     var changes = null;
-    var currentDirectiveMemento = null;
-
     for (var i = 0; i < protos.length; ++i) {
       var proto:ProtoRecord = protos[i];
-      if (isBlank(currentDirectiveMemento)) {
-        currentDirectiveMemento = proto.directiveMemento;
-      }
 
       var change = this._check(proto);
       if (isPresent(change)) {
         if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
-        this.dispatcher.invokeMementoFor(proto.bindingMemento, change.currentValue);
-
-        if (isPresent(currentDirectiveMemento) && currentDirectiveMemento.callOnChange) {
-          changes = ChangeDetectionUtil.addChange(changes, proto.bindingMemento, change);
-        }
+        this._updateDirectiveOrElement(change, proto.directiveMemento, proto.bindingMemento);
+        changes = this._addChange(proto.directiveMemento, proto.bindingMemento, change, changes);
       }
 
-      if (proto.lastInDirective) {
-        if (isPresent(changes)) {
-          this.dispatcher.onChange(currentDirectiveMemento, changes);
-        }
-        currentDirectiveMemento = null;
+      if (proto.lastInDirective && isPresent(changes)) {
+        this._directive(proto.directiveMemento).onChange(changes);
         changes = null;
       }
     }
@@ -123,9 +115,29 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     for (var i = mementos.length - 1; i >= 0; --i) {
       var memento = mementos[i];
       if (memento.callOnAllChangesDone) {
-        this.dispatcher.onAllChangesDone(memento);
+        this._directive(memento).onAllChangesDone();
       }
     }
+  }
+
+  _updateDirectiveOrElement(change, directiveMemento, bindingMemento) {
+    if (isBlank(directiveMemento)) {
+      this.dispatcher.invokeMementoFor(bindingMemento, change.currentValue);
+    } else {
+      bindingMemento.setter(this._directive(directiveMemento), change.currentValue);
+    }
+  }
+
+  _addChange(directiveMemento, bindingMemento, change, changes) {
+    if (isPresent(directiveMemento) && directiveMemento.callOnChange) {
+      return ChangeDetectionUtil.addChange(changes, bindingMemento, change);
+    } else {
+      return changes;
+    }
+  }
+
+  _directive(memento) {
+    return memento.directive(this.directives);
   }
 
   _check(proto:ProtoRecord) {

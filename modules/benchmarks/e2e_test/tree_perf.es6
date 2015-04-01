@@ -17,10 +17,32 @@ describe('ng2 tree benchmark', function () {
     }).then(done, done.fail);
   });
 
+  it('should log the ng stats (update)', function(done) {
+    perfUtil.runClickBenchmark({
+      url: URL,
+      buttons: ['#ng2CreateDom'],
+      id: 'ng2.tree.update',
+      params: [{
+        name: 'depth', value: 9, scale: 'log2'
+      }]
+    }).then(done, done.fail);
+  });
+
   it('should log the baseline stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
+      id: 'baseline.tree',
+      params: [{
+        name: 'depth', value: 9, scale: 'log2'
+      }]
+    }).then(done, done.fail);
+  });
+
+  it('should log the baseline stats (update)', function(done) {
+    perfUtil.runClickBenchmark({
+      url: URL,
+      buttons: ['#baselineCreateDom'],
       id: 'baseline.tree',
       params: [{
         name: 'depth', value: 9, scale: 'log2'
