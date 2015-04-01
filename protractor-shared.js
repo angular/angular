@@ -135,7 +135,7 @@ var config = exports.config = {
     // During benchmarking, we need to open a new browser
     // for every benchmark, otherwise the numbers can get skewed
     // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
-    if (argv['benchmark']) {
+    if (argv['benchmark'] && !argv['dryrun']) {
       var originalBrowser = browser;
       var _tmpBrowser;
       beforeEach(function() {
@@ -225,19 +225,21 @@ exports.createBenchpressRunner = function(options) {
       'lang': options.lang,
       'runId': runId
     }),
-    benchpress.MultiReporter.createBindings([
-      benchpress.ConsoleReporter,
-      benchpress.JsonFileReporter
-    ]),
     benchpress.JsonFileReporter.BINDINGS,
     benchpress.bind(benchpress.JsonFileReporter.PATH).toValue(resultsFolder)
   ];
   if (!argv['dryrun']) {
     bindings.push(benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator));
     bindings.push(benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(argv['sample-size']));
+    bindings.push(benchpress.MultiReporter.createBindings([
+      benchpress.ConsoleReporter,
+      benchpress.JsonFileReporter
+    ]));
   } else {
     bindings.push(benchpress.Validator.bindTo(benchpress.SizeValidator));
     bindings.push(benchpress.bind(benchpress.SizeValidator.SAMPLE_SIZE).toValue(1));
+    bindings.push(benchpress.MultiReporter.createBindings([]));
+    bindings.push(benchpress.MultiMetric.createBindings([]));
   }
 
   global.benchpressRunner = new benchpress.Runner(bindings);
