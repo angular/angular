@@ -76,7 +76,7 @@ export class CompileElement {
     this.ignoreBindings = false;
     this.contentTagSelector = null;
     // description is calculated here as compilation steps may change the element
-    var tplDesc = assertionsEnabled()? getElementDescription(element) : null;
+    var tplDesc = getElementDescription(element);
     if (compilationUnit !== '') {
       this.elementDescription = compilationUnit;
       if (isPresent(tplDesc)) this.elementDescription += ": " + tplDesc;
