@@ -160,7 +160,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
     // TODO(kegluneq): Remove this limitation.
     if (node.name is! Label || node.name.label is! SimpleIdentifier) {
       logger.error(
-          'Angular 2 currently only supports simple identifiers in directives',
+          'Angular 2 currently only supports simple identifiers in directives.'
           ' Source: ${node}');
       return null;
     }
@@ -168,7 +168,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
     if (keyString == 'inline' || keyString == 'url') {
       if (node.expression is! SimpleStringLiteral) {
         logger.error(
-            'Angular 2 currently only supports string literals in directives',
+            'Angular 2 currently only supports string literals in directives.'
             ' Source: ${node}');
         return null;
       }

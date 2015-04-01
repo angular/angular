@@ -2,7 +2,6 @@ library angular2.transform.directive_processor.transformer;
 
 import 'dart:async';
 
-import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
