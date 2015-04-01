@@ -275,3 +275,5 @@ function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zon
   ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
   return _rootInjector.createChild(mergedBindings);
 }
+
+// Silly change 2 3
