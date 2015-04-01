@@ -30,17 +30,17 @@ System.import('angular2/src/dom/browser_adapter').then(function(browser_adapter)
     .map(function(path) {
       return System.import(path).then(function(module) {
         if (module.hasOwnProperty('main')) {
-          module.main()
+          module.main();
         } else {
           throw new Error('Module ' + path + ' does not implement main() method.');
         }
       });
-    }))
+    }));
 })
 .then(function() {
   __karma__.start();
 }, function(error) {
-  console.error(error.stack || error)
+  console.error(error.stack || error);
   __karma__.start();
 });
 
