@@ -20,6 +20,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
+    "preinstall": "npm install tsd && tsd update --config modules/angular2/tsd.json",
     "postinstall": "webdriver-manager update && bower install && gulp pubget.dart",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
@@ -56,6 +57,7 @@
     "gulp-template": "^3.0.0",
     "gulp-traceur": "0.17.*",
     "gulp-ts2dart": "^1.0.0",
+    "gulp-typescript": "ivogabe/gulp-typescript#3422fbff06532ccc57368f3b4c8801de8f72ef27",
     "gulp-webserver": "^0.8.7",
     "js-yaml": "^3.2.7",
     "karma": "^0.12.23",
@@ -77,6 +79,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
+    "typescript": "Microsoft/TypeScript#cebe42b81fbeeaf68c8e228dda5e602ab94e151b",
     "vinyl": "^0.4.6",
     "yargs": "2.3.*"
   }

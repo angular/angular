@@ -14,6 +14,9 @@ bower_components
 *.js.deps
 *.js.map
 
+# Or type definitions we mirror from github
+**/typings/**/*.d.ts
+
 # Include when developing application packages.
 pubspec.lock
 .c9
