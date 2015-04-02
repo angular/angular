@@ -7,3 +7,7 @@ export var __esModule = true;
 
 export var Math = global.Math;
 export var NaN = global.NaN;
+
+export class do_not_use_preserve_js_output {
+  static has<T>(s: Set<T>, key: T): boolean { return s.has(key); }
+}

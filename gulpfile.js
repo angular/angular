@@ -1,3 +1,4 @@
+var format = require('gulp-clang-format');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var shell = require('gulp-shell');
@@ -543,13 +544,18 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 }));
 
 // ------------
-// format dart
+// formatting
 
 gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
   pub: DART_SDK.PUB,
   packageName: CONFIG.formatDart.packageName,
   args: CONFIG.formatDart.args
 }));
+
+gulp.task('check-format', function() {
+  return gulp.src(['modules/**/*.ts', '!**/typings/**/*.d.ts'])
+    .pipe(format.checkFormat('file'));
+});
 
 // ------------
 // check circular dependencies in Node.js context

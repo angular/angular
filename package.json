@@ -51,6 +51,7 @@
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-changed": "^1.0.0",
+    "gulp-clang-format": "^1.0.3",
     "gulp-concat": "^2.5.2",
     "gulp-connect": "~1.0.5",
     "gulp-jasmine": "^1.0.1",

@@ -9,7 +9,7 @@ interface String {
    * same as the corresponding elements of this object (converted to a String) starting at
    * position. Otherwise returns false.
    */
-  startsWith(searchString: string, position?: number): boolean;
+  startsWith(searchString: string, position ?: number): boolean;
 }
 
 interface NumberConstructor {
@@ -17,7 +17,7 @@ interface NumberConstructor {
    * Returns true if the value passed is an integer, false otherwise.
    * @param number A numeric value.
    */
-  isInteger(number:number): boolean;
+  isInteger(number: number): boolean;
 }
 
 interface Array<T> {
@@ -29,40 +29,40 @@ interface Array<T> {
    * @param end index to stop filling the array at. If end is negative, it is treated as
    * length+end.
    */
-  fill(value:T, start?:number, end?:number): T[];
+  fill(value: T, start ?: number, end ?: number): T[];
 }
 
 // Copied from lib.dom.d.ts and modified
 interface Map<K, V> {
   clear(): void;
-  delete(key: K): boolean;
-  forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
+  delete (key: K): boolean;
+  forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg ?: any): void;
   get(key: K): V;
   has(key: K): boolean;
   set(key: K, value: V): Map<K, V>;
   size: number;
 }
 declare var Map: {
-  new <K, V>(): Map<K, V>;
+  new<K, V>(): Map<K, V>;
   // alexeagle: PATCHED
-  new <K, V>(m: Map<K, V>): Map<K, V>;
-  new <K, V>(l: List<any>): Map<K, V>;
+  new<K, V>(m: Map<K, V>): Map<K, V>;
+  new<K, V>(l: List<any>): Map<K, V>;
   prototype: Map<any, any>;
 };
 
 interface Set<T> {
   add(value: T): Set<T>;
   clear(): void;
-  delete(value: T): boolean;
-  forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void;
+  delete (value: T): boolean;
+  forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg ?: any): void;
   has(value: T): boolean;
   size: number;
 }
 declare var Set: {
-  new <T>(): Set<T>;
+  new<T>(): Set<T>;
   // alexeagle PATCHED
-  new <T>(s: Set<T>): Set<T>;
-  new <T>(l: List<T>): Set<T>;
+  new<T>(s: Set<T>): Set<T>;
+  new<T>(l: List<T>): Set<T>;
   prototype: Set<any>;
 };
 
