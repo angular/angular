@@ -31,10 +31,10 @@ import {IntegrationTestbed} from './integration_testbed';
 
 export function main() {
   describe('ShadowDom integration tests', function() {
-    var urlResolver, styleUrlResolver, styleInliner, styleHost;
+    var urlResolver, styleUrlResolver, styleInliner;
     var strategies = {
-      "scoped" : () => new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, styleHost),
-      "unscoped" : () => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, styleHost)
+      "scoped" : () => new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, null),
+      "unscoped" : () => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, null)
     }
     if (DOM.supportsNativeShadowDOM()) {
       StringMapWrapper.set(strategies, "native", () => new NativeShadowDomStrategy(styleUrlResolver));
@@ -48,7 +48,6 @@ export function main() {
         var testbed, renderer, rootEl, compile, strategy;
 
         beforeEach( () => {
-          styleHost = el('<div></div>');
           urlResolver = new UrlResolver();
           styleUrlResolver = new StyleUrlResolver(urlResolver);
           styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);

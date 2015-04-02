@@ -1,7 +1,7 @@
-import {isPresent, isBlank, RegExpWrapper, BaseException, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, RegExpWrapper} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
-import {Parser, AST, ExpressionWithSource} from 'angular2/change_detection';
+import {Parser} from 'angular2/change_detection';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
@@ -10,16 +10,14 @@ import {CompileControl} from './compile_control';
 import {dashCaseToCamelCase} from '../util';
 import {setterFactory} from './property_setter_factory';
 
-// Group 1 = "bind"
-// Group 2 = "var"
-// Group 3 = "on"
-// Group 4 = the identifier after "bind", "var", or "on"
+// Group 1 = "bind-"
+// Group 2 = "var-" or "#"
+// Group 3 = "on-"
+// Group 4 = the identifier after "bind-", "var-/#", or "on-"
 // Group 5 = idenitifer inside square braces
 // Group 6 = identifier inside parenthesis
-// Group 7 = "#"
-// Group 8 = identifier after "#"
 var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(?:(bind)|(var)|(on))-(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\)|(#)(.+))$');
+    '^(?:(?:(?:(bind-)|(var-|#)|(on-))(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\))$');
 
 /**
  * Parses the property bindings on a single element.
@@ -46,10 +44,9 @@ export class PropertyBindingParser extends CompileStep {
         if (isPresent(bindParts[1])) {
           // match: bind-prop
           this._bindProperty(bindParts[4], attrValue, current, newAttrs);
-        } else if (isPresent(bindParts[2]) || isPresent(bindParts[7])) {
+        } else if (isPresent(bindParts[2])) {
           // match: var-name / var-name="iden" / #name / #name="iden"
-          var identifier = (isPresent(bindParts[4]) && bindParts[4] !== '') ?
-              bindParts[4] : bindParts[8];
+          var identifier = bindParts[4];
           var value = attrValue == '' ? '\$implicit' : attrValue;
           this._bindVariable(identifier, value, current, newAttrs);
         } else if (isPresent(bindParts[3])) {
