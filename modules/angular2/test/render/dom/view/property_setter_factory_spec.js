@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
-import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
+import {setterFactory} from 'angular2/src/render/dom/view/property_setter_factory';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {

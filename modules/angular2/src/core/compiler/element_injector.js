@@ -10,7 +10,7 @@ import {NgElement} from 'angular2/src/core/dom/element';
 import {Directive, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 import * as pclModule from 'angular2/src/core/compiler/private_component_location';
-import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
+import {setterFactory} from 'angular2/src/render/dom/view/property_setter_factory';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -132,12 +132,14 @@ export class DirectiveBinding extends Binding {
   callOnDestroy:boolean;
   callOnChange:boolean;
   callOnAllChangesDone:boolean;
+  annotation:Directive;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
     this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
     this.callOnAllChangesDone = isPresent(annotation) && annotation.hasLifecycleHook(onAllChangesDone);
+    this.annotation = annotation;
   }
 
   static createFromBinding(b:Binding, annotation:Directive):Binding {

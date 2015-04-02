@@ -7,6 +7,8 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
+import {dashCaseToCamelCase} from '../util';
+
 /**
  * Splits views at `<template>` elements or elements with `template` attribute:
  * For `<template>` elements:
@@ -105,10 +107,14 @@ export class ViewSplitter extends CompileStep {
     for (var i=0; i<bindings.length; i++) {
       var binding = bindings[i];
       if (binding.keyIsVar) {
-        compileElement.bindElement().bindVariable(binding.key, binding.name);
+        compileElement.bindElement().bindVariable(
+          dashCaseToCamelCase(binding.key), binding.name
+        );
         MapWrapper.set(compileElement.attrs(), binding.key, binding.name);
       } else if (isPresent(binding.expression)) {
-        compileElement.bindElement().bindProperty(binding.key, binding.expression);
+        compileElement.bindElement().bindProperty(
+          dashCaseToCamelCase(binding.key), binding.expression
+        );
         MapWrapper.set(compileElement.attrs(), binding.key, binding.expression.source);
       } else {
         DOM.setAttribute(compileElement.element, binding.key, '');

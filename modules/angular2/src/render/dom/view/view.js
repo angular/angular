@@ -52,7 +52,7 @@ export class View {
   }
 
   setElementProperty(elementIndex:number, propertyName:string, value:any) {
-    var setter = MapWrapper.get(this.proto.propertySetters, propertyName);
+    var setter = MapWrapper.get(this.proto.elementBinders[elementIndex].propertySetters, propertyName);
     setter(this.boundElements[elementIndex], value);
   }
 

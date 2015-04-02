@@ -92,14 +92,14 @@ export function main() {
       });
 
       it('should add property bindings from the template attribute', () => {
-        var rootElement = el('<div><div template="prop:expr"></div></div>');
+        var rootElement = el('<div><div template="some-prop:expr"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'prop').source).toEqual('expr');
-        expect(MapWrapper.get(results[1].attrs(), 'prop')).toEqual('expr');
+        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'someProp').source).toEqual('expr');
+        expect(MapWrapper.get(results[1].attrs(), 'some-prop')).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute to the nestedProtoView', () => {
-        var rootElement = el('<div><div template="var varName=mapName"></div></div>');
+        var rootElement = el('<div><div template="var var-name=mapName"></div></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].inheritedProtoView.variableBindings).toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
       });

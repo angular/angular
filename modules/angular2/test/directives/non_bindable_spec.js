@@ -20,13 +20,12 @@ import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_str
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {NgElement} from 'angular2/src/core/dom/element';
 import {NonBindable} from 'angular2/src/directives/non_bindable';
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
@@ -46,8 +45,7 @@ export function main() {
         new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
         tplResolver,
         new ComponentUrlMapper(),
-        urlResolver,
-        new CssProcessor(null)
+        urlResolver
       );
     });
 

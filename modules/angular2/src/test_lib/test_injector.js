@@ -3,7 +3,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {ShadowDomStrategy, NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
@@ -13,7 +13,6 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {Injector} from 'angular2/di';
 
@@ -56,8 +55,7 @@ function _getAppBindings() {
     ComponentUrlMapper,
     UrlResolver,
     StyleUrlResolver,
-    StyleInliner,
-    bind(CssProcessor).toFactory(() => new CssProcessor(null), []),
+    StyleInliner
   ];
 }
 

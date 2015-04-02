@@ -1,13 +1,13 @@
 import {int, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as eiModule from './element_injector';
-import {DirectiveMetadata} from './directive_metadata';
+import {DirectiveBinding} from './element_injector';
 import {List, StringMap} from 'angular2/src/facade/collection';
 import * as viewModule from './view';
 
 export class ElementBinder {
   protoElementInjector:eiModule.ProtoElementInjector;
-  componentDirective:DirectiveMetadata;
-  viewportDirective:DirectiveMetadata;
+  componentDirective:DirectiveBinding;
+  viewportDirective:DirectiveBinding;
   textNodeIndices:List<int>;
   hasElementPropertyBindings:boolean;
   nestedProtoView: viewModule.ProtoView;
@@ -17,9 +17,9 @@ export class ElementBinder {
   index:int;
   distanceToParent:int;
   constructor(
-    index:int, parent:ElementBinder, distanceToParent: int, 
-    protoElementInjector: eiModule.ProtoElementInjector, componentDirective:DirectiveMetadata,
-    viewportDirective:DirectiveMetadata) {
+    index:int, parent:ElementBinder, distanceToParent: int,
+    protoElementInjector: eiModule.ProtoElementInjector, componentDirective:DirectiveBinding,
+    viewportDirective:DirectiveBinding) {
     if (isBlank(index)) {
       throw new BaseException('null index not allowed.');
     }

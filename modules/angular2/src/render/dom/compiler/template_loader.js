@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
@@ -12,6 +13,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
  * Strategy to load component templates.
  * @publicModule angular2/angular2
  */
+@Injectable()
 export class TemplateLoader {
   _xhr: XHR;
   _htmlCache: StringMap;

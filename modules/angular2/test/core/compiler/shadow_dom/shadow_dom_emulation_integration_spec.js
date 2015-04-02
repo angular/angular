@@ -27,12 +27,11 @@ import {ShadowDomStrategy,
         EmulatedScopedShadowDomStrategy,
         EmulatedUnscopedShadowDomStrategy,
 } from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
@@ -46,35 +45,37 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 export function main() {
   BrowserDomAdapter.makeCurrent();
   describe('integration tests', function() {
-    var urlResolver = new UrlResolver();
-    var styleUrlResolver = new StyleUrlResolver(urlResolver);
-    var styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+    var urlResolver;
+    var styleUrlResolver;
+    var styleInliner;
     var strategies = {
-      "scoped" : new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
-      "unscoped" : new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
+      "scoped" : () => new EmulatedScopedShadowDomStrategy(styleInliner, styleUrlResolver, DOM.createElement('div')),
+      "unscoped" : () => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, DOM.createElement('div'))
     }
     if (DOM.supportsNativeShadowDOM()) {
-      StringMapWrapper.set(strategies, "native", new NativeShadowDomStrategy(styleUrlResolver));
+      StringMapWrapper.set(strategies, "native", () => new NativeShadowDomStrategy(styleUrlResolver));
     }
 
     StringMapWrapper.forEach(strategies,
-      (strategy, name) => {
+      (strategyFactory, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
         var compiler, tplResolver;
 
         beforeEach(() => {
+          urlResolver = new UrlResolver();
+          styleUrlResolver = new StyleUrlResolver(urlResolver);
+          styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
           tplResolver = new MockTemplateResolver();
           compiler = new Compiler(dynamicChangeDetection,
             new TemplateLoader(null, null),
             new DirectiveMetadataReader(),
             new Parser(new Lexer()),
             new CompilerCache(),
-            strategy,
+            strategyFactory(),
             tplResolver,
             new ComponentUrlMapper(),
-            urlResolver,
-            new CssProcessor(null)
+            urlResolver
           );
         });
 

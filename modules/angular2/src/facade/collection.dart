@@ -32,7 +32,7 @@ class IterableMap extends IterableBase<List> {
 class MapWrapper {
   static HashMap create() => new HashMap();
   static HashMap clone(Map m) => new HashMap.from(m);
-  static HashMap createFromStringMap(HashMap m) => m;
+  static HashMap createFromStringMap(Map m) => new Map.from(m);
   static HashMap createFromPairs(List pairs) => pairs.fold({}, (m, p) {
     m[p[0]] = p[1];
     return m;

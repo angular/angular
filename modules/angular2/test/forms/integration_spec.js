@@ -15,15 +15,15 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+import {Inject, Injectable} from 'angular2/di';
 import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
@@ -53,8 +53,7 @@ export function main() {
       new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
       tplResolver,
       new ComponentUrlMapper(),
-      urlResolver,
-      new CssProcessor(null)
+      urlResolver
     );
 
     tplResolver.setTemplate(componentType, new Template({
@@ -397,7 +396,7 @@ class MyComp {
   form:any;
   name:string;
 
-  constructor(form = null, name = null) {
+  constructor(@Inject('form') form = null, @Inject('name') name = null) {
     this.form = form;
     this.name = name;
   }

@@ -25,12 +25,11 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {ShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
@@ -56,8 +55,7 @@ export function main() {
         shadowDomStrategy,
         tplResolver,
         new ComponentUrlMapper(),
-        urlResolver,
-        new CssProcessor(null)
+        urlResolver
       );
     }
 

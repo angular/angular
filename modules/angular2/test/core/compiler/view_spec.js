@@ -56,8 +56,8 @@ export function main() {
 
     beforeEach(() => {
       parser = new Parser(new Lexer());
-      someComponentDirective = new DirectiveMetadataReader().read(SomeComponent);
-      someViewportDirective = new DirectiveMetadataReader().read(SomeViewport);
+      someComponentDirective = readDirectiveBinding(SomeComponent);
+      someViewportDirective = readDirectiveBinding(SomeViewport);
     });
 
     describe('instantiated from protoView', () => {
@@ -411,7 +411,7 @@ export function main() {
           var pv = new ProtoView(el('<cmp class="ng-binding"></cmp>'),
             new DynamicProtoChangeDetector(null, null), new EmulatedScopedShadowDomStrategy(null, null, null));
           var binder = pv.bindElement(null, 0, new ProtoElementInjector(null, 0, [SomeComponent], true));
-          binder.componentDirective = new DirectiveMetadataReader().read(SomeComponent);
+          binder.componentDirective = readDirectiveBinding(SomeComponent);
           binder.nestedProtoView = subpv;
 
           var view = createNestedView(pv);
@@ -678,6 +678,11 @@ export function main() {
       });
     });
   });
+}
+
+function readDirectiveBinding(type) {
+  var meta = new DirectiveMetadataReader().read(type);
+  return DirectiveBinding.createFromType(type, meta.annotation);
 }
 
 class SomeDirective {

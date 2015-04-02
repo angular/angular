@@ -3,9 +3,14 @@ import {BaseException} from 'angular2/src/facade/lang';
 
 import {Template, ProtoView} from '../../api';
 import {CompilePipeline} from './compile_pipeline';
-import {TemplateLoader} from './template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory} from './compile_step_factory';
 
+/**
+ * The compiler loads and translates the html templates of components into
+ * nested ProtoViews. To decompose its functionality it uses
+ * the CompilePipeline and the CompileSteps.
+ */
 export class Compiler {
   _templateLoader: TemplateLoader;
   _stepFactory: CompileStepFactory;

@@ -9,8 +9,6 @@ import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
-
 import {DirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase} from '../util';
 
@@ -72,7 +70,12 @@ export class DirectiveParser extends CompileStep {
       }
       if (isPresent(directive.setters)) {
         ListWrapper.forEach(directive.setters, (propertyName) => {
-          directiveBinder.bindPropertySetter(propertyName, setterFactory(propertyName));
+          elementBinder.bindPropertySetter(propertyName);
+        });
+      }
+      if (isPresent(directive.readAttributes)) {
+        ListWrapper.forEach(directive.readAttributes, (attrName) => {
+          elementBinder.readAttribute(attrName);
         });
       }
       if (directive.type === DirectiveMetadata.VIEWPORT_TYPE) {

@@ -1,6 +1,5 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {SetterFn} from 'angular2/src/reflection/types';
 
 import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
@@ -16,20 +15,17 @@ export class ProtoView {
   isTemplateElement:boolean;
   isRootView:boolean;
   rootBindingOffset:int;
-  propertySetters: Map<string, SetterFn>;
 
   constructor({
     elementBinders,
     element,
-    isRootView,
-    propertySetters
+    isRootView
   }) {
     this.element = element;
     this.elementBinders = elementBinders;
     this.isTemplateElement = DOM.isTemplateElement(this.element);
     this.isRootView = isRootView;
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
-    this.propertySetters = propertySetters;
   }
 
   mergeChildComponentProtoViews(protoViews:List<ProtoView>, target:List<ProtoView>):ProtoView {
@@ -45,9 +41,7 @@ export class ProtoView {
     var result = new ProtoView({
       elementBinders: elementBinders,
       element: this.element,
-      isRootView: this.isRootView,
-      // Don't clone as we assume immutability!
-      propertySetters: this.propertySetters
+      isRootView: this.isRootView
     });
     ListWrapper.insert(target, 0, result);
     return result

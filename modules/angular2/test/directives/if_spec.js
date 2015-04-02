@@ -20,11 +20,10 @@ import {Lexer, Parser, ChangeDetector, dynamicChangeDetection} from 'angular2/ch
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
@@ -49,8 +48,7 @@ export function main() {
         new NativeShadowDomStrategy(new StyleUrlResolver(urlResolver)),
         tplResolver,
         new ComponentUrlMapper(),
-        urlResolver,
-        new CssProcessor(null)
+        urlResolver
       );
     });
 

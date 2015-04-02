@@ -7,9 +7,10 @@ import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
-import {TemplateLoader} from './compiler/template_loader';
+import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
+import {DirectiveBinding} from './compiler/element_injector';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
@@ -24,7 +25,6 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
@@ -74,7 +74,8 @@ function _injectorBindings(appComponentType): List<Binding> {
         return compiler.compile(appComponentAnnotatedType.type).then(
             (protoView) => {
           var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
-            appComponentAnnotatedType, changeDetection.createProtoChangeDetector('root'),
+            DirectiveBinding.createFromType(appComponentAnnotatedType.type, appComponentAnnotatedType.annotation),
+            changeDetection.createProtoChangeDetector('root'),
             strategy);
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
@@ -112,7 +113,6 @@ function _injectorBindings(appComponentType): List<Binding> {
       UrlResolver,
       StyleUrlResolver,
       StyleInliner,
-      bind(CssProcessor).toFactory(() => new CssProcessor(null), []),
       PrivateComponentLoader,
       Testability,
   ];

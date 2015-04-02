@@ -19,8 +19,6 @@ export class ElementBinder {
   index:number;
   parentIndex:number;
   distanceToParent:number;
-  parentWithDirectivesIndex:number;
-  distanceToParentWithDirectives:number;
   directives:List<DirectiveBinder>;
   nestedProtoView:ProtoView;
   propertyBindings: Map<string, ASTWithSource>;
@@ -30,24 +28,25 @@ export class ElementBinder {
   // with a local name
   eventBindings: Map<string, ASTWithSource>;
   textBindings: List<ASTWithSource>;
+  readAttributes: Map<string, string>;
 
   constructor({
-    index, parentIndex, distanceToParent, parentWithDirectivesIndex,
-    distanceToParentWithDirectives, directives, nestedProtoView,
+    index, parentIndex, distanceToParent,
+    directives, nestedProtoView,
     propertyBindings, variableBindings,
-    eventBindings, textBindings
+    eventBindings, textBindings,
+    readAttributes
   }) {
     this.index = index;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
-    this.parentWithDirectivesIndex = parentWithDirectivesIndex;
-    this.distanceToParentWithDirectives = distanceToParentWithDirectives;
     this.directives = directives;
     this.nestedProtoView = nestedProtoView;
     this.propertyBindings = propertyBindings;
     this.variableBindings = variableBindings;
     this.eventBindings = eventBindings;
     this.textBindings = textBindings;
+    this.readAttributes = readAttributes;
   }
 }
 
@@ -73,7 +72,7 @@ export class ProtoView {
   elementBinders:List<ElementBinder>;
   variableBindings: Map<string, string>;
 
-  constructor({render, elementBinders, variableBindings}) {
+  constructor({render, elementBinders, variableBindings}={}) {
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;
@@ -90,14 +89,16 @@ export class DirectiveMetadata {
   events:Map<string, string>;
   bind:Map<string, string>;
   setters:List<string>;
+  readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, events, bind, setters, type}) {
+  constructor({id, selector, compileChildren, events, bind, setters, readAttributes, type}) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.events = events;
     this.bind = bind;
     this.setters = setters;
+    this.readAttributes = readAttributes;
     this.type = type;
   }
 }

@@ -26,7 +26,7 @@ export class ShadowDomCompileStep extends CompileStep {
     if (current.ignoreBindings) {
       return;
     }
-    var tagName = DOM.tagName(current.element);
+    var tagName = DOM.tagName(current.element).toUpperCase();
     if (tagName == 'STYLE') {
       this._processStyleElement(current);
     } else if (tagName == 'CONTENT') {

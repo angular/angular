@@ -145,7 +145,7 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   addClass(element, String classname) {
-    throw 'not implemented';
+    element.classes.add(classname);
   }
   removeClass(element, String classname) {
     throw 'not implemented';

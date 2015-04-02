@@ -114,10 +114,15 @@ export function main() {
     it('should store working property setters', () => {
       var element = el('<input some-decor-props>');
       var results = process(element);
-      var directiveBinding = results[0].directives[0];
-      var setter = MapWrapper.get(directiveBinding.propertySetters, 'value');
+      var setter = MapWrapper.get(results[0].propertySetters, 'value');
       setter(element, 'abc');
       expect(element.value).toEqual('abc');
+    });
+
+    it('should read attribute values', () => {
+      var element = el('<input some-decor-props some-attr="someValue">');
+      var results = process(element);
+      expect(MapWrapper.get(results[0].readAttributes, 'some-attr')).toEqual('someValue');
     });
 
     it('should bind directive events', () => {
@@ -231,7 +236,8 @@ var someDecoratorWithProps = new DirectiveMetadata({
     'dirProp': 'elProp',
     'doubleProp': 'elProp | double'
   }),
-  setters: ['value']
+  setters: ['value'],
+  readAttributes: ['some-attr']
 });
 
 var someDecoratorWithEvents = new DirectiveMetadata({

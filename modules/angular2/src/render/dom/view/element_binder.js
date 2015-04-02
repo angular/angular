@@ -1,4 +1,5 @@
 import {AST} from 'angular2/change_detection';
+import {SetterFn} from 'angular2/src/reflection/types';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import * as protoViewModule from './proto_view';
@@ -15,6 +16,7 @@ export class ElementBinder {
   componentId: string;
   parentIndex:number;
   distanceToParent:number;
+  propertySetters: Map<string, SetterFn>;
 
   constructor({
     textNodeIndices,
@@ -24,7 +26,8 @@ export class ElementBinder {
     eventLocals,
     eventNames,
     parentIndex,
-    distanceToParent
+    distanceToParent,
+    propertySetters
   }) {
     this.textNodeIndices = textNodeIndices;
     this.contentTagSelector = contentTagSelector;
@@ -34,6 +37,7 @@ export class ElementBinder {
     this.eventNames = eventNames;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
+    this.propertySetters = propertySetters;
   }
 
   mergeChildComponentProtoViews(protoViews:List<protoViewModule.ProtoView>, target:List<protoViewModule.ProtoView>):ElementBinder {
@@ -45,15 +49,14 @@ export class ElementBinder {
     }
     return new ElementBinder({
       parentIndex: this.parentIndex,
-      // Don't clone as we assume immutability!
       textNodeIndices: this.textNodeIndices,
       contentTagSelector: this.contentTagSelector,
       nestedProtoView: nestedProtoView,
       componentId: this.componentId,
-      // Don't clone as we assume immutability!
       eventLocals: this.eventLocals,
       eventNames: this.eventNames,
-      distanceToParent: this.distanceToParent
+      distanceToParent: this.distanceToParent,
+      propertySetters: this.propertySetters
     });
   }
 }

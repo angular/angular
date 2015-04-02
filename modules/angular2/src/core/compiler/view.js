@@ -4,9 +4,8 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
   ChangeRecord, BindingRecord, BindingPropagationConfig, uninitialized} from 'angular2/change_detection';
 
-import {ProtoElementInjector, ElementInjector, PreBuiltObjects} from './element_injector';
+import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';
-import {DirectiveMetadata} from './directive_metadata';
 import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
@@ -549,7 +548,7 @@ export class ProtoView {
   }
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,
-      componentDirective:DirectiveMetadata = null, viewportDirective:DirectiveMetadata = null):ElementBinder {
+      componentDirective:DirectiveBinding = null, viewportDirective:DirectiveBinding = null):ElementBinder {
     var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
         protoElementInjector, componentDirective, viewportDirective);
     ListWrapper.push(this.elementBinders, elBinder);
@@ -649,20 +648,20 @@ export class ProtoView {
   // Used for bootstrapping.
   static createRootProtoView(protoView: ProtoView,
       insertionElement,
-      rootComponentAnnotatedType: DirectiveMetadata,
+      rootComponentBinding: DirectiveBinding,
       protoChangeDetector:ProtoChangeDetector,
       shadowDomStrategy: ShadowDomStrategy
   ): ProtoView {
 
     DOM.addClass(insertionElement, NG_BINDING_CLASS);
-    var cmpType = rootComponentAnnotatedType.type;
+    var cmpType = rootComponentBinding.key.token;
     var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);
     rootProtoView.instantiateInPlace = true;
     var binder = rootProtoView.bindElement(null, 0,
         new ProtoElementInjector(null, 0, [cmpType], true));
-    binder.componentDirective = rootComponentAnnotatedType;
+    binder.componentDirective = rootComponentBinding;
     binder.nestedProtoView = protoView;
-    shadowDomStrategy.shimAppElement(rootComponentAnnotatedType, insertionElement);
+    shadowDomStrategy.shimAppElement(cmpType, insertionElement);
     return rootProtoView;
   }
 }
