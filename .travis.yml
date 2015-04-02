@@ -8,12 +8,20 @@ env:
   - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
   - ARCH=linux-x64
+  # Token for tsd to increase github rate limit
+  # See https://github.com/DefinitelyTyped/tsd#tsdrc
+  # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
+  # because those are not visible for pull requests, and those should also be reliable.
+  # This SSO token belongs to github account angular-github-ratelimit-token which has no access
+  # (password is in Valentine)
+  - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
   matrix:
   - MODE=js DART_CHANNEL=dev
   - MODE=dart DART_CHANNEL=stable
   - MODE=dart DART_CHANNEL=dev
 
 before_install:
+- echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh
