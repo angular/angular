@@ -29,6 +29,7 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
  *   <template [switch-default]>...</template>
  * </ANY>
  * ```
+ * @publicModule angular2/directives
  */
 @Decorator({
   selector: '[switch]',
@@ -140,6 +141,8 @@ export class Switch {
  * // match against a constant string
  * <template [switch-when]="'stringValue'">...</template>
  * ```
+ *
+ * @publicModule angular2/directives
  */
 @Viewport({
   selector: '[switch-when]',
@@ -175,6 +178,8 @@ export class SwitchWhen {
  *
  * ```
  * <template [switch-default]>...</template>
+ *
+ * @publicModule angular2/directives
  * ```
  */
 @Viewport({

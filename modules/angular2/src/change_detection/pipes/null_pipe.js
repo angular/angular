@@ -1,6 +1,9 @@
 import {isBlank} from 'angular2/src/facade/lang';
 import {Pipe, NO_CHANGE} from './pipe';
 
+/**
+ * @publicModule angular2/pipes
+ */
 export class NullPipeFactory {
   supports(obj):boolean {
     return NullPipe.supportsObj(obj);
@@ -11,6 +14,9 @@ export class NullPipeFactory {
   }
 }
 
+/**
+ * @publicModule angular2/pipes
+ */
 export class NullPipe extends Pipe {
   called:boolean;
   constructor() {

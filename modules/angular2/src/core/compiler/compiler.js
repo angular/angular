@@ -22,7 +22,6 @@ import {CssProcessor} from './css_processor';
 /**
  * Cache that stores the ProtoView of the template of a component.
  * Used to prevent duplicate work and resolve cyclic dependencies.
- * @publicModule angular2/angular2
  */
 @Injectable()
 export class CompilerCache {
@@ -49,7 +48,8 @@ export class CompilerCache {
  * The compiler loads and translates the html templates of components into
  * nested ProtoViews. To decompose its functionality it uses
  * the CompilePipeline and the CompileSteps.
- * @publicModule angular2/angular2
+ *
+ * @publicModule angular2/template
  */
 @Injectable()
 export class Compiler {
@@ -90,6 +90,7 @@ export class Compiler {
     this._cssProcessor = cssProcessor;
   }
 
+  // todo(misko): should be private method
   createSteps(component:Type, template: Template):List<CompileStep> {
     var dirMetadata = ListWrapper.map(this._flattenDirectives(template),
       (d) => this._reader.read(d));
