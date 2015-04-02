@@ -220,7 +220,7 @@ var CONFIG = {
     },
     dart: {
       src: ['LICENSE'],
-      exclude: ['rtts_assert/'],
+      exclude: ['rtts_assert'],
       pipes: {}
     }
   },
