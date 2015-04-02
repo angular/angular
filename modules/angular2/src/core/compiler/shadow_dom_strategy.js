@@ -8,10 +8,10 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import * as viewModule from './view';
 
 import {LightDom} from './shadow_dom_emulation/light_dom';
-import {ShadowCss} from './shadow_dom_emulation/shadow_css';
+import {ShadowCss} from 'angular2/src/render/dom/shadow_dom/shadow_css';
 
-import {StyleInliner} from './style_inliner';
-import {StyleUrlResolver} from './style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 
 import {DirectiveMetadata} from './directive_metadata';
 
@@ -105,7 +105,7 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
 
   getTemplateCompileStep(cmpMetadata: DirectiveMetadata): NS.CompileStep {
     return new _BaseEmulatedShadowDomStep();
-  }  
+  }
 }
 
 /**
@@ -190,7 +190,7 @@ class _BaseEmulatedShadowDomStep extends NS.CompileStep {
       DOM.remove(current.element);
 
       current.element = contentStart;
-    }    
+    }
   }
 
 }

@@ -10,7 +10,7 @@ var url = require('url');
 import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
 import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
-import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
+import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 
 var _attrToPropMap = {
   'innerHtml': 'innerHTML',

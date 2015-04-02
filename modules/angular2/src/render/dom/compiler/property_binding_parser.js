@@ -8,7 +8,7 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 import {dashCaseToCamelCase} from '../util';
-import {setterFactory} from './property_setter_factory';
+import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
 
 // Group 1 = "bind-"
 // Group 2 = "var-" or "#"

@@ -13,9 +13,9 @@ import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_t
 import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
+import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';

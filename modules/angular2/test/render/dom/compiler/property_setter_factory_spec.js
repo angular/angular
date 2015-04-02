@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
-import {setterFactory} from 'angular2/src/core/compiler/property_setter_factory';
+import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -8,7 +8,7 @@ export function main() {
   	div = el('<div></div>');
   });
   describe('property setter factory', () => {
-  	
+
     it('should return a setter for a property', () => {
       var setterFn = setterFactory('title');
       setterFn(div, 'Hello');

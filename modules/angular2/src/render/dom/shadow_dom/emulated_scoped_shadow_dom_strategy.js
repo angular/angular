@@ -3,8 +3,8 @@ import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {StyleInliner} from './style_inliner';
-import {StyleUrlResolver} from './style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
+import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {EmulatedUnscopedShadowDomStrategy} from './emulated_unscoped_shadow_dom_strategy';
 import {
   getContentAttribute, getHostAttribute, getComponentId, shimCssForComponent, insertStyleElement

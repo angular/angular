@@ -11,8 +11,8 @@ import {XHR} from 'angular2/src/services/xhr';
 import {XHRMock} from 'angular2/src/mock/xhr_mock';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
-import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
-import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
+import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
+import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
 
 import {Injector} from 'angular2/di';

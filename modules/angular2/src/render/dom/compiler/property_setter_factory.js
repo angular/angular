@@ -1,7 +1,7 @@
 import {StringWrapper, RegExpWrapper, BaseException, isPresent, isBlank, isString, stringify} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {camelCaseToDashCase, dashCaseToCamelCase} from './string_utils';
+import {camelCaseToDashCase, dashCaseToCamelCase} from '../util';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 const STYLE_SEPARATOR = '.';

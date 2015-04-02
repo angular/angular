@@ -3,13 +3,13 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Parser} from 'angular2/change_detection';
 
-import {SelectorMatcher, CssSelector} from './selector';
+import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 
 import {CompileStep} from './compile_step';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
-import {setterFactory} from './property_setter_factory';
+import {setterFactory} from 'angular2/src/render/dom/compiler/property_setter_factory';
 
 import {DirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase} from '../util';

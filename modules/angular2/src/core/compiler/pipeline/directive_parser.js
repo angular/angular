@@ -1,8 +1,7 @@
 import {isPresent, isBlank, BaseException, assertionsEnabled, RegExpWrapper} from 'angular2/src/facade/lang';
 import {List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {SelectorMatcher} from '../selector';
-import {CssSelector} from '../selector';
+import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 
 import {DirectiveMetadata} from '../directive_metadata';
 import {DynamicComponent, Component, Viewport} from '../../annotations/annotations';
