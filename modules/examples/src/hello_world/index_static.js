@@ -12,14 +12,14 @@ import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_t
 import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr/xhr_impl';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {XHR} from 'angular2/src/services/xhr';
+import {XHRImpl} from 'angular2/src/services/xhr_impl';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 

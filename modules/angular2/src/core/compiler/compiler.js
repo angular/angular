@@ -16,7 +16,7 @@ import {Template} from '../annotations/template';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {CompileStep} from './pipeline/compile_step';
 import {ComponentUrlMapper} from './component_url_mapper';
-import {UrlResolver} from './url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {CssProcessor} from './css_processor';
 
 /**

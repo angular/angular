@@ -3,7 +3,7 @@
 
 import {Injectable} from 'angular2/di';
 import {RegExp, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {UrlResolver} from './url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 /**
  * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL.

@@ -16,7 +16,7 @@ import {LightDom} from './shadow_dom_emulation/light_dom';
 import {Content} from './shadow_dom_emulation/content_tag';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {ViewPool} from './view_pool';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -306,7 +306,7 @@ export class ProtoView {
   parentProtoView:ProtoView;
   _variableBindings:List;
 
-  _directiveMementosMap:Map; 
+  _directiveMementosMap:Map;
   _directiveMementos:List;
 
   constructor(
@@ -486,7 +486,7 @@ export class ProtoView {
         ListWrapper.push(componentChildViews, childView);
       }
       lightDoms[binderIdx] = lightDom;
-      
+
       var destLightDom = null;
       if (isPresent(binder.parent) && binder.distanceToParent === 1) {
         destLightDom = lightDoms[binder.parent.index];
@@ -574,7 +574,7 @@ export class ProtoView {
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,
       componentDirective:DirectiveMetadata = null, viewportDirective:DirectiveMetadata = null):ElementBinder {
-    var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent, 
+    var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
         protoElementInjector, componentDirective, viewportDirective);
     ListWrapper.push(this.elementBinders, elBinder);
     return elBinder;
@@ -653,18 +653,18 @@ export class ProtoView {
     var directiveMemento = this._getDirectiveMemento(elementIndex, directiveIndex);
     ListWrapper.push(this.bindingRecords, new BindingRecord(expression, bindingMemento, directiveMemento));
   }
-  
+
   _getDirectiveMemento(elementInjectorIndex:number, directiveIndex:number) {
     var id = elementInjectorIndex * 100 + directiveIndex;
     var protoElementInjector = this.elementBinders[elementInjectorIndex].protoElementInjector;
-  
+
     if (!MapWrapper.contains(this._directiveMementosMap, id)) {
       var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
       MapWrapper.set(this._directiveMementosMap, id,
         new DirectiveMemento(elementInjectorIndex, directiveIndex,
           binding.callOnAllChangesDone, binding.callOnChange));
     }
-  
+
     return MapWrapper.get(this._directiveMementosMap, id);
   }
 

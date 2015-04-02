@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/di';
-import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHR} from 'angular2/src/services/xhr';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {

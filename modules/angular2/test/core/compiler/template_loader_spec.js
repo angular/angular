@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 import {Template} from 'angular2/src/core/annotations/template';
 import {PromiseWrapper} from 'angular2/src/facade/async';

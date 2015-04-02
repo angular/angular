@@ -17,7 +17,7 @@ import {
   EmulatedUnscopedShadowDomStrategy,
   resetShadowDomCache,
 } from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {StyleInliner} from 'angular2/src/core/compiler/style_inliner';
 import {ProtoView} from 'angular2/src/core/compiler/view';
@@ -25,7 +25,7 @@ import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
 import {CompileElement} from 'angular2/src/core/compiler/pipeline/compile_element';
 
-import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHR} from 'angular2/src/services/xhr';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
