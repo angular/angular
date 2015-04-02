@@ -26,4 +26,7 @@ pubspec.lock
 # Don't check in secret files
 *secret.js
 
+# Ignore npm debug log
+npm-debug.log
+
 /docs/bower_components/
