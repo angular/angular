@@ -119,6 +119,12 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     // addEventListener misses zones so we use element.on.
     element.on[event].listen(callback);
   }
+  Function onAndCancel(EventTarget element, String event, callback(arg)) {
+    // due to https://code.google.com/p/dart/issues/detail?id=17406
+    // addEventListener misses zones so we use element.on.
+    var subscription = element.on[event].listen(callback);
+    return subscription.cancel;
+  }
   void dispatchEvent(EventTarget el, Event evt) {
     el.dispatchEvent(evt);
   }
@@ -287,5 +293,14 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String getEventKey(KeyboardEvent event) {
     int keyCode = event.keyCode;
     return _keyCodeToKeyMap.containsKey(keyCode) ? _keyCodeToKeyMap[keyCode] : 'Unidentified';
+  }
+  getGlobalEventTarget(String target) {
+    if (target == "window") {
+      return window;
+    } else if (target == "document") {
+      return document;
+    } else if (target == "body") {
+      return document.body;
+    }
   }
 }

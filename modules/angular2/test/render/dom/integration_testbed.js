@@ -173,6 +173,7 @@ export class FakeEventManagerPlugin extends EventManagerPlugin {
 
   addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
     MapWrapper.set(this._eventHandlers, eventName, handler);
+    return () => {MapWrapper.delete(this._eventHandlers, eventName);}
   }
 }
 

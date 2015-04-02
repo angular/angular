@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException, assertionsEnabled, RegExpWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, assertionsEnabled, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Parser} from 'angular2/change_detection';
@@ -10,7 +10,7 @@ import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 
 import {DirectiveMetadata} from '../../api';
-import {dashCaseToCamelCase, camelCaseToDashCase} from '../util';
+import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
 
 /**
  * Parses the directives on a single element. Assumes ViewSplitter has already created
@@ -132,7 +132,13 @@ export class DirectiveParser extends CompileStep {
 
   _bindDirectiveEvent(eventName, action, compileElement, directiveBinder) {
     var ast = this._parser.parseAction(action, compileElement.elementDescription);
-    directiveBinder.bindEvent(eventName, ast);
+    if (StringWrapper.contains(eventName, EVENT_TARGET_SEPARATOR)) {
+      var parts = eventName.split(EVENT_TARGET_SEPARATOR);
+      directiveBinder.bindEvent(parts[1], ast, parts[0]);
+    } else {
+      directiveBinder.bindEvent(eventName, ast);
+    }
+    
   }
 
   _splitBindConfig(bindConfig:string) {

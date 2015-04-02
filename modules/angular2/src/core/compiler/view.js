@@ -272,7 +272,7 @@ export class AppView {
       var elBinder = this.proto.elementBinders[elementIndex];
       if (isBlank(elBinder.hostListeners)) return;
       var eventMap = elBinder.hostListeners[eventName];
-      if (isBlank(eventName)) return;
+      if (isBlank(eventMap)) return;
       MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
         var context;
         if (directiveIndex === -1) {
@@ -407,19 +407,23 @@ export class AppProtoView {
    * @param {int} directiveIndex The directive index in the binder or -1 when the event is not bound
    *                             to a directive
    */
-  bindEvent(eventName:string, expression:AST, directiveIndex: int = -1) {
+  bindEvent(eventBindings: List<renderApi.EventBinding>, directiveIndex: int = -1) {
     var elBinder = this.elementBinders[this.elementBinders.length - 1];
     var events = elBinder.hostListeners;
     if (isBlank(events)) {
       events = StringMapWrapper.create();
       elBinder.hostListeners = events;
     }
-    var event = StringMapWrapper.get(events, eventName);
-    if (isBlank(event)) {
-      event = MapWrapper.create();
-      StringMapWrapper.set(events, eventName, event);
+    for (var i = 0; i < eventBindings.length; i++) {
+      var eventBinding = eventBindings[i];
+      var eventName = eventBinding.fullName;
+      var event = StringMapWrapper.get(events, eventName);
+      if (isBlank(event)) {
+        event = MapWrapper.create();
+        StringMapWrapper.set(events, eventName, event);
+      }
+      MapWrapper.set(event, directiveIndex, eventBinding.source);
     }
-    MapWrapper.set(event, directiveIndex, expression);
   }
 
   /**

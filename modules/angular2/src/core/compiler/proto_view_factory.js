@@ -118,9 +118,7 @@ export class ProtoViewFactory {
       protoView.bindElementProperty(astWithSource.ast, propertyName);
     });
     // events
-    MapWrapper.forEach(renderElementBinder.eventBindings, (astWithSource, eventName) => {
-      protoView.bindEvent(eventName, astWithSource.ast, -1);
-    });
+    protoView.bindEvent(renderElementBinder.eventBindings, -1);
     // variables
     // The view's locals needs to have a full set of variable names at construction time
     // in order to prevent new variables from being set later in the lifecycle. Since we don't want
@@ -143,9 +141,7 @@ export class ProtoViewFactory {
         protoView.bindDirectiveProperty(i, astWithSource.ast, propertyName, setter);
       });
       // directive events
-      MapWrapper.forEach(renderDirectiveMetadata.eventBindings, (astWithSource, eventName) => {
-        protoView.bindEvent(eventName, astWithSource.ast, i);
-      });
+      protoView.bindEvent(renderDirectiveMetadata.eventBindings, i);
     }
   }
 

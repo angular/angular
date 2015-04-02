@@ -11,8 +11,7 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig, Parser, Lexer} from 'angular2/change_detection';
-
-import {ViewRef, Renderer} from 'angular2/src/render/api';
+import {ViewRef, Renderer, EventBinding} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 class DummyDirective extends Directive {
@@ -701,7 +700,9 @@ export function main() {
         StringMapWrapper.set(handlers, eventName, eventHandler);
         var pv = new AppProtoView(null, null, null);
         pv.bindElement(null, 0, null, null, null);
-        pv.bindEvent(eventName, new Parser(new Lexer()).parseAction('handler()', ''));
+        var eventBindings = ListWrapper.create();
+        ListWrapper.push(eventBindings, new EventBinding(eventName, new Parser(new Lexer()).parseAction('handler()', '')));
+        pv.bindEvent(eventBindings);
 
         var view = new AppView(pv, MapWrapper.create());
         view.context = new ContextWithHandler(eventHandler);

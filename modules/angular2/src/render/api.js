@@ -15,6 +15,16 @@ import {ASTWithSource} from 'angular2/change_detection';
  * - render compiler is not on the critical path as
  *   its output will be stored in precompiled templates.
  */
+export class EventBinding {
+  fullName: string; // name/target:name, e.g "click", "window:resize"
+  source: ASTWithSource;  
+
+  constructor(fullName :string, source: ASTWithSource) {
+    this.fullName = fullName;
+    this.source = source;
+  }
+}
+
 export class ElementBinder {
   index:number;
   parentIndex:number;
@@ -26,7 +36,7 @@ export class ElementBinder {
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
   // with a local name
-  eventBindings: Map<string, ASTWithSource>;
+  eventBindings: List<EventBinding>;
   textBindings: List<ASTWithSource>;
   readAttributes: Map<string, string>;
 
@@ -57,7 +67,7 @@ export class DirectiveBinder {
   // Note: this contains a preprocessed AST
   // that replaced the values that should be extracted from the element
   // with a local name
-  eventBindings: Map<string, ASTWithSource>;
+  eventBindings: List<EventBinding>;
   constructor({
     directiveIndex, propertyBindings, eventBindings
   }) {

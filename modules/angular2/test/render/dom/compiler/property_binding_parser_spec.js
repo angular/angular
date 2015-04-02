@@ -96,10 +96,14 @@ export function main() {
 
     it('should detect () syntax', () => {
       var results = process(el('<div (click)="b()"></div>'));
-      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('b()');
+      expect(eventBinding.fullName).toEqual('click');
       // "(click[])" is not an expected syntax and is only used to validate the regexp
       results = process(el('<div (click[])="b()"></div>'));
-      expect(MapWrapper.get(results[0].eventBindings, 'click[]').source).toEqual('b()');
+      eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('b()');
+      expect(eventBinding.fullName).toEqual('click[]');
     });
 
     it('should detect () syntax only if an attribute name starts and ends with ()', () => {
@@ -109,17 +113,23 @@ export function main() {
 
     it('should parse event handlers using () syntax as actions', () => {
       var results = process(el('<div (click)="foo=bar"></div>'));
-      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('foo=bar');
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('foo=bar');
+      expect(eventBinding.fullName).toEqual('click');
     });
 
     it('should detect on- syntax', () => {
       var results = process(el('<div on-click="b()"></div>'));
-      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('b()');
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('b()');
+      expect(eventBinding.fullName).toEqual('click');
     });
 
     it('should parse event handlers using on- syntax as actions', () => {
       var results = process(el('<div on-click="foo=bar"></div>'));
-      expect(MapWrapper.get(results[0].eventBindings, 'click').source).toEqual('foo=bar');
+      var eventBinding = results[0].eventBindings[0];
+      expect(eventBinding.source.source).toEqual('foo=bar');
+      expect(eventBinding.fullName).toEqual('click');
     });
 
     it('should store bound properties as temporal attributes', () => {

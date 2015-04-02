@@ -23,7 +23,8 @@ export function main() {
         someDecorator,
         someDecoratorIgnoringChildren,
         someDecoratorWithProps,
-        someDecoratorWithEvents
+        someDecoratorWithEvents,
+        someDecoratorWithGlobalEvents
       ];
       parser = new Parser(new Lexer());
     });
@@ -130,8 +131,21 @@ export function main() {
         el('<div some-decor-events></div>')
       );
       var directiveBinding = results[0].directives[0];
-      expect(MapWrapper.get(directiveBinding.eventBindings, 'click').source)
-        .toEqual('doIt()');
+      expect(directiveBinding.eventBindings.length).toEqual(1);
+      var eventBinding = directiveBinding.eventBindings[0];
+      expect(eventBinding.fullName).toEqual('click');
+      expect(eventBinding.source.source).toEqual('doIt()');
+    });
+
+    it('should bind directive global events', () => {
+      var results = process(
+        el('<div some-decor-globalevents></div>')
+      );
+      var directiveBinding = results[0].directives[0];
+      expect(directiveBinding.eventBindings.length).toEqual(1);
+      var eventBinding = directiveBinding.eventBindings[0];
+      expect(eventBinding.fullName).toEqual('window:resize');
+      expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
 
     describe('viewport directives', () => {
@@ -244,5 +258,12 @@ var someDecoratorWithEvents = new DirectiveMetadata({
   selector: '[some-decor-events]',
   hostListeners: MapWrapper.createFromStringMap({
     'click': 'doIt()'
+  })
+});
+
+var someDecoratorWithGlobalEvents = new DirectiveMetadata({
+  selector: '[some-decor-globalevents]',
+  hostListeners: MapWrapper.createFromStringMap({
+    'window:resize': 'doItGlobal()'
   })
 });

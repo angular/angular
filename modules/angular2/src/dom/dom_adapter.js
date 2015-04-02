@@ -39,6 +39,9 @@ export class DomAdapter {
   on(el, evt, listener) {
     throw _abstract();
   }
+  onAndCancel(el, evt, listener): Function {
+    throw _abstract();
+  }
   dispatchEvent(el, evt) {
     throw _abstract();
   }
@@ -271,6 +274,9 @@ export class DomAdapter {
     throw _abstract();
   }
   supportsNativeShadowDOM(): boolean {
+    throw _abstract();
+  }
+  getGlobalEventTarget(target:string) {
     throw _abstract();
   }
 }

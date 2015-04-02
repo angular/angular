@@ -2,6 +2,7 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} fr
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
+import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {RenderView} from 'angular2/src/render/dom/view/view';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
@@ -9,14 +10,15 @@ import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 export function main() {
 
   function createView() {
-    var proto = null;
+    var proto = new RenderProtoView({element: el('<div></div>'), isRootView: false, elementBinders: []});
     var rootNodes = [el('<div></div>')];
     var boundTextNodes = [];
     var boundElements = [el('<div></div>')];
     var viewContainers = [];
     var contentTags = [];
+    var eventManager = null;
     return new RenderView(proto, rootNodes,
-      boundTextNodes, boundElements, viewContainers, contentTags);
+      boundTextNodes, boundElements, viewContainers, contentTags, eventManager);
   }
 
   function createShadowDomStrategy(log) {

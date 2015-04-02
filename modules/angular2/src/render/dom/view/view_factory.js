@@ -125,7 +125,7 @@ export class ViewFactory {
 
     var view = new viewModule.RenderView(
       protoView, viewRootNodes,
-      boundTextNodes, boundElements, viewContainers, contentTags
+      boundTextNodes, boundElements, viewContainers, contentTags, this._eventManager
     );
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
@@ -139,10 +139,10 @@ export class ViewFactory {
       }
 
       // events
-      if (isPresent(binder.eventLocals)) {
-        ListWrapper.forEach(binder.eventNames, (eventName) => {
-          this._createEventListener(view, element, binderIdx, eventName, binder.eventLocals);
-        });
+      if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
+        for (var i = 0; i < binder.localEvents.length; i++) {
+          this._createEventListener(view, element, binderIdx, binder.localEvents[i].name, binder.eventLocals);
+        }
       }
     }
 

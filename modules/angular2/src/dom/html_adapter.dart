@@ -29,6 +29,9 @@ class Html5LibDomAdapter implements DomAdapter {
   on(el, evt, listener) {
     throw 'not implemented';
   }
+  Function onAndCancel(el, evt, listener) {
+    throw 'not implemented';
+  }
   dispatchEvent(el, evt) {
     throw 'not implemented';
   }
