@@ -19,7 +19,7 @@ class AngularTransformerGroup extends TransformerGroup {
         [new DirectiveProcessor(options)],
         [new DirectiveLinker(options)],
         [new BindGenerator(options)],
-        [new TemplateComplier(options)],
+        [new TemplateCompiler(options)],
         [new ReflectionRemover(options)]
       ]) {
     formatter.init(new DartFormatter());

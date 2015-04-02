@@ -14,14 +14,14 @@ import 'generator.dart';
 
 /// [Transformer] responsible for detecting and processing Angular 2 templates.
 ///
-/// [TemplateComplier] uses the Angular 2 `Compiler` to process the templates,
+/// [TemplateCompiler] uses the Angular 2 `Compiler` to process the templates,
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
-class TemplateComplier extends Transformer {
+class TemplateCompiler extends Transformer {
   final TransformerOptions options;
 
-  TemplateComplier(this.options);
+  TemplateCompiler(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
