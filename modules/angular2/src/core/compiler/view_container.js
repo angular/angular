@@ -5,7 +5,7 @@ import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {LightDom} from './shadow_dom_emulation/light_dom';
 
 /**
@@ -88,7 +88,7 @@ export class ViewContainer {
     var newView = this.defaultProtoView.instantiate(this.hostElementInjector, this._eventManager);
     // insertion must come before hydration so that element injector trees are attached.
     this.insert(newView, atIndex);
-    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom, 
+    newView.hydrate(this.appInjector, this.hostElementInjector, this.hostLightDom,
       this.parentView.context, this.parentView.locals);
 
     // new content tags might have appeared, we need to redistrubute.

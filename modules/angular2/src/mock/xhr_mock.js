@@ -1,4 +1,4 @@
-import {XHR} from 'angular2/src/core/compiler/xhr/xhr';
+import {XHR} from 'angular2/src/services/xhr';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, normalizeBlank, BaseException} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';

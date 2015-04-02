@@ -3,11 +3,11 @@ import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/
 import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {XHR} from './xhr/xhr';
+import {XHR} from 'angular2/src/services/xhr';
 
 import {Template} from 'angular2/src/core/annotations/template';
 
-import {UrlResolver} from './url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 /**
  * Strategy to load component templates.

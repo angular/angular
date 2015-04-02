@@ -1,6 +1,6 @@
 import {Compiler} from './compiler';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLocation} from './private_component_location';

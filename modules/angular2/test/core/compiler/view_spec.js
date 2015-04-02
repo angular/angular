@@ -14,7 +14,7 @@ import {Injector} from 'angular2/di';
 import {View, PropertyUpdate} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
+import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 class DummyDirective extends Directive {

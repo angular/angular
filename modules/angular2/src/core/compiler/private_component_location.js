@@ -3,7 +3,7 @@ import {NgElement} from 'angular2/src/core/dom/element';
 import * as viewModule from './view';
 import * as eiModule from './element_injector';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
-import {EventManager} from 'angular2/src/core/events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
 

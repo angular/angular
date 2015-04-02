@@ -6,7 +6,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Content} from '../shadow_dom/content_tag';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
-import {EventManager} from '../events/event_manager';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
 import {ViewContainer} from './view_container';
 import {ProtoView} from './proto_view';

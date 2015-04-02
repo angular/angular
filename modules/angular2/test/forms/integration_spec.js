@@ -21,10 +21,10 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/core/compiler/template_loader';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/compiler/style_url_resolver';
 import {CssProcessor} from 'angular2/src/core/compiler/css_processor';
-import {EventManager, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
+import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';

@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
-import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/core/events/event_manager';
+import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {document} from 'angular2/src/facade/browser';
