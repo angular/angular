@@ -1,7 +1,8 @@
-var Q = require('q');
+var fs = require('fs');
 var path = require('path');
 var minimatch = require('minimatch');
-var glob = require('glob');
+var path = require('path');
+var Q = require('q');
 
 module.exports = {
   processToPromise: processToPromise,
@@ -14,7 +15,9 @@ module.exports = {
 };
 
 function subDirs(dir) {
-  return [].slice.call(glob.sync('*/', {cwd: dir}));
+  return fs.readdirSync(dir).filter(function(file) {
+    return fs.statSync(path.join(dir, file)).isDirectory();
+  });
 }
 
 function forEachSubDir(dir, callback) {
