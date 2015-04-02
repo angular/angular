@@ -6,6 +6,7 @@ import {ViewContainer} from './view_container';
 import {RenderProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
 import {Content} from '../shadow_dom/content_tag';
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 
@@ -29,12 +30,14 @@ export class RenderView {
   contentTags: List<Content>;
   lightDoms: List<LightDom>;
   proto: RenderProtoView;
+  eventManager: EventManager;
   _hydrated: boolean;
   _eventDispatcher: any/*EventDispatcher*/;
+  _eventHandlerRemovers: List<Function>;
 
   constructor(
       proto:RenderProtoView, rootNodes:List,
-      boundTextNodes: List, boundElements:List, viewContainers:List, contentTags:List) {
+      boundTextNodes: List, boundElements:List, viewContainers:List, contentTags:List, eventManager: EventManager) {
     this.proto = proto;
     this.rootNodes = rootNodes;
     this.boundTextNodes = boundTextNodes;
@@ -42,9 +45,11 @@ export class RenderView {
     this.viewContainers = viewContainers;
     this.contentTags = contentTags;
     this.lightDoms = ListWrapper.createFixedSize(boundElements.length);
+    this.eventManager = eventManager;
     ListWrapper.fill(this.lightDoms, null);
     this.componentChildViews = ListWrapper.createFixedSize(boundElements.length);
     this._hydrated = false;
+    this._eventHandlerRemovers = null;
   }
 
   hydrated() {
@@ -130,6 +135,26 @@ export class RenderView {
         lightDom.redistribute();
       }
     }
+
+    //add global events
+    this._eventHandlerRemovers = ListWrapper.create();
+    var binders = this.proto.elementBinders;
+    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
+      var binder = binders[binderIdx];
+      if (isPresent(binder.globalEvents)) {
+        for (var i = 0; i < binder.globalEvents.length; i++) {
+          var globalEvent = binder.globalEvents[i];
+          var remover = this._createGlobalEventListener(binderIdx, globalEvent.name, globalEvent.target, globalEvent.fullName);
+          ListWrapper.push(this._eventHandlerRemovers, remover);
+        }
+      }
+    }
+  }
+
+  _createGlobalEventListener(elementIndex, eventName, eventTarget, fullName): Function {
+    return this.eventManager.addGlobalEventListener(eventTarget, eventName, (event) => {
+      this.dispatchEvent(elementIndex, fullName, event);
+    });
   }
 
   dehydrate() {
@@ -156,6 +181,13 @@ export class RenderView {
         }
       }
     }
+
+    //remove global events
+    for (var i = 0; i < this._eventHandlerRemovers.length; i++) {
+      this._eventHandlerRemovers[i]();
+    }
+
+    this._eventHandlerRemovers = null;
     this._eventDispatcher = null;
     this._hydrated = false;
   }

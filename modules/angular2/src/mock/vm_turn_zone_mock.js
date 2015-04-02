@@ -10,6 +10,6 @@ export class MockVmTurnZone extends VmTurnZone {
   }
 
   runOutsideAngular(fn) {
-    fn();
+    return fn();
   }
 }

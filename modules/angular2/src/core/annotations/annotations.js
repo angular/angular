@@ -367,6 +367,8 @@ export class Directive extends Injectable {
    * - `event1`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
    *
+   * To listen to global events, a target must be added to the event name.
+   * The target can be `window`, `document` or `body`.
    *
    * When writing a directive event binding, you can also refer to the following local variables:
    * - `$event`: Current event object which triggered the event.
@@ -380,6 +382,7 @@ export class Directive extends Injectable {
    * @Directive({
    *   hostListeners: {
    *     'event1': 'onMethod1(arguments)',
+   *     'target:event2': 'onMethod2(arguments)',
    *     ...
    *   }
    * }
@@ -387,18 +390,21 @@ export class Directive extends Injectable {
    *
    * ## Basic Event Binding:
    *
-   * Suppose you want to write a directive that triggers on `change` hostListeners in the DOM. You would define the event
-   * binding as follows:
+   * Suppose you want to write a directive that triggers on `change` events in the DOM and on `resize` events in window.
+   * You would define the event binding as follows:
    *
    * ```
    * @Decorator({
    *   selector: 'input',
    *   hostListeners: {
-   *     'change': 'onChange($event)'
+   *     'change': 'onChange($event)',
+   *     'window:resize': 'onResize($event)'
    *   }
    * })
    * class InputDecorator {
    *   onChange(event:Event) {
+   *   }
+   *   onResize(event:Event) {
    *   }
    * }
    * ```

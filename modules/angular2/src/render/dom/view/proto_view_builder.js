@@ -1,5 +1,5 @@
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {ListWrapper, MapWrapper, Set, SetWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, MapWrapper, Set, SetWrapper, List} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {
@@ -8,13 +8,13 @@ import {
 import {SetterFn} from 'angular2/src/reflection/types';
 
 import {RenderProtoView} from './proto_view';
-import {ElementBinder} from './element_binder';
+import {ElementBinder, Event} from './element_binder';
 import {setterFactory} from './property_setter_factory';
 
 import * as api from '../../api';
 import * as directDomRenderer from '../direct_dom_renderer';
 
-import {NG_BINDING_CLASS} from '../util';
+import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
 
 export class ProtoViewBuilder {
   rootElement;
@@ -56,12 +56,12 @@ export class ProtoViewBuilder {
     var apiElementBinders = [];
     ListWrapper.forEach(this.elements, (ebb) => {
       var propertySetters = MapWrapper.create();
-      var eventLocalsAstSplitter = new EventLocalsAstSplitter();
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (db) => {
+        ebb.eventBuilder.merge(db.eventBuilder);
         return new api.DirectiveBinder({
           directiveIndex: db.directiveIndex,
           propertyBindings: db.propertyBindings,
-          eventBindings: eventLocalsAstSplitter.splitEventAstIntoLocals(db.eventBindings)
+          eventBindings: db.eventBindings
         });
       });
       MapWrapper.forEach(ebb.propertySetters, (setter, propertyName) => {
@@ -75,7 +75,7 @@ export class ProtoViewBuilder {
         directives: apiDirectiveBinders,
         nestedProtoView: nestedProtoView,
         propertyBindings: ebb.propertyBindings, variableBindings: ebb.variableBindings,
-        eventBindings: eventLocalsAstSplitter.splitEventAstIntoLocals(ebb.eventBindings),
+        eventBindings: ebb.eventBindings,
         textBindings: ebb.textBindings,
         readAttributes: ebb.readAttributes
       }));
@@ -86,8 +86,9 @@ export class ProtoViewBuilder {
         distanceToParent: ebb.distanceToParent,
         nestedProtoView: isPresent(nestedProtoView) ? nestedProtoView.render.delegate : null,
         componentId: ebb.componentId,
-        eventLocals: eventLocalsAstSplitter.buildEventLocals(),
-        eventNames: eventLocalsAstSplitter.buildEventNames(),
+        eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
+        localEvents: ebb.eventBuilder.buildLocalEvents(),
+        globalEvents: ebb.eventBuilder.buildGlobalEvents(),
         propertySetters: propertySetters
       }));
     });
@@ -112,7 +113,8 @@ export class ElementBinderBuilder {
   nestedProtoView:ProtoViewBuilder;
   propertyBindings: Map<string, ASTWithSource>;
   variableBindings: Map<string, string>;
-  eventBindings: Map<string, ASTWithSource>;
+  eventBindings: List<api.EventBinding>;
+  eventBuilder: EventBuilder;
   textBindingIndices: List<number>;
   textBindings: List<ASTWithSource>;
   contentTagSelector:string;
@@ -129,7 +131,8 @@ export class ElementBinderBuilder {
     this.nestedProtoView = null;
     this.propertyBindings = MapWrapper.create();
     this.variableBindings = MapWrapper.create();
-    this.eventBindings = MapWrapper.create();
+    this.eventBindings = ListWrapper.create();
+    this.eventBuilder = new EventBuilder();
     this.textBindings = [];
     this.textBindingIndices = [];
     this.contentTagSelector = null;
@@ -191,8 +194,8 @@ export class ElementBinderBuilder {
     }
   }
 
-  bindEvent(name, expression) {
-    MapWrapper.set(this.eventBindings, name, expression);
+  bindEvent(name, expression, target = null) {
+    ListWrapper.push(this.eventBindings, this.eventBuilder.add(name, expression, target));
   }
 
   bindText(index, expression) {
@@ -212,49 +215,53 @@ export class ElementBinderBuilder {
 export class DirectiveBuilder {
   directiveIndex:number;
   propertyBindings: Map<string, ASTWithSource>;
-  eventBindings: Map<string, ASTWithSource>;
+  eventBindings: List<api.EventBinding>;
+  eventBuilder: EventBuilder;
 
   constructor(directiveIndex) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = MapWrapper.create();
-    this.eventBindings = MapWrapper.create();
+    this.eventBindings = ListWrapper.create();
+    this.eventBuilder = new EventBuilder();
   }
 
   bindProperty(name, expression) {
     MapWrapper.set(this.propertyBindings, name, expression);
   }
 
-  bindEvent(name, expression) {
-    MapWrapper.set(this.eventBindings, name, expression);
+  bindEvent(name, expression, target = null) {
+    ListWrapper.push(this.eventBindings, this.eventBuilder.add(name, expression, target));
   }
 }
 
-export class EventLocalsAstSplitter extends AstTransformer {
-  locals:List<AST>;
-  eventNames:List<string>;
-  _implicitReceiver:AST;
+export class EventBuilder extends AstTransformer {
+  locals: List<AST>;
+  localEvents: List<Event>;
+  globalEvents: List<Event>;
+  _implicitReceiver: AST;
 
   constructor() {
     super();
     this.locals = [];
-    this.eventNames = [];
+    this.localEvents = [];
+    this.globalEvents = [];
     this._implicitReceiver = new ImplicitReceiver();
   }
 
-  splitEventAstIntoLocals(eventBindings:Map<string, ASTWithSource>):Map<string, ASTWithSource> {
-    if (isPresent(eventBindings)) {
-      var result = MapWrapper.create();
-      MapWrapper.forEach(eventBindings, (astWithSource, eventName) => {
-        // TODO(tbosch): reenable this when we are parsing element properties
-        // out of action expressions
-        // var adjustedAst = astWithSource.ast.visit(this);
-        var adjustedAst = astWithSource.ast;
-        MapWrapper.set(result, eventName, new ASTWithSource(adjustedAst, astWithSource.source, ''));
-        ListWrapper.push(this.eventNames, eventName);
-      });
-      return result;
+  add(name: string, source: ASTWithSource, target: string): api.EventBinding {
+    // TODO(tbosch): reenable this when we are parsing element properties
+    // out of action expressions
+    // var adjustedAst = astWithSource.ast.visit(this);
+    var adjustedAst = source.ast;
+    var fullName = isPresent(target) ? target + EVENT_TARGET_SEPARATOR + name : name;
+    var result = new api.EventBinding(fullName, new ASTWithSource(adjustedAst, source.source, ''));
+    var event = new Event(name, target, fullName);
+    if (isBlank(target)) {
+      ListWrapper.push(this.localEvents, event);  
+    } else {
+      ListWrapper.push(this.globalEvents, event);  
     }
-    return null;
+    return result;
   }
 
   visitAccessMember(ast:AccessMember) {
@@ -277,10 +284,32 @@ export class EventLocalsAstSplitter extends AstTransformer {
   }
 
   buildEventLocals() {
-    return new LiteralArray(this.locals);
+    return this.locals;
   }
 
-  buildEventNames() {
-    return this.eventNames;
+  buildLocalEvents() {
+    return this.localEvents;
+  }
+
+  buildGlobalEvents() {
+    return this.globalEvents;
+  }
+
+  merge(eventBuilder: EventBuilder) {
+    this._merge(this.localEvents, eventBuilder.localEvents);
+    this._merge(this.globalEvents, eventBuilder.globalEvents);
+    ListWrapper.concat(this.locals, eventBuilder.locals);
+  }
+
+  _merge(host: List<Event>, tobeAdded: List<Event>) {
+    var names = ListWrapper.create();
+    for (var i = 0; i < host.length; i++) {
+      ListWrapper.push(names, host[i].fullName);
+    }
+    for (var j = 0; j < tobeAdded.length; j++) {
+      if (!ListWrapper.contains(names, tobeAdded[j].fullName)) {
+        ListWrapper.push(host, tobeAdded[j]);
+      }
+    }
   }
 }

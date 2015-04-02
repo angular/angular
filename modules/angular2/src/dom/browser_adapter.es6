@@ -73,6 +73,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   on(el, evt, listener) {
     el.addEventListener(evt, listener, false);
   }
+  onAndCancel(el, evt, listener): Function {
+    el.addEventListener(evt, listener, false);
+    //Needed to follow Dart's subscription semantic, until fix of
+    //https://code.google.com/p/dart/issues/detail?id=17406
+    return () => {el.removeEventListener(evt, listener, false);};
+  }
   dispatchEvent(el, evt) {
     el.dispatchEvent(evt);
   }
@@ -352,5 +358,14 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       key = _keyMap[key];
     }
     return key;
+  }
+  getGlobalEventTarget(target:string) {
+    if (target == "window") {
+      return window;
+    } else if (target == "document") {
+      return document;
+    } else if (target == "body") {
+      return document.body;
+    }
   }
 }

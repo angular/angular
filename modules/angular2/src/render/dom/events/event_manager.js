@@ -18,13 +18,15 @@ export class EventManager {
   }
 
   addEventListener(element, eventName: string, handler: Function) {
-    var shouldSupportBubble = eventName[0] == BUBBLE_SYMBOL; 
-    if (shouldSupportBubble) {
-      eventName = StringWrapper.substring(eventName, 1); 
-    }
+    var withoutBubbleSymbol = this._removeBubbleSymbol(eventName);
+    var plugin = this._findPluginFor(withoutBubbleSymbol);
+    plugin.addEventListener(element, withoutBubbleSymbol, handler, withoutBubbleSymbol != eventName);
+  }
 
-    var plugin = this._findPluginFor(eventName);
-    plugin.addEventListener(element, eventName, handler, shouldSupportBubble);
+  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
+    var withoutBubbleSymbol = this._removeBubbleSymbol(eventName);
+    var plugin = this._findPluginFor(withoutBubbleSymbol);
+    return plugin.addGlobalEventListener(target, withoutBubbleSymbol, handler, withoutBubbleSymbol != eventName);
   }
 
   getZone(): VmTurnZone {
@@ -41,6 +43,10 @@ export class EventManager {
     }
     throw new BaseException(`No event manager plugin found for event ${eventName}`);
   }
+
+  _removeBubbleSymbol(eventName: string): string {
+    return eventName[0] == BUBBLE_SYMBOL ? StringWrapper.substring(eventName, 1) : eventName;
+  }
 }
 
 export class EventManagerPlugin {
@@ -54,8 +60,11 @@ export class EventManagerPlugin {
     return false;
   }
 
-  addEventListener(element, eventName: string, handler: Function,
-      shouldSupportBubble: boolean) {
+  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+    throw "not implemented";
+  }
+
+  addGlobalEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean): Function {
     throw "not implemented";
   }
 }
@@ -69,15 +78,25 @@ export class DomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  addEventListener(element, eventName: string, handler: Function,
-      shouldSupportBubble: boolean) {
-    var outsideHandler = shouldSupportBubble ?
-      DomEventsPlugin.bubbleCallback(element, handler, this.manager._zone) :
-      DomEventsPlugin.sameElementCallback(element, handler, this.manager._zone);
-
+  addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
+    var outsideHandler = this._getOutsideHandler(shouldSupportBubble, element, handler, this.manager._zone);
     this.manager._zone.runOutsideAngular(() => {
       DOM.on(element, eventName, outsideHandler);
     });
+  }
+
+  addGlobalEventListener(target:string, eventName: string, handler: Function, shouldSupportBubble: boolean): Function {
+    var element = DOM.getGlobalEventTarget(target);
+    var outsideHandler = this._getOutsideHandler(shouldSupportBubble, element, handler, this.manager._zone);
+    return this.manager._zone.runOutsideAngular(() => {
+      return DOM.onAndCancel(element, eventName, outsideHandler);
+    });
+  }
+
+  _getOutsideHandler(shouldSupportBubble: boolean, element, handler: Function, zone: VmTurnZone) {
+    return shouldSupportBubble ?
+      DomEventsPlugin.bubbleCallback(element, handler, zone) :
+      DomEventsPlugin.sameElementCallback(element, handler, zone);
   }
 
   static sameElementCallback(element, handler, zone) {

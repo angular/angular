@@ -8,7 +8,8 @@ export class ElementBinder {
   textNodeIndices: List<number>;
   nestedProtoView: protoViewModule.RenderProtoView;
   eventLocals: AST;
-  eventNames: List<string>;
+  localEvents: List<Event>;
+  globalEvents: List<Event>;
   componentId: string;
   parentIndex:number;
   distanceToParent:number;
@@ -20,7 +21,8 @@ export class ElementBinder {
     nestedProtoView,
     componentId,
     eventLocals,
-    eventNames,
+    localEvents,
+    globalEvents,
     parentIndex,
     distanceToParent,
     propertySetters
@@ -30,9 +32,22 @@ export class ElementBinder {
     this.nestedProtoView = nestedProtoView;
     this.componentId = componentId;
     this.eventLocals = eventLocals;
-    this.eventNames = eventNames;
+    this.localEvents = localEvents;
+    this.globalEvents = globalEvents;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
     this.propertySetters = propertySetters;
+  }
+}
+
+export class Event {
+  name: string;
+  target: string;
+  fullName: string;
+
+  constructor(name: string, target: string, fullName: string) {
+    this.name = name;
+    this.target = target;
+    this.fullName = fullName;
   }
 }

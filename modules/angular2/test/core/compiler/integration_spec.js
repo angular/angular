@@ -17,7 +17,7 @@ import {
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Type, isPresent, BaseException, assertionsEnabled, isJsObject} from 'angular2/src/facade/lang';
+import {Type, isPresent, BaseException, assertionsEnabled, isJsObject, global} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
@@ -541,6 +541,66 @@ export function main() {
             async.done();
           });
         }));
+
+        it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div listener></div>',
+            directives: [DecoratorListeningDomEvent]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            var injector = view.rawView.elementInjectors[0];
+
+            var listener = injector.get(DecoratorListeningDomEvent);
+            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+            expect(listener.eventType).toEqual('window_domEvent');
+
+            listener = injector.get(DecoratorListeningDomEvent);
+            dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
+            expect(listener.eventType).toEqual('document_domEvent');
+
+            view.rawView.dehydrate();
+            listener = injector.get(DecoratorListeningDomEvent);
+            dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
+            expect(listener.eventType).toEqual('');
+
+            async.done();
+          });
+        }));
+        
+        it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div *if="ctxBoolProp" listener listenerother></div>',
+            directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            globalCounter = 0;
+            ctx.ctxBoolProp = true;
+            view.detectChanges();
+
+            var subview = view.rawView.viewContainers[0].get(0);
+            var injector = subview.elementInjectors[0];
+            var listener = injector.get(DecoratorListeningDomEvent);
+            var listenerother = injector.get(DecoratorListeningDomEventOther);
+            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+            expect(listener.eventType).toEqual('window_domEvent');
+            expect(listenerother.eventType).toEqual('other_domEvent');
+            expect(globalCounter).toEqual(1);
+
+            ctx.ctxBoolProp = false;
+            view.detectChanges();
+            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+            expect(globalCounter).toEqual(1);
+
+            ctx.ctxBoolProp = true;
+            view.detectChanges();
+            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+            expect(globalCounter).toEqual(2);
+
+            async.done();
+          });
+        }));
       }
 
       describe("dynamic components", () => {
@@ -894,17 +954,48 @@ class DecoratorListeningEvent {
 
 @Decorator({
   selector: '[listener]',
-  hostListeners: {'domEvent': 'onEvent($event.type)'}
+  hostListeners: {
+    'domEvent': 'onEvent($event.type)',
+    'window:domEvent': 'onWindowEvent($event.type)',
+    'document:domEvent': 'onDocumentEvent($event.type)',
+    'body:domEvent': 'onBodyEvent($event.type)'
+  }
 })
 class DecoratorListeningDomEvent {
   eventType: string;
-
   constructor() {
     this.eventType = '';
   }
-
   onEvent(eventType: string) {
     this.eventType = eventType;
+  }
+  onWindowEvent(eventType: string) {
+    this.eventType = "window_" + eventType;
+  }
+  onDocumentEvent(eventType: string) {
+    this.eventType = "document_" + eventType;
+  }
+  onBodyEvent(eventType: string) {
+    this.eventType = "body_" + eventType;
+  }
+}
+
+var globalCounter = 0;
+@Decorator({
+  selector: '[listenerother]',
+  hostListeners: {
+    'window:domEvent': 'onEvent($event.type)'
+  }
+})
+class DecoratorListeningDomEventOther {
+  eventType: string;
+  counter: int;
+  constructor() {
+    this.eventType = '';
+  }
+  onEvent(eventType: string) {
+    globalCounter++;
+    this.eventType = "other_" + eventType;
   }
 }
 

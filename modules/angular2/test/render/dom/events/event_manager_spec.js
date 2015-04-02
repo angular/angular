@@ -83,6 +83,28 @@ export function main() {
 
       expect(receivedEvent).toBe(dispatchedEvent);
     });
+
+    it('should add and remove global event listeners with correct bubbling', () => {
+      var element = el('<div><div></div></div>');
+      DOM.appendChild(document.body, element);
+      var dispatchedEvent = DOM.createMouseEvent('click');
+      var receivedEvent = null;
+      var handler = (e) => { receivedEvent = e; };
+      var manager = new EventManager([domEventPlugin], new FakeVmTurnZone());
+
+      var remover = manager.addGlobalEventListener("document", '^click', handler);
+      DOM.dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(dispatchedEvent);
+
+      receivedEvent = null;
+      remover();
+      DOM.dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
+
+      remover = manager.addGlobalEventListener("document", 'click', handler);
+      DOM.dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
+    });
   });
 }
 
@@ -104,6 +126,8 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
     MapWrapper.set(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
         eventName, handler);
+    return () => {MapWrapper.delete(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
+        eventName)};
   }
 }
 
@@ -117,6 +141,6 @@ class FakeVmTurnZone extends VmTurnZone {
   }
 
   runOutsideAngular(fn) {
-    fn();
+    return fn();
   }
 }
