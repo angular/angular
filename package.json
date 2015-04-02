@@ -66,7 +66,7 @@
     "karma-dart": "^0.2.8",
     "karma-jasmine": "^0.2.2",
     "lodash": "^2.4.1",
-    "madge": "mlaval/madge#es6",
+    "madge": "^0.5.0",
     "merge": "^1.2.0",
     "minimatch": "^2.0.1",
     "minimist": "1.1.x",
