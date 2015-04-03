@@ -126,7 +126,7 @@ var CONFIG = {
   srcFolderInsertion: SRC_FOLDER_INSERTION,
   transpile: {
     src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6', '!modules/angular2/src/facade/*.es6'],
+      js: ['modules/**/*.js', 'modules/**/*.es6'],
       ts: ['modules/**/*.ts'],
       dart: ['modules/**/*.js']
     },
@@ -810,7 +810,10 @@ gulp.task('build.js.prod', function(done) {
 
 gulp.task('build.js.cjs', function(done) {
   runSequence(
-    ['build/transpile.js.cjs', 'build/transpile.ts.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
+    ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
+    // Overwrite the .js.cjs transpilation with typescript outputs
+    // We still need traceur outputs everywhere else, for now.
+    'build/transpile.ts.cjs',
     ['build/linknodemodules.js.cjs'],
     'build/transformCJSTests',
     done
