@@ -7,7 +7,7 @@ import 'foo.ng_deps.dart' as i0;
 import 'package:angular2/src/core/annotations/annotations.ng_deps.dart' as i1;
 
 bool _visited = false;
-void setupReflection(reflector) {
+void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
@@ -18,6 +18,6 @@ void setupReflection(reflector) {
       'annotations':
           const [const Component(selector: prefix.preDefinedSelector)]
     });
-  i0.setupReflection(reflector);
-  i1.setupReflection(reflector);
+  i0.initReflector(reflector);
+  i1.initReflector(reflector);
 }

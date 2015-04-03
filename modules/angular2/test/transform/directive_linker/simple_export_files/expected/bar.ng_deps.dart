@@ -7,7 +7,7 @@ import 'foo.ng_deps.dart' as i0;
 export 'foo.dart';
 
 bool _visited = false;
-void setupReflection(reflector) {
+void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
@@ -16,5 +16,5 @@ void setupReflection(reflector) {
       'parameters': const [],
       'annotations': const [const Component(selector: '[soup]')]
     });
-  i0.setupReflection(reflector);
+  i0.initReflector(reflector);
 }

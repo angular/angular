@@ -5,7 +5,7 @@ import 'package:angular2/angular2.dart'
     show bootstrap, Component, Decorator, Template, NgElement;
 
 bool _visited = false;
-void setupReflection(reflector) {
+void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
