@@ -45,4 +45,12 @@ export class Attribute extends DependencyAnnotation {
     super();
     this.attributeName = attributeName;
   }
+
+  get token() {
+    //Normally one would default a token to a type of an injected value but here
+    //the type of a variable is "string" and we can't use primitive type as a return value
+    //so we use instance of Attribute instead. This doesn't matter much in practice as arguments
+    //with @Attribute annotation are injected by ElementInjector that doesn't take tokens into account.
+    return this;
+  }
 }
