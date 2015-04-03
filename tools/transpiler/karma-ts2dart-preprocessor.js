@@ -13,7 +13,8 @@ function createTs2DartPreprocessor(logger, basePath, config, emitter) {
     try {
       var moduleName = config.resolveModuleName(file.originalPath);
       file.path = config.transformPath(file.originalPath);
-      var transpiler = new ts2dart.Transpiler();
+      var transpiler = new ts2dart.Transpiler(
+          {failFast: false, generateLibraryName: true, generateSourceMap: true});
       var transpiledContent = transpiler.translateFile(file.originalPath, moduleName);
       // TODO(martinprobst): Source maps.
       done(null, transpiledContent);
