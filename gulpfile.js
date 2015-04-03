@@ -30,7 +30,8 @@ var tsc = require('gulp-typescript');
 var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
-var concat = require('gulp-concat');
+var replace = require('gulp-replace');
+var insert = require('gulp-insert');
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -801,56 +802,58 @@ var bundleConfig = {
 // production build
 gulp.task('bundle.js.prod', ['build.js.prod'], function() {
   return bundler.bundle(
-    bundleConfig,
-    'angular2/angular2',
-    './dist/build/angular2.js',
-    {
-      sourceMaps: true
-    });
-});
-
-gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
-  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.js'])
-    .pipe(concat('angular2.js'))
-    .pipe(gulp.dest('dist/bundle'));
+      bundleConfig,
+      'angular2/angular2',
+      './dist/build/angular2.js',
+      {
+        sourceMaps: true
+      });
 });
 
 // minified production build
-// TODO: minify zone.js?
+// TODO: minify zone.js
 gulp.task('bundle.js.min', ['build.js.prod'], function() {
   return bundler.bundle(
-    bundleConfig,
-    'angular2/angular2',
-    './dist/build/angular2.min.js',
-    {
-      sourceMaps: true,
-      minify: true
-    });
-});
-
-gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
-  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.min.js'])
-    .pipe(concat('angular2.min.js'))
-    .pipe(gulp.dest('dist/bundle'));
+      bundleConfig,
+      'angular2/angular2',
+      './dist/build/angular2.min.js',
+      {
+        sourceMaps: true,
+        minify: true
+      });
 });
 
 // development build
 gulp.task('bundle.js.dev', ['build.js.dev'], function() {
   return bundler.bundle(
-    merge(true, bundleConfig, {
-     "*": "dist/js/dev/es6/*.es6"
-    }),
-    'angular2/angular2',
-    './dist/build/angular2.dev.js',
-    {
-      sourceMaps: true
-    });
+      merge(true, bundleConfig, {
+       "*": "dist/js/dev/es6/*.es6"
+      }),
+      'angular2/angular2',
+      './dist/build/angular2.dev.js',
+      {
+        sourceMaps: true
+      });
+});
+
+gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
+  return bundler.modify(
+      ['node_modules/zone.js/zone.js', 'dist/build/angular2.js'], 'angular2.js')
+      .pipe(gulp.dest('dist/bundle'));
+});
+
+gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
+  return bundler.modify(
+      ['node_modules/zone.js/zone.js', 'dist/build/angular2.min.js'], 'angular2.min.js')
+      .pipe(gulp.dest('dist/bundle'));
 });
 
 gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
-  return gulp.src(['node_modules/zone.js/zone.js', 'dist/build/angular2.dev.js'])
-    .pipe(concat('angular2.dev.js'))
-    .pipe(gulp.dest('dist/bundle'));
+  return bundler.modify(
+      ['node_modules/zone.js/zone.js', 'node_modules/zone.js/long-stack-trace-zone.js', 'dist/build/angular2.dev.js'],
+      'angular2.dev.js')
+      .pipe(insert.append('\nzone = zone.fork(Zone.longStackTraceZone);\n'))
+      .pipe(gulp.dest('dist/bundle'));
 });
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
