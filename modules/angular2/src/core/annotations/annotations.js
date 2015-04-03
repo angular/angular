@@ -24,10 +24,10 @@ import {Injectable} from 'angular2/di';
  *   - The terminal [Injector] cannot resolve dependencies. It either throws an error or, if the dependency was
  *     specified as `@Optional`, returns `null`.
  *   - The primordial injector resolves browser singleton resources, such as: cookies, title, location, and others.
- * - *Component Injectors*: Each `@Component` has its own [Injector], and they follow the same parent-child hierachy
+ * - *Component Injectors*: Each `@Component` has its own [Injector], and they follow the same parent-child hierarchy
  *     as the components in the DOM.
  * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an [ElementInjector]
- *  which follow the same parent-child hiercachy as the DOM elements themselves.
+ *     which follow the same parent-child hierarchy as the DOM elements themselves.
  *
  * When a template is instantiated, it also must instantiate the corresponding directives in a depth-first order. The
  * current [ElementInjector] resolves the constructor dependencies for each directive.
@@ -46,14 +46,14 @@ import {Injectable} from 'angular2/di';
  * To inject other directives, declare the constructor parameter as:
  * - `directive:DirectiveType`: a directive on the current element only
  * - `@Ancestor() directive:DirectiveType`: any directive that matches the type between the current element and the
- *    Shadow DOM root. Current Element is not included in the resolution, therefor even if it could resolve it, it will
+ *    Shadow DOM root. Current element is not included in the resolution, therefor even if it could resolve it, it will
  *    be ignored.
  * - `@Parent() directive:DirectiveType`: any directive that matches the type on a direct parent element only.
  * - `@Children query:Query<DirectiveType>`: A live collection of direct child directives [TO BE IMPLEMENTED].
  * - `@Descendants query:Query<DirectiveType>`: A live collection of any child directives [TO BE IMPLEMENTED].
  *
  * To inject element-specific special objects, declare the constructor parameter as:
- * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacment coming)
+ * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacement coming)
  * - `viewContainer: ViewContainer` to control child template instantiation, for [Viewport] directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
@@ -322,7 +322,7 @@ export class Directive extends Injectable {
    * ```
    *
    * Whenever the `someExpression` expression changes, the `bind` declaration instructs Angular to update the
-   * `Tooltip`'s `tooltipText` property.
+   * `Tooltip`'s `text` property.
    *
    *
    *
@@ -331,7 +331,7 @@ export class Directive extends Injectable {
    * You can also use pipes when writing binding definitions for a directive.
    *
    * For example, we could write a binding that updates the directive on structural changes, rather than on reference
-   * changes, as normally occurs in change detection. (See: [Pipe] and [keyValueDiff] documentaition for more details.)
+   * changes, as normally occurs in change detection. (See: [Pipe] and [keyValueDiff] documentation for more details.)
    *
    * ```
    * @Decorator({
@@ -364,11 +364,11 @@ export class Directive extends Injectable {
    * The `events` property defines a set of `event` to `method` key-value pairs:
    *
    * - `event1`: the DOM event that the directive listens to.
-   * - `statement`: the statment to execute when the event occurs.
+   * - `statement`: the statement to execute when the event occurs.
    *
    *
    * When writing a directive event binding, you can also refer to the following local variables:
-   * - `$event`: Current event object which triggerd the event.
+   * - `$event`: Current event object which triggered the event.
    * - `$target`: The source of the event. This will be either a DOM element or an Angular directive.
    *    [TO BE IMPLEMENTED]
    *
@@ -402,7 +402,7 @@ export class Directive extends Injectable {
    * }
    * ```
    *
-   * Here `InputDecorator` is invoked whenever the DOM element fires the 'change' event.
+   * Here the `onChange` method of `InputDecorator` is invoked whenever the DOM element fires the 'change' event.
    *
    */
   events:any; //  StringMap
@@ -447,7 +447,7 @@ export class Directive extends Injectable {
 /**
  * Declare reusable UI building blocks for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@Template` annotation. The @Component
+ * Each Angular component requires a single `@Component` and at least one `@Template` annotation. The `@Component`
  * annotation specifies when a component is instantiated, and which properties and events it binds to.
  *
  * When a component is instantiated, Angular
@@ -486,8 +486,8 @@ export class Component extends Directive {
    * When a component is instantiated, Angular creates a change detector, which is responsible for propagating
    * the component's bindings.
    *
-   * The changeDetection property defines if the change detection will be checked every time or only when the component
-   * tell it too.
+   * The `changeDetection` property defines, whether the change detection will be checked every time or only when the component
+   * tells it to do so.
    */
   changeDetection:string;
 
@@ -571,8 +571,8 @@ export class Component extends Directive {
 /**
  * Directive used for dynamically loading components.
  *
- * Regular angular components are statically resolved. DynamicComponent allows to you resolve a component at runtime
- * instead by providing a placeholder into which a regular angular component can be dynamically loaded. Once loaded,
+ * Regular Angular components are statically resolved. DynamicComponent allows to you resolve a component at runtime
+ * instead by providing a placeholder into which a regular Angular component can be dynamically loaded. Once loaded,
  * the dynamically-loaded component becomes permanent and cannot be changed.
  *
  *
@@ -581,7 +581,7 @@ export class Component extends Directive {
  * Here we have `DynamicComp` which acts as the placeholder for `HelloCmp`. At runtime, the dynamic component
  * `DynamicComp` requests loading of the `HelloCmp` component.
  *
- * There is nothing special about `HelloCmp`, which is a regular angular component. It can also be used in other static
+ * There is nothing special about `HelloCmp`, which is a regular Angular component. It can also be used in other static
  * locations.
  *
  * ```
@@ -660,7 +660,7 @@ export class DynamicComponent extends Directive {
  * Decorators differ from [Component]s in that they:
  * - can have multiple decorators per element
  * - do not create their own evaluation context
- * - do not have template (and therefor do not create Shadow DOM)
+ * - do not have a template (and therefor do not create Shadow DOM)
  *
  *
  * ## Example
