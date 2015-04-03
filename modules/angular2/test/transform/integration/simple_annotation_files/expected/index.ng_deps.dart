@@ -11,10 +11,10 @@ import 'package:angular2/src/reflection/reflection_capabilities.ng_deps.dart'
     as i2;
 
 bool _visited = false;
-void setupReflection(reflector) {
+void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
-  i0.setupReflection(reflector);
-  i1.setupReflection(reflector);
-  i2.setupReflection(reflector);
+  i0.initReflector(reflector);
+  i1.initReflector(reflector);
+  i2.initReflector(reflector);
 }

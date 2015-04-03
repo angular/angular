@@ -25,7 +25,7 @@ class AngularTransformerGroup extends TransformerGroup {
     if (options.modeName == TRANSFORM_MODE) {
       phases.addAll([
         [new BindGenerator(options)],
-        [new TemplateComplier(options)],
+        [new TemplateCompiler(options)],
         [new ReflectionRemover(options)]
       ]);
     }
