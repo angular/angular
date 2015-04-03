@@ -42,11 +42,7 @@ class Foo {
   }
 
   typedVariables() {
-    // TODO(vojta): test this
     var foo:string = 'foo';
-    var typed:boolean, untyped;
-    var oneTyped:string = 'one',
-        another: boolean = true;
   }
 }
 
