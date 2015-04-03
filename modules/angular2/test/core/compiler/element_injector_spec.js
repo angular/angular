@@ -145,6 +145,13 @@ class NeedsAttribute {
   }
 }
 
+class NeedsAttributeNoType {
+  fooAttribute;
+  constructor(@Attribute('foo') fooAttribute) {
+    this.fooAttribute = fooAttribute;
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -639,7 +646,7 @@ export function main() {
       });
     });
 
-    describe('static', () => {
+    describe('static attributes', () => {
       it('should be injectable', () => {
         var attributes = MapWrapper.create();
         MapWrapper.set(attributes, 'type', 'text');
@@ -651,6 +658,16 @@ export function main() {
         expect(needsAttribute.typeAttribute).toEqual('text');
         expect(needsAttribute.titleAttribute).toEqual('');
         expect(needsAttribute.fooAttribute).toEqual(null);
+      });
+
+      it('should be injectable without type annotation', () => {
+        var attributes = MapWrapper.create();
+        MapWrapper.set(attributes, 'foo', 'bar');
+
+        var inj = injector([NeedsAttributeNoType], null, null, null, attributes);
+        var needsAttribute = inj.get(NeedsAttributeNoType);
+
+        expect(needsAttribute.fooAttribute).toEqual('bar');
       });
     });
 

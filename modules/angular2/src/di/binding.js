@@ -140,8 +140,6 @@ function _extractToken(typeOrFunc, annotations) {
       }
       ListWrapper.push(depProps, paramAnnotation);
 
-    } else if (paramAnnotation.name === "string") {
-      token = paramAnnotation;
     }
   }
 
