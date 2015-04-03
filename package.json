@@ -51,6 +51,7 @@
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-changed": "^1.0.0",
+    "gulp-clang-format": "^1.0.3",
     "gulp-concat": "^2.5.2",
     "gulp-connect": "~1.0.5",
     "gulp-jasmine": "^1.0.1",
@@ -84,7 +85,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
-    "typescript": "Microsoft/TypeScript#cebe42b81fbeeaf68c8e228dda5e602ab94e151b",
+    "typescript": "alexeagle/TypeScript#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
     "vinyl": "^0.4.6",
     "yargs": "2.3.*"
   }
