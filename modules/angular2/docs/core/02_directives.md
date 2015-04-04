@@ -10,7 +10,7 @@ There are three different kinds of directives (described in more detail in later
 
 1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
 2. *Components*: Components have an encapsulated view and can configure injectors.
-3. *Viewport*: is responsible for adding or removing child views in a parent view. (i.e. foreach, if)
+3. *Viewport*: is responsible for adding or removing child views in a parent view. (i.e. for, if)
 
 
 
@@ -165,7 +165,7 @@ Example of usage:
 
 ## Viewport
 
-Viewport is a directive which can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `foreach`.) 
+Viewport is a directive which can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.) 
 
 * Viewports can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
 * Only one viewport can be present per DOM template element.
