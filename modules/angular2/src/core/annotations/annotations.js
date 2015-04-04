@@ -402,7 +402,7 @@ export class Directive extends Injectable {
    * }
    * ```
    *
-   * Here the `onChange` method of `inputDecorator` is invoked whenever the DOM element fires the 'change' event.
+   * Here the `onChange` method of `InputDecorator` is invoked whenever the DOM element fires the 'change' event.
    *
    */
   events:any; //  StringMap
