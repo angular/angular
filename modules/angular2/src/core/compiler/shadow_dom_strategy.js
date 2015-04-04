@@ -178,9 +178,6 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
 
 class _BaseEmulatedShadowDomStep extends NS.CompileStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    if (current.ignoreBindings) {
-      return;
-    }
     var nodeName = DOM.nodeName(current.element);
     if (StringWrapper.equals(nodeName.toUpperCase(), 'CONTENT')) {
       var attrs = current.attrs();
@@ -220,9 +217,6 @@ class _ShimShadowDomStep extends _BaseEmulatedShadowDomStep {
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     super.process(parent, current, control);
-    if (current.ignoreBindings) {
-      return;
-    }
 
     // Shim the element as a child of the compiled component
     DOM.setAttribute(current.element, this._contentAttribute, '');

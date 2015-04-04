@@ -15,6 +15,7 @@ import {Component} from 'angular2/src/core/annotations/annotations';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('CssProcessor', () => {
@@ -24,20 +25,15 @@ export function main() {
         var annotation = new Component();
         var meta = new DirectiveMetadata(SomeComponent, annotation);
         return new CompilePipeline([
-          cssProcessor.getCompileStep(meta, strategy, templateUrl)
+          cssProcessor.getCompileStep(meta, strategy, templateUrl),
+          new MockStep((parent, current, control) => {
+            if (DOM.tagName(current.element) == 'STYLE') {
+              throw new BaseException('No further step should be executed after the CssProcessor ' +
+                  'step which ignores the style elements.');
+            }
+          }),
         ]);
       }
-
-      it('it should set ignoreBindings to true for style elements', () => {
-        var strategy = new FakeShadowDomStrategy(null);
-        var cssProcessor = new CssProcessor(null);
-
-        var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
-        var results = pipeline.process(el('<div><style></style></div>'));
-
-        expect(results[0].ignoreBindings).toBe(false);
-        expect(results[1].ignoreBindings).toBe(true);
-      });
 
       it('should execute the strategy step for style elements', () => {
         var processedEls = [];
@@ -48,10 +44,13 @@ export function main() {
 
         var cssProcessor = new CssProcessor(null);
         var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
-        var results = pipeline.process(el('<div><style></style></div>'));
+        var nodes = el('<div><style></style></div>');
+        var results = pipeline.process(nodes);
 
+        // Only the <div> should produce a CompileElement (<style> are ignored)
+        expect(results.length).toBe(1);
         expect(processedEls.length).toEqual(1);
-        expect(processedEls[0]).toBe(results[1].element);
+        expect(processedEls[0]).toBe(DOM.firstChild(nodes));
       });
 
       it('should apply the given transformers', () => {
@@ -62,9 +61,10 @@ export function main() {
         ]);
 
         var pipeline = createPipeline(cssProcessor, strategy, 'http://base');
-        var results = pipeline.process(el('<div><style></style></div>'));
+        var nodes = el('<div><style></style></div>');
+        pipeline.process(nodes);
 
-        expect(results[1].element).toHaveText('/*transformer1 *//*transformer2 */');
+        expect(DOM.firstChild(nodes)).toHaveText('/*transformer1 *//*transformer2 */');
       });
     });
   });
