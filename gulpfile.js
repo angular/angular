@@ -872,7 +872,13 @@ var bundleConfig = {
   paths: {
     "*": "dist/js/prod/es6/*.es6",
     "rx/*": "node_modules/rx/*.js"
-  }
+  },
+  meta: {
+    // auto-detection fails to detect properly here - https://github.com/systemjs/builder/issues/123
+    'rx/dist/rx.all': {
+        format: 'cjs'
+      }
+    }
 };
 
 // production build
@@ -901,10 +907,13 @@ gulp.task('bundle.js.min', ['build.js.prod'], function() {
 
 // development build
 gulp.task('bundle.js.dev', ['build.js.dev'], function() {
-  return bundler.bundle(
-      merge(true, bundleConfig, {
+  var devBundleConfig = merge(true, bundleConfig);
+  devBundleConfig.paths =
+      merge(true, devBundleConfig.paths, {
        "*": "dist/js/dev/es6/*.es6"
-      }),
+      });
+  return bundler.bundle(
+      devBundleConfig,
       'angular2/angular2',
       './dist/build/angular2.dev.js',
       {
