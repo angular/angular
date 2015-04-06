@@ -20,7 +20,7 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
  * evaluated. If a matching expression is not found via a when attribute then an element with the
  * default attribute is displayed.
  *
- * Example:
+ * # Example:
  *
  * ```
  * <ANY [switch]="expression">
@@ -29,6 +29,7 @@ import {Parent} from 'angular2/src/core/annotations/visibility';
  *   <template [switch-default]>...</template>
  * </ANY>
  * ```
+ *
  * @publicModule angular2/directives
  */
 @Decorator({
@@ -181,6 +182,8 @@ export class SwitchWhen {
  *
  * @publicModule angular2/directives
  * ```
+ *
+ * @publicModule angular2/directives
  */
 @Viewport({
   selector: '[switch-default]'
