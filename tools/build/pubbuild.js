@@ -17,7 +17,9 @@ module.exports = function(gulp, plugins, config) {
       }
       var folder = path.resolve(path.join(webFolders.shift(), '..'));
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
-      return util.processToPromise(spawn(config.command, ['build', '-o', destFolder], {
+      var pubMode = config.mode || 'release';
+      var pubArgs = ['build', '--mode', pubMode, '-o', destFolder];
+      return util.processToPromise(spawn(config.command, pubArgs, {
         stdio: 'inherit',
         cwd: folder
       })).then(function() {

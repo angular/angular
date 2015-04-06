@@ -1,36 +1,13 @@
-import {Injector, Key} from "angular2/di";
+import {Injectable, Injector, Key} from "angular2/di";
 import {reflector} from 'angular2/src/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 var count = 0;
 
 function setupReflector() {
-  reflector.registerType(A, {
-    'factory': () => new A(),
-    'parameters': [],
-    'annotations' : []
-  });
-  reflector.registerType(B, {
-    'factory': (a) => new B(a),
-    'parameters': [[A]],
-    'annotations' : []
-  });
-  reflector.registerType(C, {
-    'factory': (b) => new C(b),
-    'parameters': [[B]],
-    'annotations' : []
-  });
-  reflector.registerType(D, {
-    'factory': (c,b) => new D(c,b),
-    'parameters': [[C],[B]],
-    'annotations' : []
-  });
-  reflector.registerType(E, {
-    'factory': (d,c) => new E(d,c),
-    'parameters': [[D],[C]],
-    'annotations' : []
-  });
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
 }
 
 export function main() {
@@ -97,31 +74,35 @@ export function main() {
 
 
 
-
+@Injectable()
 class A {
   constructor() {
     count++;
   }
 }
 
+@Injectable()
 class B {
   constructor(a:A) {
     count++;
   }
 }
 
+@Injectable()
 class C {
   constructor(b:B) {
     count++;
   }
 }
 
+@Injectable()
 class D {
   constructor(c:C, b:B) {
     count++;
   }
 }
 
+@Injectable()
 class E {
   constructor(d:D, c:C) {
     count++;

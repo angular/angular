@@ -183,7 +183,7 @@ var CONFIG = {
     },
     dart: {
       src: [
-        'modules/**/*.md', '!modules/**/*.js.md', 'modules/**/*.png',
+        'modules/**/*.md', '!modules/**/*.js.md', 'modules/**/*.png', 'modules/**/*.html',
         'modules/**/*.dart', 'modules/*/pubspec.yaml', 'modules/**/*.css', '!modules/**/e2e_test/**'
       ],
       pipes: {
@@ -608,6 +608,24 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   path: CONFIG.dest.dart + '/benchmarks_external'
 }));
 
+gulp.task('serve/examples.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/examples'
+}));
+
+gulp.task('serve/benchmarks.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/benchmarks'
+}));
+
+gulp.task('serve/benchmarks_external.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/benchmarks_external'
+}));
+
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
@@ -758,12 +776,6 @@ gulp.task('test.transpiler.unittest', function (done) {
       }))
 });
 
-// Copy test resources to dist
-gulp.task('tests/transform.dart', function() {
-  return gulp.src('modules/angular2/test/transform/**')
-    .pipe(gulp.dest('dist/dart/angular2/test/transform'));
-});
-
 
 
 // -----------------
@@ -773,7 +785,6 @@ gulp.task('tests/transform.dart', function() {
 gulp.task('build/packages.dart', function(done) {
   runSequence(
     ['build/transpile.dart.ts2dart', 'build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
-    'tests/transform.dart',
     // the two format steps don't need to be sequential, but we have seen flakiness in
     // dartstyle:format with connecting to localhost.
     'build/format.dart.ts2dart',
