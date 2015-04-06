@@ -22,7 +22,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * ```
  * <ul>
- *   <li *for="error in errors; #i = index">
+ *   <li *for="#error in errors; #i = index">
  *     Error {{i}} of {{errors.length}}: {{error.message}}
  *   </li>
  * </ul>
