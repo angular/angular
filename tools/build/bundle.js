@@ -15,6 +15,5 @@ module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConf
 module.exports.modify = function(srcs, concatName) {
   return gulp.src(srcs)
     .pipe(concat(concatName))
-    .pipe(replace('use strict', ''))  // remove after https://github.com/systemjs/builder/issues/123 is fixed.
     .pipe(replace('sourceMappingURL', 'sourceMappingURLDisabled'))  // TODO: add concat for sourceMaps
 }
