@@ -24,8 +24,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
@@ -35,7 +34,7 @@ import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
 
 import {
-  appViewToken,
+  appComponentRefToken,
   appChangeDetectorToken,
   appElementToken,
   appComponentAnnotatedTypeToken,
@@ -66,37 +65,20 @@ function _injectorBindings(appComponentType): List<Binding> {
         }
         return element;
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
-      bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, testability, registry, viewFactory) => {
+      bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector, appElement,
+        appComponentAnnotatedType, testability, registry) => {
 
         // We need to do this here to ensure that we create Testability and
         // it's ready on the window for users.
         registry.registerApplication(appElement, testability);
-        var annotation = appComponentAnnotatedType.annotation;
-        if(!isBlank(annotation) && !(annotation instanceof Component)) {
-          var type = appComponentAnnotatedType.type;
-          throw new BaseException(`Only Components can be bootstrapped; ` +
-                                  `Directive of ${stringify(type)} is not a Component`);
-        }
-        return compiler.compileRoot(
-            appElement,
-            appComponentAnnotatedType.type
-          ).then(
-            (appProtoView) => {
-          // The light Dom of the app element is not considered part of
-          // the angular application. Thus the context and lightDomInjector are
-          // empty.
-          var view = viewFactory.getView(appProtoView);
-          view.hydrate(injector, null, new Object(), null);
-          return view;
-        });
-      }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          Testability, TestabilityRegistry, ViewFactory]),
+        return dynamicComponentLoader.loadIntoNewLocation(appElement, appComponentAnnotatedType.type, null, injector);
+      }, [DynamicComponentLoader, Injector, appElementToken, appComponentAnnotatedTypeToken,
+        Testability, TestabilityRegistry]),
 
-      bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
-          [appViewToken]),
-      bind(appComponentType).toFactory((rootView) => rootView.elementInjectors[0].getComponent(),
-          [appViewToken]),
+      bind(appChangeDetectorToken).toFactory((ref) => ref.hostView.changeDetector,
+          [appComponentRefToken]),
+      bind(appComponentType).toFactory((ref) => ref.instance,
+          [appComponentRefToken]),
       bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
       bind(EventManager).toFactory((zone) => {
         var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
@@ -136,8 +118,8 @@ function _injectorBindings(appComponentType): List<Binding> {
       UrlResolver,
       StyleUrlResolver,
       StyleInliner,
-      PrivateComponentLoader,
-      Testability,
+      DynamicComponentLoader,
+      Testability
   ];
 }
 
@@ -260,8 +242,8 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * @publicModule angular2/angular2
  */
 export function bootstrap(appComponentType: Type,
-                          componentServiceBindings: List<Binding>=null,
-                          errorReporter: Function=null): Promise<Injector> {
+                          componentServiceBindings: List<Binding> = null,
+                          errorReporter: Function = null): Promise<Injector> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
@@ -272,11 +254,11 @@ export function bootstrap(appComponentType: Type,
 
     var appInjector = _createAppInjector(appComponentType, componentServiceBindings, zone);
 
-    PromiseWrapper.then(appInjector.asyncGet(appViewToken),
-      (rootView) => {
+    PromiseWrapper.then(appInjector.asyncGet(appChangeDetectorToken),
+      (appChangeDetector) => {
         // retrieve life cycle: may have already been created if injected in root component
-        var lc=appInjector.get(LifeCycle);
-        lc.registerWith(zone, rootView.changeDetector);
+        var lc = appInjector.get(LifeCycle);
+        lc.registerWith(zone, appChangeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
         bootstrapProcess.resolve(appInjector);

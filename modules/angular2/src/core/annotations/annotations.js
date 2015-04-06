@@ -590,7 +590,7 @@ export class Component extends Directive {
  * })
  * class DynamicComp {
  *   helloCmp:HelloCmp;
- *   constructor(loader:PrivateComponentLoader, location:PrivateComponentLocation) {
+ *   constructor(loader:DynamicComponentLoader, location:PrivateComponentLocation) {
  *     loader.load(HelloCmp, location).then((helloCmp) => {
  *       this.helloCmp = helloCmp;
  *     });

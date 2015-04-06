@@ -621,58 +621,76 @@ export function main() {
       });
     });
 
-    describe("createPrivateComponent", () => {
-      it("should create a private component", () => {
+    describe("dynamicallyCreateComponent", () => {
+      it("should create a component dynamically", () => {
         var inj = injector([]);
-        inj.createPrivateComponent(SimpleDirective, null);
-        expect(inj.getPrivateComponent()).toBeAnInstanceOf(SimpleDirective);
+        inj.dynamicallyCreateComponent(SimpleDirective, null, null);
+        expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(SimpleDirective);
+        expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should inject parent dependencies into the private component", () => {
+      it("should inject parent dependencies into the dynamically-loaded component", () => {
         var inj = parentChildInjectors([SimpleDirective], []);
-        inj.createPrivateComponent(NeedDirectiveFromAncestor, null);
-        expect(inj.getPrivateComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
-        expect(inj.getPrivateComponent().dependency).toBeAnInstanceOf(SimpleDirective);
+        inj.dynamicallyCreateComponent(NeedDirectiveFromAncestor, null, null);
+        expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(inj.getDynamicallyLoadedComponent().dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should not inject the proxy component into the children of the private component", () => {
-        var injWithPrivateComponent = injector([SimpleDirective]);
-        injWithPrivateComponent.createPrivateComponent(SomeOtherDirective, null);
+      it("should not inject the proxy component into the children of the dynamically-loaded component", () => {
+        var injWithDynamicallyLoadedComponent = injector([SimpleDirective]);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(SomeOtherDirective, null, null);
 
         var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
         var shadowDomInj = shadowDomProtoInjector.instantiate(null);
 
-        expect(() => shadowDomInj.instantiateDirectives(appInjector, injWithPrivateComponent, null, defaultPreBuiltObjects)).
+        expect(() =>
+          shadowDomInj.instantiateDirectives(appInjector, injWithDynamicallyLoadedComponent,null, defaultPreBuiltObjects)).
           toThrowError(new RegExp("No provider for SimpleDirective"));
       });
 
-      it("should inject the private component into the children of the private component", () => {
-        var injWithPrivateComponent = injector([]);
-        injWithPrivateComponent.createPrivateComponent(SimpleDirective, null);
+      it("should not inject the dynamically-loaded component into directives on the same element", () => {
+        var proto = new ProtoElementInjector(null, 0, [NeedsDirective], false);
+        var inj = proto.instantiate(null);
+        inj.dynamicallyCreateComponent(SimpleDirective, null, null);
+
+        expect(() => inj.instantiateDirectives(null, null, null, null)).toThrowError();
+      });
+
+      it("should inject the dynamically-loaded component into the children of the dynamically-loaded component", () => {
+        var injWithDynamicallyLoadedComponent = injector([]);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(SimpleDirective, null, null);
 
         var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
         var shadowDomInjector = shadowDomProtoInjector.instantiate(null);
-        shadowDomInjector.instantiateDirectives(appInjector, injWithPrivateComponent, null, defaultPreBuiltObjects);
+        shadowDomInjector.instantiateDirectives(appInjector, injWithDynamicallyLoadedComponent, null, defaultPreBuiltObjects);
 
         expect(shadowDomInjector.get(NeedDirectiveFromAncestor)).toBeAnInstanceOf(NeedDirectiveFromAncestor);
         expect(shadowDomInjector.get(NeedDirectiveFromAncestor).dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should support rehydrating the private component", () => {
+      it("should remove the dynamically-loaded component when dehydrating", () => {
         var inj = injector([]);
-        inj.createPrivateComponent(
-            DirectiveWithDestroy,
-            new DummyDirective({lifecycle: [onDestroy]}));
-        var dir = inj.getPrivateComponent();
+        inj.dynamicallyCreateComponent(
+          DirectiveWithDestroy,
+          new DummyDirective({lifecycle: [onDestroy]}),
+          null);
+        var dir = inj.getDynamicallyLoadedComponent();
 
         inj.clearDirectives();
 
-        expect(inj.getPrivateComponent()).toBe(null);
+        expect(inj.getDynamicallyLoadedComponent()).toBe(null);
         expect(dir.onDestroyCounter).toBe(1);
 
         inj.instantiateDirectives(null, null, null, null);
 
-        expect(inj.getPrivateComponent()).not.toBe(null);
+        expect(inj.getDynamicallyLoadedComponent()).toBe(null);
+      });
+
+      it("should inject services of the dynamically-loaded component", () => {
+        var inj = injector([]);
+        var appInjector = new Injector([bind("service").toValue("Service")]);
+        inj.dynamicallyCreateComponent(NeedsService, null, appInjector);
+        expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
       });
     });
 

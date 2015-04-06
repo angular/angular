@@ -9,8 +9,8 @@ export * from './src/core/compiler/compiler';
 
 // TODO(tbosch): remove this once render migration is complete
 export * from 'angular2/src/render/dom/compiler/template_loader';
-export * from './src/core/compiler/private_component_loader';
-export * from './src/core/compiler/private_component_location';
+export * from './src/core/compiler/dynamic_component_loader';
+export {ElementRef, DirectiveRef, ComponetRef} from './src/core/compiler/element_injector';
 export * from './src/core/compiler/view';
 export * from './src/core/compiler/view_container';
 

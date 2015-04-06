@@ -24,13 +24,12 @@ import {Injector, bind} from 'angular2/di';
 import {dynamicChangeDetection,
   ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig, ON_PUSH} from 'angular2/change_detection';
 
-import {PrivateComponentLocation} from 'angular2/src/core/compiler/private_component_location';
-import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
-
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, Attribute} from 'angular2/src/core/annotations/di';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {DirectiveRef} from 'angular2/src/core/compiler/element_injector';
 
 import {If} from 'angular2/src/directives/if';
 
@@ -544,23 +543,40 @@ export function main() {
         }));
       }
 
-      it('should support dynamic components', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-        tb.overrideTemplate(MyComp, new Template({
-          inline: '<dynamic-comp #dynamic></dynamic-comp>',
-          directives: [DynamicComp]
-        }));
-        tb.createView(MyComp, {context: ctx}).then((view) => {
+      describe("dynamic components", () => {
+        it('should support loading components dynamically', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideTemplate(MyComp, new Template({
+            inline: '<dynamic-comp #dynamic></dynamic-comp>',
+            directives: [DynamicComp]
+          }));
 
-          var dynamicComponent = view.rawView.locals.get("dynamic");
-          expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
+          tb.createView(MyComp).then((view) => {
+            var dynamicComponent = view.rawView.locals.get("dynamic");
+            expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
 
-          dynamicComponent.done.then((_) => {
-            view.detectChanges();
-            expect(view.rootNodes).toHaveText('hello');
-            async.done();
+            dynamicComponent.done.then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
+              async.done();
+            });
           });
-        });
-      }));
+        }));
+
+        it('should inject dependencies of the dynamically-loaded component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideTemplate(MyComp, new Template({
+            inline: '<dynamic-comp #dynamic></dynamic-comp>',
+            directives: [DynamicComp]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            var dynamicComponent = view.rawView.locals.get("dynamic");
+            dynamicComponent.done.then((ref) => {
+              expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
+              async.done();
+            });
+          });
+        }));
+      });
 
       it('should support static attributes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideTemplate(MyComp, new Template({
@@ -568,7 +584,6 @@ export function main() {
           directives: [NeedsAttribute]
         }));
         tb.createView(MyComp, {context: ctx}).then((view) => {
-
           var injector = view.rawView.elementInjectors[0];
           var needsAttribute = injector.get(NeedsAttribute);
           expect(needsAttribute.typeAttribute).toEqual('text');
@@ -643,27 +658,32 @@ export function main() {
   });
 }
 
+class DynamicallyCreatedComponentService {
+}
 
 @DynamicComponent({
   selector: 'dynamic-comp'
 })
 class DynamicComp {
   done;
-  constructor(loader:PrivateComponentLoader, location:PrivateComponentLocation) {
-    this.done = loader.load(HelloCmp, location);
+  constructor(loader:DynamicComponentLoader, self:DirectiveRef) {
+    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, self);
   }
 }
 
 @Component({
-  selector: 'hello-cmp'
+  selector: 'hello-cmp',
+  services: [DynamicallyCreatedComponentService]
 })
 @Template({
   inline: "{{greeting}}"
 })
-class HelloCmp {
+class DynamicallyCreatedCmp {
   greeting:string;
-  constructor() {
+  dynamicallyCreatedComponentService:DynamicallyCreatedComponentService;
+  constructor(a:DynamicallyCreatedComponentService) {
     this.greeting = "hello";
+    this.dynamicallyCreatedComponentService = a;
   }
 }
 

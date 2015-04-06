@@ -28,7 +28,18 @@ export class View {
   viewContainers: List<ViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: ProtoView;
+
+  /**
+   * The context against which data-binding expressions in this view are evaluated against.
+   * This is always a component instance.
+   */
   context: any;
+
+  /**
+   * Variables, local to this view, that can be used in binding expressions (in addition to the
+   * context). This is used for thing like `<video #player>` or
+   * `<li template="for #item of items">`, where "player" and "item" are locals, respectively.
+   */
   locals:Locals;
 
   constructor(proto:ProtoView, protoLocals:Map) {
@@ -242,6 +253,11 @@ export class View {
   directive(directive:DirectiveRecord) {
     var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
+  }
+
+  addComponentChildView(view:View) {
+    ListWrapper.push(this.componentChildViews, view);
+    this.changeDetector.addShadowDomChild(view.changeDetector);
   }
 
   // implementation of EventDispatcher#dispatchEvent

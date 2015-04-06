@@ -19,7 +19,7 @@ import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_res
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
-import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -173,10 +173,57 @@ function setup() {
     "annotations": []
   });
 
-  reflector.registerType(PrivateComponentLoader, {
-    "factory": (compiler, reader, viewFactory) =>
-      new PrivateComponentLoader(compiler, reader, viewFactory),
-    "parameters": [[Compiler], [DirectiveMetadataReader], [ViewFactory]],
+  reflector.registerType(DynamicComponentLoader, {
+    "factory": (compiler, reader, renderer, viewFactory) =>
+      new DynamicComponentLoader(compiler, reader, renderer, viewFactory),
+    "parameters": [[Compiler], [DirectiveMetadataReader], [Renderer], [ViewFactory]],
+    "annotations": []
+  });
+
+  reflector.registerType(DirectDomRenderer, {
+    "factory": (renderCompiler, renderViewFactory, shadowDomStrategy) =>
+      new DirectDomRenderer(renderCompiler, renderViewFactory, shadowDomStrategy),
+    "parameters": [[rc.Compiler], [rvf.ViewFactory], [ShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(rc.DefaultCompiler, {
+    "factory": (parser, shadowDomStrategy, templateLoader) =>
+      new rc.DefaultCompiler(parser, shadowDomStrategy, templateLoader),
+    "parameters": [[Parser], [ShadowDomStrategy], [TemplateLoader]],
+    "annotations": []
+  });
+
+  reflector.registerType(rvf.ViewFactory, {
+    "factory": (capacity, eventManager, shadowDomStrategy) =>
+      new rvf.ViewFactory(capacity, eventManager, shadowDomStrategy),
+    "parameters": [[new Inject(rvf.VIEW_POOL_CAPACITY)], [EventManager], [ShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(rvf.VIEW_POOL_CAPACITY, {
+    "factory": () => 100000,
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(ProtoViewFactory, {
+    "factory": (changeDetection, renderer) =>
+      new ProtoViewFactory(changeDetection, renderer),
+    "parameters": [[ChangeDetection], [Renderer]],
+    "annotations": []
+  });
+
+  reflector.registerType(ViewFactory, {
+    "factory": (capacity) =>
+      new ViewFactory(capacity),
+    "parameters": [[new Inject(VIEW_POOL_CAPACITY)]],
+    "annotations": []
+  });
+
+  reflector.registerType(VIEW_POOL_CAPACITY, {
+    "factory": () => 100000,
+    "parameters": [],
     "annotations": []
   });
 

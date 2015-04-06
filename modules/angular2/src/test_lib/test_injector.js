@@ -7,6 +7,7 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {XHR} from 'angular2/src/services/xhr';
@@ -15,7 +16,6 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
-import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -88,7 +88,7 @@ function _getAppBindings() {
     bind(TemplateResolver).toClass(MockTemplateResolver),
     bind(ChangeDetection).toValue(dynamicChangeDetection),
     TemplateLoader,
-    PrivateComponentLoader,
+    DynamicComponentLoader,
     DirectiveMetadataReader,
     Parser,
     Lexer,

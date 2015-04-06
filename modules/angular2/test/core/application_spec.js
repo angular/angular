@@ -98,9 +98,8 @@ export function main() {
     it('should throw if bootstrapped Directive is not a Component', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e,t) => {throw e;});
       PromiseWrapper.then(injectorPromise, null, (reason) => {
-          expect(reason.message).toContain('Only Components can be bootstrapped; ' +
-					   'Directive of HelloRootDirectiveIsNotCmp is not a Component');
-          async.done();
+        expect(reason.message).toContain(`Could not load 'HelloRootDirectiveIsNotCmp' because it is not a component.`);
+        async.done();
       });
     }));
 
@@ -137,7 +136,6 @@ export function main() {
     it('should display hello world', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootCmp, testBindings);
       injectorPromise.then((injector) => {
-
         expect(injector.get(appElementToken)).toHaveText('hello world!');
         async.done();
       });

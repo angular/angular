@@ -23,7 +23,7 @@ import {Injectable} from 'angular2/di';
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
   inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
+           <button class="changeButton" (click)="changeGreeting()">change greeting</button><content></content>`,
   // All directives used in the template need to be specified. This allows for
   // modularity (RedDec can only be used in this template)
   // and better tooling (the template can be invalidated if the attribute is

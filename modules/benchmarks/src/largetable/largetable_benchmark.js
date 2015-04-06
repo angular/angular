@@ -16,7 +16,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -290,10 +290,10 @@ function setupReflector() {
     "annotations": []
   });
 
-  reflector.registerType(PrivateComponentLoader, {
-    "factory": (compiler, reader, viewFactory) =>
-      new PrivateComponentLoader(compiler, reader, viewFactory),
-    "parameters": [[Compiler], [DirectiveMetadataReader], [ViewFactory]],
+  reflector.registerType(DynamicComponentLoader, {
+    "factory": (compiler, reader, renderer, viewFactory) =>
+      new DynamicComponentLoader(compiler, reader, renderer, viewFactory),
+    "parameters": [[Compiler], [DirectiveMetadataReader], [Renderer], [ViewFactory]],
     "annotations": []
   });
 
