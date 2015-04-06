@@ -65,20 +65,19 @@ import {Injectable} from 'angular2/di';
  * a `dependency` decorator and `SomeService` injectable class.
  * `index.html` contains the HTML template for the `dependency` decorator.
  *
- * [PENDING: Does order matter when including the files? Should it be consistent?
- * Can it or the selected tab vary so that the most important file is visible first?]
+ * [NOTE: If we follow Angular 1's precedent, then the order of includes is
+ * the order of the tabs. We should probably be consistent about tab order,
+ * but if the most important file isn't first, either change the tab order
+ * or change which tab is selected (which one?).
+ * [QUESTION: How do you trade off runnability with readability? E.g. if only
+ * one line is important, can you highlight it? If not, how should you make
+ * sure people see it—repeat it in the text?]
  * [NOTE: It's hard to visually distinguish HTML code from its container.]
- * [PENDING: how to refer to files when the names differ in TS/ES/Dart
- * (e.g., when the file suffix is the only different, or when the actual name
- * is different?]
- * [PENDING: it'd be great to transpile to Dart, as a rule, but how should I
- * indicate that something should NOT be transpiled because I have a more
- * idiomatic way of doing it?]
- * [PENDING: Will transpiled code be run through dartfmt?]
+ * [PENDING: Transpiled code will be run through dartfmt, right?]
  *
 ```
 <example name="dependency-injection">
-  <file name="index" type="html">
+  <file name="index.html">
     <div dependency="1">
       <div dependency="2">
         <div dependency="3" my-directive>
@@ -90,7 +89,7 @@ import {Injectable} from 'angular2/di';
       </div>
     </div>
   </file>
-  <file name="app" type="typescript">
+  <file name="app" type="ts">
     @Injectable()
     class SomeService {
     }
@@ -105,7 +104,7 @@ import {Injectable} from 'angular2/di';
       id:string;
     }
   </file>
-  <file name="app" type="dart">
+  <file name="app" type="dart" filename="dependency.dart">
     @Injectable()
     class SomeService {
     }
@@ -141,6 +140,8 @@ import {Injectable} from 'angular2/di';
       }
     }
   </file>
+  <file name="app" type="dart" filename="my_directive.dart" transpile="app.ts">
+  </file>
 </example>
 ```
  *
@@ -163,6 +164,8 @@ import {Injectable} from 'angular2/di';
       }
     }
   </file>
+  <file name="app" type="dart" transpile="app.ts">
+  </file>
 </example>
 ```
  *
@@ -182,6 +185,8 @@ import {Injectable} from 'angular2/di';
         expect(dependency.id).toEqual(3);
       }
     }
+  </file>
+  <file name="app" type="dart" transpile="app.ts">
   </file>
 </example>
 ```
@@ -210,6 +215,7 @@ import {Injectable} from 'angular2/di';
       }
     }
   </file>
+  <!-- Dart version omitted on purpose, to see what happens. -->
 </example>
 ```
  *
@@ -228,6 +234,15 @@ import {Injectable} from 'angular2/di';
     @Decorator({ selector: '[my-directive]' })
     class MyDirective {
       constructor(@Ancestor() dependency: Dependency) {
+        expect(dependency.id).toEqual(2);
+      }
+    }
+  </file>
+  <file name="app" filename="my_directive.dart" type="dart">
+    @Decorator(selector: '[my-directive]')
+    class MyDirective {
+      @Ancestor() Dependency dependency;
+      MyDirective(this.dependency) {
         expect(dependency.id).toEqual(2);
       }
     }
