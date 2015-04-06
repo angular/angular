@@ -15,6 +15,8 @@ import {
 } from 'angular2/change_detection';
 
 
+// ---- SHARED
+
 class Obj {
   field0;
   field1;
@@ -42,12 +44,52 @@ class Obj {
       case 9: this.field9 = value; break;
     }
   }
+
+  getField(index) {
+    switch (index) {
+      case 0: return this.field0;
+      case 1: return this.field1;
+      case 2: return this.field2;
+      case 3: return this.field3;
+      case 4: return this.field4;
+      case 5: return this.field5;
+      case 6: return this.field6;
+      case 7: return this.field7;
+      case 8: return this.field8;
+      case 9: return this.field9;
+    }
+  }
 }
 
 class Row {
-  currentValue;
-  previousValue;
+  obj;
+  targetObj;
+  field0;
+  field1;
+  field2;
+  field3;
+  field4;
+  field5;
+  field6;
+  field7;
+  field8;
+  field9;
+
   next;
+}
+
+function createObject() {
+  var obj = new Obj();
+  for (var i = 0; i < 10; ++i) {
+    obj.setField(i, i);
+  }
+  return obj;
+}
+
+function changeObject(object) {
+  for (var i = 0; i < 10; ++i) {
+    object.setField(i, object.getField(i) + 1);
+  }
 }
 
 function setUpReflector() {
@@ -77,16 +119,15 @@ function setUpReflector() {
   });
 }
 
-function setUpBaseline(iterations) {
-  function createRow(i) {
-    var obj = new Obj();
-    for (var j = 0; j < 10; ++j) {
-      obj.setField(j, i);
-    }
 
+
+// ---- BASELINE
+
+function setUpBaseline(iterations, object) {
+  function createRow(i) {
     var r = new Row();
-    r.currentValue = obj;
-    r.previousValue = obj;
+    r.obj = object;
+    r.targetObj = new Obj();
     return r;
   }
 
@@ -100,38 +141,91 @@ function setUpBaseline(iterations) {
   return head;
 }
 
-function setUpChangeDetection(changeDetection:ChangeDetection, iterations) {
+function checkBaselineRow(r) {
+  var obj = r.obj;
+
+  if (obj.field0 !== r.field0) {r.field0 = obj.field0; r.targetObj.field0 = obj.field0; }
+  if (obj.field1 !== r.field1) {r.field1 = obj.field1; r.targetObj.field1 = obj.field1; }
+  if (obj.field2 !== r.field2) {r.field2 = obj.field2; r.targetObj.field2 = obj.field2; }
+  if (obj.field3 !== r.field3) {r.field3 = obj.field3; r.targetObj.field3 = obj.field3; }
+  if (obj.field4 !== r.field4) {r.field4 = obj.field4; r.targetObj.field4 = obj.field4; }
+  if (obj.field5 !== r.field5) {r.field5 = obj.field5; r.targetObj.field5 = obj.field5; }
+  if (obj.field6 !== r.field6) {r.field6 = obj.field6; r.targetObj.field6 = obj.field6; }
+  if (obj.field7 !== r.field7) {r.field7 = obj.field7; r.targetObj.field7 = obj.field7; }
+  if (obj.field8 !== r.field8) {r.field8 = obj.field8; r.targetObj.field8 = obj.field8; }
+  if (obj.field9 !== r.field9) {r.field9 = obj.field9; r.targetObj.field9 = obj.field9; }
+}
+
+function runBaselineChangeDetection(baselineHead){
+  var current = baselineHead;
+  while (isPresent(current)) {
+    checkBaselineRow(current);
+    current = current.next;
+  }
+}
+
+function runBaselineReads(baselineHead, numberOfRuns) {
+  for (var i = 0; i < numberOfRuns; ++i) {
+    runBaselineChangeDetection(baselineHead);
+  }
+}
+
+function runBaselineWrites(baselineHead, numberOfRuns, object) {
+  for (var i = 0; i < numberOfRuns; ++i) {
+    changeObject(object);
+    runBaselineChangeDetection(baselineHead);
+  }
+}
+
+
+
+// ---- CHANGE DETECTION
+
+function setUpChangeDetection(changeDetection:ChangeDetection, iterations, object) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
   var parentProto = changeDetection.createProtoChangeDetector('parent');
   var parentCd = parentProto.instantiate(dispatcher, [], [], []);
 
+  var targetObj = new Obj();
   var proto = changeDetection.createProtoChangeDetector("proto");
   var bindingRecords = [
-    new BindingRecord(parser.parseBinding('field0', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field1', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field2', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field3', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field4', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field5', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field6', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field7', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field8', null), "memo", null),
-    new BindingRecord(parser.parseBinding('field9', null), "memo", null)
+    new BindingRecord(parser.parseBinding('field0', null), new FakeBindingMemento(targetObj, reflector.setter("field0")), null),
+    new BindingRecord(parser.parseBinding('field1', null), new FakeBindingMemento(targetObj, reflector.setter("field1")), null),
+    new BindingRecord(parser.parseBinding('field2', null), new FakeBindingMemento(targetObj, reflector.setter("field2")), null),
+    new BindingRecord(parser.parseBinding('field3', null), new FakeBindingMemento(targetObj, reflector.setter("field3")), null),
+    new BindingRecord(parser.parseBinding('field4', null), new FakeBindingMemento(targetObj, reflector.setter("field4")), null),
+    new BindingRecord(parser.parseBinding('field5', null), new FakeBindingMemento(targetObj, reflector.setter("field5")), null),
+    new BindingRecord(parser.parseBinding('field6', null), new FakeBindingMemento(targetObj, reflector.setter("field6")), null),
+    new BindingRecord(parser.parseBinding('field7', null), new FakeBindingMemento(targetObj, reflector.setter("field7")), null),
+    new BindingRecord(parser.parseBinding('field8', null), new FakeBindingMemento(targetObj, reflector.setter("field8")), null),
+    new BindingRecord(parser.parseBinding('field9', null), new FakeBindingMemento(targetObj, reflector.setter("field9")), null)
   ];
 
   for (var i = 0; i < iterations; ++i) {
-    var obj = new Obj();
-    for (var j = 0; j < 10; ++j) {
-      obj.setField(j, i);
-    }
     var cd = proto.instantiate(dispatcher, bindingRecords, [], []);
-    cd.hydrate(obj, null);
+    cd.hydrate(object, null);
     parentCd.addChild(cd);
   }
   return parentCd;
 }
+
+function runChangeDetectionReads(changeDetector, numberOfRuns) {
+  for(var i = 0; i < numberOfRuns; ++i) {
+    changeDetector.detectChanges();
+  }
+}
+
+function runChangeDetectionWrites(changeDetector, numberOfRuns, object) {
+  for(var i = 0; i < numberOfRuns; ++i) {
+    changeObject(object);
+    changeDetector.detectChanges();
+  }
+}
+
+
+
 
 export function main () {
   BrowserDomAdapter.makeCurrent();
@@ -142,79 +236,79 @@ export function main () {
   var numberOfDetectors = numberOfChecks / numberOfChecksPerDetector / numberOfRuns;
 
   setUpReflector();
+  var object = createObject()
 
   // -- BASELINE
-  function checkBaselineRow(r) {
-    var curr = r.currentValue;
-    var prev = r.previousValue;
-    if (curr.field0 !== prev.field0) throw "should not happen";
-    if (curr.field1 !== prev.field1) throw "should not happen";
-    if (curr.field2 !== prev.field2) throw "should not happen";
-    if (curr.field3 !== prev.field3) throw "should not happen";
-    if (curr.field4 !== prev.field4) throw "should not happen";
-    if (curr.field5 !== prev.field5) throw "should not happen";
-    if (curr.field6 !== prev.field6) throw "should not happen";
-    if (curr.field7 !== prev.field7) throw "should not happen";
-    if (curr.field8 !== prev.field8) throw "should not happen";
-    if (curr.field9 !== prev.field9) throw "should not happen";
-  }
-  var baselineHead = setUpBaseline(numberOfDetectors);
-  function runBaselineChangeDetection(){
-    var current = baselineHead;
-    while (isPresent(current)) {
-      checkBaselineRow(current);
-      current = current.next;
-    }
-  }
-  function baselineChangeDetection() {
-    for (var i = 0; i < numberOfRuns; ++i) {
-      runBaselineChangeDetection();
-    }
-  }
-  runBaselineChangeDetection();
+  var baselineHead = setUpBaseline(numberOfDetectors, object);
+  
+  runBaselineReads(baselineHead, 1); //warmup
+
   bindAction(
-    '#baselineChangeDetection',
-    () => microBenchmark('detectChangesAvg', numberOfRuns, baselineChangeDetection)
+    '#baselineChangeDetectionReads',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, () => runBaselineReads(baselineHead, numberOfRuns))
   );
+
+  bindAction(
+    '#baselineChangeDetectionWrites',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, () => runBaselineWrites(baselineHead, numberOfRuns, object))
+  );
+
+
 
 
   // -- DYNAMIC
-  var ng2DynamicChangeDetector = setUpChangeDetection(dynamicChangeDetection, numberOfDetectors);
-  function ng2ChangeDetectionDynamic() {
-    for(var i = 0; i < numberOfRuns; ++i) {
-      ng2DynamicChangeDetector.detectChanges();
-    }
-  }
-  ng2DynamicChangeDetector.detectChanges();
+  var ng2DynamicChangeDetector = setUpChangeDetection(dynamicChangeDetection, numberOfDetectors, object);
+
+  runChangeDetectionReads(ng2DynamicChangeDetector, 1); //warmup
+
   bindAction(
-    '#ng2ChangeDetectionDynamic',
-    () => microBenchmark('detectChangesAvg', numberOfRuns, ng2ChangeDetectionDynamic)
+    '#ng2ChangeDetectionDynamicReads',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, () => runChangeDetectionReads(ng2DynamicChangeDetector, numberOfRuns))
   );
+
+  bindAction(
+    '#ng2ChangeDetectionDynamicWrites',
+    () => microBenchmark('detectChangesAvg', numberOfRuns, () => runChangeDetectionWrites(ng2DynamicChangeDetector, numberOfRuns, object))
+  );
+
+
 
 
   // -- JIT
   // Reenable when we have transformers for Dart
   if (isJsObject({})) {
-    var ng2JitChangeDetector = setUpChangeDetection(jitChangeDetection, numberOfDetectors);
+    var ng2JitChangeDetector = setUpChangeDetection(jitChangeDetection, numberOfDetectors, object);
 
-    function ng2ChangeDetectionJit() {
-      for (var i = 0; i < numberOfRuns; ++i) {
-        ng2JitChangeDetector.detectChanges();
-      }
-    }
+    runChangeDetectionReads(ng2JitChangeDetector, 1); //warmup
 
-    ng2JitChangeDetector.detectChanges();
     bindAction(
-      '#ng2ChangeDetectionJit',
-      () => microBenchmark('detectChangesAvg', numberOfRuns, ng2ChangeDetectionJit)
+      '#ng2ChangeDetectionJitReads',
+      () => microBenchmark('detectChangesAvg', numberOfRuns, () => runChangeDetectionReads(ng2JitChangeDetector, numberOfRuns))
+    );
+
+    bindAction(
+      '#ng2ChangeDetectionJitWrites',
+      () => microBenchmark('detectChangesAvg', numberOfRuns, () => runChangeDetectionWrites(ng2JitChangeDetector, numberOfRuns, object))
     );
   } else {
-    bindAction('#ng2ChangeDetectionJit', () => {});
+    bindAction('#ng2ChangeDetectionJitReads', () => {});
+    bindAction('#ng2ChangeDetectionJitWrites', () => {});
   }
 }
 
+class FakeBindingMemento {
+  setter:Function;
+  targetObj:Obj;
+
+  constructor(targetObj:Obj, setter:Function) {
+    this.targetObj = targetObj;
+    this.setter = setter;
+  }
+}
 
 class DummyDispatcher extends ChangeDispatcher {
-  invokeMementoFor(binding, newValue) {
+  invokeMementoFor(bindingMemento, newValue) {
+    var obj = bindingMemento.targetObj;
+    bindingMemento.setter(obj, newValue);
   }
 }
