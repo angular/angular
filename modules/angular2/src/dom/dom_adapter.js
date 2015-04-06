@@ -210,6 +210,9 @@ export class DomAdapter {
   defaultDoc() {
     throw _abstract();
   }
+  getBoundingClientRect(el) {
+    throw _abstract();
+  }
   getTitle() {
     throw _abstract();
   }

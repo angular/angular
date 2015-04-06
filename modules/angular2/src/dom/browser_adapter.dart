@@ -176,6 +176,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
       document.implementation.createHtmlDocument('fakeTitle');
 
   HtmlDocument defaultDoc() => document;
+  Rectangle getBoundingClientRect(el) => el.getBoundingClientRect();
   String getTitle() => document.title;
   void setTitle(String newTitle) {
     document.title = newTitle;

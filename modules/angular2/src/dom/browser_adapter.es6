@@ -58,9 +58,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   content(node:HTMLElement):Node {
     if (this.hasProperty(node, "content")) {
-      return node.content;  
+      return node.content;
     } else {
-      return node;  
+      return node;
     }
   }
   firstChild(el):Node {
@@ -227,6 +227,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   defaultDoc() {
     return document;
+  }
+  getBoundingClientRect(el) {
+    return el.getBoundingClientRect();
   }
   getTitle() {
     return document.title;

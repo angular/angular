@@ -377,6 +377,9 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return defDoc;
   }
+  getBoundingClientRect(el) {
+    return {left: 0, top: 0, width: 0, height: 0};
+  }
   getTitle() {
     return this.defaultDoc().title || "";
   }
