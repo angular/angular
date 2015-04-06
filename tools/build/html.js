@@ -5,6 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var VinylFile = require('vinyl');
 
+// used for generating html files and bootstrapping benchmarks and examples
 module.exports = function(gulp, plugins, config) {
   return function() {
     return gulp.src(config.src)
