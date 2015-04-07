@@ -1,20 +1,25 @@
 library angular2.transform.reflection_remover.remove_reflection_capabilities;
 
+import 'dart:async';
 import 'package:analyzer/analyzer.dart';
+import 'package:barback/barback.dart';
+import 'package:angular2/src/transform/common/asset_reader.dart';
 
 import 'codegen.dart';
 import 'rewriter.dart';
 
-/// Finds the call to the Angular2 [ReflectionCapabilities] constructor
-/// in [code] and replaces it with a call to `setupReflection` in
-/// [newEntryPoint].
+/// Finds the call to the Angular2 `ReflectionCapabilities` constructor
+/// in [reflectionEntryPoint] and replaces it with a call to
+/// `setupReflection` in [newEntryPoint].
 ///
-/// [reflectionEntryPointPath] is the path where [code] is defined and is
-/// used to display parsing errors.
-///
-/// This only searches [code] not `part`s, `import`s, `export`s, etc.
-String removeReflectionCapabilities(
-    String code, String reflectionEntryPointPath, String newEntryPointPath) {
+/// This only searches the code in [reflectionEntryPoint], not `part`s,
+/// `import`s, `export`s, etc.
+Future<String> removeReflectionCapabilities(AssetReader reader,
+    AssetId reflectionEntryPoint, AssetId newEntryPoint) async {
+  var code = await reader.readAsString(reflectionEntryPoint);
+  var reflectionEntryPointPath = reflectionEntryPoint.path;
+  var newEntryPointPath = newEntryPoint.path;
+
   var codegen = new Codegen(reflectionEntryPointPath, newEntryPointPath);
   return new Rewriter(code, codegen)
       .rewrite(parseCompilationUnit(code, name: reflectionEntryPointPath));

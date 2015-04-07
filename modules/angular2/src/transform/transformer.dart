@@ -23,10 +23,8 @@ class AngularTransformerGroup extends TransformerGroup {
   factory AngularTransformerGroup(TransformerOptions options) {
     var phases = [[new DirectiveProcessor(options)], [new DirectiveLinker()]];
     if (options.modeName == TRANSFORM_MODE) {
-      phases.addAll([
-        [new BindGenerator(options)],
-        [new TemplateCompiler(options)]
-      ]);
+      phases.addAll(
+          [[new BindGenerator(options)], [new TemplateCompiler(options)]]);
       // [ReflectionRemover] needs to occur prior to [DirectiveProcessor] and
       // [DirectiveLinker], otherwise their generated code will maintain the
       // transitive import to `dart:mirrors`.

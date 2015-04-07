@@ -1,6 +1,7 @@
 library angular2.transform.reflection_remover.transformer;
 
 import 'dart:async';
+import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -33,11 +34,12 @@ class ReflectionRemover extends Transformer {
       var newEntryPoint = new AssetId(
               transform.primaryInput.id.package, options.entryPoint)
           .changeExtension(DEPS_EXTENSION);
+      var reader = new AssetReader.fromTransform(transform);
 
-      var assetCode = await transform.primaryInput.readAsString();
-      transform.addOutput(new Asset.fromString(transform.primaryInput.id,
-          removeReflectionCapabilities(
-              assetCode, transform.primaryInput.id.path, newEntryPoint.path)));
+      var transformedCode = await removeReflectionCapabilities(
+          reader, transform.primaryInput.id, newEntryPoint);
+      transform.addOutput(
+          new Asset.fromString(transform.primaryInput.id, transformedCode));
     } catch (ex, stackTrace) {
       log.logger.error('Removing reflection failed.\n'
           'Exception: $ex\n'
