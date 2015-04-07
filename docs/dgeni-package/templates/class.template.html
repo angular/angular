@@ -6,6 +6,7 @@
 <p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></p>
 <p>{$ doc.description | marked $}</p>
 
+{%- if doc.constructorDoc or doc.members.length -%}
 <h2>Members</h2>
 {%- if doc.constructorDoc %}
   <h3>{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h3>
@@ -15,5 +16,6 @@
   <h3>{$ member.name $}{$ paramList(member.params) $}</h3>
   <p>{$ member.description | marked $}</p>
 {% endfor %}
+{%- endif -%}
 
 {% endblock %}
