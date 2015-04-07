@@ -9,7 +9,7 @@ import 'reflection_remover_files/expected/index.dart' as expected;
 import '../common/read_file.dart';
 
 void allTests() {
-  var codegen = new Codegen('web/index.dart', 'web/index.ng_deps.dart');
+  var codegen = new Codegen('web/index.dart', ['web/index.ng_deps.dart']);
 
   it('should remove uses of mirrors & insert calls to generated code.', () {
     var code =

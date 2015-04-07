@@ -12,14 +12,14 @@ class Codegen {
 
   /// The prefix used to import our generated file.
   final String prefix;
-  /// The import uri
-  final String importUri;
+  /// The import uris
+  final Iterable<String> importUris;
 
-  Codegen(String reflectionEntryPointPath, String newEntryPointPath,
+  Codegen(String reflectionEntryPointPath, Iterable<String> newEntryPointPaths,
       {String prefix})
       : this.prefix = prefix == null ? _PREFIX_BASE : prefix,
-        importUri = path.relative(newEntryPointPath,
-            from: path.dirname(reflectionEntryPointPath)) {
+        importUris = newEntryPointPaths.map((p) =>
+            path.relative(p, from: path.dirname(reflectionEntryPointPath))) {
     if (this.prefix.isEmpty) throw new ArgumentError.value('(empty)', 'prefix');
   }
 
@@ -43,7 +43,10 @@ class Codegen {
   /// The code generated here should follow the example of code generated for
   /// an [ImportDirective] node.
   String codegenImport() {
-    return 'import \'${importUri}\' as ${prefix};';
+    var count = 0;
+    return importUris
+        .map((importUri) => 'import \'${importUri}\' as ${prefix}${count++};')
+        .join('');
   }
 
   /// Generates code to call the method which sets up Angular2 reflection
@@ -63,7 +66,11 @@ class Codegen {
       reflectorExpression = 'reflector';
     }
 
-    return '${prefix}.${SETUP_METHOD_NAME}(${reflectorExpression});';
+    var count = 0;
+    return importUris
+        .map((_) =>
+            '${prefix}${count++}.${SETUP_METHOD_NAME}(${reflectorExpression});')
+        .join('');
   }
 }
 

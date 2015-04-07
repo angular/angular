@@ -15,12 +15,12 @@ import 'rewriter.dart';
 /// This only searches the code in [reflectionEntryPoint], not `part`s,
 /// `import`s, `export`s, etc.
 Future<String> removeReflectionCapabilities(AssetReader reader,
-    AssetId reflectionEntryPoint, AssetId newEntryPoint) async {
+    AssetId reflectionEntryPoint, Iterable<AssetId> newEntryPoints) async {
   var code = await reader.readAsString(reflectionEntryPoint);
   var reflectionEntryPointPath = reflectionEntryPoint.path;
-  var newEntryPointPath = newEntryPoint.path;
+  var newEntryPointPaths = newEntryPoints.map((id) => id.path);
 
-  var codegen = new Codegen(reflectionEntryPointPath, newEntryPointPath);
+  var codegen = new Codegen(reflectionEntryPointPath, newEntryPointPaths);
   return new Rewriter(code, codegen)
       .rewrite(parseCompilationUnit(code, name: reflectionEntryPointPath));
 }

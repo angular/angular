@@ -13,10 +13,10 @@ library web_foo;
 
 import 'package:angular2/src/core/application.dart';
 import 'package:angular2/src/reflection/reflection.dart';
-/*import 'package:angular2/src/reflection/reflection_capabilities.dart';*/import 'index.ng_deps.dart' as ngStaticInit;
+/*import 'package:angular2/src/reflection/reflection_capabilities.dart';*/import 'index.ng_deps.dart' as ngStaticInit0;
 
 void main() {
-  /*reflector.reflectionCapabilities = new ReflectionCapabilities();*/ngStaticInit.initReflector(reflector);
+  /*reflector.reflectionCapabilities = new ReflectionCapabilities();*/ngStaticInit0.initReflector(reflector);
   bootstrap(MyComponent);
 }
 """;

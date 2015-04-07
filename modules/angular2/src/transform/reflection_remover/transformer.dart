@@ -24,20 +24,22 @@ class ReflectionRemover extends Transformer {
   ReflectionRemover(this.options);
 
   @override
-  bool isPrimary(AssetId id) => options.reflectionEntryPoint == id.path;
+  bool isPrimary(AssetId id) => options.reflectionEntryPoints != null &&
+      options.reflectionEntryPoints.contains(id.path);
 
   @override
   Future apply(Transform transform) async {
     log.init(transform);
 
     try {
-      var newEntryPoint = new AssetId(
-              transform.primaryInput.id.package, options.entryPoint)
-          .changeExtension(DEPS_EXTENSION);
+      var newEntryPoints = options.entryPoints.map((entryPoint) {
+        return new AssetId(transform.primaryInput.id.package, entryPoint)
+            .changeExtension(DEPS_EXTENSION);
+      });
       var reader = new AssetReader.fromTransform(transform);
 
       var transformedCode = await removeReflectionCapabilities(
-          reader, transform.primaryInput.id, newEntryPoint);
+          reader, transform.primaryInput.id, newEntryPoints);
       transform.addOutput(
           new Asset.fromString(transform.primaryInput.id, transformedCode));
     } catch (ex, stackTrace) {
