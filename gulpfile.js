@@ -368,10 +368,12 @@ gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 gulp.task('build/transformCJSTests', function() {
-  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js').pipe(transformCJSTests()).pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
+  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js')
+      .pipe(transformCJSTests())
+      .pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
 });
 
-gulp.task('build/transpile.dart', function(done) {
+gulp.task('build/transpile.dart', function() {
   return gulp.src(CONFIG.transpile.src.dart)
       .pipe(ts2dart.transpile())
       .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
@@ -723,7 +725,7 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {
 
 // -----------------
 // test builders
-gulp.task('test.transpiler.unittest', function (done) {
+gulp.task('test.transpiler.unittest', function() {
   return gulp.src('tools/transpiler/unittest/**/*.js')
       .pipe(jasmine({
         includeStackTrace: true
