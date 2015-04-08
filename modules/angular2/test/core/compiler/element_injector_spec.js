@@ -577,7 +577,7 @@ export function main() {
       function createpreBuildObject(eventName, eventHandler) {
         var handlers = StringMapWrapper.create();
         StringMapWrapper.set(handlers, eventName, eventHandler);
-        var pv = new ProtoView(null, null, null);
+        var pv = new ProtoView(null, null, null, null);
         pv.eventHandlers = [handlers];
         var view = new View(pv, null, MapWrapper.create());
         return new PreBuiltObjects(view, null, null, null);

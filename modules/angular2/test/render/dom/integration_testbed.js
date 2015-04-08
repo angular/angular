@@ -1,7 +1,3 @@
-import {
-  el
-} from 'angular2/test_lib';
-
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
@@ -23,11 +19,8 @@ import {ViewFactory} from 'angular2/src/render/dom/view/view_factory';
 export class IntegrationTestbed {
   renderer;
   parser;
-  rootEl;
-  rootProtoViewRef;
   eventPlugin;
   _templates:Map<string, Template>;
-  _compileCache:Map<string, Promise<List>>;
 
   constructor({urlData, viewCacheCapacity, shadowDomStrategy, templates}) {
     this._templates = MapWrapper.create();
@@ -36,7 +29,6 @@ export class IntegrationTestbed {
         MapWrapper.set(this._templates, template.componentId, template);
       });
     }
-    this._compileCache = MapWrapper.create();
     var parser = new Parser(new Lexer());
     var urlResolver = new UrlResolver();
     if (isBlank(shadowDomStrategy)) {
@@ -54,90 +46,66 @@ export class IntegrationTestbed {
     var eventManager = new EventManager([this.eventPlugin], new FakeVmTurnZone());
     var viewFactory = new ViewFactory(viewCacheCapacity, eventManager, shadowDomStrategy);
     this.renderer = new DirectDomRenderer(compiler, viewFactory, shadowDomStrategy);
-
-    this.rootEl = el('<div></div>');
-    this.rootProtoViewRef = this.renderer.createRootProtoView(this.rootEl);
   }
 
-  compile(templateHtml, directives):Promise<List<ProtoViewRef>> {
-    return this._compileRecurse(new Template({
-      componentId: 'root',
-      inline: templateHtml,
-      directives: directives
-    })).then( (protoViewRefs) => {
-      return this._flattenList([
-        this.renderer.mergeChildComponentProtoViews(this.rootProtoViewRef, [protoViewRefs[0]]),
-        protoViewRefs
+  compile(rootEl, componentId):Promise<ProtoView> {
+    return this.renderer.createRootProtoView(rootEl, componentId).then( (rootProtoView) => {
+      return this._compileNestedProtoViews(rootProtoView, [
+        new DirectiveMetadata({
+          type: DirectiveMetadata.COMPONENT_TYPE,
+          id: componentId
+        })
       ]);
     });
   }
 
-  _compileRecurse(template):Promise<List<ProtoViewRef>> {
-    var result = MapWrapper.get(this._compileCache, template.componentId);
-    if (isPresent(result)) {
-      return result;
-    }
-    result = this.renderer.compile(template).then( (pv) => {
-      var childComponentPromises = ListWrapper.map(
-        this._findNestedComponentIds(template, pv),
-        (componentId) => {
-          var childTemplate = MapWrapper.get(this._templates, componentId);
-          if (isBlank(childTemplate)) {
-            throw new BaseException(`Could not find template for ${componentId}!`);
-          }
-          return this._compileRecurse(childTemplate);
-        }
-      );
-      return PromiseWrapper.all(childComponentPromises).then(
-        (protoViewRefsWithChildren) => {
-          var protoViewRefs =
-            ListWrapper.map(protoViewRefsWithChildren, (arr) => arr[0]);
-          return this._flattenList([
-            this.renderer.mergeChildComponentProtoViews(pv.render, protoViewRefs),
-            protoViewRefsWithChildren
-          ]);
-        }
-      );
+  _compile(template):Promise<ProtoView> {
+    return this.renderer.compile(template).then( (protoView) => {
+      return this._compileNestedProtoViews(protoView, template.directives);
     });
-    MapWrapper.set(this._compileCache, template.componentId, result);
-    return result;
   }
 
-  _findNestedComponentIds(template, pv, target = null):List<string> {
-    if (isBlank(target)) {
-      target = [];
-    }
-    for (var binderIdx=0; binderIdx<pv.elementBinders.length; binderIdx++) {
-      var eb = pv.elementBinders[binderIdx];
-      var componentDirective;
-      ListWrapper.forEach(eb.directives, (db) => {
-        var meta = template.directives[db.directiveIndex];
-        if (meta.type === DirectiveMetadata.COMPONENT_TYPE) {
-          componentDirective = meta;
+  _compileNestedProtoViews(protoView, directives):Promise<ProtoView> {
+    var childComponentRenderPvRefs = [];
+    var nestedPVPromises = [];
+    ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
+      var nestedComponentId = null;
+      ListWrapper.forEach(elementBinder.directives, (db) => {
+        var directiveMeta = directives[db.directiveIndex];
+        if (directiveMeta.type === DirectiveMetadata.COMPONENT_TYPE) {
+          nestedComponentId = directiveMeta.id;
         }
       });
-      if (isPresent(componentDirective)) {
-        ListWrapper.push(target, componentDirective.id);
-      } else if (isPresent(eb.nestedProtoView)) {
-        this._findNestedComponentIds(template, eb.nestedProtoView, target);
+      var nestedCall;
+      if (isPresent(nestedComponentId)) {
+        var childTemplate = MapWrapper.get(this._templates, nestedComponentId);
+        if (isBlank(childTemplate)) {
+          throw new BaseException(`Could not find template for ${nestedComponentId}!`);
+        }
+        nestedCall = this._compile(childTemplate);
+      } else if (isPresent(elementBinder.nestedProtoView)) {
+        nestedCall = this._compileNestedProtoViews(elementBinder.nestedProtoView, directives);
       }
-    }
-    return target;
-  }
-
-  _flattenList(tree:List, out:List = null):List {
-    if (isBlank(out)) {
-      out = [];
-    }
-    for (var i = 0; i < tree.length; i++) {
-      var item = tree[i];
-      if (ListWrapper.isList(item)) {
-        this._flattenList(item, out);
-      } else {
-        ListWrapper.push(out, item);
+      if (isPresent(nestedCall)) {
+        ListWrapper.push(
+          nestedPVPromises,
+          nestedCall.then( (nestedPv) => {
+            elementBinder.nestedProtoView = nestedPv;
+            if (isPresent(nestedComponentId)) {
+              ListWrapper.push(childComponentRenderPvRefs, nestedPv.render);
+            }
+          })
+        );
       }
+    });
+    if (nestedPVPromises.length > 0) {
+      return PromiseWrapper.all(nestedPVPromises).then((_) => {
+        this.renderer.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
+        return protoView;
+      });
+    } else {
+      return PromiseWrapper.resolve(protoView);
     }
-    return out;
   }
 
 }

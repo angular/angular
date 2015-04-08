@@ -6,9 +6,6 @@ import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection
 import {ElementBinder} from './element_binder';
 import {NG_BINDING_CLASS} from '../util';
 
-/**
- * Note: Code that uses this class assumes that is immutable!
- */
 export class ProtoView {
   element;
   elementBinders:List<ElementBinder>;
@@ -28,22 +25,14 @@ export class ProtoView {
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
   }
 
-  mergeChildComponentProtoViews(protoViews:List<ProtoView>, target:List<ProtoView>):ProtoView {
-    var elementBinders = ListWrapper.createFixedSize(this.elementBinders.length);
+  mergeChildComponentProtoViews(componentProtoViews:List<ProtoView>) {
+    var componentProtoViewIndex = 0;
     for (var i=0; i<this.elementBinders.length; i++) {
       var eb = this.elementBinders[i];
-      if (isPresent(eb.componentId) || isPresent(eb.nestedProtoView)) {
-        elementBinders[i] = eb.mergeChildComponentProtoViews(protoViews, target);
-      } else {
-        elementBinders[i] = eb;
+      if (isPresent(eb.componentId)) {
+        eb.nestedProtoView = componentProtoViews[componentProtoViewIndex];
+        componentProtoViewIndex++;
       }
     }
-    var result = new ProtoView({
-      elementBinders: elementBinders,
-      element: this.element,
-      isRootView: this.isRootView
-    });
-    ListWrapper.insert(target, 0, result);
-    return result
   }
 }

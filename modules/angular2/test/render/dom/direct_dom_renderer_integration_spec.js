@@ -21,7 +21,11 @@ import {IntegrationTestbed, LoggingEventDispatcher, FakeEvent} from './integrati
 
 export function main() {
   describe('DirectDomRenderer integration', () => {
-    var testbed, renderer, rootEl, rootProtoViewRef, eventPlugin, compile;
+    var testbed, renderer, eventPlugin, compile, rootEl;
+
+    beforeEach(() => {
+      rootEl = el('<div></div>');
+    });
 
     function createRenderer({urlData, viewCacheCapacity, shadowDomStrategy, templates}={}) {
       testbed = new IntegrationTestbed({
@@ -31,54 +35,66 @@ export function main() {
         templates: templates
       });
       renderer = testbed.renderer;
-      rootEl = testbed.rootEl;
-      rootProtoViewRef = testbed.rootProtoViewRef;
       eventPlugin = testbed.eventPlugin;
-      compile = (template, directives) => testbed.compile(template, directives);
+      compile = (rootEl, componentId) => testbed.compile(rootEl, componentId);
     }
 
-    it('should create root views while using the given elements in place', () => {
+    it('should create root views while using the given elements in place', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      var viewRefs = renderer.createView(rootProtoViewRef);
-      expect(viewRefs.length).toBe(1);
-      expect(viewRefs[0].delegate.rootNodes[0]).toEqual(rootEl);
-    });
+      renderer.createRootProtoView(rootEl, 'someComponentId').then( (rootProtoView) => {
+        expect(rootProtoView.elementBinders[0].directives[0].directiveIndex).toBe(0);
+        var viewRefs = renderer.createView(rootProtoView.render);
+        expect(viewRefs.length).toBe(1);
+        expect(viewRefs[0].delegate.rootNodes[0]).toEqual(rootEl);
+        async.done();
+      });
+    }));
 
     it('should add a static component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      var template = new Template({
-        componentId: 'someComponent',
-        inline: 'hello',
-        directives: []
-      });
-      renderer.compile(template).then( (pv) => {
-        var mergedProtoViewRefs = renderer.mergeChildComponentProtoViews(rootProtoViewRef, [pv.render]);
-        renderer.createView(mergedProtoViewRefs[0]);
-        expect(rootEl).toHaveText('hello');
-        async.done();
+      renderer.createRootProtoView(rootEl, 'someComponentId').then( (rootProtoView) => {
+        var template = new Template({
+          componentId: 'someComponent',
+          inline: 'hello',
+          directives: []
+        });
+        renderer.compile(template).then( (pv) => {
+          renderer.mergeChildComponentProtoViews(rootProtoView.render, [pv.render]);
+          renderer.createView(rootProtoView.render);
+          expect(rootEl).toHaveText('hello');
+          async.done();
+        });
       });
     }));
 
     it('should add a a dynamic component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      var template = new Template({
-        componentId: 'someComponent',
-        inline: 'hello',
-        directives: []
-      });
-      renderer.compile(template).then( (pv) => {
-        var rootViewRef = renderer.createView(rootProtoViewRef)[0];
-        var childComponentViewRef = renderer.createView(pv.render)[0];
-        renderer.setDynamicComponentView(rootViewRef, 0, childComponentViewRef);
-        expect(rootEl).toHaveText('hello');
-        async.done();
+      renderer.createRootProtoView(rootEl, 'someComponentId').then( (rootProtoView) => {
+        var template = new Template({
+          componentId: 'someComponent',
+          inline: 'hello',
+          directives: []
+        });
+        renderer.compile(template).then( (pv) => {
+          var rootViewRef = renderer.createView(rootProtoView.render)[0];
+          var childComponentViewRef = renderer.createView(pv.render)[0];
+          renderer.setDynamicComponentView(rootViewRef, 0, childComponentViewRef);
+          expect(rootEl).toHaveText('hello');
+          async.done();
+        });
       });
     }));
 
     it('should update text nodes', inject([AsyncTestCompleter], (async) => {
-      createRenderer();
-      compile('{{a}}', [someComponent]).then( (pvRefs) => {
-        var viewRefs = renderer.createView(pvRefs[0]);
+      createRenderer({
+        templates: [new Template({
+          componentId: 'someComponent',
+          inline: '{{a}}',
+          directives: []
+        })]
+      });
+      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+        var viewRefs = renderer.createView(rootProtoView.render);
         renderer.setText(viewRefs[1], 0, 'hello');
         expect(rootEl).toHaveText('hello');
         async.done();
@@ -86,9 +102,15 @@ export function main() {
     }));
 
     it('should update element properties', inject([AsyncTestCompleter], (async) => {
-      createRenderer();
-      compile('<input [value]="someProp">', []).then( (pvRefs) => {
-        var viewRefs = renderer.createView(pvRefs[0]);
+      createRenderer({
+        templates: [new Template({
+          componentId: 'someComponent',
+          inline: '<input [value]="someProp">',
+          directives: []
+        })]
+      });
+      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+        var viewRefs = renderer.createView(rootProtoView.render);
         renderer.setElementProperty(viewRefs[1], 0, 'value', 'hello');
         expect(DOM.childNodes(rootEl)[0].value).toEqual('hello');
         async.done();
@@ -96,10 +118,17 @@ export function main() {
     }));
 
     it('should add and remove views to and from containers', inject([AsyncTestCompleter], (async) => {
-      createRenderer();
-      compile('<template>hello</template>', []).then( (pvRefs) => {
-        var viewRef = renderer.createView(pvRefs[0])[1];
-        var vcProtoViewRef = pvRefs[2];
+      createRenderer({
+        templates: [new Template({
+          componentId: 'someComponent',
+          inline: '<template>hello</template>',
+          directives: []
+        })]
+      });
+      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+        var viewRef = renderer.createView(rootProtoView.render)[1];
+        var vcProtoViewRef = rootProtoView.elementBinders[0]
+          .nestedProtoView.elementBinders[0].nestedProtoView.render;
         var vcRef = new ViewContainerRef(viewRef, 0);
         var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
@@ -115,10 +144,17 @@ export function main() {
 
     it('should cache views', inject([AsyncTestCompleter], (async) => {
       createRenderer({
+        templates: [new Template({
+          componentId: 'someComponent',
+          inline: '<template>hello</template>',
+          directives: []
+        })],
         viewCacheCapacity: 2
       });
-      compile('<template>hello</template>', []).then( (pvRefs) => {
-        var vcProtoViewRef = pvRefs[2];
+      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+        var vcProtoViewRef = rootProtoView.elementBinders[0]
+          .nestedProtoView.elementBinders[0].nestedProtoView.render;
+
         var viewRef1 = renderer.createView(vcProtoViewRef)[0];
         renderer.destroyView(viewRef1);
         var viewRef2 = renderer.createView(vcProtoViewRef)[0];
@@ -133,9 +169,15 @@ export function main() {
     // TODO(tbosch): This is not working yet as we commented out
     // the event expression processing...
     xit('should handle events', inject([AsyncTestCompleter], (async) => {
-      createRenderer();
-      compile('<input (change)="$event.target.value">', []).then( (pvRefs) => {
-        var viewRef = renderer.createView(pvRefs[0])[1];
+      createRenderer({
+        templates: [new Template({
+          componentId: 'someComponent',
+          inline: '<input (change)="$event.target.value">',
+          directives: []
+        })]
+      });
+      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+        var viewRef = renderer.createView(rootProtoView.render)[1];
         var dispatcher = new LoggingEventDispatcher();
         renderer.setEventDispatcher(viewRef, dispatcher);
         var inputEl = DOM.childNodes(rootEl)[0];

@@ -40,34 +40,45 @@ export function main() {
       StringMapWrapper.set(strategies, "native", () => new NativeShadowDomStrategy(styleUrlResolver));
     }
 
+    beforeEach( () => {
+      urlResolver = new UrlResolver();
+      styleUrlResolver = new StyleUrlResolver(urlResolver);
+      styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
+    });
+
+
     StringMapWrapper.forEach(strategies,
       (strategyFactory, name) => {
 
       describe(`${name} shadow dom strategy`, () => {
 
-        var testbed, renderer, rootEl, compile, strategy;
+        var testbed, renderer, rootEl, compile;
 
-        beforeEach( () => {
-          urlResolver = new UrlResolver();
-          styleUrlResolver = new StyleUrlResolver(urlResolver);
-          styleInliner = new StyleInliner(null, styleUrlResolver, urlResolver);
-          strategy = strategyFactory();
+        function createRenderer({templates}) {
           testbed = new IntegrationTestbed({
-            shadowDomStrategy: strategy,
-            templates: templates
+            shadowDomStrategy: strategyFactory(),
+            templates: ListWrapper.concat(templates, componentTemplates)
           });
           renderer = testbed.renderer;
-          rootEl = testbed.rootEl;
-          compile = (template, directives) => testbed.compile(template, directives);
+          compile = (rootEl, componentId) => testbed.compile(rootEl, componentId);
+        }
+
+        beforeEach( () => {
+          rootEl = el('<div></div>');
         });
 
         it('should support simple components', inject([AsyncTestCompleter], (async) => {
-          var temp = '<simple>' +
-              '<div>A</div>' +
-              '</simple>';
-
-          compile(temp, [simple]).then( (pvRefs) => {
-            renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<simple>' +
+                '<div>A</div>' +
+                '</simple>',
+              directives: [simple]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('SIMPLE(A)');
 
@@ -76,14 +87,19 @@ export function main() {
         }));
 
         it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
-          var temp = '<multiple-content-tags>' +
-            '<div>B</div>' +
-            '<div>C</div>' +
-            '<div class="left">A</div>' +
-          '</multiple-content-tags>';
-
-          compile(temp, [multipleContentTagsComponent]).then( (pvRefs) => {
-            renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<multiple-content-tags>' +
+                  '<div>B</div>' +
+                  '<div>C</div>' +
+                  '<div class="left">A</div>' +
+                '</multiple-content-tags>',
+              directives: [multipleContentTagsComponent]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('(A, BC)');
 
@@ -92,13 +108,18 @@ export function main() {
         }));
 
         it('should redistribute only direct children', inject([AsyncTestCompleter], (async) => {
-          var temp = '<multiple-content-tags>' +
-            '<div>B<div class="left">A</div></div>' +
-            '<div>C</div>' +
-            '</multiple-content-tags>';
-
-          compile(temp, [multipleContentTagsComponent]).then( (pvRefs) => {
-            renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<multiple-content-tags>' +
+                '<div>B<div class="left">A</div></div>' +
+                '<div>C</div>' +
+                '</multiple-content-tags>',
+              directives: [multipleContentTagsComponent]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('(, BAC)');
 
@@ -107,15 +128,21 @@ export function main() {
         }));
 
         it("should redistribute direct child viewcontainers when the light dom changes", inject([AsyncTestCompleter], (async) => {
-          var temp = '<multiple-content-tags>' +
-            '<div><div template="manual" class="left">A</div></div>' +
-            '<div>B</div>' +
-            '</multiple-content-tags>';
-
-          compile(temp, [multipleContentTagsComponent, manualViewportDirective]).then( (pvRefs) => {
-            var viewRefs = renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<multiple-content-tags>' +
+                '<div><div template="manual" class="left">A</div></div>' +
+                '<div>B</div>' +
+                '</multiple-content-tags>',
+              directives: [multipleContentTagsComponent, manualViewportDirective]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
-            var vcProtoViewRef = pvRefs[2];
+            var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
+              .elementBinders[1].nestedProtoView.render;
             var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(, B)');
@@ -133,15 +160,21 @@ export function main() {
         }));
 
         it("should redistribute when the light dom changes", inject([AsyncTestCompleter], (async) => {
-          var temp = '<multiple-content-tags>' +
-            '<div template="manual" class="left">A</div>' +
-            '<div>B</div>' +
-            '</multiple-content-tags>';
-
-          compile(temp, [multipleContentTagsComponent, manualViewportDirective]).then( (pvRefs) => {
-            var viewRefs = renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<multiple-content-tags>' +
+                '<div template="manual" class="left">A</div>' +
+                '<div>B</div>' +
+                '</multiple-content-tags>',
+              directives: [multipleContentTagsComponent, manualViewportDirective]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
-            var vcProtoViewRef = pvRefs[2];
+            var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
+              .elementBinders[1].nestedProtoView.render;
             var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(, B)');
@@ -159,13 +192,18 @@ export function main() {
         }));
 
         it("should support nested components", inject([AsyncTestCompleter], (async) => {
-          var temp = '<outer-with-indirect-nested>' +
-            '<div>A</div>' +
-            '<div>B</div>' +
-            '</outer-with-indirect-nested>';
-
-          compile(temp, [outerWithIndirectNestedComponent]).then( (pvRefs) => {
-            renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<outer-with-indirect-nested>' +
+                '<div>A</div>' +
+                '<div>B</div>' +
+                '</outer-with-indirect-nested>',
+              directives: [outerWithIndirectNestedComponent]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('OUTER(SIMPLE(AB))');
 
@@ -174,16 +212,22 @@ export function main() {
         }));
 
         it("should support nesting with content being direct child of a nested component", inject([AsyncTestCompleter], (async) => {
-          var temp = '<outer>' +
-            '<div template="manual" class="left">A</div>' +
-            '<div>B</div>' +
-            '<div>C</div>' +
-            '</outer>';
-
-          compile(temp, [outerComponent, manualViewportDirective]).then( (pvRefs) => {
-            var viewRefs = renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<outer>' +
+                '<div template="manual" class="left">A</div>' +
+                '<div>B</div>' +
+                '<div>C</div>' +
+                '</outer>',
+              directives: [outerComponent, manualViewportDirective]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
-            var vcProtoViewRef = pvRefs[2];
+            var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
+              .elementBinders[1].nestedProtoView.render;
             var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
@@ -196,16 +240,23 @@ export function main() {
         }));
 
         it('should redistribute when the shadow dom changes', inject([AsyncTestCompleter], (async) => {
-          var temp = '<conditional-content>' +
-            '<div class="left">A</div>' +
-            '<div>B</div>' +
-            '<div>C</div>' +
-            '</conditional-content>';
-
-          compile(temp, [conditionalContentComponent, autoViewportDirective]).then( (pvRefs) => {
-            var viewRefs = renderer.createView(pvRefs[0]);
+          createRenderer({
+            templates: [new Template({
+              componentId: 'main',
+              inline: '<conditional-content>' +
+                '<div class="left">A</div>' +
+                '<div>B</div>' +
+                '<div>C</div>' +
+                '</conditional-content>',
+              directives: [conditionalContentComponent]
+            })]
+          });
+          compile(rootEl, 'main').then( (pv) => {
+            var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[2], 0);
-            var vcProtoViewRef = pvRefs[3];
+            var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
+              .elementBinders[0].nestedProtoView
+              .elementBinders[0].nestedProtoView.render;
             var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(, ABC)');
@@ -299,7 +350,7 @@ var autoViewportDirective = new DirectiveMetadata({
   type: DirectiveMetadata.VIEWPORT_TYPE
 });
 
-var templates = [
+var componentTemplates = [
   new Template({
     componentId: 'simple',
     inline: 'SIMPLE(<content></content>)',

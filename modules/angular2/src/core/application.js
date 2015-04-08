@@ -3,7 +3,6 @@ import {Type, isBlank, isPresent, BaseException, assertionsEnabled, print, strin
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
-import {ProtoView} from './compiler/view';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
 import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
@@ -72,12 +71,11 @@ function _injectorBindings(appComponentType): List<Binding> {
           throw new BaseException(`Only Components can be bootstrapped; ` +
                                   `Directive of ${stringify(type)} is not a Component`);
         }
-        return compiler.compile(appComponentAnnotatedType.type).then(
-            (protoView) => {
-          var appProtoView = ProtoView.createRootProtoView(protoView, appElement,
-            DirectiveBinding.createFromType(appComponentAnnotatedType.type, appComponentAnnotatedType.annotation),
-            changeDetection.createProtoChangeDetector('root'),
-            strategy);
+        return compiler.compileRoot(
+            appElement,
+            DirectiveBinding.createFromType(appComponentAnnotatedType.type, appComponentAnnotatedType.annotation)
+          ).then(
+            (appProtoView) => {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.

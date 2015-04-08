@@ -16,6 +16,7 @@ import {Content} from './shadow_dom_emulation/content_tag';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {ViewPool} from './view_pool';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
+import * as renderApi from 'angular2/src/render/api';
 
 const NG_BINDING_CLASS = 'ng-binding';
 const NG_BINDING_CLASS_SELECTOR = '.ng-binding';
@@ -283,11 +284,14 @@ export class ProtoView {
 
   _directiveMementosMap:Map;
   _directiveMementos:List;
+  render:renderApi.ProtoViewRef;
 
   constructor(
+      render:renderApi.ProtoViewRef,
       template,
       protoChangeDetector:ProtoChangeDetector,
       shadowDomStrategy:ShadowDomStrategy, parentProtoView:ProtoView = null) {
+    this.render = render;
     this.element = template;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();
@@ -641,28 +645,6 @@ export class ProtoView {
     }
 
     return MapWrapper.get(this._directiveMementosMap, id);
-  }
-
-  // Create a rootView as if the compiler encountered <rootcmp></rootcmp>,
-  // and the component template is already compiled into protoView.
-  // Used for bootstrapping.
-  static createRootProtoView(protoView: ProtoView,
-      insertionElement,
-      rootComponentBinding: DirectiveBinding,
-      protoChangeDetector:ProtoChangeDetector,
-      shadowDomStrategy: ShadowDomStrategy
-  ): ProtoView {
-
-    DOM.addClass(insertionElement, NG_BINDING_CLASS);
-    var cmpType = rootComponentBinding.key.token;
-    var rootProtoView = new ProtoView(insertionElement, protoChangeDetector, shadowDomStrategy);
-    rootProtoView.instantiateInPlace = true;
-    var binder = rootProtoView.bindElement(null, 0,
-        new ProtoElementInjector(null, 0, [cmpType], true));
-    binder.componentDirective = rootComponentBinding;
-    binder.nestedProtoView = protoView;
-    shadowDomStrategy.shimAppElement(cmpType, insertionElement);
-    return rootProtoView;
   }
 }
 

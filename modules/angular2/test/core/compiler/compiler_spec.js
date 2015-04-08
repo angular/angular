@@ -214,14 +214,12 @@ export function main() {
         });
       }));
 
-      it('should pass the component annotation', inject([AsyncTestCompleter], (async) => {
+      it('should pass the component binding', inject([AsyncTestCompleter], (async) => {
         tplResolver.setTemplate(MainComponent, new Template({inline: '<div></div>'}));
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
         compiler.compile(MainComponent).then( (protoView) => {
           var request = protoViewFactory.requests[0];
-          expect(request[0]).toEqual(new Component({
-            selector: 'main-comp'
-          }));
+          expect(request[0].key.token).toBe(MainComponent);
           async.done();
         });
       }));
@@ -255,7 +253,7 @@ export function main() {
 
     });
 
-    it('should load nested components in root ProtoView', inject([AsyncTestCompleter], (async) => {
+    it('should load nested components', inject([AsyncTestCompleter], (async) => {
       tplResolver.setTemplate(MainComponent, new Template({inline: '<div></div>'}));
       tplResolver.setTemplate(NestedComponent, new Template({inline: '<div></div>'}));
       var mainProtoView = createProtoView([
@@ -263,34 +261,54 @@ export function main() {
       ]);
       var nestedProtoView = createProtoView();
       var compiler = createCompiler(
-        [createRenderProtoView(), createRenderProtoView()],
+        [
+          createRenderProtoView([createRenderComponentElementBinder(0)]),
+          createRenderProtoView()
+        ],
         [mainProtoView, nestedProtoView]
       );
       compiler.compile(MainComponent).then( (protoView) => {
         expect(protoView).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
+        // parentProtoView of nested components has to be null as components can
+        // be used by multiple other components.
+        expect(nestedProtoView.parentProtoView).toBe(null);
         async.done();
       });
     }));
 
-    it('should load nested components in viewport ProtoView', inject([AsyncTestCompleter], (async) => {
+    it('should load nested components in viewport', inject([AsyncTestCompleter], (async) => {
       tplResolver.setTemplate(MainComponent, new Template({inline: '<div></div>'}));
       tplResolver.setTemplate(NestedComponent, new Template({inline: '<div></div>'}));
       var mainProtoView = createProtoView([
-        createViewportElementBinder(createProtoView([
-          createComponentElementBinder(reader, NestedComponent)
-        ]))
+        createViewportElementBinder(null)
+      ]);
+      var viewportProtoView = createProtoView([
+        createComponentElementBinder(reader, NestedComponent)
       ]);
       var nestedProtoView = createProtoView();
       var compiler = createCompiler(
-        [createRenderProtoView(), createRenderProtoView()],
-        [mainProtoView, nestedProtoView]
+        [
+          createRenderProtoView([
+            createRenderViewportElementBinder(
+              createRenderProtoView([
+                createRenderComponentElementBinder(0)
+              ])
+            )
+          ]),
+          createRenderProtoView()
+        ],
+        [mainProtoView, viewportProtoView, nestedProtoView]
       );
       compiler.compile(MainComponent).then( (protoView) => {
         expect(protoView).toBe(mainProtoView);
-        expect(
-          mainProtoView.elementBinders[0].nestedProtoView.elementBinders[0].nestedProtoView
-        ).toBe(nestedProtoView);
+        expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(viewportProtoView);
+        expect(viewportProtoView.parentProtoView).toBe(mainProtoView);
+        expect(viewportProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
+        // parentProtoView of nested components has to be null as components can
+        // be used by multiple other components.
+        expect(nestedProtoView.parentProtoView).toBe(null);
+
         async.done();
       });
     }));
@@ -331,7 +349,9 @@ export function main() {
         createComponentElementBinder(reader, MainComponent)
       ]);
       var compiler = createCompiler(
-        [createRenderProtoView()],
+        [createRenderProtoView([
+          createRenderComponentElementBinder(0)
+        ])],
         [mainProtoView]
       );
       compiler.compile(MainComponent).then( (protoView) => {
@@ -340,20 +360,44 @@ export function main() {
         async.done();
       });
     }));
+
+    it('should create root proto views', inject([AsyncTestCompleter], (async) => {
+      tplResolver.setTemplate(MainComponent, new Template({inline: '<div></div>'}));
+      var rootProtoView = createProtoView([
+        createComponentElementBinder(reader, MainComponent)
+      ]);
+      var mainProtoView = createProtoView();
+      var compiler = createCompiler(
+        [
+          createRenderProtoView()
+        ],
+        [rootProtoView, mainProtoView]
+      );
+      compiler.compileRoot(null, createDirectiveBinding(reader, MainComponent)).then( (protoView) => {
+        expect(protoView).toBe(rootProtoView);
+        expect(rootProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
+        async.done();
+      });
+    }));
   });
 }
 
+function createDirectiveBinding(reader, type) {
+  var meta = reader.read(type);
+  return DirectiveBinding.createFromType(meta.type, meta.annotation);
+}
+
 function createProtoView(elementBinders = null) {
-  var pv = new ProtoView(null, null, null, null);
-  if (isPresent(elementBinders)) {
-    pv.elementBinders = elementBinders;
+  var pv = new ProtoView(null, null, null, null, null);
+  if (isBlank(elementBinders)) {
+    elementBinders = [];
   }
+  pv.elementBinders = elementBinders;
   return pv;
 }
 
 function createComponentElementBinder(reader, type) {
-  var meta = reader.read(type);
-  var binding = DirectiveBinding.createFromType(meta.type, meta.annotation);
+  var binding = createDirectiveBinding(reader, type);
   return new ElementBinder(
     0, null, 0,
     null, binding,
@@ -371,8 +415,27 @@ function createViewportElementBinder(nestedProtoView) {
   return elBinder;
 }
 
-function createRenderProtoView() {
-  return new renderApi.ProtoView();
+function createRenderProtoView(elementBinders = null) {
+  if (isBlank(elementBinders)) {
+    elementBinders = [];
+  }
+  return new renderApi.ProtoView({
+    elementBinders: elementBinders
+  });
+}
+
+function createRenderComponentElementBinder(directiveIndex) {
+  return new renderApi.ElementBinder({
+    directives: [new renderApi.DirectiveBinder({
+      directiveIndex: directiveIndex
+    })]
+  });
+}
+
+function createRenderViewportElementBinder(nestedProtoView) {
+  return new renderApi.ElementBinder({
+    nestedProtoView: nestedProtoView
+  });
 }
 
 @Component({
@@ -433,6 +496,12 @@ class FakeRenderer extends renderApi.Renderer {
     ListWrapper.push(this.requests, template);
     return PromiseWrapper.resolve(ListWrapper.removeAt(this._results, 0));
   }
+
+  createRootProtoView(elementOrSelector, componentId):Promise<renderApi.ProtoView> {
+    return PromiseWrapper.resolve(
+      createRenderProtoView([createRenderComponentElementBinder(0)])
+    );
+  }
 }
 
 class FakeUrlResolver extends UrlResolver {
@@ -481,8 +550,8 @@ class FakeProtoViewFactory extends ProtoViewFactory {
     this._results = results;
   }
 
-  createProtoView(componentAnnotation:Component, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
-    ListWrapper.push(this.requests, [componentAnnotation, renderProtoView, directives]);
+  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
+    ListWrapper.push(this.requests, [componentBinding, renderProtoView, directives]);
     return ListWrapper.removeAt(this._results, 0);
   }
 }

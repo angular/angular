@@ -141,20 +141,20 @@ export class Renderer {
   compile(template:Template):Promise<ProtoView> { return null; }
 
   /**
-   * Creates a new ProtoView with preset nested components,
+   * Sets the preset nested components,
    * which will be instantiated when this protoView is instantiated.
+   * Note: We can't create new ProtoViewRefs here as we need to support cycles / recursive components.
    * @param {List<ProtoViewRef>} protoViewRefs
    *    ProtoView for every element with a component in this protoView or in a view container's protoView
-   * @return {List<ProtoViewRef>}
-   *    new ProtoViewRef for the given protoView and all of its view container's protoViews
    */
-  mergeChildComponentProtoViews(protoViewRef:ProtoViewRef, protoViewRefs:List<ProtoViewRef>):List<ProtoViewRef> { return null; }
+  mergeChildComponentProtoViews(protoViewRef:ProtoViewRef, componentProtoViewRefs:List<ProtoViewRef>) { return null; }
 
   /**
    * Creats a ProtoView that will create a root view for the given element,
    * i.e. it will not clone the element but only attach other proto views to it.
+   * Contains a single nested component with the given componentId.
    */
-  createRootProtoView(selectorOrElement):ProtoViewRef { return null; }
+  createRootProtoView(selectorOrElement, componentId):Promise<ProtoView> { return null; }
 
   /**
    * Creates a view and all of its nested child components.

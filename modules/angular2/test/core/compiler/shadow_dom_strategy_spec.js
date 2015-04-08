@@ -43,7 +43,7 @@ export function main() {
     it('should attach the view nodes to the shadow root', () => {
       var host = el('<div></div>');
       var nodes = el('<div>view</div>');
-      var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null, null), null);
+      var pv = new ProtoView(null, nodes, new DynamicProtoChangeDetector(null, null), null);
       var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);
@@ -68,7 +68,7 @@ export function main() {
     it('should attach the view nodes as child of the host element', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null, null), null);
+      var pv = new ProtoView(null, nodes, new DynamicProtoChangeDetector(null, null), null);
       var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);
@@ -92,7 +92,7 @@ export function main() {
     it('should attach the view nodes as child of the host element', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var pv = new ProtoView(nodes, new DynamicProtoChangeDetector(null, null), null);
+      var pv = new ProtoView(null, nodes, new DynamicProtoChangeDetector(null, null), null);
       var view = pv.instantiate(null, null);
 
       strategy.attachTemplate(host, view);

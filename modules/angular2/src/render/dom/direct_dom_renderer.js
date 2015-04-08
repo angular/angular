@@ -1,4 +1,4 @@
-import {Promise} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
@@ -24,10 +24,6 @@ function _resolveProtoView(protoViewRef:DirectDomProtoViewRef) {
 
 function _wrapView(view:View) {
   return new _DirectDomViewRef(view);
-}
-
-function _wrapProtoView(protoView:ProtoView) {
-  return new DirectDomProtoViewRef(protoView);
 }
 
 function _collectComponentChildViewRefs(view, target = null) {
@@ -83,22 +79,22 @@ export class DirectDomRenderer extends api.Renderer {
     return this._compiler.compile(template);
   }
 
-  mergeChildComponentProtoViews(protoViewRef:api.ProtoViewRef, protoViewRefs:List<api.ProtoViewRef>):List<api.ProtoViewRef> {
-    var protoViews = [];
+  mergeChildComponentProtoViews(protoViewRef:api.ProtoViewRef, protoViewRefs:List<api.ProtoViewRef>) {
     _resolveProtoView(protoViewRef).mergeChildComponentProtoViews(
-      ListWrapper.map(protoViewRefs, _resolveProtoView),
-      protoViews
+      ListWrapper.map(protoViewRefs, _resolveProtoView)
     );
-    return ListWrapper.map(protoViews, _wrapProtoView);
   }
 
-  createRootProtoView(selectorOrElement):api.ProtoViewRef {
+  createRootProtoView(selectorOrElement, componentId):Promise<api.ProtoView> {
     var element = selectorOrElement; // TODO: select the element if it is not a real element...
     var rootProtoViewBuilder = new ProtoViewBuilder(element);
     rootProtoViewBuilder.setIsRootView(true);
-    rootProtoViewBuilder.bindElement(element, 'root element').setComponentId('root');
-    this._shadowDomStrategy.processElement(null, 'root', element);
-    return rootProtoViewBuilder.build().render;
+    var elBinder = rootProtoViewBuilder.bindElement(element, 'root element');
+    elBinder.setComponentId(componentId);
+    elBinder.bindDirective(0);
+
+    this._shadowDomStrategy.processElement(null, componentId, element);
+    return PromiseWrapper.resolve(rootProtoViewBuilder.build());
   }
 
   createView(protoViewRef:api.ProtoViewRef):List<api.ViewRef> {

@@ -71,7 +71,7 @@ export function main() {
       dom = el(`<div><stuff></stuff><div insert-after-me></div><stuff></stuff></div>`);
       var insertionElement = dom.childNodes[1];
       parentView = createView([dom.childNodes[0]]);
-      protoView = new ProtoView(el('<div>hi</div>'), new DynamicProtoChangeDetector(null, null),
+      protoView = new ProtoView(null, el('<div>hi</div>'), new DynamicProtoChangeDetector(null, null),
         new NativeShadowDomStrategy(null));
       elementInjector = new ElementInjector(null, null, null);
       viewContainer = new ViewContainer(parentView, insertionElement, protoView, elementInjector,
@@ -216,7 +216,7 @@ export function main() {
         var parser = new Parser(new Lexer());
         viewContainer.hydrate(new Injector([]), null, null);
 
-        var pv = new ProtoView(el('<div class="ng-binding">{{}}</div>'),
+        var pv = new ProtoView(null, el('<div class="ng-binding">{{}}</div>'),
           new DynamicProtoChangeDetector(null, null), new NativeShadowDomStrategy(null));
         pv.bindElement(null, 0, new ProtoElementInjector(null, 1, [SomeDirective]));
         pv.bindTextNode(0, parser.parseBinding('foo', null));

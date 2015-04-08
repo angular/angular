@@ -85,6 +85,17 @@ export class NewCompiler {
     return DirectiveBinding.createFromType(meta.type, meta.annotation);
   }
 
+  // Create a rootView as if the compiler encountered <rootcmp></rootcmp>.
+  // Used for bootstrapping.
+  compileRoot(elementOrSelector, componentBinding:DirectiveBinding):Promise<ProtoView> {
+    return this._renderer.createRootProtoView(elementOrSelector, 'root').then( (rootRenderPv) => {
+      return this._compileNestedProtoViews(null, rootRenderPv, [componentBinding], true)
+    }).then( (rootProtoView) => {
+      rootProtoView.instantiateInPlace = true;
+      return rootProtoView;
+    });
+  }
+
   compile(component: Type):Promise<ProtoView> {
     var protoView = this._compile(this._bindDirective(component));
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
@@ -96,7 +107,8 @@ export class NewCompiler {
     var protoView = this._compilerCache.get(component);
     if (isPresent(protoView)) {
       // The component has already been compiled into a ProtoView,
-      // returns a resolved Promise.
+      // returns a plain ProtoView, not wrapped inside of a Promise.
+      // Needed for recursive components.
       return protoView;
     }
 
@@ -113,31 +125,72 @@ export class NewCompiler {
       this._flattenDirectives(template),
       (directive) => this._bindDirective(directive)
     );
-
-    pvPromise = this._compileNoRecurse(componentBinding, template, directives).then( (protoView) => {
-      // Populate the cache before compiling the nested components,
-      // so that components can reference themselves in their template.
-      this._compilerCache.set(component, protoView);
-      MapWrapper.delete(this._compiling, component);
-
-      // Compile all the components from the template
-      var nestedPVPromises = this._compileNestedComponents(protoView);
-      if (nestedPVPromises.length > 0) {
-        // Returns ProtoView Promise when there are any asynchronous nested ProtoViews.
-        // The promise will resolved after nested ProtoViews are compiled.
-        return PromiseWrapper.then(PromiseWrapper.all(nestedPVPromises),
-          (_) => protoView,
-          (e) => { throw new BaseException(`${e} -> Failed to compile ${stringify(component)}`); }
-        );
-      }
-      return protoView;
+    var renderTemplate = this._buildRenderTemplate(component, template, directives);
+    pvPromise = this._renderer.compile(renderTemplate).then( (renderPv) => {
+      return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
     });
+
     MapWrapper.set(this._compiling, component, pvPromise);
     return pvPromise;
   }
 
-  _compileNoRecurse(componentBinding, template, directives):Promise<ProtoView> {
-    var component = componentBinding.key.token;
+  // TODO(tbosch): union type return ProtoView or Promise<ProtoView>
+  _compileNestedProtoViews(componentBinding, renderPv, directives, isComponentRootView) {
+    var nestedPVPromises = [];
+    var protoView = this._protoViewFactory.createProtoView(componentBinding, renderPv, directives);
+    if (isComponentRootView && isPresent(componentBinding)) {
+      // Populate the cache before compiling the nested components,
+      // so that components can reference themselves in their template.
+      var component = componentBinding.key.token;
+      this._compilerCache.set(component, protoView);
+      MapWrapper.delete(this._compiling, component);
+    }
+
+    var binderIndex = 0;
+    ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
+      var nestedComponent = elementBinder.componentDirective;
+      var nestedRenderProtoView = renderPv.elementBinders[binderIndex].nestedProtoView;
+      var elementBinderDone = (nestedPv) => {
+        elementBinder.nestedProtoView = nestedPv;
+        // Can't set the parentProtoView for components,
+        // as their ProtoView might be used in multiple other components.
+        nestedPv.parentProtoView = isPresent(nestedComponent) ? null : protoView;
+      };
+      var nestedCall = null;
+      if (isPresent(nestedComponent)) {
+        if (!(nestedComponent.annotation instanceof DynamicComponent)) {
+          nestedCall = this._compile(nestedComponent);
+        }
+      } else if (isPresent(nestedRenderProtoView)) {
+        nestedCall = this._compileNestedProtoViews(componentBinding, nestedRenderProtoView, directives, false);
+      }
+      if (PromiseWrapper.isPromise(nestedCall)) {
+        ListWrapper.push(nestedPVPromises, nestedCall.then(elementBinderDone));
+      } else if (isPresent(nestedCall)) {
+        elementBinderDone(nestedCall);
+      }
+      binderIndex++;
+    });
+
+    var protoViewDone = (_) => {
+      var childComponentRenderPvRefs = [];
+      ListWrapper.forEach(protoView.elementBinders, (eb) => {
+        if (isPresent(eb.componentDirective)) {
+          var componentPv = eb.nestedProtoView;
+          ListWrapper.push(childComponentRenderPvRefs, isPresent(componentPv) ? componentPv.render : null);
+        }
+      });
+      this._renderer.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
+      return protoView;
+    };
+    if (nestedPVPromises.length > 0) {
+      return PromiseWrapper.all(nestedPVPromises).then(protoViewDone);
+    } else {
+      return protoViewDone(null);
+    }
+  }
+
+  _buildRenderTemplate(component, template, directives) {
     var componentUrl = this._urlResolver.resolve(
         this._appUrl, this._componentUrlMapper.getUrl(component)
     );
@@ -150,37 +203,12 @@ export class NewCompiler {
       // is able to resolve urls in stylesheets.
       templateAbsUrl = componentUrl;
     }
-    var renderTemplate = new renderApi.Template({
+    return new renderApi.Template({
       componentId: stringify(component),
       absUrl: templateAbsUrl,
       inline: template.inline,
       directives: ListWrapper.map(directives, this._buildRenderDirective)
     });
-    return this._renderer.compile(renderTemplate).then( (renderPv) => {
-      return this._protoViewFactory.createProtoView(componentBinding.annotation, renderPv, directives);
-    });
-  }
-
-  _compileNestedComponents(protoView, nestedPVPromises = null):List<Promise> {
-    if (isBlank(nestedPVPromises)) {
-      nestedPVPromises = [];
-    }
-    ListWrapper.map(protoView.elementBinders, (elementBinder) => {
-      var nestedComponent = elementBinder.componentDirective;
-      if (isPresent(nestedComponent) && !(nestedComponent.annotation instanceof DynamicComponent)) {
-        var nestedCall = this._compile(nestedComponent);
-        if (PromiseWrapper.isPromise(nestedCall)) {
-          ListWrapper.push(nestedPVPromises, nestedCall.then( (nestedPv) => {
-            elementBinder.nestedProtoView = nestedPv;
-          }));
-        } else {
-          elementBinder.nestedProtoView = nestedCall;
-        }
-      } else if (isPresent(elementBinder.nestedProtoView)) {
-        this._compileNestedComponents(elementBinder.nestedProtoView, nestedPVPromises);
-      }
-    });
-    return nestedPVPromises;
   }
 
   _buildRenderDirective(directiveBinding) {
@@ -269,7 +297,7 @@ export class Compiler extends NewCompiler {
           new DefaultStepFactory(parser, shadowDomStrategy.render),
           templateLoader
         ),
-        null, null
+        null, shadowDomStrategy.render
       ),
       new ProtoViewFactory(changeDetection, shadowDomStrategy)
     );

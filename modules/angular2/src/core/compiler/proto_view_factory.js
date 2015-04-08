@@ -20,16 +20,19 @@ export class ProtoViewFactory {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  createProtoView(componentAnnotation:Component, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
-    return this._createProtoView(null, componentAnnotation, renderProtoView, directives);
-  }
-
-  _createProtoView(parent:ProtoView, componentAnnotation:Component, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
-    var protoChangeDetector = this._changeDetection.createProtoChangeDetector('dummy',
-      componentAnnotation.changeDetection);
+  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
+    var protoChangeDetector;
+    if (isBlank(componentBinding)) {
+      protoChangeDetector = this._changeDetection.createProtoChangeDetector('root', null);
+    } else {
+      var componentAnnotation:Component = componentBinding.annotation;
+      protoChangeDetector = this._changeDetection.createProtoChangeDetector(
+        'dummy', componentAnnotation.changeDetection
+      );
+    }
     var domProtoView = this._getDomProtoView(renderProtoView.render);
-    var protoView = new ProtoView(domProtoView.element, protoChangeDetector,
-        this._shadowDomStrategy, parent);
+    var protoView = new ProtoView(renderProtoView.render, domProtoView.element, protoChangeDetector,
+        this._shadowDomStrategy, null);
 
     for (var i=0; i<renderProtoView.elementBinders.length; i++) {
       var renderElementBinder = renderProtoView.elementBinders[i];
@@ -42,13 +45,10 @@ export class ProtoViewFactory {
         i, parentPeiWithDistance,
         sortedDirectives, renderElementBinder
       );
-      var elementBinder = this._createElementBinder(
+      this._createElementBinder(
         protoView, renderElementBinder, domElementBinder, protoElementInjector, sortedDirectives
       );
       this._createDirectiveBinders(protoView, sortedDirectives);
-      if (isPresent(renderElementBinder.nestedProtoView)) {
-        elementBinder.nestedProtoView = this._createProtoView(protoView, componentAnnotation, renderElementBinder.nestedProtoView, directives);
-      }
     }
     MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
       protoView.bindVariable(varName, mappedName);
