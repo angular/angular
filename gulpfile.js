@@ -1,6 +1,4 @@
-var broccoli = require('broccoli');
-var copyDereferenceSync = require('copy-dereference').sync;
-var fse = require('fs-extra');
+var broccoliBuild = require('./tools/broccoli/gulp');
 
 var format = require('gulp-clang-format');
 var gulp = require('gulp');
@@ -282,45 +280,8 @@ var CONFIG = {
 };
 CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
 
-// ------------
-// integration point to run broccoli build
-
-var broccoliExecuted = false;
-
 gulp.task('broccoli', function() {
-  if (broccoliExecuted) {
-    throw new Error('The broccoli task can be called only once!');
-  }
-  broccoliExecuted = true;
-
-  var broccoliDist = path.join('dist', 'js', 'dev', 'es6');
-  fse.removeSync(broccoliDist);
-  fse.mkdirsSync(path.join('dist', 'js', 'dev'));
-
-  var tree = broccoli.loadBrocfile();
-  var builder = new broccoli.Builder(tree);
-  return builder.build()
-    .then(function (hash) {
-      var dir = hash.directory;
-      try {
-        copyDereferenceSync(path.join(dir, 'js', 'dev', 'es6'), broccoliDist);
-      } catch (err) {
-        if (err.code === 'EEXIST') err.message += ' (we cannot build into an existing directory)';
-        throw err;
-      }
-    })
-    .finally(function () {
-      builder.cleanup();
-    })
-    .catch(function (err) {
-      // Should show file and line/col if present
-      if (err.file) {
-        console.error('File: ' + err.file);
-      }
-      console.error(err.stack);
-      console.error('\nBuild failed');
-      process.exit(1);
-    });
+  return broccoliBuild(require('./Brocfile.js'), path.join('js', 'dev'));
 });
 
 // ------------
