@@ -11,8 +11,8 @@ import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(new TransformerOptions(
-    'web/index.dart',
-    reflectionEntryPoint: 'web/index.dart', modeName: TRANSFORM_MODE));
+    ['web/index.dart'],
+    reflectionEntryPoints: ['web/index.dart'], modeName: TRANSFORM_MODE));
 
 class IntegrationTestConfig {
   final String name;

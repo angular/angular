@@ -9,7 +9,6 @@ import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 
-import '../common/logger.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
@@ -17,7 +16,6 @@ var formatter = new DartFormatter();
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
   AssetReader reader = new TestAssetReader();
-  setLogger(new NullLogger());
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
