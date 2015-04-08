@@ -364,3 +364,16 @@ md-content.demo-source-container > hljs > pre > code.highlight {
   padding-left:32px !important;
   padding-right:32px !important;
 }
+
+
+.member .name {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 1.17em;
+  margin: 1em 0;
+}
+
+.member {
+
+}

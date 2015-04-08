@@ -8,13 +8,24 @@
 
 {%- if doc.constructorDoc or doc.members.length -%}
 <h2>Members</h2>
+
 {%- if doc.constructorDoc %}
-  <h3>{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h3>
-  <p>{$ doc.constructorDoc.description | marked $}</p>
+  <section class="member constructor">
+    <h1 class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
+    {% marked %}
+      {$ doc.constructorDoc.description $}
+    {% endmarked %}
+  </section>
 {% endif -%}
+
 {%- for member in doc.members %}
-  <h3>{$ member.name $}{$ paramList(member.params) $}</h3>
-  <p>{$ member.description | marked $}</p>
+  <section class="member">
+    <h1 class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
+    {% marked %}
+      {$ member.description $}
+    {% endmarked %}
+  </section>
+
 {% endfor %}
 {%- endif -%}
 
