@@ -344,10 +344,6 @@ gulp.task('build/transpile.js.dev.es5', function() {
   });
 });
 
-gulp.task('broccoli.js.dev', function() {
-  return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
-});
-
 gulp.task('build/transpile.js.prod.es6', transpile(gulp, gulpPlugins, {
   src: CONFIG.transpile.src.js,
   dest: CONFIG.dest.js.prod.es6,
@@ -542,7 +538,7 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
 }));
 
 gulp.task('check-format', function() {
-  return gulp.src(['modules/**/*.ts', '!**/typings/**/*.d.ts'])
+  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', '!**/typings/**/*.d.ts'])
       .pipe(format.checkFormat('file'));
 });
 
@@ -793,10 +789,12 @@ gulp.task('build.dart', function(done) {
   );
 });
 
+gulp.task('broccoli.js.dev', function() {
+  return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
+});
 gulp.task('build.js.dev', function(done) {
   runSequence(
     'broccoli.js.dev',
-    ['build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
     'build/checkCircularDependencies',
     done
   );

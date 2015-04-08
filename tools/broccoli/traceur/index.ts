@@ -8,7 +8,7 @@ var xtend = require('xtend');
 
 class TraceurFilter extends Writer {
   constructor(private inputTree, private destExtension: string = '.js', private options = {}) {}
-
+  static RUNTIME_PATH = traceur.RUNTIME_PATH;
   write(readTree, destDir) {
     return readTree(this.inputTree)
         .then(srcDir => {

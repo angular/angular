@@ -48,6 +48,7 @@ var TraceurFilter = (function (_super) {
             });
         });
     };
+    TraceurFilter.RUNTIME_PATH = traceur.RUNTIME_PATH;
     return TraceurFilter;
 })(Writer);
 module.exports = TraceurFilter;
