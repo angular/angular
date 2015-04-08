@@ -61,17 +61,37 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
       '${code.substring(codeInjectIdx)}';
 }
 
+// TODO(kegluneq): De-dupe from template_compiler/generator.dart.
+String _sanitizeProp(String prop) => prop.replaceAll('\$', '\\\$');
+
 Iterable<String> _generateGetters(String typeName, List<String> getterNames) {
   // TODO(kegluneq): Include `typeName` where possible.
-  return getterNames.map((prop) => '''
-        '$prop': (o) => o.$prop
-    ''');
+  return getterNames.map((prop) {
+    var sProp = _sanitizeProp(prop);
+    // TODO(kegluneq): Better way to filter out reserved words?
+    switch (prop) {
+      case 'if':
+      case 'of':
+        return ''' '$sProp': (o) => o['$sProp'] ''';
+        break;
+      default:
+        return ''' '$sProp': (o) => o.$prop ''';
+    }
+  });
 }
 
 Iterable<String> _generateSetters(String typeName, List<String> setterName) {
-  return setterName.map((prop) => '''
-      '$prop': (o, v) => o.$prop = v
-  ''');
+  return setterName.map((prop) {
+    var sProp = _sanitizeProp(prop);
+    switch (prop) {
+      case 'if':
+      case 'of':
+        return ''' '$sProp': (o, v) => o['$sProp'] = v ''';
+        break;
+      default:
+        return ''' '$sProp': (o, v) => o.$prop = v ''';
+    }
+  });
 }
 
 Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
