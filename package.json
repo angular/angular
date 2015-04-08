@@ -44,6 +44,7 @@
     "bower": "^1.3.12",
     "broccoli": "^0.15.3",
     "broccoli-funnel": "^0.2.3",
+    "broccoli-merge-trees": "^0.2.1",
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",
     "canonical-path": "0.0.2",

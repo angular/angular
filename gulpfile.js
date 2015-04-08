@@ -280,10 +280,6 @@ var CONFIG = {
 };
 CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
 
-gulp.task('broccoli', function() {
-  return broccoliBuild(require('./Brocfile.js'), path.join('js', 'dev'));
-});
-
 // ------------
 // clean
 
@@ -348,12 +344,8 @@ gulp.task('build/transpile.js.dev.es5', function() {
   });
 });
 
-gulp.task('build/transpile.js.dev', function(done) {
-  runSequence(
-    // broccoli runs the ES6 version of this task
-    'build/transpile.js.dev.es5',
-    done
-  );
+gulp.task('broccoli.js.dev', function() {
+  return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
 });
 
 gulp.task('build/transpile.js.prod.es6', transpile(gulp, gulpPlugins, {
@@ -803,8 +795,8 @@ gulp.task('build.dart', function(done) {
 
 gulp.task('build.js.dev', function(done) {
   runSequence(
-    'broccoli',
-    ['build/transpile.js.dev', 'build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
+    'broccoli.js.dev',
+    ['build/html.js.dev', 'build/copy.js.dev', 'build/multicopy.js.dev.es6'],
     'build/checkCircularDependencies',
     done
   );
@@ -902,9 +894,9 @@ gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
       .pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
-
 gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps']);
+
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
 
 gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
