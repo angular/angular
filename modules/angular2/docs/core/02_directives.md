@@ -213,7 +213,7 @@ Dependency Injection (DI) is a key aspect of directives. DI allows directives to
 
 When Angular directives are instantiated, the directive can ask for other related directives to be injected into it. By assembling the directives in different order and subtypes the application behavior can be controlled. A good mental model is that the DOM structure controls the directive instantiation graph.
 
-Directive instantiation is triggered by the directive CSS selector matching the DOM structure. The directive in its constructor can ask for other directives or application services. When asking for directives the dependency is locating by following the DOM hierarchy and if not found using the application level injector.
+Directive instantiation is triggered by the directive CSS selector matching the DOM structure. In a directive's constructor, it can ask for other directives or application services. When asking for directives, the dependency is attempted to be located by its DOM hierarchy first, then if not found, by using the application level injector.
 
 To better understand the kinds of injections which are supported in Angular we have broken them down into use case examples.
 
@@ -260,17 +260,17 @@ Assume the following DOM structure for `my_app.html`:
 
 ### Injecting other Directives
 
-Injecting other directives into directives follows a similar mechanism as injecting services, but with added constraint of visibility governed by DOM structure.
+Injecting other directives into directives follows a similar mechanism as injecting services into directives, but with added constraint of visibility governed by DOM structure.
 
 There are five kinds of visibilities:
 
 * (no annotation): Inject dependant directives only if they are on the current element.
 * `@ancestor`: Inject a directive if it is at any element above the current element.
-* `@parent`: Inject a directive which is direct parent of the current element.
+* `@parent`: Inject a directive which is a direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
 * `@descendant`: Inject a list of any children which match a given type. (Used with `Query`)
 
-NOTE: if the injection constraint can not be satisfied by the current visibility constraint, then it is forward to the normal injector which may provide a default value for the directive or it may throw an error.
+NOTE: if the injection constraint can not be satisfied by the current visibility constraint, then it is forwarded to the normal injector which either provides a default value for the directive or throws an error.
 
 Here is an example of the kinds of injections which can be achieved:
 
@@ -327,12 +327,70 @@ Assume the following DOM structure for `my_app.html`:
 </form>                        |
 ```
 
+#### Shadow DOM effects on Directive DI
 
-### Shadow DOM effects on Dependency Injection
+Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries. To remedy this, declaritively specify the required component as an injectable.
 
-Shadow DOM provides an encapsulation for components, so as a general rule it does not allow directive injections to cross the shadow DOM boundaries.
+```
+@Component({
+  selector: '[kid]',
+  injectables: []
+})
+@View({
+  templateUrl: 'kid.html',
+  directives: []
+})
+class Kid {
+  constructor(
+    @Parent() dad:Dad, 
+    @Optional() grandpa:Grandpa
+  ) {
+    this.name = 'Billy';
+    this.dad = dad.name;
+    this.grandpa = grandpa.name;
+  }
+}
 
+@Component({
+  selector: '[dad]',
+  injectables: [Grandpa]
+})
+@View({
+  templateUrl: 'dad.html',
+  directives: [Kid]
+})
+class Dad {
+  constructor(@Parent() dad:Grandpa) {
+    this.name = 'Joe Jr';
+    this.dad = dad.name;
+    console.log(dad)
+  }
+} 
 
+@Component({
+  selector: '[grandpa]',
+  injectables: []
+})
+@View({
+  templateUrl: 'grandpa.html',
+  directives: [Dad]
+})
+class Grandpa {
+  constructor() {
+    this.name = 'Joe';
+  }
+}                                                   
+```
+
+Assume the following DOM structure for `grandpa.html`: The Dad has access to the Grandpa.
+```
+Name: {{name}}: <br> Children: <div dad></div>                              
+```
+
+Assume the following DOM structure for `dad.html`: Here the rendered Kid will also have access to Grandpa.
+```
+Name: {{name}}: <br> Dad: {{dad}} <br> Children: <div kid></div> 
+```
 
 ## Further Reading
 
