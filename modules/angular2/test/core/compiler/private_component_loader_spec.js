@@ -14,7 +14,7 @@ export function main() {
     var loader;
 
     beforeEach(() => {
-      loader = new PrivateComponentLoader(null, null, null,  new DirectiveMetadataReader());
+      loader = new PrivateComponentLoader(null, new DirectiveMetadataReader(), null);
     });
 
     describe('Load errors', () => {

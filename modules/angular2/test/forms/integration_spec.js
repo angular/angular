@@ -25,8 +25,8 @@ import {ControlGroupDirective, ControlDirective, Control, ControlGroup, Optional
   DefaultValueAccessor, Validators} from 'angular2/forms';
 
 export function main() {
-  if (DOM.supportsDOMEvents()) {
-    describe("integration tests", () => {
+  describe("integration tests", () => {
+    if (DOM.supportsDOMEvents()) {
       it("should initialize DOM elements with the given form object",
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
         var ctx = new MyComp(new ControlGroup({
@@ -362,8 +362,8 @@ export function main() {
           });
         }));
       });
-    });
-  }
+    }
+  });
 }
 
 @Component({selector: "my-comp"})

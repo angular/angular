@@ -8,6 +8,8 @@ module.exports = function(config) {
     frameworks: ['dart-unittest'],
 
     files: [
+      // Init and configure guiness.
+      {pattern: 'test-init.dart', included: true},
       // Unit test files needs to be included.
       // Karma-dart generates `__adapter_unittest.dart` that imports these files.
       {pattern: 'modules/*/test/**/*_spec.js', included: true},

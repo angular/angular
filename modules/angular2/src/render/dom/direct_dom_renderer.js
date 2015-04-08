@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
@@ -14,7 +15,7 @@ function _resolveViewContainer(vc:api.ViewContainerRef) {
   return _resolveView(vc.view).viewContainers[vc.elementIndex];
 }
 
-function _resolveView(viewRef:_DirectDomViewRef) {
+function _resolveView(viewRef:DirectDomViewRef) {
   return isPresent(viewRef) ? viewRef.delegate : null;
 }
 
@@ -23,7 +24,7 @@ function _resolveProtoView(protoViewRef:DirectDomProtoViewRef) {
 }
 
 function _wrapView(view:View) {
-  return new _DirectDomViewRef(view);
+  return new DirectDomViewRef(view);
 }
 
 function _collectComponentChildViewRefs(view, target = null) {
@@ -51,7 +52,7 @@ export class DirectDomProtoViewRef extends api.ProtoViewRef {
   }
 }
 
-class _DirectDomViewRef extends api.ViewRef {
+export class DirectDomViewRef extends api.ViewRef {
   delegate:View;
 
   constructor(delegate:View) {
@@ -60,6 +61,7 @@ class _DirectDomViewRef extends api.ViewRef {
   }
 }
 
+@Injectable()
 export class DirectDomRenderer extends api.Renderer {
   _compiler: Compiler;
   _viewFactory: ViewFactory;
@@ -131,7 +133,7 @@ export class DirectDomRenderer extends api.Renderer {
     _resolveView(viewRef).setText(textNodeIndex, text);
   }
 
-  setEventDispatcher(viewRef:api.ViewRef, dispatcher:api.EventDispatcher) {
+  setEventDispatcher(viewRef:api.ViewRef, dispatcher:any/*api.EventDispatcher*/):void {
     _resolveView(viewRef).setEventDispatcher(dispatcher);
   }
 }

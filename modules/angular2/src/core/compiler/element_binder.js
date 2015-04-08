@@ -8,11 +8,8 @@ export class ElementBinder {
   protoElementInjector:eiModule.ProtoElementInjector;
   componentDirective:DirectiveBinding;
   viewportDirective:DirectiveBinding;
-  textNodeIndices:List<int>;
-  hasElementPropertyBindings:boolean;
   nestedProtoView: viewModule.ProtoView;
   events:StringMap;
-  contentTagSelector:string;
   parent:ElementBinder;
   index:int;
   distanceToParent:int;
@@ -32,13 +29,7 @@ export class ElementBinder {
     this.distanceToParent = distanceToParent;
     // updated later when events are bound
     this.events = null;
-    // updated later when text nodes are bound
-    this.textNodeIndices = null;
-    // updated later when element properties are bound
-    this.hasElementPropertyBindings = false;
     // updated later, so we are able to resolve cycles
     this.nestedProtoView = null;
-    // updated later in the compilation pipeline
-    this.contentTagSelector = null;
   }
 }

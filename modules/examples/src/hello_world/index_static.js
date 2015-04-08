@@ -7,9 +7,9 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
-import {Content} from 'angular2/src/core/compiler/shadow_dom_emulation/content_tag';
-import {DestinationLightDom} from 'angular2/src/core/compiler/shadow_dom_emulation/light_dom';
+import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
+import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
+import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {XHR} from 'angular2/src/services/xhr';
@@ -23,6 +23,14 @@ import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_compone
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 
 import {reflector} from 'angular2/src/reflection/reflection';
+
+import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {Renderer} from 'angular2/src/render/api';
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import * as rc from 'angular2/src/render/dom/compiler/compiler';
+import * as rvf from 'angular2/src/render/dom/view/view_factory';
+import {Inject} from 'angular2/di';
 
 function setup() {
   reflector.registerType(app.HelloCmp, {
@@ -53,13 +61,12 @@ function setup() {
   });
 
   reflector.registerType(Compiler, {
-    "factory": (changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
-                tplResolver, cmpUrlMapper, urlResolver) =>
-      new Compiler(changeDetection, templateLoader, reader, parser, compilerCache, shadowDomStrategy,
-        tplResolver, cmpUrlMapper, urlResolver),
-    "parameters": [[ChangeDetection], [TemplateLoader], [DirectiveMetadataReader], [Parser],
-                   [CompilerCache], [ShadowDomStrategy], [TemplateResolver], [ComponentUrlMapper],
-                   [UrlResolver]],
+    "factory": (reader, compilerCache, tplResolver, cmpUrlMapper, urlResolver, renderer,
+                protoViewFactory) =>
+      new Compiler(reader, compilerCache, tplResolver, cmpUrlMapper, urlResolver, renderer,
+                protoViewFactory),
+    "parameters": [[DirectiveMetadataReader], [CompilerCache], [TemplateResolver], [ComponentUrlMapper],
+                   [UrlResolver], [Renderer], [ProtoViewFactory]],
     "annotations": []
   });
 
@@ -153,12 +160,6 @@ function setup() {
     "annotations": []
   });
 
-  reflector.registerType(Content, {
-    "factory": (lightDom, el, selector) => new Content(lightDom, el, selector),
-    "parameters": [[DestinationLightDom], [NgElement], [String]],
-    "annotations" : []
-  });
-
   reflector.registerType(StyleInliner, {
     "factory": (xhr, styleUrlResolver, urlResolver) =>
       new StyleInliner(xhr, styleUrlResolver, urlResolver),
@@ -173,9 +174,9 @@ function setup() {
   });
 
   reflector.registerType(PrivateComponentLoader, {
-    "factory": (compiler, strategy, eventMgr, reader) =>
-      new PrivateComponentLoader(compiler, strategy, eventMgr, reader),
-    "parameters": [[Compiler], [ShadowDomStrategy], [EventManager], [DirectiveMetadataReader]],
+    "factory": (compiler, reader, viewFactory) =>
+      new PrivateComponentLoader(compiler, reader, viewFactory),
+    "parameters": [[Compiler], [DirectiveMetadataReader], [ViewFactory]],
     "annotations": []
   });
 
@@ -187,6 +188,53 @@ function setup() {
 
   reflector.registerType(Testability, {
     "factory": () => new Testability(),
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(DirectDomRenderer, {
+    "factory": (renderCompiler, renderViewFactory, shadowDomStrategy) =>
+      new DirectDomRenderer(renderCompiler, renderViewFactory, shadowDomStrategy),
+    "parameters": [[rc.Compiler], [rvf.ViewFactory], [ShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(rc.DefaultCompiler, {
+    "factory": (parser, shadowDomStrategy, templateLoader) =>
+      new rc.DefaultCompiler(parser, shadowDomStrategy, templateLoader),
+    "parameters": [[Parser], [ShadowDomStrategy], [TemplateLoader]],
+    "annotations": []
+  });
+
+  reflector.registerType(rvf.ViewFactory, {
+    "factory": (capacity, eventManager, shadowDomStrategy) =>
+      new rvf.ViewFactory(capacity, eventManager, shadowDomStrategy),
+    "parameters": [[new Inject(rvf.VIEW_POOL_CAPACITY)], [EventManager], [ShadowDomStrategy]],
+    "annotations": []
+  });
+
+  reflector.registerType(rvf.VIEW_POOL_CAPACITY, {
+    "factory": () => 100000,
+    "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(ProtoViewFactory, {
+    "factory": (changeDetection, renderer) =>
+      new ProtoViewFactory(changeDetection, renderer),
+    "parameters": [[ChangeDetection], [Renderer]],
+    "annotations": []
+  });
+
+  reflector.registerType(ViewFactory, {
+    "factory": (capacity) =>
+      new ViewFactory(capacity),
+    "parameters": [[new Inject(VIEW_POOL_CAPACITY)]],
+    "annotations": []
+  });
+
+  reflector.registerType(VIEW_POOL_CAPACITY, {
+    "factory": () => 100000,
     "parameters": [],
     "annotations": []
   });

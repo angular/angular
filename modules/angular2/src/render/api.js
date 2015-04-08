@@ -203,7 +203,7 @@ export class Renderer {
    * Sets the dispatcher for all events that have been defined in the template or in directives
    * in the given view.
    */
-  setEventDispatcher(viewRef:ViewRef, dispatcher:EventDispatcher):void {}
+  setEventDispatcher(viewRef:ViewRef, dispatcher:any/*EventDispatcher*/):void {}
 
   /**
    * To be called at the end of the VmTurn so the API can buffer calls
@@ -218,10 +218,10 @@ export class Renderer {
 export class EventDispatcher {
   /**
    * Called when an event was triggered for a on-* attribute on an element.
-   * @param {List<any>} locals Locals to be used to evaluate the
+   * @param {Map<string, any>} locals Locals to be used to evaluate the
    *   event expressions
    */
   dispatchEvent(
-    elementIndex:number, eventName:string, locals:List<any>
+    elementIndex:number, eventName:string, locals:Map<string, any>
   ):void {}
 }

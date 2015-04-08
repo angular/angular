@@ -1,5 +1,5 @@
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
+import {MapWrapper, ListWrapper, List, Map} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -177,7 +177,7 @@ export class LoggingEventDispatcher extends EventDispatcher {
     this.log = [];
   }
   dispatchEvent(
-    elementIndex:number, eventName:string, locals:List<any>
+    elementIndex:number, eventName:string, locals:Map<string, any>
   ) {
     ListWrapper.push(this.log, [elementIndex, eventName, locals]);
   }

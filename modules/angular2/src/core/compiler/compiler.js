@@ -3,24 +3,16 @@ import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 
-import {ChangeDetection, Parser} from 'angular2/change_detection';
-
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {Component, Viewport, DynamicComponent, Decorator} from '../annotations/annotations';
 import {ProtoView} from './view';
 import {DirectiveBinding} from './element_injector';
 import {TemplateResolver} from './template_resolver';
 import {Template} from '../annotations/template';
-import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
-import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
-import {DefaultStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
-
-import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as renderApi from 'angular2/src/render/api';
 
 /**
@@ -49,9 +41,7 @@ export class CompilerCache {
 }
 
 
-// TODO(tbosch): rename this class to Compiler
-// and remove the current Compiler when core uses the render views.
-export class NewCompiler {
+export class Compiler {
   _reader: DirectiveMetadataReader;
   _compilerCache:CompilerCache;
   _compiling:Map<Type, Promise>;
@@ -80,19 +70,19 @@ export class NewCompiler {
     this._protoViewFactory = protoViewFactory;
   }
 
-  _bindDirective(directive) {
-    var meta = this._reader.read(directive);
+  _bindDirective(directiveTypeOrBinding) {
+    if (directiveTypeOrBinding instanceof DirectiveBinding) {
+      return directiveTypeOrBinding;
+    }
+    var meta = this._reader.read(directiveTypeOrBinding);
     return DirectiveBinding.createFromType(meta.type, meta.annotation);
   }
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>.
   // Used for bootstrapping.
-  compileRoot(elementOrSelector, componentBinding:DirectiveBinding):Promise<ProtoView> {
+  compileRoot(elementOrSelector, componentTypeOrBinding:any):Promise<ProtoView> {
     return this._renderer.createRootProtoView(elementOrSelector, 'root').then( (rootRenderPv) => {
-      return this._compileNestedProtoViews(null, rootRenderPv, [componentBinding], true)
-    }).then( (rootProtoView) => {
-      rootProtoView.instantiateInPlace = true;
-      return rootProtoView;
+      return this._compileNestedProtoViews(null, rootRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
     });
   }
 
@@ -265,41 +255,4 @@ export class NewCompiler {
     }
   }
 
-}
-
-// TODO(tbosch): delete this class once we use the render views
-/**
- * The compiler loads and translates the html templates of components into
- * nested ProtoViews. To decompose its functionality it uses
- * the render compiler.
- *
- * @publicModule angular2/template
- */
-@Injectable()
-export class Compiler extends NewCompiler {
-  constructor(changeDetection:ChangeDetection,
-              templateLoader:TemplateLoader,
-              reader: DirectiveMetadataReader,
-              parser:Parser,
-              cache:CompilerCache,
-              shadowDomStrategy: ShadowDomStrategy,
-              templateResolver: TemplateResolver,
-              componentUrlMapper: ComponentUrlMapper,
-              urlResolver: UrlResolver) {
-    super(
-      reader,
-      cache,
-      templateResolver,
-      componentUrlMapper,
-      urlResolver,
-      new DirectDomRenderer(
-        new rc.Compiler(
-          new DefaultStepFactory(parser, shadowDomStrategy.render),
-          templateLoader
-        ),
-        null, shadowDomStrategy.render
-      ),
-      new ProtoViewFactory(changeDetection, shadowDomStrategy)
-    );
-  }
 }

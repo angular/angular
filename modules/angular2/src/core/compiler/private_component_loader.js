@@ -1,7 +1,6 @@
 import {Compiler} from './compiler';
-import {ShadowDomStrategy} from './shadow_dom_strategy';
+import {ViewFactory} from './view_factory';
 import {Injectable} from 'angular2/di';
-import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLocation} from './private_component_location';
@@ -11,17 +10,14 @@ import {Type, stringify, BaseException} from 'angular2/src/facade/lang';
 @Injectable()
 export class PrivateComponentLoader {
   compiler:Compiler;
-  shadowDomStrategy:ShadowDomStrategy;
-  eventManager:EventManager;
   directiveMetadataReader:DirectiveMetadataReader;
+  viewFactory:ViewFactory;
 
-  constructor(compiler:Compiler, shadowDomStrategy:ShadowDomStrategy,
-              eventManager:EventManager, directiveMetadataReader:DirectiveMetadataReader) {
+  constructor(compiler:Compiler, directiveMetadataReader:DirectiveMetadataReader, viewFactory:ViewFactory) {
 
     this.compiler = compiler;
-    this.shadowDomStrategy = shadowDomStrategy;
-    this.eventManager = eventManager;
     this.directiveMetadataReader = directiveMetadataReader;
+    this.viewFactory = viewFactory;
   }
 
   load(type:Type, location:PrivateComponentLocation) {
@@ -33,10 +29,10 @@ export class PrivateComponentLoader {
 
     return this.compiler.compile(type).then((componentProtoView) => {
       location.createComponent(
+        this.viewFactory,
         type, annotation,
-        componentProtoView,
-        this.eventManager,
-        this.shadowDomStrategy);
+        componentProtoView
+      );
     });
   }
 }

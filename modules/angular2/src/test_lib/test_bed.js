@@ -1,4 +1,4 @@
-import {Injector} from 'angular2/di';
+import {Injector, bind} from 'angular2/di';
 
 import {Type, isPresent, BaseException} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
@@ -10,11 +10,14 @@ import {Template} from 'angular2/src/core/annotations/template';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {View} from 'angular2/src/core/compiler/view';
+import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 
-import {EventManager} from 'angular2/src/render/dom/events/event_manager';
+import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {queryView} from './utils';
+import {queryView, viewRootNodes, el} from './utils';
 import {instantiateType, getTypeOf} from './lang_utils';
+
 
 export class TestBed {
   _injector: Injector;
@@ -85,11 +88,17 @@ export class TestBed {
       this.setInlineTemplate(component, html);
     }
 
-    return this._injector.get(Compiler).compile(component).then((pv) => {
-      var eventManager = this._injector.get(EventManager);
-      var view = pv.instantiate(null, eventManager);
-      view.hydrate(this._injector, null, null, context, null);
-      return new ViewProxy(view);
+    var rootEl = el('<div></div>');
+    var metadataReader = this._injector.get(DirectiveMetadataReader);
+    var componentBinding = DirectiveBinding.createFromBinding(
+      bind(component).toValue(context),
+      metadataReader.read(component).annotation
+    );
+    return this._injector.get(Compiler).compileRoot(rootEl, componentBinding).then((pv) => {
+      var viewFactory = this._injector.get(ViewFactory);
+      var view = viewFactory.getView(pv);
+      view.hydrate(this._injector, null, context, null);
+      return new ViewProxy(view.componentChildViews[0]);
     });
   }
 }
@@ -108,8 +117,8 @@ export class ViewProxy {
     return this._view.context;
   }
 
-  get nodes(): List {
-    return this._view.nodes;
+  get rootNodes(): List {
+    return viewRootNodes(this._view);
   }
 
   detectChanges(): void {

@@ -6,11 +6,10 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
-import {NgElement} from 'angular2/src/core/dom/element';
+import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 import * as pclModule from 'angular2/src/core/compiler/private_component_location';
-import {setterFactory} from 'angular2/src/render/dom/view/property_setter_factory';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -268,8 +267,8 @@ export class ProtoElementInjector  {
     }
   }
 
-  instantiate(parent:ElementInjector, host:ElementInjector):ElementInjector {
-    return new ElementInjector(this, parent, host);
+  instantiate(parent:ElementInjector):ElementInjector {
+    return new ElementInjector(this, parent);
   }
 
   directParent(): ProtoElementInjector {
@@ -339,21 +338,12 @@ export class ElementInjector extends TreeNode {
   _privateComponent;
   _privateComponentBinding:DirectiveBinding;
 
-  constructor(proto:ProtoElementInjector, parent:ElementInjector, host:ElementInjector) {
+  constructor(proto:ProtoElementInjector, parent:ElementInjector) {
     super(parent);
-    if (isPresent(parent) && isPresent(host)) {
-      throw new BaseException('Only either parent or host is allowed');
-    }
-    this._host = null; // needed to satisfy Dart
-    if (isPresent(parent)) {
-      this._host = parent._host;
-    } else {
-      this._host = host;
-    }
-
     this._proto = proto;
 
     //we cannot call clearDirectives because fields won't be detected
+    this._host = null;
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
@@ -371,6 +361,7 @@ export class ElementInjector extends TreeNode {
   }
 
   clearDirectives() {
+    this._host = null;
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
@@ -406,7 +397,8 @@ export class ElementInjector extends TreeNode {
     this._constructionCounter = 0;
   }
 
-  instantiateDirectives(lightDomAppInjector:Injector, shadowDomAppInjector:Injector, preBuiltObjects:PreBuiltObjects) {
+  instantiateDirectives(lightDomAppInjector:Injector, host:ElementInjector, shadowDomAppInjector:Injector, preBuiltObjects:PreBuiltObjects) {
+    this._host = host;
     this._checkShadowDomAppInjector(shadowDomAppInjector);
 
     this._preBuiltObjects = preBuiltObjects;
@@ -454,10 +446,6 @@ export class ElementInjector extends TreeNode {
   hasPreBuiltObject(type:Type):boolean {
     var pb = this._getPreBuiltObjectByKeyId(Key.get(type).id);
     return pb !== _undefined && isPresent(pb);
-  }
-
-  forElement(el):boolean {
-    return this._preBuiltObjects.element.domElement === el;
   }
 
   /** Gets the NgElement associated with this ElementInjector */
@@ -538,6 +526,10 @@ export class ElementInjector extends TreeNode {
     return obj;
   }
 
+  getBoundElementIndex() {
+    return this._proto.index;
+  }
+
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
     if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
@@ -553,10 +545,12 @@ export class ElementInjector extends TreeNode {
   }
 
   _buildPropSetter(dep) {
-    var ngElement = this._getPreBuiltObjectByKeyId(StaticKeys.instance().ngElementId);
-    var domElement = ngElement.domElement;
-    var setter = setterFactory(dep.propSetterName);
-    return function(v) { setter(domElement, v) };
+    var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
+    var renderer = view.proto.renderer;
+    var index = this._proto.index;
+    return function(v) {
+      renderer.setElementProperty(view.render, index, dep.propSetterName, v);
+    };
   }
 
   _buildAttribute(dep): string {
@@ -582,7 +576,6 @@ export class ElementInjector extends TreeNode {
    */
   _getByKey(key:Key, depth:number, optional:boolean, requestor:Key) {
     var ei = this;
-
     if (! this._shouldIncludeSelf(depth)) {
       depth -= ei._proto.distanceToParent;
       ei = ei._parent;
@@ -631,7 +624,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
 
     if (keyId === staticKeys.privateComponentLocationId) {
-      return new pclModule.PrivateComponentLocation(this, this._preBuiltObjects.element, this._preBuiltObjects.view);
+      return new pclModule.PrivateComponentLocation(this, this._preBuiltObjects.view);
     }
 
     //TODO add other objects as needed

@@ -1,33 +1,28 @@
 import {Directive} from 'angular2/src/core/annotations/annotations'
-import {NgElement} from 'angular2/src/core/dom/element';
 import * as viewModule from './view';
 import * as eiModule from './element_injector';
-import {ShadowDomStrategy} from './shadow_dom_strategy';
-import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Type} from 'angular2/src/facade/lang';
-
+import * as vfModule from './view_factory';
 
 export class PrivateComponentLocation {
   _elementInjector:eiModule.ElementInjector;
-  _elt:NgElement;
   _view:viewModule.View;
 
-  constructor(elementInjector:eiModule.ElementInjector, elt:NgElement, view:viewModule.View){
+  constructor(elementInjector:eiModule.ElementInjector, view:viewModule.View){
     this._elementInjector = elementInjector;
-    this._elt = elt;
     this._view = view;
   }
 
-  createComponent(type:Type, annotation:Directive, componentProtoView:viewModule.ProtoView,
-                  eventManager:EventManager, shadowDomStrategy:ShadowDomStrategy) {
+  createComponent(viewFactory: vfModule.ViewFactory, type:Type, annotation:Directive, componentProtoView:viewModule.ProtoView) {
     var context = this._elementInjector.createPrivateComponent(type, annotation);
 
-    var view = componentProtoView.instantiate(this._elementInjector, eventManager);
-    view.hydrate(this._elementInjector.getShadowDomAppInjector(), this._elementInjector, null, context, null);
+    var view = viewFactory.getView(componentProtoView);
+    view.hydrate(this._elementInjector.getShadowDomAppInjector(), this._elementInjector, context, null);
 
-    shadowDomStrategy.attachTemplate(this._elt.domElement, view);
-
+    this._view.proto.renderer.setDynamicComponentView(
+      this._view.render, this._elementInjector.getBoundElementIndex(), view.render
+    );
     ListWrapper.push(this._view.componentChildViews, view);
     this._view.changeDetector.addChild(view.changeDetector);
   }

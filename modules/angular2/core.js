@@ -14,5 +14,5 @@ export * from './src/core/compiler/private_component_location';
 export * from './src/core/compiler/view';
 export * from './src/core/compiler/view_container';
 
-export * from './src/core/dom/element';
+export * from './src/core/compiler/ng_element';
 

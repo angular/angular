@@ -35,7 +35,7 @@ export class ViewContainer {
     if (isBlank(this._lightDom)) {
       for (var i = this._views.length - 1; i >= 0; i--) {
         var view = this._views[i];
-        ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, view);
+        ViewContainer.removeViewNodes(view);
         this._viewFactory.returnView(view);
       }
       this._views = [];
@@ -72,12 +72,11 @@ export class ViewContainer {
   }
 
   insert(view, atIndex=-1): viewModule.View {
-    this._checkHydrated();
-    if (atIndex == -1) atIndex = this._views.length;
-    ListWrapper.insert(this._views, atIndex, view);
     if (!view.hydrated()) {
       view.hydrate(this._hostLightDom);
     }
+    if (atIndex == -1) atIndex = this._views.length;
+    ListWrapper.insert(this._views, atIndex, view);
 
     if (isBlank(this._lightDom)) {
       ViewContainer.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
@@ -100,7 +99,7 @@ export class ViewContainer {
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     if (isBlank(this._lightDom)) {
-      ViewContainer.removeViewNodesFromParent(this.templateElement.parentNode, detachedView);
+      ViewContainer.removeViewNodes(detachedView);
     } else {
       this._lightDom.redistribute();
     }
@@ -129,8 +128,11 @@ export class ViewContainer {
     }
   }
 
-  static removeViewNodesFromParent(parent, view) {
-    for (var i = view.rootNodes.length - 1; i >= 0; --i) {
+  static removeViewNodes(view) {
+    var len = view.rootNodes.length;
+    if (len == 0) return;
+    var parent = view.rootNodes[0].parentNode;
+    for (var i = len - 1; i >= 0; --i) {
       DOM.removeChild(parent, view.rootNodes[i]);
     }
   }

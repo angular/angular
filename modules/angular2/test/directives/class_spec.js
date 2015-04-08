@@ -31,7 +31,7 @@ export function main() {
 
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
         async.done();
       });
@@ -43,11 +43,11 @@ export function main() {
 
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
         view.context.condition = false;
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding bar');
+        expect(view.rootNodes[0].className).toEqual('ng-binding bar');
 
         async.done();
       });
@@ -59,19 +59,19 @@ export function main() {
 
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
         StringMapWrapper.set(view.context.expr, 'bar', true);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo bar');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo bar');
 
         StringMapWrapper.set(view.context.expr, 'baz', true);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo bar baz');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo bar baz');
 
         StringMapWrapper.delete(view.context.expr, 'bar');
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo baz');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo baz');
 
         async.done();
       });
@@ -83,15 +83,15 @@ export function main() {
 
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
         view.context.expr = null;
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding foo');
+        expect(view.rootNodes[0].className).toEqual('ng-binding foo');
 
         view.context.expr = {'foo': false, 'bar': true};
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('ng-binding bar');
+        expect(view.rootNodes[0].className).toEqual('ng-binding bar');
 
         async.done();
       });
@@ -104,11 +104,11 @@ export function main() {
       tb.createView(TestComponent, {html: template}).then((view) => {
         StringMapWrapper.set(view.context.expr, 'bar', true);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init foo ng-binding bar');
+        expect(view.rootNodes[0].className).toEqual('init foo ng-binding bar');
 
         StringMapWrapper.set(view.context.expr, 'foo', false);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init ng-binding bar');
+        expect(view.rootNodes[0].className).toEqual('init ng-binding bar');
 
         async.done();
       });
@@ -120,19 +120,19 @@ export function main() {
 
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init foo ng-binding baz');
+        expect(view.rootNodes[0].className).toEqual('init foo ng-binding baz');
 
         StringMapWrapper.set(view.context.expr, 'bar', true);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init foo ng-binding baz bar');
+        expect(view.rootNodes[0].className).toEqual('init foo ng-binding baz bar');
 
         StringMapWrapper.set(view.context.expr, 'foo', false);
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init ng-binding baz bar');
+        expect(view.rootNodes[0].className).toEqual('init ng-binding baz bar');
 
         view.context.condition = false;
         view.detectChanges();
-        expect(view.nodes[0].className).toEqual('init ng-binding bar');
+        expect(view.rootNodes[0].className).toEqual('init ng-binding bar');
 
         async.done();
       });

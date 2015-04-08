@@ -1,6 +1,5 @@
 import {Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
-import {NgElement} from 'angular2/src/core/dom/element';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {Parent} from 'angular2/src/core/annotations/visibility';
@@ -156,7 +155,7 @@ export class SwitchWhen {
   _switch: Switch;
   _viewContainer: ViewContainer;
 
-  constructor(el: NgElement, viewContainer: ViewContainer, @Parent() sswitch: Switch) {
+  constructor(viewContainer: ViewContainer, @Parent() sswitch: Switch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;

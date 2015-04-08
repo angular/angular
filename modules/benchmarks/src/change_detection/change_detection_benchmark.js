@@ -185,11 +185,11 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = changeDetection.createProtoChangeDetector('parent');
+  var parentProto = changeDetection.createProtoChangeDetector('parent', null);
   var parentCd = parentProto.instantiate(dispatcher, [], [], []);
 
   var targetObj = new Obj();
-  var proto = changeDetection.createProtoChangeDetector("proto");
+  var proto = changeDetection.createProtoChangeDetector("proto", null);
   var bindingRecords = [
     new BindingRecord(parser.parseBinding('field0', null), new FakeBindingMemento(targetObj, reflector.setter("field0")), null),
     new BindingRecord(parser.parseBinding('field1', null), new FakeBindingMemento(targetObj, reflector.setter("field1")), null),
@@ -240,7 +240,7 @@ export function main () {
 
   // -- BASELINE
   var baselineHead = setUpBaseline(numberOfDetectors, object);
-  
+
   runBaselineReads(baselineHead, 1); //warmup
 
   bindAction(

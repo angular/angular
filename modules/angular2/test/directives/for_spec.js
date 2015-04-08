@@ -30,7 +30,7 @@ export function main() {
     it('should reflect initial elements', inject([TestBed, AsyncTestCompleter], (tb, async) => {
       tb.createView(TestComponent, {html: TEMPLATE}).then((view) => {
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('1;2;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;');
         async.done();
       });
     }));
@@ -42,7 +42,7 @@ export function main() {
         ListWrapper.push(view.context.items, 3);
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('1;2;3;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;3;');
         async.done();
       });
     }));
@@ -54,7 +54,7 @@ export function main() {
         ListWrapper.removeAt(view.context.items, 1);
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('1;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;');
         async.done();
       });
     }));
@@ -67,7 +67,7 @@ export function main() {
         ListWrapper.push(view.context.items, 1);
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('2;1;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('2;1;');
         async.done();
       });
     }));
@@ -81,7 +81,7 @@ export function main() {
         view.context.items = [6, 2, 7, 0, 4, 8];
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('6;2;7;0;4;8;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('6;2;7;0;4;8;');
         async.done();
       });
     }));
@@ -94,20 +94,20 @@ export function main() {
         // INIT
         view.context.items = [{'name': 'misko'}, {'name':'shyam'}];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('misko;shyam;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('misko;shyam;');
 
         // GROW
         ListWrapper.push(view.context.items, {'name': 'adam'});
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('misko;shyam;adam;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('misko;shyam;adam;');
 
         // SHRINK
         ListWrapper.removeAt(view.context.items, 2);
         ListWrapper.removeAt(view.context.items, 0);
         view.detectChanges();
 
-        expect(DOM.getText(view.nodes[0])).toEqual('shyam;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('shyam;');
         async.done();
       });
     }));
@@ -116,7 +116,7 @@ export function main() {
       var template = '<ul><li template="for #item of null">{{item}};</li></ul>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
         async.done();
       });
     }));
@@ -125,15 +125,15 @@ export function main() {
       inject([TestBed, AsyncTestCompleter], (tb, async) => {
       tb.createView(TestComponent, {html: TEMPLATE}).then((view) => {
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('1;2;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;');
 
         view.context.items = null;
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         view.context.items = [1, 2, 3];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('1;2;3;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;3;');
         async.done();
       });
     }));
@@ -141,7 +141,7 @@ export function main() {
     it('should throw on ref changing to string', inject([TestBed, AsyncTestCompleter], (tb, async) => {
       tb.createView(TestComponent, {html: TEMPLATE}).then((view) => {
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('1;2;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('1;2;');
 
         view.context.items = 'whaaa';
         expect(() => view.detectChanges()).toThrowError();
@@ -154,7 +154,7 @@ export function main() {
         var a = new Foo();
         view.context.items = [a, a];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('foo;foo;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('foo;foo;');
         async.done();
       });
     }));
@@ -174,11 +174,11 @@ export function main() {
         view.detectChanges();
         view.detectChanges();
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('a-2;b-2;|c-1;|');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('a-2;b-2;|c-1;|');
 
         view.context.items = [['e'], ['f', 'g']];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('e-1;|f-2;g-2;|');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('e-1;|f-2;g-2;|');
 
         async.done();
       });
@@ -195,11 +195,11 @@ export function main() {
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.context.items = [['a', 'b'], ['c']];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('a-2;b-2;c-1;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('a-2;b-2;c-1;');
 
         view.context.items = [['e'], ['f', 'g']];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('e-1;f-2;g-2;');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('e-1;f-2;g-2;');
         async.done();
       });
     }));
@@ -212,11 +212,11 @@ export function main() {
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.context.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('0123456789');
 
         view.context.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('0123456789');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('0123456789');
         async.done();
       });
     }));

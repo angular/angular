@@ -31,15 +31,15 @@ export function main() {
 
         tb.createView(TestComponent, {html: template}).then((view) => {
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
           view.context.switchValue = 'a';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when a');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when a');
 
           view.context.switchValue = 'b';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when b');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when b');
 
           async.done();
         });
@@ -55,15 +55,15 @@ export function main() {
 
         tb.createView(TestComponent, {html: template}).then((view) => {
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when default');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when default');
 
           view.context.switchValue = 'a';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when a');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when a');
 
           view.context.switchValue = 'b';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when default');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when default');
 
           async.done();
         });
@@ -83,15 +83,15 @@ export function main() {
 
         tb.createView(TestComponent, {html: template}).then((view) => {
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when default1;when default2;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when default1;when default2;');
 
           view.context.switchValue = 'a';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when a1;when a2;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when a1;when a2;');
 
           view.context.switchValue = 'b';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when b1;when b2;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when b1;when b2;');
 
           async.done();
         });
@@ -113,23 +113,23 @@ export function main() {
           view.context.when2 = 'b';
           view.context.switchValue = 'a';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when 1;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when 1;');
 
           view.context.switchValue = 'b';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when 2;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when 2;');
 
           view.context.switchValue = 'c';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when default;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when default;');
 
           view.context.when1 = 'c';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when 1;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when 1;');
 
           view.context.when1 = 'd';
           view.detectChanges();
-          expect(DOM.getText(view.nodes[0])).toEqual('when default;');
+          expect(DOM.getText(view.rootNodes[0])).toEqual('when default;');
 
           async.done();
         });

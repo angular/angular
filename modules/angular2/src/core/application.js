@@ -9,12 +9,12 @@ import {ExceptionHandler} from './exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
-import {DirectiveBinding} from './compiler/element_injector';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {ShadowDomStrategy, NativeShadowDomStrategy, EmulatedUnscopedShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
+import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {XHR} from 'angular2/src/services/xhr';
 import {XHRImpl} from 'angular2/src/services/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
@@ -27,6 +27,13 @@ import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {PrivateComponentLoader} from 'angular2/src/core/compiler/private_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {Renderer} from 'angular2/src/render/api';
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import * as rc from 'angular2/src/render/dom/compiler/compiler';
+import * as rvf from 'angular2/src/render/dom/view/view_factory';
+
 import {
   appViewToken,
   appChangeDetectorToken,
@@ -60,7 +67,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         return element;
       }, [appComponentAnnotatedTypeToken, appDocumentToken]),
       bind(appViewToken).toAsyncFactory((changeDetection, compiler, injector, appElement,
-        appComponentAnnotatedType, strategy, eventManager, testability, registry) => {
+        appComponentAnnotatedType, testability, registry, viewFactory) => {
 
         // We need to do this here to ensure that we create Testability and
         // it's ready on the window for users.
@@ -73,18 +80,18 @@ function _injectorBindings(appComponentType): List<Binding> {
         }
         return compiler.compileRoot(
             appElement,
-            DirectiveBinding.createFromType(appComponentAnnotatedType.type, appComponentAnnotatedType.annotation)
+            appComponentAnnotatedType.type
           ).then(
             (appProtoView) => {
           // The light Dom of the app element is not considered part of
           // the angular application. Thus the context and lightDomInjector are
           // empty.
-          var view = appProtoView.instantiate(null, eventManager);
-          view.hydrate(injector, null, null, new Object(), null);
+          var view = viewFactory.getView(appProtoView);
+          view.hydrate(injector, null, new Object(), null);
           return view;
         });
       }, [ChangeDetection, Compiler, Injector, appElementToken, appComponentAnnotatedTypeToken,
-          ShadowDomStrategy, EventManager, Testability, TestabilityRegistry]),
+          Testability, TestabilityRegistry, ViewFactory]),
 
       bind(appChangeDetectorToken).toFactory((rootView) => rootView.changeDetector,
           [appViewToken]),
@@ -98,6 +105,23 @@ function _injectorBindings(appComponentType): List<Binding> {
       bind(ShadowDomStrategy).toFactory(
           (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
           [StyleUrlResolver, appDocumentToken]),
+      bind(Renderer).toClass(DirectDomRenderer),
+      bind(rc.Compiler).toClass(rc.DefaultCompiler),
+      // TODO(tbosch): We need an explicit factory here, as
+      // we are getting errors in dart2js with mirrors...
+      bind(rvf.ViewFactory).toFactory(
+        (capacity, eventManager, shadowDomStrategy) => new rvf.ViewFactory(capacity, eventManager, shadowDomStrategy),
+        [rvf.VIEW_POOL_CAPACITY, EventManager, ShadowDomStrategy]
+      ),
+      bind(rvf.VIEW_POOL_CAPACITY).toValue(100000),
+      ProtoViewFactory,
+      // TODO(tbosch): We need an explicit factory here, as
+      // we are getting errors in dart2js with mirrors...
+      bind(ViewFactory).toFactory(
+        (capacity) => new ViewFactory(capacity),
+        [VIEW_POOL_CAPACITY]
+      ),
+      bind(VIEW_POOL_CAPACITY).toValue(100000),
       Compiler,
       CompilerCache,
       TemplateResolver,

@@ -242,19 +242,19 @@ export class EventLocalsAstSplitter extends AstTransformer {
   }
 
   splitEventAstIntoLocals(eventBindings:Map<string, ASTWithSource>):Map<string, ASTWithSource> {
-    // TODO(tbosch): reenable this when we are using
-    // the render views
-    return eventBindings;
-    // if (isPresent(eventBindings)) {
-    //   var result = MapWrapper.create();
-    //   MapWrapper.forEach(eventBindings, (astWithSource, eventName) => {
-    //     var adjustedAst = astWithSource.ast.visit(this);
-    //     MapWrapper.set(result, eventName, new ASTWithSource(adjustedAst, astWithSource.source, ''));
-    //     ListWrapper.push(this.eventNames, eventName);
-    //   });
-    //   return result;
-    // }
-    // return null;
+    if (isPresent(eventBindings)) {
+      var result = MapWrapper.create();
+      MapWrapper.forEach(eventBindings, (astWithSource, eventName) => {
+        // TODO(tbosch): reenable this when we are parsing element properties
+        // out of action expressions
+        // var adjustedAst = astWithSource.ast.visit(this);
+        var adjustedAst = astWithSource.ast;
+        MapWrapper.set(result, eventName, new ASTWithSource(adjustedAst, astWithSource.source, ''));
+        ListWrapper.push(this.eventNames, eventName);
+      });
+      return result;
+    }
+    return null;
   }
 
   visitAccessMember(ast:AccessMember) {

@@ -16,7 +16,7 @@ import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src
 import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
-import {NewCompiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {ProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -45,7 +45,7 @@ export function main() {
       var urlResolver = new FakeUrlResolver();
       renderer = new FakeRenderer(renderCompileResults);
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults)
-      return new NewCompiler(
+      return new Compiler(
         reader,
         new CompilerCache(),
         tplResolver,
@@ -373,7 +373,7 @@ export function main() {
         ],
         [rootProtoView, mainProtoView]
       );
-      compiler.compileRoot(null, createDirectiveBinding(reader, MainComponent)).then( (protoView) => {
+      compiler.compileRoot(null, MainComponent).then( (protoView) => {
         expect(protoView).toBe(rootProtoView);
         expect(rootProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
         async.done();
@@ -388,7 +388,7 @@ function createDirectiveBinding(reader, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new ProtoView(null, null, null, null, null);
+  var pv = new ProtoView(null, null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }

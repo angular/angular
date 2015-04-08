@@ -1,23 +1,23 @@
+import {Injectable} from 'angular2/di';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {ChangeDetection} from 'angular2/change_detection';
-import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {Component, Viewport, DynamicComponent} from '../annotations/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
-import {DirectDomProtoViewRef} from 'angular2/src/render/dom/direct_dom_renderer';
 import {ProtoView} from './view';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 
+@Injectable()
 export class ProtoViewFactory {
   _changeDetection:ChangeDetection;
-  _shadowDomStrategy:ShadowDomStrategy;
+  _renderer:renderApi.Renderer;
 
-  constructor(changeDetection, shadowDomStrategy) {
+  constructor(changeDetection:ChangeDetection, renderer:renderApi.Renderer) {
     this._changeDetection = changeDetection;
-    this._shadowDomStrategy = shadowDomStrategy;
+    this._renderer = renderer;
   }
 
   createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
@@ -30,13 +30,10 @@ export class ProtoViewFactory {
         'dummy', componentAnnotation.changeDetection
       );
     }
-    var domProtoView = this._getDomProtoView(renderProtoView.render);
-    var protoView = new ProtoView(renderProtoView.render, domProtoView.element, protoChangeDetector,
-        this._shadowDomStrategy, null);
+    var protoView = new ProtoView(this._renderer, renderProtoView.render, protoChangeDetector);
 
     for (var i=0; i<renderProtoView.elementBinders.length; i++) {
       var renderElementBinder = renderProtoView.elementBinders[i];
-      var domElementBinder = domProtoView.elementBinders[i];
       var sortedDirectives = new SortedDirectives(renderElementBinder.directives, directives);
       var parentPeiWithDistance = this._findParentProtoElementInjectorWithDistance(
         i, protoView.elementBinders, renderProtoView.elementBinders
@@ -46,7 +43,7 @@ export class ProtoViewFactory {
         sortedDirectives, renderElementBinder
       );
       this._createElementBinder(
-        protoView, renderElementBinder, domElementBinder, protoElementInjector, sortedDirectives
+        protoView, renderElementBinder, protoElementInjector, sortedDirectives
       );
       this._createDirectiveBinders(protoView, sortedDirectives);
     }
@@ -54,11 +51,6 @@ export class ProtoViewFactory {
       protoView.bindVariable(varName, mappedName);
     });
     return protoView;
-  }
-
-  // This method is needed to make DartAnalyzer happy
-  _getDomProtoView(protoViewRef: DirectDomProtoViewRef) {
-    return protoViewRef.delegate;
   }
 
   _findParentProtoElementInjectorWithDistance(binderIndex, elementBinders, renderElementBinders) {
@@ -105,7 +97,7 @@ export class ProtoViewFactory {
     return protoElementInjector;
   }
 
-  _createElementBinder(protoView, renderElementBinder, domElementBinder, protoElementInjector, sortedDirectives) {
+  _createElementBinder(protoView, renderElementBinder, protoElementInjector, sortedDirectives) {
     var parent = null;
     if (renderElementBinder.parentIndex !== -1) {
       parent = protoView.elementBinders[renderElementBinder.parentIndex];
@@ -117,14 +109,13 @@ export class ProtoViewFactory {
       sortedDirectives.componentDirective,
       sortedDirectives.viewportDirective
     );
-    elBinder.contentTagSelector = domElementBinder.contentTagSelector;
     // text nodes
     for (var i=0; i<renderElementBinder.textBindings.length; i++) {
-      protoView.bindTextNode(domElementBinder.textNodeIndices[i], renderElementBinder.textBindings[i].ast);
+      protoView.bindTextNode(renderElementBinder.textBindings[i].ast);
     }
     // element properties
     MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-      protoView.bindElementProperty(astWithSource.ast, propertyName, MapWrapper.get(domElementBinder.propertySetters, propertyName));
+      protoView.bindElementProperty(astWithSource.ast, propertyName);
     });
     // events
     MapWrapper.forEach(renderElementBinder.eventBindings, (astWithSource, eventName) => {

@@ -24,9 +24,14 @@ export class Log {
   }
 }
 
+export function viewRootNodes(view) {
+  return view.render.delegate.rootNodes;
+}
+
 export function queryView(view, selector) {
-  for (var i = 0; i < view.nodes.length; ++i) {
-    var res = DOM.querySelector(view.nodes[i], selector);
+  var rootNodes = viewRootNodes(view);
+  for (var i = 0; i < rootNodes.length; ++i) {
+    var res = DOM.querySelector(rootNodes[i], selector);
     if (isPresent(res)) {
       return res;
     }

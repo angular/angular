@@ -1,7 +1,6 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {Locals} from 'angular2/change_detection';
 
 import {ViewContainer} from './view_container';
 import {ProtoView} from './proto_view';
@@ -10,7 +9,7 @@ import {Content} from '../shadow_dom/content_tag';
 
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 
-import {EventDispatcher} from '../../api';
+// import {EventDispatcher} from '../../api';
 
 const NG_BINDING_CLASS = 'ng-binding';
 
@@ -31,7 +30,7 @@ export class View {
   lightDoms: List<LightDom>;
   proto: ProtoView;
   _hydrated: boolean;
-  _eventDispatcher: EventDispatcher;
+  _eventDispatcher: any/*EventDispatcher*/;
 
   constructor(
       proto:ProtoView, rootNodes:List,
@@ -43,6 +42,7 @@ export class View {
     this.viewContainers = viewContainers;
     this.contentTags = contentTags;
     this.lightDoms = ListWrapper.createFixedSize(boundElements.length);
+    ListWrapper.fill(this.lightDoms, null);
     this.componentChildViews = ListWrapper.createFixedSize(boundElements.length);
     this._hydrated = false;
   }
@@ -134,7 +134,10 @@ export class View {
 
     // componentChildViews
     for (var i = 0; i < this.componentChildViews.length; i++) {
-      this.componentChildViews[i].dehydrate();
+      var cv = this.componentChildViews[i];
+      if (isPresent(cv)) {
+        cv.dehydrate();
+      }
     }
 
     // viewContainers and content tags
@@ -150,10 +153,11 @@ export class View {
         }
       }
     }
+    this._eventDispatcher = null;
     this._hydrated = false;
   }
 
-  setEventDispatcher(dispatcher:EventDispatcher) {
+  setEventDispatcher(dispatcher:any/*EventDispatcher*/) {
     this._eventDispatcher = dispatcher;
   }
 
@@ -161,8 +165,11 @@ export class View {
     if (isPresent(this._eventDispatcher)) {
       var evalLocals = MapWrapper.create();
       MapWrapper.set(evalLocals, '$event', event);
-      var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new Locals(null, evalLocals));
-      this._eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
+      // TODO(tbosch): reenable this when we are parsing element properties
+      // out of action expressions
+      // var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new Locals(null, evalLocals));
+      // this._eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
+      this._eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
     }
   }
 }

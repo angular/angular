@@ -28,8 +28,8 @@ export function main() {
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
         async.done();
       });
     }));
@@ -39,8 +39,8 @@ export function main() {
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('hello2');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('hello2');
         async.done();
       });
     }));
@@ -51,18 +51,18 @@ export function main() {
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.context.booleanCondition = false;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         view.context.booleanCondition = true;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
 
         view.context.booleanCondition = false;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         async.done();
       });
@@ -74,28 +74,28 @@ export function main() {
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.context.booleanCondition = false;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         view.context.booleanCondition = true;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
 
         view.context.nestedBooleanCondition = false;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         view.context.nestedBooleanCondition = true;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('hello');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
 
         view.context.booleanCondition = false;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-        expect(DOM.getText(view.nodes[0])).toEqual('');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('');
 
         async.done();
       });
@@ -111,19 +111,19 @@ export function main() {
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(3);
-        expect(DOM.getText(view.nodes[0])).toEqual('helloNumberhelloStringhelloFunction');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(3);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('helloNumberhelloStringhelloFunction');
 
         view.context.numberCondition = 0;
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('helloString');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('helloString');
 
         view.context.numberCondition = 1;
         view.context.stringCondition = "bar";
         view.detectChanges();
-        expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-        expect(DOM.getText(view.nodes[0])).toEqual('helloNumber');
+        expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+        expect(DOM.getText(view.rootNodes[0])).toEqual('helloNumber');
         async.done();
       });
     }));
@@ -136,13 +136,13 @@ export function main() {
 
         tb.createView(TestComponent, {html: html}).then((view) => {
           view.detectChanges();
-          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-          expect(DOM.getText(view.nodes[0])).toEqual('hello');
+          expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+          expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
 
           view.context.numberCondition = 2;
           view.detectChanges();
-          expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(1);
-          expect(DOM.getText(view.nodes[0])).toEqual('hello');
+          expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(1);
+          expect(DOM.getText(view.rootNodes[0])).toEqual('hello');
 
           async.done();
         });
@@ -154,11 +154,11 @@ export function main() {
 
           tb.createView(TestComponent, {html: html}).then((view) => {
             view.detectChanges();
-            DOM.addClass(view.nodes[0].childNodes[1], "foo");
+            DOM.addClass(view.rootNodes[0].childNodes[1], "foo");
 
             view.context.numberCondition = 2;
             view.detectChanges();
-            expect(DOM.hasClass(view.nodes[0].childNodes[1], "foo")).toBe(true);
+            expect(DOM.hasClass(view.rootNodes[0].childNodes[1], "foo")).toBe(true);
 
             async.done();
           });
@@ -172,8 +172,8 @@ export function main() {
 
           tb.createView(TestComponent, {html: html}).then((view) => {
             expect(() => view.detectChanges()).toThrowError();
-            expect(DOM.querySelectorAll(view.nodes[0], 'copy-me').length).toEqual(0);
-            expect(DOM.getText(view.nodes[0])).toEqual('');
+            expect(DOM.querySelectorAll(view.rootNodes[0], 'copy-me').length).toEqual(0);
+            expect(DOM.getText(view.rootNodes[0])).toEqual('');
             async.done();
           });
       }));

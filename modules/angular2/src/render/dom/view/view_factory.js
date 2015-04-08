@@ -1,4 +1,4 @@
-import {OpaqueToken} from 'angular2/di';
+import {OpaqueToken, Inject, Injectable} from 'angular2/di';
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 
@@ -8,32 +8,33 @@ import {Content} from '../shadow_dom/content_tag';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
-import {ViewContainer} from './view_container';
-import {ProtoView} from './proto_view';
-import {View} from './view';
+import * as vcModule from './view_container';
+import * as pvModule from './proto_view';
+import * as viewModule from './view';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from '../util';
 
-export var VIEW_POOL_CAPACITY = new OpaqueToken('ViewFactory.viewPoolCapacity');
+// TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
+export const VIEW_POOL_CAPACITY = 'render.ViewFactory.viewPoolCapacity';
 
-
+@Injectable()
 export class ViewFactory {
   _poolCapacity:number;
-  _pooledViews:List<View>;
+  _pooledViews:List<viewModule.View>;
   _eventManager:EventManager;
   _shadowDomStrategy:ShadowDomStrategy;
 
-  constructor(capacity, eventManager, shadowDomStrategy) {
+  constructor(@Inject(VIEW_POOL_CAPACITY) capacity, eventManager:EventManager, shadowDomStrategy:ShadowDomStrategy) {
     this._poolCapacity = capacity;
     this._pooledViews = ListWrapper.create();
     this._eventManager = eventManager;
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  getView(protoView:ProtoView):View {
+  getView(protoView:pvModule.ProtoView):viewModule.View {
     // TODO(tbosch): benchmark this scanning of views and maybe
     // replace it with a fancy LRU Map/List combination...
     var view;
-    for (var i=0; i<this._pooledViews.length; i++) {
+    for (var i=this._pooledViews.length-1; i>=0; i--) {
       var pooledView = this._pooledViews[i];
       if (pooledView.proto === protoView) {
         view = ListWrapper.removeAt(this._pooledViews, i);
@@ -45,7 +46,7 @@ export class ViewFactory {
     return view;
   }
 
-  returnView(view:View) {
+  returnView(view:viewModule.View) {
     if (view.hydrated()) {
       view.dehydrate();
     }
@@ -55,7 +56,7 @@ export class ViewFactory {
     }
   }
 
-  _createView(protoView:ProtoView): View {
+  _createView(protoView:pvModule.ProtoView): viewModule.View {
     var rootElementClone = protoView.isRootView ? protoView.element : DOM.importIntoDoc(protoView.element);
     var elementsWithBindingsDynamic;
     if (protoView.isTemplateElement) {
@@ -72,7 +73,7 @@ export class ViewFactory {
     var viewRootNodes;
     if (protoView.isTemplateElement) {
       var childNode = DOM.firstChild(DOM.content(rootElementClone));
-      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in ProtoView
+      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in pvModule.ProtoView
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
       while(childNode != null) {
         ListWrapper.push(viewRootNodes, childNode);
@@ -108,7 +109,7 @@ export class ViewFactory {
       // viewContainers
       var viewContainer = null;
       if (isBlank(binder.componentId) && isPresent(binder.nestedProtoView)) {
-        viewContainer = new ViewContainer(this, element);
+        viewContainer = new vcModule.ViewContainer(this, element);
       }
       viewContainers[binderIdx] = viewContainer;
 
@@ -120,7 +121,7 @@ export class ViewFactory {
       contentTags[binderIdx] = contentTag;
     }
 
-    var view = new View(
+    var view = new viewModule.View(
       protoView, viewRootNodes,
       boundTextNodes, boundElements, viewContainers, contentTags
     );

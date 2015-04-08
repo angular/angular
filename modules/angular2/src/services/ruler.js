@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {DomAdapter} from 'angular2/src/dom/dom_adapter';
-import {NgElement} from 'angular2/src/core/dom/element';
+import {NgElement} from 'angular2/src/core/compiler/ng_element';
 
 export class Rectangle {
   left;

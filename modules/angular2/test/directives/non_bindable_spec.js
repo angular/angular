@@ -15,7 +15,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {Template} from 'angular2/src/core/annotations/template';
 
-import {NgElement} from 'angular2/src/core/dom/element';
+import {NgElement} from 'angular2/src/core/compiler/ng_element';
 
 import {NonBindable} from 'angular2/src/directives/non_bindable';
 
@@ -27,7 +27,7 @@ export function main() {
       var template = '<div>{{text}}<span non-bindable>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        expect(DOM.getText(view.nodes[0])).toEqual('foo{{text}}');
+        expect(DOM.getText(view.rootNodes[0])).toEqual('foo{{text}}');
         async.done();
       });
     }));
@@ -36,7 +36,7 @@ export function main() {
       var template = '<div non-bindable><span id=child test-dec>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        var span = DOM.querySelector(view.nodes[0], '#child');
+        var span = DOM.querySelector(view.rootNodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
         async.done();
       });
@@ -46,7 +46,7 @@ export function main() {
       var template = '<div><span id=child non-bindable test-dec>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
-        var span = DOM.querySelector(view.nodes[0], '#child');
+        var span = DOM.querySelector(view.rootNodes[0], '#child');
         expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
         async.done();
       });

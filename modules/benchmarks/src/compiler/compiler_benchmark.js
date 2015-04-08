@@ -4,7 +4,7 @@ import {isBlank, Type} from 'angular2/src/facade/lang';
 import {document} from 'angular2/src/facade/browser';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
-import {NativeShadowDomStrategy} from 'angular2/src/core/compiler/shadow_dom_strategy';
+import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
 import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
 
@@ -22,6 +22,11 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {Renderer} from 'angular2/src/render/api';
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import * as rc from 'angular2/src/render/dom/compiler/compiler';
 
 function setupReflector() {
   reflector.registerType(BenchmarkComponent, {
@@ -94,16 +99,22 @@ export function main() {
   var templateResolver = new FakeTemplateResolver();
   var urlResolver = new UrlResolver();
   var styleUrlResolver = new StyleUrlResolver(urlResolver);
+  var shadowDomStrategy = new NativeShadowDomStrategy(styleUrlResolver);
+  var renderer = new DirectDomRenderer(
+    new rc.DefaultCompiler(
+      new Parser(new Lexer()), shadowDomStrategy, new TemplateLoader(null, urlResolver)
+    ),
+    null,
+    shadowDomStrategy
+  );
   var compiler = new Compiler(
-    dynamicChangeDetection,
-    new TemplateLoader(null, urlResolver),
     reader,
-    new Parser(new Lexer()),
     cache,
-    new NativeShadowDomStrategy(styleUrlResolver),
     templateResolver,
     new ComponentUrlMapper(),
-    urlResolver
+    urlResolver,
+    renderer,
+    new ProtoViewFactory(dynamicChangeDetection, renderer)
   );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
   var templateWithBindings = createTemplateHtml('templateWithBindings', count);
