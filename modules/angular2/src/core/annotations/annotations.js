@@ -59,56 +59,91 @@ import {Injectable} from 'angular2/di';
  *
  * ## Example
  *
- * The following example demonstrates how dependency injection resolves constructor arguments in practice.
+ * The following example demonstrates how dependency injection resolves
+ * constructor arguments in practice.
+ * The [ app.ts | app.js | main.dart ] file contains
+ * a `dependency` decorator and `SomeService` injectable class.
+ * `index.html` contains the HTML template for the `dependency` decorator.
  *
+ * [NOTE: If we follow Angular 1's precedent, then the order of includes is
+ * the order of the tabs. We should probably be consistent about tab order,
+ * but if the most important file isn't first, either change the tab order
+ * or change which tab is selected (which one?).
+ * [QUESTION: How do you trade off runnability with readability? E.g. if only
+ * one line is important, can you highlight it? If not, how should you make
+ * sure people see it—repeat it in the text?]
+ * [NOTE: It's hard to visually distinguish HTML code from its container.]
+ * [PENDING: Transpiled code will be run through dartfmt, right?]
  *
- * Assume this HTML template:
+```
+<example name="dependency-injection">
+  <file name="index.html">
+    <div dependency="1">
+      <div dependency="2">
+        <div dependency="3" my-directive>
+          <div dependency="4">
+            <div dependency="5"></div>
+          </div>
+          <div dependency="6"></div>
+        </div>
+      </div>
+    </div>
+  </file>
+  <file name="app" type="ts">
+    @Injectable()
+    class SomeService {
+    }
+
+    @Decorator({
+      selector: '[dependency]',
+      bind: {
+        'id':'dependency'
+      }
+    })
+    class Dependency {
+      id:string;
+    }
+  </file>
+  <file name="app" type="dart" filename="dependency.dart">
+    @Injectable()
+    class SomeService {
+    }
+
+    @Decorator(
+        selector: '[dependency]',
+        bind: {'id':'dependency'}
+    )
+    class Dependency {
+      String id;
+    }
+  </file>
+</example>
+```
  *
- * ```
- * <div dependency="1">
- *   <div dependency="2">
- *     <div dependency="3" my-directive>
- *       <div dependency="4">
- *         <div dependency="5"></div>
- *       </div>
- *       <div dependency="6"></div>
- *     </div>
- *   </div>
- * </div>
- * ```
- *
- * With the following `dependency` decorator and `SomeService` injectable class.
- *
- * ```
- * @Injectable()
- * class SomeService {
- * }
- *
- * @Decorator({
- *   selector: '[dependency]',
- *   bind: {
- *     'id':'dependency'
- *   }
- * })
- * class Dependency {
- *   id:string;
- * }
- * ```
- *
- * Let's step through the different ways in which `MyDirective` could be declared...
+ * Let's step through the different ways in which you can declare a directive,
+ * called `MyDirective`. [PENDING: I didn't understand that this was a change
+ * of subject and looked for MyDirective in the preceding text.]
  *
  *
  * ### No injection
  *
  * Here the constructor is declared with no arguments, therefore nothing is injected into `MyDirective`.
+ * [PENDING: what does the example name mean? where do you see it, and how is it used?]
+ * [PENDING: Let's assume the following example can be automatically transpiled.]
  *
- * ```
- * @Decorator({ selector: '[my-directive]' })
- * class MyDirective {
- *   constructor() {
- *   }
- * }
- * ```
+```
+<example name="directive-no-injection">
+  <file name="app" type="typescript">
+    @Decorator({ selector: '[my-directive]' })
+    class MyDirective {
+      constructor() {
+      }
+    }
+  </file>
+  <file name="app" type="dart" filename="my_directive.dart" transpile="app.ts">
+  </file>
+</example>
+```
  *
  * This directive would be instantiated with no dependencies.
  *
@@ -120,13 +155,19 @@ import {Injectable} from 'angular2/di';
  * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type from the parent
  * component's injector.
  *
- * ```
- * @Decorator({ selector: '[my-directive]' })
- * class MyDirective {
- *   constructor(someService: SomeService) {
- *   }
- * }
- * ```
+```
+<example name="directive-injection-from-closest">
+  <file name="app" type="typescript">
+    @Decorator({ selector: '[my-directive]' })
+    class MyDirective {
+      constructor(someService: SomeService) {
+      }
+    }
+  </file>
+  <file name="app" type="dart" transpile="app.ts">
+  </file>
+</example>
+```
  *
  * This directive would be instantiated with a dependency on `SomeService`.
  *
@@ -135,31 +176,49 @@ import {Injectable} from 'angular2/di';
  *
  * Directives can inject other directives declared on the current element.
  *
- * ```
- * @Decorator({ selector: '[my-directive]' })
- * class MyDirective {
- *   constructor(dependency: Dependency) {
- *     expect(dependency.id).toEqual(3);
- *   }
- * }
- * ```
- * This directive would be instantiated with `Dependency` declared at the same element, in this case `dependency="3"`.
+```
+<example name="directive-injection-from-current">
+  <file name="app" type="typescript">
+    @Decorator({ selector: '[my-directive]' })
+    class MyDirective {
+      constructor(dependency: Dependency) {
+        expect(dependency.id).toEqual(3);
+      }
+    }
+  </file>
+  <file name="app" type="dart" transpile="app.ts">
+  </file>
+</example>
+```
+ *
+ * This directive would be instantiated with `Dependency` declared at the same
+ * element, in this case `dependency="3"`.
  *
  *
  * ### Injecting a directive from a direct parent element
  *
- * Directives can inject other directives declared on a direct parent element. By definition, a directive with a
- * `@Parent` annotation does not attempt to resolve dependencies for the current element, even if this would satisfy
+ * [PENDING: Dart conventions are for 80-character line width, in part because
+ * that works well in github and codereview diffs.]
+ *
+ * Directives can inject other directives declared on a direct parent element.
+ * By definition, a directive with a `@Parent` annotation does not attempt to
+ * resolve dependencies for the current element, even if this would satisfy
  * the dependency.
  *
- * ```
- * @Decorator({ selector: '[my-directive]' })
- * class MyDirective {
- *   constructor(@Parent() dependency: Dependency) {
- *     expect(dependency.id).toEqual(2);
- *   }
- * }
- * ```
+```
+<example name="directive-injection-from-parent">
+  <file name="app" type="typescript">
+    @Decorator({ selector: '[my-directive]' })
+    class MyDirective {
+      constructor(@Parent() dependency: Dependency) {
+        expect(dependency.id).toEqual(2);
+      }
+    }
+  </file>
+  <!-- Dart version omitted on purpose, to see what happens. -->
+</example>
+```
+ *
  * This directive would be instantiated with `Dependency` declared at the parent element, in this case `dependency="2"`.
  *
  *
@@ -169,14 +228,27 @@ import {Injectable} from 'angular2/di';
  * parent element and its parents. By definition, a directive with an `@Ancestor` annotation does not attempt to
  * resolve dependencies for the current element, even if this would satisfy the dependency.
  *
- * ```
- * @Decorator({ selector: '[my-directive]' })
- * class MyDirective {
- *   constructor(@Ancestor() dependency: Dependency) {
- *     expect(dependency.id).toEqual(2);
- *   }
- * }
- * ```
+```
+<example name="directive-injection-from-ancestor">
+  <file name="app" type="typescript">
+    @Decorator({ selector: '[my-directive]' })
+    class MyDirective {
+      constructor(@Ancestor() dependency: Dependency) {
+        expect(dependency.id).toEqual(2);
+      }
+    }
+  </file>
+  <file name="app" filename="my_directive.dart" type="dart">
+    @Decorator(selector: '[my-directive]')
+    class MyDirective {
+      @Ancestor() Dependency dependency;
+      MyDirective(this.dependency) {
+        expect(dependency.id).toEqual(2);
+      }
+    }
+  </file>
+</example>
+```
  *
  * Unlike the `@Parent` which only checks the parent, `@Ancestor` checks the parent, as well as its
  * parents recursively. If `dependency="2"` didn't exist on the direct parent, this injection would have returned
