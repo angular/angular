@@ -7,6 +7,9 @@ bower_components
 .pub
 .DS_STORE
 
+# Or broccoli working directory
+tmp
+
 # Or the files created by dart2js.
 *.dart.js
 *.dart.precompiled.js
