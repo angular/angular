@@ -10,42 +10,54 @@ module.exports = function filterPublicDocs(modules) {
     },
     $process: function(docs) {
 
+      var extraPublicDocs = [];
       docTypes = this.docTypes;
 
+      _.forEach(docs, function(doc) {
 
-      docs = _.filter(docs, function(doc) {
+        if (docTypes.indexOf(doc.docType) === -1 || !doc.publicModule) return;
 
-        if (docTypes.indexOf(doc.docType) === -1) return true;
-        if (!doc.publicModule) return false;
+        var publicModule = modules[doc.publicModule];
 
-        updateModule(doc);
+        if (!publicModule) {
+          throw new Error('Missing module definition: "' + doc.publicModule + '"\n' +
+                          'Referenced in class: "' + doc.moduleDoc.id + '/' + doc.name + '"');
+        } else {
 
-        return true;
+          // Ensure module is marked as public
+          publicModule.isPublic = true;
+
+          // Add a clone of export to its "public" module
+          var publicDoc = _.clone(doc);
+          publicDoc.moduleDoc = publicModule;
+          publicModule.exports.push(publicDoc);
+          extraPublicDocs.push(publicDoc);
+        }
       });
 
+      // Filter out the documents that are not public
       docs = _.filter(docs, function(doc) {
-        return doc.docType !== 'module' || doc.isPublic;
+
+        if (doc.docType === 'module') {
+          // doc is a module - is it public?
+          return doc.isPublic;
+        }
+
+        if (docTypes.indexOf(doc.docType) === -1) {
+          // doc is not a type we care about
+          return true;
+        }
+
+        // doc is in a public module
+        return doc.moduleDoc && doc.moduleDoc.isPublic;
+
       });
+
+      docs = docs.concat(extraPublicDocs);
+
       return docs;
     }
   };
 
 
-  function updateModule(classDoc) {
-
-    var originalModule = classDoc.moduleDoc;
-    var publicModule = modules[classDoc.publicModule];
-
-    if (!publicModule) {
-      throw new Error('Missing module definition: "' + classDoc.publicModule + '"\n' +
-                      'Referenced in class: "' + classDoc.moduleDoc.id + '/' + classDoc.name + '"');
-    }
-
-    publicModule.isPublic = true;
-
-    _.remove(classDoc.moduleDoc.exports, function(doc) { return doc === classDoc; });
-    classDoc.moduleDoc = publicModule;
-    publicModule.exports.push(classDoc);
-
-  }
 };

@@ -374,6 +374,6 @@ md-content.demo-source-container > hljs > pre > code.highlight {
   margin: 1em 0;
 }
 
-.member {
-
+.left-nav {
+  min-width: 300px;
 }

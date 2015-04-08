@@ -9,7 +9,7 @@
 <h2>Exports</h2>
 <ul>
 {%- for exportDoc in doc.exports %}
-  <li><a href="/{$ exportDoc.path $}">{$ exportDoc.name $} {$ exportDoc.docType $}</a></li>
+  <li><a href="/{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
 {%- endfor %}
 </ul>
 {% endif %}

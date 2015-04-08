@@ -3,7 +3,8 @@
 
 {% block body %}
 <h1 class="class export">{$ doc.name $} <span class="type">class</span></h1>
-<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></p>
+<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a><br/>
+defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a></p>
 <p>{$ doc.description | marked $}</p>
 
 {%- if doc.constructorDoc or doc.members.length -%}
