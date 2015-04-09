@@ -13,19 +13,21 @@ var Writer = require('broccoli-writer');
 var xtend = require('xtend');
 var TraceurFilter = (function (_super) {
     __extends(TraceurFilter, _super);
-    function TraceurFilter(inputTree, destExtension, options) {
+    function TraceurFilter(inputTree, destExtension, options, hackSourceMapExtension) {
         if (destExtension === void 0) { destExtension = '.js'; }
         if (options === void 0) { options = {}; }
+        if (hackSourceMapExtension === void 0) { hackSourceMapExtension = false; }
         this.inputTree = inputTree;
         this.destExtension = destExtension;
         this.options = options;
+        this.hackSourceMapExtension = hackSourceMapExtension;
     }
     TraceurFilter.prototype.write = function (readTree, destDir) {
         var _this = this;
         return readTree(this.inputTree).then(function (srcDir) {
             walkSync(srcDir).filter(function (filepath) {
                 var extension = path.extname(filepath).toLowerCase();
-                return extension === '.js' || extension === '.es6';
+                return extension === '.js' || extension === '.es6' || extension === '.cjs';
             }).map(function (filepath) {
                 var options = xtend({
                     filename: filepath
@@ -37,11 +39,15 @@ var TraceurFilter = (function (_super) {
                 var result = traceur.compile(options, filepath, sourcecode);
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
-                result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(filepath).replace(/\.es6$/, '') + (_this.destExtension === '.js' ? '.js.map' : '.map');
+                var url = path.basename(filepath).replace(/\.es6$/, '') + (_this.destExtension === '.js' ? '.js.map' : '.map');
+                if (_this.hackSourceMapExtension) {
+                    url = path.basename(filepath).replace(/\.\w+$/, '') + '.map';
+                }
+                result.js = result.js + ("\n//# sourceMappingURL=./" + url);
                 var destFilepath = filepath.replace(/\.\w+$/, _this.destExtension);
                 var destFile = path.join(destDir, destFilepath);
                 fse.mkdirsSync(path.dirname(destFile));
-                var destMap = path.join(destDir, filepath + '.map');
+                var destMap = path.join(destDir, destFilepath + '.map');
                 fs.writeFileSync(destFile, result.js, fsOpts);
                 result.sourceMap.file = destFilepath;
                 fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);

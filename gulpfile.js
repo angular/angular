@@ -773,9 +773,13 @@ gulp.task('build.js.prod', function(done) {
   );
 });
 
+gulp.task('broccoli.js.cjs', function() {
+  return broccoliBuild(require('./Brocfile-js_cjs.js'), path.join('js', 'cjs'));
+});
 gulp.task('build.js.cjs', function(done) {
   runSequence(
-    ['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
+    'broccoli.js.cjs',
+    //['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
     // Overwrite the .js.cjs transpilation with typescript outputs
     // We still need traceur outputs everywhere else, for now.
     'build/transpile.ts.cjs',
