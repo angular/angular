@@ -465,12 +465,6 @@ export class DirectiveBindingMemento {
     this.propertyName = propertyName;
     this.setter = setter;
   }
-
-  invoke(currentValue:any, elementInjectors:List<ElementInjector>) {
-    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    var directive = elementInjector.getDirectiveAtIndex(this._directiveIndex);
-    this.setter(directive, currentValue);
-  }
 }
 
 class DirectiveMemento {
