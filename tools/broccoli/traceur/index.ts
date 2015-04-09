@@ -8,7 +8,7 @@ var xtend = require('xtend');
 
 class TraceurFilter extends Writer {
   constructor(private inputTree, private destExtension: string = '.js',
-              private sourceMapExtension: string = '.map', private options = {}) {}
+              private options = {}, private hackSourceMapExtension: boolean = false) {}
   static RUNTIME_PATH = traceur.RUNTIME_PATH;
   write(readTree, destDir) {
     return readTree(this.inputTree)
@@ -29,9 +29,12 @@ class TraceurFilter extends Writer {
 
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
-                result.js = result.js + '\n//# sourceMappingURL=./' +
-                            path.basename(filepath).replace(/\.\w+$/, '') +
-                            this.sourceMapExtension;
+                var url = path.basename(filepath).replace(/\.es6$/, '') +
+                  (this.destExtension === '.js' ? '.js.map' : '.map');
+                if (this.hackSourceMapExtension) {
+                  url = path.basename(filepath).replace(/\.\w+$/, '') + '.map';
+                }
+                result.js = result.js + `\n//# sourceMappingURL=./${url}`;
 
                 var destFilepath = filepath.replace(/\.\w+$/, this.destExtension);
                 var destFile = path.join(destDir, destFilepath);

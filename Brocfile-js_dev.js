@@ -7,7 +7,7 @@ var replace = require('broccoli-replace');
 var htmlReplace = require('./tools/broccoli/html-replace');
 var path = require('path');
 
-var modulesTree = new Funnel('modules', {include: ['**/**'], destDir: '/'});
+var modulesTree = new Funnel('modules', {include: ['**/**'], exclude: ['**/*.cjs'], destDir: '/'});
 
 // Use Traceur to transpile original sources to ES6
 var es6DevTree = new TraceurCompiler(modulesTree, '.es6', {

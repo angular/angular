@@ -13,14 +13,14 @@ var Writer = require('broccoli-writer');
 var xtend = require('xtend');
 var TraceurFilter = (function (_super) {
     __extends(TraceurFilter, _super);
-    function TraceurFilter(inputTree, destExtension, sourceMapExtension, options) {
+    function TraceurFilter(inputTree, destExtension, options, hackSourceMapExtension) {
         if (destExtension === void 0) { destExtension = '.js'; }
-        if (sourceMapExtension === void 0) { sourceMapExtension = '.map'; }
         if (options === void 0) { options = {}; }
+        if (hackSourceMapExtension === void 0) { hackSourceMapExtension = false; }
         this.inputTree = inputTree;
         this.destExtension = destExtension;
-        this.sourceMapExtension = sourceMapExtension;
         this.options = options;
+        this.hackSourceMapExtension = hackSourceMapExtension;
     }
     TraceurFilter.prototype.write = function (readTree, destDir) {
         var _this = this;
@@ -39,7 +39,11 @@ var TraceurFilter = (function (_super) {
                 var result = traceur.compile(options, filepath, sourcecode);
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
-                result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(filepath).replace(/\.\w+$/, '') + _this.sourceMapExtension;
+                var url = path.basename(filepath).replace(/\.es6$/, '') + (_this.destExtension === '.js' ? '.js.map' : '.map');
+                if (_this.hackSourceMapExtension) {
+                    url = path.basename(filepath).replace(/\.\w+$/, '') + '.map';
+                }
+                result.js = result.js + ("\n//# sourceMappingURL=./" + url);
                 var destFilepath = filepath.replace(/\.\w+$/, _this.destExtension);
                 var destFile = path.join(destDir, destFilepath);
                 fse.mkdirsSync(path.dirname(destFile));

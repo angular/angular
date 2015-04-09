@@ -7,7 +7,7 @@ var renderLodashTemplate = require('broccoli-lodash');
 var modulesTree = new Funnel('modules', {include: ['**/**'], exclude: ['angular2/src/core/zone/vm_turn_zone.es6']});
 
 // Use Traceur to transpile original sources to ES6
-var cjsTree = new TraceurCompiler(modulesTree, '.js', '.map', {
+var cjsTree = new TraceurCompiler(modulesTree, '.js', {
   sourceMaps: true,
   annotations: true,      // parse annotations
   types: true,            // parse types
@@ -17,7 +17,7 @@ var cjsTree = new TraceurCompiler(modulesTree, '.js', '.map', {
   // Don't use type assertions since this is partly transpiled by typescript
   typeAssertions: false,
   modules: 'commonjs'
-});
+}, true);
 
 // Munge the filenames since we use an '.es6' extension
 cjsTree = stew.rename(cjsTree, function(relativePath) {
