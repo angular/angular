@@ -1,6 +1,6 @@
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  ChangeRecord, BindingRecord, BindingPropagationConfig, uninitialized} from 'angular2/change_detection';
+  BindingRecord, BindingPropagationConfig, uninitialized} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';

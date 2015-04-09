@@ -7,7 +7,7 @@ export {Locals}
   from './src/change_detection/parser/locals';
 export {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError}
     from './src/change_detection/exceptions';
-export {ProtoChangeDetector, ChangeRecord, ChangeDispatcher, ChangeDetector, ChangeDetection} from './src/change_detection/interfaces';
+export {ProtoChangeDetector, ChangeDispatcher, ChangeDetector, ChangeDetection} from './src/change_detection/interfaces';
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './src/change_detection/constants';
 export {DynamicProtoChangeDetector, JitProtoChangeDetector, BindingRecord}
     from './src/change_detection/proto_change_detector';

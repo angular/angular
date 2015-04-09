@@ -22,7 +22,7 @@ import {
   PrefixNot
   } from './parser/ast';
 
-import {ChangeRecord, ChangeDispatcher, ChangeDetector, ProtoChangeDetector} from './interfaces';
+import {ChangeDispatcher, ChangeDetector, ProtoChangeDetector} from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
