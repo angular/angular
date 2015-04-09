@@ -13,11 +13,13 @@ var Writer = require('broccoli-writer');
 var xtend = require('xtend');
 var TraceurFilter = (function (_super) {
     __extends(TraceurFilter, _super);
-    function TraceurFilter(inputTree, destExtension, options) {
+    function TraceurFilter(inputTree, destExtension, sourceMapExtension, options) {
         if (destExtension === void 0) { destExtension = '.js'; }
+        if (sourceMapExtension === void 0) { sourceMapExtension = '.map'; }
         if (options === void 0) { options = {}; }
         this.inputTree = inputTree;
         this.destExtension = destExtension;
+        this.sourceMapExtension = sourceMapExtension;
         this.options = options;
     }
     TraceurFilter.prototype.write = function (readTree, destDir) {
@@ -25,7 +27,7 @@ var TraceurFilter = (function (_super) {
         return readTree(this.inputTree).then(function (srcDir) {
             walkSync(srcDir).filter(function (filepath) {
                 var extension = path.extname(filepath).toLowerCase();
-                return extension === '.js' || extension === '.es6';
+                return extension === '.js' || extension === '.es6' || extension === '.cjs';
             }).map(function (filepath) {
                 var options = xtend({
                     filename: filepath
@@ -37,11 +39,11 @@ var TraceurFilter = (function (_super) {
                 var result = traceur.compile(options, filepath, sourcecode);
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
-                result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(filepath).replace(/\.es6$/, '') + (_this.destExtension === '.js' ? '.js.map' : '.map');
+                result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(filepath).replace(/\.\w+$/, '') + _this.sourceMapExtension;
                 var destFilepath = filepath.replace(/\.\w+$/, _this.destExtension);
                 var destFile = path.join(destDir, destFilepath);
                 fse.mkdirsSync(path.dirname(destFile));
-                var destMap = path.join(destDir, filepath + '.map');
+                var destMap = path.join(destDir, destFilepath + '.map');
                 fs.writeFileSync(destFile, result.js, fsOpts);
                 result.sourceMap.file = destFilepath;
                 fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);

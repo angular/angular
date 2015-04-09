@@ -7,7 +7,8 @@ var Writer = require('broccoli-writer');
 var xtend = require('xtend');
 
 class TraceurFilter extends Writer {
-  constructor(private inputTree, private destExtension: string = '.js', private options = {}) {}
+  constructor(private inputTree, private destExtension: string = '.js',
+              private sourceMapExtension: string = '.map', private options = {}) {}
   static RUNTIME_PATH = traceur.RUNTIME_PATH;
   write(readTree, destDir) {
     return readTree(this.inputTree)
@@ -16,7 +17,7 @@ class TraceurFilter extends Writer {
               .filter(filepath =>
                       {
                         var extension = path.extname(filepath).toLowerCase();
-                        return extension === '.js' || extension === '.es6';
+                        return extension === '.js' || extension === '.es6' || extension === '.cjs';
                       })
               .map(filepath => {
                 var options = xtend({filename: filepath}, this.options);
@@ -29,13 +30,13 @@ class TraceurFilter extends Writer {
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
                 result.js = result.js + '\n//# sourceMappingURL=./' +
-                            path.basename(filepath).replace(/\.es6$/, '') +
-                            (this.destExtension === '.js' ? '.js.map' : '.map');
+                            path.basename(filepath).replace(/\.\w+$/, '') +
+                            this.sourceMapExtension;
 
                 var destFilepath = filepath.replace(/\.\w+$/, this.destExtension);
                 var destFile = path.join(destDir, destFilepath);
                 fse.mkdirsSync(path.dirname(destFile));
-                var destMap = path.join(destDir, filepath + '.map');
+                var destMap = path.join(destDir, destFilepath + '.map');
 
 
                 fs.writeFileSync(destFile, result.js, fsOpts);
