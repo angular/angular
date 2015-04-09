@@ -160,7 +160,7 @@ You can run just the unit tests as follows:
 * `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**.
 * `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
 
-If you prefer running tests in "single-run" mode rather than watch mode, run:
+If you prefer running tests in "single-run" mode rather than watch mode use:
 
 * `$(npm bin)/gulp test.unit.js/ci`
 * `$(npm bin)/gulp test.unit.cjs/ci`
@@ -172,7 +172,7 @@ much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test
 tests respectively.
 
 **Note for transpiler tests**: The karma preprocessor is setup in a way so that after every test
-run the transpiler is reloaded. Therefore it is possible to make changes to the preprocessor and
+run the transpiler is reloaded. With that it is possible to make changes to the preprocessor and
 run the tests without exiting karma (just touch a test file that you would like to run).
 
 ### E2e tests
