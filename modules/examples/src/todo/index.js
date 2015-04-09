@@ -3,7 +3,7 @@ import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({
   selector: 'todo-app',
-  services: [
+  injectables: [
     Store,
     TodoFactory
   ]

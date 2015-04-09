@@ -453,7 +453,7 @@ export class Directive extends Injectable {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child [Injector] which is configured with the [Component.services].
+ * - creates a child [Injector] which is configured with the [Component.injectables].
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -494,16 +494,16 @@ export class Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
-   * The [services] defined in the Component annotation allow you to configure a set of bindings for the component's
+   * The [injectables] defined in the Component annotation allow you to configure a set of bindings for the component's
    * injector.
    *
    * When a component is instantiated, Angular creates a new child Injector, which is configured with the bindings in
-   * the Component [services] annotation. The injectable objects then become available for injection to the component
+   * the Component [injectables] annotation. The injectable objects then become available for injection to the component
    * itself and any of the directives in the component's template, i.e. they are not available to the directives which
    * are children in the component's light DOM.
    *
    *
-   * The syntax for configuring the [services] injectable is identical to [Injector] injectable configuration. See
+   * The syntax for configuring the [injectables] injectable is identical to [Injector] injectable configuration. See
    * [Injector] for additional detail.
    *
    *
@@ -520,7 +520,7 @@ export class Component extends Directive {
    *
    * @Component({
    *   selector: 'greet',
-   *   services: [
+   *   injectables: [
    *     Greeter
    *   ]
    * })
@@ -537,21 +537,21 @@ export class Component extends Directive {
    * }
    * ```
    */
-  services:List;
+  injectables:List;
 
 @CONST()
   constructor({
     selector,
     bind,
     events,
-    services,
+    injectables,
     lifecycle,
     changeDetection
     }:{
       selector:string,
       bind:Object,
       events:Object,
-      services:List,
+      injectables:List,
       lifecycle:List,
       changeDetection:string
     }={})
@@ -564,7 +564,7 @@ export class Component extends Directive {
     });
 
     this.changeDetection = changeDetection;
-    this.services = services;
+    this.injectables = injectables;
   }
 }
 
@@ -617,23 +617,23 @@ export class Component extends Directive {
  */
 export class DynamicComponent extends Directive {
   /**
-   * Same as [Component.services].
+   * Same as [Component.injectables].
    */
   // TODO(vsankin): Please extract into AbstractComponent
-  services:any; //List;
+  injectables:any; //List;
 
   @CONST()
   constructor({
     selector,
     bind,
     events,
-    services,
+    injectables,
     lifecycle
     }:{
       selector:string,
       bind:Object,
       events:Object,
-      services:List,
+      injectables:List,
       lifecycle:List
     }={}) {
     super({
@@ -643,7 +643,7 @@ export class DynamicComponent extends Directive {
       lifecycle: lifecycle
     });
 
-    this.services = services;
+    this.injectables = injectables;
   }
 }
 
