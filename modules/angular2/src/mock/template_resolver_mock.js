@@ -1,13 +1,13 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent, BaseException, stringify, isBlank} from 'angular2/src/facade/lang';
 
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
 export class MockTemplateResolver extends TemplateResolver {
-  _templates: Map<Type, Template>;
+  _templates: Map<Type, View>;
   _inlineTemplates: Map<Type, string>;
-  _templateCache: Map<Type, Template>;
+  _templateCache: Map<Type, View>;
   _directiveOverrides: Map<Type, Type>;
 
   constructor() {
@@ -19,14 +19,14 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Overrides the [Template] for a component.
+   * Overrides the [View] for a component.
    *
    * @param {Type} component
-   * @param {Template} template
+   * @param {ViewDefinition} view
    */
-  setTemplate(component: Type, template: Template): void {
+  setView(component: Type, view: View): void {
     this._checkOverrideable(component);
-    MapWrapper.set(this._templates, component, template);
+    MapWrapper.set(this._templates, component, view);
   }
 
   /**
@@ -41,7 +41,7 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Overrides a directive from the component [Template].
+   * Overrides a directive from the component [View].
    *
    * @param {Type} component
    * @param {Type} from
@@ -61,29 +61,29 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Returns the [Template] for a component:
-   * - Set the [Template] to the overridden template when it exists or fallback to the default
-   *   [TemplateResolver], see [setTemplate]
+   * Returns the [View] for a component:
+   * - Set the [View] to the overridden template when it exists or fallback to the default
+   *   [TemplateResolver], see [setView]
    * - Override the directives, see [overrideTemplateDirective]
-   * - Override the template definition, see [setInlineTemplate]
+   * - Override the @View definition, see [setInlineTemplate]
    *
    * @param component
-   * @returns {Template}
+   * @returns {ViewDefinition}
    */
-  resolve(component: Type): Template {
-    var template = MapWrapper.get(this._templateCache, component);
-    if (isPresent(template)) return template;
+  resolve(component: Type): View {
+    var view = MapWrapper.get(this._templateCache, component);
+    if (isPresent(view)) return view;
 
-    template = MapWrapper.get(this._templates, component);
-    if (isBlank(template)) {
-      template = super.resolve(component);
+    view = MapWrapper.get(this._templates, component);
+    if (isBlank(view)) {
+      view = super.resolve(component);
     }
 
-    var directives = template.directives;
+    var directives = view.directives;
     var overrides = MapWrapper.get(this._directiveOverrides, component);
 
     if (isPresent(overrides) && isPresent(directives)) {
-      directives = ListWrapper.clone(template.directives);
+      directives = ListWrapper.clone(view.directives);
       MapWrapper.forEach(overrides, (to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
@@ -91,36 +91,36 @@ export class MockTemplateResolver extends TemplateResolver {
         }
         directives[srcIndex] = to;
       });
-      template = new Template({
-        inline: template.inline,
-        url: template.url,
+      view = new View({
+        template: view.template,
+        templateUrl: view.templateUrl,
         directives: directives,
-        formatters: template.formatters,
-        source: template.source,
-        locale: template.locale,
-        device: template.device,
+        formatters: view.formatters,
+        source: view.source,
+        locale: view.locale,
+        device: view.device
       });
     }
 
     var inlineTemplate = MapWrapper.get(this._inlineTemplates, component);
     if (isPresent(inlineTemplate)) {
-      template = new Template({
-        inline: inlineTemplate,
-        url: null,
-        directives: template.directives,
-        formatters: template.formatters,
-        source: template.source,
-        locale: template.locale,
-        device: template.device,
+      view = new View({
+        template: inlineTemplate,
+        templateUrl: null,
+        directives: view.directives,
+        formatters: view.formatters,
+        source: view.source,
+        locale: view.locale,
+        device: view.device
       });
     }
 
-    MapWrapper.set(this._templateCache, component, template);
-    return template;
+    MapWrapper.set(this._templateCache, component, view);
+    return view;
   }
 
   /**
-   * Once a component has been compiled, the ProtoView is stored in the compiler cache.
+   * Once a component has been compiled, the AppProtoView is stored in the compiler cache.
    *
    * Then it should not be possible to override the component configuration after the component
    * has been compiled.

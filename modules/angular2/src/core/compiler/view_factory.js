@@ -13,14 +13,14 @@ export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
 @Injectable()
 export class ViewFactory {
   _poolCapacity:number;
-  _pooledViews:List<viewModule.View>;
+  _pooledViews:List<viewModule.AppView>;
 
   constructor(@Inject(VIEW_POOL_CAPACITY) capacity) {
     this._poolCapacity = capacity;
     this._pooledViews = ListWrapper.create();
   }
 
-  getView(protoView:viewModule.ProtoView):viewModule.View {
+  getView(protoView:viewModule.AppProtoView):viewModule.AppView {
     // TODO(tbosch): benchmark this scanning of views and maybe
     // replace it with a fancy LRU Map/List combination...
     var view;
@@ -36,7 +36,7 @@ export class ViewFactory {
     return view;
   }
 
-  returnView(view:viewModule.View) {
+  returnView(view:viewModule.AppView) {
     if (view.hydrated()) {
       throw new BaseException('Only dehydrated Views can be put back into the pool!');
     }
@@ -46,8 +46,8 @@ export class ViewFactory {
     }
   }
 
-  _createView(protoView:viewModule.ProtoView): viewModule.View {
-    var view = new viewModule.View(protoView, protoView.protoLocals);
+  _createView(protoView:viewModule.AppProtoView): viewModule.AppView {
+    var view = new viewModule.AppView(protoView, protoView.protoLocals);
     var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
       protoView.getVariableBindings(), protoView.getdirectiveRecords());
 

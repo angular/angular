@@ -26,7 +26,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  */
 @Viewport({
   selector: '[if]',
-  bind: {
+  properties: {
     'condition': 'if'
   }
 })

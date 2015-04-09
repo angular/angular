@@ -49,9 +49,9 @@ export class DirectiveRef extends ElementRef {
 }
 
 export class ComponentRef extends DirectiveRef {
-  componentView:viewModule.View;
+  componentView:viewModule.AppView;
 
-  constructor(key:Key, elementInjector:ElementInjector, componentView:viewModule.View){
+  constructor(key:Key, elementInjector:ElementInjector, componentView:viewModule.AppView){
     super(key, elementInjector);
     this.componentView = componentView;
   }
@@ -65,8 +65,8 @@ class StaticKeys {
   directiveRefId:number;
 
   constructor() {
-    //TODO: vsavkin Key.annotate(Key.get(View), 'static')
-    this.viewId = Key.get(viewModule.View).id;
+    //TODO: vsavkin Key.annotate(Key.get(AppView), 'static')
+    this.viewId = Key.get(viewModule.AppView).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
@@ -267,7 +267,7 @@ export class DirectiveDependency extends Dependency {
     var p = ListWrapper.find(properties, (p) => p instanceof Attribute);
     return isPresent(p) ? p.attributeName : null;
   }
-  
+
   static _query(properties) {
     var p = ListWrapper.find(properties, (p) => p instanceof Query);
     return isPresent(p) ? p.directive : null;
@@ -305,7 +305,7 @@ export class DirectiveBinding extends Binding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
-  view:viewModule.View;
+  view:viewModule.AppView;
   element:NgElement;
   viewContainer:ViewContainer;
   bindingPropagationConfig:BindingPropagationConfig;
@@ -362,7 +362,7 @@ export class ProtoElementInjector  {
   _keyId9:int;
   parent:ProtoElementInjector;
   index:int;
-  view:viewModule.View;
+  view:viewModule.AppView;
   distanceToParent:number;
   attributes:Map;
 
@@ -648,7 +648,7 @@ export class ElementInjector extends TreeNode {
   }
 
   _isDynamicallyLoadedComponentKey(key:Key) {
-    return isPresent(this._dynamicallyCreatedComponentBinding) && key.id === 
+    return isPresent(this._dynamicallyCreatedComponentBinding) && key.id ===
       this._dynamicallyCreatedComponentBinding.key.id;
   }
 
@@ -910,7 +910,7 @@ export class ElementInjector extends TreeNode {
 
   _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
-    // TODO: View should not be injectable. Remove it.
+    // TODO: AppView should not be injectable. Remove it.
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;

@@ -2,7 +2,7 @@ import {List} from 'angular2/src/facade/collection';
 import {Promise} from 'angular2/src/facade/async';
 
 import {Parser} from 'angular2/change_detection';
-import {Template} from '../../api';
+import {ViewDefinition} from '../../api';
 import {CompileStep} from './compile_step';
 import {PropertyBindingParser} from './property_binding_parser';
 import {TextInterpolationParser} from './text_interpolation_parser';
@@ -12,7 +12,7 @@ import {ShadowDomCompileStep} from '../shadow_dom/shadow_dom_compile_step';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 
 export class CompileStepFactory {
-  createSteps(template: Template, subTaskPromises: List<Promise>):List<CompileStep> {
+  createSteps(template: ViewDefinition, subTaskPromises: List<Promise>):List<CompileStep> {
     return null;
   }
 }
@@ -27,7 +27,7 @@ export class DefaultStepFactory extends CompileStepFactory {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  createSteps(template: Template, subTaskPromises: List<Promise>) {
+  createSteps(template: ViewDefinition, subTaskPromises: List<Promise>) {
     return [
       new ViewSplitter(this._parser),
       new PropertyBindingParser(this._parser),

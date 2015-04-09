@@ -17,7 +17,7 @@ var formatter = new DartFormatter();
 void allTests() {
   var reader = new TestAssetReader();
 
-  it('should generate a setter for a `bind` property in an annotation.',
+  it('should generate a setter for a `properties` property in an annotation.',
       () async {
     var inputPath = 'bind_generator/basic_bind_files/bar.ng_deps.dart';
     var expected = formatter.format(

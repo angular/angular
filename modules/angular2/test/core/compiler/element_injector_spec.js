@@ -6,7 +6,7 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
-import {ProtoView, View} from 'angular2/src/core/compiler/view';
+import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
@@ -20,7 +20,7 @@ class DummyDirective extends Directive {
 }
 
 @proxy
-@IMPLEMENTS(View)
+@IMPLEMENTS(AppView)
 class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
 
 
@@ -180,7 +180,7 @@ class B_Needs_A {
 
 class NeedsView {
   view:any;
-  constructor(@Inject(View) view) {
+  constructor(@Inject(AppView) view) {
     this.view = view;
   }
 }
@@ -596,7 +596,7 @@ export function main() {
         var view = new DummyView();
         var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
 
-        expect(inj.get(View)).toEqual(view);
+        expect(inj.get(AppView)).toEqual(view);
       });
 
       it("should return element", function () {
@@ -699,11 +699,11 @@ export function main() {
       function createpreBuildObject(eventName, eventHandler) {
         var handlers = StringMapWrapper.create();
         StringMapWrapper.set(handlers, eventName, eventHandler);
-        var pv = new ProtoView(null, null, null);
+        var pv = new AppProtoView(null, null, null);
         pv.bindElement(null, 0, null, null, null);
         pv.bindEvent(eventName, new Parser(new Lexer()).parseAction('handler()', ''));
 
-        var view = new View(pv, MapWrapper.create());
+        var view = new AppView(pv, MapWrapper.create());
         view.context = new ContextWithHandler(eventHandler);
         return new PreBuiltObjects(view, null, null, null);
       }
@@ -742,8 +742,8 @@ export function main() {
 
       beforeEach( () => {
         renderer = new FakeRenderer();
-        var protoView = new ProtoView(renderer, null, null);
-        view = new View(protoView, MapWrapper.create());
+        var protoView = new AppProtoView(renderer, null, null);
+        view = new AppView(protoView, MapWrapper.create());
         view.render = new ViewRef();
       });
 

@@ -1,4 +1,4 @@
-import {Template, Component, Decorator, Ancestor, onChange, PropertySetter} from 'angular2/angular2';
+import {View, Component, Decorator, Ancestor, onChange, PropertySetter} from 'angular2/angular2';
 import {Optional} from 'angular2/di';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
@@ -15,7 +15,7 @@ import {Validators} from './validators';
  */
 @Decorator({
   selector: '[control]',
-  events: {
+  hostListeners: {
     'change' : 'onChange($event.target.value)',
     'input' : 'onChange($event.target.value)'
   }
@@ -39,7 +39,7 @@ export class DefaultValueAccessor {
  */
 @Decorator({
   selector: 'input[type=checkbox][control]',
-  events: {
+  hostListeners: {
     'change' : 'onChange($event.target.checked)'
   }
 })
@@ -64,7 +64,7 @@ export class CheckboxControlValueAccessor {
 @Decorator({
   lifecycle: [onChange],
   selector: '[control]',
-  bind: {
+  properties: {
     'controlOrName' : 'control'
   }
 })
@@ -123,7 +123,7 @@ export class ControlDirective {
  */
 @Decorator({
   selector: '[control-group]',
-  bind: {
+  properties: {
     'controlGroup' : 'control-group'
   }
 })

@@ -18,21 +18,22 @@ import * as renderApi from 'angular2/src/render/api';
 @IMPLEMENTS(ChangeDispatcher)
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
 // @IMPLEMENTS(renderApi.EventDispatcher)
-export class View {
+export class AppView {
   render:renderApi.ViewRef;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
   elementInjectors:List<ElementInjector>;
   changeDetector:ChangeDetector;
-  componentChildViews: List<View>;
+  componentChildViews: List<AppView>;
   viewContainers: List<ViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
-  proto: ProtoView;
+  proto: AppProtoView;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
    * This is always a component instance.
    */
+
   context: any;
 
   /**
@@ -42,7 +43,7 @@ export class View {
    */
   locals:Locals;
 
-  constructor(proto:ProtoView, protoLocals:Map) {
+  constructor(proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
@@ -150,9 +151,9 @@ export class View {
 
       // shadowDomAppInjector
       if (isPresent(componentDirective)) {
-        var services = componentDirective.annotation.services;
-        if (isPresent(services))
-          shadowDomAppInjector = appInjector.createChild(services);
+        var injectables = componentDirective.annotation.injectables;
+        if (isPresent(injectables))
+          shadowDomAppInjector = appInjector.createChild(injectables);
         else {
           shadowDomAppInjector = appInjector;
         }
@@ -249,13 +250,13 @@ export class View {
       this.proto.renderer.setText(this.render, b.elementIndex, currentValue);
     }
   }
-    
+
   directive(directive:DirectiveRecord) {
     var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  addComponentChildView(view:View) {
+  addComponentChildView(view:AppView) {
     ListWrapper.push(this.componentChildViews, view);
     this.changeDetector.addShadowDomChild(view.changeDetector);
   }
@@ -269,8 +270,8 @@ export class View {
     // queuing up and firing.
     if (this.hydrated()) {
       var elBinder = this.proto.elementBinders[elementIndex];
-      if (isBlank(elBinder.events)) return;
-      var eventMap = elBinder.events[eventName];
+      if (isBlank(elBinder.hostListeners)) return;
+      var eventMap = elBinder.hostListeners[eventName];
       if (isBlank(eventName)) return;
       MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
         var context;
@@ -289,14 +290,14 @@ export class View {
  *
  * @publicModule angular2/template
  */
-export class ProtoView {
+export class AppProtoView {
   elementBinders:List<ElementBinder>;
   protoChangeDetector:ProtoChangeDetector;
   variableBindings: Map;
   protoLocals:Map;
   textNodesWithBindingCount:int;
   bindings:List;
-  parentProtoView:ProtoView;
+  parentProtoView:AppProtoView;
   _variableBindings:List;
 
   _directiveRecordsMap:Map;
@@ -323,8 +324,8 @@ export class ProtoView {
   }
 
   //TODO: Tobias or Victor. Moving it into the constructor.
-  // this work should be done the constructor of ProtoView once we separate
-  // ProtoView and ProtoViewBuilder
+  // this work should be done the constructor of AppProtoView once we separate
+  // AppProtoView and ProtoViewBuilder
   getVariableBindings() {
     if (isPresent(this._variableBindings)) {
       return this._variableBindings;
@@ -342,7 +343,7 @@ export class ProtoView {
 
   //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of ProtoView once we separate
-  // ProtoView and ProtoViewBuilder
+  // AppProtoView and ProtoViewBuilder
   getdirectiveRecords() {
     if (isPresent(this._directiveRecords)) {
       return this._directiveRecords;
@@ -408,10 +409,10 @@ export class ProtoView {
    */
   bindEvent(eventName:string, expression:AST, directiveIndex: int = -1) {
     var elBinder = this.elementBinders[this.elementBinders.length - 1];
-    var events = elBinder.events;
+    var events = elBinder.hostListeners;
     if (isBlank(events)) {
       events = StringMapWrapper.create();
-      elBinder.events = events;
+      elBinder.hostListeners = events;
     }
     var event = StringMapWrapper.get(events, eventName);
     if (isBlank(event)) {

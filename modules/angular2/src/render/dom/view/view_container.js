@@ -9,7 +9,7 @@ import * as vfModule from './view_factory';
 export class ViewContainer {
   _viewFactory: vfModule.ViewFactory;
   templateElement;
-  _views: List<viewModule.View>;
+  _views: List<viewModule.RenderView>;
   _lightDom: ldModule.LightDom;
   _hostLightDom: ldModule.LightDom;
   _hydrated: boolean;
@@ -53,7 +53,7 @@ export class ViewContainer {
     this._hydrated = false;
   }
 
-  get(index: number): viewModule.View {
+  get(index: number): viewModule.RenderView {
     return this._views[index];
   }
 
@@ -71,7 +71,7 @@ export class ViewContainer {
         'Cannot change dehydrated ViewContainer');
   }
 
-  insert(view, atIndex=-1): viewModule.View {
+  insert(view, atIndex=-1): viewModule.RenderView {
     if (!view.hydrated()) {
       view.hydrate(this._hostLightDom);
     }

@@ -57,7 +57,7 @@ class Angular2Types {
   static final _applicationLibAssetId =
       new AssetId('angular2', 'lib/src/core/application.dart');
   static final _templateLibAssetId =
-      new AssetId('angular2', 'lib/src/core/annotations/template.dart');
+      new AssetId('angular2', 'lib/src/core/annotations/view.dart');
   static final _reflectionCapabilitiesLibAssetId = new AssetId(
       'angular2', 'lib/src/reflection/reflection_capabilities.dart');
 
@@ -85,7 +85,7 @@ class Angular2Types {
 
   LibraryElement get templateLib => _resolver.getLibrary(_templateLibAssetId);
 
-  ClassElement get templateAnnotation => _getTypeSafe(templateLib, 'Template');
+  ClassElement get templateAnnotation => _getTypeSafe(templateLib, 'View');
 
   LibraryElement get reflectionCapabilitiesLib =>
       _resolver.getLibrary(_reflectionCapabilitiesLibAssetId);

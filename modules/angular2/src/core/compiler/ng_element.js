@@ -12,7 +12,7 @@ import {DirectDomViewRef} from 'angular2/src/render/dom/direct_dom_renderer';
  * @publicModule angular2/angular2
  */
 export class NgElement {
-  _view:viewModule.View;
+  _view:viewModule.AppView;
   _boundElementIndex:number;
 
   constructor(view, boundElementIndex) {

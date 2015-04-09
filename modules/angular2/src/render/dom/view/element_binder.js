@@ -6,7 +6,7 @@ import * as protoViewModule from './proto_view';
 export class ElementBinder {
   contentTagSelector: string;
   textNodeIndices: List<number>;
-  nestedProtoView: protoViewModule.ProtoView;
+  nestedProtoView: protoViewModule.RenderProtoView;
   eventLocals: AST;
   eventNames: List<string>;
   componentId: string;

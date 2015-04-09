@@ -2,7 +2,7 @@ import {Parser, Lexer, ChangeDetector, ChangeDetection, jitChangeDetection}
 from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 
-import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler, NgElement, Decorator} from 'angular2/angular2';
+import {bootstrap, Component, Viewport, View, ViewContainer, Compiler, NgElement, Decorator} from 'angular2/angular2';
 
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -58,9 +58,9 @@ function setupReflector() {
             selector: 'app'
 
         }),
-        new Template({
+        new View({
             directives: [LargetableComponent],
-            inline: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
+            template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
         })]
   });
 
@@ -71,14 +71,14 @@ function setupReflector() {
     'annotations': [
         new Component({
             selector: 'largetable',
-            bind: {
+            properties: {
                 'data': 'data',
                 'benchmarkType': 'benchmarktype'
               }
         }),
-        new Template({
+        new View({
             directives: [For, Switch, SwitchWhen, SwitchDefault],
-            inline: `
+            template: `
                 <table [switch]="benchmarkType">
                   <tbody template="switch-when 'interpolation'">
                     <tr template="for #row of data">
@@ -118,7 +118,7 @@ function setupReflector() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[if]',
-      bind: {
+      properties: {
         'condition': 'if'
       }
     })]
@@ -129,7 +129,7 @@ function setupReflector() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[for]',
-      bind: {
+      properties: {
         'iterableChanges': 'of | iterableDiff'
       }
     })]
@@ -140,7 +140,7 @@ function setupReflector() {
     'parameters': [],
     'annotations' : [new Decorator({
       selector: '[switch]',
-      bind: {
+      properties: {
         'value': 'switch'
       }
     })]
@@ -151,7 +151,7 @@ function setupReflector() {
     'parameters': [[ViewContainer],[Switch, new Parent()]],
     'annotations' : [new Viewport({
         selector: '[switch-when]',
-        bind: {
+        properties: {
           'when': 'switch-when'
         }
       })]

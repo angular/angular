@@ -4,8 +4,8 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import * as api from '../api';
-import {View} from './view/view';
-import {ProtoView} from './view/proto_view';
+import {RenderView} from './view/view';
+import {RenderProtoView} from './view/proto_view';
 import {ViewFactory} from './view/view_factory';
 import {Compiler} from './compiler/compiler';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
@@ -23,7 +23,7 @@ function _resolveProtoView(protoViewRef:DirectDomProtoViewRef) {
   return isPresent(protoViewRef) ? protoViewRef.delegate : null;
 }
 
-function _wrapView(view:View) {
+function _wrapView(view:RenderView) {
   return new DirectDomViewRef(view);
 }
 
@@ -44,18 +44,18 @@ function _collectComponentChildViewRefs(view, target = null) {
 
 // public so that the compiler can use it.
 export class DirectDomProtoViewRef extends api.ProtoViewRef {
-  delegate:ProtoView;
+  delegate:RenderProtoView;
 
-  constructor(delegate:ProtoView) {
+  constructor(delegate:RenderProtoView) {
     super();
     this.delegate = delegate;
   }
 }
 
 export class DirectDomViewRef extends api.ViewRef {
-  delegate:View;
+  delegate:RenderView;
 
-  constructor(delegate:View) {
+  constructor(delegate:RenderView) {
     super();
     this.delegate = delegate;
   }
@@ -75,7 +75,7 @@ export class DirectDomRenderer extends api.Renderer {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  compile(template:api.Template):Promise<api.ProtoView> {
+  compile(template:api.ViewDefinition):Promise<api.ProtoViewDto> {
     // Note: compiler already uses a DirectDomProtoViewRef, so we don't
     // need to do anything here
     return this._compiler.compile(template);
@@ -87,7 +87,7 @@ export class DirectDomRenderer extends api.Renderer {
     );
   }
 
-  createRootProtoView(selectorOrElement, componentId):Promise<api.ProtoView> {
+  createRootProtoView(selectorOrElement, componentId):Promise<api.ProtoViewDto> {
     var element = selectorOrElement; // TODO: select the element if it is not a real element...
     var rootProtoViewBuilder = new ProtoViewBuilder(element);
     rootProtoViewBuilder.setIsRootView(true);

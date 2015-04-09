@@ -5,10 +5,10 @@ import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {Component, Viewport, DynamicComponent, Decorator} from '../annotations/annotations';
-import {ProtoView} from './view';
+import {AppProtoView} from './view';
 import {DirectiveBinding} from './element_injector';
 import {TemplateResolver} from './template_resolver';
-import {Template} from '../annotations/template';
+import {View} from '../annotations/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -16,7 +16,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 import * as renderApi from 'angular2/src/render/api';
 
 /**
- * Cache that stores the ProtoView of the template of a component.
+ * Cache that stores the AppProtoView of the template of a component.
  * Used to prevent duplicate work and resolve cyclic dependencies.
  */
 @Injectable()
@@ -26,11 +26,11 @@ export class CompilerCache {
     this._cache = MapWrapper.create();
   }
 
-  set(component:Type, protoView:ProtoView) {
+  set(component:Type, protoView:AppProtoView) {
     MapWrapper.set(this._cache, component, protoView);
   }
 
-  get(component:Type):ProtoView {
+  get(component:Type):AppProtoView {
     var result = MapWrapper.get(this._cache, component);
     return normalizeBlank(result);
   }
@@ -80,24 +80,24 @@ export class Compiler {
 
   // Create a rootView as if the compiler encountered <rootcmp></rootcmp>.
   // Used for bootstrapping.
-  compileRoot(elementOrSelector, componentTypeOrBinding:any):Promise<ProtoView> {
+  compileRoot(elementOrSelector, componentTypeOrBinding:any):Promise<AppProtoView> {
     return this._renderer.createRootProtoView(elementOrSelector, 'root').then( (rootRenderPv) => {
       return this._compileNestedProtoViews(null, rootRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
     });
   }
 
-  compile(component: Type):Promise<ProtoView> {
+  compile(component: Type):Promise<AppProtoView> {
     var protoView = this._compile(this._bindDirective(component));
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
 
-  // TODO(vicb): union type return ProtoView or Promise<ProtoView>
+  // TODO(vicb): union type return AppProtoView or Promise<AppProtoView>
   _compile(componentBinding: DirectiveBinding) {
     var component = componentBinding.key.token;
     var protoView = this._compilerCache.get(component);
     if (isPresent(protoView)) {
-      // The component has already been compiled into a ProtoView,
-      // returns a plain ProtoView, not wrapped inside of a Promise.
+      // The component has already been compiled into an AppProtoView,
+      // returns a plain AppProtoView, not wrapped inside of a Promise.
       // Needed for recursive components.
       return protoView;
     }
@@ -124,7 +124,7 @@ export class Compiler {
     return pvPromise;
   }
 
-  // TODO(tbosch): union type return ProtoView or Promise<ProtoView>
+  // TODO(tbosch): union type return AppProtoView or Promise<AppProtoView>
   _compileNestedProtoViews(componentBinding, renderPv, directives, isComponentRootView) {
     var nestedPVPromises = [];
     var protoView = this._protoViewFactory.createProtoView(componentBinding, renderPv, directives);
@@ -143,7 +143,7 @@ export class Compiler {
       var elementBinderDone = (nestedPv) => {
         elementBinder.nestedProtoView = nestedPv;
         // Can't set the parentProtoView for components,
-        // as their ProtoView might be used in multiple other components.
+        // as their AppProtoView might be used in multiple other components.
         nestedPv.parentProtoView = isPresent(nestedComponent) ? null : protoView;
       };
       var nestedCall = null;
@@ -180,23 +180,23 @@ export class Compiler {
     }
   }
 
-  _buildRenderTemplate(component, template, directives) {
+  _buildRenderTemplate(component, view, directives) {
     var componentUrl = this._urlResolver.resolve(
         this._appUrl, this._componentUrlMapper.getUrl(component)
     );
     var templateAbsUrl = null;
-    if (isPresent(template.url)) {
-      templateAbsUrl = this._urlResolver.resolve(componentUrl, template.url);
+    if (isPresent(view.templateUrl)) {
+      templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
     } else {
       // Note: If we have an inline template, we also need to send
       // the url for the component to the renderer so that it
       // is able to resolve urls in stylesheets.
       templateAbsUrl = componentUrl;
     }
-    return new renderApi.Template({
+    return new renderApi.ViewDefinition({
       componentId: stringify(component),
       absUrl: templateAbsUrl,
-      inline: template.inline,
+      template: view.template,
       directives: ListWrapper.map(directives, this._buildRenderDirective)
     });
   }
@@ -228,14 +228,14 @@ export class Compiler {
       type: renderType,
       selector: ann.selector,
       compileChildren: compileChildren,
-      events: isPresent(ann.events) ? MapWrapper.createFromStringMap(ann.events) : null,
-      bind: isPresent(ann.bind) ? MapWrapper.createFromStringMap(ann.bind) : null,
+      hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
+      properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
       setters: setters,
       readAttributes: readAttributes
     });
   }
 
-  _flattenDirectives(template: Template):List<Type> {
+  _flattenDirectives(template: View):List<Type> {
     if (isBlank(template.directives)) return [];
 
     var directives = [];

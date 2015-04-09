@@ -17,7 +17,7 @@ import {
 } from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {View} from 'angular2/src/render/dom/view/view';
+import {RenderView} from 'angular2/src/render/dom/view/view';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -35,7 +35,7 @@ export function main() {
     it('should attach the view nodes to the shadow root', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var view = new View(null, [nodes], [], [], [], []);
+      var view = new RenderView(null, [nodes], [], [], [], []);
 
       strategy.attachTemplate(host, view);
       var shadowRoot = DOM.getShadowRoot(host);

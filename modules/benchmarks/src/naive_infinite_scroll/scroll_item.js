@@ -1,6 +1,6 @@
 import {int} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
-import {Component, Viewport, Template, ViewContainer, Compiler}
+import {Component, Viewport, View, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -51,11 +51,11 @@ export function setupReflectorForScrollItem() {
     'annotations': [
       new Component({
         selector: 'scroll-item',
-        bind: {
+        properties: {
           'offering': 'offering'
         }
       }),
-      new Template({
+      new View({
         directives: [
           CompanyNameComponent,
           OpportunityNameComponent,
@@ -64,7 +64,7 @@ export function setupReflectorForScrollItem() {
           AccountCellComponent,
           FormattedCellComponent
         ],
-        inline: `
+        template: `
           <div class="row" [style]="itemStyle">
               <company-name [company]="offering.company"
                             [cell-width]="companyNameWidth">

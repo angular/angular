@@ -3,7 +3,7 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 /**
  * Declare the available HTML templates for an application.
  *
- * Each angular component requires a single `@Component` and at least one `@Template` annotation. The @Template
+ * Each angular component requires a single `@Component` and at least one `@View` annotation. The @View
  * annotation specifies the HTML template to use, and lists the directives that are active within the template.
  *
  * When a component is instantiated, the template is loaded into the component's shadow root, and the
@@ -17,8 +17,8 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * @Component({
  *   selector: 'greet'
  * })
- * @Template({
- *   inline: 'Hello {{name}}!'
+ * @View({
+ *   template: 'Hello {{name}}!'
  * })
  * class Greet {
  *   name: string;
@@ -31,35 +31,35 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  *
  * @publicModule angular2/annotations
  */
-export class Template {
-  url:any; //string;
-  inline:any; //string;
+export class View {
+  templateUrl:any; //string;
+  template:any; //string;
   directives:any; //List<Type>;
   formatters:any; //List<Type>;
-  source:any;//List<Template>;
+  source:any;//List<View>;
   locale:any; //string
   device:any; //string
   @CONST()
   constructor({
-      url,
-      inline,
+      templateUrl,
+      template,
       directives,
       formatters,
       source,
       locale,
       device
     }: {
-      url: string,
-      inline: string,
+      templateUrl: string,
+      template: string,
       directives: List<Type>,
       formatters: List<Type>,
-      source: List<Template>,
+      source: List<View>,
       locale: string,
       device: string
     })
   {
-    this.url = url;
-    this.inline = inline;
+    this.templateUrl = templateUrl;
+    this.template = template;
     this.directives = directives;
     this.formatters = formatters;
     this.source = source;

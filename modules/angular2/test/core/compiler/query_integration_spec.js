@@ -17,7 +17,7 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 import {Query} from 'angular2/src/core/annotations/di';
 
-import {Decorator, Component, Template, If, For} from 'angular2/angular2';
+import {Decorator, Component, View, If, For} from 'angular2/angular2';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
@@ -84,9 +84,9 @@ export function main() {
 }
 
 @Component({selector: 'needs-query'})
-@Template({
+@View({
   directives: [For],
-  inline: '<div *for="var dir of query">{{dir.text}}|</div>'
+  template: '<div *for="var dir of query">{{dir.text}}|</div>'
 })
 class NeedsQuery {
   query: QueryList;
@@ -99,7 +99,7 @@ var _constructiontext = 0;
 
 @Decorator({
   selector: '[text]',
-  bind: {
+  properties: {
     'text': 'text'
   }
 })
@@ -109,7 +109,7 @@ class TextDirective {
 }
 
 @Component({selector: 'my-comp'})
-@Template({
+@View({
   directives: [NeedsQuery, TextDirective,  If, For]
 })
 class MyComp {

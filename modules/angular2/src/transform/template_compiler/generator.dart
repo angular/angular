@@ -22,7 +22,7 @@ import 'package:code_transformers/assets.dart';
 import 'recording_reflection_capabilities.dart';
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
-/// Angular 2 `Template` annotations it declares to generate `getter`s,
+/// Angular 2 `View` annotations it declares to generate `getter`s,
 /// `setter`s, and `method`s that would otherwise be reflectively accessed.
 ///
 /// This method assumes a [DomAdapter] has been registered.
@@ -80,7 +80,7 @@ Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
   ''');
 }
 
-/// Extracts `inline` and `url` values from `Template` annotations, reads
+/// Extracts `template` and `url` values from `View` annotations, reads
 /// template code if necessary, and determines what values will be
 /// reflectively accessed from that template.
 class _TemplateExtractor {
@@ -131,7 +131,7 @@ class _TemplateExtractor {
     return toReturn;
   }
 
-  // TODO(kegluneq): Rewrite these to `inline` where possible.
+  // TODO(kegluneq): Rewrite these to `template` where possible.
   // See [https://github.com/angular/angular/issues/1035].
   Future<String> _readUrlTemplate(String url) async {
     var assetId = uriToAssetId(_entryPoint, url, logger, null);
@@ -165,7 +165,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
       return null;
     }
     var keyString = '${node.name.label}';
-    if (keyString == 'inline' || keyString == 'url') {
+    if (keyString == 'template' || keyString == 'templateUrl') {
       if (node.expression is! SimpleStringLiteral) {
         logger.error(
             'Angular 2 currently only supports string literals in directives.'
@@ -173,7 +173,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
         return null;
       }
       var valueString = stringLiteralToString(node.expression);
-      if (keyString == 'url') {
+      if (keyString == 'templateUrl') {
         urlValues.add(valueString);
       } else {
         inlineValues.add(valueString);

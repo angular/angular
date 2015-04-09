@@ -9,9 +9,9 @@ export class ShadowDomStrategy {
     return true;
   }
 
-  attachTemplate(el, view:viewModule.View) {}
+  attachTemplate(el, view:viewModule.RenderView) {}
 
-  constructLightDom(lightDomView:viewModule.View, shadowDomView:viewModule.View, el): LightDom {
+  constructLightDom(lightDomView:viewModule.RenderView, shadowDomView:viewModule.RenderView, el): LightDom {
     return null;
   }
 

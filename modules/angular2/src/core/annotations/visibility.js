@@ -3,23 +3,23 @@ import {DependencyAnnotation} from 'angular2/di';
 
 /**
  * Specifies that an injector should retrieve a dependency from the direct parent.
- * 
+ *
  * ## Example
- * 
+ *
  * Here is a simple directive that retrieves a dependency from its parent element.
- * 
+ *
  * ```
  * @Decorator({
  *   selector: '[dependency]',
- *   bind: {
+ *   properties: {
  *     'id':'dependency'
  *   }
  * })
  * class Dependency {
  *   id:string;
  * }
- * 
- * 
+ *
+ *
  * @Decorator({
  *   selector: '[my-directive]'
  * })
@@ -29,9 +29,9 @@ import {DependencyAnnotation} from 'angular2/di';
  *   };
  * }
  * ```
- * 
+ *
  * We use this with the following HTML template:
- * 
+ *
  * ```
  * <div dependency="1">
  *   <div dependency="2" my-directive></div>
@@ -51,26 +51,26 @@ export class Parent extends DependencyAnnotation {
 
 /**
  * Specifies that an injector should retrieve a dependency from any ancestor element.
- * 
+ *
  * An ancestor is any element between the parent element and shadow root.
  *
- * 
+ *
  * ## Example
- * 
+ *
  * Here is a simple directive that retrieves a dependency from an ancestor element.
- * 
+ *
  * ```
  * @Decorator({
  *   selector: '[dependency]',
- *   bind: {
+ *   properties: {
  *     'id':'dependency'
  *   }
  * })
  * class Dependency {
  *   id:string;
  * }
- * 
- * 
+ *
+ *
  * @Decorator({
  *   selector: '[my-directive]'
  * })
@@ -82,7 +82,7 @@ export class Parent extends DependencyAnnotation {
  * ```
  *
  *  We use this with the following HTML template:
- * 
+ *
  * ```
  * <div dependency="1">
  *   <div dependency="2">
@@ -92,13 +92,13 @@ export class Parent extends DependencyAnnotation {
  *   </div>
  * </div>
  * ```
- * 
+ *
  * The `@Ancestor()` annotation in our constructor forces the injector to retrieve the dependency from the
- * nearest ancestor element: 
+ * nearest ancestor element:
  * - The current element `dependency="3"` is skipped because it is not an ancestor.
  * - Next parent has no directives `<div>`
- * - Next parent has the `Dependency` directive and so the dependency is satisfied. 
- * 
+ * - Next parent has the `Dependency` directive and so the dependency is satisfied.
+ *
  * Angular injects `dependency=2`.
  *
  * @publicModule angular2/annotations

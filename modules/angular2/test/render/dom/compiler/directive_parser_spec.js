@@ -6,7 +6,7 @@ import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
-import {Template, DirectiveMetadata} from 'angular2/src/render/api';
+import {ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
 import {Lexer, Parser} from 'angular2/change_detection';
 
 export function main() {
@@ -232,7 +232,7 @@ var someDecoratorIgnoringChildren = new DirectiveMetadata({
 
 var someDecoratorWithProps = new DirectiveMetadata({
   selector: '[some-decor-props]',
-  bind: MapWrapper.createFromStringMap({
+  properties: MapWrapper.createFromStringMap({
     'dirProp': 'elProp',
     'doubleProp': 'elProp | double'
   }),
@@ -242,7 +242,7 @@ var someDecoratorWithProps = new DirectiveMetadata({
 
 var someDecoratorWithEvents = new DirectiveMetadata({
   selector: '[some-decor-events]',
-  events: MapWrapper.createFromStringMap({
+  hostListeners: MapWrapper.createFromStringMap({
     'click': 'doIt()'
   })
 });

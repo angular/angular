@@ -19,7 +19,7 @@ export const VIEW_POOL_CAPACITY = 'render.ViewFactory.viewPoolCapacity';
 @Injectable()
 export class ViewFactory {
   _poolCapacity:number;
-  _pooledViews:List<viewModule.View>;
+  _pooledViews:List<viewModule.RenderView>;
   _eventManager:EventManager;
   _shadowDomStrategy:ShadowDomStrategy;
 
@@ -30,7 +30,7 @@ export class ViewFactory {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  getView(protoView:pvModule.ProtoView):viewModule.View {
+  getView(protoView:pvModule.RenderProtoView):viewModule.RenderView {
     // TODO(tbosch): benchmark this scanning of views and maybe
     // replace it with a fancy LRU Map/List combination...
     var view;
@@ -46,7 +46,7 @@ export class ViewFactory {
     return view;
   }
 
-  returnView(view:viewModule.View) {
+  returnView(view:viewModule.RenderView) {
     if (view.hydrated()) {
       view.dehydrate();
     }
@@ -56,7 +56,7 @@ export class ViewFactory {
     }
   }
 
-  _createView(protoView:pvModule.ProtoView): viewModule.View {
+  _createView(protoView:pvModule.RenderProtoView): viewModule.RenderView {
     var rootElementClone = protoView.isRootView ? protoView.element : DOM.importIntoDoc(protoView.element);
     var elementsWithBindingsDynamic;
     if (protoView.isTemplateElement) {
@@ -73,7 +73,7 @@ export class ViewFactory {
     var viewRootNodes;
     if (protoView.isTemplateElement) {
       var childNode = DOM.firstChild(DOM.content(rootElementClone));
-      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in pvModule.ProtoView
+      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in pvModule.RenderProtoView
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
       while(childNode != null) {
         ListWrapper.push(viewRootNodes, childNode);
@@ -121,7 +121,7 @@ export class ViewFactory {
       contentTags[binderIdx] = contentTag;
     }
 
-    var view = new viewModule.View(
+    var view = new viewModule.RenderView(
       protoView, viewRootNodes,
       boundTextNodes, boundElements, viewContainers, contentTags
     );

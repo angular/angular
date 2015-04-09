@@ -200,6 +200,6 @@ class _Tester {
     return metaName == 'Component' ||
         metaName == 'Decorator' ||
         metaName == 'Injectable' ||
-        metaName == 'Template';
+        metaName == 'View';
   }
 }

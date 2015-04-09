@@ -58,13 +58,13 @@ export class DirectiveParser extends CompileStep {
       var directive = this._directives[directiveIndex];
       var directiveBinder = elementBinder.bindDirective(directiveIndex);
       current.compileChildren = current.compileChildren && directive.compileChildren;
-      if (isPresent(directive.bind)) {
-        MapWrapper.forEach(directive.bind, (bindConfig, dirProperty) => {
+      if (isPresent(directive.properties)) {
+        MapWrapper.forEach(directive.properties, (bindConfig, dirProperty) => {
           this._bindDirectiveProperty(dirProperty, bindConfig, current, directiveBinder);
         });
       }
-      if (isPresent(directive.events)) {
-        MapWrapper.forEach(directive.events, (action, eventName) => {
+      if (isPresent(directive.hostListeners)) {
+        MapWrapper.forEach(directive.hostListeners, (action, eventName) => {
           this._bindDirectiveEvent(eventName, action, current, directiveBinder);
         });
       }

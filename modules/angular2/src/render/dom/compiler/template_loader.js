@@ -6,7 +6,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {XHR} from 'angular2/src/services/xhr';
 
-import {Template} from '../../api';
+import {ViewDefinition} from '../../api';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 /**
@@ -23,9 +23,9 @@ export class TemplateLoader {
     this._htmlCache = StringMapWrapper.create();
   }
 
-  load(template: Template):Promise {
-    if (isPresent(template.inline)) {
-      return PromiseWrapper.resolve(DOM.createTemplate(template.inline));
+  load(template: ViewDefinition):Promise {
+    if (isPresent(template.template)) {
+      return PromiseWrapper.resolve(DOM.createTemplate(template.template));
     }
     var url = template.absUrl;
     if (isPresent(url)) {
@@ -42,6 +42,6 @@ export class TemplateLoader {
       return promise;
     }
 
-    throw new BaseException('Templates should have either their url or inline property set');
+    throw new BaseException('View should have either the url or template property set');
   }
 }

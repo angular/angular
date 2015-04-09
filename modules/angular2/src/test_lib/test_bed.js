@@ -5,11 +5,11 @@ import {Promise} from 'angular2/src/facade/async';
 import {isBlank} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
-import {View} from 'angular2/src/core/compiler/view';
+import {AppView} from 'angular2/src/core/compiler/view';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
@@ -27,20 +27,20 @@ export class TestBed {
   }
 
   /**
-   * Overrides the [Template] of a [Component].
+   * Overrides the [View] of a [Component].
    *
    * @see setInlineTemplate() to only override the html
    *
    * @param {Type} component
-   * @param {Template} template
+   * @param {ViewDefinition} template
    */
-  overrideTemplate(component: Type, template: Template): void {
-    this._injector.get(TemplateResolver).setTemplate(component, template);
+  overrideView(component: Type, template: View): void {
+    this._injector.get(TemplateResolver).setView(component, template);
   }
 
   /**
    * Overrides only the html of a [Component].
-   * All the other propoerties of the component's [Template] are preserved.
+   * All the other propoerties of the component's [View] are preserved.
    *
    * @param {Type} component
    * @param {string} html
@@ -50,7 +50,7 @@ export class TestBed {
   }
 
   /**
-   * Overrides the directives from the component [Template].
+   * Overrides the directives from the component [View].
    *
    * @param {Type} component
    * @param {Type} from
@@ -61,7 +61,7 @@ export class TestBed {
   }
 
   /**
-   * Creates a [View] for the given component.
+   * Creates a [AppView] for the given component.
    *
    * Only either a component or a context needs to be specified but both can be provided for
    * advanced use cases (ie subclassing the context).
@@ -72,7 +72,7 @@ export class TestBed {
    * @return {Promise<ViewProxy>}
    */
   createView(component: Type,
-             {context = null, html = null}: {context:any, html: string} = {}): Promise<View> {
+             {context = null, html = null}: {context:any, html: string} = {}): Promise<AppView> {
 
     if (isBlank(component) && isBlank(context)) {
       throw new BaseException('You must specified at least a component or a context');
@@ -104,12 +104,12 @@ export class TestBed {
 }
 
 /**
- * Proxy to [View] return by [TestBed.createView] which offers a high level API for tests.
+ * Proxy to [AppView] return by [TestBed.createView] which offers a high level API for tests.
  */
 export class ViewProxy {
-  _view: View;
+  _view: AppView;
 
-  constructor(view: View) {
+  constructor(view: AppView) {
     this._view = view;
   }
 
@@ -130,11 +130,11 @@ export class ViewProxy {
   }
 
   /**
-   * @returns {View} return the underlying [View].
+   * @returns {AppView} return the underlying [AppView].
    *
    * Prefer using the other methods which hide implementation details.
    */
-  get rawView(): View {
+  get rawView(): AppView {
     return this._view;
   }
 }

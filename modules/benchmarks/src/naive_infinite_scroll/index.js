@@ -6,7 +6,7 @@ import {Parser, Lexer, ChangeDetector, ChangeDetection}
     from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {
-  bootstrap, Component, Viewport, Template, ViewContainer, Compiler, onChange, NgElement, Decorator
+  bootstrap, Component, Viewport, View, ViewContainer, Compiler, onChange, NgElement, Decorator
 }  from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -174,7 +174,7 @@ export function setupReflectorForAngular() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[if]',
-      bind: {
+      properties: {
         'condition': 'if'
       }
     })]
@@ -185,7 +185,7 @@ export function setupReflectorForAngular() {
     'parameters': [[ViewContainer]],
     'annotations' : [new Viewport({
       selector: '[for]',
-      bind: {
+      properties: {
         'iterableChanges': 'of | iterableDiff'
       }
     })]

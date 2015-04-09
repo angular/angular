@@ -15,7 +15,7 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {ProtoView, Template, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
+import {ProtoViewDto, ViewDefinition, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
 
 import {IntegrationTestbed, LoggingEventDispatcher, FakeEvent} from './integration_testbed';
 
@@ -53,9 +53,9 @@ export function main() {
     it('should add a static component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
       renderer.createRootProtoView(rootEl, 'someComponentId').then( (rootProtoView) => {
-        var template = new Template({
+        var template = new ViewDefinition({
           componentId: 'someComponent',
-          inline: 'hello',
+          template: 'hello',
           directives: []
         });
         renderer.compile(template).then( (pv) => {
@@ -70,9 +70,9 @@ export function main() {
     it('should add a a dynamic component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
       renderer.createRootProtoView(rootEl, 'someComponentId').then( (rootProtoView) => {
-        var template = new Template({
+        var template = new ViewDefinition({
           componentId: 'someComponent',
-          inline: 'hello',
+          template: 'hello',
           directives: []
         });
         renderer.compile(template).then( (pv) => {
@@ -87,9 +87,9 @@ export function main() {
 
     it('should update text nodes', inject([AsyncTestCompleter], (async) => {
       createRenderer({
-        templates: [new Template({
+        templates: [new ViewDefinition({
           componentId: 'someComponent',
-          inline: '{{a}}',
+          template: '{{a}}',
           directives: []
         })]
       });
@@ -103,9 +103,9 @@ export function main() {
 
     it('should update element properties', inject([AsyncTestCompleter], (async) => {
       createRenderer({
-        templates: [new Template({
+        templates: [new ViewDefinition({
           componentId: 'someComponent',
-          inline: '<input [value]="someProp">',
+          template: '<input [value]="someProp">',
           directives: []
         })]
       });
@@ -119,9 +119,9 @@ export function main() {
 
     it('should add and remove views to and from containers', inject([AsyncTestCompleter], (async) => {
       createRenderer({
-        templates: [new Template({
+        templates: [new ViewDefinition({
           componentId: 'someComponent',
-          inline: '<template>hello</template>',
+          template: '<template>hello</template>',
           directives: []
         })]
       });
@@ -144,9 +144,9 @@ export function main() {
 
     it('should cache views', inject([AsyncTestCompleter], (async) => {
       createRenderer({
-        templates: [new Template({
+        templates: [new ViewDefinition({
           componentId: 'someComponent',
-          inline: '<template>hello</template>',
+          template: '<template>hello</template>',
           directives: []
         })],
         viewCacheCapacity: 2
@@ -170,9 +170,9 @@ export function main() {
     // the event expression processing...
     xit('should handle events', inject([AsyncTestCompleter], (async) => {
       createRenderer({
-        templates: [new Template({
+        templates: [new ViewDefinition({
           componentId: 'someComponent',
-          inline: '<input (change)="$event.target.value">',
+          template: '<input (change)="$event.target.value">',
           directives: []
         })]
       });

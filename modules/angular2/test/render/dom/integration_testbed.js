@@ -6,7 +6,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Parser, Lexer} from 'angular2/change_detection';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import {Compiler} from 'angular2/src/render/dom/compiler/compiler';
-import {ProtoViewRef, ProtoView, Template, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
+import {ProtoViewRef, ProtoViewDto, ViewDefinition, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
 import {DefaultStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -20,7 +20,7 @@ export class IntegrationTestbed {
   renderer;
   parser;
   eventPlugin;
-  _templates:Map<string, Template>;
+  _templates:Map<string, ViewDefinition>;
 
   constructor({urlData, viewCacheCapacity, shadowDomStrategy, templates}) {
     this._templates = MapWrapper.create();
@@ -48,7 +48,7 @@ export class IntegrationTestbed {
     this.renderer = new DirectDomRenderer(compiler, viewFactory, shadowDomStrategy);
   }
 
-  compile(rootEl, componentId):Promise<ProtoView> {
+  compile(rootEl, componentId):Promise<ProtoViewDto> {
     return this.renderer.createRootProtoView(rootEl, componentId).then( (rootProtoView) => {
       return this._compileNestedProtoViews(rootProtoView, [
         new DirectiveMetadata({
@@ -59,13 +59,13 @@ export class IntegrationTestbed {
     });
   }
 
-  _compile(template):Promise<ProtoView> {
+  _compile(template):Promise<ProtoViewDto> {
     return this.renderer.compile(template).then( (protoView) => {
       return this._compileNestedProtoViews(protoView, template.directives);
     });
   }
 
-  _compileNestedProtoViews(protoView, directives):Promise<ProtoView> {
+  _compileNestedProtoViews(protoView, directives):Promise<ProtoViewDto> {
     var childComponentRenderPvRefs = [];
     var nestedPVPromises = [];
     ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
@@ -119,9 +119,9 @@ class FakeTemplateLoader extends TemplateLoader {
     this._urlData = urlData;
   }
 
-  load(template: Template) {
-    if (isPresent(template.inline)) {
-      return PromiseWrapper.resolve(DOM.createTemplate(template.inline));
+  load(template: ViewDefinition) {
+    if (isPresent(template.template)) {
+      return PromiseWrapper.resolve(DOM.createTemplate(template.template));
     }
 
     if (isPresent(template.absUrl)) {

@@ -13,7 +13,7 @@ import {
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 
@@ -55,7 +55,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@Template({directives: [NonBindable, TestDecorator]})
+@View({directives: [NonBindable, TestDecorator]})
 class TestComponent {
   text: string;
   constructor() {

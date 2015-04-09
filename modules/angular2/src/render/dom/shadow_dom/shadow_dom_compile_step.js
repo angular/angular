@@ -7,15 +7,15 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {CompileStep} from '../compiler/compile_step';
 import {CompileElement} from '../compiler/compile_element';
 import {CompileControl} from '../compiler/compile_control';
-import {Template} from '../../api';
+import {ViewDefinition} from '../../api';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 
 export class ShadowDomCompileStep extends CompileStep {
   _shadowDomStrategy: ShadowDomStrategy;
-  _template: Template;
+  _template: ViewDefinition;
   _subTaskPromises: List<Promise>;
 
-  constructor(shadowDomStrategy: ShadowDomStrategy, template: Template, subTaskPromises:List<Promise>) {
+  constructor(shadowDomStrategy: ShadowDomStrategy, template: ViewDefinition, subTaskPromises:List<Promise>) {
     super();
     this._shadowDomStrategy = shadowDomStrategy;
     this._template = template;
