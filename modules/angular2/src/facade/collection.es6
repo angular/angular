@@ -117,11 +117,21 @@ export class ListWrapper {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
+  static indexOf(list:List, value, startIndex = 0) {
+    return list.indexOf(value, startIndex);
+  }
+  static lastIndexOf(list:List, value, startIndex = null) {
+    return list.lastIndexOf(value, startIndex == null ? 0 : startIndex);
+  }
   static find(list:List, pred:Function) {
+    var index = ListWrapper.findIndex(list, pred);
+    return index == -1 ? null : list[index];
+  }
+  static findIndex(list:List, pred:Function) {
     for (var i = 0 ; i < list.length; ++i) {
-      if (pred(list[i])) return list[i];
+      if (pred(list[i])) return i;
     }
-    return null;
+    return -1;
   }
   static reduce(list:List, fn:Function, init) {
     return list.reduce(fn, init);
