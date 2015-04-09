@@ -94,8 +94,8 @@ class ListWrapper {
   static bool contains(List m, k) => m.contains(k);
   static List map(list, fn(item)) => list.map(fn).toList();
   static List filter(List list, bool fn(item)) => list.where(fn).toList();
-  static indexOf(List list, value, [int startIndex = 0]) => list.indexOf(value, startIndex);
-  static lastIndexOf(List list, value, [int startIndex = null]) =>
+  static int indexOf(List list, value, [int startIndex = 0]) => list.indexOf(value, startIndex);
+  static int lastIndexOf(List list, value, [int startIndex = null]) =>
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
   static find(List list, bool fn(item)) =>
       list.firstWhere(fn, orElse: () => null);
