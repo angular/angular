@@ -101,13 +101,13 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   @override
-  final attrToPropMap = const {
+  Map<String, String> get attrToPropMap => const <String, String>{
     'innerHtml': 'innerHtml',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
   };
 
-  query(String selector) => document.querySelector(selector);
+  Element query(String selector) => document.querySelector(selector);
 
   Element querySelector(el, String selector) => el.querySelector(selector);
 
@@ -124,7 +124,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
-  createEvent(eventType) => new Event(eventType, canBubble: true);
+  Event createEvent(eventType) => new Event(eventType, canBubble: true);
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {
@@ -154,7 +154,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   Element remove(Element el) {
     return el..remove();
   }
-  insertBefore(Node el, node) {
+  void insertBefore(Node el, node) {
     el.parentNode.insertBefore(node, el);
   }
   void insertAllBefore(Node el, Iterable<Node> nodes) {
@@ -186,7 +186,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     if (doc == null) doc = document;
     return doc.createElement(tagName);
   }
-  createTextNode(String text, [HtmlDocument doc = null]) {
+  Text createTextNode(String text, [HtmlDocument doc = null]) {
     return new Text(text);
   }
   createScriptTag(String attrName, String attrValue,
@@ -222,13 +222,13 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 
-  setStyle(Element element, String stylename, String stylevalue) {
+  void setStyle(Element element, String stylename, String stylevalue) {
     element.style.setProperty(stylename, stylevalue);
   }
-  removeStyle(Element element, String stylename) {
+  void removeStyle(Element element, String stylename) {
     element.style.removeProperty(stylename);
   }
-  getStyle(Element element, String stylename) {
+  String getStyle(Element element, String stylename) {
     return element.style.getPropertyValue(stylename);
   }
 
