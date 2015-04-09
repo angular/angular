@@ -17,7 +17,7 @@ class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
         bindMappings[stringLiteralToString(entry.key)] =
             stringLiteralToString(entry.value);
       } else {
-        logger.error('`bind` currently only supports string literals '
+        logger.error('`properties` currently only supports string literals '
             '(${entry})');
       }
     });
@@ -25,12 +25,12 @@ class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
 
   @override
   Object visitNamedExpression(NamedExpression node) {
-    if ('${node.name.label}' == 'bind') {
+    if ('${node.name.label}' == 'properties') {
       // TODO(kegluneq): Remove this restriction.
       if (node.expression is MapLiteral) {
         _extractFromMapLiteral(node.expression);
       } else {
-        logger.error('`bind` currently only supports map literals');
+        logger.error('`properties` currently only supports map literals');
       }
       return null;
     }

@@ -1,10 +1,10 @@
 library bar;
 
 import 'package:angular2/src/core/annotations/annotations.dart';
-import 'package:angular2/src/core/annotations/template.dart';
+import 'package:angular2/src/core/annotations/view.dart';
 
 @Component(selector: '[soup]')
-@Template(inline: 'Salad')
+@View(template: 'Salad')
 class MyComponent {
   MyComponent();
 }

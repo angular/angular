@@ -17,12 +17,12 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 
 @Component({selector: 'hello-app'})
-@Template({inline: '{{greeting}} world!'})
+@View({template: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting:string;
   constructor() {
@@ -31,13 +31,13 @@ class HelloRootCmp {
 }
 
 @Component({selector: 'hello-app'})
-@Template({inline: 'before: <content></content> after: done'})
+@View({template: 'before: <content></content> after: done'})
 class HelloRootCmpContent {
   constructor() { }
 }
 
 @Component({selector: 'hello-app-2'})
-@Template({inline: '{{greeting}} world, again!'})
+@View({template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting:string;
   constructor() {
@@ -46,7 +46,7 @@ class HelloRootCmp2 {
 }
 
 @Component({selector: 'hello-app'})
-@Template({inline: ''})
+@View({template: ''})
 class HelloRootCmp3 {
   appBinding;
 
@@ -56,7 +56,7 @@ class HelloRootCmp3 {
 }
 
 @Component({selector: 'hello-app'})
-@Template({inline: ''})
+@View({template: ''})
 class HelloRootCmp4 {
   lc;
 
@@ -87,7 +87,7 @@ export function main() {
   });
 
   describe('bootstrap factory method', () => {
-    it('should throw if no Template found', inject([AsyncTestCompleter], (async) => {
+    it('should throw if no View found', inject([AsyncTestCompleter], (async) => {
       var injectorPromise = bootstrap(HelloRootMissingTemplate, testBindings, (e,t) => {throw e;});
       PromiseWrapper.then(injectorPromise, null, (reason) => {
         expect(reason.message).toContain('No template found for HelloRootMissingTemplate');

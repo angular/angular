@@ -1,7 +1,7 @@
 import {int} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {bootstrap, Component, Viewport, Template, ViewContainer, Compiler}
+import {bootstrap, Component, Viewport, View, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -103,14 +103,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'company-name',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'company': 'company'
         }
       }),
-      new Template({
+      new View({
           directives: [],
-          inline: `<div [style]="style">{{company.name}}</div>`
+          template: `<div [style]="style">{{company.name}}</div>`
       })
     ]
   });
@@ -121,14 +121,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'opportunity-name',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'opportunity': 'opportunity'
         }
       }),
-      new Template({
+      new View({
           directives: [],
-          inline: `<div [style]="style">{{opportunity.name}}</div>`
+          template: `<div [style]="style">{{opportunity.name}}</div>`
       })
     ]
   });
@@ -139,14 +139,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'offering-name',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'offering': 'offering'
         }
       }),
-      new Template({
+      new View({
           directives: [],
-          inline: `<div [style]="style">{{offering.name}}</div>`
+          template: `<div [style]="style">{{offering.name}}</div>`
       })
     ]
   });
@@ -157,14 +157,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'stage-buttons',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'offering': 'offering'
         }
       }),
-      new Template({
+      new View({
           directives: [For],
-          inline: `
+          template: `
             <div [style]="style">
                 <button template="for #stage of stages"
                         [disabled]="stage.isDisabled"
@@ -183,14 +183,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'account-cell',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'account': 'account'
         }
       }),
-      new Template({
+      new View({
           directives: [],
-          inline: `
+          template: `
             <div [style]="style">
               <a href="/account/{{account.accountId}}">
                 {{account.accountId}}
@@ -206,14 +206,14 @@ export function setupReflectorForCells() {
     'annotations': [
       new Component({
         selector: 'formatted-cell',
-        bind: {
+        properties: {
           'width': 'cell-width',
           'value': 'value'
         }
       }),
-      new Template({
+      new View({
           directives: [],
-          inline: `<div [style]="style">{{formattedValue}}</div>`
+          template: `<div [style]="style">{{formattedValue}}</div>`
       })
     ]
   });

@@ -3,7 +3,7 @@ import {Injectable} from 'angular2/di';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 
-import {Template, ProtoView} from '../../api';
+import {ViewDefinition, ProtoViewDto} from '../../api';
 import {CompilePipeline} from './compile_pipeline';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
@@ -24,7 +24,7 @@ export class Compiler {
     this._stepFactory = stepFactory;
   }
 
-  compile(template: Template):Promise<ProtoView> {
+  compile(template: ViewDefinition):Promise<ProtoViewDto> {
     var tplPromise = this._templateLoader.load(template);
     return PromiseWrapper.then(tplPromise,
       (el) => this._compileTemplate(template, el),
@@ -32,7 +32,7 @@ export class Compiler {
     );
   }
 
-  _compileTemplate(template: Template, tplElement):Promise<ProtoView> {
+  _compileTemplate(template: ViewDefinition, tplElement):Promise<ProtoViewDto> {
     var subTaskPromises = [];
     var pipeline = new CompilePipeline(this._stepFactory.createSteps(template, subTaskPromises));
     var compileElements;

@@ -86,7 +86,7 @@ import {Injectable} from 'angular2/di';
  *
  * @Decorator({
  *   selector: '[dependency]',
- *   bind: {
+ *   properties: {
  *     'id':'dependency'
  *   }
  * })
@@ -272,7 +272,8 @@ export class Directive extends Injectable {
   /**
    * Enumerates the set of properties that accept data binding for a directive.
    *
-   * The `bind` property defines a set of `directiveProperty` to `bindingProperty` key-value pairs:
+   * The `properties` property defines a set of `directiveProperty` to `bindingProperty`
+   * key-value pairs:
    *
    * - `directiveProperty` specifies the component property where the value is written.
    * - `bindingProperty` specifies the DOM property where the value is read from.
@@ -285,7 +286,7 @@ export class Directive extends Injectable {
    *
    * ```
    * @Directive({
-   *   bind: {
+   *   properties: {
    *     'directiveProperty1': 'bindingProperty1',
    *     'directiveProperty2': 'bindingProperty2 | pipe1 | ...',
    *     ...
@@ -302,7 +303,7 @@ export class Directive extends Injectable {
    * ```
    * @Decorator({
    *   selector: '[tooltip]',
-   *   bind: {
+   *   properties: {
    *     'text': 'tooltip'
    *   }
    * })
@@ -321,8 +322,8 @@ export class Directive extends Injectable {
    * <div tooltip="Some Text">...</div>
    * ```
    *
-   * Whenever the `someExpression` expression changes, the `bind` declaration instructs Angular to update the
-   * `Tooltip`'s `text` property.
+   * Whenever the `someExpression` expression changes, the `properties` declaration instructs
+   * Angular to update the `Tooltip`'s `text` property.
    *
    *
    *
@@ -336,7 +337,7 @@ export class Directive extends Injectable {
    * ```
    * @Decorator({
    *   selector: '[class-set]',
-   *   bind: {
+   *   properties: {
    *     'classChanges': 'classSet | keyValDiff'
    *   }
    * })
@@ -356,12 +357,12 @@ export class Directive extends Injectable {
    * In this case, the two pipes compose as if they were inlined: `someExpression | somePipe | keyValDiff`.
    *
    */
-  bind:any; //  StringMap
+  properties:any; //  StringMap
 
   /**
-   * Specifies which DOM events a directive listens to.
+   * Specifies which DOM hostListeners a directive listens to.
    *
-   * The `events` property defines a set of `event` to `method` key-value pairs:
+   * The `hostListeners` property defines a set of `event` to `method` key-value pairs:
    *
    * - `event1`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
@@ -377,7 +378,7 @@ export class Directive extends Injectable {
    *
    * ```
    * @Directive({
-   *   events: {
+   *   hostListeners: {
    *     'event1': 'onMethod1(arguments)',
    *     ...
    *   }
@@ -386,13 +387,13 @@ export class Directive extends Injectable {
    *
    * ## Basic Event Binding:
    *
-   * Suppose you want to write a directive that triggers on `change` events in the DOM. You would define the event
+   * Suppose you want to write a directive that triggers on `change` hostListeners in the DOM. You would define the event
    * binding as follows:
    *
    * ```
    * @Decorator({
    *   selector: 'input',
-   *   events: {
+   *   hostListeners: {
    *     'change': 'onChange($event)'
    *   }
    * })
@@ -405,10 +406,10 @@ export class Directive extends Injectable {
    * Here the `onChange` method of `InputDecorator` is invoked whenever the DOM element fires the 'change' event.
    *
    */
-  events:any; //  StringMap
+  hostListeners:any; //  StringMap
 
   /**
-   * Specifies a set of lifecycle events in which the directive participates.
+   * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
    * See: [onChange], [onDestroy], [onAllChangesDone] for details.
    */
@@ -417,20 +418,20 @@ export class Directive extends Injectable {
   @CONST()
   constructor({
       selector,
-      bind,
-      events,
+      properties,
+      hostListeners,
       lifecycle
     }:{
       selector:string,
-      bind:any,
-      events: any,
+      properties:any,
+      hostListeners: any,
       lifecycle:List
     }={})
   {
     super();
     this.selector = selector;
-    this.bind = bind;
-    this.events = events;
+    this.properties = properties;
+    this.hostListeners = hostListeners;
     this.lifecycle = lifecycle;
   }
 
@@ -447,17 +448,17 @@ export class Directive extends Injectable {
 /**
  * Declare reusable UI building blocks for an application.
  *
- * Each Angular component requires a single `@Component` and at least one `@Template` annotation. The `@Component`
- * annotation specifies when a component is instantiated, and which properties and events it binds to.
+ * Each Angular component requires a single `@Component` and at least one `@View` annotation. The `@Component`
+ * annotation specifies when a component is instantiated, and which properties and hostListeners it binds to.
  *
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child [Injector] which is configured with the [Component.services].
+ * - creates a child [Injector] which is configured with the [Component.injectables].
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
- * For details on the `@Template` annotation, see [Template].
+ * For details on the `@View` annotation, see [View].
  *
  * ## Example
  *
@@ -465,8 +466,8 @@ export class Directive extends Injectable {
  * @Component({
  *   selector: 'greet'
  * })
- * @Template({
- *   inline: 'Hello {{name}}!'
+ * @View({
+ *   template: 'Hello {{name}}!'
  * })
  * class Greet {
  *   name: string;
@@ -494,16 +495,16 @@ export class Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
-   * The [services] defined in the Component annotation allow you to configure a set of bindings for the component's
+   * The [injectables] defined in the Component annotation allow you to configure a set of bindings for the component's
    * injector.
    *
    * When a component is instantiated, Angular creates a new child Injector, which is configured with the bindings in
-   * the Component [services] annotation. The injectable objects then become available for injection to the component
+   * the Component [injectables] annotation. The injectable objects then become available for injection to the component
    * itself and any of the directives in the component's template, i.e. they are not available to the directives which
    * are children in the component's light DOM.
    *
    *
-   * The syntax for configuring the [services] injectable is identical to [Injector] injectable configuration. See
+   * The syntax for configuring the [injectables] injectable is identical to [Injector] injectable configuration. See
    * [Injector] for additional detail.
    *
    *
@@ -520,12 +521,12 @@ export class Component extends Directive {
    *
    * @Component({
    *   selector: 'greet',
-   *   services: [
+   *   injectables: [
    *     Greeter
    *   ]
    * })
-   * @Template({
-   *   inline: `{{greeter.greet('world')}}!`,
+   * @View({
+   *   template: `{{greeter.greet('world')}}!`,
    *   directives: Child
    * })
    * class HelloWorld {
@@ -537,34 +538,34 @@ export class Component extends Directive {
    * }
    * ```
    */
-  services:List;
+  injectables:List;
 
 @CONST()
   constructor({
     selector,
-    bind,
-    events,
-    services,
+    properties,
+    hostListeners,
+    injectables,
     lifecycle,
     changeDetection
     }:{
       selector:string,
-      bind:Object,
-      events:Object,
-      services:List,
+      properties:Object,
+      hostListeners:Object,
+      injectables:List,
       lifecycle:List,
       changeDetection:string
     }={})
   {
     super({
       selector: selector,
-      bind: bind,
-      events: events,
+      properties: properties,
+      hostListeners: hostListeners,
       lifecycle: lifecycle
     });
 
     this.changeDetection = changeDetection;
-    this.services = services;
+    this.injectables = injectables;
   }
 }
 
@@ -600,8 +601,8 @@ export class Component extends Directive {
  * @Component({
  *   selector: 'hello-cmp'
  * })
- * @Template({
- *   inline: "{{greeting}}"
+ * @View({
+ *   template: "{{greeting}}"
  * })
  * class HelloCmp {
  *   greeting:string;
@@ -617,33 +618,33 @@ export class Component extends Directive {
  */
 export class DynamicComponent extends Directive {
   /**
-   * Same as [Component.services].
+   * Same as [Component.injectables].
    */
   // TODO(vsankin): Please extract into AbstractComponent
-  services:any; //List;
+  injectables:any; //List;
 
   @CONST()
   constructor({
     selector,
-    bind,
-    events,
-    services,
+    properties,
+    hostListeners,
+    injectables,
     lifecycle
     }:{
       selector:string,
-      bind:Object,
-      events:Object,
-      services:List,
+      properties:Object,
+      hostListeners:Object,
+      injectables:List,
       lifecycle:List
     }={}) {
     super({
       selector: selector,
-      bind: bind,
-      events: events,
+      properties: properties,
+      hostListeners: hostListeners,
       lifecycle: lifecycle
     });
 
-    this.services = services;
+    this.injectables = injectables;
   }
 }
 
@@ -670,10 +671,10 @@ export class DynamicComponent extends Directive {
  * ```
  * @Decorator({
  *   selector: '[tooltip]',
- *   bind: {
+ *   properties: {
  *     'text': 'tooltip'
  *   },
- *   events: {
+ *   hostListeners: {
  *     'onmouseenter': 'onMouseEnter()',
  *     'onmouseleave': 'onMouseLeave()'
  *   }
@@ -718,22 +719,22 @@ export class Decorator extends Directive {
   @CONST()
   constructor({
       selector,
-      bind,
-      events,
+      properties,
+      hostListeners,
       lifecycle,
       compileChildren = true,
     }:{
       selector:string,
-      bind:any,
-      events:any,
+      properties:any,
+      hostListeners:any,
       lifecycle:List,
       compileChildren:boolean
     }={})
   {
     super({
         selector: selector,
-        bind: bind,
-        events: events,
+        properties: properties,
+        hostListeners: hostListeners,
         lifecycle: lifecycle
     });
     this.compileChildren = compileChildren;
@@ -784,7 +785,7 @@ export class Decorator extends Directive {
  * ```
  * @Viewport({
  *   selector: '[unless]',
- *   bind: {
+ *   properties: {
  *     'condition': 'unless'
  *   }
  * })
@@ -837,19 +838,19 @@ export class Viewport extends Directive {
   @CONST()
   constructor({
       selector,
-      bind,
-      events,
+      properties,
+      hostListeners,
       lifecycle
     }:{
       selector:string,
-      bind:any,
+      properties:any,
       lifecycle:List
     }={})
   {
     super({
         selector: selector,
-        bind: bind,
-        events: events,
+        properties: properties,
+        hostListeners: hostListeners,
         lifecycle: lifecycle
     });
   }
@@ -891,7 +892,7 @@ export const onDestroy = "onDestroy";
  * ```
  * @Decorator({
  *   selector: '[class-set]',
- *   bind: {
+ *   properties: {
  *     'propA': 'propA'
  *     'propB': 'propB'
  *   },

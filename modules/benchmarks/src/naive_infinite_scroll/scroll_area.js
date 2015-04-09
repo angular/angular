@@ -1,7 +1,7 @@
 import {int, FINAL} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {Component, Viewport, Template, ViewContainer, Compiler}
+import {Component, Viewport, View, ViewContainer, Compiler}
     from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -68,9 +68,9 @@ export function setupReflectorForScrollArea() {
       new Component({
         selector: 'scroll-area',
       }),
-      new Template({
+      new View({
         directives: [ScrollItemComponent, For],
-        inline: `
+        template: `
           <div>
               <div id="scrollDiv"
                    [style]="scrollDivStyle"

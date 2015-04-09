@@ -12,12 +12,12 @@ Views form a tree structure which mimics the DOM tree.
   nested in a tree like structure. The View tree is a simplified version of the DOM tree. A View can 
   have a single DOM Element or large DOM structures. The key is that the DOM tree in the View can 
   not undergo structural changes (only property changes).
-* Views represent a running instance of a DOM Template. This implies that while elements in a View 
+* Views represent a running instance of a DOM View. This implies that while elements in a View 
   can change properties, they can not change structurally. (Structural changes such as, adding or 
   removing elements requires adding or removing child Views into ViewContainers).
 * View can have zero or more ViewPorts. A ViewPort is a marker in the DOM which allows 
   the insertion of child Views.
-* Views are created from a ProtoView. A ProtoView is a compiled DOM Template which is efficient at 
+* Views are created from a ProtoView. A ProtoView is a compiled DOM View which is efficient at 
   creating Views.
 * View contains a context object. The context represents the object instance against which all 
   expressions are evaluated.
@@ -40,7 +40,7 @@ class Greeter {
 }
 ```
 
-And assume following HTML Template:
+And assume following HTML View:
 
 ```
 <div>
@@ -90,7 +90,7 @@ Note:
 An important part of an application is to be able to change the DOM structure to render data for the 
 user. In Angular this is done by inserting child views into the ViewPort.
 
-Let's start with a Template such as:
+Let's start with a View such as:
 
 ```
 <ul>
@@ -194,7 +194,7 @@ class Greeter {
 }
 ```
 
-And assume the following HTML Template:
+And assume the following HTML View:
 
 ```
 <div>                             | viewA(greeter)

@@ -8,8 +8,8 @@ export class ElementBinder {
   protoElementInjector:eiModule.ProtoElementInjector;
   componentDirective:DirectiveBinding;
   viewportDirective:DirectiveBinding;
-  nestedProtoView: viewModule.ProtoView;
-  events:StringMap;
+  nestedProtoView: viewModule.AppProtoView;
+  hostListeners:StringMap;
   parent:ElementBinder;
   index:int;
   distanceToParent:int;
@@ -28,7 +28,7 @@ export class ElementBinder {
     this.index = index;
     this.distanceToParent = distanceToParent;
     // updated later when events are bound
-    this.events = null;
+    this.hostListeners = null;
     // updated later, so we are able to resolve cycles
     this.nestedProtoView = null;
   }

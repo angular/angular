@@ -7,7 +7,7 @@ import {ChangeDetection} from 'angular2/change_detection';
 import {Component, Viewport, DynamicComponent} from '../annotations/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
-import {ProtoView} from './view';
+import {AppProtoView} from './view';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class ProtoViewFactory {
     this._renderer = renderer;
   }
 
-  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoView, directives:List<DirectiveBinding>):ProtoView {
+  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto, directives:List<DirectiveBinding>):AppProtoView {
     var protoChangeDetector;
     if (isBlank(componentBinding)) {
       protoChangeDetector = this._changeDetection.createProtoChangeDetector('root', null);
@@ -30,7 +30,7 @@ export class ProtoViewFactory {
         'dummy', componentAnnotation.changeDetection
       );
     }
-    var protoView = new ProtoView(this._renderer, renderProtoView.render, protoChangeDetector);
+    var protoView = new AppProtoView(this._renderer, renderProtoView.render, protoChangeDetector);
 
     for (var i=0; i<renderProtoView.elementBinders.length; i++) {
       var renderElementBinder = renderProtoView.elementBinders[i];

@@ -6,7 +6,7 @@ import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection
 import {ElementBinder} from './element_binder';
 import {NG_BINDING_CLASS} from '../util';
 
-export class ProtoView {
+export class RenderProtoView {
   element;
   elementBinders:List<ElementBinder>;
   isTemplateElement:boolean;
@@ -25,7 +25,7 @@ export class ProtoView {
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
   }
 
-  mergeChildComponentProtoViews(componentProtoViews:List<ProtoView>) {
+  mergeChildComponentProtoViews(componentProtoViews:List<RenderProtoView>) {
     var componentProtoViewIndex = 0;
     for (var i=0; i<this.elementBinders.length; i++) {
       var eb = this.elementBinders[i];

@@ -1,6 +1,6 @@
 import *  as app from './index_common';
 
-import {Component, Decorator, Template, NgElement} from 'angular2/angular2';
+import {Component, Decorator, View, NgElement} from 'angular2/angular2';
 import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
@@ -39,11 +39,11 @@ function setup() {
     "annotations" : [
       new Component({
         selector: 'hello-app',
-        services: [app.GreetingService]
+        injectables: [app.GreetingService]
       }),
-      new Template({
+      new View({
         directives: [app.RedDec],
-        inline: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
+        template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
                  <button class="changeButton" (click)="changeGreeting()">change greeting</button>`
       })]
   });

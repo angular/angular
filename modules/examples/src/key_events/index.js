@@ -1,4 +1,4 @@
-import {bootstrap, Component, Template} from 'angular2/angular2';
+import {bootstrap, Component, View} from 'angular2/angular2';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 
 // 2 imports for the Dart version:
@@ -6,10 +6,10 @@ import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 @Component({
-  selector: 'key-events-app',
+  selector: 'key-events-app'
 })
-@Template({
-  inline: `Click in the following area and press a key to display its name:<br>
+@View({
+  template: `Click in the following area and press a key to display its name:<br>
   <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>
   Click in the following area and press shift.enter:<br>
   <div

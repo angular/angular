@@ -14,16 +14,16 @@ import * as vfModule from './view_factory';
 export class ViewContainer {
   render:renderApi.ViewContainerRef;
   viewFactory: vfModule.ViewFactory;
-  parentView: viewModule.View;
-  defaultProtoView: viewModule.ProtoView;
-  _views: List<viewModule.View>;
+  parentView: viewModule.AppView;
+  defaultProtoView: viewModule.AppProtoView;
+  _views: List<viewModule.AppView>;
   elementInjector: eiModule.ElementInjector;
   appInjector: Injector;
   hostElementInjector: eiModule.ElementInjector;
 
   constructor(viewFactory:vfModule.ViewFactory,
-              parentView: viewModule.View,
-              defaultProtoView: viewModule.ProtoView,
+              parentView: viewModule.AppView,
+              defaultProtoView: viewModule.AppProtoView,
               elementInjector: eiModule.ElementInjector) {
     this.viewFactory = viewFactory;
     this.render = null;
@@ -67,7 +67,7 @@ export class ViewContainer {
     }
   }
 
-  get(index: number): viewModule.View {
+  get(index: number): viewModule.AppView {
     return this._views[index];
   }
 
@@ -86,7 +86,7 @@ export class ViewContainer {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex=-1): viewModule.View {
+  create(atIndex=-1): viewModule.AppView {
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
     var newView = this.viewFactory.getView(this.defaultProtoView);
@@ -101,13 +101,13 @@ export class ViewContainer {
     return newView;
   }
 
-  insert(view, atIndex=-1): viewModule.View {
+  insert(view, atIndex=-1): viewModule.AppView {
     this._insertWithoutRender(view, atIndex);
     this.defaultProtoView.renderer.insertViewIntoContainer(this.render, view.render, atIndex);
     return view;
   }
 
-  _insertWithoutRender(view, atIndex=-1): viewModule.View {
+  _insertWithoutRender(view, atIndex=-1): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length;
     ListWrapper.insert(this._views, atIndex, view);
     this.parentView.changeDetector.addChild(view.changeDetector);
@@ -128,7 +128,7 @@ export class ViewContainer {
    * The method can be used together with insert to implement a view move, i.e.
    * moving the dom nodes while the directives in the view stay intact.
    */
-  detach(atIndex=-1): viewModule.View {
+  detach(atIndex=-1): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);

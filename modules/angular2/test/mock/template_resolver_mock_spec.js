@@ -11,7 +11,7 @@ import {
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 
 import {isBlank} from 'angular2/src/facade/lang';
 
@@ -23,17 +23,17 @@ export function main() {
       resolver = new MockTemplateResolver();
     });
 
-    describe('Template overriding', () => {
+    describe('View overriding', () => {
       it('should fallback to the default TemplateResolver when templates are not overridden', () => {
         var template = resolver.resolve(SomeComponent);
-        expect(template.inline).toEqual('template');
+        expect(template.template).toEqual('template');
         expect(template.directives).toEqual([SomeDirective]);
       });
 
-      it('should allow overriding a template', () => {
-        resolver.setTemplate(SomeComponent, new Template({inline: 'overridden template'}));
+      it('should allow overriding the @View', () => {
+        resolver.setView(SomeComponent, new View({template: 'overridden template'}));
         var template = resolver.resolve(SomeComponent);
-        expect(template.inline).toEqual('overridden template');
+        expect(template.template).toEqual('overridden template');
         expect(isBlank(template.directives)).toBe(true);
 
       });
@@ -41,24 +41,24 @@ export function main() {
       it('should not allow overriding a template after it has been resolved', () => {
         resolver.resolve(SomeComponent);
         expect(() => {
-          resolver.setTemplate(SomeComponent, new Template({inline: 'overridden template'}));
+          resolver.setView(SomeComponent, new View({template: 'overridden template'}));
         }).toThrowError('The component SomeComponent has already been compiled, its configuration can not be changed');
       });
     });
 
-    describe('inline definition overriding', () => {
-      it('should allow overriding the default Template', () => {
+    describe('inline template definition overriding', () => {
+      it('should allow overriding the default template', () => {
         resolver.setInlineTemplate(SomeComponent, 'overridden template');
         var template = resolver.resolve(SomeComponent);
-        expect(template.inline).toEqual('overridden template');
+        expect(template.template).toEqual('overridden template');
         expect(template.directives).toEqual([SomeDirective]);
       });
 
-      it('should allow overriding an overriden template', () => {
-        resolver.setTemplate(SomeComponent, new Template({inline: 'overridden template'}));
+      it('should allow overriding an overriden @View', () => {
+        resolver.setView(SomeComponent, new View({template: 'overridden template'}));
         resolver.setInlineTemplate(SomeComponent, 'overridden template x 2');
         var template = resolver.resolve(SomeComponent);
-        expect(template.inline).toEqual('overridden template x 2');
+        expect(template.template).toEqual('overridden template x 2');
       });
 
       it('should not allow overriding a template after it has been resolved', () => {
@@ -78,8 +78,8 @@ export function main() {
         expect(template.directives[0]).toBe(SomeOtherDirective);
       });
 
-      it('should allow overriding a directive from an overriden template', () => {
-        resolver.setTemplate(SomeComponent, new Template({directives: [SomeOtherDirective]}));
+      it('should allow overriding a directive from an overriden @View', () => {
+        resolver.setView(SomeComponent, new View({directives: [SomeOtherDirective]}));
         resolver.overrideTemplateDirective(SomeComponent, SomeOtherDirective, SomeComponent);
         var template = resolver.resolve(SomeComponent);
         expect(template.directives.length).toEqual(1);
@@ -103,8 +103,8 @@ export function main() {
 }
 
 @Component({selector: 'cmp'})
-@Template({
-  inline: 'template',
+@View({
+  template: 'template',
   directives: [SomeDirective],
 })
 class SomeComponent {

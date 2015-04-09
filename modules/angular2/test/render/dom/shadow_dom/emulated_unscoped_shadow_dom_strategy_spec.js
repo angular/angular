@@ -23,7 +23,7 @@ import {
 } from 'angular2/src/render/dom/shadow_dom/util';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {View} from 'angular2/src/render/dom/view/view';
+import {RenderView} from 'angular2/src/render/dom/view/view';
 
 export function main() {
   var strategy;
@@ -42,7 +42,7 @@ export function main() {
     it('should attach the view nodes as child of the host element', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var view = new View(null, [nodes], [], [], [], []);
+      var view = new RenderView(null, [nodes], [], [], [], []);
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);

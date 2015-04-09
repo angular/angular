@@ -17,7 +17,7 @@ import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {
-  ProtoView, Template, ViewContainerRef, DirectiveMetadata
+  ProtoViewDto, ViewDefinition, ViewContainerRef, DirectiveMetadata
 } from 'angular2/src/render/api';
 
 import {EmulatedScopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_scoped_shadow_dom_strategy';
@@ -69,9 +69,9 @@ export function main() {
 
         it('should support simple components', inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<simple>' +
+              template: '<simple>' +
                 '<div>A</div>' +
                 '</simple>',
               directives: [simple]
@@ -88,9 +88,9 @@ export function main() {
 
         it('should support multiple content tags', inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<multiple-content-tags>' +
+              template: '<multiple-content-tags>' +
                   '<div>B</div>' +
                   '<div>C</div>' +
                   '<div class="left">A</div>' +
@@ -109,9 +109,9 @@ export function main() {
 
         it('should redistribute only direct children', inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<multiple-content-tags>' +
+              template: '<multiple-content-tags>' +
                 '<div>B<div class="left">A</div></div>' +
                 '<div>C</div>' +
                 '</multiple-content-tags>',
@@ -129,9 +129,9 @@ export function main() {
 
         it("should redistribute direct child viewcontainers when the light dom changes", inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<multiple-content-tags>' +
+              template: '<multiple-content-tags>' +
                 '<div><div template="manual" class="left">A</div></div>' +
                 '<div>B</div>' +
                 '</multiple-content-tags>',
@@ -161,9 +161,9 @@ export function main() {
 
         it("should redistribute when the light dom changes", inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<multiple-content-tags>' +
+              template: '<multiple-content-tags>' +
                 '<div template="manual" class="left">A</div>' +
                 '<div>B</div>' +
                 '</multiple-content-tags>',
@@ -193,9 +193,9 @@ export function main() {
 
         it("should support nested components", inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<outer-with-indirect-nested>' +
+              template: '<outer-with-indirect-nested>' +
                 '<div>A</div>' +
                 '<div>B</div>' +
                 '</outer-with-indirect-nested>',
@@ -213,9 +213,9 @@ export function main() {
 
         it("should support nesting with content being direct child of a nested component", inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<outer>' +
+              template: '<outer>' +
                 '<div template="manual" class="left">A</div>' +
                 '<div>B</div>' +
                 '<div>C</div>' +
@@ -241,9 +241,9 @@ export function main() {
 
         it('should redistribute when the shadow dom changes', inject([AsyncTestCompleter], (async) => {
           createRenderer({
-            templates: [new Template({
+            templates: [new ViewDefinition({
               componentId: 'main',
-              inline: '<conditional-content>' +
+              template: '<conditional-content>' +
                 '<div class="left">A</div>' +
                 '<div>B</div>' +
                 '<div>C</div>' +
@@ -351,39 +351,39 @@ var autoViewportDirective = new DirectiveMetadata({
 });
 
 var componentTemplates = [
-  new Template({
+  new ViewDefinition({
     componentId: 'simple',
-    inline: 'SIMPLE(<content></content>)',
+    template: 'SIMPLE(<content></content>)',
     directives: []
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'multiple-content-tags',
-    inline: '(<content select=".left"></content>, <content></content>)',
+    template: '(<content select=".left"></content>, <content></content>)',
     directives: []
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'outer-with-indirect-nested',
-    inline: 'OUTER(<simple><div><content></content></div></simple>)',
+    template: 'OUTER(<simple><div><content></content></div></simple>)',
     directives: [simple]
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'outer',
-    inline: 'OUTER(<inner><content></content></inner>)',
+    template: 'OUTER(<inner><content></content></inner>)',
     directives: [innerComponent]
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'inner',
-    inline: 'INNER(<innerinner><content></content></innerinner>)',
+    template: 'INNER(<innerinner><content></content></innerinner>)',
     directives: [innerInnerComponent]
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'innerinner',
-    inline: 'INNERINNER(<content select=".left"></content>,<content></content>)',
+    template: 'INNERINNER(<content select=".left"></content>,<content></content>)',
     directives: []
   }),
-  new Template({
+  new ViewDefinition({
     componentId: 'conditional-content',
-    inline: '<div>(<div *auto="cond"><content select=".left"></content></div>, <content></content>)</div>',
+    template: '<div>(<div *auto="cond"><content select=".left"></content></div>, <content></content>)</div>',
     directives: [autoViewportDirective]
   })
 ];

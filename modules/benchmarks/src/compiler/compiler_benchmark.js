@@ -13,7 +13,7 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -38,31 +38,31 @@ function setupReflector() {
   reflector.registerType(Dir0, {
     "factory": () => new Dir0(),
     "parameters": [],
-    "annotations" : [new Decorator({selector: '[dir0]', bind: {'prop': 'attr0'}})]
+    "annotations" : [new Decorator({selector: '[dir0]', properties: {'prop': 'attr0'}})]
   });
 
   reflector.registerType(Dir1, {
     "factory": (dir0) => new Dir1(dir0),
     "parameters": [[Dir0]],
-    "annotations" : [new Decorator({selector: '[dir1]', bind: {'prop': 'attr1'}})]
+    "annotations" : [new Decorator({selector: '[dir1]', properties: {'prop': 'attr1'}})]
   });
 
   reflector.registerType(Dir2, {
     "factory": (dir1) => new Dir2(dir1),
     "parameters": [[Dir1]],
-    "annotations" : [new Decorator({selector: '[dir2]', bind: {'prop': 'attr2'}})]
+    "annotations" : [new Decorator({selector: '[dir2]', properties: {'prop': 'attr2'}})]
   });
 
   reflector.registerType(Dir3, {
     "factory": (dir2) => new Dir3(dir2),
     "parameters": [[Dir2]],
-    "annotations" : [new Decorator({selector: '[dir3]', bind: {'prop': 'attr3'}})]
+    "annotations" : [new Decorator({selector: '[dir3]', properties: {'prop': 'attr3'}})]
   });
 
   reflector.registerType(Dir4, {
     "factory": (dir3) => new Dir4(dir3),
     "parameters": [[Dir3]],
-    "annotations" : [new Decorator({selector: '[dir4]', bind: {'prop': 'attr4'}})]
+    "annotations" : [new Decorator({selector: '[dir4]', properties: {'prop': 'attr4'}})]
   });
 
   reflector.registerGetters({
@@ -147,7 +147,7 @@ function createTemplateHtml(templateId, repeatCount) {
 
 @Decorator({
   selector: '[dir0]',
-  bind: {
+  properties: {
     'prop': 'attr0'
   }
 })
@@ -155,7 +155,7 @@ class Dir0 {}
 
 @Decorator({
   selector: '[dir1]',
-  bind: {
+  properties: {
     'prop': 'attr1'
   }
 })
@@ -165,7 +165,7 @@ class Dir1 {
 
 @Decorator({
   selector: '[dir2]',
-  bind: {
+  properties: {
     'prop': 'attr2'
   }
 })
@@ -175,7 +175,7 @@ class Dir2 {
 
 @Decorator({
   selector: '[dir3]',
-  bind: {
+  properties: {
     'prop': 'attr3'
   }
 })
@@ -185,7 +185,7 @@ class Dir3 {
 
 @Decorator({
   selector: '[dir4]',
-  bind: {
+  properties: {
     'prop': 'attr4'
   }
 })
@@ -197,20 +197,20 @@ class Dir4 {
 class BenchmarkComponent {}
 
 class FakeTemplateResolver extends TemplateResolver {
-  _template: Template;
+  _template: View;
 
   constructor() {
     super();
   }
 
   setTemplateHtml(html: string) {
-    this._template = new Template({
-      inline: html,
+    this._template = new View({
+      template: html,
       directives: [Dir0, Dir1, Dir2, Dir3, Dir4]
     });
   }
 
-  resolve(component: Type): Template {
+  resolve(component: Type): View {
     return this._template;
   }
 }

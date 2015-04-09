@@ -17,12 +17,12 @@ class Context {
   final Map<LibraryElement, String> _libraryPrefixes = {};
 
   /// Whether to generate constructor stubs for classes annotated
-  /// with [Component], [Decorator], [Template], and [Inject] (and subtypes).
+  /// with [Component], [Decorator], [View], and [Inject] (and subtypes).
   bool generateCtorStubs = true;
 
   /// Whether to generate setter stubs for classes annotated with
   /// [Directive] subtypes. These setters depend on the value passed to the
-  /// annotation's `bind` value.
+  /// annotation's `properties` value.
   bool generateSetterStubs = true;
 
   DirectiveRegistry _directiveRegistry;
@@ -499,7 +499,7 @@ class _BindTransformVisitor extends Object
       if (entry.key is SimpleStringLiteral) {
         _visitNode(entry.key);
       } else {
-        logger.error('`bind` currently only supports string literals');
+        logger.error('`properties` currently only supports string literals');
       }
     });
     return null;

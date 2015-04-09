@@ -5,7 +5,7 @@ import {NgElement} from 'angular2/src/core/compiler/ng_element';
 
 @Decorator({
   selector: '[class]',
-  bind: {
+  properties: {
     'iterableChanges': 'class | keyValDiff'
   }
 })

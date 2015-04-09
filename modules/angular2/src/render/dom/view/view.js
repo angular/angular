@@ -3,7 +3,7 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
 import {ViewContainer} from './view_container';
-import {ProtoView} from './proto_view';
+import {RenderProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
 import {Content} from '../shadow_dom/content_tag';
 
@@ -16,7 +16,7 @@ const NG_BINDING_CLASS = 'ng-binding';
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
-export class View {
+export class RenderView {
   boundElements:List;
   boundTextNodes:List;
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
@@ -24,16 +24,16 @@ export class View {
   rootNodes:List;
   // TODO(tbosch): move componentChildViews, viewContainers, contentTags, lightDoms into
   // a single array with records inside
-  componentChildViews: List<View>;
+  componentChildViews: List<RenderView>;
   viewContainers: List<ViewContainer>;
   contentTags: List<Content>;
   lightDoms: List<LightDom>;
-  proto: ProtoView;
+  proto: RenderProtoView;
   _hydrated: boolean;
   _eventDispatcher: any/*EventDispatcher*/;
 
   constructor(
-      proto:ProtoView, rootNodes:List,
+      proto:RenderProtoView, rootNodes:List,
       boundTextNodes: List, boundElements:List, viewContainers:List, contentTags:List) {
     this.proto = proto;
     this.rootNodes = rootNodes;
@@ -61,7 +61,7 @@ export class View {
   }
 
   setComponentView(strategy: ShadowDomStrategy,
-      elementIndex:number, childView:View) {
+      elementIndex:number, childView:RenderView) {
     var element = this.boundElements[elementIndex];
     var lightDom = strategy.constructLightDom(this, childView, element);
     strategy.attachTemplate(element, childView);

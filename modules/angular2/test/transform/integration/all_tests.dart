@@ -91,8 +91,8 @@ void allTests() {
         inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations/template.dart':
-          '../../../lib/src/core/annotations/template.dart'
+      'angular2|lib/src/core/annotations/view.dart':
+          '../../../lib/src/core/annotations/view.dart'
     },
         outputs: {
       'a|web/bar.ng_deps.dart':

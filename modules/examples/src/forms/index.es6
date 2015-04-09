@@ -1,4 +1,4 @@
-import {bootstrap, Component, Decorator, Template, If, For, EventEmitter} from 'angular2/angular2';
+import {bootstrap, Component, Decorator, View, If, For, EventEmitter} from 'angular2/angular2';
 import {FormBuilder, Validators, FormDirectives, ControlGroup} from 'angular2/forms';
 
 // HeaderFields renders the bound header control group. It can used as follows:
@@ -8,12 +8,12 @@ import {FormBuilder, Validators, FormDirectives, ControlGroup} from 'angular2/fo
 // This component is self-contained and can be tested in isolation.
 @Component({
   selector: 'survey-header',
-  bind: {
+  properties: {
     "header" : "header"
   }
 })
-@Template({
-  inline: `
+@View({
+  template: `
       <div [control-group]="header">
         <div>
           <label>Title:</label> <br/>
@@ -53,13 +53,13 @@ class HeaderFields {
 // This component is self-contained and can be tested in isolation.
 @Component({
   selector: 'survey-question',
-  bind: {
+  properties: {
     "question" : "question",
     "index" : "index"
   }
 })
-@Template({
-  inline: `
+@View({
+  template: `
       <h2>Question #{{index}}</h2>
 
       <button (click)="deleteQuestion()">Delete</button>
@@ -118,10 +118,10 @@ class SurveyQuestion {
 // SurveyBuilder is a form that allows you to create a survey.
 @Component({
   selector: 'survey-builder-app',
-  services: [FormBuilder]
+  injectables: [FormBuilder]
 })
-@Template({
-  inline: `
+@View({
+  template: `
     <h1>Create New Survey</h1>
 
     <div [control-group]="form">

@@ -169,8 +169,8 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * @Component({
  *    selector: 'my-app'
  * })
- * @Template({
- *    inline: 'Hello {{ name }}!'
+ * @View({
+ *    template: 'Hello {{ name }}!'
  * })
  * class MyApp {
  *   name:string;
@@ -191,8 +191,8 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *  1. It uses the component's `selector` property to locate the DOM element which needs to be upgraded into
  *     the angular component.
  *  2. It creates a new child injector (from the primordial injector) and configures the injector with the component's
- *     `services`. Optionally, you can also override the injector configuration for an app by invoking
- *     `bootstrap` with the `componentServiceBindings` argument.
+ *     `injectables`. Optionally, you can also override the injector configuration for an app by invoking
+ *     `bootstrap` with the `componentInjectableBindings` argument.
  *  3. It creates a new [Zone] and connects it to the angular application's change detection domain instance.
  *  4. It creates a shadow DOM on the selected component's host element and loads the template into it.
  *  5. It instantiates the specified component.
@@ -234,7 +234,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * # API
  * - [appComponentType]: The root component which should act as the application. This is a reference to a [Type]
  *   which is annotated with `@Component(...)`.
- * - [componentServiceBindings]: An additional set of bindings that can be added to the [Component.services] to
+ * - [componentInjectableBindings]: An additional set of bindings that can be added to the [Component.injectables] to
  *   override default injection behavior.
  * - [errorReporter]: `function(exception:any, stackTrace:string)` a default error reporter for unhandled exceptions.
  *
@@ -243,7 +243,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * @publicModule angular2/angular2
  */
 export function bootstrap(appComponentType: Type,
-                          componentServiceBindings: List<Binding> = null,
+                          componentInjectableBindings: List<Binding> = null,
                           errorReporter: Function = null): Promise<Injector> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
@@ -253,7 +253,7 @@ export function bootstrap(appComponentType: Type,
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
 
-    var appInjector = _createAppInjector(appComponentType, componentServiceBindings, zone);
+    var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
 
     PromiseWrapper.then(appInjector.asyncGet(appChangeDetectorToken),
       (appChangeDetector) => {

@@ -36,7 +36,7 @@ export class DynamicComponentLoader {
 
     var annotation = this._directiveMetadataReader.read(type).annotation;
 
-    var inj = this._componentAppInjector(location, injector, annotation.services);
+    var inj = this._componentAppInjector(location, injector, annotation.injectables);
 
     var hostEi = location.elementInjector;
     var hostView = location.hostView;

@@ -7,7 +7,7 @@ import {
 } from 'angular2/change_detection';
 import {SetterFn} from 'angular2/src/reflection/types';
 
-import {ProtoView} from './proto_view';
+import {RenderProtoView} from './proto_view';
 import {ElementBinder} from './element_binder';
 import {setterFactory} from './property_setter_factory';
 
@@ -39,7 +39,7 @@ export class ProtoViewBuilder {
 
   bindVariable(name, value) {
     // Store the variable map from value to variable, reflecting how it will be used later by
-    // View. When a local is set to the view, a lookup for the variable name will take place keyed
+    // RenderView. When a local is set to the view, a lookup for the variable name will take place keyed
     // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
@@ -50,7 +50,7 @@ export class ProtoViewBuilder {
     this.isRootView = value;
   }
 
-  build():api.ProtoView {
+  build():api.ProtoViewDto {
     var renderElementBinders = [];
 
     var apiElementBinders = [];
@@ -91,8 +91,8 @@ export class ProtoViewBuilder {
         propertySetters: propertySetters
       }));
     });
-    return new api.ProtoView({
-      render: new directDomRenderer.DirectDomProtoViewRef(new ProtoView({
+    return new api.ProtoViewDto({
+      render: new directDomRenderer.DirectDomProtoViewRef(new RenderProtoView({
         element: this.rootElement,
         elementBinders: renderElementBinders,
         isRootView: this.isRootView
@@ -183,7 +183,7 @@ export class ElementBinderBuilder {
       this.nestedProtoView.bindVariable(name, value);
     } else {
       // Store the variable map from value to variable, reflecting how it will be used later by
-      // View. When a local is set to the view, a lookup for the variable name will take place keyed
+      // RenderView. When a local is set to the view, a lookup for the variable name will take place keyed
       // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
       // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
       // it.

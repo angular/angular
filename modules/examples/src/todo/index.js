@@ -1,15 +1,15 @@
-import {bootstrap, Component, Template, For} from 'angular2/angular2';
+import {bootstrap, Component, View, For} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({
   selector: 'todo-app',
-  services: [
+  injectables: [
     Store,
     TodoFactory
   ]
 })
-@Template({
-  url: 'todo.html',
+@View({
+  templateUrl: 'todo.html',
   directives: [For]
 })
 class TodoApp {

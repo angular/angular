@@ -16,7 +16,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Component} from 'angular2/src/core/annotations/annotations';
-import {Template} from 'angular2/src/core/annotations/template';
+import {View} from 'angular2/src/core/annotations/view';
 
 import {For} from 'angular2/src/directives/for';
 
@@ -231,7 +231,7 @@ class Foo {
 }
 
 @Component({selector: 'test-cmp'})
-@Template({directives: [For]})
+@View({directives: [For]})
 class TestComponent {
   items: any;
   constructor() {
