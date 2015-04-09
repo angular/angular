@@ -125,11 +125,11 @@ export class ChangeDetectionUtil {
     return _simpleChange(previousValue, currentValue);
   }
 
-  static addChange(changes, bindingMemento, change){
+  static addChange(changes, propertyName:string, change){
     if (isBlank(changes)) {
       changes = {};
     }
-    changes[bindingMemento.propertyName] = change;
+    changes[propertyName] = change;
     return changes;
   }
 }

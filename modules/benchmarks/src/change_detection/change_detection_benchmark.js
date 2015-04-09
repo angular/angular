@@ -11,7 +11,8 @@ import {
   ChangeDetection,
   dynamicChangeDetection,
   jitChangeDetection,
-  BindingRecord
+  BindingRecord,
+  DirectiveRecord
 } from 'angular2/change_detection';
 
 
@@ -188,26 +189,26 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
   var parentProto = changeDetection.createProtoChangeDetector('parent');
   var parentCd = parentProto.instantiate(dispatcher, [], [], []);
 
-  var targetObj = new Obj();
   var proto = changeDetection.createProtoChangeDetector("proto");
 
-  var directiveMemento = new FakeDirectiveMemento("target", targetObj);
-  var bindingRecords = [
-    new BindingRecord(parser.parseBinding('field0', null), new FakeBindingMemento(reflector.setter("field0"), "field0"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field1', null), new FakeBindingMemento(reflector.setter("field1"), "field1"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field2', null), new FakeBindingMemento(reflector.setter("field2"), "field2"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field3', null), new FakeBindingMemento(reflector.setter("field3"), "field3"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field4', null), new FakeBindingMemento(reflector.setter("field4"), "field4"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field5', null), new FakeBindingMemento(reflector.setter("field5"), "field5"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field6', null), new FakeBindingMemento(reflector.setter("field6"), "field6"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field7', null), new FakeBindingMemento(reflector.setter("field7"), "field7"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field8', null), new FakeBindingMemento(reflector.setter("field8"), "field8"), directiveMemento),
-    new BindingRecord(parser.parseBinding('field9', null), new FakeBindingMemento(reflector.setter("field9"), "field9"), directiveMemento)
+  var directiveRecord = new DirectiveRecord(0, 0, false, false);
+  var bindings = [
+    BindingRecord.createForDirective(parser.parseBinding('field0', null), "field0", reflector.setter("field0"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field1', null), "field1", reflector.setter("field1"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field2', null), "field2", reflector.setter("field2"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field3', null), "field3", reflector.setter("field3"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field4', null), "field4", reflector.setter("field4"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field5', null), "field5", reflector.setter("field5"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field6', null), "field6", reflector.setter("field6"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field7', null), "field7", reflector.setter("field7"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field8', null), "field8", reflector.setter("field8"), directiveRecord),
+    BindingRecord.createForDirective(parser.parseBinding('field9', null), "field9", reflector.setter("field9"), directiveRecord)
   ];
 
+  var targetObj = new Obj();
   for (var i = 0; i < iterations; ++i) {
-    var cd = proto.instantiate(dispatcher, bindingRecords, [], [directiveMemento]);
-    cd.hydrate(object, null, null);
+    var cd = proto.instantiate(dispatcher, bindings, [], [directiveRecord]);
+    cd.hydrate(object, null, new FakeDirectives(targetObj));
     parentCd.addChild(cd);
   }
   return parentCd;
@@ -298,36 +299,20 @@ export function main () {
   }
 }
 
-class FakeBindingMemento {
-  setter:Function;
-  propertyName:string;
-
-  constructor(setter:Function, propertyName:string) {
-    this.setter = setter;
-    this.propertyName = propertyName;
-  }
-}
-
-class FakeDirectiveMemento {
+class FakeDirectives {
   targetObj:Obj;
-  name:string;
-  callOnChange:boolean;
-  callOnAllChangesDone:boolean;
 
-  constructor(name, targetObj) {
+  constructor(targetObj) {
     this.targetObj = targetObj;
-    this.name = name;
-    this.callOnChange = false;
-    this.callOnAllChangesDone = false;
   }
 
-  directive(dirs) {
+  directive(record) {
     return this.targetObj;
   }
 }
 
 class DummyDispatcher extends ChangeDispatcher {
-  invokeMementoFor(bindingMemento, newValue) {
+  notifyOnBinding(bindingRecord, newValue) {
     throw "Should not be used";
   }
 }

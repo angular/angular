@@ -7,7 +7,7 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
 
-import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord,
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord,
   PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT} from 'angular2/change_detection';
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
@@ -27,6 +27,10 @@ export function main() {
           return parser.parseBinding(exp, location);
         }
 
+        function dirs(directives:List) {
+          return new FakeDirectives(directives);
+        }
+
         function convertLocalsToVariableBindings(locals) {
           var variableBindings = [];
           var loc = locals;
@@ -37,13 +41,13 @@ export function main() {
           return variableBindings;
         }
 
-        function createChangeDetector(memo:string, exp:string, context = null, locals = null, registry = null) {
+        function createChangeDetector(propName:string, exp:string, context = null, locals = null, registry = null) {
           var pcd = createProtoChangeDetector(registry);
           var dispatcher = new TestDispatcher();
 
           var variableBindings = convertLocalsToVariableBindings(locals);
 
-          var records = [new BindingRecord(ast(exp), memo, null)];
+          var records = [BindingRecord.createForElement(ast(exp), 0, propName)];
           var cd = pcd.instantiate(dispatcher, records, variableBindings, []);
           cd.hydrate(context, locals, null);
 
@@ -56,9 +60,9 @@ export function main() {
           return res["dispatcher"].log;
         }
 
-        function instantiate(protoChangeDetector, dispatcher, bindings, directiveMementos = null) {
-          if (isBlank(directiveMementos)) directiveMementos = [];
-          return protoChangeDetector.instantiate(dispatcher, bindings, null, directiveMementos);
+        function instantiate(protoChangeDetector, dispatcher, bindings, directiveRecords = null) {
+          if (isBlank(directiveRecords)) directiveRecords = [];
+          return protoChangeDetector.instantiate(dispatcher, bindings, null, directiveRecords);
         }
 
         describe(`${name} change detection`, () => {
@@ -204,7 +208,7 @@ export function main() {
             var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
 
-            var cd = instantiate(pcd, dispatcher, [new BindingRecord(ast, "memo", null)]);
+            var cd = instantiate(pcd, dispatcher, [BindingRecord.createForElement(ast, 0, "memo")]);
             cd.hydrate(new TestData("value"), null, null);
 
             cd.detectChanges();
@@ -241,13 +245,18 @@ export function main() {
               });
             });
 
-            describe("updatingDirectives", () => {
-              var dirMemento1 = new FakeDirectiveMemento(0, true, true);
-              var dirMemento2 = new FakeDirectiveMemento(1, true, true);
-              var dirMementoNoCallbacks = new FakeDirectiveMemento(0, false, false);
+            describe("updating directives", () => {
+              var dirRecord1 = new DirectiveRecord(0, 0, true, true);
+              var dirRecord2 = new DirectiveRecord(0, 1, true, true);
+              var dirRecordNoCallbacks = new DirectiveRecord(0, 0, false, false);
 
-              var updateA = new FakeBindingMemento((o, v) => o.a = v, "a");
-              var updateB = new FakeBindingMemento((o, v) => o.b = v, "b");
+              function updateA(exp:string, dirRecord) {
+                return BindingRecord.createForDirective(ast(exp), "a", (o,v) => o.a = v, dirRecord);
+              }
+
+              function updateB(exp:string, dirRecord) {
+                return BindingRecord.createForDirective(ast(exp), "b", (o,v) => o.b = v, dirRecord);
+              }
 
               var directive1;
               var directive2;
@@ -260,10 +269,10 @@ export function main() {
               it("should happen directly, without invoking the dispatcher", () => {
                 var pcd = createProtoChangeDetector();
 
-                var cd = instantiate(pcd, dispatcher, [new BindingRecord(ast("42"), updateA, dirMemento1)],
-                  [dirMemento1]);
+                var cd = instantiate(pcd, dispatcher, [updateA("42", dirRecord1)],
+                  [dirRecord1]);
 
-                cd.hydrate(null, null, [directive1])
+                cd.hydrate(null, null, dirs([directive1]));
 
                 cd.detectChanges();
 
@@ -276,12 +285,12 @@ export function main() {
                   var pcd = createProtoChangeDetector();
 
                   var cd = instantiate(pcd, dispatcher, [
-                    new BindingRecord(ast("1"), updateA, dirMemento1),
-                    new BindingRecord(ast("2"), updateB, dirMemento1),
-                    new BindingRecord(ast("3"), updateA, dirMemento2)
-                  ], [dirMemento1, dirMemento2]);
+                    updateA("1", dirRecord1),
+                    updateB("2", dirRecord1),
+                    updateA("3", dirRecord2)
+                  ], [dirRecord1, dirRecord2]);
 
-                  cd.hydrate(null, null, [directive1, directive2])
+                  cd.hydrate(null, null, dirs([directive1, directive2]));
 
                   cd.detectChanges();
 
@@ -293,10 +302,10 @@ export function main() {
                   var pcd = createProtoChangeDetector();
 
                   var cd = instantiate(pcd, dispatcher, [
-                    new BindingRecord(ast("1"), updateA, dirMementoNoCallbacks)
-                  ], [dirMementoNoCallbacks]);
+                    updateA("1", dirRecordNoCallbacks)
+                  ], [dirRecordNoCallbacks]);
 
-                  cd.hydrate(null, null, [directive1])
+                  cd.hydrate(null, null, dirs([directive1]));
 
                   cd.detectChanges();
 
@@ -308,8 +317,8 @@ export function main() {
                 it("should be called after processing all the children", () => {
                   var pcd = createProtoChangeDetector();
 
-                  var cd = instantiate(pcd, dispatcher, [], [dirMemento1, dirMemento2]);
-                  cd.hydrate(null, null, [directive1, directive2]);
+                  var cd = instantiate(pcd, dispatcher, [], [dirRecord1, dirRecord2]);
+                  cd.hydrate(null, null, dirs([directive1, directive2]));
 
                   cd.detectChanges();
 
@@ -322,10 +331,10 @@ export function main() {
                   var pcd = createProtoChangeDetector();
 
                   var cd = instantiate(pcd, dispatcher, [
-                    new BindingRecord(ast("1"), updateA, dirMementoNoCallbacks)
-                  ], [dirMementoNoCallbacks]);
+                    updateA("1", dirRecordNoCallbacks)
+                  ], [dirRecordNoCallbacks]);
 
-                  cd.hydrate(null, null, [directive1])
+                  cd.hydrate(null, null, dirs([directive1]));
 
                   cd.detectChanges();
 
@@ -334,14 +343,14 @@ export function main() {
 
                 it("should be called in reverse order so the child is always notified before the parent", () => {
                   var pcd = createProtoChangeDetector();
-                  var cd = instantiate(pcd, dispatcher, [], [dirMemento1, dirMemento2]);
+                  var cd = instantiate(pcd, dispatcher, [], [dirRecord1, dirRecord2]);
 
                   var onChangesDoneCalls = [];
                   var td1;
                   td1 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td1));
                   var td2;
                   td2 = new TestDirective(() => ListWrapper.push(onChangesDoneCalls, td2));
-                  cd.hydrate(null, null, [td1, td2]);
+                  cd.hydrate(null, null, dirs([td1, td2]));
 
                   cd.detectChanges();
 
@@ -352,19 +361,19 @@ export function main() {
                   var pcd = createProtoChangeDetector();
                   var shadowDomChildPCD = createProtoChangeDetector();
 
-                  var parent = pcd.instantiate(dispatcher, [], null, [dirMemento1]);
+                  var parent = pcd.instantiate(dispatcher, [], null, [dirRecord1]);
 
-                  var child = shadowDomChildPCD.instantiate(dispatcher, [
-                    new BindingRecord(ast("1"), updateA, dirMemento1)], null, [dirMemento1]);
+                  var child = shadowDomChildPCD.instantiate(dispatcher,
+                    [updateA("1", dirRecord1)], null, [dirRecord1]);
                   parent.addShadowDomChild(child);
 
-                  var directiveInShadowDOm = new TestDirective();
+                  var directiveInShadowDom = new TestDirective();
                   var parentDirective = new TestDirective(() => {
-                    expect(directiveInShadowDOm.a).toBe(null);
+                    expect(directiveInShadowDom.a).toBe(null);
                   });
 
-                  parent.hydrate(null, null, [parentDirective]);
-                  child.hydrate(null, null, [directiveInShadowDOm]);
+                  parent.hydrate(null, null, dirs([parentDirective]));
+                  child.hydrate(null, null, dirs([directiveInShadowDom]));
 
                   parent.detectChanges();
                 });
@@ -375,11 +384,10 @@ export function main() {
           describe("enforce no new changes", () => {
             it("should throw when a record gets changed after it has been checked", () => {
               var pcd = createProtoChangeDetector();
-              pcd.addAst(ast("a"), "a", 1);
 
               var dispatcher = new TestDispatcher();
               var cd = instantiate(pcd, dispatcher, [
-                new BindingRecord(ast("a"), "a", 1)
+                BindingRecord.createForElement(ast("a"), 0, "a")
               ]);
               cd.hydrate(new TestData('value'), null, null);
 
@@ -394,7 +402,7 @@ export function main() {
             xit("should wrap exceptions into ChangeDetectionError", () => {
               var pcd = createProtoChangeDetector();
               var cd = pcd.instantiate(new TestDispatcher(), [
-                new BindingRecord(ast("invalidProp", "someComponent"), "a", 1)
+                BindingRecord.createForElement(ast("invalidProp"), 0, "a")
               ], null, []);
               cd.hydrate(null, null);
 
@@ -836,33 +844,15 @@ class TestData {
   }
 }
 
-class FakeDirectiveMemento {
-  callOnAllChangesDone:boolean;
-  callOnChange:boolean;
-  directiveIndex:number;
+class FakeDirectives {
+  directives:List;
 
-  constructor(directiveIndex:number = 0, callOnAllChangesDone:boolean = false, callOnChange:boolean = false) {
-    this.directiveIndex = directiveIndex;
-    this.callOnAllChangesDone = callOnAllChangesDone;
-    this.callOnChange = callOnChange;
+  constructor(directives:List) {
+    this.directives = directives;
   }
 
-  get name() {
-    return this.directiveIndex;
-  }
-
-  directive(directives) {
-    return directives[this.directiveIndex];
-  }
-}
-
-class FakeBindingMemento {
-  setter:Function;
-  propertyName:string;
-
-  constructor(setter:Function, propertyName:string) {
-    this.setter = setter;
-    this.propertyName = propertyName;
+  directive(directiveRecord:DirectiveRecord) {
+    return this.directives[directiveRecord.directiveIndex];
   }
 }
 
@@ -880,8 +870,8 @@ class TestDispatcher extends ChangeDispatcher {
     this.loggedValues = ListWrapper.create();
   }
 
-  invokeMementoFor(memento, value) {
-    ListWrapper.push(this.log, `${memento}=${this._asString(value)}`);
+  notifyOnBinding(binding, value) {
+    ListWrapper.push(this.log, `${binding.propertyName}=${this._asString(value)}`);
     ListWrapper.push(this.loggedValues, value);
   }
 

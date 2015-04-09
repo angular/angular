@@ -6,7 +6,7 @@ import {RECORD_TYPE_SELF, ProtoRecord} from 'angular2/src/change_detection/proto
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false) {
     return new ProtoRecord(99,  "name", funcOrValue, args, null, contextIndex, selfIndex,
-      null, null, null, lastInBinding, false);
+      null, null, lastInBinding, false);
   }
 
   describe("change detection - coalesce", () => {
@@ -74,7 +74,7 @@ export function main() {
       expect(rs[1]).toEqual(new ProtoRecord(
         RECORD_TYPE_SELF, "self", null,
         [], null, 1, 2,
-        null, null, null,
+        null, null,
         true, false)
       );
     });

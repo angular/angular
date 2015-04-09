@@ -48,8 +48,8 @@ export class ViewFactory {
 
   _createView(protoView:viewModule.ProtoView): viewModule.View {
     var view = new viewModule.View(protoView, protoView.protoLocals);
-    var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindingRecords,
-      protoView.getVariableBindings(), protoView.getDirectiveMementos());
+    var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
+      protoView.getVariableBindings(), protoView.getdirectiveRecords());
 
     var binders = protoView.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);

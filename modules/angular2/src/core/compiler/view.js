@@ -1,6 +1,6 @@
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  BindingRecord, BindingPropagationConfig, uninitialized} from 'angular2/change_detection';
+  ChangeRecord, BindingRecord, DirectiveRecord, BindingPropagationConfig} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';
@@ -70,11 +70,10 @@ export class View {
   _setContextAndLocals(newContext, locals) {
     this.context = newContext;
     this.locals.parent = locals;
-    this.changeDetector.hydrate(this.context, this.locals, this.elementInjectors);
   }
 
   _hydrateChangeDetector() {
-    this.changeDetector.hydrate(this.context, this.locals, this.elementInjectors);
+    this.changeDetector.hydrate(this.context, this.locals, this);
   }
 
   _dehydrateContext() {
@@ -229,17 +228,20 @@ export class View {
   }
 
   // dispatch to element injector or text nodes based on context
-  invokeMementoFor(memento:any, currentValue:any) {
-    if (memento instanceof ElementBindingMemento) {
-      var elementMemento:ElementBindingMemento = memento;
+  notifyOnBinding(b:BindingRecord, currentValue:any) {
+    if (b.isElement()) {
       this.proto.renderer.setElementProperty(
-        this.render, elementMemento.elementIndex, elementMemento.propertyName, currentValue
+        this.render, b.elementIndex, b.propertyName, currentValue
       );
     } else {
       // we know it refers to _textNodes.
-      var textNodeIndex:number = memento;
-      this.proto.renderer.setText(this.render, textNodeIndex, currentValue);
+      this.proto.renderer.setText(this.render, b.elementIndex, currentValue);
     }
+  }
+    
+  directive(directive:DirectiveRecord) {
+    var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
+    return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
   // implementation of EventDispatcher#dispatchEvent
@@ -277,12 +279,12 @@ export class ProtoView {
   variableBindings: Map;
   protoLocals:Map;
   textNodesWithBindingCount:int;
-  bindingRecords:List;
+  bindings:List;
   parentProtoView:ProtoView;
   _variableBindings:List;
 
-  _directiveMementosMap:Map;
-  _directiveMementos:List;
+  _directiveRecordsMap:Map;
+  _directiveRecords:List;
   render:renderApi.ProtoViewRef;
   renderer:renderApi.Renderer;
 
@@ -298,10 +300,10 @@ export class ProtoView {
     this.protoChangeDetector = protoChangeDetector;
     this.parentProtoView = null;
     this.textNodesWithBindingCount = 0;
-    this.bindingRecords = [];
-    this._directiveMementosMap = MapWrapper.create();
+    this.bindings = [];
+    this._directiveRecordsMap = MapWrapper.create();
     this._variableBindings = null;
-    this._directiveMementos = null;
+    this._directiveRecords = null;
   }
 
   //TODO: Tobias or Victor. Moving it into the constructor.
@@ -325,23 +327,23 @@ export class ProtoView {
   //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of ProtoView once we separate
   // ProtoView and ProtoViewBuilder
-  getDirectiveMementos() {
-    if (isPresent(this._directiveMementos)) {
-      return this._directiveMementos;
+  getdirectiveRecords() {
+    if (isPresent(this._directiveRecords)) {
+      return this._directiveRecords;
     }
 
-    this._directiveMementos = [];
+    this._directiveRecords = [];
 
     for (var injectorIndex = 0; injectorIndex < this.elementBinders.length; ++injectorIndex) {
       var pei = this.elementBinders[injectorIndex].protoElementInjector;
       if (isPresent(pei)) {
         for (var directiveIndex = 0; directiveIndex < pei.numberOfDirectives; ++directiveIndex) {
-          ListWrapper.push(this._directiveMementos, this._getDirectiveMemento(injectorIndex, directiveIndex));
+          ListWrapper.push(this._directiveRecords, this._getDirectiveRecord(injectorIndex, directiveIndex));
         }
       }
     }
 
-    return this._directiveMementos;
+    return this._directiveRecords;
   }
 
   bindVariable(contextName:string, templateName:string) {
@@ -361,16 +363,18 @@ export class ProtoView {
    * Adds a text node binding for the last created ElementBinder via bindElement
    */
   bindTextNode(expression:AST) {
-    var memento = this.textNodesWithBindingCount++;
-    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, memento, null));
+    var textNodeIndex = this.textNodesWithBindingCount++;
+    var b = BindingRecord.createForTextNode(expression, textNodeIndex);
+    ListWrapper.push(this.bindings, b);
   }
 
   /**
    * Adds an element property binding for the last created ElementBinder via bindElement
    */
   bindElementProperty(expression:AST, setterName:string) {
-    var memento = new ElementBindingMemento(this.elementBinders.length-1, setterName);
-    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, memento, null));
+    var elementIndex = this.elementBinders.length-1;
+    var b = BindingRecord.createForElement(expression, elementIndex, setterName);
+    ListWrapper.push(this.bindings, b);
   }
 
   /**
@@ -411,82 +415,22 @@ export class ProtoView {
     setter:SetterFn) {
 
     var elementIndex = this.elementBinders.length-1;
-    var bindingMemento = new DirectiveBindingMemento(
-      elementIndex,
-      directiveIndex,
-      setterName,
-      setter
-    );
-    var directiveMemento = this._getDirectiveMemento(elementIndex, directiveIndex);
-    ListWrapper.push(this.bindingRecords, new BindingRecord(expression, bindingMemento, directiveMemento));
+    var directiveRecord = this._getDirectiveRecord(elementIndex, directiveIndex);
+    var b = BindingRecord.createForDirective(expression, setterName, setter, directiveRecord);
+    ListWrapper.push(this.bindings, b);
   }
 
-  _getDirectiveMemento(elementInjectorIndex:number, directiveIndex:number) {
+  _getDirectiveRecord(elementInjectorIndex:number, directiveIndex:number) {
     var id = elementInjectorIndex * 100 + directiveIndex;
     var protoElementInjector = this.elementBinders[elementInjectorIndex].protoElementInjector;
 
-    if (!MapWrapper.contains(this._directiveMementosMap, id)) {
+    if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
       var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
-      MapWrapper.set(this._directiveMementosMap, id,
-        new DirectiveMemento(elementInjectorIndex, directiveIndex,
+      MapWrapper.set(this._directiveRecordsMap, id,
+        new DirectiveRecord(elementInjectorIndex, directiveIndex,
           binding.callOnAllChangesDone, binding.callOnChange));
     }
 
-    return MapWrapper.get(this._directiveMementosMap, id);
-  }
-}
-
-/**
- */
-export class ElementBindingMemento {
-  elementIndex:int;
-  propertyName:string;
-
-  constructor(elementIndex:int, propertyName:string) {
-    this.elementIndex = elementIndex;
-    this.propertyName = propertyName;
-  }
-}
-
-/**
- */
-export class DirectiveBindingMemento {
-  _elementInjectorIndex:int;
-  _directiveIndex:int;
-  propertyName:string;
-  setter:SetterFn;
-  constructor(
-      elementInjectorIndex:number,
-      directiveIndex:number,
-      propertyName:string,
-      setter:SetterFn) {
-    this._elementInjectorIndex = elementInjectorIndex;
-    this._directiveIndex = directiveIndex;
-    this.propertyName = propertyName;
-    this.setter = setter;
-  }
-}
-
-class DirectiveMemento {
-  _elementInjectorIndex:number;
-  _directiveIndex:number;
-  callOnAllChangesDone:boolean;
-  callOnChange:boolean;
-
-  get name() {
-    return `${this._elementInjectorIndex}_${this._directiveIndex}`;
-  }
-
-  constructor(elementInjectorIndex:number, directiveIndex:number, callOnAllChangesDone:boolean,
-              callOnChange:boolean) {
-    this._elementInjectorIndex = elementInjectorIndex;
-    this._directiveIndex = directiveIndex;
-    this.callOnAllChangesDone = callOnAllChangesDone;
-    this.callOnChange = callOnChange;
-  }
-
-  directive(elementInjectors:List<ElementInjector>) {
-    var elementInjector:ElementInjector = elementInjectors[this._elementInjectorIndex];
-    return elementInjector.getDirectiveAtIndex(this._directiveIndex);
+    return MapWrapper.get(this._directiveRecordsMap, id);
   }
 }

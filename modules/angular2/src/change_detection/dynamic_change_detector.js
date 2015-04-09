@@ -2,6 +2,8 @@ import {isPresent, isBlank, BaseException, FunctionWrapper} from 'angular2/src/f
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
+import {BindingRecord} from './binding_record';
+import {DirectiveRecord} from './directive_record';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {ChangeDetectionUtil, uninitialized} from './change_detection_util';
 
@@ -35,11 +37,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   protos:List<ProtoRecord>;
   directives:any;
-  directiveMementos:List;
+  directiveRecords:List;
   changeControlStrategy:string;
 
   constructor(changeControlStrategy:string, dispatcher:any, pipeRegistry:PipeRegistry,
-              protoRecords:List<ProtoRecord>, directiveMementos:List) {
+              protoRecords:List<ProtoRecord>, directiveRecords:List) {
     super();
     this.dispatcher = dispatcher;
     this.pipeRegistry = pipeRegistry;
@@ -57,7 +59,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.directives = null;
 
     this.protos = protoRecords;
-    this.directiveMementos = directiveMementos;
+    this.directiveRecords = directiveRecords;
     this.changeControlStrategy = changeControlStrategy;
   }
 
@@ -99,45 +101,45 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       var change = this._check(proto);
       if (isPresent(change)) {
         if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
-        this._updateDirectiveOrElement(change, proto.directiveMemento, proto.bindingMemento);
-        changes = this._addChange(proto.directiveMemento, proto.bindingMemento, change, changes);
+        this._updateDirectiveOrElement(change, proto.bindingRecord);
+        changes = this._addChange(proto.bindingRecord, change, changes);
       }
 
       if (proto.lastInDirective && isPresent(changes)) {
-        this._directive(proto.directiveMemento).onChange(changes);
+        this._directive(proto.bindingRecord.directiveRecord).onChange(changes);
         changes = null;
       }
     }
   }
 
   callOnAllChangesDone() {
-    var mementos = this.directiveMementos;
-    for (var i = mementos.length - 1; i >= 0; --i) {
-      var memento = mementos[i];
-      if (memento.callOnAllChangesDone) {
-        this._directive(memento).onAllChangesDone();
+    var dirs = this.directiveRecords;
+    for (var i = dirs.length - 1; i >= 0; --i) {
+      var dir = dirs[i];
+      if (dir.callOnAllChangesDone) {
+        this._directive(dir).onAllChangesDone();
       }
     }
   }
 
-  _updateDirectiveOrElement(change, directiveMemento, bindingMemento) {
-    if (isBlank(directiveMemento)) {
-      this.dispatcher.invokeMementoFor(bindingMemento, change.currentValue);
+  _updateDirectiveOrElement(change, bindingRecord) {
+    if (isBlank(bindingRecord.directiveRecord)) {
+      this.dispatcher.notifyOnBinding(bindingRecord, change.currentValue);
     } else {
-      bindingMemento.setter(this._directive(directiveMemento), change.currentValue);
+      bindingRecord.setter(this._directive(bindingRecord.directiveRecord), change.currentValue);
     }
   }
 
-  _addChange(directiveMemento, bindingMemento, change, changes) {
-    if (isPresent(directiveMemento) && directiveMemento.callOnChange) {
-      return ChangeDetectionUtil.addChange(changes, bindingMemento, change);
+  _addChange(bindingRecord:BindingRecord, change, changes) {
+    if (bindingRecord.callOnChange()) {
+      return ChangeDetectionUtil.addChange(changes, bindingRecord.propertyName, change);
     } else {
       return changes;
     }
   }
 
-  _directive(memento) {
-    return memento.directive(this.directives);
+  _directive(directive:DirectiveRecord) {
+    return this.directives.directive(directive);
   }
 
   _check(proto:ProtoRecord) {

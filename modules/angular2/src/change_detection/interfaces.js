@@ -1,11 +1,10 @@
 import {List} from 'angular2/src/facade/collection';
 import {Locals} from './parser/locals';
-import {AST} from './parser/ast';
 import {DEFAULT} from './constants';
+import {BindingRecord} from './binding_record';
 
 export class ProtoChangeDetector  {
-  addAst(ast:AST, bindingMemento:any, directiveMemento:any = null){}
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveMementos:List):ChangeDetector{
+  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveRecords:List):ChangeDetector{
     return null;
   }
 }
@@ -17,7 +16,7 @@ export class ChangeDetection {
 }
 
 export class ChangeDispatcher {
-  invokeMementoFor(memento:any, value) {}
+  notifyOnBinding(bindingRecord:BindingRecord, value:any) {}
 }
 
 export class ChangeDetector {
