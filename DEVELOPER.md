@@ -3,17 +3,17 @@
 This document describes how to set up your development environment to build and test Angular, both
 JS and Dart versions. It also explains the basic mechanics of using `git`, `node`, and `npm`.
 
-See the [contributing guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
-for how to contribute your own code to
+* [Prerequisite Software](#prerequisite-software)
+* [Getting the Sources](#getting-the-sources)
+* [Environment Variable Setup](#environment-variable-setup)
+* [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
+* [Running Tests Locally](#running-tests-locally)
+* [Project Information](#project-information)
+* [CI using Travis](#ci-using-travis)
+* [Debugging](#debugging)
 
-1. [Prerequisite Software](#prerequisite-software)
-2. [Getting the Sources](#getting-the-sources)
-3. [Environment Variable Setup](#environment-variable-setup)
-4. [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
-5. [Running Tests Locally](#running-tests-locally)
-6. [Project Information](#project-information)
-7. [CI using Travis](#ci-using-travis)
-8. [Debugging](#debugging)
+See the [contribution guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
+if you'd like to contribute to Angular.
 
 ## Prerequisite Software
 
@@ -114,7 +114,7 @@ use in these instructions.
 
 ## Build commands
 
-To build Angular and prepare tests run
+To build Angular and prepare tests run:
 
 ```shell
 $(npm bin)/gulp build
@@ -151,7 +151,7 @@ You can run just the unit tests as follows:
 * `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**.
 * `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
 
-If you prefer running tests in "single-run" mode rather than watch mode use
+If you prefer running tests in "single-run" mode rather than watch mode use:
 
 * `$(npm bin)/gulp test.unit.js/ci`
 * `$(npm bin)/gulp test.unit.cjs/ci`
@@ -162,7 +162,7 @@ If you prefer running tests in "single-run" mode rather than watch mode use
 much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
 tests respectively.
 
-**Note** for transpiler tests: The karma preprocessor is setup in a way so that after every test
+**Note for transpiler tests**: The karma preprocessor is setup in a way so that after every test
 run the transpiler is reloaded. With that it is possible to make changes to the preprocessor and
 run the tests without exiting karma (just touch a test file that you would like to run).
 
