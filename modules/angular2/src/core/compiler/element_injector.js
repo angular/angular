@@ -1,7 +1,7 @@
 import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Injector, Key, Dependency, bind, Binding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
+import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
@@ -278,7 +278,7 @@ export class DirectiveDependency extends Dependency {
   }
 }
 
-export class DirectiveBinding extends Binding {
+export class DirectiveBinding extends ResolvedBinding {
   callOnDestroy:boolean;
   callOnChange:boolean;
   callOnAllChangesDone:boolean;
@@ -292,13 +292,14 @@ export class DirectiveBinding extends Binding {
     this.annotation = annotation;
   }
 
-  static createFromBinding(b:Binding, annotation:Directive):Binding {
-    var deps = ListWrapper.map(b.dependencies, DirectiveDependency.createFrom);
-    return new DirectiveBinding(b.key, b.factory, deps, b.providedAsPromise, annotation);
+  static createFromBinding(b:Binding, annotation:Directive):DirectiveBinding {
+    var rb = b.resolve();
+    var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
+    return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise, annotation);
   }
 
-  static createFromType(type:Type, annotation:Directive):Binding {
-    var binding = bind(type).toClass(type);
+  static createFromType(type:Type, annotation:Directive):DirectiveBinding {
+    var binding = new Binding(type, {toClass: type});
     return DirectiveBinding.createFromBinding(binding, annotation);
   }
 
@@ -343,16 +344,16 @@ ElementInjector:
  */
 
 export class ProtoElementInjector  {
-  _binding0:Binding;
-  _binding1:Binding;
-  _binding2:Binding;
-  _binding3:Binding;
-  _binding4:Binding;
-  _binding5:Binding;
-  _binding6:Binding;
-  _binding7:Binding;
-  _binding8:Binding;
-  _binding9:Binding;
+  _binding0:ResolvedBinding;
+  _binding1:ResolvedBinding;
+  _binding2:ResolvedBinding;
+  _binding3:ResolvedBinding;
+  _binding4:ResolvedBinding;
+  _binding5:ResolvedBinding;
+  _binding6:ResolvedBinding;
+  _binding7:ResolvedBinding;
+  _binding8:ResolvedBinding;
+  _binding9:ResolvedBinding;
   _binding0IsComponent:boolean;
   _keyId0:int;
   _keyId1:int;
@@ -642,7 +643,7 @@ export class ElementInjector extends TreeNode {
       this._dynamicallyCreatedComponentBinding.key.id;
   }
 
-  _new(binding:Binding) {
+  _new(binding:ResolvedBinding) {
     if (this._constructionCounter++ > _MAX_DIRECTIVE_CONSTRUCTION_COUNTER) {
       throw new CyclicDependencyError(binding.key);
     }

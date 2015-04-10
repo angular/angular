@@ -1,6 +1,6 @@
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError, InvalidBindingError,
+import {ResolvedBinding, Binding, BindingBuilder, bind} from './binding';
+import {ProviderError, NoProviderError,
   AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -28,7 +28,7 @@ export class Injector {
   _asyncStrategy: _AsyncInjectorStrategy;
   _syncStrategy:_SyncInjectorStrategy;
   constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
-    var flatten = _flattenBindings(bindings, MapWrapper.create());
+    var flatten = _flattenBindings(Binding.resolveAll(bindings), MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();
     this._parent = parent;
@@ -89,7 +89,7 @@ export class Injector {
     }
   }
 
-  _resolveDependencies(key:Key, binding:Binding, forceAsync:boolean):List {
+  _resolveDependencies(key:Key, binding:ResolvedBinding, forceAsync:boolean):List {
     try {
       var getDependency = d => this._getByKey(d.key, forceAsync || d.asPromise, d.lazy, d.optional);
       return ListWrapper.map(binding.dependencies, getDependency);
@@ -115,7 +115,7 @@ export class Injector {
       ListWrapper.get(this._bindings, key.id);
 
     if (isBlank(binding) && this._defaultBindings) {
-      return bind(key.token).toClass(key.token);
+      return bind(key.token).toClass(key.token).resolve();
     } else {
       return binding;
     }
@@ -166,7 +166,7 @@ class _SyncInjectorStrategy {
     return this._createInstance(key, binding, deps);
   }
 
-  _createInstance(key:Key, binding:Binding, deps:List) {
+  _createInstance(key:Key, binding:ResolvedBinding, deps:List) {
     try {
       var instance = FunctionWrapper.apply(binding.factory, deps);
       this.injector._setInstance(key, instance);
@@ -227,7 +227,7 @@ class _AsyncInjectorStrategy {
     return PromiseWrapper.reject(e);
   }
 
-  _findOrCreate(key:Key, binding:Binding, deps:List) {
+  _findOrCreate(key:Key, binding:ResolvedBinding, deps:List) {
     try {
       var instance = this.injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
@@ -246,21 +246,10 @@ class _AsyncInjectorStrategy {
 
 function _flattenBindings(bindings:List, res:Map) {
   ListWrapper.forEach(bindings, function (b) {
-    if (b instanceof Binding) {
+    if (b instanceof ResolvedBinding) {
       MapWrapper.set(res, b.key.id, b);
-
-    } else if (b instanceof Type) {
-      var s = bind(b).toClass(b);
-      MapWrapper.set(res, s.key.id, s);
-
     } else if (b instanceof List) {
       _flattenBindings(b, res);
-
-    } else if (b instanceof BindingBuilder) {
-      throw new InvalidBindingError(b.token);
-
-    } else {
-      throw new InvalidBindingError(b);
     }
   });
   return res;

@@ -756,7 +756,6 @@ gulp.task('build/packages.dart', function(done) {
     'build/transpile.dart', // Creates the folder structure needed by subsequent tasks.
     ['build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'build/format.dart',
-    'build/pubspec.dart',
     done
   );
 });
@@ -765,6 +764,7 @@ gulp.task('build/packages.dart', function(done) {
 gulp.task('build.dart', function(done) {
   runSequence(
     'build/packages.dart',
+    'build/pubspec.dart',
     'build/analyze.dart',
     'build/pubbuild.dart',
     done

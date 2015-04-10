@@ -13,6 +13,7 @@ module.exports = function(config) {
       // Unit test files needs to be included.
       // Karma-dart generates `__adapter_unittest.dart` that imports these files.
       {pattern: 'modules/*/test/**/*_spec.js', included: true},
+      {pattern: 'modules/*/test/**/*_spec.dart', included: true},
       {pattern: 'tools/transpiler/spec/**/*_spec.js', included: true},
 
       // These files are not included, they are imported by the unit tests above.
