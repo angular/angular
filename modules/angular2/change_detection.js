@@ -1,3 +1,9 @@
+/**
+ * @module
+ * @description
+ * Description of the change_detection module
+ */
+
 export {
   ASTWithSource, AST, AstTransformer, AccessMember, LiteralArray, ImplicitReceiver
 } from './src/change_detection/parser/ast';
