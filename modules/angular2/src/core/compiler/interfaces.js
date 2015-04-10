@@ -1,5 +1,5 @@
 /**
- * @publicModule angular2/angular2
+ * @exportedAs angular2/angular2
  */
 export class OnChange {
   onChange(changes) {

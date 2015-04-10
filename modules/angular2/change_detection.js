@@ -52,7 +52,7 @@ export var defaultPipes = {
 
 
 /**
- * @publicModule angular2/change_detection
+ * @exportedAs angular2/change_detection
  */
 export class DynamicChangeDetection extends ChangeDetection {
   registry:PipeRegistry;
@@ -68,7 +68,7 @@ export class DynamicChangeDetection extends ChangeDetection {
 }
 
 /**
- * @publicModule angular2/change_detection
+ * @exportedAs angular2/change_detection
  */
 export class JitChangeDetection extends ChangeDetection {
   registry:PipeRegistry;

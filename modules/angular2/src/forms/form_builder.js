@@ -4,7 +4,7 @@ import * as modelModule from './model';
 
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export class FormBuilder {
   group(controlsConfig, extra = null):modelModule.ControlGroup {

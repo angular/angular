@@ -5,7 +5,7 @@ import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {isPresent} from 'angular2/src/facade/lang';
 
 /**
- * @publicModule angular2/change_detection
+ * @exportedAs angular2/change_detection
  */
 @Injectable()
 export class LifeCycle {
