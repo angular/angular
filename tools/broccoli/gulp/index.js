@@ -33,6 +33,7 @@ function broccoliBuild(tree, outputRoot) {
   var builder = new broccoli.Builder(tree);
   return builder.build()
     .then(function (hash) {
+      console.log('=== Stats for %s (total: %ds) ===', outputRoot, Math.round(hash.totalTime/1000000)/1000);
       printSlowTrees(hash.graph);
 
       var dir = hash.directory;
@@ -49,6 +50,8 @@ function broccoliBuild(tree, outputRoot) {
       time('Build cleanup', function() {
         builder.cleanup();
       });
+
+      console.log('=== Done building %s ===', outputRoot);
     })
     .catch(function (err) {
       // Should show file and line/col if present

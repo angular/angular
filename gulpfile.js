@@ -758,6 +758,11 @@ gulp.task('build.dart', function(done) {
 gulp.task('broccoli.js.dev', function() {
   return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
 });
+
+gulp.task('broccoli.js.prod', function() {
+  return broccoliBuild(require('./Brocfile-js_prod.js'), path.join('js', 'prod'));
+});
+
 gulp.task('build.js.dev', function(done) {
   runSequence(
     'broccoli.js.dev',
@@ -766,12 +771,7 @@ gulp.task('build.js.dev', function(done) {
   );
 });
 
-gulp.task('build.js.prod', function(done) {
-  runSequence(
-    ['build/transpile.js.prod', 'build/html.js.prod', 'build/copy.js.prod', 'build/multicopy.js.prod.es6'],
-    done
-  );
-});
+gulp.task('build.js.prod', ['broccoli.js.prod']);
 
 gulp.task('broccoli.js.cjs', function() {
   return broccoliBuild(require('./Brocfile-js_cjs.js'), path.join('js', 'cjs'));
