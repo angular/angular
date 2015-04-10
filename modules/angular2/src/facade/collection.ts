@@ -108,11 +108,19 @@ export class ListWrapper {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
+  static indexOf(list: List<any>, value: any, startIndex: int = 0) {
+    return list.indexOf(value, startIndex);
+  }
   static find(list: List<any>, pred: Function) {
-    for (var i = 0; i < list.length; ++i) {
-      if (pred(list[i])) return list[i];
+    var index = ListWrapper.findIndex(list, pred);
+    return index == -1 ? null : list[index];
+  }
+  static findIndex(list: List<any>, predicate: Function) {
+    for (var i = 0; i < list.length; i++) {
+      if (predicate(list[i])) return i;
     }
-    return null;
+
+    return -1;
   }
   static reduce<T>(list: List<T>,
                    fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,

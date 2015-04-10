@@ -99,6 +99,14 @@ class ListWrapper {
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
   static find(List list, bool fn(item)) =>
       list.firstWhere(fn, orElse: () => null);
+  static int findIndex(List list, bool fn(item)) {
+    for (int i = 0; i < list.length; i++) {
+      if (fn(list[i])) return i;
+    }
+
+    return -1;
+  }
+
   static bool any(List list, bool fn(item)) => list.any(fn);
   static void forEach(Iterable list, fn(item)) {
     list.forEach(fn);
