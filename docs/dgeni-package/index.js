@@ -41,6 +41,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 .processor(require('./processors/captureClassMembers'))
 .processor(require('./processors/captureModuleDocs'))
 .processor(require('./processors/attachModuleDocs'))
+.processor(require('./processors/cloneExportedFromDocs'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
@@ -62,6 +63,12 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];
+})
+
+
+.config(function(parseTagsProcessor, getInjectables) {
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/public'));
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/exportedAs'));
 })
 
 
@@ -92,10 +99,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   ];
 })
 
-// Add in a custom tag that we use when generating public docs
-.config(function(parseTagsProcessor) {
-  parseTagsProcessor.tagDefinitions.push({ name: 'publicModule' });
-})
 
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {

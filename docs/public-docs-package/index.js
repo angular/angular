@@ -6,9 +6,8 @@ module.exports = new Package('angular-public', [basePackage])
 
 .processor(require('./processors/filterPublicDocs'))
 
-.config(function(captureClassMembers, filterPublicDocs, EXPORT_DOC_TYPES) {
+.config(function(captureClassMembers) {
   captureClassMembers.ignorePrivateMembers = true;
-  filterPublicDocs.docTypes = EXPORT_DOC_TYPES;
 })
 
 // Configure file writing

@@ -12,6 +12,7 @@ module.exports = function attachModuleDocs(log) {
         }
         if (doc.module || doc.module === '') {
           doc.moduleDoc.description = doc.description;
+          doc.moduleDoc.public = doc.public;
           log.debug('attached', doc.moduleDoc.id, doc.moduleDoc.description);
         }
         return false;
