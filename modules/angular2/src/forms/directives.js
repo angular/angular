@@ -11,7 +11,7 @@ import {Validators} from './validators';
 //}
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 @Decorator({
   selector: '[control]',
@@ -35,7 +35,7 @@ export class DefaultValueAccessor {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 @Decorator({
   selector: 'input[type=checkbox][control]',
@@ -59,7 +59,7 @@ export class CheckboxControlValueAccessor {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 @Decorator({
   lifecycle: [onChange],
@@ -119,7 +119,7 @@ export class ControlDirective {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 @Decorator({
   selector: '[control-group]',
@@ -170,7 +170,7 @@ export class ControlGroupDirective {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 // todo(misko): rename to lover case as it is not a Type but a var.
 export var FormDirectives = [

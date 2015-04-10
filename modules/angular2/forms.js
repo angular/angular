@@ -1,3 +1,10 @@
+/**
+ * @module
+ * @public
+ * @description
+ * Describe the forms module here
+ */
+
 export * from './src/forms/model';
 export * from './src/forms/directives';
 export * from './src/forms/validators';

@@ -4,12 +4,12 @@ import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facad
 import {Validators} from './validators';
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export const VALID = "VALID";
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export const INVALID = "INVALID";
 
@@ -26,7 +26,7 @@ export const INVALID = "INVALID";
 //}
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export class AbstractControl {
   _value:any;
@@ -80,7 +80,7 @@ export class AbstractControl {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export class Control extends AbstractControl {
   constructor(value:any, validator:Function = Validators.nullValidator) {
@@ -108,7 +108,7 @@ export class Control extends AbstractControl {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export class ControlGroup extends AbstractControl {
   controls:StringMap;
@@ -186,7 +186,7 @@ export class ControlGroup extends AbstractControl {
 }
 
 /**
- * @publicModule angular2/forms
+ * @exportedAs angular2/forms
  */
 export class ControlArray extends AbstractControl {
   controls:List;

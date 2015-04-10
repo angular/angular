@@ -13,7 +13,7 @@ import {Decorator} from 'angular2/src/core/annotations/annotations';
  * <div non-bindable>Ignored: {{1 + 2}}</div> // output "Ignored: {{1 + 2}}"
  * ```
  *
- * @publicModule angular2/directives
+ * @exportedAs angular2/directives
  */
 @Decorator({
   selector: '[non-bindable]',

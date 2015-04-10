@@ -46,7 +46,7 @@ import * as rvf from 'angular2/src/render/dom/view/view_factory';
  *
  * This must be kept in sync with the _rootBindings in application.js
  *
- * @returns {*[]}
+ * @returns {any[]}
  */
 function _getRootBindings() {
   return [
@@ -59,7 +59,7 @@ function _getRootBindings() {
  *
  * This must be kept in sync with _injectorBindings() in application.js
  *
- * @returns {*[]}
+ * @returns {any[]}
  */
 function _getAppBindings() {
   var appDoc;

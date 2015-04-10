@@ -22,7 +22,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  * - `<div template="if condition">...</div>`
  * - `<template [if]="condition"><div>...</div></template>`
  *
- * @publicModule angular2/directives
+ * @exportedAs angular2/directives
  */
 @Viewport({
   selector: '[if]',

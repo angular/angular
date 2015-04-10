@@ -232,7 +232,7 @@ import {Injectable} from 'angular2/di';
  * This directive would be instantiated with a `Dependency` directive found on the current element. If none can be
  * found, the injector supplies `null` instead of throwing an error.
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 @ABSTRACT()
 export class Directive extends Injectable {
@@ -478,7 +478,7 @@ export class Directive extends Injectable {
  * }
  * ```
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class Component extends Directive {
   /**
@@ -614,7 +614,7 @@ export class Component extends Directive {
  *
  *
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class DynamicComponent extends Directive {
   /**
@@ -706,7 +706,7 @@ export class DynamicComponent extends Directive {
  * <div tooltip="some text here"></div>
  * ```
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class Decorator extends Directive {
 
@@ -832,7 +832,7 @@ export class Decorator extends Directive {
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  *
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class Viewport extends Directive {
   @CONST()
@@ -874,7 +874,7 @@ export class Viewport extends Directive {
  *   }
  * }
  * ```
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export const onDestroy = "onDestroy";
 
@@ -912,7 +912,7 @@ export const onDestroy = "onDestroy";
  *   }
  * }
  *  ```
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export const onChange = "onChange";
 
@@ -933,6 +933,6 @@ export const onChange = "onChange";
  *
  * }
  *  ```
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export const onAllChangesDone = "onAllChangesDone";

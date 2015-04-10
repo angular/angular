@@ -29,7 +29,7 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * }
  * ```
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class View {
   templateUrl:any; //string;

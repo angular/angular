@@ -34,7 +34,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  * - `<li template="for #item of items; #i=index">...</li>`
  * - `<template [for]="#item" [of]="items" #i="index"><li>...</li></template>`
  *
- * @publicModule angular2/directives
+ * @exportedAs angular2/directives
  */
 @Viewport({
   selector: '[for][of]',

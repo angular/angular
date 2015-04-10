@@ -9,7 +9,7 @@ import {DirectDomViewRef} from 'angular2/src/render/dom/direct_dom_renderer';
  * Attention: NgElement will be replaced by a different concept
  * for accessing an element in a way that is compatible with the render layer.
  *
- * @publicModule angular2/angular2
+ * @exportedAs angular2/angular2
  */
 export class NgElement {
   _view:viewModule.AppView;

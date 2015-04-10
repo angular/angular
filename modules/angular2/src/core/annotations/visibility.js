@@ -40,7 +40,7 @@ import {DependencyAnnotation} from 'angular2/di';
  * The `@Parent()` annotation in our constructor forces the injector to retrieve the dependency from the
  * parent element (even thought the current element could resolve it): Angular injects `dependency=1`.
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class Parent extends DependencyAnnotation {
   @CONST()
@@ -101,7 +101,7 @@ export class Parent extends DependencyAnnotation {
  *
  * Angular injects `dependency=2`.
  *
- * @publicModule angular2/annotations
+ * @exportedAs angular2/annotations
  */
 export class Ancestor extends DependencyAnnotation {
   @CONST()
