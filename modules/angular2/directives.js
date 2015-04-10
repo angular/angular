@@ -1,5 +1,6 @@
 /**
  * @module
+ * @public
  * @description
  * Describe the directives module here
  */

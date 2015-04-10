@@ -1,3 +1,9 @@
+/**
+ * @module
+ * @description
+ * This is a description
+ */
+
 export {Inject, InjectPromise, InjectLazy, Injectable, Optional, DependencyAnnotation} from './src/di/annotations';
 export {Injector} from './src/di/injector';
 export {Binding, Dependency, bind} from './src/di/binding';

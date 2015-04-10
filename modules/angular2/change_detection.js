@@ -1,5 +1,6 @@
 /**
  * @module
+ * @public
  * @description
  * Description of the change_detection module
  */
