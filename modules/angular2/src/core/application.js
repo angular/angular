@@ -18,6 +18,7 @@ import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_
 import {XHR} from 'angular2/src/services/xhr';
 import {XHRImpl} from 'angular2/src/services/xhr_impl';
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
+import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/render/dom/events/hammer_gestures';
 import {Binding} from 'angular2/src/di/binding';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -81,7 +82,7 @@ function _injectorBindings(appComponentType): List<Binding> {
           [appComponentRefToken]),
       bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
       bind(EventManager).toFactory((zone) => {
-        var plugins = [new HammerGesturesPlugin(), new DomEventsPlugin()];
+        var plugins = [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
         return new EventManager(plugins, zone);
       }, [VmTurnZone]),
       bind(ShadowDomStrategy).toFactory(
