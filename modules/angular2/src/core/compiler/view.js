@@ -13,7 +13,7 @@ import * as renderApi from 'angular2/src/render/api';
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  *
- * @publicModule angular2/template
+ * @exportedAs angular2/template
  */
 @IMPLEMENTS(ChangeDispatcher)
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
@@ -249,7 +249,7 @@ export class View {
       this.proto.renderer.setText(this.render, b.elementIndex, currentValue);
     }
   }
-    
+
   directive(directive:DirectiveRecord) {
     var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
@@ -287,7 +287,7 @@ export class View {
 
 /**
  *
- * @publicModule angular2/template
+ * @exportedAs angular2/template
  */
 export class ProtoView {
   elementBinders:List<ElementBinder>;

@@ -9,7 +9,7 @@ import * as viewModule from './view';
 import * as vfModule from './view_factory';
 
 /**
- * @publicModule angular2/template
+ * @exportedAs angular2/template
  */
 export class ViewContainer {
   render:renderApi.ViewContainerRef;

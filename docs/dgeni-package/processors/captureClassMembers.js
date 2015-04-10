@@ -1,10 +1,10 @@
 var _ = require('lodash');
 
-module.exports = function processClassDocs(log, getJSDocComment) {
+module.exports = function captureClassMembers(log, getJSDocComment) {
 
   return {
-    $runAfter: ['processModuleDocs'],
-    $runBefore: ['parsing-tags', 'generateDocsFromComments'],
+    $runAfter: ['captureModuleExports'],
+    $runBefore: ['parsing-tags'],
     ignorePrivateMembers: false,
     $process: function(docs) {
       var memberDocs = [];

@@ -23,7 +23,7 @@
 {% for module in doc.modules %}
 
 <h2>{$ module.id $}
-    {%- if module.publicModule %} (public){% endif %}</h2>
+    {%- if module.public %} (public){% endif %}</h2>
 
   {% for export in module.exports %}
   <h3>{$ export.name $}</h3>

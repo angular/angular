@@ -3,7 +3,7 @@ var _ = require('lodash');
 module.exports = function createOverviewDump() {
 
   return {
-    $runAfter: ['processModuleDocs', 'processClassDocs'],
+    $runAfter: ['captureModuleExports', 'captureClassMembers'],
     $runBefore: ['docs-processed'],
     $process: function(docs) {
       var overviewDoc = {
