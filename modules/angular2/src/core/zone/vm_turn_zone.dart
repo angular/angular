@@ -157,6 +157,7 @@ class VmTurnZone {
     final traces = chain.terse.traces.map((t) => t.toString()).toList();
     _onError(exception, traces, chain.traces[0]);
   }
+
   _onErrorWithoutLongStackTrace(exception, StackTrace trace) {
     _onError(exception, [trace.toString()], trace);
   }
