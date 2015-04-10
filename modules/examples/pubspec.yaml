@@ -13,8 +13,8 @@ dev_dependencies:
     path: ../benchpress
 transformers:
   - angular2:
-      entry_point: web/src/hello_world/index_common.dart
-      reflection_entry_point: web/src/hello_world/index.dart
+      entry_points: web/src/hello_world/index_common.dart
+      reflection_entry_points: web/src/hello_world/index.dart
   - $dart2js:
       minify: true
       commandLineOptions: [--trust-type-annotations, --trust-primitives, --dump-info]

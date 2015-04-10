@@ -11,6 +11,7 @@ import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/names.dart';
 import 'common/options.dart';
+import 'common/options_reader.dart';
 
 export 'common/options.dart';
 
@@ -21,25 +22,17 @@ class AngularTransformerGroup extends TransformerGroup {
   }
 
   factory AngularTransformerGroup(TransformerOptions options) {
-    var phases = [[new DirectiveProcessor(options)], [new DirectiveLinker()]];
-    if (options.modeName == TRANSFORM_MODE) {
-      phases.addAll([
-        [new BindGenerator(options)],
-        [new TemplateCompiler(options)],
-        [new ReflectionRemover(options)]
-      ]);
-    }
+    var phases = [
+      [new ReflectionRemover(options)],
+      [new DirectiveProcessor(options)],
+      [new DirectiveLinker()],
+      [new BindGenerator(options)],
+      [new TemplateCompiler(options)]
+    ];
     return new AngularTransformerGroup._(phases);
   }
 
   factory AngularTransformerGroup.asPlugin(BarbackSettings settings) {
-    return new AngularTransformerGroup(_parseOptions(settings));
+    return new AngularTransformerGroup(parseBarbackSettings(settings));
   }
-}
-
-TransformerOptions _parseOptions(BarbackSettings settings) {
-  var config = settings.configuration;
-  return new TransformerOptions(config[ENTRY_POINT_PARAM],
-      reflectionEntryPoint: config[REFLECTION_ENTRY_POINT_PARAM],
-      modeName: settings.mode.name);
 }
