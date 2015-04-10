@@ -1,16 +1,21 @@
-var fs = require('fs');
-var fse = require('fs-extra');
-var path = require('path');
-var traceur = require('../../transpiler');
+/// <reference path="../broccoli-writer.d.ts" />
+/// <reference path="../../typings/fs-extra/fs-extra.d.ts" />
+/// <reference path="../../typings/node/node.d.ts" />
+import fs = require('fs');
+import fse = require('fs-extra');
+import path = require('path');
+var traceur = require('../../../tools/transpiler');
 var walkSync = require('walk-sync');
-var Writer = require('broccoli-writer');
+import Writer = require('broccoli-writer');
 var xtend = require('xtend');
 
 class TraceurFilter extends Writer {
   static RUNTIME_PATH = traceur.RUNTIME_PATH;
 
   constructor(private inputTree, private destExtension: string,
-              private destSourceMapExtension: string, private options = {}) {}
+              private destSourceMapExtension: string, private options = {}) {
+    super();
+  }
 
   write(readTree, destDir) {
     return readTree(this.inputTree)

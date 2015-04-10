@@ -737,11 +737,17 @@ gulp.task('build.dart', function(done) {
   );
 });
 
-gulp.task('broccoli.js.dev', function() {
+gulp.task('build.broccoli.tools', function() {
+  var tsResult = gulp.src('tools/broccoli/**/*.ts')
+    .pipe(tsc({ target: 'ES5', module: 'commonjs' }));
+  return tsResult.js.pipe(gulp.dest('dist/broccoli'));
+});
+
+gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
   return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
 });
 
-gulp.task('broccoli.js.prod', function() {
+gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
   return broccoliBuild(require('./Brocfile-js_prod.js'), path.join('js', 'prod'));
 });
 
@@ -755,7 +761,7 @@ gulp.task('build.js.dev', function(done) {
 
 gulp.task('build.js.prod', ['broccoli.js.prod']);
 
-gulp.task('broccoli.js.cjs', function() {
+gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
   return broccoliBuild(require('./Brocfile-js_cjs.js'), path.join('js', 'cjs'));
 });
 gulp.task('build.js.cjs', function(done) {

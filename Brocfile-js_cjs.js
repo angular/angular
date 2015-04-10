@@ -1,8 +1,8 @@
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var stew = require('broccoli-stew');
-var TraceurCompiler = require('./tools/broccoli/traceur');
-var TypescriptCompiler = require('./tools/broccoli/typescript');
+var TraceurCompiler = require('./dist/broccoli/traceur');
+var TypescriptCompiler = require('./dist/broccoli/typescript');
 var renderLodashTemplate = require('broccoli-lodash');
 
 var modulesTree = new Funnel(
