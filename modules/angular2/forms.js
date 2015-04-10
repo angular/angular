@@ -2,7 +2,10 @@
  * @module
  * @public
  * @description
- * Describe the forms module here
+ * This module is used for handling complex input, by defining and building a [FormObject] that consists of [Control]
+ * objects, and mapping them onto the DOM. [Control] objects can then be used to read information from the form DOM
+ * elements.
+ *
  */
 
 export * from './src/forms/model';

@@ -702,7 +702,7 @@ export class DynamicComponent extends Directive {
  * In our HTML template, we can then add this behavior to a `<div>` or any other element with the `tooltip` selector,
  * like so:
  *
- *  ```
+ * ```
  * <div tooltip="some text here"></div>
  * ```
  *

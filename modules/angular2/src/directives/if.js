@@ -3,8 +3,9 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {isBlank} from 'angular2/src/facade/lang';
 
 /**
- * The `If` directive removes or recreates a portion of the DOM tree based on an {expression}. If
- * the expression assigned to `if` evaluates to a false value then the element is removed from the
+ * Removes or recreates a portion of the DOM tree based on an {expression}.
+ *
+ * If the expression assigned to `if` evaluates to a false value then the element is removed from the
  * DOM, otherwise a clone of the element is reinserted into the DOM.
  *
  * # Example:

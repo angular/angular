@@ -18,7 +18,8 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  *   selector: 'greet'
  * })
  * @View({
- *   template: 'Hello {{name}}!'
+ *   template: 'Hello {{name}}!',
+ *   directives: [GreetUser, Bold]
  * })
  * class Greet {
  *   name: string;

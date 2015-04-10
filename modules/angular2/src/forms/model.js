@@ -4,11 +4,15 @@ import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facad
 import {Validators} from './validators';
 
 /**
+ * Indicates that a Control is valid, i.e. that no errors exist in the input value.
+ *
  * @exportedAs angular2/forms
  */
 export const VALID = "VALID";
 
 /**
+ * Indicates that a Control is invalid, i.e. that an error exists in the input value.
+ *
  * @exportedAs angular2/forms
  */
 export const INVALID = "INVALID";
@@ -26,7 +30,7 @@ export const INVALID = "INVALID";
 //}
 
 /**
- * @exportedAs angular2/forms
+ * Omitting from external API doc as this is really an abstract internal concept.
  */
 export class AbstractControl {
   _value:any;
@@ -80,6 +84,11 @@ export class AbstractControl {
 }
 
 /**
+ * Defines a part of a form that cannot be divided into other controls.
+ *
+ * `Control` is one of the three fundamental building blocks used to define forms in Angular, along with [ControlGroup]
+ * and [ControlArray].
+ *
  * @exportedAs angular2/forms
  */
 export class Control extends AbstractControl {
@@ -108,6 +117,15 @@ export class Control extends AbstractControl {
 }
 
 /**
+ * Defines a part of a form, of fixed length, that can contain other controls.
+ *
+ * A ControlGroup aggregates the values and errors of each [Control] in the group. Thus, if one of the controls in a
+ * group is invalid, the entire group is invalid. Similarly, if a control changes its value, the entire group changes
+ * as well.
+ *
+ * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular, along with [Control]
+ * and [ControlArray]. [ControlArray] can also contain other controls, but is of variable length.
+ *
  * @exportedAs angular2/forms
  */
 export class ControlGroup extends AbstractControl {
@@ -186,6 +204,15 @@ export class ControlGroup extends AbstractControl {
 }
 
 /**
+ * Defines a part of a form, of variable length, that can contain other controls.
+ *
+ * A `ControlArray` aggregates the values and errors of each [Control] in the group. Thus, if one of the controls in a
+ * group is invalid, the entire group is invalid. Similarly, if a control changes its value, the entire group changes
+ * as well.
+ *
+ * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular, along with [Control]
+ * and [ControlGroup]. [ControlGroup] can also contain other controls, but is of fixed length.
+ *
  * @exportedAs angular2/forms
  */
 export class ControlArray extends AbstractControl {

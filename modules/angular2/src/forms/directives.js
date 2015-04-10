@@ -11,6 +11,15 @@ import {Validators} from './validators';
 //}
 
 /**
+ * The default accessor for writing a value and listening to changes that is used by a [Control] directive.
+ *
+ * This is the default strategy that Angular uses when no other accessor is applied.
+ *
+ *  # Example
+ *  ```
+ *  <input type="text" [control]="loginControl">
+ *  ```
+ *
  * @exportedAs angular2/forms
  */
 @Decorator({
@@ -35,6 +44,14 @@ export class DefaultValueAccessor {
 }
 
 /**
+ * The accessor for writing a value and listening to changes on a checkbox input element.
+ *
+ *
+ *  # Example
+ *  ```
+ *  <input type="checkbox" [control]="rememberLogin">
+ *  ```
+ *
  * @exportedAs angular2/forms
  */
 @Decorator({
@@ -59,6 +76,33 @@ export class CheckboxControlValueAccessor {
 }
 
 /**
+ * Binds a control to a DOM element.
+ *
+ * # Example
+ *
+ * In this example, we bind the control to an input element. When the value of the input element changes, the value of
+ * the control will reflect that change. Likewise, if the value of the control changes, the input element reflects that
+ * change.
+ *
+ * Here we use [FormDirectives], rather than importing each form directive individually, e.g.
+ * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ *
+ *  ```
+ * @Component({selector: "login-comp"})
+ * @View({
+ *      directives: [FormDirectives],
+ *      inline: "<input type='text' [control]='loginControl'>"
+ *      })
+ * class LoginComp {
+ *  loginControl:Control;
+ *
+ *  constructor() {
+ *    this.loginControl = new Control('');
+ *  }
+ * }
+ *
+ *  ```
+ *
  * @exportedAs angular2/forms
  */
 @Decorator({
@@ -119,6 +163,43 @@ export class ControlDirective {
 }
 
 /**
+ * Binds a control group to a DOM element.
+ *
+ * # Example
+ *
+ * In this example, we bind the control group to the form element, and we bind the login and password controls to the
+ * login and password elements.
+ *
+ * Here we use [FormDirectives], rather than importing each form directive individually, e.g.
+ * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
+ *
+ *  ```
+ * @Component({selector: "login-comp"})
+ * @View({
+ *      directives: [FormDirectives],
+ *      inline: "<form [control-group]='loginForm'>" +
+ *              "Login <input type='text' control='login'>" +
+ *              "Password <input type='password' control='password'>" +
+ *              "<button (click)="onLogin()">Login</button>" +
+ *              "</form>"
+ *      })
+ * class LoginComp {
+ *  loginForm:ControlGroup;
+ *
+ *  constructor() {
+ *    this.loginForm = new ControlGroup({
+ *      login: new Control(""),
+ *      password: new Control("")
+ *    });
+ *  }
+ *
+ *  onLogin() {
+ *    // this.loginForm.value
+ *  }
+ * }
+ *
+ *  ```
+ *
  * @exportedAs angular2/forms
  */
 @Decorator({
@@ -170,6 +251,11 @@ export class ControlGroupDirective {
 }
 
 /**
+ *
+ * A list of all the form directives used as part of a `@View` annotation.
+ *
+ *  This is a shorthand for importing them each individually.
+ *
  * @exportedAs angular2/forms
  */
 // todo(misko): rename to lover case as it is not a Type but a var.

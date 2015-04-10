@@ -1,3 +1,9 @@
+/**
+ * @module
+ * @public
+ * @description
+ * Define public API for Angular here.
+ */
 export * from './src/core/annotations/visibility';
 export * from './src/core/compiler/interfaces';
 export * from './src/core/annotations/view';

@@ -240,7 +240,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *
  * Returns a [Promise] with the application`s private [Injector].
  *
- * @exportedAs angular2/angular2
+ * @exportedAs angular2/core
  */
 export function bootstrap(appComponentType: Type,
                           componentInjectableBindings: List<Binding> = null,

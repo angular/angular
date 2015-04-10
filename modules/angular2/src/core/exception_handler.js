@@ -3,7 +3,7 @@ import {isPresent, print} from 'angular2/src/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 /**
- * @exportedAs angular2/angular2
+ * @exportedAs angular2/core
  */
 @Injectable()
 export class ExceptionHandler {
