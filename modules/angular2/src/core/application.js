@@ -96,7 +96,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         (capacity, eventManager, shadowDomStrategy) => new rvf.ViewFactory(capacity, eventManager, shadowDomStrategy),
         [rvf.VIEW_POOL_CAPACITY, EventManager, ShadowDomStrategy]
       ),
-      bind(rvf.VIEW_POOL_CAPACITY).toValue(100000),
+      bind(rvf.VIEW_POOL_CAPACITY).toValue(10000),
       ProtoViewFactory,
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
@@ -104,7 +104,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         (capacity) => new ViewFactory(capacity),
         [VIEW_POOL_CAPACITY]
       ),
-      bind(VIEW_POOL_CAPACITY).toValue(100000),
+      bind(VIEW_POOL_CAPACITY).toValue(10000),
       Compiler,
       CompilerCache,
       TemplateResolver,
