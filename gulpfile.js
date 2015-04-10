@@ -29,7 +29,6 @@ var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var sourcemaps = require('gulp-sourcemaps');
 var transformCJSTests = require('./tools/build/transformCJSTests');
 var tsc = require('gulp-typescript');
-var ts2dart = require('gulp-ts2dart');
 var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
@@ -373,11 +372,8 @@ gulp.task('build/transformCJSTests', function() {
       .pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
 });
 
-gulp.task('build/transpile.dart', function() {
-  return gulp.src(CONFIG.transpile.src.dart)
-      .pipe(ts2dart.transpile())
-      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.dart))
-      .pipe(gulp.dest(CONFIG.dest.dart));
+gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
+  return broccoliBuild(require('./Brocfile-dart.js'), 'dart');
 });
 
 // ------------
@@ -720,7 +716,8 @@ gulp.task('test.transpiler.unittest', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
-    ['build/transpile.dart', 'build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
+    'build/transpile.dart', // Creates the folder structure needed by subsequent tasks.
+    ['build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
     'build/format.dart',
     'build/pubspec.dart',
     done
