@@ -41,6 +41,7 @@ export class CompilerCache {
 }
 
 
+@Injectable()
 export class Compiler {
   _reader: DirectiveMetadataReader;
   _compilerCache:CompilerCache;
