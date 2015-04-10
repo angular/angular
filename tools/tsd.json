@@ -1,0 +1,18 @@
+{
+  "version": "v4",
+  "repo": "angular/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "fs-extra/fs-extra.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
+    "node/node.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    }
+  }
+}
