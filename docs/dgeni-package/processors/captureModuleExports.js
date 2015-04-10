@@ -1,12 +1,12 @@
 var _ = require('lodash');
 
-module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComment) {
+module.exports = function captureModuleExports(log, ExportTreeVisitor, getJSDocComment) {
 
   return {
     $runAfter: ['files-read'],
-    $runBefore: ['parsing-tags', 'generateDocsFromComments'],
+    $runBefore: ['parsing-tags'],
     $process: function(docs) {
-      var exportDocs = [];
+      var extraDocs = [];
       _.forEach(docs, function(doc) {
         if ( doc.docType === 'module' ) {
 
@@ -21,7 +21,7 @@ module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComm
             _.forEach(visitor.exports, function(exportDoc) {
 
               doc.exports.push(exportDoc);
-              exportDocs.push(exportDoc);
+              extraDocs.push(exportDoc);
               exportDoc.moduleDoc = doc;
 
               if (exportDoc.comment) {
@@ -40,7 +40,7 @@ module.exports = function processModuleDocs(log, ExportTreeVisitor, getJSDocComm
         }
       });
 
-      return docs.concat(exportDocs);
+      return docs.concat(extraDocs);
     }
   };
 };

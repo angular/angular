@@ -37,12 +37,14 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 
 // Register the processors
-.processor(require('./processors/generateDocsFromComments'))
-.processor(require('./processors/processModuleDocs'))
-.processor(require('./processors/processClassDocs'))
+.processor(require('./processors/captureModuleExports'))
+.processor(require('./processors/captureClassMembers'))
+.processor(require('./processors/captureModuleDocs'))
+.processor(require('./processors/attachModuleDocs'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
+
 
 // Configure the log service
 .config(function(log) {
