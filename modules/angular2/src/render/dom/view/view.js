@@ -69,6 +69,9 @@ export class RenderView {
     this.componentChildViews[elementIndex] = childView;
     if (this._hydrated) {
       childView.hydrate(lightDom);
+      if (isPresent(lightDom)) {
+        lightDom.redistribute();
+      }
     }
   }
 
