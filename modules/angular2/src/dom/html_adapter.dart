@@ -9,6 +9,13 @@ class Html5LibDomAdapter implements DomAdapter {
     setRootDomAdapter(new Html5LibDomAdapter());
   }
 
+  @override
+  final attrToPropMap = const {
+    'innerHtml': 'innerHtml',
+    'readonly': 'readOnly',
+    'tabindex': 'tabIndex',
+  };
+
   Element parse(String templateHtml) => parser.parse(templateHtml).firstChild;
   query(selector) {
     throw 'not implemented';
@@ -69,18 +76,12 @@ class Html5LibDomAdapter implements DomAdapter {
   clearNodes(el) {
     throw 'not implemented';
   }
-  appendChild(el, node) {
-    throw 'not implemented';
-  }
+  appendChild(el, node) => null;
   removeChild(el, node) {
     throw 'not implemented';
   }
-  remove(el) {
-    throw 'not implemented';
-  }
-  insertBefore(el, node) {
-    throw 'not implemented';
-  }
+  remove(el) => null;
+  insertBefore(el, node) => null;
   insertAllBefore(el, nodes) {
     throw 'not implemented';
   }
@@ -176,9 +177,7 @@ class Html5LibDomAdapter implements DomAdapter {
   getAttribute(element, String attribute) {
     throw 'not implemented';
   }
-  setAttribute(element, String name, String value) {
-    throw 'not implemented';
-  }
+  setAttribute(element, String name, String value) => null;
   removeAttribute(element, String attribute) {
     throw 'not implemented';
   }
