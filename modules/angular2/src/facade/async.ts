@@ -55,8 +55,8 @@ export class PromiseWrapper {
  *
  * Once a reference implementation of the spec is available, switch to it.
  */
-type Observable = Rx.Observable<any>;
-type ObservableController = Rx.Subject<any>;
+export type Observable = Rx.Observable<any>;
+export type ObservableController = Rx.Subject<any>;
 
 export class ObservableWrapper {
   static createController(): Rx.Subject<any> { return new Rx.Subject(); }

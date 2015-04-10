@@ -8,7 +8,7 @@ export var __esModule = true;
 export var List = global.Array;
 export var Map = global.Map;
 export var Set = global.Set;
-export var StringMap = global.Object;
+export type StringMap = Object;
 
 export class MapWrapper {
   static create(): Map<any, any> { return new Map(); }
@@ -114,9 +114,9 @@ export class ListWrapper {
     }
     return null;
   }
-  static reduce<T>(list: List<T>,
-                   fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
-                   init: T) {
+  static reduce<T,R>(list: List<T>,
+                   fn: (previousValue: R, currentValue: T, currentIndex: number, array: T[]) => R,
+                   init: R) {
     return list.reduce(fn, init);
   }
   static filter(array, pred: Function) { return array.filter(pred); }

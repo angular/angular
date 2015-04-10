@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "noEmitOnError": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "../dist2/"
+  }
+}

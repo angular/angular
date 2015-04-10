@@ -6,7 +6,8 @@ export {_global as global};
 // TODO: remove this when we no longer use traceur
 export var __esModule = true;
 
-export var Type = Function;
+export var TypeClass = Function;
+export type Type = Function;
 export var Math = _global.Math;
 export var Date = _global.Date;
 
@@ -26,9 +27,23 @@ if (assertionsEnabled_) {
 }
 export {int};
 
-export class CONST {}
-export class ABSTRACT {}
-export class IMPLEMENTS {}
+export function addAnnotation(c: any, annotation: any): any {
+  (c.annotations || (c.annotations = [])).push(annotation);
+  return c;
+}
+
+export class ConstAnnotation {}
+export function CONST() {
+  return (c) => { addAnnotation(c, new ConstAnnotation()); }
+}
+export class AbstractAnnotation {}
+export function ABSTRACT() {
+  return (c) => { addAnnotation(c, new AbstractAnnotation()); }
+}
+export class ImplementsAnnotation {}
+export function IMPLEMENTS() {
+  return (c) => { addAnnotation(c, new ImplementsAnnotation()); }
+}
 
 export function isPresent(obj): boolean {
   return obj !== undefined && obj !== null;

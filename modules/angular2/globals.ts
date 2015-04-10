@@ -20,4 +20,7 @@ interface Window {
   assert: typeof assert;
   NaN: typeof NaN;
   gc(): void;
+  angular2: any;
+  Hammer: any;
+  zone: any;
 }
