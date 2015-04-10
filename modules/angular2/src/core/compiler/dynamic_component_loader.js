@@ -79,7 +79,7 @@ export class DynamicComponentLoader {
   }
 
   _componentAppInjector(location, injector, services) {
-    var inj = isPresent(injector) ? injector : location.elementInjector.getLightDomAppInjector();
+    var inj = isPresent(injector) ? injector : location.injector;
     return isPresent(services) ? inj.createChild(services) : inj;
   }
 

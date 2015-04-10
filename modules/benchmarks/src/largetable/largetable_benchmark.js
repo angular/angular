@@ -142,7 +142,8 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, _createBindings()).then((injector) => {
+    bootstrap(AppComponent, _createBindings()).then((ref) => {
+      var injector = ref.injector;
       app = injector.get(AppComponent);
       lifecycle = injector.get(LifeCycle);
       bindAction('#ng2DestroyDom', ng2DestroyDom);

@@ -120,7 +120,8 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createBindings()).then((injector) => {
+    bootstrap(AppComponent, createBindings()).then((ref) => {
+      var injector = ref.injector;
       lifeCycle = injector.get(LifeCycle);
 
       app = injector.get(AppComponent);

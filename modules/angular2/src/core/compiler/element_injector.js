@@ -27,11 +27,15 @@ export class ElementRef {
   }
 
   get hostView() {
-    return this.elementInjector.getHostView();
+    return this.elementInjector._preBuiltObjects.view;
+  }
+
+  get injector() {
+    return this.elementInjector._lightDomAppInjector;
   }
 
   get boundElementIndex() {
-    return this.elementInjector.getBoundElementIndex();
+    return this.elementInjector._proto.index;
   }
 }
 
@@ -608,19 +612,9 @@ export class ElementInjector extends TreeNode {
     return this._getDirectiveByKeyId(Key.get(type).id) !== _undefined;
   }
 
-  hasPreBuiltObject(type:Type):boolean {
-    var pb = this._getPreBuiltObjectByKeyId(Key.get(type).id);
-    return pb !== _undefined && isPresent(pb);
-  }
-
   /** Gets the NgElement associated with this ElementInjector */
   getNgElement() {
     return this._preBuiltObjects.element;
-  }
-
-  /** Gets the View associated with this ElementInjector */
-  getHostView() {
-    return this._preBuiltObjects.view;
   }
 
   getComponent() {
@@ -633,10 +627,6 @@ export class ElementInjector extends TreeNode {
 
   getDynamicallyLoadedComponent() {
     return this._dynamicallyCreatedComponent;
-  }
-
-  getLightDomAppInjector() {
-    return this._lightDomAppInjector;
   }
 
   directParent(): ElementInjector {
@@ -697,10 +687,6 @@ export class ElementInjector extends TreeNode {
     this._addToQueries(obj, binding.key.token);
 
     return obj;
-  }
-
-  getBoundElementIndex() {
-    return this._proto.index;
   }
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {

@@ -88,24 +88,24 @@ export function main() {
 
   describe('bootstrap factory method', () => {
     it('should throw if no View found', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootMissingTemplate, testBindings, (e,t) => {throw e;});
-      PromiseWrapper.then(injectorPromise, null, (reason) => {
+      var refPromise = bootstrap(HelloRootMissingTemplate, testBindings, (e,t) => {throw e;});
+      PromiseWrapper.then(refPromise, null, (reason) => {
         expect(reason.message).toContain('No template found for HelloRootMissingTemplate');
         async.done();
       });
     }));
 
     it('should throw if bootstrapped Directive is not a Component', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e,t) => {throw e;});
-      PromiseWrapper.then(injectorPromise, null, (reason) => {
+      var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e,t) => {throw e;});
+      PromiseWrapper.then(refPromise, null, (reason) => {
         expect(reason.message).toContain(`Could not load 'HelloRootDirectiveIsNotCmp' because it is not a component.`);
         async.done();
       });
     }));
 
     it('should throw if no element is found', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
-      PromiseWrapper.then(injectorPromise, null, (reason) => {
+      var refPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
+      PromiseWrapper.then(refPromise, null, (reason) => {
         expect(reason.message).toContain(
             'The app selector "hello-app" did not match any elements');
         async.done();
@@ -113,82 +113,82 @@ export function main() {
     }));
 
     it('should create an injector promise', () => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
-      expect(injectorPromise).not.toBe(null);
+      var refPromise = bootstrap(HelloRootCmp, testBindings);
+      expect(refPromise).not.toBe(null);
     });
 
     it('should resolve an injector promise and contain bindings', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
-      injectorPromise.then((injector) => {
-        expect(injector.get(appElementToken)).toBe(el);
+      var refPromise = bootstrap(HelloRootCmp, testBindings);
+      refPromise.then((ref) => {
+        expect(ref.injector.get(appElementToken)).toBe(el);
         async.done();
       });
     }));
 
     it('should provide the application component in the injector', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
-      injectorPromise.then((injector) => {
-        expect(injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
+      var refPromise = bootstrap(HelloRootCmp, testBindings);
+      refPromise.then((ref) => {
+        expect(ref.injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
         async.done();
       });
     }));
 
     it('should display hello world', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp, testBindings);
-      injectorPromise.then((injector) => {
-        expect(injector.get(appElementToken)).toHaveText('hello world!');
+      var refPromise = bootstrap(HelloRootCmp, testBindings);
+      refPromise.then((ref) => {
+        expect(ref.injector.get(appElementToken)).toHaveText('hello world!');
         async.done();
       });
     }));
 
     it('should support multiple calls to bootstrap', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
-      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
-      PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
-        expect(injectors[0].get(appElementToken)).toHaveText('hello world!');
-        expect(injectors[1].get(appElementToken)).toHaveText('hello world, again!');
+      var refPromise1 = bootstrap(HelloRootCmp, testBindings);
+      var refPromise2 = bootstrap(HelloRootCmp2, testBindings);
+      PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
+        expect(refs[0].injector.get(appElementToken)).toHaveText('hello world!');
+        expect(refs[1].injector.get(appElementToken)).toHaveText('hello world, again!');
         async.done();
       });
     }));
 
     it("should make the provided bindings available to the application component", inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp3, [
+      var refPromise = bootstrap(HelloRootCmp3, [
         testBindings,
         bind("appBinding").toValue("BoundValue")
       ]);
 
-      injectorPromise.then((injector) => {
-        expect(injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
+      refPromise.then((ref) => {
+        expect(ref.injector.get(HelloRootCmp3).appBinding).toEqual("BoundValue");
         async.done();
       });
     }));
 
     it("should avoid cyclic dependencies when root component requires Lifecycle through DI", inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmp4, testBindings);
+      var refPromise = bootstrap(HelloRootCmp4, testBindings);
 
-      injectorPromise.then((injector) => {
-        expect(injector.get(HelloRootCmp4).lc).toBe(injector.get(LifeCycle));
+      refPromise.then((ref) => {
+        expect(ref.injector.get(HelloRootCmp4).lc).toBe(ref.injector.get(LifeCycle));
         async.done();
       });
     }));
 
     it("should support shadow dom content tag", inject([AsyncTestCompleter], (async) => {
-      var injectorPromise = bootstrap(HelloRootCmpContent, testBindings);
-      injectorPromise.then((injector) => {
-        expect(injector.get(appElementToken)).toHaveText('before: loading after: done');
+      var refPromise = bootstrap(HelloRootCmpContent, testBindings);
+      refPromise.then((ref) => {
+        expect(ref.injector.get(appElementToken)).toHaveText('before: loading after: done');
         async.done();
       });
     }));
 
     it('should register each application with the testability registry', inject([AsyncTestCompleter], (async) => {
-      var injectorPromise1 = bootstrap(HelloRootCmp, testBindings);
-      var injectorPromise2 = bootstrap(HelloRootCmp2, testBindings);
+      var refPromise1 = bootstrap(HelloRootCmp, testBindings);
+      var refPromise2 = bootstrap(HelloRootCmp2, testBindings);
 
-      PromiseWrapper.all([injectorPromise1, injectorPromise2]).then((injectors) => {
-        var registry = injectors[0].get(TestabilityRegistry);
+      PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
+        var registry = refs[0].injector.get(TestabilityRegistry);
         PromiseWrapper.all([
-            injectors[0].asyncGet(Testability),
-            injectors[1].asyncGet(Testability)]).then((testabilities) => {
+            refs[0].injector.asyncGet(Testability),
+            refs[1].injector.asyncGet(Testability)]).then((testabilities) => {
           expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
           expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
           async.done();
