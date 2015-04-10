@@ -18,7 +18,6 @@ export class CompileElement {
   distanceToInheritedBinder:number;
   inheritedElementBinder:ElementBinderBuilder;
   compileChildren: boolean;
-  ignoreBindings: boolean;
   elementDescription: string; // e.g. '<div [class]="foo">' : used to provide context in case of error
 
   constructor(element, compilationUnit = '') {
@@ -34,8 +33,6 @@ export class CompileElement {
     this.inheritedElementBinder = null;
     this.distanceToInheritedBinder = 0;
     this.compileChildren = true;
-    // set to true to ignore all the bindings on the element
-    this.ignoreBindings = false;
     // description is calculated here as compilation steps may change the element
     var tplDesc = assertionsEnabled()? getElementDescription(element) : null;
     if (compilationUnit !== '') {

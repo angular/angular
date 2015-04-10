@@ -80,6 +80,19 @@ export function main() {
       expect(results[3].inheritedElementBinder.parent).toBe(results[0].inheritedElementBinder);
     });
 
+    it('should not execute further steps when ignoreCurrentElement has been called', () => {
+      var element = el('<div id="1"><span id="2" ignore-current></span><span id="3"></span></div>');
+      var logs = [];
+      var pipeline = new CompilePipeline([
+        new IgnoreCurrentElementStep(),
+        createLoggerStep(logs),
+      ]);
+      var results = pipeline.process(element);
+
+      expect(results.length).toBe(2);
+      expect(logs).toEqual(['1', '1<3'])
+    });
+
     describe('control.addParent', () => {
       it('should report the new parent to the following processor and the result', () => {
         var element = el('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
@@ -184,6 +197,15 @@ export class IgnoreChildrenStep extends CompileStep {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-children')) {
       current.compileChildren = false;
+    }
+  }
+}
+
+class IgnoreCurrentElementStep extends CompileStep {
+  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+    var attributeMap = DOM.attributeMap(current.element);
+    if (MapWrapper.contains(attributeMap, 'ignore-current')) {
+      control.ignoreCurrentElement();
     }
   }
 }

@@ -23,12 +23,9 @@ export class ShadowDomCompileStep extends CompileStep {
   }
 
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
-    if (current.ignoreBindings) {
-      return;
-    }
     var tagName = DOM.tagName(current.element).toUpperCase();
     if (tagName == 'STYLE') {
-      this._processStyleElement(current);
+      this._processStyleElement(current, control);
     } else if (tagName == 'CONTENT') {
       this._processContentElement(current);
     } else {
@@ -39,17 +36,20 @@ export class ShadowDomCompileStep extends CompileStep {
     }
   }
 
-  _processStyleElement(current) {
-    current.ignoreBindings = true;
+  _processStyleElement(current:CompileElement, control:CompileControl) {
     var stylePromise = this._shadowDomStrategy.processStyleElement(
       this._template.componentId, this._template.absUrl, current.element
     );
     if (isPresent(stylePromise) && PromiseWrapper.isPromise(stylePromise)) {
       ListWrapper.push(this._subTaskPromises, stylePromise);
     }
+
+    // Style elements should not be further processed by the compiler, as they can not contain
+    // bindings. Skipping further compiler steps allow speeding up the compilation process.
+    control.ignoreCurrentElement();
   }
 
-  _processContentElement(current) {
+  _processContentElement(current:CompileElement) {
     if (this._shadowDomStrategy.hasNativeContentElement()) {
       return;
     }

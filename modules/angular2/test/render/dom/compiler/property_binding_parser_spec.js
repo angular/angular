@@ -11,10 +11,9 @@ var EMPTY_MAP = MapWrapper.create();
 
 export function main() {
   describe('PropertyBindingParser', () => {
-    function createPipeline(ignoreBindings = false, hasNestedProtoView = false) {
+    function createPipeline(hasNestedProtoView = false) {
       return new CompilePipeline([
         new MockStep((parent, current, control) => {
-          current.ignoreBindings = ignoreBindings;
           if (hasNestedProtoView) {
             current.bindElement().bindNestedProtoView(el('<template></template>'));
           }
@@ -22,17 +21,12 @@ export function main() {
         new PropertyBindingParser(new Parser(new Lexer()))]);
     }
 
-    function process(element, ignoreBindings = false, hasNestedProtoView = false) {
+    function process(element, hasNestedProtoView = false) {
       return ListWrapper.map(
-        createPipeline(ignoreBindings, hasNestedProtoView).process(element),
+        createPipeline(hasNestedProtoView).process(element),
         (compileElement) => compileElement.inheritedElementBinder
       );
     }
-
-    it('should not parse bindings when ignoreBindings is true', () => {
-      var results = process(el('<div [a]="b"></div>'), true);
-      expect(results[0]).toEqual(null);
-    });
 
     it('should detect [] syntax', () => {
       var results = process(el('<div [a]="b"></div>'));
@@ -64,13 +58,13 @@ export function main() {
     });
 
     it('should store variable binding for a template element on the nestedProtoView', () => {
-      var results = process(el('<template var-george="washington"></p>'), false, true);
+      var results = process(el('<template var-george="washington"></p>'), true);
       expect(results[0].variableBindings).toEqual(EMPTY_MAP);
       expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington')).toEqual('george');
     });
 
     it('should store variable binding for a non-template element using shorthand syntax on the nestedProtoView', () => {
-      var results = process(el('<template #george="washington"></template>'), false, true);
+      var results = process(el('<template #george="washington"></template>'), true);
       expect(results[0].variableBindings).toEqual(EMPTY_MAP);
       expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington')).toEqual('george');
     });
