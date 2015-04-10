@@ -48,7 +48,7 @@ export class IntegrationTestbed {
     this.renderer = new DirectDomRenderer(compiler, viewFactory, shadowDomStrategy);
   }
 
-  compile(rootEl, componentId):Promise<ProtoViewDto> {
+  compileRoot(rootEl, componentId):Promise<ProtoViewDto> {
     return this.renderer.createRootProtoView(rootEl, componentId).then( (rootProtoView) => {
       return this._compileNestedProtoViews(rootProtoView, [
         new DirectiveMetadata({
@@ -59,9 +59,13 @@ export class IntegrationTestbed {
     });
   }
 
-  _compile(template):Promise<ProtoViewDto> {
-    return this.renderer.compile(template).then( (protoView) => {
-      return this._compileNestedProtoViews(protoView, template.directives);
+  compile(componentId):Promise<ProtoViewDto> {
+    var childTemplate = MapWrapper.get(this._templates, componentId);
+    if (isBlank(childTemplate)) {
+      throw new BaseException(`No template for component ${componentId}`);
+    }
+    return this.renderer.compile(childTemplate).then( (protoView) => {
+      return this._compileNestedProtoViews(protoView, childTemplate.directives);
     });
   }
 
@@ -80,9 +84,11 @@ export class IntegrationTestbed {
       if (isPresent(nestedComponentId)) {
         var childTemplate = MapWrapper.get(this._templates, nestedComponentId);
         if (isBlank(childTemplate)) {
-          throw new BaseException(`Could not find template for ${nestedComponentId}!`);
+          // dynamic component
+          ListWrapper.push(childComponentRenderPvRefs, null);
+        } else {
+          nestedCall = this.compile(nestedComponentId);
         }
-        nestedCall = this._compile(childTemplate);
       } else if (isPresent(elementBinder.nestedProtoView)) {
         nestedCall = this._compileNestedProtoViews(elementBinder.nestedProtoView, directives);
       }

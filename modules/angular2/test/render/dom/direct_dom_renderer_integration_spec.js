@@ -21,7 +21,7 @@ import {IntegrationTestbed, LoggingEventDispatcher, FakeEvent} from './integrati
 
 export function main() {
   describe('DirectDomRenderer integration', () => {
-    var testbed, renderer, eventPlugin, compile, rootEl;
+    var testbed, renderer, eventPlugin, compileRoot, rootEl;
 
     beforeEach(() => {
       rootEl = el('<div></div>');
@@ -36,7 +36,7 @@ export function main() {
       });
       renderer = testbed.renderer;
       eventPlugin = testbed.eventPlugin;
-      compile = (rootEl, componentId) => testbed.compile(rootEl, componentId);
+      compileRoot = (rootEl, componentId) => testbed.compileRoot(rootEl, componentId);
     }
 
     it('should create root views while using the given elements in place', inject([AsyncTestCompleter], (async) => {
@@ -93,7 +93,7 @@ export function main() {
           directives: []
         })]
       });
-      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+      compileRoot(rootEl, 'someComponent').then( (rootProtoView) => {
         var viewRefs = renderer.createView(rootProtoView.render);
         renderer.setText(viewRefs[1], 0, 'hello');
         expect(rootEl).toHaveText('hello');
@@ -109,7 +109,7 @@ export function main() {
           directives: []
         })]
       });
-      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+      compileRoot(rootEl, 'someComponent').then( (rootProtoView) => {
         var viewRefs = renderer.createView(rootProtoView.render);
         renderer.setElementProperty(viewRefs[1], 0, 'value', 'hello');
         expect(DOM.childNodes(rootEl)[0].value).toEqual('hello');
@@ -125,7 +125,7 @@ export function main() {
           directives: []
         })]
       });
-      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+      compileRoot(rootEl, 'someComponent').then( (rootProtoView) => {
         var viewRef = renderer.createView(rootProtoView.render)[1];
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
@@ -151,7 +151,7 @@ export function main() {
         })],
         viewCacheCapacity: 2
       });
-      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+      compileRoot(rootEl, 'someComponent').then( (rootProtoView) => {
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
 
@@ -176,7 +176,7 @@ export function main() {
           directives: []
         })]
       });
-      compile(rootEl, 'someComponent').then( (rootProtoView) => {
+      compileRoot(rootEl, 'someComponent').then( (rootProtoView) => {
         var viewRef = renderer.createView(rootProtoView.render)[1];
         var dispatcher = new LoggingEventDispatcher();
         renderer.setEventDispatcher(viewRef, dispatcher);

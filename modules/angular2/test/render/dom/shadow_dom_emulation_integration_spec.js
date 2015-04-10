@@ -52,7 +52,7 @@ export function main() {
 
       describe(`${name} shadow dom strategy`, () => {
 
-        var testbed, renderer, rootEl, compile;
+        var testbed, renderer, rootEl, compile, compileRoot;
 
         function createRenderer({templates}) {
           testbed = new IntegrationTestbed({
@@ -60,7 +60,8 @@ export function main() {
             templates: ListWrapper.concat(templates, componentTemplates)
           });
           renderer = testbed.renderer;
-          compile = (rootEl, componentId) => testbed.compile(rootEl, componentId);
+          compileRoot = (rootEl, componentId) => testbed.compileRoot(rootEl, componentId);
+          compile = (componentId) => testbed.compile(componentId);
         }
 
         beforeEach( () => {
@@ -77,12 +78,35 @@ export function main() {
               directives: [simple]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('SIMPLE(A)');
 
             async.done();
+          });
+        }));
+
+        it('should support dynamic components', inject([AsyncTestCompleter], (async) => {
+          createRenderer({
+            templates: [new ViewDefinition({
+              componentId: 'main',
+              template: '<dynamic>' +
+                '<div>A</div>' +
+                '</dynamic>',
+              directives: [dynamicComponent]
+            })]
+          });
+          compileRoot(rootEl, 'main').then( (rootPv) => {
+            compile('simple').then( (simplePv) => {
+              var views = renderer.createView(rootPv.render);
+              var simpleViews = renderer.createView(simplePv.render);
+              renderer.setDynamicComponentView(views[1], 0, simpleViews[0]);
+
+              expect(rootEl).toHaveText('SIMPLE(A)');
+
+              async.done();
+            });
           });
         }));
 
@@ -98,7 +122,7 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('(A, BC)');
@@ -118,7 +142,7 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('(, BAC)');
@@ -138,7 +162,7 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -170,7 +194,7 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -202,7 +226,7 @@ export function main() {
               directives: [outerWithIndirectNestedComponent]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             renderer.createView(pv.render);
 
             expect(rootEl).toHaveText('OUTER(SIMPLE(AB))');
@@ -223,7 +247,7 @@ export function main() {
               directives: [outerComponent, manualViewportDirective]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -251,7 +275,7 @@ export function main() {
               directives: [conditionalContentComponent]
             })]
           });
-          compile(rootEl, 'main').then( (pv) => {
+          compileRoot(rootEl, 'main').then( (pv) => {
             var viewRefs = renderer.createView(pv.render);
             var vcRef = new ViewContainerRef(viewRefs[2], 0);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -299,6 +323,12 @@ export function main() {
 var simple = new DirectiveMetadata({
   selector: 'simple',
   id: 'simple',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var dynamicComponent = new DirectiveMetadata({
+  selector: 'dynamic',
+  id: 'dynamic',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
