@@ -225,3 +225,5 @@ String elementText(n) {
 
   return DOM.getText(n);
 }
+
+String getCurrentZoneName() => Zone.current['_name'];

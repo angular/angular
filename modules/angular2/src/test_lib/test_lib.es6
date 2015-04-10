@@ -135,11 +135,15 @@ function _it(jsmFn, name, fn) {
     if (!(fn instanceof FunctionWithParamTokens)) {
       fn = inject([], fn);
     }
-    inIt = true;
-    fn.execute(injector);
-    inIt = false;
 
-    if (!async) done();
+    // Use setTimeout() to run tests in a macrotasks.
+    // Without this, tests would be executed in the context of a microtasks (a promise .then).
+    setTimeout(() => {
+      inIt = true;
+      fn.execute(injector);
+      inIt = false;
+      if (!async) done();
+    }, 0);
   });
 }
 
@@ -350,4 +354,8 @@ function elementText(n) {
   }
 
   return DOM.getText(n);
+}
+
+function getCurrentZoneName(): string {
+  return zone._name;
 }

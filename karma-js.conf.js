@@ -12,6 +12,12 @@ module.exports = function(config) {
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
+      // Promise monkey patch & zone should be included first
+      'zone/es6-promise.js',
+      'zone/zone.js',
+      'zone/inner-zone.js',
+      'zone/long-stack-trace-zone.js',
+
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
@@ -20,9 +26,6 @@ module.exports = function(config) {
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.js',
       'node_modules/reflect-metadata/Reflect.js',
-      'node_modules/zone.js/zone.js',
-      'node_modules/zone.js/long-stack-trace-zone.js',
-
       'tools/build/file2modulename.js',
       'test-main.js'
     ],

@@ -7,8 +7,8 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
  * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
  * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton `VmTurnZone` whose outer `Zone` is the root `Zone`
- * and whose default `onTurnDone` runs the Angular digest.
+ * A typical application will create a singleton `VmTurnZone`. The outer `Zone` is a fork of the root
+ * `Zone`. The default `onTurnDone` runs the Angular change detection.
  *
  * @exportedAs angular2/core
  */
@@ -20,25 +20,30 @@ export class VmTurnZone {
   _onTurnDone:Function;
   _onErrorHandler:Function;
 
-  _nestedRunCounter:number;
-
   /**
    * Associates with this
    *
-   * - an "outer" zone, which is the one that created this.
+   * - an "outer" zone, which is a child of the one that created this.
    * - an "inner" zone, which is a child of the outer zone.
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
    */
   constructor({enableLongStackTrace}) {
-    this._nestedRunCounter = 0;
     this._onTurnStart = null;
     this._onTurnDone = null;
     this._onErrorHandler = null;
+    Zone._hasExecutedInnerCode = false;
 
-    this._outerZone = global.zone;
+    this._outerZone = global.zone.fork({
+      _name: 'outer',
+      beforeTurn: () => { this._beforeTurn(); },
+      afterTurn: () => { this._afterTurn(); }
+    });
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
+
+    // TODO('remove');
+    Zone.debug = true;
   }
 
   /**
@@ -46,10 +51,9 @@ export class VmTurnZone {
    *
    * @param {Function} onTurnStart called before code executes in the inner zone for each VM turn
    * @param {Function} onTurnDone called at the end of a VM turn if code has executed in the inner zone
-   * @param {Function} onScheduleMicrotask
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler} = {}) {
+  initCallbacks({onTurnStart, onTurnDone, onErrorHandler} = {}) {
     this._onTurnStart = normalizeBlank(onTurnStart);
     this._onTurnDone = normalizeBlank(onTurnDone);
     this._onErrorHandler = normalizeBlank(onErrorHandler);
@@ -62,10 +66,10 @@ export class VmTurnZone {
    * Angular's auto digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = <ref to the application zone>;
+   * var zone: VmTurnZone = [ref to the application zone];
    *
    * zone.run(() => {
-   *   // auto-digest will run after this function is called from JS
+   *   // the change detection will run after this function and the microtasks it enqueues have executed.
    * });
    * ```
    */
@@ -80,7 +84,7 @@ export class VmTurnZone {
    * auto-digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = <ref to the application zone>;
+   * var zone: VmTurnZone = [ref to the application zone];
    *
    * zone.runOusideAngular(() => {
    *   element.onClick(() => {
@@ -111,23 +115,39 @@ export class VmTurnZone {
       };
     }
 
-    return zone.fork(errorHandling).fork({
-      beforeTask: () => {this._beforeTask()},
-      afterTask: () => {this._afterTask()}
-    });
+    return zone
+        .fork(errorHandling)
+        .fork({
+          '$run': function (parentRun) {
+            return function () {
+              if (!Zone._hasExecutedInnerCode) {
+                // Execute the beforeTurn hook when code is first executed in the inner zone in the turn
+                Zone._hasExecutedInnerCode = true;
+                var oldZone = global.zone;
+                global.zone = this;
+                this.beforeTurn();
+                global.zone = oldZone;
+              }
+
+              return parentRun.apply(this, arguments);
+            }
+          },
+          _name: 'inner'
+        });
   }
 
-  _beforeTask(){
-    this._nestedRunCounter ++;
-    if(this._nestedRunCounter === 1 && this._onTurnStart) {
-      this._onTurnStart();
-    }
+  _beforeTurn() {
+    this._onTurnStart && this._onTurnStart();
   }
 
-  _afterTask(){
-    this._nestedRunCounter --;
-    if(this._nestedRunCounter === 0 && this._onTurnDone) {
-      this._onTurnDone();
+  _afterTurn() {
+    if (this._onTurnDone) {
+      if (Zone._hasExecutedInnerCode) {
+        // Execute the onTurnDone hook in the inner zone so that microtasks are enqueued there
+        // The hook gets executed when code has runned in the inner zone during the current turn
+        this._innerZone.run(this._onTurnDone, this);
+        Zone._hasExecutedInnerCode = false;
+      }
     }
   }
 
