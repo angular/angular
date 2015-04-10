@@ -1,12 +1,16 @@
-var fs = require('fs');
-var path = require('path');
-var ts = require('typescript');
+/// <reference path="../broccoli-writer.d.ts" />
+/// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../../../node_modules/typescript/bin/typescript.d.ts" />
+
+import fs = require('fs');
+import path = require('path');
+import ts = require('typescript');
 var walkSync = require('walk-sync');
-var Writer = require('broccoli-writer');
+import Writer = require('broccoli-writer');
 var xtend = require('xtend');
 
 class TSCompiler extends Writer {
-  constructor(private inputTree, private options = {}) { super(inputTree, options); }
+  constructor(private inputTree, private options: ts.CompilerOptions = {}) { super(); }
 
   write(readTree, destDir) {
     var options: ts.CompilerOptions = xtend({outDir: destDir}, this.options);
@@ -16,7 +20,7 @@ class TSCompiler extends Writer {
     if (options.out) {
       options.out = path.resolve(destDir, options.out);
     }
-    options.target = ts.ScriptTarget[options.target];
+    options.target = (<any>ts).ScriptTarget[options.target];
     return readTree(this.inputTree)
       .then(srcDir => {
         var files = walkSync(srcDir)
