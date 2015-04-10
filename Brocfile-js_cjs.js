@@ -56,9 +56,9 @@ packageJsons = renderLodashTemplate(
     packageJsons, {files: ["**/**"], context: {'packageJson': COMMON_PACKAGE_JSON}});
 
 var typescriptTree = new TypescriptCompiler(modulesTree, {
-  target: 1,
+  target: 'ES5',
   sourceMap: true,
-  sourceRoot: process.cwd(),
+  mapRoot: '', /* force sourcemaps to use relative path */
   module: /*system.js*/'commonjs',
   allowNonTsExtensions: false,
   typescript: require('typescript'),
