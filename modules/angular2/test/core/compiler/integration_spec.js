@@ -736,7 +736,7 @@ class ComponentWithPipes {
 
 @Component({
   selector: 'child-cmp',
-  services: [MyService]
+  injectables: [MyService]
 })
 @Template({
   directives: [MyDir],
@@ -786,7 +786,7 @@ class CompWithAncestor {
 
 @Component({
   selector: '[child-cmp2]',
-  services: [MyService]
+  injectables: [MyService]
 })
 class ChildComp2 {
   ctxProp:string;

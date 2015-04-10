@@ -39,7 +39,7 @@ function setup() {
     "annotations" : [
       new Component({
         selector: 'hello-app',
-        services: [app.GreetingService]
+        injectables: [app.GreetingService]
       }),
       new Template({
         directives: [app.RedDec],
