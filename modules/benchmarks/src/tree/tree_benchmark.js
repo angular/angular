@@ -24,7 +24,7 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {window, document, gc} from 'angular2/src/facade/browser';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {XHR} from 'angular2/src/services/xhr';
 import {XHRImpl} from 'angular2/src/services/xhr_impl';
@@ -42,7 +42,11 @@ import * as rvf from 'angular2/src/render/dom/view/view_factory';
 import {Inject, bind} from 'angular2/di';
 
 function createBindings():List {
-  return [bind(VIEW_POOL_CAPACITY).toValue(100000)];
+  var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
+  return [
+    bind(rvf.VIEW_POOL_CAPACITY).toValue(viewCacheCapacity),
+    bind(VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
+  ];
 }
 
 function setupReflector() {
