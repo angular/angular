@@ -33,6 +33,7 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var makeBroccoliTree = require('./tools/broccoli/make-broccoli-tree');
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -573,6 +574,24 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   path: CONFIG.dest.dart + '/benchmarks_external'
 }));
 
+gulp.task('serve/examples.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/examples'
+}));
+
+gulp.task('serve/benchmarks.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/benchmarks'
+}));
+
+gulp.task('serve/benchmarks_external.dart.static', pubserve(gulp, gulpPlugins, {
+  command: DART_SDK.PUB,
+  mode: 'ngstatic',
+  path: CONFIG.dest.dart + '/benchmarks_external'
+}));
+
 // --------------
 // doc generation
 var Dgeni = require('dgeni');
@@ -754,11 +773,11 @@ gulp.task('build.broccoli.tools', function() {
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
-  return broccoliBuild(require('./Brocfile-js_dev.js'), path.join('js', 'dev'));
+  return broccoliBuild(makeBroccoliTree('dev'), path.join('js', 'dev'));
 });
 
 gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
-  return broccoliBuild(require('./Brocfile-js_prod.js'), path.join('js', 'prod'));
+  return broccoliBuild(makeBroccoliTree('prod'), path.join('js', 'prod'));
 });
 
 gulp.task('build.js.dev', function(done) {
@@ -773,7 +792,7 @@ gulp.task('build.js.dev', function(done) {
 gulp.task('build.js.prod', ['broccoli.js.prod']);
 
 gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
-  return broccoliBuild(require('./Brocfile-js_cjs.js'), path.join('js', 'cjs'));
+  return broccoliBuild(makeBroccoliTree('cjs'), path.join('js', 'cjs'));
 });
 gulp.task('build.js.cjs', function(done) {
   runSequence(
