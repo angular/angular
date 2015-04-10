@@ -22,5 +22,5 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [const Component(properties: const {'menu': 'menu'})]
     })
-    ..registerSetters({'menu': (o, String v) => o.menu = v});
+    ..registerSetters({'menu': (o, v) => o.menu = v});
 }

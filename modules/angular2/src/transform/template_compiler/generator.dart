@@ -16,6 +16,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
+import 'package:angular2/src/transform/common/property_utils.dart' as prop;
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
@@ -63,21 +64,38 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
 
 Iterable<String> _generateGetters(String typeName, List<String> getterNames) {
   // TODO(kegluneq): Include `typeName` where possible.
-  return getterNames.map((prop) => '''
-        '$prop': (o) => o.$prop
-    ''');
+  return getterNames.map((getterName) {
+    if (!prop.isValid(getterName)) {
+      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
+      return prop.lazyInvalidGetter(getterName);
+    } else {
+      return ''' '${prop.sanitize(getterName)}': (o) => o.$getterName''';
+    }
+  });
 }
 
 Iterable<String> _generateSetters(String typeName, List<String> setterName) {
-  return setterName.map((prop) => '''
-      '$prop': (o, v) => o.$prop = v
-  ''');
+  return setterName.map((setterName) {
+    if (!prop.isValid(setterName)) {
+      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
+      return prop.lazyInvalidSetter(setterName);
+    } else {
+      return ''' '${prop.sanitize(setterName)}': '''
+          ''' (o, v) => o.$setterName = v ''';
+    }
+  });
 }
 
 Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
-  return methodNames.map((methodName) => '''
-      '$methodName': (o, List args) => Function.apply(o.$methodName, args)
-  ''');
+  return methodNames.map((methodName) {
+    if (!prop.isValid(methodName)) {
+      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
+      return prop.lazyInvalidMethod(methodName);
+    } else {
+      return ''' '${prop.sanitize(methodName)}': '''
+          '(o, List args) => Function.apply(o.$methodName, args) ';
+    }
+  });
 }
 
 /// Extracts `template` and `url` values from `View` annotations, reads

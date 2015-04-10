@@ -16,5 +16,5 @@ void initReflector(reflector) {
             selector: '[tool-tip]', properties: const {'text': 'tool-tip'})
       ]
     })
-    ..registerSetters({'text': (o, String v) => o.text = v});
+    ..registerSetters({'text': (o, v) => o.text = v});
 }
