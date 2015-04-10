@@ -56,9 +56,6 @@ export function setupReflector() {
   setupReflectorForScrollItem();
   setupReflectorForCells();
 
-  // TODO: the transpiler is not able to compiles templates used as keys
-  var evt = `$event`;
-
   reflector.registerGetters({
     'scrollAreas': (o) => o.scrollAreas,
     'length': (o) => o.length,
@@ -103,7 +100,7 @@ export function setupReflector() {
     'stages': (o) => o.stages,
     'aatStatusWidth': (o) => o.aatStatusWidth,
     'endDateWidth': (o) => o.endDateWidth,
-    evt: (o) => null
+    '$event': (o) => null
   });
 
   reflector.registerSetters({
@@ -152,7 +149,7 @@ export function setupReflector() {
     'if': (o, v) => {},
     'of': (o, v) => {},
     'cellWidth': (o, v) => o.cellWidth = v,
-    evt: (o, v) => null,
+    '$event': (o, v) => null,
     'style': (o, m) => {
       //if (isBlank(m)) return;
       // HACK
