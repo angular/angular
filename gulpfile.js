@@ -761,10 +761,6 @@ gulp.task('broccoli.js.cjs', function() {
 gulp.task('build.js.cjs', function(done) {
   runSequence(
     'broccoli.js.cjs',
-    //['build/transpile.js.cjs', 'build/copy.js.cjs', 'build/multicopy.js.cjs'],
-    // Overwrite the .js.cjs transpilation with typescript outputs
-    // We still need traceur outputs everywhere else, for now.
-    'build/transpile.ts.cjs',
     ['build/linknodemodules.js.cjs'],
     'build/transformCJSTests',
     done

@@ -2,12 +2,14 @@ var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var stew = require('broccoli-stew');
 var TraceurCompiler = require('./tools/broccoli/traceur');
+var TypescriptCompiler = require('./tools/broccoli/typescript');
 var renderLodashTemplate = require('broccoli-lodash');
 
-var modulesTree = new Funnel('modules', {include: ['**/**'], exclude: ['angular2/src/core/zone/vm_turn_zone.es6']});
+var modulesTree = new Funnel(
+    'modules', {include: ['**/**'], exclude: ['angular2/src/core/zone/vm_turn_zone.es6']});
 
-// Use Traceur to transpile original sources to ES6
-var cjsTree = new TraceurCompiler(modulesTree, '.js', {
+// Use Traceur to transpile original sources to ES5
+var traceurOpts = {
   sourceMaps: true,
   annotations: true,      // parse annotations
   types: true,            // parse types
@@ -17,18 +19,13 @@ var cjsTree = new TraceurCompiler(modulesTree, '.js', {
   // Don't use type assertions since this is partly transpiled by typescript
   typeAssertions: false,
   modules: 'commonjs'
-}, true);
+};
+var cjsTree = new TraceurCompiler(modulesTree, '.js', '.map', traceurOpts);
 
-// Munge the filenames since we use an '.es6' extension
-cjsTree = stew.rename(cjsTree, function(relativePath) {
-  return relativePath.replace(/\.(js|es6)\.map$/, '.map').replace(/\.es6$/, '.js');
-});
-
-// Now we add a few more files to the es6 tree that Traceur should not see
+// Add the LICENSE file in each module
 ['angular2', 'benchmarks', 'benchmarks_external', 'benchpress', 'examples', 'rtts_assert'].forEach(
     function(destDir) {
-      var extras = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
-      cjsTree = mergeTrees([cjsTree, extras]);
+      cjsTree = mergeTrees([cjsTree, new Funnel('.', {files: ['LICENSE'], destDir: destDir})]);
     });
 
 extras = new Funnel(modulesTree, {include: ['**/*.md', '**/*.png'], exclude: ['**/*.dart.md']});
@@ -53,12 +50,25 @@ var COMMON_PACKAGE_JSON = {
 };
 
 // Add a .template extension since renderLodashTemplate strips one extension
-var packageJsons = stew.rename(new Funnel(modulesTree, {include: ['**/package.json']}), '.json', '.json.template');
-packageJsons = renderLodashTemplate(packageJsons, {
-  files: ["**/**"],
-  context: { 'packageJson': COMMON_PACKAGE_JSON }
+var packageJsons =
+    stew.rename(new Funnel(modulesTree, {include: ['**/package.json']}), '.json', '.json.template');
+packageJsons = renderLodashTemplate(
+    packageJsons, {files: ["**/**"], context: {'packageJson': COMMON_PACKAGE_JSON}});
+
+var typescriptTree = new TypescriptCompiler(modulesTree, {
+  target: 'ES5',
+  sourceMap: true,
+  mapRoot: '', /* force sourcemaps to use relative path */
+  module: /*system.js*/'commonjs',
+  allowNonTsExtensions: false,
+  typescript: require('typescript'),
+  //declarationFiles: true,
+  noEmitOnError: true,
+  outDir: 'angular2'
 });
 
+// For now, we just overwrite the Traceur-compiled files with their Typescript equivalent
+cjsTree = mergeTrees([cjsTree, typescriptTree], { overwrite: true });
 cjsTree = mergeTrees([cjsTree, extras, packageJsons]);
 
 module.exports = stew.mv(cjsTree, 'js/cjs');
