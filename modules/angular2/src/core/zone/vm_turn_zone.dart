@@ -27,7 +27,17 @@ class VmTurnZone {
   async.Zone _outerZone;
   async.Zone _innerZone;
 
-  int _nestedRunCounter;
+  bool _enableLongStackTrace;
+
+  // Microtask queue
+  List<Function> _asyncQueue = [];
+
+  // Whether we are in a VM turn
+  bool _currentlyInTurn = false;
+  // Whether we are draining the microtask queue (at the end of a turn)
+  bool _inFinishTurn = false;
+  // onRun depth
+  int _runningInTurn = 0;
 
   /**
    * Associates with this
@@ -39,7 +49,7 @@ class VmTurnZone {
    *               enabled in development mode as they significantly impact perf.
    */
   VmTurnZone({bool enableLongStackTrace}) {
-    _nestedRunCounter = 0;
+    _enableLongStackTrace = enableLongStackTrace;
     _outerZone = async.Zone.current;
     _innerZone = _createInnerZoneWithErrorHandling(enableLongStackTrace);
   }
@@ -53,10 +63,10 @@ class VmTurnZone {
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
   initCallbacks({Function onTurnStart, Function onTurnDone, Function onScheduleMicrotask, Function onErrorHandler}) {
-    this._onTurnStart = onTurnStart;
-    this._onTurnDone = onTurnDone;
-    this._onScheduleMicrotask = onScheduleMicrotask;
-    this._onErrorHandler = onErrorHandler;
+    _onTurnStart = onTurnStart;
+    _onTurnDone = onTurnDone;
+    _onScheduleMicrotask = onScheduleMicrotask == null ? _defaultOnScheduleMicrotask : onScheduleMicrotask;
+    _onErrorHandler = onErrorHandler;
   }
 
   /**
@@ -102,11 +112,11 @@ class VmTurnZone {
     if (enableLongStackTrace) {
       return Chain.capture(() {
         return _createInnerZone(async.Zone.current);
-      }, onError: this._onErrorWithLongStackTrace);
+      }, onError: _onErrorWithLongStackTrace);
     } else {
       return async.runZoned(() {
         return _createInnerZone(async.Zone.current);
-      }, onError: this._onErrorWithoutLongStackTrace);
+      }, onError: _onErrorWithoutLongStackTrace);
     }
   }
 
@@ -118,39 +128,85 @@ class VmTurnZone {
     ));
   }
 
-  dynamic _onRunBase(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn()) {
-    _nestedRunCounter++;
+  dynamic _onRunBase(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
+    _runningInTurn++;
     try {
-      if (_nestedRunCounter == 1 && _onTurnStart != null) delegate.run(zone, _onTurnStart);
+      if (!_currentlyInTurn) {
+        _currentlyInTurn = true;
+        if (_onTurnStart != null) parent.run(zone, _onTurnStart);
+      }
       return fn();
     } catch (e, s) {
-      if (_onErrorHandler != null && _nestedRunCounter == 1) {
+      // TODO(vicb): check with vics
+      // When _runningInTurn > 1, the error handler is called by the zone (via onError)
+      if (_onErrorHandler != null && _runningInTurn == 1) {
         _onErrorHandler(e, [s.toString()]);
       } else {
         rethrow;
       }
     } finally {
-      _nestedRunCounter--;
-      if (_nestedRunCounter == 0 && _onTurnDone != null) _finishTurn(zone, delegate);
+      _runningInTurn--;
+      if (_runningInTurn == 0) _finishTurn(zone, parent);
     }
   }
 
-  dynamic _onRun(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn()) =>
-      _onRunBase(self, delegate, zone, () => delegate.run(zone, fn));
+  dynamic _onRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) =>
+      _onRunBase(self, parent, zone, () => parent.run(zone, fn));
 
-  dynamic _onRunUnary(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn(args), args) =>
-      _onRunBase(self, delegate, zone, () => delegate.runUnary(zone, fn, args));
+  dynamic _onRunUnary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(args), args) =>
+      _onRunBase(self, parent, zone, () => parent.runUnary(zone, fn, args));
 
   void _finishTurn(zone, delegate) {
-    delegate.run(zone, _onTurnDone);
+    if (_inFinishTurn) return;
+    _inFinishTurn = true;
+    try {
+      // Two loops here: the inner one runs all queued microtasks,
+      // the outer runs onTurnDone (e.g. scope.digest) and then
+      // any microtasks which may have been queued from onTurnDone.
+      // If any microtasks were scheduled during onTurnDone, onTurnStart
+      // will be executed before those microtasks.
+      do {
+        if (!_currentlyInTurn) {
+          _currentlyInTurn = true;
+          if (_onTurnStart != null) delegate.run(zone, _onTurnStart);
+        }
+        while (!_asyncQueue.isEmpty) {
+          _asyncQueue.removeAt(0)();
+        }
+        if (_onTurnDone != null) delegate.run(zone, _onTurnDone);
+        _currentlyInTurn = false;
+      } while (!_asyncQueue.isEmpty);
+    } catch (e, s) {
+      if (_onErrorHandler != null) {
+        _onErrorHandler(e, [s.toString()]);
+      } else {
+        rethrow;
+      }
+    } finally {
+      _inFinishTurn = false;
+    }
   }
 
-  _onMicrotask(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn) {
-    if (this._onScheduleMicrotask != null) {
-      _onScheduleMicrotask(fn);
-    } else {
-      delegate.scheduleMicrotask(zone, fn);
-    }
+  /**
+   * Called when a microtask is scheduled in the inner zone
+   */
+  _onMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
+    // see https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/dart:async.Zone#id_registerCallback
+    // calling bindCallback() allow for long stack traces
+    var microtask = _enableLongStackTrace ?
+      zone.bindCallback(fn, runGuarded: false) :
+      () => parent.run(zone, fn);
+
+    _onScheduleMicrotask(microtask);
+    if (_runningInTurn == 0 && !_inFinishTurn)  _finishTurn(zone, parent);
+  }
+
+  /**
+   * Default handling of microtasks: add them to a queue which is drained after each macro-task
+   * execute.
+   */
+  void _defaultOnScheduleMicrotask(fn) {
+    _asyncQueue.add(fn);
   }
 
   _onErrorWithLongStackTrace(exception, Chain chain) {
