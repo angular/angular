@@ -10,14 +10,12 @@ import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 import 'package:unittest/vm_config.dart';
 
-import '../common/logger.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
 void allTests() {
   var reader = new TestAssetReader();
-  setLogger(new NullLogger());
 
   it('should ensure that dependencies are property chained.', () async {
     for (var inputPath in [
