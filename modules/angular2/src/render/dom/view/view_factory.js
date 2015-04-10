@@ -18,41 +18,43 @@ export const VIEW_POOL_CAPACITY = 'render.ViewFactory.viewPoolCapacity';
 
 @Injectable()
 export class ViewFactory {
-  _poolCapacity:number;
-  _pooledViews:List<viewModule.RenderView>;
+  _poolCapacityPerProtoView:number;
+  _pooledViewsPerProtoView:Map<pvModule.RenderProtoView, List<viewModule.RenderView>>;
   _eventManager:EventManager;
   _shadowDomStrategy:ShadowDomStrategy;
 
-  constructor(@Inject(VIEW_POOL_CAPACITY) capacity, eventManager:EventManager, shadowDomStrategy:ShadowDomStrategy) {
-    this._poolCapacity = capacity;
-    this._pooledViews = ListWrapper.create();
+  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView,
+      eventManager:EventManager, shadowDomStrategy:ShadowDomStrategy) {
+    this._poolCapacityPerProtoView = poolCapacityPerProtoView;
+    this._pooledViewsPerProtoView = MapWrapper.create();
     this._eventManager = eventManager;
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
   getView(protoView:pvModule.RenderProtoView):viewModule.RenderView {
-    // TODO(tbosch): benchmark this scanning of views and maybe
-    // replace it with a fancy LRU Map/List combination...
-    var view;
-    for (var i=this._pooledViews.length-1; i>=0; i--) {
-      var pooledView = this._pooledViews[i];
-      if (pooledView.proto === protoView) {
-        view = ListWrapper.removeAt(this._pooledViews, i);
+    var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
+    if (isPresent(pooledViews)) {
+      var result = ListWrapper.removeLast(pooledViews);
+      if (pooledViews.length === 0) {
+        MapWrapper.delete(this._pooledViewsPerProtoView, protoView);
       }
+      return result;
     }
-    if (isBlank(view)) {
-      view = this._createView(protoView);
-    }
-    return view;
+    return this._createView(protoView);
   }
 
   returnView(view:viewModule.RenderView) {
     if (view.hydrated()) {
       view.dehydrate();
     }
-    ListWrapper.push(this._pooledViews, view);
-    while (this._pooledViews.length > this._poolCapacity) {
-      ListWrapper.removeAt(this._pooledViews, 0);
+    var protoView = view.proto;
+    var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
+    if (isBlank(pooledViews)) {
+      pooledViews = [];
+      MapWrapper.set(this._pooledViewsPerProtoView, protoView, pooledViews);
+    }
+    if (pooledViews.length < this._poolCapacityPerProtoView) {
+      ListWrapper.push(pooledViews, view);
     }
   }
 

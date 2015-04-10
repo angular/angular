@@ -202,7 +202,7 @@ function setup() {
   });
 
   reflector.registerType(rvf.VIEW_POOL_CAPACITY, {
-    "factory": () => 100000,
+    "factory": () => 10000,
     "parameters": [],
     "annotations": []
   });
@@ -222,7 +222,7 @@ function setup() {
   });
 
   reflector.registerType(VIEW_POOL_CAPACITY, {
-    "factory": () => 100000,
+    "factory": () => 10000,
     "parameters": [],
     "annotations": []
   });
@@ -261,7 +261,7 @@ function setup() {
   });
 
   reflector.registerType(rvf.VIEW_POOL_CAPACITY, {
-    "factory": () => 100000,
+    "factory": () => 10000,
     "parameters": [],
     "annotations": []
   });
@@ -281,7 +281,7 @@ function setup() {
   });
 
   reflector.registerType(VIEW_POOL_CAPACITY, {
-    "factory": () => 100000,
+    "factory": () => 10000,
     "parameters": [],
     "annotations": []
   });
