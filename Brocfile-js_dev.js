@@ -10,7 +10,7 @@ var path = require('path');
 var modulesTree = new Funnel('modules', {include: ['**/**'], exclude: ['**/*.cjs'], destDir: '/'});
 
 // Use Traceur to transpile original sources to ES6
-var es6DevTree = new TraceurCompiler(modulesTree, '.es6', {
+var es6DevTree = new TraceurCompiler(modulesTree, '.es6', '.map', {
   sourceMaps: true,
   annotations: true,      // parse annotations
   types: true,            // parse types
@@ -21,14 +21,9 @@ var es6DevTree = new TraceurCompiler(modulesTree, '.es6', {
   typeAssertions: true,
   outputLanguage: 'es6'
 });
-// Munge the filenames since we use an '.es6' extension
-es6DevTree = stew.rename(es6DevTree, function(relativePath) {
-  return relativePath.replace(/\.(js|es6)\.map$/, '.map').replace(/\.js$/, '.es6');
-});
 
 // Call Traceur again to lower the ES6 build tree to ES5
-var es5DevTree = new TraceurCompiler(es6DevTree, '.js', {modules: 'instantiate', sourceMaps: true});
-es5DevTree = stew.rename(es5DevTree, '.es6.map', '.js.map');
+var es5DevTree = new TraceurCompiler(es6DevTree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
 // Now we add a few more files to the es6 tree that Traceur should not see
 ['angular2', 'benchmarks', 'benchmarks_external', 'benchpress', 'examples', 'rtts_assert'].forEach(
