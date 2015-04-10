@@ -10,6 +10,21 @@ import {If, For} from 'angular2/directives';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
+
+@Component({selector: 'scroll-app'})
+@View({
+  directives: [ScrollAreaComponent, If, For],
+  template: `
+  <div>
+    <div style="display: flex">
+      <scroll-area id="testArea"></scroll-area>
+    </div>
+    <div template="if scrollAreas.length > 0">
+      <p>Following tables are only here to add weight to the UI:</p>
+      <scroll-area template="for #scrollArea of scrollAreas"></scroll-area>
+    </div>
+  </div>`
+})
 export class App {
   scrollAreas:List<int>;
   iterationCount:int;
@@ -76,26 +91,4 @@ export class App {
   _getScrollDiv() {
     return DOM.query('body /deep/ #testArea /deep/ #scrollDiv');
   }
-}
-
-export function setupReflectorForApp() {
-  reflector.registerType(App, {
-    'factory': () => { return new App(); },
-    'parameters': [],
-    'annotations': [
-      new Component({selector: 'scroll-app'}),
-      new View({
-        directives: [ScrollAreaComponent, If, For],
-        template: `
-          <div>
-            <div style="display: flex">
-              <scroll-area id="testArea"></scroll-area>
-            </div>
-            <div template="if scrollAreas.length > 0">
-              <p>Following tables are only here to add weight to the UI:</p>
-              <scroll-area template="for #scrollArea of scrollAreas"></scroll-area>
-            </div>
-          </div>`
-      })]
-  });
 }

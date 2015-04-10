@@ -1,34 +1,17 @@
 import {reflector} from 'angular2/src/reflection/reflection';
-import {Injector} from 'angular2/di';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+import {Injectable, Injector} from 'angular2/di';
 import {ProtoElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 var count = 0;
 
-function setupReflector() {
-  reflector.registerType(A, {
-    'factory': () => new A(),
-    'parameters': [],
-    'annotations' : []
-  });
-  reflector.registerType(B, {
-    'factory': () => new B(),
-    'parameters': [],
-    'annotations' : []
-  });
-  reflector.registerType(C, {
-    'factory': (a,b) => new C(a,b),
-    'parameters': [[A],[B]],
-    'annotations' : []
-  });
-}
-
 export function main() {
   BrowserDomAdapter.makeCurrent();
   var iterations = getIntParameter('iterations');
 
-  setupReflector();
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
   var appInjector = new Injector([]);
 
   var bindings = [A, B, C];
@@ -59,18 +42,21 @@ export function main() {
   );
 }
 
+@Injectable()
 class A {
   constructor() {
     count++;
   }
 }
 
+@Injectable()
 class B {
   constructor() {
     count++;
   }
 }
 
+@Injectable()
 class C {
   constructor(a:A, b:B) {
     count++;

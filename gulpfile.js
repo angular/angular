@@ -564,24 +564,6 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   path: CONFIG.dest.dart + '/benchmarks_external'
 }));
 
-gulp.task('serve/examples.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
-  path: CONFIG.dest.dart + '/examples'
-}));
-
-gulp.task('serve/benchmarks.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
-  path: CONFIG.dest.dart + '/benchmarks'
-}));
-
-gulp.task('serve/benchmarks_external.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
-  path: CONFIG.dest.dart + '/benchmarks_external'
-}));
-
 // --------------
 // doc generation
 var Dgeni = require('dgeni');

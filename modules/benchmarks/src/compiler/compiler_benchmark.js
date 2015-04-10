@@ -21,6 +21,7 @@ import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_res
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
 import {reflector} from 'angular2/src/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
@@ -29,41 +30,7 @@ import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 
 function setupReflector() {
-  reflector.registerType(BenchmarkComponent, {
-    "factory": () => new BenchmarkComponent(),
-    "parameters": [],
-    "annotations" : [new Component()]
-  });
-
-  reflector.registerType(Dir0, {
-    "factory": () => new Dir0(),
-    "parameters": [],
-    "annotations" : [new Decorator({selector: '[dir0]', properties: {'prop': 'attr0'}})]
-  });
-
-  reflector.registerType(Dir1, {
-    "factory": (dir0) => new Dir1(dir0),
-    "parameters": [[Dir0]],
-    "annotations" : [new Decorator({selector: '[dir1]', properties: {'prop': 'attr1'}})]
-  });
-
-  reflector.registerType(Dir2, {
-    "factory": (dir1) => new Dir2(dir1),
-    "parameters": [[Dir1]],
-    "annotations" : [new Decorator({selector: '[dir2]', properties: {'prop': 'attr2'}})]
-  });
-
-  reflector.registerType(Dir3, {
-    "factory": (dir2) => new Dir3(dir2),
-    "parameters": [[Dir2]],
-    "annotations" : [new Decorator({selector: '[dir3]', properties: {'prop': 'attr3'}})]
-  });
-
-  reflector.registerType(Dir4, {
-    "factory": (dir3) => new Dir4(dir3),
-    "parameters": [[Dir3]],
-    "annotations" : [new Decorator({selector: '[dir4]', properties: {'prop': 'attr4'}})]
-  });
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
 
   reflector.registerGetters({
     "inter0": (a) => a.inter0, "inter1": (a) => a.inter1,

@@ -14,6 +14,26 @@ import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
 import {For} from 'angular2/directives';
 
+@Component({
+  selector: 'scroll-area',
+})
+@View({
+  directives: [ScrollItemComponent, For],
+  template: `
+    <div>
+        <div id="scrollDiv"
+             [style]="scrollDivStyle"
+             on-scroll="onScroll($event)">
+            <div id="padding"></div>
+            <div id="inner">
+                <scroll-item
+                    template="for #item of visibleItems"
+                    [offering]="item">
+                </scroll-item>
+            </div>
+        </div>
+    </div>`
+})
 export class ScrollAreaComponent {
   _fullList:List<Offering>;
   visibleItems:List<Offering>;
@@ -58,33 +78,4 @@ export class ScrollAreaComponent {
     }
     this.visibleItems = ListWrapper.slice(this._fullList, iStart, iEnd);
   }
-}
-
-export function setupReflectorForScrollArea() {
-  reflector.registerType(ScrollAreaComponent, {
-    'factory': () => new ScrollAreaComponent(),
-    'parameters': [],
-    'annotations': [
-      new Component({
-        selector: 'scroll-area',
-      }),
-      new View({
-        directives: [ScrollItemComponent, For],
-        template: `
-          <div>
-              <div id="scrollDiv"
-                   [style]="scrollDivStyle"
-                   on-scroll="onScroll($event)">
-                  <div id="padding"></div>
-                  <div id="inner">
-                      <scroll-item
-                          template="for #item of visibleItems"
-                          [offering]="item">
-                      </scroll-item>
-                  </div>
-              </div>
-          </div>`
-      })
-    ]
-  });
 }
