@@ -39,6 +39,8 @@ following products on your development machine:
 * [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
   bleeding edge functionality, built especially for developers (and early adopters).
 
+* [Bower](http://bower.io/).
+
 
 ## Getting the Sources
 
