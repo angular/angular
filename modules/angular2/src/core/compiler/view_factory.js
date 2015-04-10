@@ -13,7 +13,7 @@ export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
 @Injectable()
 export class ViewFactory {
   _poolCapacityPerProtoView:number;
-  _pooledViewsPerProtoView:Map<vieModule.ProtoView, List<viewModule.AppView>>;
+  _pooledViewsPerProtoView:Map<viewModule.AppProtoView, List<viewModule.AppView>>;
 
   constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView) {
     this._poolCapacityPerProtoView = poolCapacityPerProtoView;

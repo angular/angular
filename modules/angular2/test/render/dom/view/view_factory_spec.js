@@ -29,7 +29,6 @@ export function main() {
     describe('caching', () => {
 
       it('should support multiple RenderProtoViews', () => {
-        var capacity;
         var pv1 = createPv();
         var pv2 = createPv();
         var vf = createViewFactory({ capacity: 2 });
@@ -43,7 +42,6 @@ export function main() {
       });
 
       it('should reuse the newest view that has been returned', () => {
-        var capacity;
         var pv = createPv();
         var vf = createViewFactory({ capacity: 2 });
         var view1 = vf.getView(pv);
@@ -55,7 +53,6 @@ export function main() {
       });
 
       it('should not add views when the capacity has been reached', () => {
-        var capacity;
         var pv = createPv();
         var vf = createViewFactory({ capacity: 2 });
         var view1 = vf.getView(pv);

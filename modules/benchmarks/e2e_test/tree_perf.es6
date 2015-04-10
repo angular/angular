@@ -6,13 +6,28 @@ describe('ng2 tree benchmark', function () {
 
   afterEach(perfUtil.verifyNoBrowserErrors);
 
-  it('should log the ng stats', function(done) {
+  it('should log the ng stats with viewcache', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      id: 'ng2.tree',
+      id: 'ng2.tree.create.viewcache',
       params: [{
         name: 'depth', value: 9, scale: 'log2'
+      },{
+        name: 'viewcache', value: 'true'
+      }]
+    }).then(done, done.fail);
+  });
+
+  it('should log the ng stats without viewcache', function(done) {
+    perfUtil.runClickBenchmark({
+      url: URL,
+      buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
+      id: 'ng2.tree.create.plain',
+      params: [{
+        name: 'depth', value: 9, scale: 'log2'
+      },{
+        name: 'viewcache', value: 'false'
       }]
     }).then(done, done.fail);
   });
@@ -24,6 +39,8 @@ describe('ng2 tree benchmark', function () {
       id: 'ng2.tree.update',
       params: [{
         name: 'depth', value: 9, scale: 'log2'
+      },{
+        name: 'viewcache', value: 'true'
       }]
     }).then(done, done.fail);
   });
@@ -32,7 +49,7 @@ describe('ng2 tree benchmark', function () {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      id: 'baseline.tree',
+      id: 'baseline.tree.create',
       params: [{
         name: 'depth', value: 9, scale: 'log2'
       }]
@@ -43,7 +60,7 @@ describe('ng2 tree benchmark', function () {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineCreateDom'],
-      id: 'baseline.tree',
+      id: 'baseline.tree.update',
       params: [{
         name: 'depth', value: 9, scale: 'log2'
       }]
