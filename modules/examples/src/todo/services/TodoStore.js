@@ -1,4 +1,4 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
 
 // base model for RecordStore
 export class KeyModel {
