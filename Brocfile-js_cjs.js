@@ -67,6 +67,13 @@ var typescriptTree = new TypescriptCompiler(modulesTree, {
   outDir: 'angular2'
 });
 
+cjsTree = stew.map(cjsTree, 'angular2/test/**/*_spec.js', function(content, relativePath) {
+  return "var parse5Adapter = require('angular2/src/dom/parse5_adapter');\r\n"
+  + "parse5Adapter.Parse5DomAdapter.makeCurrent();\r\n"
+  + content
+  + "\r\n main();";
+});
+
 // For now, we just overwrite the Traceur-compiled files with their Typescript equivalent
 cjsTree = mergeTrees([cjsTree, typescriptTree], { overwrite: true });
 cjsTree = mergeTrees([cjsTree, extras, packageJsons]);
