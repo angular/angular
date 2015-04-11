@@ -37,7 +37,7 @@ class TraceurFilter extends Writer {
                 // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
                 // (but we might switch to typescript first)
                 var mapFilepath = filepath.replace(/\.\w+$/, '') + this.destSourceMapExtension;
-                result.js = result.js + `\n//# sourceMappingURL=./${path.basename(mapFilepath)}`;
+                result.js = result.js + '\n  //# sourceMappingURL=./' + path.basename(mapFilepath);
 
                 var destFilepath = filepath.replace(/\.\w+$/, this.destExtension);
                 var destFile = path.join(destDir, destFilepath);

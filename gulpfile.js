@@ -504,9 +504,22 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
   args: CONFIG.formatDart.args
 }));
 
+function doCheckFormat() {
+  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
+    .pipe(format.checkFormat('file'));
+}
+
 gulp.task('check-format', function() {
-  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', '!**/typings/**/*.d.ts'])
-      .pipe(format.checkFormat('file'));
+  return doCheckFormat().on('warning', function(e) {
+    console.log("NOTE: this will be promoted to an ERROR in the continuous build");
+  });
+});
+
+gulp.task('enforce-format', function() {
+  return doCheckFormat().on('warning', function(e) {
+    console.log("ERROR: Some files need formatting");
+    process.exit(1);
+  });
 });
 
 // ------------
@@ -752,6 +765,7 @@ gulp.task('build.js.dev', function(done) {
   runSequence(
     'broccoli.js.dev',
     'build/checkCircularDependencies',
+    'check-format',
     done
   );
 });

@@ -9,7 +9,7 @@ import path = require('path');
 import ts2dart = require('ts2dart');
 
 type Set = {
-  [s:string]: boolean
+  [s: string]: boolean
 };
 
 class TypeScriptToDartTranspiler extends Writer {

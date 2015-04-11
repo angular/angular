@@ -8,7 +8,7 @@ export interface TranspilerOptions {
   basePath?: string;
 }
 
-export class Transpiler{
+export class Transpiler {
   constructor(options: TranspilerOptions);
   transpile(fileNames: string[], outdir?: string);
 }

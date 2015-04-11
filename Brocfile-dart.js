@@ -6,9 +6,9 @@ var path = require('path');
 
 // Transpile everything in 'modules'...
 var modulesTree = new Funnel('modules', {
-  include: ['**/*.js', '**/*.ts', '**/*.dart'], // .dart file available means don't translate.
+  include: ['**/*.js', '**/*.ts', '**/*.dart'],  // .dart file available means don't translate.
   exclude: ['rtts_assert/**/*'],  // ... except for the rtts_asserts (don't apply to Dart).
-  destDir: '/',  // Remove the 'modules' prefix.
+  destDir: '/',                   // Remove the 'modules' prefix.
 });
 
 // Transpile to dart.
