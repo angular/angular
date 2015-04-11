@@ -34,6 +34,8 @@ export function main() {
     bind(F).toValue(6)
   ];
 
+  var variousBindingsResolved = Injector.resolve(variousBindings);
+
   function getByToken() {
     for (var i = 0; i < iterations; ++i) {
       injector.get(D);
@@ -66,7 +68,16 @@ export function main() {
    */
   function createVariety() {
     for (var i = 0; i < iterations; ++i) {
-      new Injector(variousBindings);
+      Injector.resolveAndCreate(variousBindings);
+    }
+  }
+
+  /**
+   * Same as [createVariety] but resolves bindings ahead of time.
+   */
+  function createVarietyResolved() {
+    for (var i = 0; i < iterations; ++i) {
+      Injector.fromResolvedBindings(variousBindingsResolved);
     }
   }
 
@@ -89,6 +100,10 @@ export function main() {
   bindAction(
     '#createVariety',
     () => microBenchmark('injectAvg', iterations, createVariety)
+  );
+  bindAction(
+    '#createVarietyResolved',
+    () => microBenchmark('injectAvg', iterations, createVarietyResolved)
   );
 }
 
