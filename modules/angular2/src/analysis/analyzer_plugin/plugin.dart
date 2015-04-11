@@ -3,8 +3,8 @@ library angular2.src.analysis.analyzer_plugin;
 import 'package:analyzer/plugin/plugin.dart';
 
 /// Contribute a plugin to the dart analyzer for analysis of
-/// Angular2 dart code.
-class AngularAnalyzerPlugin extends Plugin {
+/// Angular 2 dart code.
+class AngularAnalyzerPlugin implements Plugin {
 
   /// the unique indetifier for this plugin
   static const String UNIQUE_IDENTIFIER = 'angular2.analysis';
