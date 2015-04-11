@@ -1,4 +1,4 @@
-import {Injectable, Injector, Key} from "angular2/di";
+import {Injectable, Injector, Key, bind} from "angular2/di";
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
@@ -27,7 +27,14 @@ export function main() {
     createChild([]).
     createChild([]);
 
-  function getByToken () {
+  var variousBindings = [
+    A,
+    bind(B).toClass(C),
+    [D, [E]],
+    bind(F).toValue(6)
+  ];
+
+  function getByToken() {
     for (var i = 0; i < iterations; ++i) {
       injector.get(D);
       injector.get(E);
@@ -40,17 +47,26 @@ export function main() {
     }
   }
 
-  function getChild () {
+  function getChild() {
     for (var i = 0; i < iterations; ++i) {
       childInjector.get(D);
       childInjector.get(E);
     }
   }
 
-  function instantiate () {
+  function instantiate() {
     for (var i = 0; i < iterations; ++i) {
       var child = injector.createChild([E]);
       child.get(E);
+    }
+  }
+
+  /**
+   * Creates an injector with a variety of binding types.
+   */
+  function createVariety() {
+    for (var i = 0; i < iterations; ++i) {
+      new Injector(variousBindings);
     }
   }
 
@@ -69,6 +85,10 @@ export function main() {
   bindAction(
     '#instantiate',
     () => microBenchmark('injectAvg', iterations, instantiate)
+  );
+  bindAction(
+    '#createVariety',
+    () => microBenchmark('injectAvg', iterations, createVariety)
   );
 }
 
@@ -105,6 +125,13 @@ class D {
 @Injectable()
 class E {
   constructor(d:D, c:C) {
+    count++;
+  }
+}
+
+@Injectable()
+class F {
+  constructor(e:E, d:D) {
     count++;
   }
 }
