@@ -209,7 +209,7 @@ class TestNode extends TreeNode {
 
 export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
-  var appInjector = new Injector([]);
+  var appInjector = Injector.resolveAndCreate([]);
 
   function humanize(tree, names:List) {
     var lookupName = (item) =>
@@ -236,7 +236,7 @@ export function main() {
   function parentChildInjectors(parentBindings, childBindings, parentPreBuildObjects = null) {
     if (isBlank(parentPreBuildObjects)) parentPreBuildObjects = defaultPreBuiltObjects;
 
-    var inj = new Injector([]);
+    var inj = Injector.resolveAndCreate([]);
 
     var protoParent = new ProtoElementInjector(null, 0, parentBindings);
     var parent = protoParent.instantiate(null);
@@ -253,8 +253,8 @@ export function main() {
   function hostShadowInjectors(hostBindings, shadowBindings, hostPreBuildObjects = null) {
     if (isBlank(hostPreBuildObjects)) hostPreBuildObjects = defaultPreBuiltObjects;
 
-    var inj = new Injector([]);
-    var shadowInj = inj.createChild([]);
+    var inj = Injector.resolveAndCreate([]);
+    var shadowInj = inj.resolveAndCreateChild([]);
 
     var protoParent = new ProtoElementInjector(null, 0, hostBindings, true);
     var host = protoParent.instantiate(null);
@@ -455,7 +455,7 @@ export function main() {
       });
 
       it("should instantiate directives that depend on app services", function () {
-        var appInjector = new Injector([
+        var appInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
         ]);
         var inj = injector([NeedsService], appInjector);
@@ -487,7 +487,7 @@ export function main() {
       });
 
       it("should instantiate component directives that depend on app services in the shadow app injector", () => {
-        var shadowAppInjector = new Injector([
+        var shadowAppInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
         ]);
         var inj = injector([NeedsService], null, shadowAppInjector);
@@ -498,7 +498,7 @@ export function main() {
       });
 
       it("should not instantiate other directives that depend on app services in the shadow app injector", () => {
-        var shadowAppInjector = new Injector([
+        var shadowAppInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
         ]);
         expect(() => {
@@ -507,7 +507,7 @@ export function main() {
       });
 
       it("should return app services", function () {
-        var appInjector = new Injector([
+        var appInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
         ]);
         var inj = injector([], appInjector);
@@ -687,7 +687,7 @@ export function main() {
 
       it("should inject services of the dynamically-loaded component", () => {
         var inj = injector([]);
-        var appInjector = new Injector([bind("service").toValue("Service")]);
+        var appInjector = Injector.resolveAndCreate([bind("service").toValue("Service")]);
         inj.dynamicallyCreateComponent(NeedsService, null, appInjector);
         expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
       });
@@ -844,8 +844,8 @@ export function main() {
 
         var parent = protoParent.instantiate(null);
         var child = protoChild.instantiate(parent);
-        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
 
         expectDirectives(parent.get(NeedsQuery).query, CountingDirective, [0,1]);
       });
@@ -856,8 +856,8 @@ export function main() {
 
         var parent = protoParent.instantiate(null);
         var child = protoChild.instantiate(parent);
-        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
 
         child.unlink();
 
@@ -873,9 +873,9 @@ export function main() {
         var child1 = protoChild1.instantiate(parent);
         var child2 = protoChild2.instantiate(parent);
 
-        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child1.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child2.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child1.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child2.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
 
         child1.unlink();
         child1.link(parent);
@@ -893,9 +893,9 @@ export function main() {
         var child1 = protoChild1.instantiate(parent);
         var child2 = protoChild2.instantiate(parent);
 
-        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child1.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child2.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child1.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child2.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
 
         child2.unlink();
         child2.linkAfter(parent, null);
@@ -913,9 +913,9 @@ export function main() {
         var parent = protoParent.instantiate(grandParent);
         var child = protoChild.instantiate(parent);
 
-        grandParent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        parent.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
-        child.instantiateDirectives(new Injector([]), null, null, preBuildObjects);
+        grandParent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
+        child.instantiateDirectives(Injector.resolveAndCreate([]), null, null, preBuildObjects);
 
         var queryList1 = grandParent.get(NeedsQuery).query;
         var queryList2 = parent.get(NeedsQuery).query;

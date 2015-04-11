@@ -276,10 +276,10 @@ export function bootstrap(appComponentType: Type,
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zone: VmTurnZone): Injector {
-  if (isBlank(_rootInjector)) _rootInjector = new Injector(_rootBindings);
+  if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
       _injectorBindings(appComponentType);
   ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
-  return _rootInjector.createChild(mergedBindings);
+  return _rootInjector.resolveAndCreateChild(mergedBindings);
 }

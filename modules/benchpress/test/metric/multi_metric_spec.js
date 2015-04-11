@@ -18,7 +18,7 @@ import { Metric, MultiMetric, bind, Injector } from 'benchpress/common';
 
 export function main() {
   function createMetric(ids) {
-    return new Injector([
+    return Injector.resolveAndCreate([
       ListWrapper.map(ids, (id) => bind(id).toValue(new MockMetric(id)) ),
       MultiMetric.createBindings(ids)
     ]).asyncGet(MultiMetric);

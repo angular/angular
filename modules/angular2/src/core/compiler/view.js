@@ -153,7 +153,7 @@ export class AppView {
       if (isPresent(componentDirective)) {
         var injectables = componentDirective.annotation.injectables;
         if (isPresent(injectables))
-          shadowDomAppInjector = appInjector.createChild(injectables);
+          shadowDomAppInjector = appInjector.resolveAndCreateChild(injectables);
         else {
           shadowDomAppInjector = appInjector;
         }

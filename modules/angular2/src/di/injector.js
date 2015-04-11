@@ -27,13 +27,39 @@ export class Injector {
   _defaultBindings:boolean;
   _asyncStrategy: _AsyncInjectorStrategy;
   _syncStrategy:_SyncInjectorStrategy;
-  constructor(bindings:List, {parent=null, defaultBindings=false}={}) {
+
+  /**
+   * Creates/looks up factory functions and dependencies from binding
+   * declarations and flattens bindings into a single [List].
+   */
+  static resolve(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):List<ResolvedBinding> {
     var flatten = _flattenBindings(Binding.resolveAll(bindings), MapWrapper.create());
-    this._bindings = this._createListOfBindings(flatten);
+    return _createListOfBindings(flatten);
+  }
+
+  /**
+   * Resolves bindings and creates an injector based on those bindings. This function is slower than the
+   * corresponding [fromResolvedBindings] because it needs to resolve bindings. Prefer [fromResolvedBindings]
+   * in performance-critical code that creates lots of injectors.
+   */
+  static resolveAndCreate(bindings:List/*<ResolvedBinding|Binding|Type|List>*/, {defaultBindings=false}={}) {
+    return new Injector(Injector.resolve(bindings), null, defaultBindings);
+  }
+
+  /**
+   * Creates an injector from previously resolved bindings. This bypasses a lot
+   * of computation and is the recommended way to construct injectors in
+   * performance-sensitive parts.
+   */
+  static fromResolvedBindings(bindings:List<ResolvedBinding>, {defaultBindings=false}={}) {
+    return new Injector(bindings, null, defaultBindings);
+  }
+
+  constructor(bindings:List<ResolvedBinding>, parent:Injector, defaultBindings:boolean) {
+    this._bindings = bindings;
     this._instances = this._createInstances();
     this._parent = parent;
     this._defaultBindings = defaultBindings;
-
     this._asyncStrategy = new _AsyncInjectorStrategy(this);
     this._syncStrategy = new _SyncInjectorStrategy(this);
   }
@@ -50,15 +76,12 @@ export class Injector {
     return this._getByKey(Key.get(token), true, false, false);
   }
 
-  createChild(bindings:List):Injector {
-    return new Injector(bindings, {parent: this});
+  resolveAndCreateChild(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):Injector {
+    return new Injector(Injector.resolve(bindings), this, false);
   }
 
-
-  _createListOfBindings(flattenBindings):List {
-    var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
-    MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
-    return bindings;
+  createChildFromResolved(bindings:List<ResolvedBinding>):Injector {
+    return new Injector(bindings, this, false);
   }
 
   _createInstances():List {
@@ -243,6 +266,14 @@ class _AsyncInjectorStrategy {
     return instance
   }
 }
+
+function _createListOfBindings(flattenBindings):List {
+  var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
+  MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
+  return bindings;
+}
+
+
 
 function _flattenBindings(bindings:List, res:Map) {
   ListWrapper.forEach(bindings, function (b) {

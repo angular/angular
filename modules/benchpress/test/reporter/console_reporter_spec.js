@@ -29,7 +29,7 @@ export function main() {
       if (isPresent(columnWidth)) {
         ListWrapper.push(bindings, bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
       }
-      reporter = new Injector(bindings).get(ConsoleReporter);
+      reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

@@ -38,7 +38,7 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension = new Injector([
+      extension = Injector.resolveAndCreate([
         ChromeDriverExtension.BINDINGS,
         bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords, messageMethod))
       ]).get(ChromeDriverExtension);

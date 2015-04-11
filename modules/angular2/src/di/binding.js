@@ -94,7 +94,9 @@ export class Binding {
     for (var i = 0; i < bindings.length; i++) {
       var unresolved = bindings[i];
       var resolved;
-      if (unresolved instanceof Type) {
+      if (unresolved instanceof ResolvedBinding) {
+        resolved = unresolved;  // ha-ha! I'm easily amused
+      } else if (unresolved instanceof Type) {
         resolved = bind(unresolved).toClass(unresolved).resolve();
       } else if (unresolved instanceof Binding) {
         resolved = unresolved.resolve(); 

@@ -68,7 +68,7 @@ export function main() {
         ListWrapper.push(bindings, bind(Options.FORCE_GC).toValue(forceGc));
       }
 
-      sampler = new Injector(bindings).get(Sampler);
+      sampler = Injector.resolveAndCreate(bindings).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor', inject([AsyncTestCompleter], (async) => {

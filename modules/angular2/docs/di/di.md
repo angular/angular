@@ -43,7 +43,7 @@ class Car {
 	}
 }
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Car).toClass(Car),
 	bind(Engine).toClass(Engine)
 ]);
@@ -86,7 +86,7 @@ To avoid bugs make sure the registered objects have side-effect-free constructor
 Injectors are hierarchical.
 
 ```
-var child = injector.createChild([
+var child = injector.resolveAndCreateChild([
 	bind(Engine).toClass(TurboEngine)
 ]);
 
@@ -99,21 +99,21 @@ var car = child.get(Car); // uses the Car binding from the parent injector and E
 You can bind to a class, a value, or a factory. It is also possible to alias existing bindings.
 
 ```
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Car).toClass(Car),
 	bind(Engine).toClass(Engine)
 ]);
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	Car,  // syntax sugar for bind(Car).toClass(Car)
 	Engine
 ]);
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Car).toValue(new Car(new Engine()))
 ]);
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Car).toFactory((e) => new Car(e), [Engine]),
 	bind(Engine).toFactory(() => new Engine())
 ]);
@@ -122,7 +122,7 @@ var inj = new Injector([
 You can bind any token.
 
 ```
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Car).toFactory((e) => new Car(), ["engine!"]),
 	bind("engine!").toClass(Engine)
 ]);
@@ -131,7 +131,7 @@ var inj = new Injector([
 If you want to alias an existing binding, you can do so using `toAlias`:
 
 ```
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(Engine).toClass(Engine),
 	bind("engine!").toAlias(Engine)
 ]);
@@ -152,7 +152,7 @@ The `someFactory` function does not have to know that it creates an object for `
 Injector can create binding on the fly if we enable default bindings.
 
 ```
-var inj = new Injector([], {defaultBindings: true});
+var inj = Injector.resolveAndCreate([], {defaultBindings: true});
 var car = inj.get(Car); //this works as if `bind(Car).toClass(Car)` and `bind(Engine).toClass(Engine)` were present.
 ```
 
@@ -226,7 +226,7 @@ class UserController {
 	}
 }
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ])
@@ -252,7 +252,7 @@ class UserController {
 	}
 }
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ])
@@ -276,7 +276,7 @@ class UserController {
 	constructor(ul:UserList){}
 }
 
-var inj = new Injector([UserList, UserController]);
+var inj = Injector.resolveAndCreate([UserList, UserController]);
 var ctrl:UserController = inj.get(UserController);
 ```
 
@@ -290,7 +290,7 @@ class UserController {
 	constructor(@InjectPromise(UserList) ul){}
 }
 
-var inj = new Injector([UserList, UserController]);
+var inj = Injector.resolveAndCreate([UserList, UserController]);
 var ctrl:UserController = inj.get(UserController);
 // UserController responsible for dealing with asynchrony.
 expect(ctrl.ul).toBePromise();
@@ -306,7 +306,7 @@ class UserController {
 	constructor(ul:UserList){}
 }
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ]);
@@ -331,7 +331,7 @@ class UserController {
 	constructor(@InjectPromise(UserList) ul){}
 }
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
 	bind(UserList).toAsyncFactory(() => fetchUsersUsingHttp().then((u) => new UserList(u))),
 	UserController
 ]);
@@ -369,14 +369,14 @@ If we need a transient dependency, something that we want a new instance of ever
 We can create a child injector:
 
 ```
-var child = inj.createChild([MyClass]);
+var child = inj.resolveAndCreateChild([MyClass]);
 child.get(MyClass);
 ```
 
 Or we can register a factory function:
 
 ```
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
   bind('MyClassFactory').toFactory(dep => () => new MyClass(dep), [SomeDependency])
 ]);
 
@@ -393,7 +393,7 @@ expect(instance1).not.toBe(instance2);
 Most of the time we do not have to deal with keys.
 
 ```
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
   bind(Engine).toFactory(() => new TurboEngine())  //the passed in token Engine gets mapped to a key
 ]);
 var engine = inj.get(Engine); //the passed in token Engine gets mapped to a key
@@ -404,7 +404,7 @@ Now, the same example, but with keys
 ```
 var ENGINE_KEY = Key.get(Engine);
 
-var inj = new Injector([
+var inj = Injector.resolveAndCreate([
   bind(ENGINE_KEY).toFactory(() => new TurboEngine()) // no mapping
 ]);
 var engine = inj.get(ENGINE_KEY);  // no mapping

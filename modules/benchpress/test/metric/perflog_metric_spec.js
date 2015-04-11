@@ -45,7 +45,7 @@ export function main() {
       }),
       bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
-    return new Injector(bindings).get(PerflogMetric);
+    return Injector.resolveAndCreate(bindings).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {

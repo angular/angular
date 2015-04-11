@@ -41,7 +41,7 @@ export function main() {
 
     describe("asyncGet", function () {
       it('should return a promise', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers)
         ]);
         var p = injector.asyncGet(UserList);
@@ -49,7 +49,7 @@ export function main() {
       });
 
       it('should return a promise when the binding is sync', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           SynchronousUserList
         ]);
         var p = injector.asyncGet(SynchronousUserList);
@@ -57,7 +57,7 @@ export function main() {
       });
 
       it("should return a promise when the binding is sync (from cache)", function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           UserList
         ]);
         expect(injector.get(UserList)).toBeAnInstanceOf(UserList);
@@ -65,7 +65,7 @@ export function main() {
       });
 
       it('should return the injector', inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([]);
+        var injector = Injector.resolveAndCreate([]);
         var p = injector.asyncGet(Injector);
         p.then(function (injector) {
           expect(injector).toBe(injector);
@@ -75,7 +75,7 @@ export function main() {
 
       it('should return a promise when instantiating a sync binding ' +
       'with an async dependency', inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers),
           UserController
         ]);
@@ -88,7 +88,7 @@ export function main() {
       }));
 
       it("should create only one instance (async + async)", inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers)
         ]);
 
@@ -102,7 +102,7 @@ export function main() {
       }));
 
       it("should create only one instance (sync + async)", inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           UserList
         ]);
 
@@ -119,7 +119,7 @@ export function main() {
       }));
 
       it('should show the full path when error happens in a constructor', inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           UserController,
           bind(UserList).toAsyncFactory(function () {
             throw "Broken UserList";
@@ -136,7 +136,7 @@ export function main() {
 
     describe("get", function () {
       it('should throw when instantiating an async binding', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers)
         ]);
 
@@ -145,7 +145,7 @@ export function main() {
       });
 
       it('should throw when instantiating a sync binding with an async dependency', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers),
           UserController
         ]);
@@ -156,7 +156,7 @@ export function main() {
 
       it('should not throw when instantiating a sync binding with a resolved async dependency',
         inject([AsyncTestCompleter], (async) => {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers),
           UserController
         ]);
@@ -168,7 +168,7 @@ export function main() {
       }));
 
       it('should resolve synchronously when an async dependency requested as a promise', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toAsyncFactory(fetchUsers),
           AsyncUserController
         ]);
@@ -179,7 +179,7 @@ export function main() {
       });
 
       it('should wrap sync dependencies into promises if required', function () {
-        var injector = new Injector([
+        var injector = Injector.resolveAndCreate([
           bind(UserList).toFactory(() => new UserList()),
           AsyncUserController
         ]);

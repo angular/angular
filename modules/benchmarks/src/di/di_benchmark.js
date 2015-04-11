@@ -16,16 +16,16 @@ export function main() {
 
   setupReflector();
   var bindings = [A, B, C, D, E];
-  var injector = new Injector(bindings);
+  var injector = Injector.resolveAndCreate(bindings);
 
   var D_KEY = Key.get(D);
   var E_KEY = Key.get(E);
   var childInjector = injector.
-    createChild([]).
-    createChild([]).
-    createChild([]).
-    createChild([]).
-    createChild([]);
+    resolveAndCreateChild([]).
+    resolveAndCreateChild([]).
+    resolveAndCreateChild([]).
+    resolveAndCreateChild([]).
+    resolveAndCreateChild([]);
 
   var variousBindings = [
     A,
@@ -56,7 +56,7 @@ export function main() {
 
   function instantiate() {
     for (var i = 0; i < iterations; ++i) {
-      var child = injector.createChild([E]);
+      var child = injector.resolveAndCreateChild([E]);
       child.get(E);
     }
   }

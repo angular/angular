@@ -34,7 +34,7 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension = new Injector([
+      extension = Injector.resolveAndCreate([
         IOsDriverExtension.BINDINGS,
         bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
       ]).get(IOsDriverExtension);

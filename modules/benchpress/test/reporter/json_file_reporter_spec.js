@@ -42,7 +42,7 @@ export function main() {
           return PromiseWrapper.resolve(null);
         })
       ];
-      return new Injector(bindings).get(JsonFileReporter);
+      return Injector.resolveAndCreate(bindings).get(JsonFileReporter);
     }
 
     it('should write all data into a file', inject([AsyncTestCompleter], (async) => {

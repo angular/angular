@@ -11,7 +11,7 @@ export function main() {
     var validator;
 
     function createValidator(size) {
-      validator = new Injector([
+      validator = Injector.resolveAndCreate([
         SizeValidator.BINDINGS,
         bind(SizeValidator.SAMPLE_SIZE).toValue(size)
       ]).get(SizeValidator);

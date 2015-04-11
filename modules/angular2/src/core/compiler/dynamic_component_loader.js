@@ -80,7 +80,7 @@ export class DynamicComponentLoader {
 
   _componentAppInjector(location, injector, services) {
     var inj = isPresent(injector) ? injector : location.injector;
-    return isPresent(services) ? inj.createChild(services) : inj;
+    return isPresent(services) ? inj.resolveAndCreateChild(services) : inj;
   }
 
   _instantiateAndHydrateView(protoView, injector, hostElementInjector, context) {

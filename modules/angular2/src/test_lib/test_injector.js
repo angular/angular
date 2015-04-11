@@ -110,8 +110,8 @@ function _getAppBindings() {
 }
 
 export function createTestInjector(bindings: List) {
-  var rootInjector = new Injector(_getRootBindings());
-  return rootInjector.createChild(ListWrapper.concat(_getAppBindings(), bindings));
+  var rootInjector = Injector.resolveAndCreate(_getRootBindings());
+  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
 
 /**

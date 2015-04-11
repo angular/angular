@@ -19,7 +19,7 @@ import { WebDriverExtension, bind, Injector, Options } from 'benchpress/common';
 
 export function main() {
   function createExtension(ids, caps) {
-    return new Injector([
+    return Injector.resolveAndCreate([
       ListWrapper.map(ids, (id) => bind(id).toValue(new MockExtension(id)) ),
       bind(Options.CAPABILITIES).toValue(caps),
       WebDriverExtension.bindTo(ids)

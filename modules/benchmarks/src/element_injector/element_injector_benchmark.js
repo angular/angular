@@ -12,7 +12,7 @@ export function main() {
   var iterations = getIntParameter('iterations');
 
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var appInjector = new Injector([]);
+  var appInjector = Injector.resolveAndCreate([]);
 
   var bindings = [A, B, C];
   var proto = new ProtoElementInjector(null, 0, bindings);

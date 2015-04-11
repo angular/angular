@@ -50,7 +50,7 @@ export class Runner {
     if (isPresent(bindings)) {
       ListWrapper.push(sampleBindings, bindings);
     }
-    return new Injector(sampleBindings).asyncGet(Sampler)
+    return Injector.resolveAndCreate(sampleBindings).asyncGet(Sampler)
       .then( (sampler) => sampler.sample() );
   }
 }

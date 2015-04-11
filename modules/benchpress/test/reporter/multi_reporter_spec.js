@@ -19,7 +19,7 @@ import { Reporter, MultiReporter, bind, Injector, MeasureValues } from 'benchpre
 
 export function main() {
   function createReporters(ids) {
-    return new Injector([
+    return Injector.resolveAndCreate([
       ListWrapper.map(ids, (id) => bind(id).toValue(new MockReporter(id)) ),
       MultiReporter.createBindings(ids)
     ]).asyncGet(MultiReporter);
