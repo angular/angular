@@ -48,6 +48,11 @@ export class Store {
     this.list.push(record);
   }
 
+  save(record: KeyModel) {
+    var i = this.indexFor(record);
+    this.list[i] = record;
+  }
+
   remove(record: KeyModel) {
     this.spliceOut(record);
   }
