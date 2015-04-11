@@ -59,10 +59,10 @@ var typescriptTree = new TypescriptCompiler(modulesTree, {
   target: 'ES5',
   sourceMap: true,
   mapRoot: '', /* force sourcemaps to use relative path */
-  module: /*system.js*/'commonjs',
+  module: /*system.js*/ 'commonjs',
   allowNonTsExtensions: false,
   typescript: require('typescript'),
-  //declarationFiles: true,
+  // declarationFiles: true,
   noEmitOnError: true,
   outDir: 'angular2'
 });

@@ -23,14 +23,15 @@ var es6ProdTree = new TraceurCompiler(modulesTree, '.es6', '.map', {
 });
 
 // Call Traceur again to lower the ES6 build tree to ES5
-var es5ProdTree = new TraceurCompiler(es6ProdTree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
+var es5ProdTree =
+    new TraceurCompiler(es6ProdTree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
 // Now we add a few more files to the es6 tree that Traceur should not see
 ['angular2', 'benchmarks', 'benchmarks_external', 'benchpress', 'examples', 'rtts_assert'].forEach(
-  function(destDir) {
-    var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
-    es6ProdTree = mergeTrees([es6ProdTree, extras]);
-  });
+    function(destDir) {
+      var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
+      es6ProdTree = mergeTrees([es6ProdTree, extras]);
+    });
 
 var vendorScriptsTree = flatten(new Funnel('.', {
   files: [
@@ -46,9 +47,9 @@ var vendorScriptsTree = flatten(new Funnel('.', {
   ]
 }));
 var vendorScripts_benchmark =
-  new Funnel('tools/build/snippets', {files: ['url_params_to_form.js'], destDir: '/'});
+    new Funnel('tools/build/snippets', {files: ['url_params_to_form.js'], destDir: '/'});
 var vendorScripts_benchmarks_external =
-  new Funnel('node_modules/angular', {files: ['angular.js'], destDir: '/'});
+    new Funnel('node_modules/angular', {files: ['angular.js'], destDir: '/'});
 
 var servingTrees = [];
 function copyVendorScriptsTo(destDir) {
@@ -58,7 +59,7 @@ function copyVendorScriptsTo(destDir) {
   }
   if (destDir.indexOf('benchmarks_external') > -1) {
     servingTrees.push(
-      new Funnel(vendorScripts_benchmarks_external, {srcDir: '/', destDir: destDir}));
+        new Funnel(vendorScripts_benchmarks_external, {srcDir: '/', destDir: destDir}));
   }
 }
 
@@ -85,7 +86,7 @@ htmlTree = replace(htmlTree, {
 });
 // TODO(broccoli): are these needed here, if not loaded by a script tag??
 ['benchmarks/src', 'benchmarks_external/src', 'examples/src/benchpress'].forEach(
-  copyVendorScriptsTo);
+    copyVendorScriptsTo);
 
 var scripts = mergeTrees(servingTrees, {overwrite: true});
 var css = new Funnel(modulesTree, {include: ["**/*.css"]});
@@ -100,4 +101,5 @@ htmlTree = mergeTrees([htmlTree, scripts, polymer, css]);
 
 es5ProdTree = mergeTrees([es5ProdTree, htmlTree]);
 
-module.exports = mergeTrees([stew.mv(es6ProdTree, 'js/prod/es6'), stew.mv(es5ProdTree, 'js/prod/es5')]);
+module.exports =
+    mergeTrees([stew.mv(es6ProdTree, 'js/prod/es6'), stew.mv(es5ProdTree, 'js/prod/es5')]);

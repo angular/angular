@@ -6,7 +6,8 @@ declare var assert: any;
 declare var global: Window;
 type int = number;
 
-interface List<T> extends Array<T> {}
+interface List<T> extends Array<T> {
+}
 
 interface Window {
   Object: typeof Object;

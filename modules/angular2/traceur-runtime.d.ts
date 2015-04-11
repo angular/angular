@@ -9,7 +9,7 @@ interface String {
    * same as the corresponding elements of this object (converted to a String) starting at
    * position. Otherwise returns false.
    */
-  startsWith(searchString: string, position ?: number): boolean;
+  startsWith(searchString: string, position?: number): boolean;
 }
 
 interface NumberConstructor {
@@ -29,14 +29,14 @@ interface Array<T> {
    * @param end index to stop filling the array at. If end is negative, it is treated as
    * length+end.
    */
-  fill(value: T, start ?: number, end ?: number): T[];
+  fill(value: T, start?: number, end?: number): T[];
 }
 
 // Copied from lib.dom.d.ts and modified
 interface Map<K, V> {
   clear(): void;
   delete (key: K): boolean;
-  forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg ?: any): void;
+  forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
   get(key: K): V;
   has(key: K): boolean;
   set(key: K, value: V): Map<K, V>;
@@ -54,7 +54,7 @@ interface Set<T> {
   add(value: T): Set<T>;
   clear(): void;
   delete (value: T): boolean;
-  forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg ?: any): void;
+  forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void;
   has(value: T): boolean;
   size: number;
 }

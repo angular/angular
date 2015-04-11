@@ -23,7 +23,8 @@ var es6DevTree = new TraceurCompiler(modulesTree, '.es6', '.map', {
 });
 
 // Call Traceur again to lower the ES6 build tree to ES5
-var es5DevTree = new TraceurCompiler(es6DevTree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
+var es5DevTree =
+    new TraceurCompiler(es6DevTree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
 // Now we add a few more files to the es6 tree that Traceur should not see
 ['angular2', 'benchmarks', 'benchmarks_external', 'benchpress', 'examples', 'rtts_assert'].forEach(
