@@ -7,7 +7,7 @@ import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
-import {Directive, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
+import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {BindingPropagationConfig} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 
@@ -283,6 +283,7 @@ export class DirectiveBinding extends ResolvedBinding {
   callOnChange:boolean;
   callOnAllChangesDone:boolean;
   annotation:Directive;
+  resolvedInjectables:List<ResolvedBinding>;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
     super(key, factory, dependencies, providedAsPromise);
@@ -290,6 +291,9 @@ export class DirectiveBinding extends ResolvedBinding {
     this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
     this.callOnAllChangesDone = isPresent(annotation) && annotation.hasLifecycleHook(onAllChangesDone);
     this.annotation = annotation;
+    if (annotation instanceof Component && isPresent(annotation.injectables)) {
+      this.resolvedInjectables = Injector.resolve(annotation.injectables);
+    }
   }
 
   static createFromBinding(b:Binding, annotation:Directive):DirectiveBinding {

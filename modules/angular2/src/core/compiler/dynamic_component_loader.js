@@ -1,7 +1,8 @@
-import {Key, Injector, Injectable} from 'angular2/di'
+import {Key, Injector, Injectable, ResolvedBinding} from 'angular2/di'
 import {Compiler} from './compiler';
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {Type, BaseException, stringify, isPresent} from 'angular2/src/facade/lang';
+import {List} from 'angular2/src/facade/collection';
 import {Promise} from 'angular2/src/facade/async';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
@@ -34,15 +35,15 @@ export class DynamicComponentLoader {
   loadIntoExistingLocation(type:Type, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
     this._assertTypeIsComponent(type);
 
-    var annotation = this._directiveMetadataReader.read(type).annotation;
+    var directiveMetadata = this._directiveMetadataReader.read(type);
 
-    var inj = this._componentAppInjector(location, injector, annotation.injectables);
+    var inj = this._componentAppInjector(location, injector, directiveMetadata.resolvedInjectables);
 
     var hostEi = location.elementInjector;
     var hostView = location.hostView;
 
     return this._compiler.compile(type).then(componentProtoView => {
-      var context = hostEi.dynamicallyCreateComponent(type, annotation, inj);
+      var context = hostEi.dynamicallyCreateComponent(type, directiveMetadata.annotation, inj);
       var componentView = this._instantiateAndHydrateView(componentProtoView, injector, hostEi, context);
 
       //TODO(vsavkin): do not use component child views as we need to clear the dynamically created views
@@ -78,9 +79,9 @@ export class DynamicComponentLoader {
     });
   }
 
-  _componentAppInjector(location, injector, services) {
+  _componentAppInjector(location, injector:Injector, resolvedBindings:List<ResolvedBinding>) {
     var inj = isPresent(injector) ? injector : location.injector;
-    return isPresent(services) ? inj.resolveAndCreateChild(services) : inj;
+    return isPresent(resolvedBindings) ? inj.createChildFromResolved(resolvedBindings) : inj;
   }
 
   _instantiateAndHydrateView(protoView, injector, hostElementInjector, context) {

@@ -267,13 +267,11 @@ class _AsyncInjectorStrategy {
   }
 }
 
-function _createListOfBindings(flattenBindings):List {
+function _createListOfBindings(flattenedBindings):List {
   var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
-  MapWrapper.forEach(flattenBindings, (v, keyId) => bindings[keyId] = v);
+  MapWrapper.forEach(flattenedBindings, (v, keyId) => bindings[keyId] = v);
   return bindings;
 }
-
-
 
 function _flattenBindings(bindings:List, res:Map) {
   ListWrapper.forEach(bindings, function (b) {

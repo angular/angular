@@ -1,5 +1,6 @@
+import {isBlank} from 'angular2/src/facade/lang';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Injector, Inject, InjectLazy, Optional, bind} from 'angular2/di';
+import {Injector, Inject, InjectLazy, Optional, bind, ResolvedBinding} from 'angular2/di';
 
 class Engine {
 }
@@ -362,6 +363,16 @@ export function main() {
         var e2 = car.engineFactory();
 
         expect(e1).toBe(e2);
+      });
+    });
+
+    describe('resolve', function() {
+      it('should resolve and flatten', function() {
+        var bindings = Injector.resolve([Engine, [BrokenEngine]]);
+        bindings.forEach(function(b) {
+          if (isBlank(b)) return;  // the result is a sparse array
+          expect(b instanceof ResolvedBinding).toBe(true);
+        });
       });
     });
   });
