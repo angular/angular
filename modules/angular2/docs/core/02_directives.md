@@ -277,12 +277,12 @@ Here is an example of the kinds of injections which can be achieved:
 
 ```
 @Component({                         |
-  selector: 'my-app',                | 
-  template: new TemplateConfig({     | 
-    templateUrl: 'my_app.html',              |
-    directives: [Form, FieldSet,     |
-      Field, Primary]                |
-  })                                 |
+  selector: 'my-app'                 |
+})                                   | 
+@View({                              | 
+  templateUrl: 'my_app.html',        |
+  directives: [Form, FieldSet,       |
+    Field, Primary]                  |
 })                                   |
 class MyApp {}                       |
                                      |
