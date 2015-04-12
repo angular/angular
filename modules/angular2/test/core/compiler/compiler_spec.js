@@ -105,6 +105,14 @@ export function main() {
         });
       }));
 
+      it('should not fill absUrl given no inline template or template url', inject([AsyncTestCompleter], (async) => {
+        cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
+        captureTemplate(new View({template: null, templateUrl: null})).then( (renderTpl) => {
+          expect(renderTpl.absUrl).toBe(null)
+          async.done();
+        });
+      }));
+
       it('should fill absUrl given url template', inject([AsyncTestCompleter], (async) => {
         cmpUrlMapper.setComponentUrl(MainComponent, '/mainComponent');
         captureTemplate(new View({templateUrl: '/someTemplate'})).then( (renderTpl) => {
