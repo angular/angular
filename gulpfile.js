@@ -706,6 +706,7 @@ gulp.task('test.unit.cjs/ci', function () {
 gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
   //Run tests once
   runSequence('test.unit.cjs/ci', function() {});
+
   //Watcher to transpile file changed
   gulp.watch(CONFIG.transpile.src.js.concat(['modules/**/*.cjs']), function(event) {
     var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
@@ -723,6 +724,7 @@ gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
         delete require.cache[id];
       }
     }
+    global.assert = undefined; // https://github.com/angular/angular/issues/1340
     runSequence('test.unit.cjs/ci', function() {});
   });
 
