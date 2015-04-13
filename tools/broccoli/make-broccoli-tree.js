@@ -115,7 +115,7 @@ function makeBrowserTree(options) {
     replaceWithPath: writeScriptsForPath
   });
 
-  // TODO(broccoli): are these needed here, if not loaded by a script tag??
+  // Copy all vendor scripts into all examples and benchmarks
   ['benchmarks/src', 'benchmarks_external/src', 'examples/src/benchpress'].forEach(
     copyVendorScriptsTo);
 
