@@ -374,7 +374,7 @@ gulp.task('build/transformCJSTests', function() {
 });
 
 gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
-  return broccoliBuild(require('./Brocfile-dart.js'), 'dart');
+  return broccoliBuild(makeBroccoliTree('dart'), 'dart');
 });
 
 // ------------

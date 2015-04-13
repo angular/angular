@@ -8,6 +8,7 @@ var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
+var ts2dart;
 var TraceurCompiler;
 var TypescriptCompiler;
 
@@ -17,11 +18,13 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..'));
 module.exports = function makeBroccoliTree(name) {
   if (!TraceurCompiler) TraceurCompiler = require('../../dist/broccoli/traceur');
   if (!TypescriptCompiler) TypescriptCompiler = require('../../dist/broccoli/typescript');
+  if (!ts2dart) ts2dart = require('../../dist/broccoli/broccoli-ts2dart');
 
   switch (name) {
     case 'dev': return makeBrowserTree({name: name, typeAssertions: true});
     case 'prod': return makeBrowserTree({name: name, typeAssertions: false});
     case 'cjs': return makeCjsTree();
+    case 'dart': return makeDartTree();
     default: throw new Error('Unknown build type: ' + name);
   }
 };
@@ -218,4 +221,45 @@ function makeCjsTree() {
   cjsTree = mergeTrees([cjsTree, docs, packageJsons]);
 
   return stew.mv(cjsTree, 'js/cjs');
+}
+
+
+function makeDartTree() {
+  // Transpile everything in 'modules'...
+  var modulesTree = new Funnel('modules', {
+    include: ['**/*.js', '**/*.ts', '**/*.dart'],  // .dart file available means don't translate.
+    exclude: ['rtts_assert/**/*'],  // ... except for the rtts_asserts (don't apply to Dart).
+    destDir: '/'                    // Remove the 'modules' prefix.
+  });
+
+  // Transpile to dart.
+  var dartTree = ts2dart.transpile(modulesTree);
+
+  // Move around files to match Dart's layout expectations.
+  dartTree = stew.rename(dartTree, function(relativePath) {
+    // If a file matches the `pattern`, insert the given `insertion` as the second path part.
+    var replacements = [
+      {pattern: /^benchmarks\/test\//, insertion: ''},
+      {pattern: /^benchmarks\//, insertion: 'web'},
+      {pattern: /^benchmarks_external\/test\//, insertion: ''},
+      {pattern: /^benchmarks_external\//, insertion: 'web'},
+      {pattern: /^example.?\//, insertion: 'web/'},
+      {pattern: /^example.?\/test\//, insertion: ''},
+      {pattern: /^[^\/]*\/test\//, insertion: ''},
+      {pattern: /^./, insertion: 'lib'},  // catch all.
+    ];
+
+    for (var i = 0; i < replacements.length; i++) {
+      var repl = replacements[i];
+      if (relativePath.match(repl.pattern)) {
+        var parts = relativePath.split('/');
+        parts.splice(1, 0, repl.insertion);
+        return path.join.apply(path, parts);
+      }
+    }
+    throw new Error('Failed to match any path', relativePath);
+  });
+
+  // Move the tree under the 'dart' folder.
+  return stew.mv(dartTree, 'dart');
 }
