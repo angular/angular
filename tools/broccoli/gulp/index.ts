@@ -1,5 +1,5 @@
 var broccoli = require('broccoli');
-var copyDereferenceSync = require('copy-dereference').sync;
+var destCopy = require('../broccoli-dest-copy');
 var fse = require('fs-extra');
 var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
@@ -26,31 +26,23 @@ function broccoliBuild(tree, outputRoot) {
   // We do a clean build every time to avoid stale outputs.
   // Broccoli's cache folders allow it to remain incremental without reading this dir.
   fse.removeSync(distPath);
-  fse.mkdirsSync(path.join(distPath, '..'));
+
+  tree = destCopy(tree, 'dist');
 
   var builder = new broccoli.Builder(tree);
   return builder.build()
-      .then(function(hash) {
-        console.log('=== Stats for %s (total: %ds) ===', outputRoot,
-                    Math.round(hash.totalTime / 1000000) / 1000);
-        printSlowTrees(hash.graph);
-
-        var dir = hash.directory;
-        try {
-          time('Write build output', function() {
-            copyDereferenceSync(path.join(dir, outputRoot), distPath);
-          });
-        } catch (err) {
-          if (err.code === 'EEXIST') err.message += ' (we cannot build into an existing directory)';
-          throw err;
-        }
-      })
-      .finally(function() {
-        time('Build cleanup', function() { builder.cleanup(); });
-
-        console.log('=== Done building %s ===', outputRoot);
-      })
-      .catch(function(err) {
+      .then(hash =>
+            {
+              console.log('=== Stats for %s (total: %ds) ===', outputRoot,
+                          Math.round(hash.totalTime / 1000000) / 1000);
+              printSlowTrees(hash.graph);
+            })
+      .finally(() =>
+               {
+                 time('Build cleanup', () => builder.cleanup());
+                 console.log('=== Done building %s ===', outputRoot);
+               })
+      .catch(err => {
         // Should show file and line/col if present
         if (err.file) {
           console.error('File: ' + err.file);
