@@ -1,5 +1,3 @@
-var broccoliBuild = require('./tools/broccoli/gulp');
-
 var format = require('gulp-clang-format');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
@@ -33,7 +31,12 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
-var makeBroccoliTree = require('./tools/broccoli/make-broccoli-tree');
+
+// dynamic require in build.broccoli.tools so we can bootstrap TypeScript compilation
+function missingDynamicBroccoli() {
+  throw new Error('ERROR: build.broccoli.tools task should have been run before using broccoli');
+}
+var makeBroccoliTree = missingDynamicBroccoli, broccoliBuild = missingDynamicBroccoli;
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -769,7 +772,11 @@ gulp.task('build.dart', function(done) {
 gulp.task('build.broccoli.tools', function() {
   var tsResult = gulp.src('tools/broccoli/**/*.ts')
     .pipe(tsc({ target: 'ES5', module: 'commonjs' }));
-  return tsResult.js.pipe(gulp.dest('dist/broccoli'));
+  return tsResult.js.pipe(gulp.dest('dist/broccoli'))
+      .on('end', function() {
+        makeBroccoliTree = require('./dist/broccoli/make-broccoli-tree');
+        broccoliBuild = require('./dist/broccoli/gulp');
+      });
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
