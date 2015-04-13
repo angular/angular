@@ -3,12 +3,18 @@ var concat = require('gulp-concat');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 
-module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConfig){
+module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConfig,
+    sfx) {
+  var sfx = sfx || false;
   // loading it earlier interfers with custom traceur.
   var Builder = require('systemjs-builder');
   var builder = new Builder();
   builder.config(buildConfig);
-  return builder.build(moduleName, outputFile, outputConfig);
+  if (sfx) {
+    return builder.buildSFX(moduleName, outputFile, outputConfig);
+  } else {
+    return builder.build(moduleName, outputFile, outputConfig);
+  }
 }
 
 
