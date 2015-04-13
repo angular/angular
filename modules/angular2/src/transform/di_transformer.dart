@@ -5,10 +5,8 @@ import 'package:dart_style/dart_style.dart';
 
 import 'directive_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
-import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
 import 'common/formatter.dart' as formatter;
-import 'common/names.dart';
 import 'common/options.dart';
 import 'common/options_reader.dart';
 

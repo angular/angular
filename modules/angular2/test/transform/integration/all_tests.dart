@@ -1,6 +1,5 @@
 library angular2.test.transform.integration;
 
-import 'dart:io';
 import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/transformer.dart';

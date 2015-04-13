@@ -1,8 +1,6 @@
 library angular2.transform.reflection_remover.codegen;
 
 import 'package:analyzer/src/generated/ast.dart';
-import 'package:barback/barback.dart';
-import 'package:code_transformers/resolver.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:angular2/src/transform/common/names.dart';
@@ -21,20 +19,6 @@ class Codegen {
         importUris = newEntryPointPaths.map((p) =>
             path.relative(p, from: path.dirname(reflectionEntryPointPath))) {
     if (this.prefix.isEmpty) throw new ArgumentError.value('(empty)', 'prefix');
-  }
-
-  factory Codegen.fromResolver(
-      Resolver resolver, AssetId reflectionEntryPoint, AssetId newEntryPoint) {
-    var lib = resolver.getLibrary(reflectionEntryPoint);
-    var prefix = _PREFIX_BASE;
-    var idx = 0;
-    while (lib.imports.any((import) {
-      return import.prefix != null && import.prefix == prefix;
-    })) {
-      prefix = '${_PREFIX_BASE}${idx++}';
-    }
-
-    return new Codegen(reflectionEntryPoint, newEntryPoint, prefix: prefix);
   }
 
   /// Generates code to import the library containing the method which sets up

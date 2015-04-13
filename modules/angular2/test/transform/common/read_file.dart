@@ -1,6 +1,7 @@
 library angular2.test.transform.common.read_file;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';

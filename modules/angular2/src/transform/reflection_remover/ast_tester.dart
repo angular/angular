@@ -2,12 +2,11 @@ library angular2.transform.reflection_remover.ast_tester;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:angular2/src/transform/common/names.dart';
 
 /// An object that checks for [ReflectionCapabilities] syntactically, that is,
 /// without resolution information.
 class AstTester {
-  static const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
-
   const AstTester();
 
   bool isNewReflectionCapabilities(InstanceCreationExpression node) =>

@@ -43,7 +43,7 @@ class Parser {
   Future<List<NgDeps>> _recurse(AssetId id,
       [List<NgDeps> allDeps, Set<AssetId> seen]) async {
     if (seen == null) seen = new Set<AssetId>();
-    if (seen.contains(id)) return;
+    if (seen.contains(id)) return null;
     seen.add(id);
 
     if (allDeps == null) allDeps = [];
@@ -75,7 +75,6 @@ class NgDeps {
 
 class _ParseNgDepsVisitor extends Object with RecursiveAstVisitor<Object> {
   NgDeps ngDeps = null;
-  _RegisteredTypeBuilder current = null;
 
   @override
   Object visitImportDirective(ImportDirective node) {

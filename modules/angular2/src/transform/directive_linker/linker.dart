@@ -17,9 +17,10 @@ Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
   if (ngDeps == null) return null;
   if (ngDeps.imports.isEmpty) return ngDeps.code;
 
-  var allDeps = ngDeps.imports.toList()..addAll(ngDeps.exports);
-  var depList = await _processNgImports(
-      reader, entryPoint, allDeps.map((node) => node.uri.stringValue));
+  var depUris = <String>[]
+    ..addAll(ngDeps.imports.map((i) => i.uri.stringValue))
+    ..addAll(ngDeps.exports.map((i) => i.uri.stringValue));
+  var depList = await _processNgImports(reader, entryPoint, depUris);
 
   if (depList.isEmpty) return ngDeps.code;
 

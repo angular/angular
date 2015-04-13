@@ -4,7 +4,6 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/visitor_mixin.dart';
 import 'package:path/path.dart' as path;
 
 import 'visitors.dart';
@@ -27,8 +26,7 @@ String createNgDeps(String code, String path) {
 
 /// Visitor responsible for processing [CompilationUnit] and creating an
 /// associated .ng_deps.dart file.
-class CreateNgDepsVisitor extends Object
-    with SimpleAstVisitor<Object>, VisitorMixin {
+class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final PrintWriter writer;
   final _Tester _tester = const _Tester();
   bool _foundNgDirectives = false;
@@ -48,11 +46,21 @@ class CreateNgDepsVisitor extends Object
         _paramsVisitor = new ParameterTransformVisitor(writer),
         _metaVisitor = new AnnotationsTransformVisitor(writer);
 
+  void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
+    if (list == null) return;
+    for (var i = 0, iLen = list.length; i < iLen; ++i) {
+      if (i != 0) {
+        writer.print(separator);
+      }
+      list[i].accept(this);
+    }
+  }
+
   @override
-  void visitCompilationUnit(CompilationUnit node) {
-    visitNodeListWithSeparator(node.directives, " ");
+  Object visitCompilationUnit(CompilationUnit node) {
+    _visitNodeListWithSeparator(node.directives, " ");
     _openFunctionWrapper();
-    visitNodeListWithSeparator(node.declarations, " ");
+    _visitNodeListWithSeparator(node.declarations, " ");
     _closeFunctionWrapper();
     return null;
   }
@@ -139,7 +147,7 @@ class CreateNgDepsVisitor extends Object
         _foundNgDirectives = true;
       }
       writer.print('..registerType(');
-      visitNode(node.name);
+      node.name.accept(this);
       writer.print(''', {'factory': ''');
       if (ctor == null) {
         _generateEmptyFactory(node.name.toString());
@@ -155,9 +163,8 @@ class CreateNgDepsVisitor extends Object
       writer.print(''', 'annotations': ''');
       node.accept(_metaVisitor);
       writer.print('})');
-
-      return null;
     }
+    return null;
   }
 
   Object _nodeToSource(AstNode node) {

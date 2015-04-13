@@ -3,10 +3,9 @@ library angular2.transform.directive_processor;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/visitor_mixin.dart';
 
-/// SourceVisitor designed to accept [ConstructorDeclaration] nodes.
-class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
+/// `ToSourceVisitor` designed to accept [ConstructorDeclaration] nodes.
+class _CtorTransformVisitor extends ToSourceVisitor {
   bool _withParameterAnnotations = true;
   bool _withParameterTypes = true;
   bool _withParameterNames = true;
@@ -20,25 +19,50 @@ class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
       : this.writer = writer,
         super(writer);
 
+  void _visitNodeWithPrefix(String prefix, AstNode node) {
+    if (node != null) {
+      writer.print(prefix);
+      node.accept(this);
+    }
+  }
+
+  void _visitNodeWithSuffix(AstNode node, String suffix) {
+    if (node != null) {
+      node.accept(this);
+      writer.print(suffix);
+    }
+  }
+
+  void _visitNode(AstNode node) {
+    if (node != null) {
+      node.accept(this);
+    }
+  }
+
   /// If [_withParameterTypes] is true, this method outputs [node]'s type. If
   /// [_withParameterNames] is true, this method outputs [node]'s identifier.
   Object _visitNormalFormalParameter(
       NodeList<Annotation> metadata, TypeName type, SimpleIdentifier name) {
     if (_withParameterAnnotations && metadata != null) {
       assert(_withParameterTypes);
-      var suffix = type != null ? ', ' : '';
-      visitNodeListWithSeparatorAndSuffix(metadata, ', ', suffix);
+      for (var i = 0, iLen = metadata.length; i < iLen; ++i) {
+        if (i != 0) {
+          writer.print(', ');
+        }
+        metadata[i].accept(this);
+      }
+      writer.print(type != null && metadata.isNotEmpty ? ', ' : '');
     }
     var needCompileTimeConstants = !_withParameterNames;
     if (_withParameterTypes && type != null) {
-      visitNodeWithSuffix(type.name, ' ');
+      _visitNodeWithSuffix(type.name, ' ');
       if (!needCompileTimeConstants) {
         // Types with arguments are not compile-time constants.
-        visitNodeWithSuffix(type.typeArguments, ' ');
+        _visitNodeWithSuffix(type.typeArguments, ' ');
       }
     }
     if (_withParameterNames) {
-      visitNode(name);
+      _visitNode(name);
     }
     return null;
   }
@@ -87,7 +111,7 @@ class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
 
   @override
   Object visitDefaultFormalParameter(DefaultFormalParameter node) {
-    visitNode(node.parameter);
+    _visitNode(node.parameter);
     // Ignore the declared default value.
     return null;
   }
@@ -112,9 +136,9 @@ class _CtorTransformVisitor extends ToSourceVisitor with VisitorMixin {
   Object visitAnnotation(Annotation node) {
     var prefix =
         node.arguments != null && node.arguments.length > 0 ? 'const ' : '';
-    visitNodeWithPrefix(prefix, node.name);
-    visitNodeWithPrefix(".", node.constructorName);
-    visitNode(node.arguments);
+    _visitNodeWithPrefix(prefix, node.name);
+    _visitNodeWithPrefix(".", node.constructorName);
+    _visitNode(node.arguments);
     return null;
   }
 }
@@ -132,7 +156,7 @@ class ParameterTransformVisitor extends _CtorTransformVisitor {
   Object visitConstructorDeclaration(ConstructorDeclaration node) {
     _buildFieldMap(node);
     writer.print('const [');
-    visitNode(node.parameters);
+    _visitNode(node.parameters);
     writer.print(']');
     return null;
   }
@@ -140,8 +164,7 @@ class ParameterTransformVisitor extends _CtorTransformVisitor {
   @override
   Object visitFormalParameterList(FormalParameterList node) {
     NodeList<FormalParameter> parameters = node.parameters;
-    int size = parameters.length;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0, iLen = parameters.length; i < iLen; i++) {
       if (i > 0) {
         writer.print(', ');
       }
@@ -166,20 +189,20 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
     _buildFieldMap(node);
     _withParameterNames = true;
     _withParameterTypes = true;
-    visitNode(node.parameters);
+    _visitNode(node.parameters);
     writer.print(' => new ');
-    visitNode(node.returnType);
-    visitNodeWithPrefix(".", node.name);
+    _visitNode(node.returnType);
+    _visitNodeWithPrefix(".", node.name);
 
     _withParameterTypes = false;
-    visitNode(node.parameters);
+    _visitNode(node.parameters);
     return null;
   }
 }
 
 /// ToSourceVisitor designed to print a [ClassDeclaration] node as a
 /// 'annotations' value for Angular2's [registerType] calls.
-class AnnotationsTransformVisitor extends ToSourceVisitor with VisitorMixin {
+class AnnotationsTransformVisitor extends ToSourceVisitor {
   final PrintWriter writer;
   AnnotationsTransformVisitor(PrintWriter writer)
       : this.writer = writer,
@@ -202,9 +225,16 @@ class AnnotationsTransformVisitor extends ToSourceVisitor with VisitorMixin {
   @override
   Object visitAnnotation(Annotation node) {
     writer.print('const ');
-    visitNode(node.name);
-    visitNodeWithPrefix(".", node.constructorName);
-    visitNode(node.arguments);
+    if (node.name != null) {
+      node.name.accept(this);
+    }
+    if (node.constructorName != null) {
+      writer.print('.');
+      node.constructorName.accept(this);
+    }
+    if (node.arguments != null) {
+      node.arguments.accept(this);
+    }
     return null;
   }
 }
