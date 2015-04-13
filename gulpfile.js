@@ -36,7 +36,7 @@ var insert = require('gulp-insert');
 function missingDynamicBroccoli() {
   throw new Error('ERROR: build.broccoli.tools task should have been run before using broccoli');
 }
-var makeBroccoliTree = missingDynamicBroccoli, broccoliBuild = missingDynamicBroccoli;
+var getBroccoli = missingDynamicBroccoli;
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -295,7 +295,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // transpile
 
 gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
-  return broccoliBuild(makeBroccoliTree('dart'), 'dart');
+  return getBroccoli().forDartTree().buildOnce();
 });
 
 // ------------
@@ -609,7 +609,7 @@ gulp.task('test.transpiler.unittest', function() {
   return gulp.src('tools/transpiler/unittest/**/*.js')
       .pipe(jasmine({
         includeStackTrace: true
-      }))
+      }));
 });
 
 // -----------------
@@ -641,17 +641,19 @@ gulp.task('build.broccoli.tools', function() {
     .pipe(tsc({ target: 'ES5', module: 'commonjs' }));
   return tsResult.js.pipe(gulp.dest('dist/broccoli'))
       .on('end', function() {
-        makeBroccoliTree = require('./dist/broccoli/make-broccoli-tree');
-        broccoliBuild = require('./dist/broccoli/gulp');
+        var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
+        getBroccoli = function() {
+          return BroccoliBuilder;
+        };
       });
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
-  return broccoliBuild(makeBroccoliTree('dev'), path.join('js', 'dev'));
+  return getBroccoli().forDevTree().buildOnce();
 });
 
 gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
-  return broccoliBuild(makeBroccoliTree('prod'), path.join('js', 'prod'));
+  return getBroccoli().forProdTree().buildOnce();
 });
 
 gulp.task('build.js.dev', function(done) {
@@ -666,7 +668,7 @@ gulp.task('build.js.dev', function(done) {
 gulp.task('build.js.prod', ['broccoli.js.prod']);
 
 gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
-  return broccoliBuild(makeBroccoliTree('cjs'), path.join('js', 'cjs'));
+  return getBroccoli().forNodeTree().buildOnce();
 });
 gulp.task('build.js.cjs', function(done) {
   runSequence(
