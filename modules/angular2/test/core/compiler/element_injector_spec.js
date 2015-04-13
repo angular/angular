@@ -1,7 +1,8 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
 import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from 'angular2/src/facade/collection';
-import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode} from 'angular2/src/core/compiler/element_injector';
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode, ElementRef}
+  from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
@@ -166,6 +167,13 @@ class NeedsQuery {
   query: QueryList;
   constructor(@Query(CountingDirective) query: QueryList) {
     this.query = query;
+  }
+}
+
+class NeedsElementRef {
+  elementRef;
+  constructor(ref:ElementRef) {
+    this.elementRef = ref;
   }
 }
 
@@ -799,6 +807,13 @@ export function main() {
         var needsAttribute = inj.get(NeedsAttributeNoType);
 
         expect(needsAttribute.fooAttribute).toEqual('bar');
+      });
+    });
+
+    describe("ElementRef", () => {
+      it("should inject ElementRef", () => {
+        var inj = injector([NeedsElementRef]);
+        expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
       });
     });
 
