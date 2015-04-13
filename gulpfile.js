@@ -294,103 +294,12 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // ------------
 // transpile
 
-gulp.task('build/transpile.ts.cjs', function() {
-  var tsResult = gulp.src(CONFIG.transpile.src.ts)
-      .pipe(sourcemaps.init())
-      .pipe(tsc({
-        target: 'ES5',
-        module: /*system.js*/'commonjs',
-        allowNonTsExtensions: false,
-        typescript: require('typescript'),
-        //declarationFiles: true,
-        noEmitOnError: true
-      }));
-  var dest = gulp.dest(CONFIG.dest.js.cjs);
-  return merge([
-    // Write external sourcemap next to the js file
-    tsResult.js.pipe(sourcemaps.write('.')).pipe(dest),
-    tsResult.js.pipe(dest),
-    tsResult.dts.pipe(dest),
-  ]);
-});
-
-gulp.task('build/transpile.ts.dev.es5', function() {
-  var tsResult = gulp.src(CONFIG.transpile.src.ts)
-                     .pipe(sourcemaps.init())
-                     .pipe(tsc({
-
-                       target: 'ES5',
-                       module: 'commonjs',
-                       typescript: require('typescript'),
-                       noEmitOnError: true
-                     }));
-  return merge([
-    tsResult.js.pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(CONFIG.dest.js.dev.es5)),
-    tsResult.js.pipe(gulp.dest(CONFIG.dest.js.dev.es5))
-  ]);
-});
-
-gulp.task('build/transpile.js.dev.es5', function() {
-  return es5build({
-    src: CONFIG.dest.js.dev.es6,
-    dest: CONFIG.dest.js.dev.es5,
-    modules: 'instantiate'
-  });
-});
-
-gulp.task('build/transpile.js.prod.es6', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.js,
-  dest: CONFIG.dest.js.prod.es6,
-  outputExt: 'es6',
-  options: CONFIG.transpile.options.js.prod,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js
-}));
-
-gulp.task('build/transpile.js.prod.es5', function() {
-  return es5build({
-    src: CONFIG.dest.js.prod.es6,
-    dest: CONFIG.dest.js.prod.es5,
-    modules: 'instantiate'
-  });
-});
-
-gulp.task('build/transpile.js.prod', function(done) {
-  runSequence(
-    'build/transpile.js.prod.es6',
-    'build/transpile.js.prod.es5',
-    done
-  );
-});
-
-gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
-  src: CONFIG.transpile.src.js.concat(['modules/**/*.cjs']),
-  dest: CONFIG.dest.js.cjs,
-  outputExt: 'js',
-  options: CONFIG.transpile.options.js.cjs,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js
-}));
-
 gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
   return broccoliBuild(makeBroccoliTree('dart'), 'dart');
 });
 
 // ------------
 // html
-
-gulp.task('build/html.js.dev', html(gulp, gulpPlugins, {
-  src: CONFIG.html.src.js,
-  dest: CONFIG.dest.js.dev.es5,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js,
-  scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
-}));
-
-gulp.task('build/html.js.prod', html(gulp, gulpPlugins, {
-  src: CONFIG.html.src.js,
-  dest: CONFIG.dest.js.prod.es5,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.js,
-  scriptsPerFolder: CONFIG.html.scriptsPerFolder.js
-}));
 
 gulp.task('build/html.dart', html(gulp, gulpPlugins, {
   src: CONFIG.html.src.dart,
@@ -402,24 +311,6 @@ gulp.task('build/html.dart', html(gulp, gulpPlugins, {
 // ------------
 // copy
 
-gulp.task('build/copy.js.cjs', copy.copy(gulp, gulpPlugins, {
-  src: CONFIG.copy.js.cjs.src,
-  pipes: CONFIG.copy.js.cjs.pipes,
-  dest: CONFIG.dest.js.cjs
-}));
-
-gulp.task('build/copy.js.dev', copy.copy(gulp, gulpPlugins, {
-  src: CONFIG.copy.js.dev.src,
-  pipes: CONFIG.copy.js.dev.pipes,
-  dest: CONFIG.dest.js.dev.es5
-}));
-
-gulp.task('build/copy.js.prod', copy.copy(gulp, gulpPlugins, {
-  src: CONFIG.copy.js.prod.src,
-  pipes: CONFIG.copy.js.prod.pipes,
-  dest: CONFIG.dest.js.prod.es5
-}));
-
 gulp.task('build/copy.dart', copy.copy(gulp, gulpPlugins, {
   src: CONFIG.copy.dart.src,
   pipes: CONFIG.copy.dart.pipes,
@@ -429,27 +320,6 @@ gulp.task('build/copy.dart', copy.copy(gulp, gulpPlugins, {
 
 // ------------
 // multicopy
-
-gulp.task('build/multicopy.js.cjs', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.cjs.src,
-  pipes: CONFIG.multicopy.js.cjs.pipes,
-  exclude: CONFIG.multicopy.js.cjs.exclude,
-  dest: CONFIG.dest.js.cjs
-}));
-
-gulp.task('build/multicopy.js.dev.es6', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.dev.es6.src,
-  pipes: CONFIG.multicopy.js.dev.es6.pipes,
-  exclude: CONFIG.multicopy.js.dev.es6.exclude,
-  dest: CONFIG.dest.js.dev.es6
-}));
-
-gulp.task('build/multicopy.js.prod.es6', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.js.prod.es6.src,
-  pipes: CONFIG.multicopy.js.prod.es6.pipes,
-  exclude: CONFIG.multicopy.js.prod.es6.exclude,
-  dest: CONFIG.dest.js.prod.es6
-}));
 
 gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
   src: CONFIG.multicopy.dart.src,
