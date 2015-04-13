@@ -726,9 +726,26 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
       devBundleConfig,
       'angular2/angular2',
       './dist/build/angular2.dev.js',
-      {
-        sourceMaps: true
+      { sourceMaps: true });
+});
+
+// self-executing development build
+// This bundle executes its main module - angular2_sfx, when loaded, without
+// a corresponding System.import call. It is aimed at ES5 developers that do not
+// use System loader polyfills (like system.js and es6 loader).
+// see: https://github.com/systemjs/builder (SFX bundles).
+gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
+  var devBundleConfig = merge(true, bundleConfig);
+  devBundleConfig.paths =
+      merge(true, devBundleConfig.paths, {
+       '*': 'dist/js/dev/es6/*.es6'
       });
+  return bundler.bundle(
+      devBundleConfig,
+      'angular2/angular2_sfx',
+      './dist/build/angular2.sfx.dev.js',
+      { sourceMaps: true },
+      /* self-exectuting */ true);
 });
 
 gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
@@ -743,17 +760,24 @@ gulp.task('bundle.js.min.deps', ['bundle.js.min'], function() {
       .pipe(gulp.dest('dist/bundle'));
 });
 
+var JS_DEV_DEPS = ['node_modules/zone.js/zone.js', 'node_modules/zone.js/long-stack-trace-zone.js'];
+
 gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
-  return bundler.modify(
-      ['node_modules/zone.js/zone.js', 'node_modules/zone.js/long-stack-trace-zone.js', 'dist/build/angular2.dev.js'],
-      'angular2.dev.js')
+  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
       .pipe(insert.append('\nzone = zone.fork(Zone.longStackTraceZone);\n'))
       .pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps']);
+gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
+  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
+                        'angular2.sfx.dev.js')
+      .pipe(insert.append('\nzone = zone.fork(Zone.longStackTraceZone);\n'))
+      .pipe(gulp.dest('dist/bundle'));
+});
 
-gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs']);
+gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps']);
+
+gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
 
 gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
