@@ -18,6 +18,5 @@ class AngularAnalyzerPlugin implements Plugin {
   @override
   void registerExtensions(RegisterExtension registerExtension) {
     // TODO(keerti): register extension for analysis
-
   }
 }
