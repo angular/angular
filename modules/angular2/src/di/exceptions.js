@@ -106,7 +106,8 @@ export class NoAnnotationError extends Error {
   message:string;
   constructor(typeOrFunc) {
     super();
-    this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}`;
+    this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}.` +
+      ` Make sure they all have valid type or annotations.`;
   }
 
   toString() {
