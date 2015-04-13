@@ -31,6 +31,11 @@ export class Injector {
   /**
    * Creates/looks up factory functions and dependencies from binding
    * declarations and flattens bindings into a single [List].
+   *
+   * The returned list is sparse, indexed by [Key.id]. It is generally not
+   * useful to application code other than for passing it to [Injector]
+   * functions that require resolved binding lists, such as
+   * [fromResolvedBindings] and [createChildFromResolved].
    */
   static resolve(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):List<ResolvedBinding> {
     var flatten = _flattenBindings(Binding.resolveAll(bindings), MapWrapper.create());
