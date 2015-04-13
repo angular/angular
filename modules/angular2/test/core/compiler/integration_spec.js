@@ -29,7 +29,7 @@ import {View} from 'angular2/src/core/annotations/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {EventEmitter, Attribute} from 'angular2/src/core/annotations/di';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {DirectiveRef} from 'angular2/src/core/compiler/element_injector';
+import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
 import {If} from 'angular2/src/directives/if';
 
@@ -726,8 +726,8 @@ class DynamicallyCreatedComponentService {
 })
 class DynamicComp {
   done;
-  constructor(loader:DynamicComponentLoader, self:DirectiveRef) {
-    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, self);
+  constructor(loader:DynamicComponentLoader, location:ElementRef) {
+    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, location);
   }
 }
 

@@ -39,34 +39,12 @@ export class ElementRef {
   }
 }
 
-export class DirectiveRef extends ElementRef {
-  _key:Key;
-
-  constructor(key:Key, elementInjector:ElementInjector){
-    super(elementInjector);
-    this._key = key;
-  }
-
-  get instance() {
-    return this.elementInjector.get(this._key);
-  }
-}
-
-export class ComponentRef extends DirectiveRef {
-  componentView:viewModule.AppView;
-
-  constructor(key:Key, elementInjector:ElementInjector, componentView:viewModule.AppView){
-    super(key, elementInjector);
-    this.componentView = componentView;
-  }
-}
-
 class StaticKeys {
   viewId:number;
   ngElementId:number;
   viewContainerId:number;
   bindingPropagationConfigId:number;
-  directiveRefId:number;
+  elementRefId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(AppView), 'static')
@@ -74,7 +52,7 @@ class StaticKeys {
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
     this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
-    this.directiveRefId = Key.get(DirectiveRef).id;
+    this.elementRefId = Key.get(ElementRef).id;
   }
 
   static instance() {
@@ -699,9 +677,8 @@ export class ElementInjector extends TreeNode {
     if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
-    if (dep.key.id === StaticKeys.instance().directiveRefId) {
-      // TODO: we need store component view here and pass it to directive ref
-      return new DirectiveRef(requestor, this);
+    if (dep.key.id === StaticKeys.instance().elementRefId) {
+      return new ElementRef(this);
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }

@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {DynamicComponentLoader, DirectiveRef} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
 
 @Decorator({selector: 'someDecorator'})

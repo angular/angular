@@ -7,7 +7,29 @@ import {Promise} from 'angular2/src/facade/async';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 import {Renderer} from 'angular2/src/render/api';
-import {ElementRef, DirectiveRef, ComponentRef} from './element_injector';
+import {ElementRef} from './element_injector';
+import {AppView} from './view';
+
+
+export class ComponentRef {
+  location:ElementRef;
+  instance:any;
+  componentView:AppView;
+
+  constructor(location:ElementRef, instance:any, componentView:AppView){
+    this.location = location;
+    this.instance = instance;
+    this.componentView = componentView;
+  }
+
+  get injector() {
+    return this.location.injector;
+  }
+
+  get hostView() {
+    return this.location.hostView;
+  }
+}
 
 /**
  * Service for dynamically loading a Component into an arbitrary position in the internal Angular
@@ -43,8 +65,8 @@ export class DynamicComponentLoader {
     var hostView = location.hostView;
 
     return this._compiler.compile(type).then(componentProtoView => {
-      var context = hostEi.dynamicallyCreateComponent(type, directiveMetadata.annotation, inj);
-      var componentView = this._instantiateAndHydrateView(componentProtoView, injector, hostEi, context);
+      var component = hostEi.dynamicallyCreateComponent(type, directiveMetadata.annotation, inj);
+      var componentView = this._instantiateAndHydrateView(componentProtoView, injector, hostEi, component);
 
       //TODO(vsavkin): do not use component child views as we need to clear the dynamically created views
       //same problem exists on the render side
@@ -54,7 +76,7 @@ export class DynamicComponentLoader {
 
       // TODO(vsavkin): return a component ref that dehydrates the component view and removes it
       // from the component child views
-      return new ComponentRef(Key.get(type), hostEi, componentView);
+      return new ComponentRef(location, component, componentView);
     });
   }
 
@@ -75,7 +97,9 @@ export class DynamicComponentLoader {
       var hostView = this._instantiateAndHydrateView(pv, inj, null, new Object());
 
       // TODO(vsavkin): return a component ref that dehydrates the host view
-      return new ComponentRef(Key.get(type), hostView.elementInjectors[0], hostView.componentChildViews[0]);
+      var newLocation = new ElementRef(hostView.elementInjectors[0]);
+      var component = hostView.elementInjectors[0].getComponent();
+      return new ComponentRef(newLocation, component, hostView.componentChildViews[0]);
     });
   }
 

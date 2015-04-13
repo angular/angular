@@ -25,14 +25,13 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {ComponentRef, DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
-import {ComponentRef} from 'angular2/src/core/compiler/element_injector';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
 
 import {
