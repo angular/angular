@@ -25,5 +25,5 @@ export {PipeRegistry} from './src/change_detection/pipes/pipe_registry';
 export {uninitialized} from './src/change_detection/change_detection_util';
 export {NO_CHANGE, Pipe} from './src/change_detection/pipes/pipe';
 export {
-  defaultPipes, DynamicChangeDetection, JitChangeDetection, dynamicChangeDetection, jitChangeDetection
+  defaultPipes, DynamicChangeDetection, JitChangeDetection, defaultPipeRegistry
 } from './src/change_detection/change_detection';

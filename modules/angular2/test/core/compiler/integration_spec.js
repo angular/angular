@@ -21,8 +21,8 @@ import {Type, isPresent, BaseException, assertionsEnabled, isJsObject, global} f
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
-import {dynamicChangeDetection,
-  ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
+import {PipeRegistry, defaultPipeRegistry,
+  ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';

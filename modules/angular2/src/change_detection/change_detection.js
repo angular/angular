@@ -5,6 +5,7 @@ import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector} from './interfaces';
+import {Injectable} from 'angular2/di';
 
 export var defaultPipes = {
   "iterableDiff" : [
@@ -17,6 +18,10 @@ export var defaultPipes = {
   ]
 };
 
+/**
+ * @exportedAs angular2/change_detection
+ */
+@Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
   registry:PipeRegistry;
 
@@ -30,6 +35,10 @@ export class DynamicChangeDetection extends ChangeDetection {
   }
 }
 
+/**
+ * @exportedAs angular2/change_detection
+ */
+@Injectable()
 export class JitChangeDetection extends ChangeDetection {
   registry:PipeRegistry;
 
@@ -43,18 +52,4 @@ export class JitChangeDetection extends ChangeDetection {
   }
 }
 
-var _registry = new PipeRegistry(defaultPipes);
-
-/**
- * Implements dynamic change detection. See: [ChangeDetection] for more details.
- *
- * @exportedAs angular2/change_detection
- */
-export var dynamicChangeDetection = new DynamicChangeDetection(_registry);
-
-/**
- * Implements just-in-time change detection. See: [ChangeDetection] for more details.
- *
- * @exportedAs angular2/change_detection
- */
-export var jitChangeDetection = new JitChangeDetection(_registry);
+export var defaultPipeRegistry = new PipeRegistry(defaultPipes);

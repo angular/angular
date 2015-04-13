@@ -9,8 +9,8 @@ import {
   Parser,
   ChangeDispatcher,
   ChangeDetection,
-  dynamicChangeDetection,
-  jitChangeDetection,
+  DynamicChangeDetection,
+  JitChangeDetection,
   BindingRecord,
   DirectiveRecord,
   DEFAULT
@@ -261,7 +261,7 @@ export function main () {
 
 
   // -- DYNAMIC
-  var ng2DynamicChangeDetector = setUpChangeDetection(dynamicChangeDetection, numberOfDetectors, object);
+  var ng2DynamicChangeDetector = setUpChangeDetection(new DynamicChangeDetection(null), numberOfDetectors, object);
 
   runChangeDetectionReads(ng2DynamicChangeDetector, 1); //warmup
 
@@ -281,7 +281,7 @@ export function main () {
   // -- JIT
   // Reenable when we have transformers for Dart
   if (isJsObject({})) {
-    var ng2JitChangeDetector = setUpChangeDetection(jitChangeDetection, numberOfDetectors, object);
+    var ng2JitChangeDetector = setUpChangeDetection(new JitChangeDetection(null), numberOfDetectors, object);
 
     runChangeDetectionReads(ng2JitChangeDetector, 1); //warmup
 

@@ -1,7 +1,7 @@
 import *  as app from './index_common';
 
 import {Component, Decorator, View, NgElement} from 'angular2/angular2';
-import {Lexer, Parser, ChangeDetection, ChangeDetector} from 'angular2/change_detection';
+import {Lexer, Parser, ChangeDetection, ChangeDetector, PipeRegistry, DynamicChangeDetection} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 
@@ -245,6 +245,12 @@ function setup() {
   reflector.registerType(Testability, {
     "factory": () => new Testability(),
     "parameters": [],
+    "annotations": []
+  });
+
+  reflector.registerType(DynamicChangeDetection, {
+    "factory": (registry) => new DynamicChangeDetection(registry),
+    "parameters": [[PipeRegistry]],
     "annotations": []
   });
 

@@ -2,7 +2,8 @@ import {bind} from 'angular2/di';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
-import {Parser, Lexer, ChangeDetection, dynamicChangeDetection} from 'angular2/change_detection';
+import {Parser, Lexer, ChangeDetection, DynamicChangeDetection,
+  PipeRegistry, defaultPipeRegistry} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
@@ -90,7 +91,8 @@ function _getAppBindings() {
     Compiler,
     CompilerCache,
     bind(TemplateResolver).toClass(MockTemplateResolver),
-    bind(ChangeDetection).toValue(dynamicChangeDetection),
+    bind(PipeRegistry).toValue(defaultPipeRegistry),
+    bind(ChangeDetection).toClass(DynamicChangeDetection),
     TemplateLoader,
     DynamicComponentLoader,
     DirectiveMetadataReader,

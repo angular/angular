@@ -5,7 +5,7 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Compiler, CompilerCache} from './compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
-import {Parser, Lexer, ChangeDetection, dynamicChangeDetection, jitChangeDetection} from 'angular2/change_detection';
+import {Parser, Lexer, ChangeDetection, DynamicChangeDetection, PipeRegistry, defaultPipeRegistry} from 'angular2/change_detection';
 import {ExceptionHandler} from './exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
@@ -113,7 +113,8 @@ function _injectorBindings(appComponentType): List<Binding> {
       Compiler,
       CompilerCache,
       TemplateResolver,
-      bind(ChangeDetection).toValue(dynamicChangeDetection),
+      bind(PipeRegistry).toValue(defaultPipeRegistry),
+      bind(ChangeDetection).toClass(DynamicChangeDetection),
       TemplateLoader,
       DirectiveMetadataReader,
       Parser,

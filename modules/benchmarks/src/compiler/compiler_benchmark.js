@@ -6,7 +6,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
-import {Parser, Lexer, ProtoRecordRange, dynamicChangeDetection} from 'angular2/change_detection';
+import {Parser, Lexer, ProtoRecordRange, DynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -82,7 +82,7 @@ export function main() {
     new ComponentUrlMapper(),
     urlResolver,
     renderer,
-    new ProtoViewFactory(dynamicChangeDetection)
+    new ProtoViewFactory(new DynamicChangeDetection(null))
   );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
   var templateWithBindings = createTemplateHtml('templateWithBindings', count);
