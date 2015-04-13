@@ -9,7 +9,6 @@ import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
 import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
-import 'common/names.dart';
 import 'common/options.dart';
 import 'common/options_reader.dart';
 

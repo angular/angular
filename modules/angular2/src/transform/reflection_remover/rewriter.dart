@@ -2,6 +2,7 @@ library angular2.transform.reflection_remover.rewriter;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/names.dart';
 
 import 'ast_tester.dart';
 import 'codegen.dart';
@@ -27,12 +28,11 @@ class Rewriter {
     var visitor = new _FindReflectionCapabilitiesVisitor(_tester);
     node.accept(visitor);
     if (visitor.reflectionCapabilityImports.isEmpty) {
-      logger.error(
-          'Failed to find ${AstTester.REFLECTION_CAPABILITIES_NAME} import.');
+      logger.error('Failed to find ${REFLECTION_CAPABILITIES_NAME} import.');
       return _code;
     }
     if (visitor.reflectionCapabilityAssignments.isEmpty) {
-      logger.error('Failed to find ${AstTester.REFLECTION_CAPABILITIES_NAME} '
+      logger.error('Failed to find ${REFLECTION_CAPABILITIES_NAME} '
           'instantiation.');
       return _code;
     }
@@ -120,7 +120,7 @@ class _FindReflectionCapabilitiesVisitor extends Object
     if (_tester.isNewReflectionCapabilities(node) &&
         !reflectionCapabilityAssignments.contains(node.parent)) {
       logger.error('Unexpected format in creation of '
-          '${reflectionCapabilitiesTypeName}');
+          '${REFLECTION_CAPABILITIES_NAME}');
     }
     return super.visitInstanceCreationExpression(node);
   }

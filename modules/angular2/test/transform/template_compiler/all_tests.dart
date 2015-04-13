@@ -1,10 +1,8 @@
-library angular2.test.transform.directive_processor.all_tests;
+library angular2.test.transform.template_compiler.all_tests;
 
 import 'package:barback/barback.dart';
 import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';

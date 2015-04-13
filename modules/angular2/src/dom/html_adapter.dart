@@ -16,6 +16,36 @@ class Html5LibDomAdapter implements DomAdapter {
     'tabindex': 'tabIndex',
   };
 
+  @override
+  getGlobalEventTarget(String target) {
+    throw 'not implemented';
+  }
+
+  @override
+  getTitle() {
+    throw 'not implemented';
+  }
+
+  @override
+  setTitle(String newTitle) {
+    throw 'not implemented';
+  }
+
+  @override
+  String getEventKey(event) {
+    throw 'not implemented';
+  }
+
+  @override
+  void replaceChild(el, newNode, oldNode) {
+    throw 'not implemented';
+  }
+
+  @override
+  dynamic getBoundingClientRect(el) {
+    throw 'not implemented';
+  }
+
   Element parse(String templateHtml) => parser.parse(templateHtml).firstChild;
   query(selector) {
     throw 'not implemented';
@@ -54,7 +84,7 @@ class Html5LibDomAdapter implements DomAdapter {
   String type(node) {
     throw 'not implemented';
   }
-  content(TemplateElement node) {
+  content(node) {
     throw 'not implemented';
   }
 

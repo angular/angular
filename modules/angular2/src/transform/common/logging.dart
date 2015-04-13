@@ -1,7 +1,9 @@
 library angular2.transform.common.logging;
 
+import 'dart:async';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
+import 'package:source_span/source_span.dart';
 
 BuildLogger _logger;
 
@@ -24,6 +26,11 @@ BuildLogger get logger {
 }
 
 class PrintLogger implements BuildLogger {
+  @override
+  final String detailsUri = '';
+  @override
+  final bool convertErrorsToWarnings = false;
+
   void _printWithPrefix(prefix, msg) => print('$prefix: $msg');
   void info(msg, {AssetId asset, SourceSpan span}) =>
       _printWithPrefix('INFO', msg);
@@ -43,7 +50,7 @@ class PrintLoggerError extends Error {
   final AssetId asset;
   final SourceSpan span;
 
-  PrintLoggerError(message, asset, span);
+  PrintLoggerError(this.message, this.asset, this.span);
 
   @override
   String toString() {

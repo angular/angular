@@ -6,7 +6,6 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/options.dart';
 import 'package:barback/barback.dart';
 
 import 'linker.dart';
