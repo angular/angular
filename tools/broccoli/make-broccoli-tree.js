@@ -148,8 +148,7 @@ function makeCjsTree() {
     exclude: ['angular2/src/core/zone/vm_turn_zone.es6']
   });
 
-  // Use Traceur to transpile original sources to ES6
-  var traceurOpts = {
+  var cjsTree = new TraceurCompiler(modulesTree, '.js', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
@@ -159,9 +158,7 @@ function makeCjsTree() {
     // Don't use type assertions since this is partly transpiled by typescript
     typeAssertions: false,
     modules: 'commonjs'
-  }
-
-  var cjsTree = new TraceurCompiler(modulesTree, '.js', '.map', traceurOpts);
+  });
 
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(
