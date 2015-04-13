@@ -55,8 +55,7 @@ function makeBrowserTree(options) {
   var es5Tree = new TraceurCompiler(es6Tree, '.js',  '.js.map', {modules: 'instantiate', sourceMaps: true});
 
   // Now we add a few more files to the es6 tree that Traceur should not see
-  // TODO(broccoli): this is wrong. only angular2 and rtts_assert should contain the es5build.js file
-  ['angular2', 'benchmarks', 'benchmarks_external', 'benchpress', 'examples', 'rtts_assert'].forEach(
+  ['angular2', 'rtts_assert'].forEach(
     function (destDir) {
       var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
       es6Tree = mergeTrees([es6Tree, extras]);
