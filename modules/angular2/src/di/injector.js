@@ -1,7 +1,7 @@
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ResolvedBinding, Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError,
-  AsyncBindingError, CyclicDependencyError, InstantiationError} from './exceptions';
+import {ProviderError, NoProviderError, AsyncBindingError, CyclicDependencyError,
+  InstantiationError, InvalidBindingError} from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Key} from './key';
@@ -38,7 +38,8 @@ export class Injector {
    * [fromResolvedBindings] and [createChildFromResolved].
    */
   static resolve(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):List<ResolvedBinding> {
-    var flatten = _flattenBindings(Binding.resolveAll(bindings), MapWrapper.create());
+    var resolvedBindings = _resolveBindings(bindings);
+    var flatten = _flattenBindings(resolvedBindings, MapWrapper.create());
     return _createListOfBindings(flatten);
   }
 
@@ -270,6 +271,29 @@ class _AsyncInjectorStrategy {
     this.injector._setInstance(key, instance);
     return instance
   }
+}
+
+function _resolveBindings(bindings:List): List {
+  var resolvedList = ListWrapper.createFixedSize(bindings.length);
+  for (var i = 0; i < bindings.length; i++) {
+    var unresolved = bindings[i];
+    var resolved;
+    if (unresolved instanceof ResolvedBinding) {
+      resolved = unresolved;  // ha-ha! I'm easily amused
+    } else if (unresolved instanceof Type) {
+      resolved = bind(unresolved).toClass(unresolved).resolve();
+    } else if (unresolved instanceof Binding) {
+      resolved = unresolved.resolve(); 
+    } else if (unresolved instanceof List) {
+      resolved = _resolveBindings(unresolved);
+    } else if (unresolved instanceof BindingBuilder) {
+      throw new InvalidBindingError(unresolved.token);
+    } else {
+      throw new InvalidBindingError(unresolved);
+    }
+    resolvedList[i] = resolved;
+  }
+  return resolvedList;
 }
 
 function _createListOfBindings(flattenedBindings):List {

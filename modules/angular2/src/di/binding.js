@@ -3,7 +3,7 @@ import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
 import {Inject, InjectLazy, InjectPromise, Optional, DependencyAnnotation} from './annotations';
-import {NoAnnotationError, InvalidBindingError} from './exceptions';
+import {NoAnnotationError} from './exceptions';
 
 export class Dependency {
   key:Key;
@@ -87,29 +87,6 @@ export class Binding {
       resolvedDeps,
       isAsync
     );
-  }
-
-  static resolveAll(bindings:List): List {
-    var resolvedList = ListWrapper.createFixedSize(bindings.length);
-    for (var i = 0; i < bindings.length; i++) {
-      var unresolved = bindings[i];
-      var resolved;
-      if (unresolved instanceof ResolvedBinding) {
-        resolved = unresolved;  // ha-ha! I'm easily amused
-      } else if (unresolved instanceof Type) {
-        resolved = bind(unresolved).toClass(unresolved).resolve();
-      } else if (unresolved instanceof Binding) {
-        resolved = unresolved.resolve(); 
-      } else if (unresolved instanceof List) {
-        resolved = Binding.resolveAll(unresolved);
-      } else if (unresolved instanceof BindingBuilder) {
-        throw new InvalidBindingError(unresolved.token);
-      } else {
-        throw new InvalidBindingError(unresolved);
-      }
-      resolvedList[i] = resolved;
-    }
-    return resolvedList;
   }
 }
 
