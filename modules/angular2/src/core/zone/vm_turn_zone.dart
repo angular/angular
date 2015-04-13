@@ -21,23 +21,19 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
 class VmTurnZone {
   Function _onTurnStart;
   Function _onTurnDone;
-  Function _onScheduleMicrotask;
   Function _onErrorHandler;
 
   async.Zone _outerZone;
   async.Zone _innerZone;
 
-  bool _enableLongStackTrace;
-
-  // Microtask queue
-  List<Function> _asyncQueue = [];
-
-  // Whether we are in a VM turn
-  bool _currentlyInTurn = false;
-  // Whether we are draining the microtask queue (at the end of a turn)
-  bool _inFinishTurn = false;
   // onRun depth
   int _runningInTurn = 0;
+
+  // Number of pending microtasks
+  int pendingMicrotasks = 0;
+
+  // True when microtasks are scheduled in onTurnDone and an artifical turn needs to be created
+  bool _startFakeTurn = false;
 
   /**
    * Associates with this
@@ -49,7 +45,6 @@ class VmTurnZone {
    *               enabled in development mode as they significantly impact perf.
    */
   VmTurnZone({bool enableLongStackTrace}) {
-    _enableLongStackTrace = enableLongStackTrace;
     _outerZone = async.Zone.current;
     _innerZone = _createInnerZoneWithErrorHandling(enableLongStackTrace);
   }
@@ -62,10 +57,9 @@ class VmTurnZone {
    * @param {Function} onScheduleMicrotask
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  initCallbacks({Function onTurnStart, Function onTurnDone, Function onScheduleMicrotask, Function onErrorHandler}) {
+  initCallbacks({Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
     _onTurnStart = onTurnStart;
     _onTurnDone = onTurnDone;
-    _onScheduleMicrotask = onScheduleMicrotask == null ? _defaultOnScheduleMicrotask : onScheduleMicrotask;
     _onErrorHandler = onErrorHandler;
   }
 
@@ -129,15 +123,17 @@ class VmTurnZone {
   }
 
   dynamic _onRunBase(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
-    _runningInTurn++;
     try {
-      if (!_currentlyInTurn) {
-        _currentlyInTurn = true;
-        if (_onTurnStart != null) parent.run(zone, _onTurnStart);
+      _runningInTurn++;
+      // _onRunBase could be called recursively to execute a single macrotask but we only call
+      // _onTurnStart on the first call.
+      if ((_runningInTurn == 1 && pendingMicrotasks == 0 || _startFakeTurn) &&
+          _onTurnStart != null) {
+        _startFakeTurn = false;
+        parent.run(zone, _onTurnStart);
       }
-      return fn();
+      return parent.run(zone, fn);
     } catch (e, s) {
-      // TODO(vicb): check with vics
       // When _runningInTurn > 1, the error handler is called by the zone (via onError)
       if (_onErrorHandler != null && _runningInTurn == 1) {
         _onErrorHandler(e, [s.toString()]);
@@ -146,7 +142,28 @@ class VmTurnZone {
       }
     } finally {
       _runningInTurn--;
-      if (_runningInTurn == 0) _finishTurn(zone, parent);
+      // _onRunBase could be called recursively to execute a single macrotask but we only call
+      // _onTurnDone on the first call.
+      if (_runningInTurn == 0 && pendingMicrotasks == 0 && _onTurnDone != null) {
+        try {
+          parent.run(zone, _onTurnDone);
+        } catch (e, s) {
+          if (_onErrorHandler != null) {
+            _onErrorHandler(e, [s.toString()]);
+          } else {
+            rethrow;
+          }
+        }
+
+        // _onTurnDone might schedule more microtasks.
+        // In such a case, they will be executed as part of the current VM Turn. However _onTurnDone
+        // will be called after the microtasks are executed. We need to call _onTurnStart for
+        // symetry (Note that in such a case _onTurnStart..._onTurnEnd is actually executed in the
+        // current turn)
+        if (pendingMicrotasks > 0) {
+          _startFakeTurn = true;
+        }
+      }
     }
   }
 
@@ -156,57 +173,19 @@ class VmTurnZone {
   dynamic _onRunUnary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(args), args) =>
       _onRunBase(self, parent, zone, () => parent.runUnary(zone, fn, args));
 
-  void _finishTurn(zone, delegate) {
-    if (_inFinishTurn) return;
-    _inFinishTurn = true;
-    try {
-      // Two loops here: the inner one runs all queued microtasks,
-      // the outer runs onTurnDone (e.g. scope.digest) and then
-      // any microtasks which may have been queued from onTurnDone.
-      // If any microtasks were scheduled during onTurnDone, onTurnStart
-      // will be executed before those microtasks.
-      do {
-        if (!_currentlyInTurn) {
-          _currentlyInTurn = true;
-          if (_onTurnStart != null) delegate.run(zone, _onTurnStart);
-        }
-        while (!_asyncQueue.isEmpty) {
-          _asyncQueue.removeAt(0)();
-        }
-        if (_onTurnDone != null) delegate.run(zone, _onTurnDone);
-        _currentlyInTurn = false;
-      } while (!_asyncQueue.isEmpty);
-    } catch (e, s) {
-      if (_onErrorHandler != null) {
-        _onErrorHandler(e, [s.toString()]);
-      } else {
-        rethrow;
-      }
-    } finally {
-      _inFinishTurn = false;
-    }
-  }
-
   /**
    * Called when a microtask is scheduled in the inner zone
    */
   _onMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
-    // see https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/dart:async.Zone#id_registerCallback
-    // calling bindCallback() allow for long stack traces
-    var microtask = _enableLongStackTrace ?
-      zone.bindCallback(fn, runGuarded: false) :
-      () => parent.run(zone, fn);
-
-    _onScheduleMicrotask(microtask);
-    if (_runningInTurn == 0 && !_inFinishTurn)  _finishTurn(zone, parent);
-  }
-
-  /**
-   * Default handling of microtasks: add them to a queue which is drained after each macro-task
-   * execute.
-   */
-  void _defaultOnScheduleMicrotask(fn) {
-    _asyncQueue.add(fn);
+    pendingMicrotasks++;
+    var microtask = () {
+      try {
+        fn();
+      } finally {
+        pendingMicrotasks--;
+      }
+    };
+    parent.scheduleMicrotask(zone, microtask);
   }
 
   _onErrorWithLongStackTrace(exception, Chain chain) {

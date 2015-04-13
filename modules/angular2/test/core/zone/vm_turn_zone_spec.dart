@@ -17,6 +17,14 @@ import 'package:angular2/src/core/zone/vm_turn_zone.dart' show VmTurnZone;
 
 import 'dart:async' show Future, Completer;
 
+macroTask(fn) {
+  PromiseWrapper.setTimeout(fn, 0);
+}
+
+microTask(fn) {
+  new Future.value(null).then((_) { fn(); });
+}
+
 main() {
   ddescribe('all tests', () {
 
@@ -56,8 +64,7 @@ oldtests() {
       it('should call onTurnStart and onTurnDone before and after each top-level run', () {
         zone.run(log.fn('run1'));
         zone.run(log.fn('run2'));
-        expect(log.result()).toEqual(
-            'onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
+        expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
       });
 
       it('should call onTurnStart and onTurnDone before and after each turn',
@@ -103,16 +110,22 @@ oldtests() {
         };
       });
 
-      it('should call the on error callback when it is defined', () {
+      it('should call the on error callback when it is defined', inject([AsyncTestCompleter], (async) {
         zone.initCallbacks(onErrorHandler: saveStackTrace);
-        zone.run(() {
-          throw new BaseException('aaa');
-        });
-        expect(exception).toBeDefined();
-      });
 
-      it('should rethrow exceptions from the body when no callback defined',
-          () {
+        macroTask(() {
+          zone.run(() {
+            throw new BaseException('aaa');
+          });
+        });
+
+        macroTask(() {
+          expect(exception).toBeDefined();
+          async.done();
+        });
+      }));
+
+      it('should rethrow exceptions from the body when no callback defined', () {
         expect(() {
           zone.run(() {
             throw new BaseException('bbb');
@@ -125,26 +138,27 @@ oldtests() {
         zone.initCallbacks(onErrorHandler: saveStackTrace);
         var c = PromiseWrapper.completer();
         zone.run(() {
-          PromiseWrapper.setTimeout(() {
-            PromiseWrapper.setTimeout(() {
+          macroTask(() {
+            macroTask(() {
               c.resolve(null);
               throw new BaseException('ccc');
-            }, 0);
-          }, 0);
+            });
+          });
         });
+
         c.promise.then((_) {
           expect(trace.length).toBeGreaterThan(1);
           async.done();
         });
       }));
 
-      it('should produce long stack traces (when using promises)', inject(
+      it('should produce long stack traces (when using microtasks)', inject(
           [AsyncTestCompleter], (async) {
             zone.initCallbacks(onErrorHandler: saveStackTrace);
             var c = PromiseWrapper.completer();
             zone.run(() {
-              PromiseWrapper.resolve(null).then((_) {
-                return PromiseWrapper.resolve(null).then((__) {
+              microTask(() {
+                microTask(() {
                   c.resolve(null);
                   throw new BaseException("ddd");
                 });
@@ -156,19 +170,20 @@ oldtests() {
             });
           }));
 
-      it('should disable long stack traces', inject([AsyncTestCompleter],
-          (async) {
+      it('should disable long stack traces', inject([AsyncTestCompleter], (async) {
         var zone = new VmTurnZone(enableLongStackTrace: false);
         zone.initCallbacks(onErrorHandler: saveStackTrace);
         var c = PromiseWrapper.completer();
+
         zone.run(() {
-          PromiseWrapper.setTimeout(() {
-            PromiseWrapper.setTimeout(() {
+          macroTask(() {
+            macroTask(() {
               c.resolve(null);
               throw new BaseException('ccc');
-            }, 0);
-          }, 0);
+            });
+          });
         });
+
         c.promise.then((_) {
           expect(trace.length).toEqual(1);
           async.done();
@@ -206,21 +221,25 @@ newTests() {
       expect(errors).toEqual(['hello']);
     });
 
-    it('should call onError for errors from microtasks', (() {
+    it('should call onError for errors from microtasks', inject([AsyncTestCompleter], (async) {
       var errors = [];
       zone.initCallbacks(onErrorHandler: (e, s) { errors.add(e); });
 
-      zone.run(() {
-        new Future.value(null).then((_) {
-          throw "async exception";
+      macroTask(() {
+        zone.run(() {
+          microTask(() { throw "async exception"; });
         });
       });
 
-      expect(errors).toEqual(["async exception"]);
+      macroTask(() {
+        expect(errors).toEqual(["async exception"]);
+        async.done();
+      });
     }));
 
-    // TODO(vicb)
-    it('should rethrow exceptions from the onTurnDone and call onError when the zone is sync', () {
+    // TODO(vicb) - rethrow ?
+    it('should rethrow exceptions from the onTurnDone and call onError when the zone is sync',
+        inject([AsyncTestCompleter], (async) {
       var errors = [];
       zone.initCallbacks(
         onErrorHandler: (e, s) { errors.add(e); },
@@ -229,12 +248,19 @@ newTests() {
 //      expect(() {
 //        zone.run(() { });
 //      }).toThrowWith(message: 'fromOnTurnDone');
-      zone.run(() {});
 
-      expect(errors).toEqual(["fromOnTurnDone"]);
-    });
+      macroTask(() {
+        zone.run(() {});
+      });
 
-    it('should rethrow exceptions from the onTurnDone and call onError when the zone is async', () {
+      macroTask(() {
+        expect(errors).toEqual(["fromOnTurnDone"]);
+        async.done();
+      });
+    }));
+
+    it('should rethrow exceptions from the onTurnDone and call onError when the zone is async',
+        inject([AsyncTestCompleter], (async) {
       var errors = [];
       var asyncRan = false;
 
@@ -250,17 +276,18 @@ newTests() {
 //        });
 //      }).toThrowWith(message: 'fromOnTurnDone');
 
-      zone.run(() {
-        new Future.value(null).then((_) {
-          asyncRan = true;
+      macroTask(() {
+        zone.run(() {
+          microTask(() { asyncRan = true; });
         });
       });
 
-
-      expect(asyncRan).toBe(true);
-      expect(errors).toEqual(["fromOnTurnDone"]);
-    });
-
+      macroTask(() {
+        expect(asyncRan).toBe(true);
+        expect(errors).toEqual(["fromOnTurnDone"]);
+        async.done();
+      });
+    }));
 
   });
 
@@ -269,6 +296,64 @@ newTests() {
     expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
   });
 
+  it('should call onTurnStart and onTurnDone when an inner microtask is scheduled from outside angular',
+        inject([AsyncTestCompleter], (async) {
+    Completer c = new Completer();
+
+    macroTask(() {
+      zone.run(() {
+        c.future.then((_) {
+          log.add('executedMicrotask');
+        });
+      });
+    });
+
+    macroTask(() {
+      log.add('scheduling a microtask');
+      c.complete(null);
+    });
+
+    macroTask(() {
+      expect(log.result()).toEqual(
+          // First VM turn => setup Promise then
+          'onTurnStart; onTurnDone; '
+          // Second VM turn (outside of anguler)
+          'scheduling a microtask; '
+          // Third VM Turn => execute the microtask (inside angular)
+          'onTurnStart; executedMicrotask; onTurnDone'
+      );
+      async.done();
+    });
+  }));
+
+  it('should not call onTurnStart and onTurnDone when an outer microtask is scheduled from inside angular',
+        inject([AsyncTestCompleter], (async) {
+    Completer c = new Completer();
+
+    macroTask(() {
+      c.future.then((_) {
+        log.add('executedMicrotask');
+      });
+    });
+
+    macroTask(() {
+      zone.run(() {
+        log.add('scheduling a microtask');
+        c.complete(null);
+      });
+    });
+
+    macroTask(() {
+      expect(log.result()).toEqual(
+          // First VM turn
+          'onTurnStart; scheduling a microtask; onTurnDone; '
+          // Second VM turn (outside of anguler)
+          'executedMicrotask'
+      );
+      async.done();
+    });
+  }));
+
   it('should return the body return value from run', () {
     expect(zone.run(() {
       return 6;
@@ -276,14 +361,14 @@ newTests() {
   });
 
   it('should call onTurnStart before executing a microtask scheduled in onTurnDone as well as '
-      'onTurnDone after executing the task', (() {
+      'onTurnDone after executing the task', inject([AsyncTestCompleter], (async) {
     var ran = false;
     zone.initCallbacks(
       onTurnStart: log.fn('onTurnStart'),
       onTurnDone: () {
         log.add('onTurnDone(begin)');
         if (!ran) {
-          new Future.value(null).then((_) {
+          microTask(() {
             ran = true;
             log.add('executedMicrotask');});
         }
@@ -291,24 +376,25 @@ newTests() {
         log.add('onTurnDone(end)');
       });
 
-    zone.run(() {
-      log.add('run');
+    macroTask(() {
+      zone.run(() {
+        log.add('run');
+      });
     });
 
-    zone.run(() {
+    macroTask(() {
       expect(log.result()).toEqual(
           // First VM turn => 'run' macrotask
           'onTurnStart; run; onTurnDone(begin); onTurnDone(end); '
           // Second VM Turn => microtask enqueued from onTurnDone
-          'onTurnStart; executedMicrotask; onTurnDone(begin); onTurnDone(end); '
-          // Current VM Turn
-          'onTurnStart'
+          'onTurnStart; executedMicrotask; onTurnDone(begin); onTurnDone(end)'
       );
+      async.done();
     });
   }));
 
   it('should call onTurnStart and onTurnDone for a scheduleMicrotask in onTurnDone triggered by '
-     'a scheduleMicrotask in run', (() {
+     'a scheduleMicrotask in run', inject([AsyncTestCompleter], (async) {
     var ran = false;
     zone.initCallbacks(
       onTurnStart: log.fn('onTurnStart'),
@@ -316,7 +402,7 @@ newTests() {
         log.add('onTurnDone(begin)');
         if (!ran) {
           log.add('onTurnDone(scheduleMicrotask)');
-          new Future.value(null).then((_) {
+          microTask(() {
             ran = true;
             log.add('onTurnDone(executeMicrotask)');
           });
@@ -324,36 +410,41 @@ newTests() {
         log.add('onTurnDone(end)');
       });
 
-    zone.run(() {
-      log.add('scheduleMicrotask');
-      new Future.value(null).then((_) {
-        log.add('run(executeMicrotask)');
+    macroTask(() {
+      zone.run(() {
+        log.add('scheduleMicrotask');
+        microTask(() { log.add('run(executeMicrotask)'); });
       });
     });
 
-    zone.run(() {
+    macroTask(() {
       expect(log.result()).toEqual(
           // First VM Turn => a macrotask + the microtask it enqueues
           'onTurnStart; scheduleMicrotask; run(executeMicrotask); onTurnDone(begin); onTurnDone(scheduleMicrotask); onTurnDone(end); '
           // Second VM Turn => the microtask enqueued from onTurnDone
-          'onTurnStart; onTurnDone(executeMicrotask); onTurnDone(begin); onTurnDone(end); '
-          // Current VM Turn
-          'onTurnStart'
+          'onTurnStart; onTurnDone(executeMicrotask); onTurnDone(begin); onTurnDone(end)'
       );
+      async.done();
+
     });
   }));
 
-  it('should call onTurnStart once before a turn and onTurnDone once after the turn', (() {
-    zone.run(() {
-      log.add('run start');
-      new Future.value(null).then((_) {
-        log.add('async');
+  it('should call onTurnStart once before a turn and onTurnDone once after the turn',
+     inject([AsyncTestCompleter], (async) {
+
+    macroTask(() {
+      zone.run(() {
+        log.add('run start');
+        microTask(() { log.add('async'); });
+        log.add('run end');
       });
-      log.add('run end');
     });
 
-    // The microtask (async) is executed after the macrotask (run)
-    expect(log.result()).toEqual('onTurnStart; run start; run end; async; onTurnDone');
+    macroTask(() {
+      // The microtask (async) is executed after the macrotask (run)
+      expect(log.result()).toEqual('onTurnStart; run start; run end; async; onTurnDone');
+      async.done();
+    });
   }));
 
   // TODO(vicb)
@@ -361,7 +452,8 @@ newTests() {
   // Is testing chained future valuable ?
   // it('should work for Future.value as well', async((Logger log) {
 
-  it('should execute futures scheduled in onTurnStart before Futures scheduled in run', (() {
+  it('should execute futures scheduled in onTurnStart before Futures scheduled in run',
+     inject([AsyncTestCompleter], (async) {
     var doneFutureRan = false;
     var startFutureRan = false;
 
@@ -370,7 +462,7 @@ newTests() {
         log.add('onTurnStart(begin)');
         if (!startFutureRan) {
           log.add('onTurnStart(scheduleFuture)');
-          new Future.value(null).then((_) { log.add('onTurnStart(executeFuture)'); });
+          microTask(() { log.add('onTurnStart(executeFuture)'); });
           startFutureRan = true;
         }
         log.add('onTurnStart(end)');
@@ -379,28 +471,29 @@ newTests() {
         log.add('onTurnDone(begin)');
         if (!doneFutureRan) {
           log.add('onTurnDone(scheduleFuture)');
-          new Future.value(null).then((_) { log.add('onTurnDone(executeFuture)'); });
+          microTask(() { log.add('onTurnDone(executeFuture)'); });
           doneFutureRan = true;
         }
         log.add('onTurnDone(end)');
     });
 
-    zone.run(() {
-      log.add('run start');
-      new Future.value(null)
-      .then((_) {
-        log.add('future then');
+    macroTask(() {
+      zone.run(() {
+        log.add('run start');
         new Future.value(null)
-        .then((_) { log.add('future foo'); });
-        return new Future.value(null);
-      })
-      .then((_) {
-        log.add('future bar');
+          .then((_) {
+            log.add('future then');
+            new Future.value(null).then((_) { log.add('future foo'); });
+            return new Future.value(null);
+          })
+          .then((_) {
+            log.add('future bar');
+          });
+        log.add('run end');
       });
-      log.add('run end');
     });
 
-    zone.run(() {
+    macroTask(() {
       expect(log.result()).toEqual(
           // First VM turn: enqueue a microtask in onTurnStart
           'onTurnStart(begin); onTurnStart(scheduleFuture); onTurnStart(end); '
@@ -411,67 +504,74 @@ newTests() {
           // First VM turn: onTurnEnd, enqueue a microtask
           'onTurnDone(begin); onTurnDone(scheduleFuture); onTurnDone(end); '
           // Second VM turn: execute the microtask from onTurnEnd
-          'onTurnStart(begin); onTurnStart(end); onTurnDone(executeFuture); onTurnDone(begin); onTurnDone(end); '
-          // Current VM turn
-          'onTurnStart(begin); onTurnStart(end)'
+          'onTurnStart(begin); onTurnStart(end); onTurnDone(executeFuture); onTurnDone(begin); onTurnDone(end)'
       );
+      async.done();
     });
   }));
 
-  it('should call onTurnStart and onTurnDone before and after each turn, respectively', (() {
+  it('should call onTurnStart and onTurnDone before and after each turn, respectively',
+     inject([AsyncTestCompleter], (async) {
     Completer a, b;
-    zone.run(() {
-      a = new Completer();
-      b = new Completer();
-      a.future.then((_) => log.add('a then'));
-      b.future.then((_) => log.add('b then'));
-      log.add('run start');
+
+    macroTask(() {
+      zone.run(() {
+        a = new Completer();
+        b = new Completer();
+        a.future.then((_) => log.add('a then'));
+        b.future.then((_) => log.add('b then'));
+        log.add('run start');
+      });
     });
 
-    zone.run(() {
-      a.complete(null);
+    macroTask(() {
+      zone.run(() {
+        a.complete(null);
+      });
     });
 
-    zone.run(() {
-      b.complete(null);
+
+    macroTask(() {
+      zone.run(() {
+        b.complete(null);
+      });
     });
 
-    zone.run(() {
+    macroTask(() {
       expect(log.result()).toEqual(
           // First VM turn
           'onTurnStart; run start; onTurnDone; '
           // Second VM turn
           'onTurnStart; a then; onTurnDone; '
           // Third VM turn
-          'onTurnStart; b then; onTurnDone; '
-          // Current VM turn
-          'onTurnStart');
+          'onTurnStart; b then; onTurnDone');
+      async.done();
     });
   }));
 
-  it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain', (() {
-    zone.run(() {
-      log.add('run start');
-      new Future.value(null).then((_) {
-        log.add('async1');
-        new Future.value(null).then((_) {
-          log.add('async2');
+  it('should call onTurnStart and onTurnDone before and after (respectively) all turns in a chain',
+     inject([AsyncTestCompleter], (async) {
+    macroTask(() {
+      zone.run(() {
+        log.add('run start');
+        microTask(() {
+          log.add('async1');
+          microTask(() {
+            log.add('async2');
+          });
         });
+        log.add('run end');
       });
-      log.add('run end');
     });
 
-    zone.run(() {
-      expect(log.result()).toEqual(
-          // First VM turn
-          'onTurnStart; run start; run end; async1; async2; onTurnDone; '
-          // Current VM turn
-          'onTurnStart');
+    macroTask(() {
+      expect(log.result()).toEqual('onTurnStart; run start; run end; async1; async2; onTurnDone');
+      async.done();
     });
   }));
 
-  it('should call onTurnStart and onTurnDone for futures created outside of run body', inject(
-          [AsyncTestCompleter], (async) {
+  it('should call onTurnStart and onTurnDone for futures created outside of run body',
+     inject([AsyncTestCompleter], (async) {
     var turn = 0;
     var future = new Future.value(4).then((x) => new Future.value(x));
 
@@ -480,20 +580,24 @@ newTests() {
       onTurnDone: () {
         turn++;
         log.add('onTurnDone');
-        if (turn == 2) {
-          expect(log.result()).toEqual(
-              'onTurnStart; zone run; onTurnDone; '
-              'onTurnStart; future then; onTurnDone');
-          async.done();
-        }
       });
 
-    zone.run(() {
-      future.then((_) {
-        log.add('future then');
+    macroTask(() {
+      zone.run(() {
+        future.then((_) {
+          log.add('future then');
+        });
+        log.add('zone run');
       });
-      log.add('zone run');
     });
+
+    macroTask(() {
+      expect(log.result()).toEqual(
+          'onTurnStart; zone run; onTurnDone; '
+          'onTurnStart; future then; onTurnDone');
+      async.done();
+    });
+
   }));
 
   it('should call onTurnDone even if there was an exception in body', (() {
@@ -519,7 +623,8 @@ newTests() {
     expect(log.result()).toEqual('onTurnStart; zone run; onError; onTurnDone');
   }));
 
-  it('should call onTurnDone even if there was an exception in onTurnStart', (() {
+  it('should call onTurnDone even if there was an exception in onTurnStart',
+     inject([AsyncTestCompleter], (async) {
 
     zone.initCallbacks(
       onTurnStart: () { log.add('onTurnStart'); throw 'zoneError';},
@@ -532,11 +637,17 @@ newTests() {
 //      log('zone run');
 //    })).toThrowWith(message: 'zoneError');
 
-    zone.run(() {
-      log('zone run');
+    macroTask(() {
+      zone.run(() { log.add('zone run'); });
     });
 
-    expect(log.result()).toEqual('onTurnStart; onError; onTurnDone');
+    macroTask(() {
+      expect(log.result()).toEqual('onTurnStart; onError; onTurnDone');
+      async.done();
+    });
+
+
+
   }));
 
   it('should call onTurnDone even if there was an exception in scheduleMicrotask', (() {
@@ -548,7 +659,7 @@ newTests() {
 
     zone.run(() {
       log.add('zone run');
-      new Future.value(null).then((_) {
+      microTask(() {
         log('scheduleMicrotask');
         throw new Error();
       });
