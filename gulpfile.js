@@ -294,7 +294,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // ------------
 // transpile
 
-gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
+gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
   return getBroccoli().forDartTree().buildOnce();
 });
 
@@ -617,12 +617,7 @@ gulp.task('test.transpiler.unittest', function() {
 
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
-  runSequence(
-    'build/transpile.dart', // Creates the folder structure needed by subsequent tasks.
-    ['build/html.dart', 'build/copy.dart', 'build/multicopy.dart'],
-    'build/format.dart',
-    done
-  );
+  runSequence('build/tree.dart', 'build/format.dart', done);
 });
 
 // Builds and compiles all Dart packages
