@@ -8,34 +8,33 @@ var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
-var ts2dart;
-var TraceurCompiler;
-var TypescriptCompiler;
+var ts2dart = require('./broccoli-ts2dart');
+var TraceurCompiler = require('./traceur');
+var TypescriptCompiler = require('./typescript');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..'));
 
 
 module.exports = function makeBroccoliTree(name) {
-  if (!TraceurCompiler) TraceurCompiler = require('../../dist/broccoli/traceur');
-  if (!TypescriptCompiler) TypescriptCompiler = require('../../dist/broccoli/typescript');
-  if (!ts2dart) ts2dart = require('../../dist/broccoli/broccoli-ts2dart');
-
   switch (name) {
-    case 'dev': return makeBrowserTree({name: name, typeAssertions: true});
-    case 'prod': return makeBrowserTree({name: name, typeAssertions: false});
-    case 'cjs': return makeCjsTree();
-    case 'dart': return makeDartTree();
-    default: throw new Error('Unknown build type: ' + name);
+    case 'dev':
+      return makeBrowserTree({name: name, typeAssertions: true});
+    case 'prod':
+      return makeBrowserTree({name: name, typeAssertions: false});
+    case 'cjs':
+      return makeCjsTree();
+    case 'dart':
+      return makeDartTree();
+    default:
+      throw new Error('Unknown build type: ' + name);
   }
 };
 
 
 function makeBrowserTree(options) {
-  var modulesTree = new Funnel('modules', {
-    include: ['**/**'],
-    exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'],
-    destDir: '/'
-  });
+  var modulesTree = new Funnel(
+      'modules',
+      {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
   // Use Traceur to transpile original sources to ES6
   var es6Tree = new TraceurCompiler(modulesTree, '.es6', '.map', {
@@ -52,14 +51,14 @@ function makeBrowserTree(options) {
 
 
   // Call Traceur again to lower the ES6 build tree to ES5
-  var es5Tree = new TraceurCompiler(es6Tree, '.js',  '.js.map', {modules: 'instantiate', sourceMaps: true});
+  var es5Tree =
+      new TraceurCompiler(es6Tree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
   // Now we add a few more files to the es6 tree that Traceur should not see
-  ['angular2', 'rtts_assert'].forEach(
-    function (destDir) {
-      var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
-      es6Tree = mergeTrees([es6Tree, extras]);
-    });
+  ['angular2', 'rtts_assert'].forEach(function(destDir) {
+    var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: destDir});
+    es6Tree = mergeTrees([es6Tree, extras]);
+  });
 
 
   var vendorScriptsTree = flatten(new Funnel('.', {
@@ -76,9 +75,9 @@ function makeBrowserTree(options) {
     ]
   }));
   var vendorScripts_benchmark =
-    new Funnel('tools/build/snippets', {files: ['url_params_to_form.js'], destDir: '/'});
+      new Funnel('tools/build/snippets', {files: ['url_params_to_form.js'], destDir: '/'});
   var vendorScripts_benchmarks_external =
-    new Funnel('node_modules/angular', {files: ['angular.js'], destDir: '/'});
+      new Funnel('node_modules/angular', {files: ['angular.js'], destDir: '/'});
 
   var servingTrees = [];
 
@@ -89,7 +88,7 @@ function makeBrowserTree(options) {
     }
     if (destDir.indexOf('benchmarks_external') > -1) {
       servingTrees.push(
-        new Funnel(vendorScripts_benchmarks_external, {srcDir: '/', destDir: destDir}));
+          new Funnel(vendorScripts_benchmarks_external, {srcDir: '/', destDir: destDir}));
     }
   }
 
@@ -117,7 +116,7 @@ function makeBrowserTree(options) {
 
   // Copy all vendor scripts into all examples and benchmarks
   ['benchmarks/src', 'benchmarks_external/src', 'examples/src/benchpress'].forEach(
-    copyVendorScriptsTo);
+      copyVendorScriptsTo);
 
   var scripts = mergeTrees(servingTrees, {overwrite: true});
   var css = new Funnel(modulesTree, {include: ["**/*.css"]});
@@ -161,11 +160,10 @@ function makeCjsTree() {
   });
 
   // Now we add the LICENSE file into all the folders that will become npm packages
-  outputPackages.forEach(
-    function(destDir) {
-      var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
-      cjsTree = mergeTrees([cjsTree, license]);
-    });
+  outputPackages.forEach(function(destDir) {
+    var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
+    cjsTree = mergeTrees([cjsTree, license]);
+  });
 
   // Get all docs and related assets and prepare them for js build
   var docs = new Funnel(modulesTree, {include: ['**/*.md', '**/*.png'], exclude: ['**/*.dart.md']});
@@ -191,11 +189,10 @@ function makeCjsTree() {
   };
 
   // Add a .template extension since renderLodashTemplate strips one extension
-  var packageJsons = stew.rename(new Funnel(modulesTree, {include: ['**/package.json']}), '.json', '.json.template');
-  packageJsons = renderLodashTemplate(packageJsons, {
-    files: ["**/**"],
-    context: { 'packageJson': COMMON_PACKAGE_JSON }
-  });
+  var packageJsons = stew.rename(new Funnel(modulesTree, {include: ['**/package.json']}), '.json',
+                                 '.json.template');
+  packageJsons = renderLodashTemplate(
+      packageJsons, {files: ["**/**"], context: {'packageJson': COMMON_PACKAGE_JSON}});
 
 
   var typescriptTree = new TypescriptCompiler(modulesTree, {
@@ -251,7 +248,7 @@ function makeDartTree() {
         return path.join.apply(path, parts);
       }
     }
-    throw new Error('Failed to match any path', relativePath);
+    throw new Error('Failed to match any path: ' + relativePath);
   });
 
   // Move the tree under the 'dart' folder.
