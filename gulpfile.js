@@ -370,11 +370,6 @@ gulp.task('build/transpile.js.cjs', transpile(gulp, gulpPlugins, {
   options: CONFIG.transpile.options.js.cjs,
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
-gulp.task('build/transformCJSTests', function() {
-  return gulp.src(CONFIG.dest.js.cjs + '/angular2/test/**/*_spec.js')
-      .pipe(transformCJSTests())
-      .pipe(gulp.dest(CONFIG.dest.js.cjs + '/angular2/test/'));
-});
 
 gulp.task('build/transpile.dart', ['build.broccoli.tools'], function() {
   return broccoliBuild(makeBroccoliTree('dart'), 'dart');
@@ -807,7 +802,6 @@ gulp.task('build.js.cjs', function(done) {
   runSequence(
     'broccoli.js.cjs',
     ['build/linknodemodules.js.cjs'],
-    'build/transformCJSTests',
     done
   );
 });

@@ -159,6 +159,25 @@ function makeCjsTree() {
     modules: 'commonjs'
   });
 
+  // Transform all tests to make them runnable in node
+  cjsTree = replace(cjsTree, {
+    files: ['**/test/**/*_spec.js'],
+    patterns: [
+      {
+        // Override the default DOM adapter with Parse5 for all tests
+        match: /"use strict";/,
+        replacement:
+            "'use strict'; var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
+                "parse5Adapter.Parse5DomAdapter.makeCurrent();"
+      },
+      {
+        // Append main() to all tests since all of our tests are wrapped in exported main fn
+        match: /$/g,
+        replacement: "\r\n main();"
+      }
+    ]
+  });
+
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {
     var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
