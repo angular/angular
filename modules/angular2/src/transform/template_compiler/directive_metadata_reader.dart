@@ -134,7 +134,6 @@ class _DirectiveMetadataVisitor extends Object
       var sVal =
           _expressionToString(entry.value, 'Directive#hostListeners values');
       current.hostListeners[sKey] = sVal;
-      ;
     }
   }
 }
