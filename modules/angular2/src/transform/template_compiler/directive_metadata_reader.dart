@@ -2,11 +2,8 @@ library angular2.transform.template_compiler.directive_metadata_reader;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
-import 'package:angular2/src/transform/common/property_utils.dart' as prop;
 
 /// Reads [DirectiveMetadata] from the `attributes` of `t`.
 List<DirectiveMetadata> readDirectiveMetadata(RegisteredType t) {
@@ -102,20 +99,20 @@ class _DirectiveMetadataVisitor extends Object
       logger.error(
           'Angular 2 currently only supports boolean literal values for '
           'Decorator#compileChildren.'
-          ' Source: ${node}');
+          ' Source: ${compileChildrenValue}');
       return;
     }
-    current.compileChildren = compileChildrenValue.value;
+    current.compileChildren = (compileChildrenValue as BooleanLiteral).value;
   }
 
   void _populateProperties(Expression propertiesValue) {
     if (propertiesValue is! MapLiteral) {
       logger.error('Angular 2 currently only supports map literal values for '
           'Directive#properties.'
-          ' Source: ${node}');
+          ' Source: ${propertiesValue}');
       return;
     }
-    for (MapLiteralEntry entry in propertiesValue.entries) {
+    for (MapLiteralEntry entry in (propertiesValue as MapLiteral).entries) {
       var sKey = _expressionToString(entry.key, 'Directive#properties keys');
       var sVal = _expressionToString(entry.value, 'Direcive#properties values');
       current.properties[sKey] = sVal;
@@ -126,10 +123,10 @@ class _DirectiveMetadataVisitor extends Object
     if (hostListenersValue is! MapLiteral) {
       logger.error('Angular 2 currently only supports map literal values for '
           'Directive#hostListeners.'
-          ' Source: ${node}');
+          ' Source: ${hostListenersValue}');
       return;
     }
-    for (MapLiteralEntry entry in hostListenersValue.entries) {
+    for (MapLiteralEntry entry in (hostListenersValue as MapLiteral).entries) {
       var sKey = _expressionToString(entry.key, 'Directive#hostListeners keys');
       var sVal =
           _expressionToString(entry.value, 'Directive#hostListeners values');

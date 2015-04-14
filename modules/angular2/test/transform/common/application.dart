@@ -8,7 +8,7 @@ import 'dart:async';
 /// Mocked out version of [bootstrap], defined in application.dart. Importing
 /// the actual file in tests causes issues with resolution due to its
 /// transitive dependencies.
-Future bootstrap(Type appComponentType, [List<Binding> bindings = null,
-    Function givenBootstrapErrorReporter = null]) {
+Future bootstrap(Type appComponentType,
+    [List bindings = null, Function givenBootstrapErrorReporter = null]) {
   return null;
 }
