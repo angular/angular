@@ -49,6 +49,7 @@ module.exports = function(gulp, plugins, config) {
       });
       var hintCount = 0;
       var errorCount = 0;
+      var warningCount = 0;
       rl.on('line', function(line) {
         //TODO remove once dartanalyzer handles transitive libraries
         //skip errors in third-party packages
@@ -70,6 +71,8 @@ module.exports = function(gulp, plugins, config) {
         }
         if (line.match(/\[hint\]/)) {
           hintCount++;
+        } else if (line.match(/\[warning\]/)) {
+          warningCount++;
         } else {
           errorCount ++;
         }
@@ -77,11 +80,18 @@ module.exports = function(gulp, plugins, config) {
       });
       stream.on('close', function() {
         var error;
+        var report = [];
         if (errorCount > 0) {
-          error = new Error('Dartanalyzer showed errors');
+          report.push(errorCount + ' error(s)');
+        }
+        if (warningCount > 0) {
+          report.push(warningCount + ' warning(s)');
         }
         if (hintCount > 0) {
-          error = new Error('Dartanalyzer showed hints');
+          report.push(hintCount + ' hint(s)');
+        }
+        if (report.length > 0) {
+          error = 'Dartanalyzer showed ' + report.join(', ');
         }
         done(error);
       });
