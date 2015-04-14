@@ -7,7 +7,6 @@ var Q = require('q');
 module.exports = {
   processToPromise: processToPromise,
   streamToPromise: streamToPromise,
-  insertSrcFolder: insertSrcFolder,
   filterByFile: filterByFile,
   subDirs: subDirs,
   forEachSubDir: forEachSubDir,
@@ -78,16 +77,4 @@ function filterByFile(pathMapping, folder) {
   } else {
     throw new Error('No entry for folder '+folder+' found in '+JSON.stringify(pathMapping));
   }
-}
-
-function insertSrcFolder(plugins, srcFolderInsertion) {
-  return plugins.rename(function(file) {
-    var folder = file.dirname;
-    var srcDir = filterByFile(srcFolderInsertion, path.join(folder, file.basename));
-    if (srcDir) {
-      var folderParts = file.dirname.split(path.sep);
-      folder = [folderParts[0], srcDir].concat(folderParts.slice(1)).join(path.sep);
-    }
-    file.dirname = folder;
-  });
 }

@@ -10,7 +10,6 @@ var path = require('path');
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
-var html = require('./tools/build/html');
 var pubget = require('./tools/build/pubget');
 var linknodemodules = require('./tools/build/linknodemodules');
 var pubbuild = require('./tools/build/pubbuild');
@@ -18,7 +17,6 @@ var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var rundartpackage = require('./tools/build/rundartpackage');
-var copy = require('./tools/build/copy');
 var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma').server;
 var minimist = require('minimist');
@@ -94,22 +92,6 @@ var COMMON_PACKAGE_JSON = {
   }
 };
 
-var SRC_FOLDER_INSERTION = {
-    js: {
-      '**': ''
-    },
-    dart: {
-      '**': 'lib',
-      '*/test/**': '',
-      'benchmarks/**': 'web',
-      'benchmarks/test/**': '',
-      'benchmarks_external/**': 'web',
-      'benchmarks_external/test/**': '',
-      'example*/**': 'web',
-      'example*/test/**': ''
-    }
-  };
-
 var CONFIG = {
   dest: {
     js: {
@@ -128,7 +110,6 @@ var CONFIG = {
     dart: 'dist/dart',
     docs: 'dist/docs'
   },
-  srcFolderInsertion: SRC_FOLDER_INSERTION,
   transpile: {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
@@ -178,19 +159,6 @@ var CONFIG = {
         pipes: {}
       }
     },
-    dart: {
-      src: [
-        'modules/**/*.md', '!modules/**/*.js.md', 'modules/**/*.png', 'modules/**/*.html',
-        'modules/**/*.dart', 'modules/*/pubspec.yaml', 'modules/**/*.css', '!modules/**/e2e_test/**'
-      ],
-      pipes: {
-        '**/*.dart': util.insertSrcFolder(gulpPlugins, SRC_FOLDER_INSERTION.dart),
-        '**/*.dart.md': gulpPlugins.rename(function(file) {
-          file.basename = file.basename.substring(0, file.basename.lastIndexOf('.'));
-        }),
-        '**/pubspec.yaml': gulpPlugins.template({ 'packageJson': COMMON_PACKAGE_JSON })
-      }
-    }
   },
   multicopy: {
     js: {
@@ -297,36 +265,6 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
   return getBroccoli().forDartTree().buildOnce();
 });
-
-// ------------
-// html
-
-gulp.task('build/html.dart', html(gulp, gulpPlugins, {
-  src: CONFIG.html.src.dart,
-  dest: CONFIG.dest.dart,
-  srcFolderInsertion: CONFIG.srcFolderInsertion.dart,
-  scriptsPerFolder: CONFIG.html.scriptsPerFolder.dart
-}));
-
-// ------------
-// copy
-
-gulp.task('build/copy.dart', copy.copy(gulp, gulpPlugins, {
-  src: CONFIG.copy.dart.src,
-  pipes: CONFIG.copy.dart.pipes,
-  dest: CONFIG.dest.dart
-}));
-
-
-// ------------
-// multicopy
-
-gulp.task('build/multicopy.dart', copy.multicopy(gulp, gulpPlugins, {
-  src: CONFIG.multicopy.dart.src,
-  pipes: CONFIG.multicopy.dart.pipes,
-  exclude: CONFIG.multicopy.dart.exclude,
-  dest: CONFIG.dest.dart
-}));
 
 // ------------
 // pubspec
@@ -577,7 +515,6 @@ gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
     var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
     gulp.src(relPath)
       .pipe(gulpPlugins.rename({extname: '.'+ 'js'}))
-      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.js))
       .pipe(gulpTraceur(CONFIG.transpile.options.js.cjs, file2moduleName))
       .pipe(transformCJSTests())
       .pipe(gulp.dest(CONFIG.dest.js.cjs + path.dirname(relPath.replace("modules", ""))));
