@@ -10,7 +10,9 @@ import {Renderer} from 'angular2/src/render/api';
 import {ElementRef} from './element_injector';
 import {AppView} from './view';
 
-
+/**
+ * @exportedAs angular2/view
+ */
 export class ComponentRef {
   location:ElementRef;
   instance:any;
@@ -34,6 +36,8 @@ export class ComponentRef {
 /**
  * Service for dynamically loading a Component into an arbitrary position in the internal Angular
  * application tree.
+ *
+ * @exportedAs angular2/view
  */
 @Injectable()
 export class DynamicComponentLoader {

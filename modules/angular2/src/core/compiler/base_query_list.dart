@@ -10,12 +10,12 @@ import 'dart:collection';
  * In the future this class will implement an Observable interface.
  * For now it uses a plain list of observable callbacks.
  */
-class QueryList extends Object with IterableMixin<Directive> {
+class BaseQueryList extends Object with IterableMixin<Directive> {
   List<Directive> _results;
   List _callbacks;
   bool _dirty;
 
-  QueryList(): _results = [], _callbacks = [], _dirty = false;
+  BaseQueryList(): _results = [], _callbacks = [], _dirty = false;
 
   Iterator<Directive> get iterator => _results.iterator;
 
