@@ -95,19 +95,31 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var protos:List<ProtoRecord> = this.protos;
 
     var changes = null;
+    var isChanged = false;
     for (var i = 0; i < protos.length; ++i) {
       var proto:ProtoRecord = protos[i];
+      var bindingRecord = proto.bindingRecord;
+      var directiveRecord = bindingRecord.directiveRecord;
 
       var change = this._check(proto);
       if (isPresent(change)) {
         if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
-        this._updateDirectiveOrElement(change, proto.bindingRecord);
-        changes = this._addChange(proto.bindingRecord, change, changes);
+        this._updateDirectiveOrElement(change, bindingRecord);
+        isChanged = true;
+        changes = this._addChange(bindingRecord, change, changes);
       }
 
-      if (proto.lastInDirective && isPresent(changes)) {
-        this._directive(proto.bindingRecord.directiveRecord).onChange(changes);
-        changes = null;
+      if (proto.lastInDirective) {
+        if (isPresent(changes)) {
+          this._getDirectiveFor(directiveRecord).onChange(changes);
+          changes = null;
+        }
+
+        if (isChanged && bindingRecord.isOnPushChangeDetection()) {
+          this._getDetectorFor(directiveRecord).markAsCheckOnce();
+        }
+
+        isChanged = false;
       }
     }
   }
@@ -117,7 +129,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {
-        this._directive(dir).onAllChangesDone();
+        this._getDirectiveFor(dir).onAllChangesDone();
       }
     }
   }
@@ -126,7 +138,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isBlank(bindingRecord.directiveRecord)) {
       this.dispatcher.notifyOnBinding(bindingRecord, change.currentValue);
     } else {
-      bindingRecord.setter(this._directive(bindingRecord.directiveRecord), change.currentValue);
+      bindingRecord.setter(this._getDirectiveFor(bindingRecord.directiveRecord), change.currentValue);
     }
   }
 
@@ -138,8 +150,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _directive(directive:DirectiveRecord) {
-    return this.directives.directive(directive);
+  _getDirectiveFor(directive:DirectiveRecord) {
+    return this.directives.getDirectiveFor(directive);
+  }
+
+  _getDetectorFor(directive:DirectiveRecord) {
+    return this.directives.getDetectorFor(directive);
   }
 
   _check(proto:ProtoRecord) {
@@ -249,7 +265,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     //
     // In the future, pipes declared in the bind configuration should
     // be able to access the changeDetectorRef of that component.
-    var cdr = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.changeDetectorRef : null;
+    var cdr = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.ref : null;
     var pipe = this.pipeRegistry.get(proto.name, context, cdr);
     this._writePipe(proto, pipe);
     return pipe;

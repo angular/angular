@@ -36,7 +36,7 @@ var PIPE_REGISTRY_ACCESSOR = "this.pipeRegistry";
 var PROTOS_ACCESSOR = "this.protos";
 var DIRECTIVES_ACCESSOR = "this.directiveRecords";
 var CONTEXT_ACCESSOR = "this.context";
-var CHANGE_LOCAL = "change";
+var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var MODE_ACCESSOR = "this.mode";
@@ -78,10 +78,15 @@ function pipeOnDestroyTemplate(pipeNames:List) {
 }
 
 function hydrateTemplate(type:string, mode:string, fieldDefinitions:string, pipeOnDestroy:string,
-                         directiveFieldNames:List<String>):string {
+                         directiveFieldNames:List<String>, detectorFieldNames:List<String>):string {
   var directiveInit = "";
   for(var i = 0; i < directiveFieldNames.length; ++i) {
-    directiveInit += `${directiveFieldNames[i]} = directives.directive(this.directiveRecords[${i}]);\n`;
+    directiveInit += `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}]);\n`;
+  }
+
+  var detectorInit = "";
+  for(var i = 0; i < detectorFieldNames.length; ++i) {
+    detectorInit += `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}]);\n`;
   }
 
   return `
@@ -90,6 +95,7 @@ ${type}.prototype.hydrate = function(context, locals, directives) {
   ${CONTEXT_ACCESSOR} = context;
   ${LOCALS_ACCESSOR} = locals;
   ${directiveInit}
+  ${detectorInit}
 }
 ${type}.prototype.dehydrate = function() {
   ${pipeOnDestroy}
@@ -128,7 +134,7 @@ function detectChangesBodyTemplate(localDefinitions:string, changeDefinitions:st
 ${localDefinitions}
 ${changeDefinitions}
 var ${TEMP_LOCAL};
-var ${CHANGE_LOCAL};
+var ${IS_CHANGED_LOCAL} = false;
 var ${CURRENT_PROTO};
 var ${CHANGES_LOCAL} = null;
 
@@ -208,6 +214,7 @@ function updateDirectiveTemplate(oldValue:string, newValue:string, directiveProp
   return `
 if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
 ${directiveProperty} = ${newValue};
+${IS_CHANGED_LOCAL} = true;
   `;
 }
 
@@ -224,6 +231,22 @@ if(${CHANGES_LOCAL}) {
   ${directive}.onChange(${CHANGES_LOCAL});
   ${CHANGES_LOCAL} = null;
 }
+`;
+}
+
+function notifyOnPushDetectorsTemplate(detector:string):string{
+  return  `
+if(${IS_CHANGED_LOCAL}) {
+  ${detector}.markAsCheckOnce();
+}
+`;
+}
+
+function lastInDirectiveTemplate(notifyOnChanges:string, notifyOnPush:string):string{
+  return  `
+${notifyOnChanges}
+${notifyOnPush}
+${IS_CHANGED_LOCAL} = false;
 `;
 }
 
@@ -285,15 +308,24 @@ export class ChangeDetectorJITGenerator {
   genHydrate():string {
     var mode = ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy);
     return hydrateTemplate(this.typeName, mode, this.genFieldDefinitions(),
-      pipeOnDestroyTemplate(this.getNonNullPipeNames()), this.getDirectiveFieldNames());
+      pipeOnDestroyTemplate(this.getNonNullPipeNames()),
+      this.getDirectiveFieldNames(), this.getDetectorFieldNames());
   }
 
   getDirectiveFieldNames():List<string> {
     return this.directiveRecords.map((d) => this.getDirective(d));
   }
 
+  getDetectorFieldNames():List<string> {
+    return this.directiveRecords.filter(r => r.isOnPushChangeDetection()).map((d) => this.getDetector(d));
+  }
+
   getDirective(d:DirectiveRecord) {
     return `this.directive_${d.name}`;
+  }
+
+  getDetector(d:DirectiveRecord) {
+    return `this.detector_${d.name}`;
   }
 
   genFieldDefinitions() {
@@ -301,6 +333,7 @@ export class ChangeDetectorJITGenerator {
     fields = fields.concat(this.fieldNames);
     fields = fields.concat(this.getNonNullPipeNames());
     fields = fields.concat(this.getDirectiveFieldNames());
+    fields = fields.concat(this.getDetectorFieldNames());
     return fieldDefinitionsTemplate(fields);
   }
 
@@ -362,11 +395,11 @@ export class ChangeDetectorJITGenerator {
     var change = this.changeNames[r.selfIndex];
 
     var pipe = this.pipeNames[r.selfIndex];
-    var cdRef = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.changeDetectorRef" : "null";
+    var cdRef = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.ref" : "null";
 
     var update = this.genUpdateDirectiveOrElement(r);
     var addToChanges = this.genAddToChanges(r);
-    var lastInDirective = this.genNotifyOnChanges(r);
+    var lastInDirective = this.genLastInDirective(r);
 
     return pipeCheckTemplate(r.selfIndex - 1, context, cdRef, pipe, r.name, oldValue, newValue, change,
       update, addToChanges, lastInDirective);
@@ -380,7 +413,7 @@ export class ChangeDetectorJITGenerator {
 
     var update = this.genUpdateDirectiveOrElement(r);
     var addToChanges = this.genAddToChanges(r);
-    var lastInDirective = this.genNotifyOnChanges(r);
+    var lastInDirective = this.genLastInDirective(r);
 
     var check = referenceCheckTemplate(r.selfIndex - 1, assignment, oldValue, newValue, change,
       update, addToChanges, lastInDirective);
@@ -471,10 +504,25 @@ export class ChangeDetectorJITGenerator {
     return r.bindingRecord.callOnChange() ? addToChangesTemplate(oldValue, newValue) : "";
   }
 
+  genLastInDirective(r:ProtoRecord):string{
+    var onChanges = this.genNotifyOnChanges(r);
+    var onPush = this.genNotifyOnPushDetectors(r);
+    return lastInDirectiveTemplate(onChanges, onPush);
+  }
+
   genNotifyOnChanges(r:ProtoRecord):string{
     var br = r.bindingRecord;
     if (r.lastInDirective && br.callOnChange()) {
       return notifyOnChangesTemplate(this.getDirective(br.directiveRecord));
+    } else {
+      return "";
+    }
+  }
+
+  genNotifyOnPushDetectors(r:ProtoRecord):string{
+    var br = r.bindingRecord;
+    if (r.lastInDirective && br.isOnPushChangeDetection()) {
+      return notifyOnPushDetectorsTemplate(this.getDetector(br.directiveRecord));
     } else {
       return "";
     }

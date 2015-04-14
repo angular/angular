@@ -390,13 +390,13 @@ export function main() {
         })
       }));
 
-      describe("ChangeDetectorRef", () => {
-        it("can be used to disable the change detection of the component's template",
+      describe("ON_PUSH components", () => {
+        it("should use ChangeDetectorRef to manually request a check",
           inject([TestBed, AsyncTestCompleter], (tb, async) => {
 
           tb.overrideView(MyComp, new View({
-            template: '<push-cmp #cmp></push-cmp>',
-            directives: [[[PushBasedComp]]]
+            template: '<push-cmp-with-ref #cmp></push-cmp-with-ref>',
+            directives: [[[PushCmpWithRef]]]
           }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -417,10 +417,33 @@ export function main() {
           })
         }));
 
-        it('should not affect updating properties on the component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        it("should be checked when its bindings got updated",
+          inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
           tb.overrideView(MyComp, new View({
             template: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
-            directives: [[[PushBasedComp]]]
+            directives: [[[PushCmp]]]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            var cmp = view.rawView.locals.get('cmp');
+
+            ctx.ctxProp = "one";
+            view.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(1);
+
+            ctx.ctxProp = "two";
+            view.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(2);
+
+            async.done();
+          })
+        }));
+
+        it('should not affect updating properties on the component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<push-cmp-with-ref [prop]="ctxProp" #cmp></push-cmp-with-ref>',
+            directives: [[[PushCmpWithRef]]]
           }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -800,7 +823,29 @@ class MyDir {
   changeDetection:ON_PUSH
 })
 @View({template: '{{field}}'})
-class PushBasedComp {
+class PushCmp {
+  numberOfChecks:number;
+  prop;
+
+  constructor() {
+    this.numberOfChecks = 0;
+  }
+
+  get field(){
+    this.numberOfChecks++;
+    return "fixed";
+  }
+}
+
+ @Component({
+  selector: 'push-cmp-with-ref',
+  properties: {
+    'prop': 'prop'
+  },
+  changeDetection:ON_PUSH
+})
+@View({template: '{{field}}'})
+class PushCmpWithRef {
   numberOfChecks:number;
   ref:ChangeDetectorRef;
   prop;

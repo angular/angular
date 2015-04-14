@@ -12,7 +12,8 @@ import {
   dynamicChangeDetection,
   jitChangeDetection,
   BindingRecord,
-  DirectiveRecord
+  DirectiveRecord,
+  DEFAULT
 } from 'angular2/change_detection';
 
 
@@ -191,7 +192,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
 
   var proto = changeDetection.createProtoChangeDetector("proto");
 
-  var directiveRecord = new DirectiveRecord(0, 0, false, false);
+  var directiveRecord = new DirectiveRecord(0, 0, false, false, DEFAULT);
   var bindings = [
     BindingRecord.createForDirective(parser.parseBinding('field0', null), "field0", reflector.setter("field0"), directiveRecord),
     BindingRecord.createForDirective(parser.parseBinding('field1', null), "field1", reflector.setter("field1"), directiveRecord),
@@ -306,7 +307,7 @@ class FakeDirectives {
     this.targetObj = targetObj;
   }
 
-  directive(record) {
+  getDirectiveFor(record) {
     return this.targetObj;
   }
 }

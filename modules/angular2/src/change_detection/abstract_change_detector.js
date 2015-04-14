@@ -9,13 +9,13 @@ export class AbstractChangeDetector extends ChangeDetector {
   shadowDomChildren:List;
   parent:ChangeDetector;
   mode:string;
-  changeDetectorRef:ChangeDetectorRef;
+  ref:ChangeDetectorRef;
 
   constructor() {
     super();
     this.lightDomChildren = [];
     this.shadowDomChildren = [];
-    this.changeDetectorRef = new ChangeDetectorRef(this);
+    this.ref = new ChangeDetectorRef(this);
     this.mode = null;
   }
 
@@ -78,6 +78,10 @@ export class AbstractChangeDetector extends ChangeDetector {
     for(var i = 0; i < c.length; ++i) {
       c[i]._detectChanges(throwOnChange);
     }
+  }
+
+  markAsCheckOnce() {
+    this.mode = CHECK_ONCE;
   }
 
   markPathToRootAsCheckOnce() {

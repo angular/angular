@@ -32,6 +32,10 @@ export class BindingRecord {
     return isPresent(this.directiveRecord) && this.directiveRecord.callOnChange;
   }
 
+  isOnPushChangeDetection() {
+    return isPresent(this.directiveRecord) && this.directiveRecord.isOnPushChangeDetection();
+  }
+
   isDirective() {
     return this.mode === DIRECTIVE;
   }

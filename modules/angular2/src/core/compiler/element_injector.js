@@ -8,7 +8,7 @@ import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
-import {ChangeDetectorRef} from 'angular2/change_detection';
+import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -277,6 +277,15 @@ export class DirectiveBinding extends ResolvedBinding {
     }
   }
 
+  get changeDetection() {
+    if (this.annotation instanceof Component) {
+      var c:Component = this.annotation;
+      return c.changeDetection;
+    } else {
+      return null;
+    }
+  }
+
   static createFromBinding(b:Binding, annotation:Directive):DirectiveBinding {
     var rb = b.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
@@ -298,13 +307,13 @@ export class PreBuiltObjects {
   view:viewModule.AppView;
   element:NgElement;
   viewContainer:ViewContainer;
-  changeDetectorRef:ChangeDetectorRef;
+  changeDetector:ChangeDetector;
   constructor(view, element:NgElement, viewContainer:ViewContainer,
-              changeDetectorRef:ChangeDetectorRef) {
+              changeDetector:ChangeDetector) {
     this.view = view;
     this.element = element;
     this.viewContainer = viewContainer;
-    this.changeDetectorRef = changeDetectorRef;
+    this.changeDetector = changeDetector;
   }
 }
 
@@ -603,6 +612,10 @@ export class ElementInjector extends TreeNode {
     return this._preBuiltObjects.element;
   }
 
+  getChangeDetector() {
+    return this._preBuiltObjects.changeDetector;
+  }
+
   getComponent() {
     if (this._proto._binding0IsComponent) {
       return this._obj0;
@@ -885,7 +898,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
-    if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetectorRef;
+    if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetector.ref;
 
     //TODO add other objects as needed
     return _undefined;

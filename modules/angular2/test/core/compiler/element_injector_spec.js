@@ -11,7 +11,7 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
-import {ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
+import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
 import {ViewRef, Renderer, EventBinding} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -621,10 +621,10 @@ export function main() {
       });
 
       it('should return changeDetectorRef', function () {
-        var config = new ChangeDetectorRef(null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, config));
+        var cd = new DynamicChangeDetector(null, null, null, [], []);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, cd));
 
-        expect(inj.get(ChangeDetectorRef)).toEqual(config);
+        expect(inj.get(ChangeDetectorRef)).toBe(cd.ref);
       });
     });
 

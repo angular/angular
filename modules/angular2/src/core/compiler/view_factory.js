@@ -5,7 +5,6 @@ import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import * as vcModule from './view_container';
 import * as viewModule from './view';
-import {ChangeDetectorRef} from 'angular2/change_detection';
 
 // TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
 export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
@@ -77,13 +76,12 @@ export class ViewFactory {
       elementInjectors[binderIdx] = elementInjector;
 
       // componentChildViews
-      var changeDetectorRef = null;
+      var childChangeDetector = null;
       if (binder.hasStaticComponent()) {
         var childView = this._createView(binder.nestedProtoView);
-        changeDetector.addShadowDomChild(childView.changeDetector);
-
-        changeDetectorRef = new ChangeDetectorRef(childView.changeDetector);
-
+        childChangeDetector = childView.changeDetector;
+        changeDetector.addShadowDomChild(childChangeDetector);
+        
         componentChildViews[binderIdx] = childView;
       }
 
@@ -97,7 +95,7 @@ export class ViewFactory {
       // preBuiltObjects
       if (isPresent(elementInjector)) {
         preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(view, new NgElement(view, binderIdx), viewContainer,
-          changeDetectorRef);
+          childChangeDetector);
       }
     }
 

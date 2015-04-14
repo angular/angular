@@ -256,9 +256,14 @@ export class AppView {
     }
   }
 
-  directive(directive:DirectiveRecord) {
-    var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
+  getDirectiveFor(directive:DirectiveRecord) {
+    var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
+  }
+
+  getDetectorFor(directive:DirectiveRecord) {
+    var elementInjector = this.elementInjectors[directive.elementIndex];
+    return elementInjector.getChangeDetector();
   }
 
   setDynamicComponentChildView(boundElementIndex, view:AppView) {
@@ -458,9 +463,11 @@ export class AppProtoView {
 
     if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
       var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
+      var changeDetection = binding.changeDetection;
+
       MapWrapper.set(this._directiveRecordsMap, id,
         new DirectiveRecord(elementInjectorIndex, directiveIndex,
-          binding.callOnAllChangesDone, binding.callOnChange));
+          binding.callOnAllChangesDone, binding.callOnChange, changeDetection));
     }
 
     return MapWrapper.get(this._directiveRecordsMap, id);
