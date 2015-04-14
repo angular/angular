@@ -51,7 +51,7 @@ class PipeFactory {
     return this.shouldSupport;
   }
 
-  create(bpc):Pipe {
+  create(cdRef):Pipe {
     return this.pipe;
   }
 }

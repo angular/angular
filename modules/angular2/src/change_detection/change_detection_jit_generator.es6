@@ -362,13 +362,13 @@ export class ChangeDetectorJITGenerator {
     var change = this.changeNames[r.selfIndex];
 
     var pipe = this.pipeNames[r.selfIndex];
-    var bpc = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.bindingPropagationConfig" : "null";
+    var cdRef = r.mode === RECORD_TYPE_BINDING_PIPE ? "this.changeDetectorRef" : "null";
 
     var update = this.genUpdateDirectiveOrElement(r);
     var addToChanges = this.genAddToChanges(r);
     var lastInDirective = this.genNotifyOnChanges(r);
 
-    return pipeCheckTemplate(r.selfIndex - 1, context, bpc, pipe, r.name, oldValue, newValue, change,
+    return pipeCheckTemplate(r.selfIndex - 1, context, cdRef, pipe, r.name, oldValue, newValue, change,
       update, addToChanges, lastInDirective);
   }
 

@@ -245,12 +245,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
 
     // Currently, only pipes that used in bindings in the template get
-    // the bindingPropagationConfig of the encompassing component.
+    // the changeDetectorRef of the encompassing component.
     //
     // In the future, pipes declared in the bind configuration should
-    // be able to access the bindingPropagationConfig of that component.
-    var bpc = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.bindingPropagationConfig : null;
-    var pipe = this.pipeRegistry.get(proto.name, context, bpc);
+    // be able to access the changeDetectorRef of that component.
+    var cdr = proto.mode === RECORD_TYPE_BINDING_PIPE ? this.changeDetectorRef : null;
+    var pipe = this.pipeRegistry.get(proto.name, context, cdr);
     this._writePipe(proto, pipe);
     return pipe;
   }

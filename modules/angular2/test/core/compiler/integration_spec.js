@@ -22,7 +22,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
 import {dynamicChangeDetection,
-  ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig, ON_PUSH} from 'angular2/change_detection';
+  ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';
@@ -390,7 +390,7 @@ export function main() {
         })
       }));
 
-      describe("BindingPropagationConfig", () => {
+      describe("ChangeDetectorRef", () => {
         it("can be used to disable the change detection of the component's template",
           inject([TestBed, AsyncTestCompleter], (tb, async) => {
 
@@ -802,12 +802,12 @@ class MyDir {
 @View({template: '{{field}}'})
 class PushBasedComp {
   numberOfChecks:number;
-  bpc:BindingPropagationConfig;
+  ref:ChangeDetectorRef;
   prop;
 
-  constructor(bpc:BindingPropagationConfig) {
+  constructor(ref:ChangeDetectorRef) {
     this.numberOfChecks = 0;
-    this.bpc = bpc;
+    this.ref = ref;
   }
 
   get field(){
@@ -816,7 +816,7 @@ class PushBasedComp {
   }
 
   propagate() {
-    this.bpc.shouldBePropagatedFromRoot();
+    this.ref.requestCheck();
   }
 }
 
@@ -943,7 +943,7 @@ class DoublePipeFactory {
     return true;
   }
 
-  create(bpc) {
+  create(cdRef) {
     return new DoublePipe();
   }
 }

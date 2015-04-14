@@ -673,7 +673,7 @@ export function main() {
 
             cd.detectChanges();
 
-            expect(registry.bpc).toBe(cd.bindingPropagationConfig);
+            expect(registry.cdRef).toBe(cd.changeDetectorRef);
           });
         });
 
@@ -762,7 +762,7 @@ class FakePipeRegistry extends PipeRegistry {
   numberOfLookups:number;
   pipeType:string;
   factory:Function;
-  bpc:any;
+  cdRef:any;
 
   constructor(pipeType, factory) {
     super({});
@@ -771,10 +771,10 @@ class FakePipeRegistry extends PipeRegistry {
     this.numberOfLookups = 0;
   }
 
-  get(type:string, obj, bpc) {
+  get(type:string, obj, cdRef) {
     if (type != this.pipeType) return null;
     this.numberOfLookups ++;
-    this.bpc = bpc;
+    this.cdRef = cdRef;
     return this.factory();
   }
 }

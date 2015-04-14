@@ -8,7 +8,7 @@ import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
-import {BindingPropagationConfig} from 'angular2/change_detection';
+import {ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
@@ -46,7 +46,7 @@ class StaticKeys {
   viewId:number;
   ngElementId:number;
   viewContainerId:number;
-  bindingPropagationConfigId:number;
+  changeDetectorRefId:number;
   elementRefId:number;
 
   constructor() {
@@ -54,7 +54,7 @@ class StaticKeys {
     this.viewId = Key.get(viewModule.AppView).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
-    this.bindingPropagationConfigId = Key.get(BindingPropagationConfig).id;
+    this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
   }
 
@@ -298,13 +298,13 @@ export class PreBuiltObjects {
   view:viewModule.AppView;
   element:NgElement;
   viewContainer:ViewContainer;
-  bindingPropagationConfig:BindingPropagationConfig;
+  changeDetectorRef:ChangeDetectorRef;
   constructor(view, element:NgElement, viewContainer:ViewContainer,
-              bindingPropagationConfig:BindingPropagationConfig) {
+              changeDetectorRef:ChangeDetectorRef) {
     this.view = view;
     this.element = element;
     this.viewContainer = viewContainer;
-    this.bindingPropagationConfig = bindingPropagationConfig;
+    this.changeDetectorRef = changeDetectorRef;
   }
 }
 
@@ -885,7 +885,7 @@ export class ElementInjector extends TreeNode {
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
     if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
-    if (keyId === staticKeys.bindingPropagationConfigId) return this._preBuiltObjects.bindingPropagationConfig;
+    if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetectorRef;
 
     //TODO add other objects as needed
     return _undefined;

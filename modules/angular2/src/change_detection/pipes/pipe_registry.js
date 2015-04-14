@@ -1,7 +1,7 @@
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, BaseException, CONST} from 'angular2/src/facade/lang';
 import {Pipe} from './pipe';
-import {BindingPropagationConfig} from '../binding_propagation_config';
+import {ChangeDetectorRef} from '../change_detector_ref';
 
 export class PipeRegistry {
   config;
@@ -10,7 +10,7 @@ export class PipeRegistry {
     this.config = config;
   }
 
-  get(type:string, obj, bpc:BindingPropagationConfig):Pipe {
+  get(type:string, obj, cdRef:ChangeDetectorRef):Pipe {
     var listOfConfigs = this.config[type];
     if (isBlank(listOfConfigs)) {
       throw new BaseException(`Cannot find a pipe for type '${type}' object '${obj}'`);
@@ -23,6 +23,6 @@ export class PipeRegistry {
       throw new BaseException(`Cannot find a pipe for type '${type}' object '${obj}'`);
     }
 
-    return matchingConfig.create(bpc);
+    return matchingConfig.create(cdRef);
   }
 }

@@ -11,7 +11,7 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
-import {BindingPropagationConfig, Parser, Lexer} from 'angular2/change_detection';
+import {ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
 import {ViewRef, Renderer, EventBinding} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -620,11 +620,11 @@ export function main() {
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
       });
 
-      it('should return bindingPropagationConfig', function () {
-        var config = new BindingPropagationConfig(null);
+      it('should return changeDetectorRef', function () {
+        var config = new ChangeDetectorRef(null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, null, config));
 
-        expect(inj.get(BindingPropagationConfig)).toEqual(config);
+        expect(inj.get(ChangeDetectorRef)).toEqual(config);
       });
     });
 

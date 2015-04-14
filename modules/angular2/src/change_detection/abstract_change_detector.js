@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {BindingPropagationConfig} from './binding_propagation_config';
+import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
@@ -9,13 +9,13 @@ export class AbstractChangeDetector extends ChangeDetector {
   shadowDomChildren:List;
   parent:ChangeDetector;
   mode:string;
-  bindingPropagationConfig:BindingPropagationConfig;
+  changeDetectorRef:ChangeDetectorRef;
 
   constructor() {
     super();
     this.lightDomChildren = [];
     this.shadowDomChildren = [];
-    this.bindingPropagationConfig = new BindingPropagationConfig(this);
+    this.changeDetectorRef = new ChangeDetectorRef(this);
     this.mode = null;
   }
 
