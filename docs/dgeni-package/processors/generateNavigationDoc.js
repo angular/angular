@@ -27,13 +27,15 @@ module.exports = function generateNavigationDoc() {
           modulesDoc.value.sections.push(moduleNavItem);
 
           _.forEach(doc.exports, function(exportDoc) {
-            var exportNavItem = {
-              path: exportDoc.path,
-              partial: exportDoc.outputPath,
-              name: exportDoc.name,
-              type: exportDoc.docType
-            };
-            moduleNavItem.pages.push(exportNavItem);
+            if (!exportDoc.private) {
+              var exportNavItem = {
+                path: exportDoc.path,
+                partial: exportDoc.outputPath,
+                name: exportDoc.name,
+                type: exportDoc.docType
+              };
+              moduleNavItem.pages.push(exportNavItem);
+            }
           });
         }
       });

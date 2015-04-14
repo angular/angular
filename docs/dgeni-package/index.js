@@ -68,6 +68,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 .config(function(parseTagsProcessor, getInjectables) {
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/public'));
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/private'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/exportedAs'));
 })
 
