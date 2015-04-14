@@ -2,11 +2,11 @@ library web_foo.ng_deps.dart;
 
 import 'index.dart';
 import 'package:angular2/src/core/application.dart';
+import 'package:angular2/src/core/application.ng_deps.dart' as i0;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'index.ng_deps.dart' as ngStaticInit0;
 import 'bar.dart';
-import 'bar.ng_deps.dart' as i0;
-import 'package:angular2/src/core/application.ng_deps.dart' as i1;
+import 'bar.ng_deps.dart' as i1;
 
 bool _visited = false;
 void initReflector(reflector) {
