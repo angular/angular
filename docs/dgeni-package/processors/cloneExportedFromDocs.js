@@ -20,11 +20,13 @@ module.exports = function cloneExportedFromDocs(modules, EXPORT_DOC_TYPES) {
                             'Referenced in "@exportedAs" tag on class: "' + doc.moduleDoc.id + '/' + doc.name + '"');
           } else {
 
-            // Add a clone of export to its "exportedAs" module
-            var clonedDoc = _.clone(doc);
-            clonedDoc.moduleDoc = exportedAsModule;
-            exportedAsModule.exports.push(clonedDoc);
-            extraPublicDocs.push(clonedDoc);
+            if(exportedAsModule !== doc.moduleDoc) {
+              // Add a clone of export to its "exportedAs" module
+              var clonedDoc = _.clone(doc);
+              clonedDoc.moduleDoc = exportedAsModule;
+              exportedAsModule.exports.push(clonedDoc);
+              extraPublicDocs.push(clonedDoc);
+            }
           }
         });
       });
