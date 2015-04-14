@@ -570,13 +570,15 @@ gulp.task('build.dart', function(done) {
 
 gulp.task('build.broccoli.tools', function() {
   var tsResult = gulp.src('tools/broccoli/**/*.ts')
-    .pipe(tsc({ target: 'ES5', module: 'commonjs' }));
+                     .pipe(tsc({target: 'ES5', module: 'commonjs'}))
+                     .on('error', function() {
+                       console.log("ERROR: Broccoli tools failed to build.");
+                       process.exit(1);
+                     });
   return tsResult.js.pipe(gulp.dest('dist/broccoli'))
       .on('end', function() {
         var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
-        getBroccoli = function() {
-          return BroccoliBuilder;
-        };
+        getBroccoli = function() { return BroccoliBuilder; };
       });
 });
 
