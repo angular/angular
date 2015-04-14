@@ -361,6 +361,30 @@ export class Directive extends Injectable {
   properties:any; //  StringMap
 
   /**
+   * Enumerates the set of emitted events.
+   *
+   * ## Syntax
+   *
+   * ```
+   * @Component({
+   *   events: ['status-change']
+   * })
+   * class TaskComponent {
+   *   statusChange:EventEmitter;
+   *
+   *   constructor() {
+   *     this.complete = new EventEmitter();
+   *   }
+   *
+   *   onComplete() {
+   *     this.statusChange.next("completed");
+   *   }
+   * }
+   * ```
+   */
+  events:List<string>;
+
+  /**
    * Specifies which DOM hostListeners a directive listens to.
    *
    * The `hostListeners` property defines a set of `event` to `method` key-value pairs:
@@ -426,11 +450,13 @@ export class Directive extends Injectable {
   constructor({
       selector,
       properties,
+      events,
       hostListeners,
       lifecycle
     }:{
       selector:string,
       properties:any,
+      events:List,
       hostListeners: any,
       lifecycle:List
     }={})
@@ -438,6 +464,7 @@ export class Directive extends Injectable {
     super();
     this.selector = selector;
     this.properties = properties;
+    this.events = events;
     this.hostListeners = hostListeners;
     this.lifecycle = lifecycle;
   }
@@ -551,6 +578,7 @@ export class Component extends Directive {
   constructor({
     selector,
     properties,
+    events,
     hostListeners,
     injectables,
     lifecycle,
@@ -558,6 +586,7 @@ export class Component extends Directive {
     }:{
       selector:string,
       properties:Object,
+      events:List,
       hostListeners:Object,
       injectables:List,
       lifecycle:List,
@@ -567,6 +596,7 @@ export class Component extends Directive {
     super({
       selector: selector,
       properties: properties,
+      events: events,
       hostListeners: hostListeners,
       lifecycle: lifecycle
     });
@@ -634,12 +664,14 @@ export class DynamicComponent extends Directive {
   constructor({
     selector,
     properties,
+    events,
     hostListeners,
     injectables,
     lifecycle
     }:{
       selector:string,
       properties:Object,
+      events:List,
       hostListeners:Object,
       injectables:List,
       lifecycle:List
@@ -647,6 +679,7 @@ export class DynamicComponent extends Directive {
     super({
       selector: selector,
       properties: properties,
+      events: events,
       hostListeners: hostListeners,
       lifecycle: lifecycle
     });
@@ -727,12 +760,14 @@ export class Decorator extends Directive {
   constructor({
       selector,
       properties,
+      events,
       hostListeners,
       lifecycle,
       compileChildren = true,
     }:{
       selector:string,
       properties:any,
+      events:List,
       hostListeners:any,
       lifecycle:List,
       compileChildren:boolean
@@ -741,6 +776,7 @@ export class Decorator extends Directive {
     super({
         selector: selector,
         properties: properties,
+        events: events,
         hostListeners: hostListeners,
         lifecycle: lifecycle
     });
@@ -846,17 +882,20 @@ export class Viewport extends Directive {
   constructor({
       selector,
       properties,
+      events,
       hostListeners,
       lifecycle
     }:{
       selector:string,
       properties:any,
+      events:List,
       lifecycle:List
     }={})
   {
     super({
         selector: selector,
         properties: properties,
+        events: events,
         hostListeners: hostListeners,
         lifecycle: lifecycle
     });

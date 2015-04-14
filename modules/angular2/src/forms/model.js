@@ -1,5 +1,5 @@
 import {isPresent} from 'angular2/src/facade/lang';
-import {Observable, ObservableController, ObservableWrapper} from 'angular2/src/facade/async';
+import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMap, StringMapWrapper, ListWrapper, List} from 'angular2/src/facade/collection';
 import {Validators} from './validators';
 
@@ -40,8 +40,7 @@ export class AbstractControl {
   _parent:any; /* ControlGroup | ControlArray */
   validator:Function;
 
-  valueChanges:Observable;
-  _valueChangesController:ObservableController;
+  _valueChanges:EventEmitter;
 
   constructor(validator:Function) {
     this.validator = validator;
@@ -72,6 +71,10 @@ export class AbstractControl {
     return ! this.pristine;
   }
 
+  get valueChanges():Observable {
+    return this._valueChanges;
+  }
+
   setParent(parent){
     this._parent = parent;
   }
@@ -95,16 +98,14 @@ export class Control extends AbstractControl {
   constructor(value:any, validator:Function = Validators.nullValidator) {
     super(validator);
     this._setValueErrorsStatus(value);
-
-    this._valueChangesController = ObservableWrapper.createController();
-    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
+    this._valueChanges = new EventEmitter();
   }
 
   updateValue(value:any):void {
     this._setValueErrorsStatus(value);
     this._pristine = false;
 
-    ObservableWrapper.callNext(this._valueChangesController, this._value);
+    ObservableWrapper.callNext(this._valueChanges, this._value);
 
     this._updateParent();
   }
@@ -137,8 +138,7 @@ export class ControlGroup extends AbstractControl {
     this.controls = controls;
     this._optionals = isPresent(optionals) ? optionals : {};
 
-    this._valueChangesController = ObservableWrapper.createController();
-    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
+    this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
     this._setValueErrorsStatus();
@@ -169,7 +169,7 @@ export class ControlGroup extends AbstractControl {
     this._setValueErrorsStatus();
     this._pristine = false;
 
-    ObservableWrapper.callNext(this._valueChangesController, this._value);
+    ObservableWrapper.callNext(this._valueChanges, this._value);
 
     this._updateParent();
   }
@@ -222,8 +222,7 @@ export class ControlArray extends AbstractControl {
     super(validator);
     this.controls = controls;
 
-    this._valueChangesController = ObservableWrapper.createController();
-    this.valueChanges = ObservableWrapper.createObservable(this._valueChangesController);
+    this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
     this._setValueErrorsStatus();
@@ -258,7 +257,7 @@ export class ControlArray extends AbstractControl {
     this._setValueErrorsStatus();
     this._pristine = false;
 
-    ObservableWrapper.callNext(this._valueChangesController, this._value);
+    ObservableWrapper.callNext(this._valueChanges, this._value);
 
     this._updateParent();
   }

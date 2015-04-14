@@ -1,11 +1,10 @@
-import {Component, View, Parent, Ancestor, Attribute, PropertySetter,
-    EventEmitter} from 'angular2/angular2';
+import {Component, View, Parent, Ancestor, Attribute, PropertySetter} from 'angular2/angular2';
 import {Optional} from 'angular2/src/di/annotations';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
 import {MdTheme} from 'angular2_material/src/core/theme'
 import {onChange} from 'angular2/src/core/annotations/annotations';
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-// import {KeyCodes} from 'angular2_material/src/core/constants'
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {Math} from 'angular2/src/facade/math';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -177,6 +176,7 @@ export class MdRadioButton {
 @Component({
   selector: 'md-radio-group',
   lifecycle: [onChange],
+  events: ['change'],
   properties: {
     'disabled': 'disabled',
     'value': 'value'
@@ -212,6 +212,8 @@ export class MdRadioGroup {
   /** The ID of the selected radio button. */
   selectedRadioId: string;
 
+  change:EventEmitter;
+
   constructor(
       @Attribute('tabindex') tabindex: string,
       @Attribute('disabled') disabled: string,
@@ -219,11 +221,10 @@ export class MdRadioGroup {
       @PropertySetter('attr.role') roleSetter: Function,
       @PropertySetter('attr.aria-disabled') ariaDisabledSetter: Function,
       @PropertySetter('attr.aria-activedescendant') ariaActiveDescendantSetter: Function,
-      @EventEmitter('change') changeEmitter: Function,
       radioDispatcher: MdRadioDispatcher) {
     this.name_ = `md-radio-group-${_uniqueIdCounter++}`;
     this.radios_ = [];
-    this.changeEmitter = changeEmitter;
+    this.change = new EventEmitter();
     this.ariaActiveDescendantSetter = ariaActiveDescendantSetter;
     this.ariaDisabledSetter = ariaDisabledSetter;
     this.radioDispatcher = radioDispatcher;
@@ -277,7 +278,7 @@ export class MdRadioGroup {
     this.value = value;
     this.selectedRadioId = id;
     this.ariaActiveDescendantSetter(id);
-    this.changeEmitter();
+    ObservableWrapper.callNext(this.change, null);
   }
 
   /** Registers a child radio button with this group. */

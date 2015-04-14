@@ -3,13 +3,14 @@ import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
+import {reflector} from 'angular2/src/reflection/reflection';
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -194,17 +195,14 @@ export class TreeNode {
 
 export class DirectiveDependency extends Dependency {
   depth:int;
-  eventEmitterName:string;
   propSetterName:string;
   attributeName:string;
   queryDirective;
 
-  constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean,
-              properties:List, depth:int, eventEmitterName: string,
-              propSetterName: string, attributeName:string, queryDirective) {
+  constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean, properties:List,
+              depth:int, propSetterName: string, attributeName:string, queryDirective) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
-    this.eventEmitterName = eventEmitterName;
     this.propSetterName = propSetterName;
     this.attributeName = attributeName;
     this.queryDirective = queryDirective;
@@ -213,18 +211,16 @@ export class DirectiveDependency extends Dependency {
 
   _verify() {
     var count = 0;
-    if (isPresent(this.eventEmitterName)) count++;
     if (isPresent(this.propSetterName)) count++;
     if (isPresent(this.queryDirective)) count++;
     if (isPresent(this.attributeName)) count++;
     if (count > 1) throw new BaseException(
-      'A directive injectable can contain only one of the following @EventEmitter, @PropertySetter, @Attribute or @Query.');
+      'A directive injectable can contain only one of the following @PropertySetter, @Attribute or @Query.');
   }
 
   static createFrom(d:Dependency):Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
       d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._eventEmitterName(d.properties),
       DirectiveDependency._propSetterName(d.properties),
       DirectiveDependency._attributeName(d.properties),
       DirectiveDependency._query(d.properties)
@@ -236,11 +232,6 @@ export class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
-  }
-
-  static _eventEmitterName(properties):string {
-    var p = ListWrapper.find(properties, (p) => p instanceof EventEmitter);
-    return isPresent(p) ? p.eventName : null;
   }
 
   static _propSetterName(properties):string {
@@ -277,6 +268,10 @@ export class DirectiveBinding extends ResolvedBinding {
     }
   }
 
+  get eventEmitters():List<string> {
+    return isPresent(this.annotation) && isPresent(this.annotation.events) ? this.annotation.events : [];
+  }
+
   get changeDetection() {
     if (this.annotation instanceof Component) {
       var c:Component = this.annotation;
@@ -296,10 +291,6 @@ export class DirectiveBinding extends ResolvedBinding {
     var binding = new Binding(type, {toClass: type});
     return DirectiveBinding.createFromBinding(binding, annotation);
   }
-
-  static _hasEventEmitter(eventName: string, binding: DirectiveBinding) {
-    return ListWrapper.any(binding.dependencies, (d) => (d.eventEmitterName == eventName));
-  }
 }
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
@@ -314,6 +305,16 @@ export class PreBuiltObjects {
     this.element = element;
     this.viewContainer = viewContainer;
     this.changeDetector = changeDetector;
+  }
+}
+
+class EventEmitterAccessor {
+  eventName:string;
+  getter:Function;
+
+  constructor(eventName:string, getter:Function) {
+    this.eventName = eventName;
+    this.getter = getter;
   }
 }
 
@@ -337,17 +338,18 @@ ElementInjector:
  PERF BENCHMARK: http://www.williambrownstreet.net/blog/2014/04/faster-angularjs-rendering-angularjs-and-reactjs/
  */
 
+
 export class ProtoElementInjector  {
-  _binding0:ResolvedBinding;
-  _binding1:ResolvedBinding;
-  _binding2:ResolvedBinding;
-  _binding3:ResolvedBinding;
-  _binding4:ResolvedBinding;
-  _binding5:ResolvedBinding;
-  _binding6:ResolvedBinding;
-  _binding7:ResolvedBinding;
-  _binding8:ResolvedBinding;
-  _binding9:ResolvedBinding;
+  _binding0:DirectiveBinding;
+  _binding1:DirectiveBinding;
+  _binding2:DirectiveBinding;
+  _binding3:DirectiveBinding;
+  _binding4:DirectiveBinding;
+  _binding5:DirectiveBinding;
+  _binding6:DirectiveBinding;
+  _binding7:DirectiveBinding;
+  _binding8:DirectiveBinding;
+  _binding9:DirectiveBinding;
   _binding0IsComponent:boolean;
   _keyId0:int;
   _keyId1:int;
@@ -364,6 +366,7 @@ export class ProtoElementInjector  {
   view:viewModule.AppView;
   distanceToParent:number;
   attributes:Map;
+  eventEmitterAccessors:List<List<EventEmitterAccessor>>;
 
   numberOfDirectives:number;
 
@@ -397,20 +400,67 @@ export class ProtoElementInjector  {
 
     this.numberOfDirectives = bindings.length;
     var length = bindings.length;
+    this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
 
-    if (length > 0) {this._binding0 = this._createBinding(bindings[0]); this._keyId0 = this._binding0.key.id;}
-    if (length > 1) {this._binding1 = this._createBinding(bindings[1]); this._keyId1 = this._binding1.key.id;}
-    if (length > 2) {this._binding2 = this._createBinding(bindings[2]); this._keyId2 = this._binding2.key.id;}
-    if (length > 3) {this._binding3 = this._createBinding(bindings[3]); this._keyId3 = this._binding3.key.id;}
-    if (length > 4) {this._binding4 = this._createBinding(bindings[4]); this._keyId4 = this._binding4.key.id;}
-    if (length > 5) {this._binding5 = this._createBinding(bindings[5]); this._keyId5 = this._binding5.key.id;}
-    if (length > 6) {this._binding6 = this._createBinding(bindings[6]); this._keyId6 = this._binding6.key.id;}
-    if (length > 7) {this._binding7 = this._createBinding(bindings[7]); this._keyId7 = this._binding7.key.id;}
-    if (length > 8) {this._binding8 = this._createBinding(bindings[8]); this._keyId8 = this._binding8.key.id;}
-    if (length > 9) {this._binding9 = this._createBinding(bindings[9]); this._keyId9 = this._binding9.key.id;}
+    if (length > 0) {
+      this._binding0 = this._createBinding(bindings[0]);
+      this._keyId0 = this._binding0.key.id;
+      this.eventEmitterAccessors[0] = this._createEventEmitterAccessors(this._binding0);
+    }
+    if (length > 1) {
+      this._binding1 = this._createBinding(bindings[1]);
+      this._keyId1 = this._binding1.key.id;
+      this.eventEmitterAccessors[1] = this._createEventEmitterAccessors(this._binding1);
+    }
+    if (length > 2) {
+      this._binding2 = this._createBinding(bindings[2]);
+      this._keyId2 = this._binding2.key.id;
+      this.eventEmitterAccessors[2] = this._createEventEmitterAccessors(this._binding2);
+    }
+    if (length > 3) {
+      this._binding3 = this._createBinding(bindings[3]);
+      this._keyId3 = this._binding3.key.id;
+      this.eventEmitterAccessors[3] = this._createEventEmitterAccessors(this._binding3);
+    }
+    if (length > 4) {
+      this._binding4 = this._createBinding(bindings[4]);
+      this._keyId4 = this._binding4.key.id;
+      this.eventEmitterAccessors[4] = this._createEventEmitterAccessors(this._binding4);
+    }
+    if (length > 5) {
+      this._binding5 = this._createBinding(bindings[5]);
+      this._keyId5 = this._binding5.key.id;
+      this.eventEmitterAccessors[5] = this._createEventEmitterAccessors(this._binding5);
+    }
+    if (length > 6) {
+      this._binding6 = this._createBinding(bindings[6]);
+      this._keyId6 = this._binding6.key.id;
+      this.eventEmitterAccessors[6] = this._createEventEmitterAccessors(this._binding6);
+    }
+    if (length > 7) {
+      this._binding7 = this._createBinding(bindings[7]);
+      this._keyId7 = this._binding7.key.id;
+      this.eventEmitterAccessors[7] = this._createEventEmitterAccessors(this._binding7);
+    }
+    if (length > 8) {
+      this._binding8 = this._createBinding(bindings[8]);
+      this._keyId8 = this._binding8.key.id;
+      this.eventEmitterAccessors[8] = this._createEventEmitterAccessors(this._binding8);
+    }
+    if (length > 9) {
+      this._binding9 = this._createBinding(bindings[9]);
+      this._keyId9 = this._binding9.key.id;
+      this.eventEmitterAccessors[9] = this._createEventEmitterAccessors(this._binding9);
+    }
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
     }
+  }
+
+  _createEventEmitterAccessors(b:DirectiveBinding) {
+    return ListWrapper.map(b.eventEmitters, eventName =>
+      new EventEmitterAccessor(eventName, reflector.getter(eventName))
+    );
   }
 
   instantiate(parent:ElementInjector):ElementInjector {
@@ -446,21 +496,6 @@ export class ProtoElementInjector  {
     if (index == 8) return this._binding8;
     if (index == 9) return this._binding9;
     throw new OutOfBoundsAccess(index);
-  }
-
-  hasEventEmitter(eventName: string) {
-    var p = this;
-    if (isPresent(p._binding0) && DirectiveBinding._hasEventEmitter(eventName, p._binding0)) return true;
-    if (isPresent(p._binding1) && DirectiveBinding._hasEventEmitter(eventName, p._binding1)) return true;
-    if (isPresent(p._binding2) && DirectiveBinding._hasEventEmitter(eventName, p._binding2)) return true;
-    if (isPresent(p._binding3) && DirectiveBinding._hasEventEmitter(eventName, p._binding3)) return true;
-    if (isPresent(p._binding4) && DirectiveBinding._hasEventEmitter(eventName, p._binding4)) return true;
-    if (isPresent(p._binding5) && DirectiveBinding._hasEventEmitter(eventName, p._binding5)) return true;
-    if (isPresent(p._binding6) && DirectiveBinding._hasEventEmitter(eventName, p._binding6)) return true;
-    if (isPresent(p._binding7) && DirectiveBinding._hasEventEmitter(eventName, p._binding7)) return true;
-    if (isPresent(p._binding8) && DirectiveBinding._hasEventEmitter(eventName, p._binding8)) return true;
-    if (isPresent(p._binding9) && DirectiveBinding._hasEventEmitter(eventName, p._binding9)) return true;
-    return false;
   }
 }
 
@@ -607,6 +642,10 @@ export class ElementInjector extends TreeNode {
     return this._getDirectiveByKeyId(Key.get(type).id) !== _undefined;
   }
 
+  getEventEmitterAccessors() {
+    return this._proto.eventEmitterAccessors;
+  }
+
   /** Gets the NgElement associated with this ElementInjector */
   getNgElement() {
     return this._preBuiltObjects.element;
@@ -689,7 +728,6 @@ export class ElementInjector extends TreeNode {
   }
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
-    if (isPresent(dep.eventEmitterName)) return this._buildEventEmitter(dep);
     if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
@@ -697,13 +735,6 @@ export class ElementInjector extends TreeNode {
       return new ElementRef(this);
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
-  }
-
-  _buildEventEmitter(dep: DirectiveDependency) {
-    var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    return (event) => {
-      view.triggerEventHandlers(dep.eventEmitterName, event, this._proto.index);
-    };
   }
 
   _buildPropSetter(dep) {
@@ -934,16 +965,8 @@ export class ElementInjector extends TreeNode {
     throw new OutOfBoundsAccess(index);
   }
 
-  getDirectiveBindingAtIndex(index:int) {
-    return this._proto.getDirectiveBindingAtIndex(index);
-  }
-
   hasInstances() {
     return this._constructionCounter > 0;
-  }
-
-  hasEventEmitter(eventName: string) {
-    return this._proto.hasEventEmitter(eventName);
   }
 
   /** Gets whether this element is exporting a component instance as $implicit. */

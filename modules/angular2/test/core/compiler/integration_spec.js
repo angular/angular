@@ -18,7 +18,7 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Type, isPresent, BaseException, assertionsEnabled, isJsObject, global} from 'angular2/src/facade/lang';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
 import {dynamicChangeDetection,
@@ -27,7 +27,7 @@ import {dynamicChangeDetection,
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, Attribute} from 'angular2/src/core/annotations/di';
+import {Attribute} from 'angular2/src/core/annotations/di';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
@@ -532,14 +532,14 @@ export function main() {
           var emitter = injector.get(DecoratorEmitingEvent);
           var listener = injector.get(DecoratorListeningEvent);
 
-          expect(emitter.msg).toEqual('');
           expect(listener.msg).toEqual('');
 
           emitter.fireEvent('fired !');
-          expect(emitter.msg).toEqual('fired !');
-          expect(listener.msg).toEqual('fired !');
 
-          async.done();
+          PromiseWrapper.setTimeout(() => {
+            expect(listener.msg).toEqual('fired !');
+            async.done();
+          }, 0);
         });
       }));
 
@@ -994,23 +994,19 @@ class DoublePipeFactory {
 
 @Decorator({
   selector: '[emitter]',
-  hostListeners: {'event': 'onEvent($event)'}
+  events: ['event']
 })
 class DecoratorEmitingEvent {
   msg: string;
-  emitter;
+  event:EventEmitter;
 
-  constructor(@EventEmitter('event') emitter:Function) {
+  constructor() {
     this.msg = '';
-    this.emitter = emitter;
+    this.event = new EventEmitter();
   }
 
   fireEvent(msg: string) {
-    this.emitter(msg);
-  }
-
-  onEvent(msg: string) {
-    this.msg = msg;
+    ObservableWrapper.callNext(this.event, msg);
   }
 }
 

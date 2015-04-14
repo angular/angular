@@ -47,6 +47,7 @@ export function main() {
       var res = new SpyElementInjector();
       res.spy('isExportingComponent').andCallFake( () => false );
       res.spy('isExportingElement').andCallFake( () => false );
+      res.spy('getEventEmitterAccessors').andCallFake( () => [] );
       return res;
     }
 

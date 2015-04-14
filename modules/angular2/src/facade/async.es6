@@ -53,6 +53,28 @@ export class PromiseWrapper {
   }
 }
 
+export class ObservableWrapper {
+  static subscribe(emitter:EventEmitter, onNext, onThrow = null, onReturn = null) {
+    return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
+  }
+
+  static callNext(emitter:EventEmitter, value:any) {
+    emitter.next(value);
+  }
+
+  static callThrow(emitter:EventEmitter, error:any) {
+    emitter.throw(error);
+  }
+
+  static callReturn(emitter:EventEmitter) {
+    emitter.return();
+  }
+}
+
+//TODO: vsavkin change to interface
+export class Observable {
+  observer(generator:Function){}
+}
 
 /**
  * Use Rx.Observable but provides an adapter to make it work as specified here:
@@ -60,39 +82,37 @@ export class PromiseWrapper {
  *
  * Once a reference implementation of the spec is available, switch to it.
  */
-export var Observable = Rx.Observable;
-export var ObservableController = Rx.Subject;
+export class EventEmitter extends Observable {
+  _subject:Rx.Subject;
 
-export class ObservableWrapper {
-  static createController():Rx.Subject {
-    return new Rx.Subject();
+  constructor() {
+    super();
+    this._subject = new Rx.Subject();
   }
 
-  static createObservable(subject:Rx.Subject):Observable {
-    return subject;
+  observer(generator) {
+    // Rx.Scheduler.immediate and setTimeout is a workaround, so Rx works with zones.js.
+    // Once https://github.com/angular/zone.js/issues/51 is fixed, the hack should be removed.
+    return this._subject.observeOn(Rx.Scheduler.immediate).subscribe(
+      (value) => {setTimeout(() => generator.next(value));},
+      (error) => generator.throw ? generator.throw(error) : null,
+      () => generator.return ? generator.return() : null
+    );
   }
 
-  static subscribe(observable:Observable, generatorOrOnNext, onThrow = null, onReturn = null) {
-    if (isPresent(generatorOrOnNext.next)) {
-      return observable.observeOn(Rx.Scheduler.timeout).subscribe(
-        (value) => generatorOrOnNext.next(value),
-        (error) => generatorOrOnNext.throw(error),
-        () => generatorOrOnNext.return()
-      );
-    } else {
-      return observable.observeOn(Rx.Scheduler.timeout).subscribe(generatorOrOnNext, onThrow, onReturn);
-    }
+  toRx():Rx.Observable {
+    return this._subject;
   }
 
-  static callNext(subject:Rx.Subject, value:any) {
-    subject.onNext(value);
+  next(value) {
+    this._subject.onNext(value);
   }
 
-  static callThrow(subject:Rx.Subject, error:any) {
-    subject.onError(error);
+  throw(error) {
+    this._subject.onError(error);
   }
 
-  static callReturn(subject:Rx.Subject) {
-    subject.onCompleted();
+  return(value) {
+    this._subject.onCompleted();
   }
 }

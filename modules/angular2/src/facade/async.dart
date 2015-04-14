@@ -37,26 +37,49 @@ class ObservableWrapper {
     return s.listen(onNext, onError: onError, onDone: onComplete, cancelOnError: true);
   }
 
-  static StreamController createController() {
-    return new StreamController.broadcast();
+  static void callNext(EventEmitter emitter, value) {
+    emitter.add(value);
   }
 
-  static Stream createObservable(StreamController controller) {
-    return controller.stream;
+  static void callThrow(EventEmitter emitter, error) {
+    emitter.addError(error);
   }
 
-  static void callNext(StreamController controller, value) {
-    controller.add(value);
-  }
-
-  static void callThrow(StreamController controller, error) {
-    controller.addError(error);
-  }
-
-  static void callReturn(StreamController controller) {
-    controller.close();
+  static void callReturn(EventEmitter emitter) {
+    emitter.close();
   }
 }
+
+class EventEmitter extends Stream {
+  StreamController<String> _controller;
+
+  EventEmitter() {
+    _controller = new StreamController.broadcast();
+  }
+
+  StreamSubscription listen(void onData(String line), {
+                              void onError(Error error),
+                              void onDone(),
+                              bool cancelOnError }) {
+    return _controller.stream.listen(onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError);
+  }
+
+  void add(value) {
+    _controller.add(value);
+  }
+
+  void addError(error) {
+    _controller.addError(error);
+  }
+
+  void close() {
+    _controller.close();
+  }
+}
+
 
 class _Completer {
   final Completer c;

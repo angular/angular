@@ -53,6 +53,7 @@ class HeaderFields {
 // This component is self-contained and can be tested in isolation.
 @Component({
   selector: 'survey-question',
+  events: ['destroy'],
   properties: {
     "question" : "question",
     "index" : "index"
@@ -100,16 +101,16 @@ class HeaderFields {
 class SurveyQuestion {
   question:ControlGroup;
   index:number;
-  onDelete:Function;
+  destroy:EventEmitter;
 
-  constructor(@EventEmitter("delete") onDelete:Function) {
-    this.onDelete = onDelete;
+  constructor() {
+    this.destroy = new EventEmitter();
   }
 
   deleteQuestion() {
     // Invoking an injected event emitter will fire an event,
     // which in this case will result in calling `deleteQuestion(i)`
-    this.onDelete();
+    this.destroy.next(null);
   }
 }
 
@@ -132,7 +133,7 @@ class SurveyQuestion {
           *for="var q of form.controls.questions.controls; var i=index"
           [question]="q"
           [index]="i + 1"
-          (delete)="deleteQuestion(i)">
+          (destroy)="destroyQuestion(i)">
       </survey-question>
 
       <button (click)="submitForm()">Submit</button>
@@ -175,14 +176,14 @@ class SurveyBuilder {
     // complex form interactions in a declarative fashion.
     //
     // We are disabling the responseLength control when the question type is checkbox.
-    newQuestion.controls.type.valueChanges.subscribe((v) =>
-      v == 'text' || v == 'textarea' ?
-        newQuestion.include('responseLength') : newQuestion.exclude('responseLength'));
+    newQuestion.controls.type.valueChanges.observer({
+      next: (v) => v == 'text' || v == 'textarea' ? newQuestion.include('responseLength') : newQuestion.exclude('responseLength')
+    });
 
     this.form.controls.questions.push(newQuestion);
   }
 
-  deleteQuestion(index:number) {
+  destroyQuestion(index:number) {
     this.form.controls.questions.removeAt(index);
   }
 

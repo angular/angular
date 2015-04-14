@@ -2,33 +2,10 @@ import {CONST} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/di';
 
 /**
- * Specifies that a function for emitting events should be injected.
- *
- * NOTE: This is changing pre 1.0.
- * 
- * The directive can inject an emitter function that would emit events onto the directive host element.
- * 
- * @exportedAs angular2/annotations
- */
-export class EventEmitter extends DependencyAnnotation {
-  eventName: string;
-
-  @CONST()
-  constructor(eventName) {
-    super();
-    this.eventName = eventName;
-  }
-
-  get token() {
-    return Function;
-  }
-}
-
-/**
  * Specifies that a function for setting host properties should be injected.
  *
  * NOTE: This is changing pre 1.0.
- * 
+ *
  * The directive can inject a property setter that would allow setting this property on the host element.
  *
  * @exportedAs angular2/annotations

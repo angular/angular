@@ -4,7 +4,7 @@ import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from '
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode, ElementRef}
   from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {EventEmitter, PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
@@ -12,11 +12,11 @@ import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
-import {ViewRef, Renderer, EventBinding} from 'angular2/src/render/api';
+import {ViewRef, Renderer} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 class DummyDirective extends Directive {
-  constructor({lifecycle} = {}) { super({lifecycle: lifecycle}); }
+  constructor({lifecycle, events} = {}) { super({lifecycle: lifecycle, events: events}); }
 }
 
 @proxy
@@ -80,23 +80,10 @@ class NeedsService {
   }
 }
 
-class NeedsEventEmitter {
-  clickEmitter;
-  constructor(@EventEmitter('click') clickEmitter:Function) {
-    this.clickEmitter = clickEmitter;
-  }
-  click() {
-    this.clickEmitter(null);
-  }
-}
-
-class NeedsEventEmitterNoType {
-  clickEmitter;
-  constructor(@EventEmitter('click') clickEmitter) {
-    this.clickEmitter = clickEmitter;
-  }
-  click() {
-    this.clickEmitter(null);
+class HasEventEmitter {
+  emitter;
+  constructor() {
+    this.emitter = "emitter";
   }
 }
 
@@ -378,6 +365,20 @@ export function main() {
           'Index -1 is out-of-bounds.');
         expect(() => proto.getDirectiveBindingAtIndex(10)).toThrowError(
           'Index 10 is out-of-bounds.');
+      });
+    });
+
+    describe('event emitters', () => {
+      it('should return a list of event emitter accessors', () => {
+        var binding = DirectiveBinding.createFromType(
+          HasEventEmitter, new DummyDirective({events: ['emitter']}));
+
+        var inj = new ProtoElementInjector(null, 0, [binding]);
+        expect(inj.eventEmitterAccessors.length).toEqual(1);
+
+        var accessor = inj.eventEmitterAccessors[0][0];
+        expect(accessor.eventName).toEqual('emitter');
+        expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
       });
     });
   });
@@ -700,51 +701,6 @@ export function main() {
         var appInjector = Injector.resolveAndCreate([bind("service").toValue("Service")]);
         inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedsService, null), appInjector);
         expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
-      });
-    });
-
-    describe('event emitters', () => {
-
-      function createpreBuildObject(eventName, eventHandler) {
-        var handlers = StringMapWrapper.create();
-        StringMapWrapper.set(handlers, eventName, eventHandler);
-        var pv = new AppProtoView(null, null);
-        pv.bindElement(null, 0, null, null, null);
-        var eventBindings = ListWrapper.create();
-        ListWrapper.push(eventBindings, new EventBinding(eventName, new Parser(new Lexer()).parseAction('handler()', '')));
-        pv.bindEvent(eventBindings);
-
-        var view = new AppView(null, pv, MapWrapper.create());
-        view.context = new ContextWithHandler(eventHandler);
-        return new PreBuiltObjects(view, null, null, null);
-      }
-
-      it('should be injectable and callable', () => {
-        var called = false;
-        var preBuildObject = createpreBuildObject('click', () => { called = true;});
-        var inj = injector([NeedsEventEmitter], null, null, preBuildObject);
-        inj.get(NeedsEventEmitter).click();
-        expect(called).toEqual(true);
-      });
-
-      it('should be injectable and callable without specifying param type annotation', () => {
-        var called = false;
-        var preBuildObject = createpreBuildObject('click', () => { called = true;});
-        var inj = injector([NeedsEventEmitterNoType], null, null, preBuildObject);
-        inj.get(NeedsEventEmitterNoType).click();
-        expect(called).toEqual(true);
-      });
-
-      it('should be queryable through hasEventEmitter', () => {
-        var inj = injector([NeedsEventEmitter]);
-        expect(inj.hasEventEmitter('click')).toBe(true);
-        expect(inj.hasEventEmitter('move')).toBe(false);
-      });
-
-      it('should be queryable through hasEventEmitter without specifying param type annotation', () => {
-        var inj = injector([NeedsEventEmitterNoType]);
-        expect(inj.hasEventEmitter('click')).toBe(true);
-        expect(inj.hasEventEmitter('move')).toBe(false);
       });
     });
 

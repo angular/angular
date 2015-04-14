@@ -49,35 +49,50 @@ export class PromiseWrapper {
 }
 
 
+export class ObservableWrapper {
+  static subscribe(emitter: EventEmitter, onNext, onThrow = null, onReturn = null) {
+    return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
+  }
+
+  static callNext(emitter: EventEmitter, value: any) { emitter.next(value); }
+
+  static callThrow(emitter: EventEmitter, error: any) { emitter.throw(error); }
+
+  static callReturn(emitter: EventEmitter) { emitter.return (null); }
+}
+
+// TODO: vsavkin change to interface
+export class Observable {
+  observer(generator: any) {}
+}
+
 /**
  * Use Rx.Observable but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
  */
-type Observable = Rx.Observable<any>;
-type ObservableController = Rx.Subject<any>;
+export class EventEmitter extends Observable {
+  _subject: Rx.Subject<any>;
 
-export class ObservableWrapper {
-  static createController(): Rx.Subject<any> { return new Rx.Subject(); }
-
-  static createObservable<T>(subject: Rx.Subject<T>): Rx.Observable<T> { return subject; }
-
-  static subscribe(observable: Rx.Observable<any>, generatorOrOnNext, onThrow = null,
-                   onReturn = null) {
-    if (isPresent(generatorOrOnNext.next)) {
-      return observable.observeOn(Rx.Scheduler.timeout)
-          .subscribe((value) => generatorOrOnNext.next(value),
-                     (error) => generatorOrOnNext.throw(error), () => generatorOrOnNext.return ());
-    } else {
-      return observable.observeOn(Rx.Scheduler.timeout)
-          .subscribe(generatorOrOnNext, onThrow, onReturn);
-    }
+  constructor() {
+    super();
+    this._subject = new Rx.Subject<any>();
   }
 
-  static callNext(subject: Rx.Subject<any>, value: any) { subject.onNext(value); }
+  observer(generator) {
+    var immediateScheduler = (<any>Rx.Scheduler).immediate;
+    return this._subject.observeOn(immediateScheduler)
+        .subscribe((value) => { setTimeout(() => generator.next(value)); },
+                   (error) => generator.throw ? generator.throw(error) : null,
+                   () => generator.return ? generator.return () : null);
+  }
 
-  static callThrow(subject: Rx.Subject<any>, error: any) { subject.onError(error); }
+  toRx(): Rx.Observable<any> { return this._subject; }
 
-  static callReturn(subject: Rx.Subject<any>) { subject.onCompleted(); }
+  next(value) { this._subject.onNext(value); }
+
+  throw(error) { this._subject.onError(error); }
+
+  return (value) { this._subject.onCompleted(); }
 }
