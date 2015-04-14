@@ -19,7 +19,14 @@ module.exports = function makeNodeTree() {
 
   var modulesTree = new Funnel('modules', {
     include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
-    exclude: ['angular2/src/core/zone/vm_turn_zone.es6']
+    exclude: [
+      'angular2/src/core/zone/vm_turn_zone.es6',
+      'angular2/test/core/application_spec.js',
+      'angular2/test/core/testability/**',
+      'angular2/test/core/zone/**',
+      'angular2/test/render/**',
+      'angular2/test/forms/integration_spec.js'
+    ]
   });
 
   var nodeTree = new TraceurCompiler(modulesTree, '.js', '.map', {
