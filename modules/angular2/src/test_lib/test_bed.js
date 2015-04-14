@@ -18,7 +18,9 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {queryView, viewRootNodes, el} from './utils';
 import {instantiateType, getTypeOf} from './lang_utils';
 
-
+/**
+ * @exportedAs angular2/test
+ */
 export class TestBed {
   _injector: Injector;
 

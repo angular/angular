@@ -40,7 +40,9 @@ export class CompilerCache {
   }
 }
 
-
+/**
+ * @exportedAs angular2/template
+ */
 @Injectable()
 export class Compiler {
   _reader: DirectiveMetadataReader;

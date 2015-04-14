@@ -13,7 +13,6 @@ import * as renderApi from 'angular2/src/render/api';
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  *
- * @exportedAs angular2/template
  */
 @IMPLEMENTS(ChangeDispatcher)
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
@@ -288,7 +287,6 @@ export class AppView {
 
 /**
  *
- * @exportedAs angular2/template
  */
 export class AppProtoView {
   elementBinders:List<ElementBinder>;

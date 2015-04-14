@@ -7,8 +7,10 @@ import {Directive} from 'angular2/src/core/annotations/annotations';
  *
  * In the future this class will implement an Observable interface.
  * For now it uses a plain list of observable callbacks.
+ *
+ * @exportedAs angular2/view
  */
-export class QueryList {
+export class BaseQueryList {
   _results: List<Directive>;
   _callbacks;
   _dirty;
