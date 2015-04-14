@@ -10,6 +10,7 @@ cd $ROOT_DIR
 
 gulp clean
 gulp build/packages.dart
+gulp build/pubspec.dart
 gulp build/analyze.dart
 
 PKG_DIR=$ROOT_DIR/dist/pub
