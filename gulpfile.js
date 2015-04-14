@@ -208,22 +208,15 @@ var CONFIG = {
   test: {
     js: {
       cjs: [
-        '/angular2/test/change_detection/**/*_spec.js',
-        '/angular2/test/core/annotations/**/*_spec.js',
-        '/angular2/test/core/compiler/**/*_spec.js',
-        '/angular2/test/di/**/*_spec.js',
-        '/angular2/test/directives/**/*_spec.js',
-        '/angular2/test/facade/**/*_spec.js',
-        '/angular2/test/forms/**/*_spec.js',
-        '/angular2/test/mock/**/*_spec.js',
-        '/angular2/test/reflection/**/*_spec.js',
-        '/angular2/test/services/**/*_spec.js',
-        '/angular2/test/test_lib/**/*_spec.js'
+        '/angular2/test/**/*_spec.js'
       ]
     }
   }
 };
 CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
+CONFIG.test.js.cjs.push('!**/core/application_spec.js'); //Disabled in nodejs because it relies on Zone.js
+CONFIG.test.js.cjs.push('!**/core/zone/vm_turn_zone_spec.js'); //Disabled in nodejs because it relies on Zone.js
+CONFIG.test.js.cjs.push('!**/render/dom/events/event_manager_spec.js'); //Disabled in nodejs because it relies on DOM events
 
 // ------------
 // clean
