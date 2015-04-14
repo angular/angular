@@ -9,6 +9,29 @@ export class ProtoChangeDetector  {
   }
 }
 
+/**
+ * Interface used by Angular to control the change detection strategy for an application.
+ *
+ * Angular implements the following change detection strategies by default:
+ *
+ * - [dynamicChangeDetection]: slower, but does not require `eval()`.
+ * - [jitChangeDetection]: faster, but requires `eval()`.
+ *
+ * In JavaScript, you should always use `jitChangeDetection`, unless you are in an environment that has
+ * [CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP), such as a Chrome Extension.
+ *
+ * In Dart, use `dynamicChangeDetection` during development. The Angular transformer generates an analog to the
+ * `jitChangeDetection` strategy at compile time.
+ *
+ *
+ * See: [dynamicChangeDetection], [jitChangeDetection]
+ *
+ * # Example
+ * ```javascript
+ * bootstrap(MyApp, [bind(ChangeDetection).toValue(dynamicChangeDetection)]);
+ * ```
+ * @exportedAs angular2/change_detection
+ */
 export class ChangeDetection {
   createProtoChangeDetector(name:string, changeControlStrategy:string=DEFAULT):ProtoChangeDetector{
     return null;

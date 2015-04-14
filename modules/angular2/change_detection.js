@@ -2,7 +2,7 @@
  * @module
  * @public
  * @description
- * Description of the change_detection module
+ * Change detection enables data binding in Angular.
  */
 
 export {
@@ -79,5 +79,16 @@ export class JitChangeDetection extends ChangeDetection {
 
 var _registry = new PipeRegistry(defaultPipes);
 
+/**
+ * Implements dynamic change detection. See: [ChangeDetection] for more details.
+ *
+ * @exportedAs angular2/change_detection
+ */
 export var dynamicChangeDetection = new DynamicChangeDetection(_registry);
+
+/**
+ * Implements just-in-time change detection. See: [ChangeDetection] for more details.
+ *
+ * @exportedAs angular2/change_detection
+ */
 export var jitChangeDetection = new JitChangeDetection(_registry);

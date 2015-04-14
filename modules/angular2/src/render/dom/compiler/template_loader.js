@@ -11,7 +11,7 @@ import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 /**
  * Strategy to load component templates.
- * @exportedAs angular2/core
+ * TODO: Make public API once we are more confident in this approach.
  */
 @Injectable()
 export class TemplateLoader {

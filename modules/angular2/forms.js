@@ -2,9 +2,11 @@
  * @module
  * @public
  * @description
- * This module is used for handling complex input, by defining and building a [FormObject] that consists of [Control]
+ * This module is used for handling user input, by defining and building a [FormObject] that consists of [Control]
  * objects, and mapping them onto the DOM. [Control] objects can then be used to read information from the form DOM
  * elements.
+ *
+ * This module is not included in the `angular2` module; you must import the forms module explicitly.
  *
  */
 
