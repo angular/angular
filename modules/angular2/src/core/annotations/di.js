@@ -2,11 +2,17 @@ import {CONST} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/di';
 
 /**
- * The directive can inject an emitter function that would emit events onto the
- * directive host element.
+ * Specifies that a function for emitting events should be injected.
+ *
+ * NOTE: This is changing pre 1.0.
+ * 
+ * The directive can inject an emitter function that would emit events onto the directive host element.
+ * 
+ * @exportedAs angular2/annotations
  */
 export class EventEmitter extends DependencyAnnotation {
   eventName: string;
+
   @CONST()
   constructor(eventName) {
     super();
@@ -19,8 +25,13 @@ export class EventEmitter extends DependencyAnnotation {
 }
 
 /**
- * The directive can inject a property setter that would allow setting this property on the
- * host element
+ * Specifies that a function for setting host properties should be injected.
+ *
+ * NOTE: This is changing pre 1.0.
+ * 
+ * The directive can inject a property setter that would allow setting this property on the host element.
+ *
+ * @exportedAs angular2/annotations
  */
 export class PropertySetter extends DependencyAnnotation {
   propName: string;
@@ -36,7 +47,32 @@ export class PropertySetter extends DependencyAnnotation {
 }
 
 /**
- * The directive can inject the value of an attribute of the host element
+ * Specifies that a constant attribute value should be injected.
+ *
+ * The directive can inject constant string literals of host element attributes.
+ *
+ * ## Example
+ *
+ * suppose we have an `<input>` element and would like to know its `type`.
+ *
+ * ```html
+ * <input type="text">
+ * ```
+ *
+ * A decorator could inject string literal `text` like so:
+ *
+ * ```javascript
+ * @Decorator({
+ *   selector: `input'
+ * })
+ * class InputDecorator {
+ *   constructor(@Attribute('type') type) {
+ *     // type would be `text` in this example
+ *   }
+ * }
+ * ```
+ *
+ * @exportedAs angular2/annotations
  */
 export class Attribute extends DependencyAnnotation {
   attributeName: string;
@@ -56,7 +92,11 @@ export class Attribute extends DependencyAnnotation {
 }
 
 /**
- * The directive can inject an query that would reflect a list of ancestor directives
+ * Specifies that a [QueryList] should be injected.
+ *
+ * See: [QueryList] for usage.
+ *
+ * @exportedAs angular2/annotations
  */
 export class Query extends DependencyAnnotation {
   directive;

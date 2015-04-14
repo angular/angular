@@ -19,6 +19,9 @@ var _undefined = new Object();
 
 var _staticKeys;
 
+/**
+ * @exportedAs angular2/view
+ */
 export class ElementRef {
   elementInjector:ElementInjector;
 
