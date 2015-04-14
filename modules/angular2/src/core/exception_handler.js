@@ -3,6 +3,32 @@ import {isPresent, print} from 'angular2/src/facade/lang';
 import {ListWrapper, isListLikeIterable} from 'angular2/src/facade/collection';
 
 /**
+ * Provides a hook for centralized exception handling.
+ *
+ * The default implementation of `ExceptionHandler` prints error messages to the `Console`. To intercept error handling,
+ * write a custom exception handler that replaces this default as appropriate for your app.
+ *
+ * # Example
+ *
+ * ```javascript
+ * @Component({
+ *   selector: 'my-app',
+ *   injectables: [
+ *     bind(ExceptionHandler).toClass(MyExceptionHandler)
+ *   ]
+ * })
+ * @View(...)
+ * class MyApp { ... }
+ *
+ *
+ * class MyExceptionHandler implements ExceptionHandler {
+ *   call(error, stackTrace = null, reason = null) {
+ *     // do something with the exception
+ *   }
+ * }
+ *
+ * ```
+ *
  * @exportedAs angular2/core
  */
 @Injectable()
