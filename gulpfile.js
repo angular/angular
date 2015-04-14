@@ -1,4 +1,5 @@
 var format = require('gulp-clang-format');
+var fork = require('child_process').fork;
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var shell = require('gulp-shell');
@@ -6,6 +7,7 @@ var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
 var path = require('path');
+var Q = require('q');
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 var clean = require('./tools/build/clean');
@@ -565,34 +567,37 @@ gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
-gulp.task('test.unit.cjs/ci', function () {
-  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine({includeStackTrace: true, timeout: 1000}));
-});
-gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
+
+function runNodeJasmineTests() {
+  var doneDeferred = Q.defer();
+  var jasmineProcess = fork('./tools/traceur-jasmine', ['dist/js/cjs/angular2/test/**/*_spec.js'], {
+    stdio: 'inherit'
+  });
+
+  jasmineProcess.on('close', function (code) {
+    doneDeferred.resolve();
+  });
+
+  return doneDeferred.promise;
+}
+
+gulp.task('test.unit.cjs/ci', runNodeJasmineTests);
+
+gulp.task('test.unit.cjs', ['build.broccoli.tools'], function (done) {
   //Run tests once
-  runSequence('test.unit.cjs/ci', function() {});
+  var nodeBroccoliBuilder = getBroccoli().forNodeTree();
 
-  //Watcher to transpile file changed
-  gulp.watch(CONFIG.transpile.src.js.concat(['modules/**/*.cjs']), function(event) {
-    var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
-    gulp.src(relPath)
-      .pipe(gulpPlugins.rename({extname: '.'+ 'js'}))
-      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.js))
-      .pipe(gulpTraceur(CONFIG.transpile.options.js.cjs, file2moduleName))
-      .pipe(transformCJSTests())
-      .pipe(gulp.dest(CONFIG.dest.js.cjs + path.dirname(relPath.replace("modules", ""))));
-  });
-  //Watcher to run tests when dist/js/cjs/angular2 is updated by the first watcher (after clearing the node cache)
-  gulp.watch(CONFIG.dest.js.cjs + '/angular2/**/*.js', function(event) {
-    for (var id in require.cache) {
-      if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
-        delete require.cache[id];
-      }
-    }
-    global.assert = undefined; // https://github.com/angular/angular/issues/1340
-    runSequence('test.unit.cjs/ci', function() {});
-  });
 
+  nodeBroccoliBuilder.doBuild().then(function() {
+    gulp.start('build/linknodemodules.js.cjs');
+    return runNodeJasmineTests();
+  }).then(function() {
+    //Watcher to transpile file changed
+    gulp.watch('modules/**', function(event) {
+      console.log("fs changes detected", event);
+      nodeBroccoliBuilder.doBuild().then(runNodeJasmineTests);
+    });
+  });
 });
 
 // ------------------
@@ -673,7 +678,7 @@ gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
 gulp.task('build.js.cjs', function(done) {
   runSequence(
     'broccoli.js.cjs',
-    ['build/linknodemodules.js.cjs'],
+    'build/linknodemodules.js.cjs',
     done
   );
 });
