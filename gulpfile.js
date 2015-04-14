@@ -69,11 +69,6 @@ var _HTML_DEFAULT_SCRIPTS_JS = [
   }
 ];
 
-var _HTML_DEFAULT_SCRIPTS_DART = [
-  {src: '$MODULENAME_WITHOUT_PATH$.dart', mimeType: 'application/dart'},
-  {src: 'packages/browser/dart.js', mimeType: 'text/javascript'}
-];
-
 var BASE_PACKAGE_JSON = require('./package.json');
 var COMMON_PACKAGE_JSON = {
   version: BASE_PACKAGE_JSON.version,
@@ -114,7 +109,6 @@ var CONFIG = {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
       ts: ['modules/**/*.ts'],
-      dart: ['modules/**/*.js']
     },
     options: {
       js: {
@@ -181,16 +175,10 @@ var CONFIG = {
         }
       }
     },
-    dart: {
-      src: ['LICENSE'],
-      exclude: ['rtts_assert'],
-      pipes: {}
-    }
   },
   html: {
     src: {
       js: ['modules/*/src/**/*.html'],
-      dart: ['modules/*/src/**/*.html']
     },
     scriptsPerFolder: {
       js: {
@@ -210,13 +198,6 @@ var CONFIG = {
             { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
           ]
       },
-      dart: {
-        '**': _HTML_DEFAULT_SCRIPTS_DART,
-        'benchmarks*/**':
-          [
-            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTML_DEFAULT_SCRIPTS_DART)
-      }
     }
   },
   formatDart: {
