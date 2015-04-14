@@ -7,11 +7,17 @@ class TestObj {
   constructor(prop) {
     this.prop = prop;
   }
+  someFunc():number {
+    return -1;
+  }
 }
 
 @proxy
 @IMPLEMENTS(TestObj)
-class SpyTestObj extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+class SpyTestObj extends SpyObject {
+  constructor(){super(TestObj);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
 
 export function main() {
   describe('test_lib', () => {
@@ -66,10 +72,22 @@ export function main() {
       });
 
       it("should record function calls", () => {
-        spyObj.spy("someFunc").andCallFake((a,b) => a + b);
+        spyObj.spy("someFunc").andCallFake((a,b) => {
+          return a + b
+        });
 
         expect(spyObj.someFunc(1,2)).toEqual(3);
         expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1,2);
+      });
+
+      it('should create spys for all methods', () => {
+        expect(spyObj.someFunc).toBeTruthy();
+      });
+
+      it('should create a default spy that does not fail for numbers', () => {
+        // Need to return null instead of undefined so that rtts assert does
+        // not fail...
+        expect(spyObj.someFunc()).toBe(null);
       });
     });
   });
