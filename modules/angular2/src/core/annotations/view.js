@@ -33,38 +33,57 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * @exportedAs angular2/annotations
  */
 export class View {
+  /**
+   * Specify a template URL for an angular component.
+   *
+   * NOTE: either `templateURL` or `template` should be used, but not both.
+   */
   templateUrl:any; //string;
+
+  /**
+   * Specify an inline template for an angular component.
+   *
+   * NOTE: either `templateURL` or `template` should be used, but not both.
+   */
   template:any; //string;
+
+  /**
+   * Specify a list of directives that are active within a template. [TODO: true?]
+   *
+   * Directives must be listed explicitly to provide proper component encapsulation.
+   *
+   * ## Example
+   *
+   * ```javascript
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   directives: [For]
+   *   template: '
+   *   <ul>
+   *     <li *for="item in items">{{item}}</li>
+   *   </ul>'
+   * })
+   * class MyComponent {
+   * }
+   * ```
+   */
   directives:any; //List<Type>;
-  formatters:any; //List<Type>;
-  source:any;//List<View>;
-  locale:any; //string
-  device:any; //string
+
   @CONST()
   constructor({
       templateUrl,
       template,
-      directives,
-      formatters,
-      source,
-      locale,
-      device
+      directives
     }: {
       templateUrl: string,
       template: string,
-      directives: List<Type>,
-      formatters: List<Type>,
-      source: List<View>,
-      locale: string,
-      device: string
+      directives: List<Type>
     })
   {
     this.templateUrl = templateUrl;
     this.template = template;
     this.directives = directives;
-    this.formatters = formatters;
-    this.source = source;
-    this.locale = locale;
-    this.device = device;
   }
 }

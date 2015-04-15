@@ -178,8 +178,6 @@ export class SwitchWhen {
  *
  * ```
  * <template [switch-default]>...</template>
- *
- * @exportedAs angular2/directives
  * ```
  *
  * @exportedAs angular2/directives

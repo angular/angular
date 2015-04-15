@@ -30,13 +30,13 @@ export class PropertySetter extends DependencyAnnotation {
  *
  * ## Example
  *
- * suppose we have an `<input>` element and would like to know its `type`.
+ * Suppose we have an `<input>` element and want to know its `type`.
  *
  * ```html
  * <input type="text">
  * ```
  *
- * A decorator could inject string literal `text` like so:
+ * A decorator can inject string literal `text` like so:
  *
  * ```javascript
  * @Decorator({
@@ -71,7 +71,7 @@ export class Attribute extends DependencyAnnotation {
 /**
  * Specifies that a [QueryList] should be injected.
  *
- * See: [QueryList] for usage.
+ * See: [QueryList] for usage and example.
  *
  * @exportedAs angular2/annotations
  */

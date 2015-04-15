@@ -402,6 +402,7 @@ function createDocsTasks(public) {
       var dgeni = new Dgeni([require(dgeniPackage)]);
       return dgeni.generate();
     } catch(x) {
+      console.log(x);
       console.log(x.stack);
       throw x;
     }

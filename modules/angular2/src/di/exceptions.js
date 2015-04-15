@@ -24,8 +24,12 @@ function constructResolvingPath(keys:List) {
   }
 }
 
-export class KeyMetadataError extends Error {}
 
+/**
+ * Base class for all errors arising from missconfigured bindings.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class ProviderError extends Error {
   keys:List;
   constructResolvingMessage:Function;
@@ -49,6 +53,12 @@ export class ProviderError extends Error {
   }
 }
 
+/**
+ * Thrown when trying to retrieve a dependency by [Key] from [Injector], but [Injector] does not have a [Binding] for
+ * said [Key].
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class NoProviderError extends ProviderError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
@@ -59,6 +69,30 @@ export class NoProviderError extends ProviderError {
   }
 }
 
+/**
+ * Throw when trying to retrieve async [Binding] using sync API.
+ *
+ * ## Example
+ *
+ * ```javascript
+ * var injector = Injector.resolveAndCreate([
+ *   bind(Number).toAsyncFactory(() => {
+ *     return new Promise((resolve) => resolve(1 + 2));
+ *   }),
+ *   bind(String).toFactory((v) => { return "Value: " + v; }, [String])
+ * ]);
+ *
+ * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
+ * expect(() => {
+ *   injector.get(String);
+ * }).toThrowError(AsycBindingError);
+ * ```
+ *
+ * The above example throws because `String` dependes no `Numeber` which is async. If any binding in the dependency
+ * graph is async then the graph can only be retrieved using `asyncGet` API.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class AsyncBindingError extends ProviderError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
@@ -70,6 +104,24 @@ export class AsyncBindingError extends ProviderError {
   }
 }
 
+/**
+ * Throw when dependencies from a cyle.
+ *
+ * ## Example:
+ *
+ * ```javascript
+ * class A {
+ *   constructor(b:B) {}
+ * }
+ * class B {
+ *   constructor(a:A) {}
+ * }
+ * ```
+ *
+ * Retrieving `A` or `B` will throw `CyclicDependencyError` as such a graph can not be constructed.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class CyclicDependencyError extends ProviderError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
@@ -79,6 +131,14 @@ export class CyclicDependencyError extends ProviderError {
   }
 }
 
+/**
+ * Thrown when constructing type returns with an Error.
+ *
+ * The `InstantiationError` class contains the original error plus dependency graph which caused this object to be
+ * instantiated.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class InstantiationError extends ProviderError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(originalException, key) {
@@ -90,6 +150,11 @@ export class InstantiationError extends ProviderError {
   }
 }
 
+/**
+ * Thrown when object other then [Binding] (or [Type]) is passed to [Injector] creation.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class InvalidBindingError extends Error {
   message:string;
   constructor(binding) {
@@ -102,6 +167,14 @@ export class InvalidBindingError extends Error {
   }
 }
 
+/**
+ * Thrown when the class as no annotation information.
+ *
+ * Lack of annotation prevents the [Injector] from determininig what dependencies need to be injected int the
+ * constructor.
+ *
+ * @exportedAs angular2/di_errors
+ */
 export class NoAnnotationError extends Error {
   message:string;
   constructor(typeOrFunc) {

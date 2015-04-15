@@ -94,11 +94,7 @@ export class MockTemplateResolver extends TemplateResolver {
       view = new View({
         template: view.template,
         templateUrl: view.templateUrl,
-        directives: directives,
-        formatters: view.formatters,
-        source: view.source,
-        locale: view.locale,
-        device: view.device
+        directives: directives
       });
     }
 
@@ -107,11 +103,7 @@ export class MockTemplateResolver extends TemplateResolver {
       view = new View({
         template: inlineTemplate,
         templateUrl: null,
-        directives: view.directives,
-        formatters: view.formatters,
-        source: view.source,
-        locale: view.locale,
-        device: view.device
+        directives: view.directives
       });
     }
 

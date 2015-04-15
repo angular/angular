@@ -5,10 +5,11 @@ import {CONST} from "angular2/src/facade/lang";
  *
  * ```
  * class AComponent {
- *   constructor(@Inject('aServiceToken') aService) {}
+ *   constructor(@Inject(MyService) aService:MyService) {}
  * }
  * ```
  *
+ * @exportedAs angular2/di_annotations
  */
 export class Inject {
   token;
@@ -23,12 +24,13 @@ export class Inject {
  *
  * ```
  * class AComponent {
- *   constructor(@InjectPromise('aServiceToken') aServicePromise) {
- *     aServicePromise.then(aService => ...);
+ *   constructor(@InjectPromise(MyService) aServicePromise:Promise<MyService>) {
+ *     aServicePromise.then(aService:MyService => ...);
  *   }
  * }
  * ```
  *
+ * @exportedAs angular2/di_annotations
  */
 export class InjectPromise {
   token;
@@ -43,12 +45,13 @@ export class InjectPromise {
  *
  * ```
  * class AComponent {
- *   constructor(@InjectLazy('aServiceToken') aServiceFn) {
- *     aService = aServiceFn();
+ *   constructor(@InjectLazy(MyService) aServiceFn:Function) {
+ *     var aService:MyService = aServiceFn();
  *   }
  * }
  * ```
  *
+ * @exportedAs angular2/di_annotations
  */
 export class InjectLazy {
   token;
@@ -59,16 +62,16 @@ export class InjectLazy {
 }
 
 /**
- * A parameter annotation that marks a dependency as optional.
- *
+ * A parameter annotation that marks a dependency as optional. (Injects `null` if not found.)
  * ```
  * class AComponent {
- *   constructor(@Optional() dp:Dependency) {
- *     this.dp = dp;
+ *   constructor(@Optional() aService:MyService) {
+ *     this.aService = aService;
  *   }
  * }
  * ```
  *
+ * @exportedAs angular2/di_annotations
  */
 export class Optional {
   @CONST()
@@ -102,6 +105,7 @@ export class Optional {
  * The framework can use `new Parent()` to handle the `aService` dependency
  * in a specific way.
  *
+ * @exportedAs angular2/di_annotations
  */
 export class DependencyAnnotation {
   @CONST()
@@ -114,8 +118,8 @@ export class DependencyAnnotation {
 }
 
 /**
- * A class annotation that marks a class as available to `Injector`s for
- * creation.
+ * A marker annotation that marks a class as available to `Injector`s for creation. Used by tooling for generating 
+ * constructor stubs. 
  *
  * ```
  * class NeedsService {
@@ -125,6 +129,7 @@ export class DependencyAnnotation {
  * @Injectable
  * class UsefulService {}
  * ```
+ * @exportedAs angular2/di_annotations
  */
 export class Injectable {
   @CONST()
