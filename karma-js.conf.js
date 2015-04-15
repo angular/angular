@@ -59,7 +59,10 @@ module.exports = function(config) {
     customLaunchers: {
       DartiumWithWebPlatform: {
         base: 'Dartium',
-        flags: ['--enable-experimental-web-platform-features'] }
+        flags: ['--enable-experimental-web-platform-features'] },
+      ChromeNoSandbox: {
+        base: 'Chrome',
+        flags: ['--no-sandbox'] }
     },
     browsers: ['ChromeCanary'],
 

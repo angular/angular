@@ -3,7 +3,7 @@
 register(System);
 cjs(System);
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 50;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
 // Cancel Karma's synchronous start,
 // we will call `__karma__.start()` later, once all the specs are loaded.
