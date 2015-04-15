@@ -50,7 +50,7 @@ These CSS selectors will match:
 
 CSS Selectors can be combined:
 * `input[type=text]`: Triggers on element name `input` which is of `type` `text`.
-* `input[type=text], textarea`: triggers on element name `input` which is of `type` `text` or element name `textarea`
+* `input[type=text], textarea`: triggers on element name `input` which is of `type` `text` or element name `textarea`.
 
 
 
