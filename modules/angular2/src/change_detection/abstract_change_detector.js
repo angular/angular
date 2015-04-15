@@ -33,6 +33,10 @@ export class AbstractChangeDetector extends ChangeDetector {
     cd.parent = this;
   }
 
+  removeShadowDomChild(cd:ChangeDetector) {
+    ListWrapper.remove(this.shadowDomChildren, cd);
+  }
+
   remove() {
     this.parent.removeChild(this);
   }

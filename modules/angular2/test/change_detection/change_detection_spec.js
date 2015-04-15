@@ -484,6 +484,13 @@ export function main() {
 
               expect(parent.lightDomChildren).toEqual([]);
             });
+
+            it("should remove shadow dom children", () => {
+              parent.addShadowDomChild(child);
+              parent.removeShadowDomChild(child);
+
+              expect(parent.shadowDomChildren.length).toEqual(0);
+            });
           });
         });
 
