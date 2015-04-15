@@ -84,7 +84,6 @@ export class ViewFactory {
     } else {
       viewRootNodes = [rootElementClone];
     }
-
     var binders = protoView.elementBinders;
     var boundTextNodes = [];
     var boundElements = ListWrapper.createFixedSize(binders.length);
@@ -133,7 +132,7 @@ export class ViewFactory {
       var element = boundElements[binderIdx];
 
       // static child components
-      if (isPresent(binder.componentId) && isPresent(binder.nestedProtoView)) {
+      if (binder.hasStaticComponent()) {
         var childView = this._createView(binder.nestedProtoView);
         view.setComponentView(this._shadowDomStrategy, binderIdx, childView);
       }

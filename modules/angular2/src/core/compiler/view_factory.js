@@ -57,7 +57,7 @@ export class ViewFactory {
     var rootElementInjectors = [];
     var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
     var viewContainers = ListWrapper.createFixedSize(binders.length);
-    var componentChildViews = [];
+    var componentChildViews = ListWrapper.createFixedSize(binders.length);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -78,13 +78,13 @@ export class ViewFactory {
 
       // componentChildViews
       var bindingPropagationConfig = null;
-      if (isPresent(binder.nestedProtoView) && isPresent(binder.componentDirective)) {
+      if (binder.hasStaticComponent()) {
         var childView = this._createView(binder.nestedProtoView);
-        changeDetector.addChild(childView.changeDetector);
+        changeDetector.addShadowDomChild(childView.changeDetector);
 
         bindingPropagationConfig = new BindingPropagationConfig(childView.changeDetector);
 
-        ListWrapper.push(componentChildViews, childView);
+        componentChildViews[binderIdx] = childView;
       }
 
       // viewContainers

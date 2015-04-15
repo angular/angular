@@ -567,7 +567,7 @@ export function main() {
             async.done();
           });
         }));
-        
+
         it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<div *if="ctxBoolProp" listener listenerother></div>',
@@ -632,6 +632,40 @@ export function main() {
             var dynamicComponent = view.rawView.locals.get("dynamic");
             dynamicComponent.done.then((ref) => {
               expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
+              async.done();
+            });
+          });
+        }));
+
+        it('should allow to destroy and create them via viewport directives',
+            inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
+            directives: [DynamicComp, If]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            view.context.ctxBoolProp = true;
+            view.detectChanges();
+            var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+            dynamicComponent.done.then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
+
+              view.context.ctxBoolProp = false;
+              view.detectChanges();
+
+              expect(view.rawView.viewContainers[0].length).toBe(0);
+              expect(view.rootNodes).toHaveText('');
+
+              view.context.ctxBoolProp = true;
+              view.detectChanges();
+
+              var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+              return dynamicComponent.done;
+            }).then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
               async.done();
             });
           });

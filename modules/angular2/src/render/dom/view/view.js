@@ -165,6 +165,11 @@ export class RenderView {
       var cv = this.componentChildViews[i];
       if (isPresent(cv)) {
         cv.dehydrate();
+        if (this.proto.elementBinders[i].hasDynamicComponent()) {
+          ViewContainer.removeViewNodes(cv);
+          this.lightDoms[i] = null;
+          this.componentChildViews[i] = null;
+        }
       }
     }
 

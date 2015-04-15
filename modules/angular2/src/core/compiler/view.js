@@ -143,7 +143,6 @@ export class AppView {
     }
 
     var binders = this.proto.elementBinders;
-    var componentChildViewIndex = 0;
     for (var i = 0; i < binders.length; ++i) {
       var componentDirective = binders[i].componentDirective;
       var shadowDomAppInjector = null;
@@ -176,8 +175,8 @@ export class AppView {
         }
       }
 
-      if (isPresent(binders[i].nestedProtoView) && isPresent(componentDirective)) {
-        renderComponentIndex = this.componentChildViews[componentChildViewIndex].internalHydrateRecurse(
+      if (binders[i].hasStaticComponent()) {
+        renderComponentIndex = this.componentChildViews[i].internalHydrateRecurse(
           renderComponentViewRefs,
           renderComponentIndex,
           shadowDomAppInjector,
@@ -185,7 +184,6 @@ export class AppView {
           elementInjector.getComponent(),
           null
         );
-        componentChildViewIndex++;
       }
     }
     this._hydrateChangeDetector();
@@ -198,7 +196,15 @@ export class AppView {
 
     // componentChildViews
     for (var i = 0; i < this.componentChildViews.length; i++) {
-      this.componentChildViews[i].internalDehydrateRecurse();
+      var componentView = this.componentChildViews[i];
+      if (isPresent(componentView)) {
+        componentView.internalDehydrateRecurse();
+        var binder = this.proto.elementBinders[i];
+        if (binder.hasDynamicComponent()) {
+          this.componentChildViews[i] = null;
+          this.changeDetector.removeShadowDomChild(componentView.changeDetector);
+        }
+      }
     }
 
     // elementInjectors
@@ -255,9 +261,16 @@ export class AppView {
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  addComponentChildView(view:AppView) {
-    ListWrapper.push(this.componentChildViews, view);
+  setDynamicComponentChildView(boundElementIndex, view:AppView) {
+    if (!this.proto.elementBinders[boundElementIndex].hasDynamicComponent()) {
+      throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`);
+    }
+    if (isPresent(this.componentChildViews[boundElementIndex])) {
+      throw new BaseException(`There already is a bound component at element ${boundElementIndex}`);
+    }
+    this.componentChildViews[boundElementIndex] = view;
     this.changeDetector.addShadowDomChild(view.changeDetector);
+    this.proto.renderer.setDynamicComponentView(this.render, boundElementIndex, view.render);
   }
 
   // implementation of EventDispatcher#dispatchEvent
