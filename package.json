@@ -20,8 +20,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "preinstall": "npm install tsd && tsd update --config modules/angular2/tsd.json && tsd update --config tools/tsd.json",
-    "postinstall": "webdriver-manager update && bower install && gulp pubget.dart",
+    "postinstall": "webdriver-manager update && bower install && gulp pubget.dart && tsd update --config modules/angular2/tsd.json && tsd update --config tools/tsd.json",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
@@ -98,6 +97,7 @@
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
     "ts2dart": "^0.3.0",
+    "tsd": "^0.5.7",
     "typescript": "alexeagle/TypeScript#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
     "vinyl": "^0.4.6",
     "walk-sync": "^0.1.3",
