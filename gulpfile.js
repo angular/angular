@@ -22,7 +22,6 @@ var rundartpackage = require('./tools/build/rundartpackage');
 var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma').server;
 var minimist = require('minimist');
-var es5build = require('./tools/build/es5build');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var sourcemaps = require('gulp-sourcemaps');
 var transformCJSTests = require('./tools/build/transformCJSTests');
