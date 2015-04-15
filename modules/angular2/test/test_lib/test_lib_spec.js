@@ -81,7 +81,7 @@ export function main() {
       });
 
       it('should create spys for all methods', () => {
-        expect(spyObj.someFunc).toBeTruthy();
+        expect(() => spyObj.someFunc()).not.toThrow();
       });
 
       it('should create a default spy that does not fail for numbers', () => {

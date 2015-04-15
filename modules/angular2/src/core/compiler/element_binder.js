@@ -1,4 +1,4 @@
-import {int, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {int, isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 import * as eiModule from './element_injector';
 import {DirectiveBinding} from './element_injector';
 import {List, StringMap} from 'angular2/src/facade/collection';
@@ -31,5 +31,13 @@ export class ElementBinder {
     this.hostListeners = null;
     // updated later, so we are able to resolve cycles
     this.nestedProtoView = null;
+  }
+
+  hasStaticComponent() {
+    return isPresent(this.componentDirective) && isPresent(this.nestedProtoView);
+  }
+
+  hasDynamicComponent() {
+    return isPresent(this.componentDirective) && isBlank(this.nestedProtoView);
   }
 }

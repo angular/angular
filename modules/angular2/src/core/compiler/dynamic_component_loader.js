@@ -43,14 +43,12 @@ export class ComponentRef {
 export class DynamicComponentLoader {
   _compiler:Compiler;
   _viewFactory:ViewFactory;
-  _renderer:Renderer;
   _directiveMetadataReader:DirectiveMetadataReader;
 
   constructor(compiler:Compiler, directiveMetadataReader:DirectiveMetadataReader,
               renderer:Renderer, viewFactory:ViewFactory) {
     this._compiler = compiler;
     this._directiveMetadataReader = directiveMetadataReader;
-    this._renderer = renderer;
     this._viewFactory = viewFactory
   }
 
@@ -67,16 +65,13 @@ export class DynamicComponentLoader {
 
     var hostEi = location.elementInjector;
     var hostView = location.hostView;
-
     return this._compiler.compile(type).then(componentProtoView => {
       var component = hostEi.dynamicallyCreateComponent(type, directiveMetadata.annotation, inj);
       var componentView = this._instantiateAndHydrateView(componentProtoView, injector, hostEi, component);
 
       //TODO(vsavkin): do not use component child views as we need to clear the dynamically created views
       //same problem exists on the render side
-      hostView.addComponentChildView(componentView);
-
-      this._renderer.setDynamicComponentView(hostView.render, location.boundElementIndex, componentView.render);
+      hostView.setDynamicComponentChildView(location.boundElementIndex, componentView);
 
       // TODO(vsavkin): return a component ref that dehydrates the component view and removes it
       // from the component child views

@@ -49,6 +49,7 @@ export class ChangeDetector {
   addChild(cd:ChangeDetector) {}
   addShadowDomChild(cd:ChangeDetector) {}
   removeChild(cd:ChangeDetector) {}
+  removeShadowDomChild(cd:ChangeDetector) {}
   remove() {}
   hydrate(context:any, locals:Locals, directives:any) {}
   dehydrate() {}
