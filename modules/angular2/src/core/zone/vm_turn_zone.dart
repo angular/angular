@@ -29,8 +29,8 @@ class VmTurnZone {
   // onRun depth
   int _runningInTurn = 0;
 
-  // Number of pending microtasks
-  int pendingMicrotasks = 0;
+  // Number of pending microtasks in the inner zone
+  int _pendingInnerMicrotasks = 0;
 
   // True when microtasks are scheduled in onTurnDone and an artifical turn needs to be created
   bool _startFakeTurn = false;
@@ -54,10 +54,9 @@ class VmTurnZone {
    *
    * @param {Function} onTurnStart called before code executes in the inner zone for each VM turn
    * @param {Function} onTurnDone called at the end of a VM turn if code has executed in the inner zone
-   * @param {Function} onScheduleMicrotask
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  initCallbacks({Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
+  void initCallbacks({Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
     _onTurnStart = onTurnStart;
     _onTurnDone = onTurnDone;
     _onErrorHandler = onErrorHandler;
@@ -127,7 +126,7 @@ class VmTurnZone {
       _runningInTurn++;
       // _onRunBase could be called recursively to execute a single macrotask but we only call
       // _onTurnStart on the first call.
-      if ((_runningInTurn == 1 && pendingMicrotasks == 0 || _startFakeTurn) &&
+      if ((_runningInTurn == 1 && _pendingInnerMicrotasks == 0 || _startFakeTurn) &&
           _onTurnStart != null) {
         _startFakeTurn = false;
         parent.run(zone, _onTurnStart);
@@ -144,7 +143,7 @@ class VmTurnZone {
       _runningInTurn--;
       // _onRunBase could be called recursively to execute a single macrotask but we only call
       // _onTurnDone on the first call.
-      if (_runningInTurn == 0 && pendingMicrotasks == 0 && _onTurnDone != null) {
+      if (_runningInTurn == 0 && _pendingInnerMicrotasks == 0 && _onTurnDone != null) {
         try {
           parent.run(zone, _onTurnDone);
         } catch (e, s) {
@@ -160,7 +159,7 @@ class VmTurnZone {
         // will be called after the microtasks are executed. We need to call _onTurnStart for
         // symetry (Note that in such a case _onTurnStart..._onTurnEnd is actually executed in the
         // current turn)
-        if (pendingMicrotasks > 0) {
+        if (_pendingInnerMicrotasks > 0) {
           _startFakeTurn = true;
         }
       }
@@ -176,28 +175,28 @@ class VmTurnZone {
   /**
    * Called when a microtask is scheduled in the inner zone
    */
-  _onMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
-    pendingMicrotasks++;
+  void _onMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
+    _pendingInnerMicrotasks++;
     var microtask = () {
       try {
         fn();
       } finally {
-        pendingMicrotasks--;
+        _pendingInnerMicrotasks--;
       }
     };
     parent.scheduleMicrotask(zone, microtask);
   }
 
-  _onErrorWithLongStackTrace(exception, Chain chain) {
+  void _onErrorWithLongStackTrace(exception, Chain chain) {
     final traces = chain.terse.traces.map((t) => t.toString()).toList();
     _onError(exception, traces, chain.traces[0]);
   }
 
-  _onErrorWithoutLongStackTrace(exception, StackTrace trace) {
+  void _onErrorWithoutLongStackTrace(exception, StackTrace trace) {
     _onError(exception, [trace.toString()], trace);
   }
 
-  _onError(exception, List<String> traces, StackTrace singleTrace) {
+  void _onError(exception, List<String> traces, StackTrace singleTrace) {
     if (_onErrorHandler != null) {
       _onErrorHandler(exception, traces);
     } else {
