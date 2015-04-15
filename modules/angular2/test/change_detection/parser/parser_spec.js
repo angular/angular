@@ -381,11 +381,29 @@ export function main() {
           expect(exp.name).toEqual("uppercase");
         });
 
+        it("should parse pipes in the middle of a binding", () => {
+          var exp = parseBinding("user|a|b.name").ast;
+
+          expect(exp.name).toEqual("name");
+          expect(exp.receiver).toBeAnInstanceOf(Pipe);
+          expect(exp.receiver.name).toEqual("b");
+
+          expect(exp.receiver.exp).toBeAnInstanceOf(Pipe);
+          expect(exp.receiver.exp.name).toEqual("a");
+        });
+
         it("should parse pipes with args", () => {
-          var exp = parseBinding("1|increment:2").ast;
+          var exp = parseBinding("(1|a:2)|b:3").ast;
+
           expect(exp).toBeAnInstanceOf(Pipe);
-          expect(exp.name).toEqual("increment");
+          expect(exp.name).toEqual("b");
           expect(exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
+
+          expect(exp.exp).toBeAnInstanceOf(Pipe);
+          expect(exp.exp.name).toEqual("a");
+          expect(exp.exp.args[0]).toBeAnInstanceOf(LiteralPrimitive);
+
+          expect(exp.exp.exp).toBeAnInstanceOf(LiteralPrimitive);
         });
 
         it('should only allow identifier or keyword as formatter names', () => {

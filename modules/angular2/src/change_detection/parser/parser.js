@@ -211,18 +211,11 @@ class _ParseAST {
 
   parsePipe() {
     var result = this.parseExpression();
-    while (this.optionalOperator("|")) {
-      if (this.parseAction) {
-        this.error("Cannot have a pipe in an action expression");
-      }
-      var name = this.expectIdentifierOrKeyword();
-      var args = ListWrapper.create();
-      while (this.optionalCharacter($COLON)) {
-        ListWrapper.push(args, this.parseExpression());
-      }
-      result = new Pipe(result, name, args, true);
+    if (this.optionalOperator("|")) {
+      return this.parseInlinedPipe(result);
+    } else {
+      return result;
     }
-    return result;
   }
 
   parseExpression() {
@@ -464,8 +457,30 @@ class _ParseAST {
     } else {
       var getter = this.reflector.getter(id);
       var setter = this.reflector.setter(id);
-      return new AccessMember(receiver, id, getter, setter);
+      var am = new AccessMember(receiver, id, getter, setter);
+
+      if (this.optionalOperator("|")) {
+        return this.parseInlinedPipe(am);
+      } else {
+        return am;
+      }
     }
+  }
+
+  parseInlinedPipe(result) {
+    do  {
+      if (this.parseAction) {
+        this.error("Cannot have a pipe in an action expression");
+      }
+      var name = this.expectIdentifierOrKeyword();
+      var args = ListWrapper.create();
+      while (this.optionalCharacter($COLON)) {
+        ListWrapper.push(args, this.parseExpression());
+      }
+      result = new Pipe(result, name, args, true);
+    } while(this.optionalOperator("|"));
+
+    return result;
   }
 
   parseCallArguments() {
