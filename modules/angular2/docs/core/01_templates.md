@@ -514,7 +514,8 @@ Where:
 * `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
 * `some-event` (escaped with `()` or `bind-`) is the name of the event `some-event`. In this case the
   dash-case is converted into camel-case `someEvent`.
-* `statement` is a valid statement (as defined in section below).
+* `statement` is a valid statement (as defined in section below). 
+If the execution of the statement returns `false`, then `preventDefault`is applied on the DOM event.
 
 By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled
 events (as in the case of clicking on any child) use the bubble option (`(^event)` or `on-bubble-event`) as shown

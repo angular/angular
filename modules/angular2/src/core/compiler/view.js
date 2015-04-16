@@ -131,17 +131,17 @@ export class AppView {
   }
 
   // implementation of EventDispatcher#dispatchEvent
-  dispatchEvent(
-    elementIndex:number, eventName:string, locals:Map<string, any>
-  ):void {
+  // returns false if preventDefault must be applied to the DOM event
+  dispatchEvent(elementIndex:number, eventName:string, locals:Map<string, any>): boolean {
     // Most of the time the event will be fired only when the view is in the live document.
     // However, in a rare circumstance the view might get dehydrated, in between the event
     // queuing up and firing.
+    var allowDefaultBehavior = true;
     if (this.hydrated()) {
       var elBinder = this.proto.elementBinders[elementIndex];
-      if (isBlank(elBinder.hostListeners)) return;
+      if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
       var eventMap = elBinder.hostListeners[eventName];
-      if (isBlank(eventMap)) return;
+      if (isBlank(eventMap)) return allowDefaultBehavior;
       MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
         var context;
         if (directiveIndex === -1) {
@@ -149,9 +149,13 @@ export class AppView {
         } else {
           context = this.elementInjectors[elementIndex].getDirectiveAtIndex(directiveIndex);
         }
-        expr.eval(context, new Locals(this.locals, locals));
+        var result = expr.eval(context, new Locals(this.locals, locals));
+        if (isPresent(result)) {
+          allowDefaultBehavior = allowDefaultBehavior && result;  
+        }
       });
     }
+    return allowDefaultBehavior;
   }
 }
 
