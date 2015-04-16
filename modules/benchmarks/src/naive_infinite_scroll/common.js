@@ -1,7 +1,5 @@
-import {int} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 export var ITEMS = 1000;
@@ -46,17 +44,17 @@ export var AAT_STATUS_LIST = [
 
 // Just a non-trivial object. Nothing fancy or correct.
 export class CustomDate {
-  year: int;
-  month: int;
-  day: int;
+  year:number;
+  month:number;
+  day:number;
 
-  constructor(y:int, m:int, d:int) {
+  constructor(y:number, m:number, d:number) {
     this.year = y;
     this.month = m;
     this.day = d;
   }
 
-  addDays(days:int):CustomDate {
+  addDays(days:number):CustomDate {
     var newDay = this.day + days;
     var newMonth = this.month + Math.floor(newDay / 30);
     newDay = newDay % 30;
@@ -154,13 +152,13 @@ export class Offering extends RawEntity {
     this.set('account', val);
   }
 
-  get basePoints():int { return this.get('basePoints'); }
-  set basePoints(val:int) {
+  get basePoints():number { return this.get('basePoints'); }
+  set basePoints(val:number) {
     this.set('basePoints', val);
   }
 
-  get kickerPoints():int { return this.get('kickerPoints'); }
-  set kickerPoints(val:int) {
+  get kickerPoints():number { return this.get('kickerPoints'); }
+  set kickerPoints(val:number) {
     this.set('kickerPoints', val);
   }
 
@@ -198,8 +196,8 @@ export class Opportunity extends RawEntity {
 }
 
 export class Account extends RawEntity {
-  get accountId():int { return this.get('accountId'); }
-  set accountId(val:int) {
+  get accountId():number { return this.get('accountId'); }
+  set accountId(val:number) {
     this.set('accountId', val);
   }
 }

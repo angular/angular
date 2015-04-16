@@ -1,12 +1,10 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {isBlank, Type} from 'angular2/src/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {document} from 'angular2/src/facade/browser';
-import {MapWrapper} from 'angular2/src/facade/collection';
-import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 
-import {Parser, Lexer, ProtoRecordRange, DynamicChangeDetection} from 'angular2/change_detection';
+import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -25,7 +23,6 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 

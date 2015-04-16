@@ -22,7 +22,7 @@ module.exports = function(gulp, plugins, config) {
         var analyzeFile = ['library _analyzer;'];
         srcFiles.concat(testFiles).forEach(function(fileName, index) {
           if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
-            analyzeFile.push('import "./'+fileName+'" as mod'+index+';');
+            analyzeFile.push('import "./' + fileName + '" as mod' + index + ';');
           }
         });
         fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
@@ -73,15 +73,6 @@ module.exports = function(gulp, plugins, config) {
         }
 
         var skip = false;
-        // TODO: not reporting issues in web for now
-        // Should be removed when https://github.com/angular/angular/issues/1392
-        // is fixed
-        var webDir = path.join(dirName, 'web');
-        if (line.indexOf(webDir) >= 0) {
-          skip = true;
-          line = '(TODO #1392) ' + line;
-        }
-
         if (!skip) {
           if (line.match(/\[hint\]/)) {
             hintCount++;
