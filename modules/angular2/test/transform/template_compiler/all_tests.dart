@@ -5,6 +5,7 @@ import 'package:barback/barback.dart';
 import 'package:angular2/src/dom/html_adapter.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/parser.dart';
 import 'package:angular2/src/transform/template_compiler/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
@@ -19,6 +20,8 @@ void allTests() {
   Html5LibDomAdapter.makeCurrent();
   AssetReader reader = new TestAssetReader();
   var parser = new Parser(reader);
+
+  beforeEach(() => setLogger(new PrintLogger()));
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
@@ -54,31 +57,29 @@ void allTests() {
   });
 
   describe('DirectiveMetadataReader', () {
-    Future<DirectiveMetadata> readSingleMetadata(inputPath) async {
+    Future<DirectiveMetadata> readMetadata(inputPath) async {
       var ngDeps = await parser.parse(new AssetId('a', inputPath));
-      var metadata = readDirectiveMetadata(ngDeps.registeredTypes.first);
-      expect(metadata.length).toEqual(1);
-      return metadata.first;
+      return readDirectiveMetadata(ngDeps.registeredTypes.first);
     }
 
     it('should parse selectors', () async {
-      var metadata = await readSingleMetadata(
+      var metadata = await readMetadata(
           'template_compiler/directive_metadata_files/selector.ng_deps.dart');
       expect(metadata.selector).toEqual('hello-app');
     });
 
     it('should parse compile children values', () async {
-      var metadata = await readSingleMetadata('template_compiler/'
+      var metadata = await readMetadata('template_compiler/'
           'directive_metadata_files/compile_children.ng_deps.dart');
       expect(metadata.compileChildren).toBeTrue();
 
-      metadata = await readSingleMetadata(
+      metadata = await readMetadata(
           'template_compiler/directive_metadata_files/selector.ng_deps.dart');
       expect(metadata.compileChildren).toBeFalse();
     });
 
     it('should parse properties.', () async {
-      var metadata = await readSingleMetadata('template_compiler/'
+      var metadata = await readMetadata('template_compiler/'
           'directive_metadata_files/properties.ng_deps.dart');
       expect(metadata.properties).toBeNotNull();
       expect(metadata.properties.length).toBe(2);
@@ -89,7 +90,7 @@ void allTests() {
     });
 
     it('should parse host listeners.', () async {
-      var metadata = await readSingleMetadata('template_compiler/'
+      var metadata = await readMetadata('template_compiler/'
           'directive_metadata_files/host_listeners.ng_deps.dart');
       expect(metadata.hostListeners).toBeNotNull();
       expect(metadata.hostListeners.length).toBe(2);
@@ -97,6 +98,14 @@ void allTests() {
       expect(metadata.hostListeners['change']).toEqual('onChange(\$event)');
       expect(metadata.hostListeners).toContain('keyDown');
       expect(metadata.hostListeners['keyDown']).toEqual('onKeyDown(\$event)');
+    });
+
+    it('should fail when a class is annotated with multiple Directives.',
+        () async {
+      var ngDeps = await parser.parse(new AssetId('a', 'template_compiler/'
+          'directive_metadata_files/too_many_directives.ng_deps.dart'));
+      expect(() => readDirectiveMetadata(ngDeps.registeredTypes.first))
+          .toThrowWith(anInstanceOf: PrintLoggerError);
     });
   });
 }

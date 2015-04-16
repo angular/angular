@@ -6,10 +6,10 @@ import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/parser.dart';
 
 /// Reads [DirectiveMetadata] from the `attributes` of `t`.
-List<DirectiveMetadata> readDirectiveMetadata(RegisteredType t) {
+DirectiveMetadata readDirectiveMetadata(RegisteredType t) {
   var visitor = new _DirectiveMetadataVisitor();
   t.annotations.accept(visitor);
-  return visitor.directiveMetadata;
+  return visitor.meta;
 }
 
 num _getDirectiveType(String annotationName) {
@@ -30,21 +30,23 @@ num _getDirectiveType(String annotationName) {
 /// [RegisterType] object and pulling out [DirectiveMetadata].
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
-  DirectiveMetadata current;
-  final List<DirectiveMetadata> directiveMetadata = [];
+  DirectiveMetadata meta;
 
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     var directiveType = _getDirectiveType('${node.constructorName.type.name}');
     if (directiveType >= 0) {
-      current = new DirectiveMetadata(
+      if (meta != null) {
+        logger.error('Only one Directive is allowed per class. '
+            'Found "$node" but already processed "$meta".');
+      }
+      meta = new DirectiveMetadata(
           type: directiveType,
           compileChildren: false,
           properties: {},
           hostListeners: {},
           setters: [],
           readAttributes: []);
-      directiveMetadata.add(current);
       super.visitInstanceCreationExpression(node);
     }
     // Annotation we do not recognize - no need to visit.
@@ -91,7 +93,7 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   void _populateSelector(Expression selectorValue) {
-    current.selector = _expressionToString(selectorValue, 'Directive#selector');
+    meta.selector = _expressionToString(selectorValue, 'Directive#selector');
   }
 
   void _populateCompileChildren(Expression compileChildrenValue) {
@@ -102,7 +104,7 @@ class _DirectiveMetadataVisitor extends Object
           ' Source: ${compileChildrenValue}');
       return;
     }
-    current.compileChildren = (compileChildrenValue as BooleanLiteral).value;
+    meta.compileChildren = (compileChildrenValue as BooleanLiteral).value;
   }
 
   void _populateProperties(Expression propertiesValue) {
@@ -115,7 +117,7 @@ class _DirectiveMetadataVisitor extends Object
     for (MapLiteralEntry entry in (propertiesValue as MapLiteral).entries) {
       var sKey = _expressionToString(entry.key, 'Directive#properties keys');
       var sVal = _expressionToString(entry.value, 'Direcive#properties values');
-      current.properties[sKey] = sVal;
+      meta.properties[sKey] = sVal;
     }
   }
 
@@ -130,7 +132,7 @@ class _DirectiveMetadataVisitor extends Object
       var sKey = _expressionToString(entry.key, 'Directive#hostListeners keys');
       var sVal =
           _expressionToString(entry.value, 'Directive#hostListeners values');
-      current.hostListeners[sKey] = sVal;
+      meta.hostListeners[sKey] = sVal;
     }
   }
 }
