@@ -17,7 +17,6 @@ import {
 import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
-import {dynamicChangeDetection} from 'angular2/change_detection';
 import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';

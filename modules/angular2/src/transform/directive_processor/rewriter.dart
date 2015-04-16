@@ -1,4 +1,4 @@
-library angular2.transform.directive_processor;
+library angular2.transform.directive_processor.rewriter;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';

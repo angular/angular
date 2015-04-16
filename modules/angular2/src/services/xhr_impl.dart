@@ -1,3 +1,5 @@
+library angular2.src.services.xhr_impl; 
+
 import 'dart:async';
 import 'dart:html';
 import 'package:angular2/di.dart';

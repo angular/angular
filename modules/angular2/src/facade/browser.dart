@@ -2,6 +2,7 @@
  * Dart version of browser APIs. This library depends on 'dart:html' and
  * therefore can only run in the browser.
  */
+library angular2.src.facade.browser; 
 
 import 'dart:js' show context;
 

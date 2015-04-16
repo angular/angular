@@ -1,4 +1,4 @@
-library angular2.src.core.compiler.query_list;
+library angular2.src.core.compiler.base_query_list;
 
 import 'package:angular2/src/core/annotations/annotations.dart';
 import 'dart:collection';
