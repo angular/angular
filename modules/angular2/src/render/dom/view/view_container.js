@@ -3,22 +3,17 @@ import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import * as viewModule from './view';
-import * as ldModule from '../shadow_dom/light_dom';
 
 export class ViewContainer {
-  templateElement;
+  parentView: viewModule.RenderView;
+  boundElementIndex: number;
   views: List<viewModule.RenderView>;
-  lightDom: ldModule.LightDom;
-  hostLightDom: ldModule.LightDom;
-  hydrated: boolean;
 
-  constructor(templateElement) {
-    this.templateElement = templateElement;
-
+  constructor(parentView: viewModule.RenderView, boundElementIndex: number) {
+    this.parentView = parentView;
+    this.boundElementIndex = boundElementIndex;
     // The order in this list matches the DOM order.
     this.views = [];
-    this.hostLightDom = null;
-    this.hydrated = false;
   }
 
   get(index: number): viewModule.RenderView {
@@ -30,13 +25,17 @@ export class ViewContainer {
   }
 
   _siblingToInsertAfter(index: number) {
-    if (index == 0) return this.templateElement;
+    if (index == 0) return this.parentView.boundElements[this.boundElementIndex];
     return ListWrapper.last(this.views[index - 1].rootNodes);
   }
 
   _checkHydrated() {
-    if (!this.hydrated) throw new BaseException(
+    if (!this.parentView.hydrated) throw new BaseException(
         'Cannot change dehydrated ViewContainer');
+  }
+
+  _getDirectParentLightDom() {
+    return this.parentView.getDirectParentLightDom(this.boundElementIndex);
   }
 
   clear() {
@@ -44,8 +43,8 @@ export class ViewContainer {
     for (var i=this.views.length-1; i>=0; i--) {
       this.detach(i);
     }
-    if (isPresent(this.lightDom)) {
-      this.lightDom.redistribute();
+    if (isPresent(this._getDirectParentLightDom())) {
+      this._getDirectParentLightDom().redistribute();
     }
   }
 
@@ -54,14 +53,14 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this.views.length;
     ListWrapper.insert(this.views, atIndex, view);
 
-    if (isBlank(this.lightDom)) {
+    if (isBlank(this._getDirectParentLightDom())) {
       ViewContainer.moveViewNodesAfterSibling(this._siblingToInsertAfter(atIndex), view);
     } else {
-      this.lightDom.redistribute();
+      this._getDirectParentLightDom().redistribute();
     }
     // new content tags might have appeared, we need to redistribute.
-    if (isPresent(this.hostLightDom)) {
-      this.hostLightDom.redistribute();
+    if (isPresent(this.parentView.hostLightDom)) {
+      this.parentView.hostLightDom.redistribute();
     }
     return view;
   }
@@ -74,14 +73,14 @@ export class ViewContainer {
     this._checkHydrated();
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this.views, atIndex);
-    if (isBlank(this.lightDom)) {
+    if (isBlank(this._getDirectParentLightDom())) {
       ViewContainer.removeViewNodes(detachedView);
     } else {
-      this.lightDom.redistribute();
+      this._getDirectParentLightDom().redistribute();
     }
     // content tags might have disappeared we need to do redistribution.
-    if (isPresent(this.hostLightDom)) {
-      this.hostLightDom.redistribute();
+    if (isPresent(this.parentView.hostLightDom)) {
+      this.parentView.hostLightDom.redistribute();
     }
     return detachedView;
   }

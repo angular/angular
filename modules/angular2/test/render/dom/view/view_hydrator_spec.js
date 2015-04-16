@@ -70,12 +70,12 @@ export function main() {
     function createEmptyView() {
       var root = el('<div><div></div></div>');
       return new RenderView(createProtoView(), [DOM.childNodes(root)[0]],
-        [], [], [], []);
+        [], [], []);
     }
 
     function createHostView(pv, shadowDomView) {
       var view = new RenderView(pv, [el('<div></div>')],
-        [], [el('<div></div>')], [], []);
+        [], [el('<div></div>')], [null]);
       viewFactory.setComponentView(view, 0, shadowDomView);
       return view;
     }

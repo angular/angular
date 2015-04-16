@@ -218,8 +218,8 @@ function setup() {
 
   reflector.registerType(ViewFactory, {
     "factory": (capacity, renderer) =>
-      new ViewFactory(capacity, renderer),
-    "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer]],
+      new ViewFactory(capacity, renderer, appViewHydrator),
+    "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer],[AppViewHydrator]],
     "annotations": []
   });
 
@@ -278,13 +278,6 @@ function setup() {
   reflector.registerType(rvf.VIEW_POOL_CAPACITY, {
     "factory": () => 10000,
     "parameters": [],
-    "annotations": []
-  });
-
-  reflector.registerType(ViewFactory, {
-    "factory": (capacity, renderer) =>
-      new ViewFactory(capacity, renderer),
-    "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer]],
     "annotations": []
   });
 

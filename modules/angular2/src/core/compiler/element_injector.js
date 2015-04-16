@@ -35,6 +35,10 @@ export class ElementRef {
     return this.elementInjector._preBuiltObjects.view;
   }
 
+  get viewContainer() {
+    return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
+  }
+
   get injector() {
     return this.elementInjector._lightDomAppInjector;
   }
@@ -298,13 +302,10 @@ export class DirectiveBinding extends ResolvedBinding {
 export class PreBuiltObjects {
   view:viewModule.AppView;
   element:NgElement;
-  viewContainer:ViewContainer;
   changeDetector:ChangeDetector;
-  constructor(view, element:NgElement, viewContainer:ViewContainer,
-              changeDetector:ChangeDetector) {
+  constructor(view, element:NgElement, changeDetector:ChangeDetector) {
     this.view = view;
     this.element = element;
-    this.viewContainer = viewContainer;
     this.changeDetector = changeDetector;
   }
 }
@@ -929,7 +930,7 @@ export class ElementInjector extends TreeNode {
     // TODO: AppView should not be injectable. Remove it.
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
+    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.view.getOrCreateViewContainer(this._proto.index);
     if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetector.ref;
 
     //TODO add other objects as needed
@@ -983,6 +984,18 @@ export class ElementInjector extends TreeNode {
   /** Get the name to which this element's $implicit is to be assigned. */
   getExportImplicitName() {
     return this._proto.exportImplicitName;
+  }
+
+  getLightDomAppInjector() {
+    return this._lightDomAppInjector;
+  }
+
+  getHost() {
+    return this._host;
+  }
+
+  getBoundElementIndex() {
+    return this._proto.index;
   }
 }
 

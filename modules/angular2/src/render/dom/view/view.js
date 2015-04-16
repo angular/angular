@@ -26,6 +26,7 @@ export class RenderView {
   viewContainers: List<ViewContainer>;
   contentTags: List<Content>;
   lightDoms: List<LightDom>;
+  hostLightDom: LightDom;
   proto: RenderProtoView;
   hydrated: boolean;
   _eventDispatcher: any/*EventDispatcher*/;
@@ -33,18 +34,37 @@ export class RenderView {
 
   constructor(
       proto:RenderProtoView, rootNodes:List,
-      boundTextNodes: List, boundElements:List, viewContainers:List, contentTags:List) {
+      boundTextNodes: List, boundElements:List, contentTags:List) {
     this.proto = proto;
     this.rootNodes = rootNodes;
     this.boundTextNodes = boundTextNodes;
     this.boundElements = boundElements;
-    this.viewContainers = viewContainers;
+    this.viewContainers = ListWrapper.createFixedSize(boundElements.length);
     this.contentTags = contentTags;
     this.lightDoms = ListWrapper.createFixedSize(boundElements.length);
     ListWrapper.fill(this.lightDoms, null);
     this.componentChildViews = ListWrapper.createFixedSize(boundElements.length);
+    this.hostLightDom = null;
     this.hydrated = false;
     this.eventHandlerRemovers = null;
+  }
+
+  getDirectParentLightDom(boundElementIndex:number) {
+    var binder = this.proto.elementBinders[boundElementIndex];
+    var destLightDom = null;
+    if (binder.parentIndex !== -1 && binder.distanceToParent === 1) {
+      destLightDom = this.lightDoms[binder.parentIndex];
+    }
+    return destLightDom;
+  }
+
+  getOrCreateViewContainer(binderIndex) {
+    var vc = this.viewContainers[binderIndex];
+    if (isBlank(vc)) {
+      vc = new ViewContainer(this, binderIndex);
+      this.viewContainers[binderIndex] = vc;
+    }
+    return vc;
   }
 
   setElementProperty(elementIndex:number, propertyName:string, value:any) {

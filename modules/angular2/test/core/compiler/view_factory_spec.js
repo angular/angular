@@ -35,7 +35,7 @@ export function main() {
     });
 
     function createViewFactory({capacity}):ViewFactory {
-      return new ViewFactory(capacity, renderer);
+      return new ViewFactory(capacity, renderer, null);
     }
 
     function createProtoChangeDetector() {

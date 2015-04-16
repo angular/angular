@@ -44,8 +44,7 @@ export class AppViewHydrator {
     }
     var hostElementInjector = hostView.elementInjectors[boundElementIndex];
     if (isBlank(injector)) {
-      // TODO: We should have another way of accesing the app injector at hostView place.
-      injector = new eli.ElementRef(hostElementInjector).injector;
+      injector = hostElementInjector.getLightDomAppInjector();
     }
 
     // shadowDomAppInjector
@@ -114,19 +113,22 @@ export class AppViewHydrator {
     this._renderer.destroyInPlaceHostView(parentRenderViewRef, render);
   }
 
-  hydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, atIndex:number, view:viewModule.AppView) {
+  hydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, atIndex:number, view:viewModule.AppView, injector:Injector = null) {
     if (!viewContainer.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
-    var renderViewRefs = this._renderer.createViewInContainer(viewContainer.render, atIndex, view.proto.render);
+    if (isBlank(injector)) {
+      injector = viewContainer.elementInjector.getLightDomAppInjector();
+    }
+    var renderViewRefs = this._renderer.createViewInContainer(viewContainer.getRender(), atIndex, view.proto.render);
     viewContainer.parentView.changeDetector.addChild(view.changeDetector);
-    this._viewHydrateRecurse(view, renderViewRefs, 0, viewContainer.appInjector, viewContainer.hostElementInjector,
+    this._viewHydrateRecurse(view, renderViewRefs, 0, injector, viewContainer.elementInjector.getHost(),
       viewContainer.parentView.context, viewContainer.parentView.locals);
   }
 
   dehydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, atIndex:number, view:viewModule.AppView) {
     view.changeDetector.remove();
     this._viewDehydrateRecurse(view);
-    this._renderer.destroyViewInContainer(viewContainer.render, atIndex);
+    this._renderer.destroyViewInContainer(viewContainer.getRender(), atIndex);
   }
 
   _viewHydrateRecurse(
@@ -141,14 +143,6 @@ export class AppViewHydrator {
 
     view.context = context;
     view.locals.parent = locals;
-
-    // viewContainers
-    for (var i = 0; i < view.viewContainers.length; i++) {
-      var vc = view.viewContainers[i];
-      if (isPresent(vc)) {
-        this._viewContainerHydrateRecurse(vc, new renderApi.ViewContainerRef(view.render, i), appInjector, hostElementInjector);
-      }
-    }
 
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; ++i) {
@@ -276,16 +270,6 @@ export class AppViewHydrator {
   /**
    * This should only be called by View or ViewContainer.
    */
-  _viewContainerHydrateRecurse(viewContainer:vcModule.ViewContainer, render:renderApi.ViewContainerRef, appInjector: Injector, hostElementInjector: eli.ElementInjector) {
-    viewContainer.viewHydrator = this;
-    viewContainer.render = render;
-    viewContainer.appInjector = appInjector;
-    viewContainer.hostElementInjector = hostElementInjector;
-  }
-
-  /**
-   * This should only be called by View or ViewContainer.
-   */
   _viewContainerDehydrateRecurse(viewContainer:vcModule.ViewContainer) {
     for (var i=0; i<viewContainer.length; i++) {
       var view = viewContainer.get(i);
@@ -296,10 +280,6 @@ export class AppViewHydrator {
     // as we don't want to change the render side
     // as the render side does its own recursion.
     viewContainer.internalClearWithoutRender();
-    viewContainer.viewHydrator = null;
-    viewContainer.appInjector = null;
-    viewContainer.hostElementInjector = null;
-    viewContainer.render = null;
   }
 
 }

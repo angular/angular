@@ -34,6 +34,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {If} from 'angular2/src/directives/if';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
 
 export function main() {
   describe('integration tests', function() {
@@ -694,6 +695,27 @@ export function main() {
         }));
       });
 
+      describe('dynamic ViewContainers', () => {
+
+        it('should allow to create a ViewContainer at any bound location',
+            inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
+            directives: [DynamicViewport]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            var dynamicVp = view.rawView.elementInjectors[0].get(DynamicViewport);
+            dynamicVp.done.then( (_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('dynamic greet');
+              async.done();
+            });
+          });
+        }));
+
+      });
+
       it('should support static attributes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<input static type="text" title>',
@@ -774,8 +796,21 @@ export function main() {
   });
 }
 
-class DynamicallyCreatedComponentService {
+@Decorator({
+  selector: 'dynamic-vp'
+})
+class DynamicViewport {
+  done;
+  constructor(vc:ViewContainer, inj:Injector, compiler:Compiler) {
+    var myService = new MyService();
+    myService.greeting = 'dynamic greet';
+    this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
+      vc.create(0, hostPv, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
+    });
+  }
 }
+
+class DynamicallyCreatedComponentService {}
 
 @DynamicComponent({
   selector: 'dynamic-comp'
@@ -906,6 +941,19 @@ class ChildComp {
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
     this.dirProp = null;
+  }
+}
+
+@Component({
+  selector: 'child-cmp-svc'
+})
+@View({
+  template: '{{ctxProp}}'
+})
+class ChildCompUsingService {
+  ctxProp:string;
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
   }
 }
 

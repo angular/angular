@@ -4,45 +4,31 @@ import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
-import * as renderApi from 'angular2/src/render/api';
 import * as viewModule from './view';
-import * as vfModule from './view_factory';
-import * as vhModule from './view_hydrator';
-import {Renderer} from 'angular2/src/render/api';
+import {ViewContainerRef} from 'angular2/src/render/api';
 
 /**
  * @exportedAs angular2/view
  */
 export class ViewContainer {
-  viewFactory: vfModule.ViewFactory;
-  viewHydrator: vhModule.AppViewHydrator;
-  renderer: Renderer;
-
-  render:renderApi.ViewContainerRef;
   parentView: viewModule.AppView;
   defaultProtoView: viewModule.AppProtoView;
   _views: List<viewModule.AppView>;
   elementInjector: eiModule.ElementInjector;
-  appInjector: Injector;
-  hostElementInjector: eiModule.ElementInjector;
 
-  constructor(viewFactory:vfModule.ViewFactory,
-              renderer: Renderer,
-              parentView: viewModule.AppView,
+  constructor(parentView: viewModule.AppView,
               defaultProtoView: viewModule.AppProtoView,
               elementInjector: eiModule.ElementInjector) {
-    this.viewFactory = viewFactory;
-    this.viewHydrator = null;
-    this.renderer = renderer;
-    this.render = null;
     this.parentView = parentView;
     this.defaultProtoView = defaultProtoView;
     this.elementInjector = elementInjector;
 
     // The order in this list matches the DOM order.
     this._views = [];
-    this.appInjector = null;
-    this.hostElementInjector = null;
+  }
+
+  getRender() {
+    return new ViewContainerRef(this.parentView.render, this.elementInjector.getBoundElementIndex());
   }
 
   internalClearWithoutRender() {
@@ -71,22 +57,22 @@ export class ViewContainer {
   }
 
   hydrated() {
-    return isPresent(this.appInjector);
+    return this.parentView.hydrated();
   }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex=-1, protoView:viewModule.AppProtoView = null): viewModule.AppView {
+  create(atIndex=-1, protoView:viewModule.AppProtoView = null, injector:Injector = null): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length;
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
     if (isBlank(protoView)) {
       protoView = this.defaultProtoView;
     }
-    var newView = this.viewFactory.getView(protoView);
+    var newView = this.parentView.viewFactory.getView(protoView);
     // insertion must come before hydration so that element injector trees are attached.
     this._insertInjectors(newView, atIndex);
-    this.viewHydrator.hydrateViewInViewContainer(this, atIndex, newView);
+    this.parentView.viewHydrator.hydrateViewInViewContainer(this, atIndex, newView, injector);
 
     return newView;
   }
@@ -95,7 +81,7 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this._views.length;
     this._insertInjectors(view, atIndex);
     this.parentView.changeDetector.addChild(view.changeDetector);
-    this.renderer.insertViewIntoContainer(this.render, atIndex, view.render);
+    this.parentView.renderer.insertViewIntoContainer(this.getRender(), atIndex, view.render);
     return view;
   }
 
@@ -110,9 +96,9 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var view = this._views[atIndex];
     // opposite order as in create
-    this.viewHydrator.dehydrateViewInViewContainer(this, atIndex, view);
+    this.parentView.viewHydrator.dehydrateViewInViewContainer(this, atIndex, view);
     this._detachInjectors(atIndex);
-    this.viewFactory.returnView(view);
+    this.parentView.viewFactory.returnView(view);
     // view is intentionally not returned to the client.
   }
 
@@ -124,7 +110,7 @@ export class ViewContainer {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var detachedView = this._detachInjectors(atIndex);
     detachedView.changeDetector.remove();
-    this.renderer.detachViewFromContainer(this.render, atIndex);
+    this.parentView.renderer.detachViewFromContainer(this.getRender(), atIndex);
     return detachedView;
   }
 

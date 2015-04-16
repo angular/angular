@@ -105,8 +105,8 @@ function _injectorBindings(appComponentType): List<Binding> {
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
       bind(ViewFactory).toFactory(
-        (capacity, renderer) => new ViewFactory(capacity, renderer),
-        [VIEW_POOL_CAPACITY, Renderer]
+        (capacity, renderer, appViewHydrator) => new ViewFactory(capacity, renderer, appViewHydrator),
+        [VIEW_POOL_CAPACITY, Renderer, AppViewHydrator]
       ),
       bind(VIEW_POOL_CAPACITY).toValue(10000),
       AppViewHydrator,

@@ -8,7 +8,6 @@ import {Content} from '../shadow_dom/content_tag';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
-import * as vcModule from './view_container';
 import * as pvModule from './proto_view';
 import * as viewModule from './view';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from '../util';
@@ -91,7 +90,6 @@ export class ViewFactory {
     var binders = protoView.elementBinders;
     var boundTextNodes = [];
     var boundElements = ListWrapper.createFixedSize(binders.length);
-    var viewContainers = ListWrapper.createFixedSize(binders.length);
     var contentTags = ListWrapper.createFixedSize(binders.length);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
@@ -111,13 +109,6 @@ export class ViewFactory {
         ListWrapper.push(boundTextNodes, childNodes[textNodeIndices[i]]);
       }
 
-      // viewContainers
-      var viewContainer = null;
-      if (isBlank(binder.componentId) && isPresent(binder.nestedProtoView)) {
-        viewContainer = new vcModule.ViewContainer(element);
-      }
-      viewContainers[binderIdx] = viewContainer;
-
       // contentTags
       var contentTag = null;
       if (isPresent(binder.contentTagSelector)) {
@@ -128,7 +119,7 @@ export class ViewFactory {
 
     var view = new viewModule.RenderView(
       protoView, viewRootNodes,
-      boundTextNodes, boundElements, viewContainers, contentTags
+      boundTextNodes, boundElements, contentTags
     );
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {

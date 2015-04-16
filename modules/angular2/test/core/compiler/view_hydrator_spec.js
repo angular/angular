@@ -80,19 +80,19 @@ export function main() {
     }
 
     function createEmptyView() {
-      var view = new AppView(renderer, createProtoView(), MapWrapper.create());
+      var view = new AppView(renderer, null, null, createProtoView(), MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
-      view.init(changeDetector, [], [], [], [], []);
+      view.init(changeDetector, [], [], [], []);
       return view;
     }
 
     function createHostView(pv, shadowView, componentInstance) {
-      var view = new AppView(renderer, pv, MapWrapper.create());
+      var view = new AppView(renderer, null, null, pv, MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
       var eij = createElementInjector();
       eij.spy('getComponent').andCallFake( () => componentInstance );
       view.init(changeDetector, [eij], [eij],
-          [null], [null], [shadowView]);
+          [null], [shadowView]);
       return view;
     }
 

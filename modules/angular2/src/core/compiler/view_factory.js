@@ -3,9 +3,9 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
-import * as vcModule from './view_container';
 import * as viewModule from './view';
 import {Renderer} from 'angular2/src/render/api';
+import {AppViewHydrator} from './view_hydrator';
 
 // TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
 export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
@@ -15,11 +15,13 @@ export class ViewFactory {
   _poolCapacityPerProtoView:number;
   _pooledViewsPerProtoView:Map<viewModule.AppProtoView, List<viewModule.AppView>>;
   _renderer:Renderer;
+  _viewHydrator:AppViewHydrator;
 
-  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView, renderer:Renderer) {
+  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView, renderer:Renderer, viewHydrator:AppViewHydrator) {
     this._poolCapacityPerProtoView = poolCapacityPerProtoView;
     this._pooledViewsPerProtoView = MapWrapper.create();
     this._renderer = renderer;
+    this._viewHydrator = viewHydrator;
   }
 
   getView(protoView:viewModule.AppProtoView):viewModule.AppView {
@@ -50,7 +52,7 @@ export class ViewFactory {
   }
 
   _createView(protoView:viewModule.AppProtoView): viewModule.AppView {
-    var view = new viewModule.AppView(this._renderer, protoView, protoView.protoLocals);
+    var view = new viewModule.AppView(this._renderer, this, this._viewHydrator, protoView, protoView.protoLocals);
     var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
       protoView.getVariableBindings(), protoView.getdirectiveRecords());
 
@@ -58,7 +60,6 @@ export class ViewFactory {
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
     var rootElementInjectors = [];
     var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
-    var viewContainers = ListWrapper.createFixedSize(binders.length);
     var componentChildViews = ListWrapper.createFixedSize(binders.length);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
@@ -88,22 +89,14 @@ export class ViewFactory {
         componentChildViews[binderIdx] = childView;
       }
 
-      // viewContainers
-      var viewContainer = null;
-      if (isPresent(binder.viewportDirective)) {
-        viewContainer = new vcModule.ViewContainer(this, this._renderer, view, binder.nestedProtoView, elementInjector);
-      }
-      viewContainers[binderIdx] = viewContainer;
-
       // preBuiltObjects
       if (isPresent(elementInjector)) {
-        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(view, new NgElement(view, binderIdx), viewContainer,
-          childChangeDetector);
+        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(view, new NgElement(view, binderIdx), childChangeDetector);
       }
     }
 
     view.init(changeDetector, elementInjectors, rootElementInjectors,
-      viewContainers, preBuiltObjects, componentChildViews);
+      preBuiltObjects, componentChildViews);
 
     return view;
   }

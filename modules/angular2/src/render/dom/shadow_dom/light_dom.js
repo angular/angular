@@ -9,13 +9,11 @@ export class DestinationLightDom {}
 
 class _Root {
   node;
-  viewContainer;
-  content;
+  boundElementIndex:number;
 
-  constructor(node, viewContainer, content) {
+  constructor(node, boundElementIndex) {
     this.node = node;
-    this.viewContainer = viewContainer;
-    this.content = content;
+    this.boundElementIndex = boundElementIndex;
   }
 }
 
@@ -79,11 +77,16 @@ export class LightDom {
     for (var i = 0; i < roots.length; ++i) {
 
       var root = roots[i];
-
-      if (isPresent(root.viewContainer)) {
-        res = ListWrapper.concat(res, root.viewContainer.nodes());
-      } else if (isPresent(root.content)) {
-        res = ListWrapper.concat(res, root.content.nodes());
+      if (isPresent(root.boundElementIndex)) {
+        var vc = this.lightDomView.viewContainers[root.boundElementIndex];
+        var content = this.lightDomView.contentTags[root.boundElementIndex];
+        if (isPresent(vc)) {
+          res = ListWrapper.concat(res, vc.nodes());
+        } else if (isPresent(content)) {
+          res = ListWrapper.concat(res, content.nodes());
+        } else {
+          ListWrapper.push(res, root.node);
+        }
       } else {
         ListWrapper.push(res, root.node);
       }
@@ -92,27 +95,22 @@ export class LightDom {
   }
 
   // Returns a list of Roots for all the nodes of the light DOM.
-  // The Root object contains the DOM node and its corresponding injector (could be null).
+  // The Root object contains the DOM node and its corresponding boundElementIndex
   _roots() {
     if (isPresent(this.roots)) return this.roots;
 
-    var viewContainers = this.lightDomView.viewContainers;
-    var contentTags = this.lightDomView.contentTags;
+    var boundElements = this.lightDomView.boundElements;
 
     this.roots = ListWrapper.map(this.nodes, (n) => {
-      var foundVc = null;
-      var foundContentTag = null;
-      for (var i=0; i<viewContainers.length; i++) {
-        var vc = viewContainers[i];
-        var contentTag = contentTags[i];
-        if (isPresent(vc) && vc.templateElement === n) {
-          foundVc = vc;
-        }
-        if (isPresent(contentTag) && contentTag.contentStartElement === n) {
-          foundContentTag = contentTag;
+      var boundElementIndex = null;
+      for (var i=0; i<boundElements.length; i++) {
+        var boundEl = boundElements[i];
+        if (isPresent(boundEl) && boundEl === n) {
+          boundElementIndex = i;
+          break;
         }
       }
-      return new _Root(n, foundVc, foundContentTag);
+      return new _Root(n, boundElementIndex);
     });
 
     return this.roots;

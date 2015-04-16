@@ -27,7 +27,7 @@ export class ElementBinder {
     parentIndex,
     distanceToParent,
     propertySetters
-  }) {
+  } = {}) {
     this.textNodeIndices = textNodeIndices;
     this.contentTagSelector = contentTagSelector;
     this.nestedProtoView = nestedProtoView;

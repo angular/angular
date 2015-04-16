@@ -10,24 +10,30 @@ import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
 @proxy
 @IMPLEMENTS(RenderView)
 class FakeView {
+  boundElements;
   contentTags;
   viewContainers;
 
   constructor(containers = null) {
+    this.boundElements = [];
     this.contentTags = [];
     this.viewContainers = [];
     if (isPresent(containers)) {
       ListWrapper.forEach(containers, (c) => {
+        var boundElement = null;
+        var contentTag = null;
+        var vc = null;
         if (c instanceof FakeContentTag) {
-          ListWrapper.push(this.contentTags, c);
-        } else {
-          ListWrapper.push(this.contentTags, null);
+          contentTag = c;
+          boundElement = c.contentStartElement;
         }
         if (c instanceof FakeViewContainer) {
-          ListWrapper.push(this.viewContainers, c);
-        } else {
-          ListWrapper.push(this.viewContainers, null);
+          vc = c;
+          boundElement = c.templateElement;
         }
+        ListWrapper.push(this.contentTags, contentTag);
+        ListWrapper.push(this.viewContainers, vc);
+        ListWrapper.push(this.boundElements, boundElement);
       });
     }
   }
@@ -40,9 +46,9 @@ class FakeView {
 @proxy
 @IMPLEMENTS(ViewContainer)
 class FakeViewContainer {
-  templateElement;
   _nodes;
   _contentTagContainers;
+  templateElement;
 
   constructor(templateEl, nodes = null, views = null) {
     this.templateElement = templateEl;
