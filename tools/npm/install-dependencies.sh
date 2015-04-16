@@ -7,6 +7,8 @@ SHRINKWRAP_CACHED_FILE=node_modules/npm-shrinkwrap.cached.json
 
 if diff -q $SHRINKWRAP_FILE $SHRINKWRAP_CACHED_FILE; then
   echo 'No shrinkwrap changes detected. npm install will be skipped...';
+  echo 'Running npm postinstall'
+  npm run postinstall
 else
   echo 'Blowing away node_modules and reinstalling npm dependencies...'
   rm -rf node_modules
