@@ -1,4 +1,5 @@
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {global} from 'angular2/src/facade/lang';
 
 class PublicTestability {
   _testabililty: Testability;
@@ -18,10 +19,10 @@ class PublicTestability {
 
 export class GetTestability {
   static addToWindow(registry: TestabilityRegistry) {
-    if (!window.angular2) {
-      window.angular2 = {};
+    if (!global.angular2) {
+      global.angular2 = {};
     }
-    window.angular2.getTestability = function(elem): PublicTestability {
+    global.angular2.getTestability = function(elem): PublicTestability {
       var testability = registry.findTestabilityInTree(elem);
 
       if (testability == null) {
@@ -29,7 +30,7 @@ export class GetTestability {
       }
       return new PublicTestability(testability);
     };
-    window.angular2.resumeBootstrap = function() {
+    global.angular2.resumeBootstrap = function() {
       // Intentionally left blank. This will allow Protractor to run
       // against angular2 without turning off Angular synchronization.
     };
