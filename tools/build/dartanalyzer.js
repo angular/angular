@@ -12,9 +12,10 @@ module.exports = function(gulp, plugins, config) {
     return util.forEachSubDirSequential(
       config.dest,
       function(dir) {
-        var srcFiles = [].slice.call(glob.sync('{/lib,/web}/**/*.dart', {
+        var srcFiles = [].slice.call(glob.sync('web/**/*.dart', {
           cwd: dir
         }));
+
         var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
           cwd: dir
         }));
@@ -32,8 +33,17 @@ module.exports = function(gulp, plugins, config) {
     );
 
     function analyze(dirName, done) {
+      // analyze files in lib directly – or you mess up package: urls
+      var sources = [].slice.call(glob.sync('lib/*.dart', {
+        cwd: dirName
+      }));
+
+      sources.push(tempFile);
+
       //TODO remove --package-warnings once dartanalyzer handles transitive libraries
-      var stream = spawn(config.command, ['--fatal-warnings', '--package-warnings', tempFile], {
+      var args = ['--fatal-warnings', '--package-warnings'].concat(sources);
+
+      var stream = spawn(config.command, args, {
         // inherit stdin and stderr, but filter stdout
         stdio: [process.stdin, 'pipe', process.stderr],
         cwd: dirName
@@ -60,21 +70,26 @@ module.exports = function(gulp, plugins, config) {
           if (line.match(/_analyzer\.dart/)) {
             return;
           }
-
-          //TODO: remove this work-around once #704 is fixed
-          if (line.match(/\/test\/core\/compiler\/view_.*spec\.dart/)) {
-            return;
-          }
-          if (line.match(/\/test_lib_spec\.dart/)) {
-            return;
-          }
         }
-        if (line.match(/\[hint\]/)) {
-          hintCount++;
-        } else if (line.match(/\[warning\]/)) {
-          warningCount++;
-        } else {
-          errorCount ++;
+
+        var skip = false;
+        // TODO: not reporting issues in web for now
+        // Should be removed when https://github.com/angular/angular/issues/1392
+        // is fixed
+        var webDir = path.join(dirName, 'web');
+        if (line.indexOf(webDir) >= 0) {
+          skip = true;
+          line = '(TODO #1392) ' + line;
+        }
+
+        if (!skip) {
+          if (line.match(/\[hint\]/)) {
+            hintCount++;
+          } else if (line.match(/\[warning\]/)) {
+            warningCount++;
+          } else {
+            errorCount ++;
+          }
         }
         console.log(dirName + ':' + line);
       });
