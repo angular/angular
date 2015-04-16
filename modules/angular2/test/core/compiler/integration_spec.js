@@ -591,6 +591,23 @@ export function main() {
           });
         }));
 
+        it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
+            directives: [DecoratorListeningDomEventPrevent, DecoratorListeningDomEventNoPrevent]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
+            expect(DOM.getChecked(view.rootNodes[1])).toBeFalsy();
+            DOM.dispatchEvent(view.rootNodes[0], DOM.createMouseEvent('click'));
+            DOM.dispatchEvent(view.rootNodes[1], DOM.createMouseEvent('click'));
+            expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
+            expect(DOM.getChecked(view.rootNodes[1])).toBeTruthy();
+            async.done();        
+          });
+        }));
+
         it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<div *if="ctxBoolProp" listener listenerother></div>',
@@ -1159,6 +1176,30 @@ class DecoratorListeningDomEventOther {
   onEvent(eventType: string) {
     globalCounter++;
     this.eventType = "other_" + eventType;
+  }
+}
+
+@Decorator({
+  selector: '[listenerprevent]',
+  hostListeners: {
+    'click': 'onEvent($event)'
+  }
+})
+class DecoratorListeningDomEventPrevent {
+  onEvent(event) {
+    return false;
+  }
+}
+
+@Decorator({
+  selector: '[listenernoprevent]',
+  hostListeners: {
+    'click': 'onEvent($event)'
+  }
+})
+class DecoratorListeningDomEventNoPrevent {
+  onEvent(event) {
+    return true;
   }
 }
 

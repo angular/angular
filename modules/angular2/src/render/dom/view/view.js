@@ -84,7 +84,8 @@ export class RenderView {
     this._eventDispatcher = dispatcher;
   }
 
-  dispatchEvent(elementIndex, eventName, event) {
+  dispatchEvent(elementIndex, eventName, event): boolean {
+    var allowDefaultBehavior = true;
     if (isPresent(this._eventDispatcher)) {
       var evalLocals = MapWrapper.create();
       MapWrapper.set(evalLocals, '$event', event);
@@ -92,7 +93,11 @@ export class RenderView {
       // out of action expressions
       // var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new Locals(null, evalLocals));
       // this._eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
-      this._eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
+      allowDefaultBehavior = this._eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
+      if (!allowDefaultBehavior) {
+        event.preventDefault();
+      }
     }
+    return allowDefaultBehavior;
   }
 }

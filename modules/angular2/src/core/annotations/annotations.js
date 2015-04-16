@@ -391,6 +391,7 @@ export class Directive extends Injectable {
    *
    * - `event1`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
+   * If the evalutation of the statement returns `false`, then `preventDefault`is applied on the DOM event.
    *
    * To listen to global events, a target must be added to the event name.
    * The target can be `window`, `document` or `body`.
