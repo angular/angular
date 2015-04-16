@@ -35,6 +35,9 @@ before_install:
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 
 install:
+  # Update npm
+  - npm install -g npm@2.7.4
+  - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
   # Install npm dependecies and ensure that npm cache is not stale
