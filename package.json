@@ -89,6 +89,7 @@
     "protractor": "2.0.0",
     "q": "^1.0.1",
     "run-sequence": "^0.3.6",
+    "sorted-object": "^1.0.0",
     "source-map": "^0.3.0",
     "sprintf-js": "1.0.*",
     "systemjs-builder": "^0.10.3",
