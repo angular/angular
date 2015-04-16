@@ -32,15 +32,16 @@ function runBenchmark(config) {
       });
     }
     var url = encodeURI(config.url + '?' + urlParams.join('&'));
-    browser.get(url);
-    return benchpressRunner.sample({
-      id: config.id,
-      execute: config.work,
-      prepare: config.prepare,
-      microMetrics: config.microMetrics,
-      bindings: [
-        benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue(description)
-      ]
+    return browser.get(url).then(function() {
+      benchpressRunner.sample({
+        id: config.id,
+        execute: config.work,
+        prepare: config.prepare,
+        microMetrics: config.microMetrics,
+        bindings: [
+          benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue(description)
+        ]
+      });
     });
   });
 }
