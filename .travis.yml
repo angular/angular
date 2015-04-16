@@ -28,12 +28,22 @@ before_install:
 - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${ARCH}
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
+
+install:
+  # Check the size of caches
+  - du -sh ./node_modules || true
+  # Install npm dependecies and ensure that npm cache is not stale
+  - tools/npm/install-dependencies.sh
+
 before_script:
 - mkdir -p $LOGS_DIR
+
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
+
 after_script:
 - ./scripts/ci/print-logs.sh
+
 notifications:
   webhooks:
     urls:
