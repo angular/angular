@@ -200,11 +200,11 @@ export class Compiler {
       componentId: stringify(component),
       absUrl: templateAbsUrl,
       template: view.template,
-      directives: ListWrapper.map(directives, this._buildRenderDirective)
+      directives: ListWrapper.map(directives, Compiler.buildRenderDirective)
     });
   }
 
-  _buildRenderDirective(directiveBinding) {
+  static buildRenderDirective(directiveBinding) {
     var ann = directiveBinding.annotation;
     var renderType;
     var compileChildren = true;
