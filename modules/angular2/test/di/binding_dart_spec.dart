@@ -1,5 +1,6 @@
 /// This file contains tests that make sense only in Dart world, such as
 /// verifying that things are valid constants.
+library angular2.test.di.binding_dart_spec;
 
 import 'dart:mirrors';
 import 'package:angular2/test_lib.dart';
