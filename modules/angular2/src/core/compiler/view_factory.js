@@ -5,6 +5,7 @@ import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import * as vcModule from './view_container';
 import * as viewModule from './view';
+import {Renderer} from 'angular2/src/render/api';
 
 // TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
 export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
@@ -13,10 +14,12 @@ export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
 export class ViewFactory {
   _poolCapacityPerProtoView:number;
   _pooledViewsPerProtoView:Map<viewModule.AppProtoView, List<viewModule.AppView>>;
+  _renderer:Renderer;
 
-  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView) {
+  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView, renderer:Renderer) {
     this._poolCapacityPerProtoView = poolCapacityPerProtoView;
     this._pooledViewsPerProtoView = MapWrapper.create();
+    this._renderer = renderer;
   }
 
   getView(protoView:viewModule.AppProtoView):viewModule.AppView {
@@ -47,7 +50,7 @@ export class ViewFactory {
   }
 
   _createView(protoView:viewModule.AppProtoView): viewModule.AppView {
-    var view = new viewModule.AppView(protoView, protoView.protoLocals);
+    var view = new viewModule.AppView(this._renderer, protoView, protoView.protoLocals);
     var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
       protoView.getVariableBindings(), protoView.getdirectiveRecords());
 
@@ -81,14 +84,14 @@ export class ViewFactory {
         var childView = this._createView(binder.nestedProtoView);
         childChangeDetector = childView.changeDetector;
         changeDetector.addShadowDomChild(childChangeDetector);
-        
+
         componentChildViews[binderIdx] = childView;
       }
 
       // viewContainers
       var viewContainer = null;
       if (isPresent(binder.viewportDirective)) {
-        viewContainer = new vcModule.ViewContainer(this, view, binder.nestedProtoView, elementInjector);
+        viewContainer = new vcModule.ViewContainer(this, this._renderer, view, binder.nestedProtoView, elementInjector);
       }
       viewContainers[binderIdx] = viewContainer;
 

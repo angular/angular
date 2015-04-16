@@ -24,26 +24,32 @@ import {ElementRef, ElementInjector, ProtoElementInjector, PreBuiltObjects} from
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory'
-import {Renderer} from 'angular2/src/render/api';
+import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
 
 export function main() {
   describe("DynamicComponentLoader", () => {
     var compiler;
     var viewFactory;
     var directiveMetadataReader;
-    var renderer;
+    var viewHydrator;
     var loader;
 
     beforeEach( () => {
       compiler = new SpyCompiler();
       viewFactory = new SpyViewFactory();
-      renderer = new SpyRenderer();
+      viewHydrator = new SpyAppViewHydrator();
       directiveMetadataReader = new DirectiveMetadataReader();
-      loader = new DynamicComponentLoader(compiler, directiveMetadataReader, renderer, viewFactory);;
+      loader = new DynamicComponentLoader(compiler, directiveMetadataReader, viewFactory, viewHydrator);
     });
 
     function createProtoView() {
-      return new AppProtoView(null, null, null);
+      return new AppProtoView(null, null);
+    }
+
+    function createEmptyView() {
+      var view = new AppView(null, createProtoView(), MapWrapper.create());
+      view.init(null, [], [], [], [], []);
+      return view;
     }
 
     function createElementRef(view, boundElementIndex) {
@@ -67,23 +73,25 @@ export function main() {
         });
       });
 
-      it('should add the child view into the host view', inject([AsyncTestCompleter], (async) => {
+      it('should compile, create and hydrate the view', inject([AsyncTestCompleter], (async) => {
         var log = [];
-        var hostView = new SpyAppView();
-        var childView = new SpyAppView();
-        hostView.spy('setDynamicComponentChildView').andCallFake( (boundElementIndex, childView) => {
-          ListWrapper.push(log, ['setDynamicComponentChildView', boundElementIndex, childView]);
+        var protoView = createProtoView();
+        var hostView = createEmptyView();
+        var childView = createEmptyView();
+        viewHydrator.spy('hydrateDynamicComponentView').andCallFake( (hostView, boundElementIndex,
+            componentView, componentDirective, injector) => {
+          ListWrapper.push(log, ['hydrateDynamicComponentView', hostView, boundElementIndex, componentView]);
         });
-        childView.spy('hydrate').andCallFake( (appInjector, hostElementInjector, context, locals) => {
-          ListWrapper.push(log, 'hydrate');
+        viewFactory.spy('getView').andCallFake( (protoView) => {
+          ListWrapper.push(log, ['getView', protoView]);
+          return childView;
         });
-        compiler.spy('compile').andCallFake( (_) => PromiseWrapper.resolve(createProtoView()));
-        viewFactory.spy('getView').andCallFake( (_) => childView);
+        compiler.spy('compile').andCallFake( (_) => PromiseWrapper.resolve(protoView));
 
         var elementRef = createElementRef(hostView, 23);
         loader.loadIntoExistingLocation(SomeComponent, elementRef).then( (componentRef) => {
-          expect(log[0]).toEqual('hydrate');
-          expect(log[1]).toEqual(['setDynamicComponentChildView', 23, childView]);
+          expect(log[0]).toEqual(['getView', protoView]);
+          expect(log[1]).toEqual(['hydrateDynamicComponentView', hostView, 23, childView]);
           async.done();
         });
       }));
@@ -112,8 +120,8 @@ class SpyCompiler extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m
 class SpyViewFactory extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
 
 @proxy
-@IMPLEMENTS(Renderer)
-class SpyRenderer extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+@IMPLEMENTS(AppViewHydrator)
+class SpyAppViewHydrator extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
 
 @proxy
 @IMPLEMENTS(AppView)

@@ -6,7 +6,6 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding
 import {ElementBinder} from './element_binder';
 import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {Injector} from 'angular2/di';
 import {ViewContainer} from './view_container';
 import * as renderApi from 'angular2/src/render/api';
 
@@ -18,6 +17,7 @@ import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
 // @IMPLEMENTS(renderApi.EventDispatcher)
 export class AppView {
+
   render:renderApi.ViewRef;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
@@ -27,6 +27,7 @@ export class AppView {
   viewContainers: List<ViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
+  renderer: renderApi.Renderer;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
@@ -42,7 +43,7 @@ export class AppView {
    */
   locals:Locals;
 
-  constructor(proto:AppProtoView, protoLocals:Map) {
+  constructor(renderer:renderApi.Renderer, proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
@@ -53,6 +54,7 @@ export class AppView {
     this.preBuiltObjects = null;
     this.context = null;
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
+    this.renderer = renderer;
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List,
@@ -78,157 +80,6 @@ export class AppView {
     return isPresent(this.context);
   }
 
-  _setContextAndLocals(newContext, locals) {
-    this.context = newContext;
-    this.locals.parent = locals;
-  }
-
-  _hydrateChangeDetector() {
-    this.changeDetector.hydrate(this.context, this.locals, this);
-  }
-
-  _dehydrateContext() {
-    if (isPresent(this.locals)) {
-      this.locals.clearValues();
-    }
-    this.context = null;
-    this.changeDetector.dehydrate();
-  }
-
-  /**
-   * A dehydrated view is a state of the view that allows it to be moved around
-   * the view tree, without incurring the cost of recreating the underlying
-   * injectors and watch records.
-   *
-   * A dehydrated view has the following properties:
-   *
-   * - all element injectors are empty.
-   * - all appInjectors are released.
-   * - all viewcontainers are empty.
-   * - all context locals are set to null.
-   * - the view context is null.
-   *
-   * A call to hydrate/dehydrate does not attach/detach the view from the view
-   * tree.
-   */
-  hydrate(appInjector: Injector, hostElementInjector: ElementInjector,
-      context: Object, locals:Locals) {
-    var renderComponentViewRefs = this.proto.renderer.createView(this.proto.render);
-    this.internalHydrateRecurse(renderComponentViewRefs, 0, appInjector, hostElementInjector, context, locals);
-  }
-
-  dehydrate() {
-    var render = this.render;
-    this.internalDehydrateRecurse();
-    this.proto.renderer.destroyView(render);
-  }
-
-  internalHydrateRecurse(
-      renderComponentViewRefs:List<renderApi.ViewRef>,
-      renderComponentIndex:number,
-      appInjector: Injector, hostElementInjector: ElementInjector,
-      context: Object, locals:Locals):number {
-    if (this.hydrated()) throw new BaseException('The view is already hydrated.');
-
-    this.render = renderComponentViewRefs[renderComponentIndex++];
-
-    this._setContextAndLocals(context, locals);
-
-    // viewContainers
-    for (var i = 0; i < this.viewContainers.length; i++) {
-      var vc = this.viewContainers[i];
-      if (isPresent(vc)) {
-        vc.internalHydrateRecurse(new renderApi.ViewContainerRef(this.render, i), appInjector, hostElementInjector);
-      }
-    }
-
-    var binders = this.proto.elementBinders;
-    for (var i = 0; i < binders.length; ++i) {
-      var componentDirective = binders[i].componentDirective;
-      var shadowDomAppInjector = null;
-
-      // shadowDomAppInjector
-      if (isPresent(componentDirective)) {
-        var injectables = componentDirective.resolvedInjectables;
-        if (isPresent(injectables))
-          shadowDomAppInjector = appInjector.createChildFromResolved(injectables);
-        else {
-          shadowDomAppInjector = appInjector;
-        }
-      } else {
-        shadowDomAppInjector = null;
-      }
-
-      // elementInjectors
-      var elementInjector = this.elementInjectors[i];
-      if (isPresent(elementInjector)) {
-        elementInjector.instantiateDirectives(appInjector, hostElementInjector, shadowDomAppInjector, this.preBuiltObjects[i]);
-
-        // The exporting of $implicit is a special case. Since multiple elements will all export
-        // the different values as $implicit, directly assign $implicit bindings to the variable
-        // name.
-        var exportImplicitName = elementInjector.getExportImplicitName();
-        if (elementInjector.isExportingComponent()) {
-          this.locals.set(exportImplicitName, elementInjector.getComponent());
-        } else if (elementInjector.isExportingElement()) {
-          this.locals.set(exportImplicitName, elementInjector.getNgElement());
-        }
-      }
-
-      if (binders[i].hasStaticComponent()) {
-        renderComponentIndex = this.componentChildViews[i].internalHydrateRecurse(
-          renderComponentViewRefs,
-          renderComponentIndex,
-          shadowDomAppInjector,
-          elementInjector,
-          elementInjector.getComponent(),
-          null
-        );
-      }
-    }
-    this._hydrateChangeDetector();
-    this.proto.renderer.setEventDispatcher(this.render, this);
-    return renderComponentIndex;
-  }
-
-  internalDehydrateRecurse() {
-    // Note: preserve the opposite order of the hydration process.
-
-    // componentChildViews
-    for (var i = 0; i < this.componentChildViews.length; i++) {
-      var componentView = this.componentChildViews[i];
-      if (isPresent(componentView)) {
-        componentView.internalDehydrateRecurse();
-        var binder = this.proto.elementBinders[i];
-        if (binder.hasDynamicComponent()) {
-          this.componentChildViews[i] = null;
-          this.changeDetector.removeShadowDomChild(componentView.changeDetector);
-        }
-      }
-    }
-
-    // elementInjectors
-    for (var i = 0; i < this.elementInjectors.length; i++) {
-      if (isPresent(this.elementInjectors[i])) {
-        this.elementInjectors[i].clearDirectives();
-      }
-    }
-
-    // viewContainers
-    if (isPresent(this.viewContainers)) {
-      for (var i = 0; i < this.viewContainers.length; i++) {
-        var vc = this.viewContainers[i];
-        if (isPresent(vc)) {
-          vc.internalDehydrateRecurse();
-        }
-      }
-    }
-
-    this.render = null;
-
-    this._dehydrateContext();
-  }
-
   /**
    * Triggers the event handlers for the element and the directives.
    *
@@ -247,12 +98,12 @@ export class AppView {
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b:BindingRecord, currentValue:any) {
     if (b.isElement()) {
-      this.proto.renderer.setElementProperty(
+      this.renderer.setElementProperty(
         this.render, b.elementIndex, b.propertyName, currentValue
       );
     } else {
       // we know it refers to _textNodes.
-      this.proto.renderer.setText(this.render, b.elementIndex, currentValue);
+      this.renderer.setText(this.render, b.elementIndex, currentValue);
     }
   }
 
@@ -264,18 +115,6 @@ export class AppView {
   getDetectorFor(directive:DirectiveRecord) {
     var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getChangeDetector();
-  }
-
-  setDynamicComponentChildView(boundElementIndex, view:AppView) {
-    if (!this.proto.elementBinders[boundElementIndex].hasDynamicComponent()) {
-      throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`);
-    }
-    if (isPresent(this.componentChildViews[boundElementIndex])) {
-      throw new BaseException(`There already is a bound component at element ${boundElementIndex}`);
-    }
-    this.componentChildViews[boundElementIndex] = view;
-    this.changeDetector.addShadowDomChild(view.changeDetector);
-    this.proto.renderer.setDynamicComponentView(this.render, boundElementIndex, view.render);
   }
 
   // implementation of EventDispatcher#dispatchEvent
@@ -319,13 +158,10 @@ export class AppProtoView {
   _directiveRecordsMap:Map;
   _directiveRecords:List;
   render:renderApi.ProtoViewRef;
-  renderer:renderApi.Renderer;
 
   constructor(
-      renderer:renderApi.Renderer,
       render:renderApi.ProtoViewRef,
       protoChangeDetector:ProtoChangeDetector) {
-    this.renderer = renderer;
     this.render = render;
     this.elementBinders = [];
     this.variableBindings = MapWrapper.create();

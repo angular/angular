@@ -15,6 +15,7 @@ import {EventManager, EventManagerPlugin} from 'angular2/src/render/dom/events/e
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {ViewFactory} from 'angular2/src/render/dom/view/view_factory';
+import {RenderViewHydrator} from 'angular2/src/render/dom/view/view_hydrator';
 
 export class IntegrationTestbed {
   renderer;
@@ -45,11 +46,12 @@ export class IntegrationTestbed {
     this.eventPlugin = new FakeEventManagerPlugin();
     var eventManager = new EventManager([this.eventPlugin], new FakeVmTurnZone());
     var viewFactory = new ViewFactory(viewCacheCapacity, eventManager, shadowDomStrategy);
-    this.renderer = new DirectDomRenderer(compiler, viewFactory, shadowDomStrategy);
+    var viewHydrator = new RenderViewHydrator(eventManager, viewFactory);
+    this.renderer = new DirectDomRenderer(compiler, viewFactory, viewHydrator, shadowDomStrategy);
   }
 
-  compileRoot(rootEl, componentId):Promise<ProtoViewDto> {
-    return this.renderer.createRootProtoView(rootEl, componentId).then( (rootProtoView) => {
+  compileRoot(componentId):Promise<ProtoViewDto> {
+    return this.renderer.createHostProtoView(componentId).then( (rootProtoView) => {
       return this._compileNestedProtoViews(rootProtoView, [
         new DirectiveMetadata({
           type: DirectiveMetadata.COMPONENT_TYPE,

@@ -28,7 +28,7 @@ import {RenderView} from 'angular2/src/render/dom/view/view';
 export function main() {
   var strategy;
 
-  describe('EmulatedUnscoped', () => {
+  describe('EmulatedUnscopedShadowDomStrategy', () => {
     var styleHost;
 
     beforeEach(() => {
@@ -42,7 +42,7 @@ export function main() {
     it('should attach the view nodes as child of the host element', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var view = new RenderView(null, [nodes], [], [], [], [], null);
+      var view = new RenderView(null, [nodes], [], [], [], []);
 
       strategy.attachTemplate(host, view);
       var firstChild = DOM.firstChild(host);

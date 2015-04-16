@@ -7,13 +7,18 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 import * as viewModule from './view';
 import * as vfModule from './view_factory';
+import * as vhModule from './view_hydrator';
+import {Renderer} from 'angular2/src/render/api';
 
 /**
  * @exportedAs angular2/template
  */
 export class ViewContainer {
-  render:renderApi.ViewContainerRef;
   viewFactory: vfModule.ViewFactory;
+  viewHydrator: vhModule.AppViewHydrator;
+  renderer: Renderer;
+
+  render:renderApi.ViewContainerRef;
   parentView: viewModule.AppView;
   defaultProtoView: viewModule.AppProtoView;
   _views: List<viewModule.AppView>;
@@ -22,10 +27,13 @@ export class ViewContainer {
   hostElementInjector: eiModule.ElementInjector;
 
   constructor(viewFactory:vfModule.ViewFactory,
+              renderer: Renderer,
               parentView: viewModule.AppView,
               defaultProtoView: viewModule.AppProtoView,
               elementInjector: eiModule.ElementInjector) {
     this.viewFactory = viewFactory;
+    this.viewHydrator = null;
+    this.renderer = renderer;
     this.render = null;
     this.parentView = parentView;
     this.defaultProtoView = defaultProtoView;
@@ -37,28 +45,10 @@ export class ViewContainer {
     this.hostElementInjector = null;
   }
 
-  internalHydrateRecurse(render:renderApi.ViewContainerRef, appInjector: Injector, hostElementInjector: eiModule.ElementInjector) {
-    this.render = render;
-    this.appInjector = appInjector;
-    this.hostElementInjector = hostElementInjector;
-  }
-
-  internalDehydrateRecurse() {
-    this.appInjector = null;
-    this.hostElementInjector = null;
-    this.render = null;
-    // Note: We don't call clear here,
-    // as we don't want to change the render side
-    // (i.e. don't deattach views on the render side),
-    // as the render side does its own recursion.
+  internalClearWithoutRender() {
     for (var i = this._views.length - 1; i >= 0; i--) {
-      var view = this._views[i];
-      view.changeDetector.remove();
-      this._unlinkElementInjectors(view);
-      view.internalDehydrateRecurse();
-      this.viewFactory.returnView(view);
+      this._detachInjectors(i);
     }
-    this._views = [];
   }
 
   clear() {
@@ -86,31 +76,31 @@ export class ViewContainer {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex=-1): viewModule.AppView {
+  create(atIndex=-1, protoView:viewModule.AppProtoView = null): viewModule.AppView {
+    if (atIndex == -1) atIndex = this._views.length;
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
-    var newView = this.viewFactory.getView(this.defaultProtoView);
+    if (isBlank(protoView)) {
+      protoView = this.defaultProtoView;
+    }
+    var newView = this.viewFactory.getView(protoView);
     // insertion must come before hydration so that element injector trees are attached.
-    this._insertWithoutRender(newView, atIndex);
-    // hydration must come before changing the render side,
-    // as it acquires the render views.
-    newView.hydrate(this.appInjector, this.hostElementInjector,
-      this.parentView.context, this.parentView.locals);
-    this.defaultProtoView.renderer.insertViewIntoContainer(this.render, newView.render, atIndex);
+    this._insertInjectors(newView, atIndex);
+    this.viewHydrator.hydrateViewInViewContainer(this, atIndex, newView);
 
     return newView;
   }
 
   insert(view, atIndex=-1): viewModule.AppView {
-    this._insertWithoutRender(view, atIndex);
-    this.defaultProtoView.renderer.insertViewIntoContainer(this.render, view.render, atIndex);
+    if (atIndex == -1) atIndex = this._views.length;
+    this._insertInjectors(view, atIndex);
+    this.parentView.changeDetector.addChild(view.changeDetector);
+    this.renderer.insertViewIntoContainer(this.render, atIndex, view.render);
     return view;
   }
 
-  _insertWithoutRender(view, atIndex=-1): viewModule.AppView {
-    if (atIndex == -1) atIndex = this._views.length;
+  _insertInjectors(view, atIndex): viewModule.AppView {
     ListWrapper.insert(this._views, atIndex, view);
-    this.parentView.changeDetector.addChild(view.changeDetector);
     this._linkElementInjectors(this._siblingInjectorToLinkAfter(atIndex), view);
 
     return view;
@@ -118,8 +108,10 @@ export class ViewContainer {
 
   remove(atIndex=-1) {
     if (atIndex == -1) atIndex = this._views.length - 1;
-    var view = this.detach(atIndex);
-    view.dehydrate();
+    var view = this._views[atIndex];
+    // opposite order as in create
+    this.viewHydrator.dehydrateViewInViewContainer(this, atIndex, view);
+    this._detachInjectors(atIndex);
     this.viewFactory.returnView(view);
     // view is intentionally not returned to the client.
   }
@@ -130,16 +122,17 @@ export class ViewContainer {
    */
   detach(atIndex=-1): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length - 1;
-    var detachedView = this.get(atIndex);
-    ListWrapper.removeAt(this._views, atIndex);
-    this.defaultProtoView.renderer.detachViewFromContainer(this.render, atIndex);
+    var detachedView = this._detachInjectors(atIndex);
     detachedView.changeDetector.remove();
-    this._unlinkElementInjectors(detachedView);
+    this.renderer.detachViewFromContainer(this.render, atIndex);
     return detachedView;
   }
 
-  contentTagContainers() {
-    return this._views;
+  _detachInjectors(atIndex): viewModule.AppView {
+    var detachedView = this.get(atIndex);
+    ListWrapper.removeAt(this._views, atIndex);
+    this._unlinkElementInjectors(detachedView);
+    return detachedView;
   }
 
   _linkElementInjectors(sibling, view) {

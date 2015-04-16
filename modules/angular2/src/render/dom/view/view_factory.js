@@ -31,6 +31,10 @@ export class ViewFactory {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
+  createInPlaceHostView(hostElementSelector, hostProtoView:pvModule.RenderProtoView):viewModule.RenderView {
+    return this._createView(hostProtoView, hostElementSelector);
+  }
+
   getView(protoView:pvModule.RenderProtoView):viewModule.RenderView {
     var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
     if (isPresent(pooledViews)) {
@@ -40,12 +44,12 @@ export class ViewFactory {
       }
       return result;
     }
-    return this._createView(protoView);
+    return this._createView(protoView, null);
   }
 
   returnView(view:viewModule.RenderView) {
-    if (view.hydrated()) {
-      view.dehydrate();
+    if (view.hydrated) {
+      throw new BaseException('View is still hydrated');
     }
     var protoView = view.proto;
     var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
@@ -58,8 +62,8 @@ export class ViewFactory {
     }
   }
 
-  _createView(protoView:pvModule.RenderProtoView): viewModule.RenderView {
-    var rootElementClone = protoView.isRootView ? protoView.element : DOM.importIntoDoc(protoView.element);
+  _createView(protoView:pvModule.RenderProtoView, inplaceElement): viewModule.RenderView {
+    var rootElementClone = isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
     var elementsWithBindingsDynamic;
     if (protoView.isTemplateElement) {
       elementsWithBindingsDynamic = DOM.querySelectorAll(DOM.content(rootElementClone), NG_BINDING_CLASS_SELECTOR);
@@ -110,7 +114,7 @@ export class ViewFactory {
       // viewContainers
       var viewContainer = null;
       if (isBlank(binder.componentId) && isPresent(binder.nestedProtoView)) {
-        viewContainer = new vcModule.ViewContainer(this, element);
+        viewContainer = new vcModule.ViewContainer(element);
       }
       viewContainers[binderIdx] = viewContainer;
 
@@ -124,7 +128,7 @@ export class ViewFactory {
 
     var view = new viewModule.RenderView(
       protoView, viewRootNodes,
-      boundTextNodes, boundElements, viewContainers, contentTags, this._eventManager
+      boundTextNodes, boundElements, viewContainers, contentTags
     );
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
@@ -133,8 +137,8 @@ export class ViewFactory {
 
       // static child components
       if (binder.hasStaticComponent()) {
-        var childView = this._createView(binder.nestedProtoView);
-        view.setComponentView(this._shadowDomStrategy, binderIdx, childView);
+        var childView = this._createView(binder.nestedProtoView, null);
+        this.setComponentView(view, binderIdx, childView);
       }
 
       // events
@@ -145,10 +149,6 @@ export class ViewFactory {
       }
     }
 
-    if (protoView.isRootView) {
-      view.hydrate(null);
-    }
-
     return view;
   }
 
@@ -156,5 +156,16 @@ export class ViewFactory {
     this._eventManager.addEventListener(element, eventName, (event) => {
       view.dispatchEvent(elementIndex, eventName, event);
     });
+  }
+
+  // This method is used by the ViewFactory and the ViewHydrator
+  // TODO(tbosch): change shadow dom emulation so that LightDom
+  // instances don't need to be recreated by instead hydrated/dehydrated
+  setComponentView(hostView:viewModule.RenderView, elementIndex:number, componentView:viewModule.RenderView) {
+    var element = hostView.boundElements[elementIndex];
+    var lightDom = this._shadowDomStrategy.constructLightDom(hostView, componentView, element);
+    this._shadowDomStrategy.attachTemplate(element, componentView);
+    hostView.lightDoms[elementIndex] = lightDom;
+    hostView.componentChildViews[elementIndex] = componentView;
   }
 }

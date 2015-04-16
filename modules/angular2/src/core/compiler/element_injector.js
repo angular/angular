@@ -575,9 +575,9 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
   }
 
-  dynamicallyCreateComponent(componentType:Type, annotation:Directive, injector:Injector) {
+  dynamicallyCreateComponent(directiveBinding, injector:Injector) {
     this._shadowDomAppInjector = injector;
-    this._dynamicallyCreatedComponentBinding = DirectiveBinding.createFromType(componentType, annotation);
+    this._dynamicallyCreatedComponentBinding = directiveBinding;
     this._dynamicallyCreatedComponent = this._new(this._dynamicallyCreatedComponentBinding);
     return this._dynamicallyCreatedComponent;
   }
@@ -708,7 +708,7 @@ export class ElementInjector extends TreeNode {
 
   _buildPropSetter(dep) {
     var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    var renderer = view.proto.renderer;
+    var renderer = view.renderer;
     var index = this._proto.index;
     return function(v) {
       renderer.setElementProperty(view.render, index, dep.propSetterName, v);

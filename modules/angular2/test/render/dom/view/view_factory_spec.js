@@ -42,7 +42,6 @@ export function main() {
       }
       return new RenderProtoView({
         element: rootEl,
-        isRootView: false,
         elementBinders: binders
       });
     }

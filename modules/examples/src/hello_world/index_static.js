@@ -25,11 +25,13 @@ import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/te
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
+import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
+import * as rvh from 'angular2/src/render/dom/view/view_hydrator';
 import {Inject} from 'angular2/di';
 
 function setup() {
@@ -174,16 +176,9 @@ function setup() {
   });
 
   reflector.registerType(DynamicComponentLoader, {
-    "factory": (compiler, reader, renderer, viewFactory) =>
-      new DynamicComponentLoader(compiler, reader, renderer, viewFactory),
-    "parameters": [[Compiler], [DirectiveMetadataReader], [Renderer], [ViewFactory]],
-    "annotations": []
-  });
-
-  reflector.registerType(DirectDomRenderer, {
-    "factory": (renderCompiler, renderViewFactory, shadowDomStrategy) =>
-      new DirectDomRenderer(renderCompiler, renderViewFactory, shadowDomStrategy),
-    "parameters": [[rc.Compiler], [rvf.ViewFactory], [ShadowDomStrategy]],
+    "factory": (compiler, reader, viewFactory, appViewHydrator) =>
+      new DynamicComponentLoader(compiler, reader, viewFactory, appViewHydrator),
+    "parameters": [[Compiler], [DirectiveMetadataReader], [ViewFactory], [AppViewHydrator]],
     "annotations": []
   });
 
@@ -207,17 +202,31 @@ function setup() {
     "annotations": []
   });
 
+  reflector.registerType(rvh.RenderViewHydrator, {
+    "factory": (eventManager, viewFactory) =>
+      new rvh.RenderViewHydrator(eventManager, viewFactory),
+    "parameters": [[rvf.ViewFactory], [EventManager]],
+    "annotations": []
+  });
+
   reflector.registerType(ProtoViewFactory, {
-    "factory": (changeDetection, renderer) =>
-      new ProtoViewFactory(changeDetection, renderer),
-    "parameters": [[ChangeDetection], [Renderer]],
+    "factory": (changeDetection) =>
+      new ProtoViewFactory(changeDetection),
+    "parameters": [[ChangeDetection]],
     "annotations": []
   });
 
   reflector.registerType(ViewFactory, {
-    "factory": (capacity) =>
-      new ViewFactory(capacity),
-    "parameters": [[new Inject(VIEW_POOL_CAPACITY)]],
+    "factory": (capacity, renderer) =>
+      new ViewFactory(capacity, renderer),
+    "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer]],
+    "annotations": []
+  });
+
+  reflector.registerType(AppViewHydrator, {
+    "factory": (renderer) =>
+      new AppViewHydrator(renderer),
+    "parameters": [[Renderer]],
     "annotations": []
   });
 
@@ -240,9 +249,9 @@ function setup() {
   });
 
   reflector.registerType(DirectDomRenderer, {
-    "factory": (renderCompiler, renderViewFactory, shadowDomStrategy) =>
-      new DirectDomRenderer(renderCompiler, renderViewFactory, shadowDomStrategy),
-    "parameters": [[rc.Compiler], [rvf.ViewFactory], [ShadowDomStrategy]],
+    "factory": (renderCompiler, renderViewFactory, renderViewHydrator, shadowDomStrategy) =>
+      new DirectDomRenderer(renderCompiler, renderViewFactory, renderViewHydrator, shadowDomStrategy),
+    "parameters": [[rc.Compiler], [rvf.ViewFactory], [rvh.RenderViewHydrator], [ShadowDomStrategy]],
     "annotations": []
   });
 
@@ -266,17 +275,10 @@ function setup() {
     "annotations": []
   });
 
-  reflector.registerType(ProtoViewFactory, {
-    "factory": (changeDetection, renderer) =>
-      new ProtoViewFactory(changeDetection, renderer),
-    "parameters": [[ChangeDetection], [Renderer]],
-    "annotations": []
-  });
-
   reflector.registerType(ViewFactory, {
-    "factory": (capacity) =>
-      new ViewFactory(capacity),
-    "parameters": [[new Inject(VIEW_POOL_CAPACITY)]],
+    "factory": (capacity, renderer) =>
+      new ViewFactory(capacity, renderer),
+    "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer]],
     "annotations": []
   });
 

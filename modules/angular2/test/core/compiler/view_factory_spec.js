@@ -16,6 +16,7 @@ import {
 } from 'angular2/test_lib';
 import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
+import {Renderer, ViewRef} from 'angular2/src/render/api';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -26,13 +27,15 @@ import {ChangeDetector, ProtoChangeDetector} from 'angular2/change_detection';
 export function main() {
   describe('AppViewFactory', () => {
     var reader;
+    var renderer;
 
     beforeEach( () => {
+      renderer = new SpyRenderer();
       reader = new DirectiveMetadataReader();
     });
 
     function createViewFactory({capacity}):ViewFactory {
-      return new ViewFactory(capacity);
+      return new ViewFactory(capacity, renderer);
     }
 
     function createProtoChangeDetector() {
@@ -47,7 +50,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var pv = new AppProtoView(null, null, createProtoChangeDetector());
+      var pv = new AppProtoView(null, createProtoChangeDetector());
       pv.elementBinders = binders;
       return pv;
     }
@@ -153,6 +156,13 @@ export function main() {
 
 @Component({ selector: 'someComponent' })
 class SomeComponent {}
+
+@proxy
+@IMPLEMENTS(Renderer)
+class SpyRenderer extends SpyObject {
+  constructor(){super(Renderer);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
 
 @proxy
 @IMPLEMENTS(ChangeDetector)

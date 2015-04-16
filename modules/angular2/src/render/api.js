@@ -5,6 +5,10 @@ import {ASTWithSource} from 'angular2/change_detection';
 
 /**
  * General notes:
+ *
+ * The methods for creating / destroying views in this API are used in the AppViewHydrator
+ * and RenderViewHydrator as well.
+ *
  * We are already parsing expressions on the render side:
  * - this makes the ElementBinders more compact
  *   (e.g. no need to distinguish interpolations from regular expressions from literals)
@@ -17,7 +21,7 @@ import {ASTWithSource} from 'angular2/change_detection';
  */
 export class EventBinding {
   fullName: string; // name/target:name, e.g "click", "window:resize"
-  source: ASTWithSource;  
+  source: ASTWithSource;
 
   constructor(fullName :string, source: ASTWithSource) {
     this.fullName = fullName;
@@ -78,14 +82,27 @@ export class DirectiveBinder {
 }
 
 export class ProtoViewDto {
+  // A view that contains the host element with bound
+  // component directive.
+  // Contains a view of type #COMPONENT_VIEW_TYPE.
+  static get HOST_VIEW_TYPE() { return 0; }
+  // The view of the component
+  // Can contain 0 to n views of type #EMBEDDED_VIEW_TYPE
+  static get COMPONENT_VIEW_TYPE() { return 1; }
+  // A view that is included via a Viewport directive
+  // inside of a component view
+  static get EMBEDDED_VIEW_TYPE() { return 1; }
+
   render: ProtoViewRef;
   elementBinders:List<ElementBinder>;
   variableBindings: Map<string, string>;
+  type: number;
 
-  constructor({render, elementBinders, variableBindings}={}) {
+  constructor({render, elementBinders, variableBindings, type}={}) {
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;
+    this.type = type;
   }
 }
 
@@ -144,6 +161,11 @@ export class ViewDefinition {
 
 export class Renderer {
   /**
+   * Creats a ProtoViewDto that contains a single nested component with the given componentId.
+   */
+  createHostProtoView(componentId):Promise<ProtoViewDto> { return null; }
+
+  /**
    * Compiles a single RenderProtoView. Non recursive so that
    * we don't need to serialize all possible components over the wire,
    * but only the needed ones based on previous calls.
@@ -160,34 +182,61 @@ export class Renderer {
   mergeChildComponentProtoViews(protoViewRef:ProtoViewRef, componentProtoViewRefs:List<ProtoViewRef>) { return null; }
 
   /**
-   * Creats a RenderProtoView that will create a root view for the given element,
-   * i.e. it will not clone the element but only attach other proto views to it.
-   * Contains a single nested component with the given componentId.
+   * Creates a view and inserts it into a ViewContainer.
+   * @param {ViewContainerRef} viewContainerRef
+   * @param {ProtoViewRef} protoViewRef A ProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE or ProtoViewDto.EMBEDDED_VIEW_TYPE
+   * @param {number} atIndex
+   * @return {List<ViewRef>} the view and all of its nested child component views
    */
-  createRootProtoView(selectorOrElement, componentId):Promise<ProtoViewDto> { return null; }
+  createViewInContainer(vcRef:ViewContainerRef, atIndex:number, protoViewRef:ProtoViewRef):List<ViewRef> { return null; }
 
   /**
-   * Creates a view and all of its nested child components.
-   * @return {List<ViewRef>} depth first list of nested child components
+   * Destroys the view in the given ViewContainer
    */
-  createView(protoView:ProtoViewRef):List<ViewRef> { return null; }
-
-  /**
-   * Destroys a view and returns it back into the pool.
-   */
-  destroyView(view:ViewRef):void {}
+  destroyViewInContainer(vcRef:ViewContainerRef, atIndex:number):void {}
 
   /**
    * Inserts a detached view into a viewContainer.
    */
-  insertViewIntoContainer(vcRef:ViewContainerRef, view:ViewRef, atIndex):void {}
+  insertViewIntoContainer(vcRef:ViewContainerRef, atIndex:number, view:ViewRef):void {}
 
   /**
    * Detaches a view from a container so that it can be inserted later on
-   * Note: We are not return the ViewRef as this can't be done in sync,
-   * so we assume that the caller knows which view is in which spot...
    */
   detachViewFromContainer(vcRef:ViewContainerRef, atIndex:number):void {}
+
+  /**
+   * Creates a view and
+   * installs it as a shadow view for an element.
+   *
+   * Note: only allowed if there is a dynamic component directive at this place.
+   * @param {ViewRef} hostView
+   * @param {number} elementIndex
+   * @param {ProtoViewRef} componentProtoViewRef A ProtoViewRef of type ProtoViewDto.COMPONENT_VIEW_TYPE
+   * @return {List<ViewRef>} the view and all of its nested child component views
+   */
+  createDynamicComponentView(hostViewRef:ViewRef, elementIndex:number, componentProtoViewRef:ProtoViewRef):List<ViewRef> { return null; }
+
+  /**
+   * Destroys the component view at the given index
+   *
+   * Note: only allowed if there is a dynamic component directive at this place.
+   */
+  destroyDynamicComponentView(hostViewRef:ViewRef, elementIndex:number):void {}
+
+  /**
+   * Creates a host view that includes the given element.
+   * @param {ViewRef} parentViewRef (might be null)
+   * @param {any} hostElementSelector element or css selector for the host element
+   * @param {ProtoViewRef} hostProtoView a ProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE
+   * @return {List<ViewRef>} the view and all of its nested child component views
+   */
+  createInPlaceHostView(parentViewRef:ViewRef, hostElementSelector, hostProtoViewRef:ProtoViewRef):List<ViewRef> { return null; }
+
+  /**
+   * Destroys the given host view in the given parent view.
+   */
+  destroyInPlaceHostView(parentViewRef:ViewRef, hostViewRef:ViewRef):void {}
 
   /**
    * Sets a property on an element.
@@ -195,12 +244,6 @@ export class Renderer {
    * in the View.
    */
   setElementProperty(view:ViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {}
-
-  /**
-   * Installs a nested component in another view.
-   * Note: only allowed if there is a dynamic component directive
-   */
-  setDynamicComponentView(view:ViewRef, elementIndex:number, nestedViewRef:ViewRef):void {}
 
   /**
    * This will set the value for a text node.

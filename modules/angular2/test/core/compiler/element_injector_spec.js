@@ -614,7 +614,7 @@ export function main() {
       });
 
       it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null, null);
+        var viewContainer = new ViewContainer(null, null, null, null, null);
         var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
@@ -631,21 +631,21 @@ export function main() {
     describe("dynamicallyCreateComponent", () => {
       it("should create a component dynamically", () => {
         var inj = injector([]);
-        inj.dynamicallyCreateComponent(SimpleDirective, null, null);
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null), null);
         expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(SimpleDirective);
         expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should inject parent dependencies into the dynamically-loaded component", () => {
         var inj = parentChildInjectors([SimpleDirective], []);
-        inj.dynamicallyCreateComponent(NeedDirectiveFromAncestor, null, null);
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedDirectiveFromAncestor, null), null);
         expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
         expect(inj.getDynamicallyLoadedComponent().dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should not inject the proxy component into the children of the dynamically-loaded component", () => {
         var injWithDynamicallyLoadedComponent = injector([SimpleDirective]);
-        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(SomeOtherDirective, null, null);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(DirectiveBinding.createFromType(SomeOtherDirective, null), null);
 
         var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
         var shadowDomInj = shadowDomProtoInjector.instantiate(null);
@@ -658,14 +658,14 @@ export function main() {
       it("should not inject the dynamically-loaded component into directives on the same element", () => {
         var proto = new ProtoElementInjector(null, 0, [NeedsDirective], false);
         var inj = proto.instantiate(null);
-        inj.dynamicallyCreateComponent(SimpleDirective, null, null);
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null), null);
 
         expect(() => inj.instantiateDirectives(null, null, null, null)).toThrowError();
       });
 
       it("should inject the dynamically-loaded component into the children of the dynamically-loaded component", () => {
         var injWithDynamicallyLoadedComponent = injector([]);
-        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(SimpleDirective, null, null);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null), null);
 
         var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
         var shadowDomInjector = shadowDomProtoInjector.instantiate(null);
@@ -678,8 +678,10 @@ export function main() {
       it("should remove the dynamically-loaded component when dehydrating", () => {
         var inj = injector([]);
         inj.dynamicallyCreateComponent(
-          DirectiveWithDestroy,
-          new DummyDirective({lifecycle: [onDestroy]}),
+          DirectiveBinding.createFromType(
+            DirectiveWithDestroy,
+            new DummyDirective({lifecycle: [onDestroy]})
+          ),
           null);
         var dir = inj.getDynamicallyLoadedComponent();
 
@@ -696,7 +698,7 @@ export function main() {
       it("should inject services of the dynamically-loaded component", () => {
         var inj = injector([]);
         var appInjector = Injector.resolveAndCreate([bind("service").toValue("Service")]);
-        inj.dynamicallyCreateComponent(NeedsService, null, appInjector);
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedsService, null), appInjector);
         expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
       });
     });
@@ -706,13 +708,13 @@ export function main() {
       function createpreBuildObject(eventName, eventHandler) {
         var handlers = StringMapWrapper.create();
         StringMapWrapper.set(handlers, eventName, eventHandler);
-        var pv = new AppProtoView(null, null, null);
+        var pv = new AppProtoView(null, null);
         pv.bindElement(null, 0, null, null, null);
         var eventBindings = ListWrapper.create();
         ListWrapper.push(eventBindings, new EventBinding(eventName, new Parser(new Lexer()).parseAction('handler()', '')));
         pv.bindEvent(eventBindings);
 
-        var view = new AppView(pv, MapWrapper.create());
+        var view = new AppView(null, pv, MapWrapper.create());
         view.context = new ContextWithHandler(eventHandler);
         return new PreBuiltObjects(view, null, null, null);
       }
@@ -751,8 +753,8 @@ export function main() {
 
       beforeEach( () => {
         renderer = new FakeRenderer();
-        var protoView = new AppProtoView(renderer, null, null);
-        view = new AppView(protoView, MapWrapper.create());
+        var protoView = new AppProtoView(null, null);
+        view = new AppView(renderer, protoView, MapWrapper.create());
         view.render = new ViewRef();
       });
 

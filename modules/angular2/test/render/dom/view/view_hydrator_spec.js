@@ -23,12 +23,16 @@ import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_s
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {ViewFactory} from 'angular2/src/render/dom/view/view_factory';
+import {RenderViewHydrator} from 'angular2/src/render/dom/view/view_hydrator';
 
 export function main() {
 
-  describe('RenderView', () => {
+  describe('RenderViewHydrator', () => {
     var shadowDomStrategy;
     var eventManager;
+    var viewFactory;
+    var viewHydrator;
 
     function createProtoView({rootEl, binders}={}) {
       if (isBlank(rootEl)) {
@@ -39,7 +43,6 @@ export function main() {
       }
       return new RenderProtoView({
         element: rootEl,
-        isRootView: false,
         elementBinders: binders
       });
     }
@@ -67,14 +70,22 @@ export function main() {
     function createEmptyView() {
       var root = el('<div><div></div></div>');
       return new RenderView(createProtoView(), [DOM.childNodes(root)[0]],
-        [], [], [], [], eventManager);
+        [], [], [], []);
     }
 
     function createHostView(pv, shadowDomView) {
       var view = new RenderView(pv, [el('<div></div>')],
-        [], [el('<div></div>')], [], [], eventManager);
-      view.setComponentView(shadowDomStrategy, 0, shadowDomView);
+        [], [el('<div></div>')], [], []);
+      viewFactory.setComponentView(view, 0, shadowDomView);
       return view;
+    }
+
+    function hydrate(view) {
+      viewHydrator.hydrateInPlaceHostView(null, view);
+    }
+
+    function dehydrate(view) {
+      viewHydrator.dehydrateInPlaceHostView(null, view);
     }
 
     beforeEach( () => {
@@ -83,67 +94,61 @@ export function main() {
       shadowDomStrategy.spy('constructLightDom').andCallFake( (lightDomView, shadowDomView, el) => {
         return new SpyLightDom();
       });
+      viewFactory = new ViewFactory(1, eventManager, shadowDomStrategy);
+      viewHydrator = new RenderViewHydrator(eventManager, viewFactory);
     });
 
-    describe('setComponentView', () => {
+    describe('hydrateDynamicComponentView', () => {
 
-      it('should redistribute when a component is added to a hydrated view', () => {
-        var shadowView = new SpyRenderView();
+      it('should redistribute', () => {
+        var shadowView = createEmptyView();
         var hostPv = createHostProtoView(createProtoView());
         var hostView = createHostView(hostPv, shadowView);
-        hostView.hydrate(null);
-        hostView.setComponentView(shadowDomStrategy, 0, shadowView);
+        viewHydrator.hydrateDynamicComponentView(hostView, 0, shadowView);
         var lightDomSpy:SpyLightDom = hostView.lightDoms[0];
         expect(lightDomSpy.spy('redistribute')).toHaveBeenCalled();
       });
 
-      it('should not redistribute when a component is added to a dehydrated view', () => {
-        var shadowView = new SpyRenderView();
-        var hostPv = createHostProtoView(createProtoView());
-        var hostView = createHostView(hostPv, shadowView);
-        hostView.setComponentView(shadowDomStrategy, 0, shadowView);
-        var lightDomSpy:SpyLightDom = hostView.lightDoms[0];
-        expect(lightDomSpy.spy('redistribute')).not.toHaveBeenCalled();
-      });
-
     });
 
-    describe('hydrate', () => {
+    describe('hydrate... shared functionality', () => {
 
       it('should hydrate existing child components', () => {
         var hostPv = createHostProtoView(createProtoView());
-        var shadowView = new SpyRenderView();
-        var hostView = createHostView(hostPv, shadowView);
+        var shadowView = createEmptyView();
+        createHostView(hostPv, shadowView);
 
-        hostView.hydrate(null);
+        hydrate(shadowView);
 
-        expect(shadowView.spy('hydrate')).toHaveBeenCalled();
+        expect(shadowView.hydrated).toBe(true);
       });
 
     });
 
-    describe('dehydrate', () => {
+    describe('dehydrate... shared functionality', () => {
       var hostView;
 
       function createAndHydrate(nestedProtoView, shadowView) {
         var hostPv = createHostProtoView(nestedProtoView);
         hostView = createHostView(hostPv, shadowView);
 
-        hostView.hydrate(null);
+        hydrate(hostView);
       }
 
       it('should dehydrate child components', () => {
-        var shadowView = new SpyRenderView();
+        var shadowView = createEmptyView();
         createAndHydrate(createProtoView(), shadowView);
-        hostView.dehydrate();
 
-        expect(shadowView.spy('dehydrate')).toHaveBeenCalled();
+        expect(shadowView.hydrated).toBe(true);
+        dehydrate(hostView);
+
+        expect(shadowView.hydrated).toBe(false);
       });
 
       it('should not clear static child components', () => {
         var shadowView = createEmptyView();
         createAndHydrate(createProtoView(), shadowView);
-        hostView.dehydrate();
+        dehydrate(hostView);
 
         expect(hostView.componentChildViews[0]).toBe(shadowView);
         expect(shadowView.rootNodes[0].parentNode).toBeTruthy();
@@ -152,7 +157,7 @@ export function main() {
       it('should clear dynamic child components', () => {
         var shadowView = createEmptyView();
         createAndHydrate(null, shadowView);
-        hostView.dehydrate();
+        dehydrate(hostView);
 
         expect(hostView.componentChildViews[0]).toBe(null);
         expect(shadowView.rootNodes[0].parentNode).toBe(null);
@@ -181,13 +186,6 @@ class SpyShadowDomStrategy extends SpyObject {
 @IMPLEMENTS(LightDom)
 class SpyLightDom extends SpyObject {
   constructor(){super(LightDom);}
-  noSuchMethod(m){return super.noSuchMethod(m)}
-}
-
-@proxy
-@IMPLEMENTS(RenderView)
-class SpyRenderView extends SpyObject {
-  constructor(){super(RenderView);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
 

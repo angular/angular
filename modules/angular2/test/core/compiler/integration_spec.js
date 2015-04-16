@@ -300,7 +300,6 @@ export function main() {
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
-
           view.detectChanges();
 
           var childNodesOfWrapper = view.rootNodes[0].childNodes;
@@ -582,7 +581,7 @@ export function main() {
             dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
             expect(listener.eventType).toEqual('document_domEvent');
 
-            view.rawView.dehydrate();
+            view.destroy();
             listener = injector.get(DecoratorListeningDomEvent);
             dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
             expect(listener.eventType).toEqual('');

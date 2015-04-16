@@ -81,11 +81,11 @@ export class Compiler {
     return DirectiveBinding.createFromType(meta.type, meta.annotation);
   }
 
-  // Create a rootView as if the compiler encountered <rootcmp></rootcmp>.
+  // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
-  compileRoot(elementOrSelector, componentTypeOrBinding:any):Promise<AppProtoView> {
-    return this._renderer.createRootProtoView(elementOrSelector, 'root').then( (rootRenderPv) => {
-      return this._compileNestedProtoViews(null, rootRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
+  compileInHost(componentTypeOrBinding:any):Promise<AppProtoView> {
+    return this._renderer.createHostProtoView('host').then( (hostRenderPv) => {
+      return this._compileNestedProtoViews(null, hostRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
     });
   }
 

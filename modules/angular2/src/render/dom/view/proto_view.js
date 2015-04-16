@@ -10,18 +10,15 @@ export class RenderProtoView {
   element;
   elementBinders:List<ElementBinder>;
   isTemplateElement:boolean;
-  isRootView:boolean;
   rootBindingOffset:int;
 
   constructor({
     elementBinders,
-    element,
-    isRootView
+    element
   }) {
     this.element = element;
     this.elementBinders = elementBinders;
     this.isTemplateElement = DOM.isTemplateElement(this.element);
-    this.isRootView = isRootView;
     this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
   }
 

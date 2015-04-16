@@ -60,7 +60,7 @@ export function main() {
             templates: ListWrapper.concat(templates, componentTemplates)
           });
           renderer = testbed.renderer;
-          compileRoot = (rootEl, componentId) => testbed.compileRoot(rootEl, componentId);
+          compileRoot = (rootEl) => testbed.compileRoot(rootEl);
           compile = (componentId) => testbed.compile(componentId);
         }
 
@@ -78,8 +78,8 @@ export function main() {
               directives: [simple]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('SIMPLE(A)');
 
@@ -97,11 +97,10 @@ export function main() {
               directives: [dynamicComponent]
             })]
           });
-          compileRoot(rootEl, 'main').then( (rootPv) => {
+          compileRoot('main').then( (rootPv) => {
             compile('simple').then( (simplePv) => {
-              var views = renderer.createView(rootPv.render);
-              var simpleViews = renderer.createView(simplePv.render);
-              renderer.setDynamicComponentView(views[1], 0, simpleViews[0]);
+              var views = renderer.createInPlaceHostView(null, rootEl, rootPv.render);
+              renderer.createDynamicComponentView(views[1], 0, simplePv.render);
 
               expect(rootEl).toHaveText('SIMPLE(A)');
 
@@ -122,8 +121,8 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('(A, BC)');
 
@@ -142,8 +141,8 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('(, BAC)');
 
@@ -162,20 +161,18 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            var viewRefs = renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
-            var childViewRef = renderer.createView(vcProtoViewRef)[0];
-
             expect(rootEl).toHaveText('(, B)');
 
-            renderer.insertViewIntoContainer(vcRef, childViewRef);
+            renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(, AB)');
 
-            renderer.detachViewFromContainer(vcRef, 0);
+            renderer.destroyViewInContainer(vcRef, 0);
 
             expect(rootEl).toHaveText('(, B)');
 
@@ -194,20 +191,18 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            var viewRefs = renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
-            var childViewRef = renderer.createView(vcProtoViewRef)[0];
-
             expect(rootEl).toHaveText('(, B)');
 
-            renderer.insertViewIntoContainer(vcRef, childViewRef);
+            renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(A, B)');
 
-            renderer.detachViewFromContainer(vcRef, 0);
+            renderer.destroyViewInContainer(vcRef, 0);
 
             expect(rootEl).toHaveText('(, B)');
 
@@ -226,8 +221,8 @@ export function main() {
               directives: [outerWithIndirectNestedComponent]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('OUTER(SIMPLE(AB))');
 
@@ -247,16 +242,14 @@ export function main() {
               directives: [outerComponent, manualViewportDirective]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            var viewRefs = renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new ViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
-            var childViewRef = renderer.createView(vcProtoViewRef)[0];
-
             expect(rootEl).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
 
-            renderer.insertViewIntoContainer(vcRef, childViewRef);
+            renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
             async.done();
@@ -275,21 +268,20 @@ export function main() {
               directives: [conditionalContentComponent]
             })]
           });
-          compileRoot(rootEl, 'main').then( (pv) => {
-            var viewRefs = renderer.createView(pv.render);
+          compileRoot('main').then( (pv) => {
+            var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new ViewContainerRef(viewRefs[2], 0);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[0].nestedProtoView
               .elementBinders[0].nestedProtoView.render;
-            var childViewRef = renderer.createView(vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(, ABC)');
 
-            renderer.insertViewIntoContainer(vcRef, childViewRef);
+            renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
 
             expect(rootEl).toHaveText('(A, BC)');
 
-            renderer.detachViewFromContainer(vcRef, 0);
+            renderer.destroyViewInContainer(vcRef, 0);
 
             expect(rootEl).toHaveText('(, ABC)');
 

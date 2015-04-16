@@ -25,7 +25,6 @@ export class ProtoViewBuilder {
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.elements = [];
-    this.isRootView = false;
     this.variableBindings = MapWrapper.create();
   }
 
@@ -44,10 +43,6 @@ export class ProtoViewBuilder {
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
     MapWrapper.set(this.variableBindings, value, name);
-  }
-
-  setIsRootView(value) {
-    this.isRootView = value;
   }
 
   build():api.ProtoViewDto {
@@ -95,8 +90,7 @@ export class ProtoViewBuilder {
     return new api.ProtoViewDto({
       render: new directDomRenderer.DirectDomProtoViewRef(new RenderProtoView({
         element: this.rootElement,
-        elementBinders: renderElementBinders,
-        isRootView: this.isRootView
+        elementBinders: renderElementBinders
       })),
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings
@@ -257,9 +251,9 @@ export class EventBuilder extends AstTransformer {
     var result = new api.EventBinding(fullName, new ASTWithSource(adjustedAst, source.source, ''));
     var event = new Event(name, target, fullName);
     if (isBlank(target)) {
-      ListWrapper.push(this.localEvents, event);  
+      ListWrapper.push(this.localEvents, event);
     } else {
-      ListWrapper.push(this.globalEvents, event);  
+      ListWrapper.push(this.globalEvents, event);
     }
     return result;
   }

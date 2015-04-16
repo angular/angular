@@ -72,6 +72,7 @@ export function main() {
       new Parser(new Lexer()), shadowDomStrategy, new TemplateLoader(null, urlResolver)
     ),
     null,
+    null,
     shadowDomStrategy
   );
   var compiler = new Compiler(
@@ -81,7 +82,7 @@ export function main() {
     new ComponentUrlMapper(),
     urlResolver,
     renderer,
-    new ProtoViewFactory(dynamicChangeDetection, renderer)
+    new ProtoViewFactory(dynamicChangeDetection)
   );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
   var templateWithBindings = createTemplateHtml('templateWithBindings', count);

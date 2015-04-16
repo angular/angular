@@ -13,11 +13,9 @@ import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 @Injectable()
 export class ProtoViewFactory {
   _changeDetection:ChangeDetection;
-  _renderer:renderApi.Renderer;
 
-  constructor(changeDetection:ChangeDetection, renderer:renderApi.Renderer) {
+  constructor(changeDetection:ChangeDetection) {
     this._changeDetection = changeDetection;
-    this._renderer = renderer;
   }
 
   createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto, directives:List<DirectiveBinding>):AppProtoView {
@@ -30,7 +28,7 @@ export class ProtoViewFactory {
         'dummy', componentAnnotation.changeDetection
       );
     }
-    var protoView = new AppProtoView(this._renderer, renderProtoView.render, protoChangeDetector);
+    var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector);
 
     for (var i=0; i<renderProtoView.elementBinders.length; i++) {
       var renderElementBinder = renderProtoView.elementBinders[i];

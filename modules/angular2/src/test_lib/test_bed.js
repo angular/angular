@@ -11,6 +11,7 @@ import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
+import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
 
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -96,11 +97,13 @@ export class TestBed {
       bind(component).toValue(context),
       metadataReader.read(component).annotation
     );
-    return this._injector.get(Compiler).compileRoot(rootEl, componentBinding).then((pv) => {
+    return this._injector.get(Compiler).compileInHost(componentBinding).then((pv) => {
       var viewFactory = this._injector.get(ViewFactory);
-      var view = viewFactory.getView(pv);
-      view.hydrate(this._injector, null, context, null);
-      return new ViewProxy(view.componentChildViews[0]);
+      var viewHydrator = this._injector.get(AppViewHydrator);
+      var hostView = viewFactory.getView(pv);
+      viewHydrator.hydrateInPlaceHostView(null, rootEl, hostView, this._injector);
+
+      return new ViewProxy(this._injector, hostView.componentChildViews[0]);
     });
   }
 }
@@ -110,9 +113,11 @@ export class TestBed {
  */
 export class ViewProxy {
   _view: AppView;
+  _injector: Injector;
 
-  constructor(view: AppView) {
+  constructor(injector: Injector, view: AppView) {
     this._view = view;
+    this._injector = injector;
   }
 
   get context(): any {
@@ -129,6 +134,11 @@ export class ViewProxy {
 
   querySelector(selector) {
     return queryView(this._view, selector);
+  }
+
+  destroy() {
+    var viewHydrator = this._injector.get(AppViewHydrator);
+    viewHydrator.dehydrateInPlaceHostView(null, this._view);
   }
 
   /**

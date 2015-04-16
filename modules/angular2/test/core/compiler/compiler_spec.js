@@ -361,7 +361,7 @@ export function main() {
       });
     }));
 
-    it('should create root proto views', inject([AsyncTestCompleter], (async) => {
+    it('should create host proto views', inject([AsyncTestCompleter], (async) => {
       tplResolver.setView(MainComponent, new View({template: '<div></div>'}));
       var rootProtoView = createProtoView([
         createComponentElementBinder(reader, MainComponent)
@@ -373,7 +373,7 @@ export function main() {
         ],
         [rootProtoView, mainProtoView]
       );
-      compiler.compileRoot(null, MainComponent).then( (protoView) => {
+      compiler.compileInHost(MainComponent).then( (protoView) => {
         expect(protoView).toBe(rootProtoView);
         expect(rootProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
         async.done();
@@ -388,7 +388,7 @@ function createDirectiveBinding(reader, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new AppProtoView(null, null, null);
+  var pv = new AppProtoView(null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
@@ -497,7 +497,7 @@ class FakeRenderer extends renderApi.Renderer {
     return PromiseWrapper.resolve(ListWrapper.removeAt(this._results, 0));
   }
 
-  createRootProtoView(elementOrSelector, componentId):Promise<renderApi.ProtoViewDto> {
+  createHostProtoView(componentId):Promise<renderApi.ProtoViewDto> {
     return PromiseWrapper.resolve(
       createRenderProtoView([createRenderComponentElementBinder(0)])
     );
@@ -545,7 +545,7 @@ class FakeProtoViewFactory extends ProtoViewFactory {
   _results:List;
 
   constructor(results) {
-    super(null, null);
+    super(null);
     this.requests = [];
     this._results = results;
   }

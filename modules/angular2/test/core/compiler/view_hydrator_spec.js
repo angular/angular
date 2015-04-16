@@ -24,15 +24,18 @@ import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';
+import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
 
 export function main() {
-  describe('AppView', () => {
+  describe('AppViewHydrator', () => {
     var renderer;
     var reader;
+    var hydrator;
 
     beforeEach( () => {
       renderer = new SpyRenderer();
       reader = new DirectiveMetadataReader();
+      hydrator = new AppViewHydrator(renderer);
     });
 
     function createDirectiveBinding(type) {
@@ -61,7 +64,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var res = new AppProtoView(renderer, null, null);
+      var res = new AppProtoView(null, null);
       res.elementBinders = binders;
       return res;
     }
@@ -75,8 +78,15 @@ export function main() {
         ]);
     }
 
+    function createEmptyView() {
+      var view = new AppView(renderer, createProtoView(), MapWrapper.create());
+      var changeDetector = new SpyChangeDetector();
+      view.init(changeDetector, [], [], [], [], []);
+      return view;
+    }
+
     function createHostView(pv, shadowView, componentInstance) {
-      var view = new AppView(pv, MapWrapper.create());
+      var view = new AppView(renderer, pv, MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
       var eij = createElementInjector();
       eij.spy('getComponent').andCallFake( () => componentInstance );
@@ -85,84 +95,93 @@ export function main() {
       return view;
     }
 
-    describe('setDynamicComponentChildView', () => {
+    function hydrate(view) {
+      hydrator.hydrateInPlaceHostView(null, null, view, null);
+    }
+
+    function dehydrate(view) {
+      hydrator.dehydrateInPlaceHostView(null, view);
+    }
+
+    describe('hydrateDynamicComponentView', () => {
 
       it('should not allow to use non component indices', () => {
         var pv = createProtoView([createEmptyElBinder()]);
         var view = createHostView(pv, null, null);
-        var shadowView = new FakeAppView();
+        var shadowView = createEmptyView();
         expect(
-          () => view.setDynamicComponentChildView(0, shadowView)
+          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
         ).toThrowError('There is no dynamic component directive at element 0');
       });
 
       it('should not allow to use static component indices', () => {
         var pv = createHostProtoView(createProtoView());
         var view = createHostView(pv, null, null);
-        var shadowView = new FakeAppView();
+        var shadowView = createEmptyView();
         expect(
-          () => view.setDynamicComponentChildView(0, shadowView)
+          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
         ).toThrowError('There is no dynamic component directive at element 0');
       });
 
       it('should not allow to overwrite an existing component', () => {
         var pv = createHostProtoView(null);
-        var shadowView = new FakeAppView();
+        var shadowView = createEmptyView();
         var view = createHostView(pv, null, null);
-        view.setDynamicComponentChildView(0, shadowView);
+        renderer.spy('createDynamicComponentView').andCallFake( (a,b,c) => {
+          return [new ViewRef(), new ViewRef()];
+        });
+        hydrator.hydrateDynamicComponentView(view, 0, shadowView, createDirectiveBinding(SomeComponent), null);
         expect(
-          () => view.setDynamicComponentChildView(0, shadowView)
+          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
         ).toThrowError('There already is a bound component at element 0');
       });
 
     });
 
-    describe('hydrate', () => {
+    describe('hydrate... shared functionality', () => {
 
       it('should hydrate existing child components', () => {
         var hostPv = createHostProtoView(createProtoView());
         var componentInstance = {};
-        var shadowView = new FakeAppView();
+        var shadowView = createEmptyView();
         var hostView = createHostView(hostPv, shadowView, componentInstance);
-        renderer.spy('createView').andCallFake( (_) => {
+        renderer.spy('createInPlaceHostView').andCallFake( (a,b,c) => {
           return [new ViewRef(), new ViewRef()];
         });
 
-        hostView.hydrate(null, null, null, null);
+        hydrate(hostView);
 
-        expect(shadowView.spy('hydrate')).not.toHaveBeenCalled();
-        expect(shadowView.spy('internalHydrateRecurse')).toHaveBeenCalled();
+        expect(shadowView.hydrated()).toBe(true);
       });
 
     });
 
-    describe('dehydrate', () => {
+    describe('dehydrate... shared functionality', () => {
       var hostView;
       var shadowView;
 
       function createAndHydrate(nestedProtoView) {
         var componentInstance = {};
-        shadowView = new FakeAppView();
+        shadowView = createEmptyView();
         var hostPv = createHostProtoView(nestedProtoView);
         hostView = createHostView(hostPv, shadowView, componentInstance);
-        renderer.spy('createView').andCallFake( (_) => {
+        renderer.spy('createInPlaceHostView').andCallFake( (a,b,c) => {
           return [new ViewRef(), new ViewRef()];
         });
 
-        hostView.hydrate(null, null, null, null);
+        hydrate(hostView);
       }
 
       it('should dehydrate child components', () => {
         createAndHydrate(createProtoView());
-        hostView.dehydrate();
+        dehydrate(hostView);
 
-        expect(shadowView.spy('dehydrate')).not.toHaveBeenCalled();
-        expect(shadowView.spy('internalDehydrateRecurse')).toHaveBeenCalled();
+        expect(shadowView.hydrated()).toBe(false);
       });
 
       it('should not clear static child components', () => {
         createAndHydrate(createProtoView());
-        hostView.dehydrate();
+        dehydrate(hostView);
 
         expect(hostView.componentChildViews[0]).toBe(shadowView);
         expect(hostView.changeDetector.spy('removeShadowDomChild')).not.toHaveBeenCalled();
@@ -170,7 +189,7 @@ export function main() {
 
       it('should clear dynamic child components', () => {
         createAndHydrate(null);
-        hostView.dehydrate();
+        dehydrate(hostView);
 
         expect(hostView.componentChildViews[0]).toBe(null);
         expect(hostView.changeDetector.spy('removeShadowDomChild')).toHaveBeenCalledWith(shadowView.changeDetector);
@@ -202,12 +221,5 @@ class SpyChangeDetector extends SpyObject {
 @IMPLEMENTS(ElementInjector)
 class SpyElementInjector extends SpyObject {
   constructor(){super(ElementInjector);}
-  noSuchMethod(m){return super.noSuchMethod(m)}
-}
-
-@proxy
-@IMPLEMENTS(AppView)
-class FakeAppView extends SpyObject {
-  constructor(){super(AppView);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
