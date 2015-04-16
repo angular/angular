@@ -214,7 +214,6 @@ var CONFIG = {
   }
 };
 CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
-CONFIG.test.js.cjs.push('!**/core/application_spec.js'); //Disabled in nodejs because it relies on Zone.js
 CONFIG.test.js.cjs.push('!**/core/zone/vm_turn_zone_spec.js'); //Disabled in nodejs because it relies on Zone.js
 CONFIG.test.js.cjs.push('!**/render/dom/events/event_manager_spec.js'); //Disabled in nodejs because it relies on DOM events
 

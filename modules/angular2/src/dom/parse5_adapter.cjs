@@ -370,13 +370,19 @@ export class Parse5DomAdapter extends DomAdapter {
     return this.isTemplateElement(el) ? this.content(el) : el;
   }
   createHtmlDocument() {
-    throw _notImplemented('createHtmlDocument');
+    var newDoc = treeAdapter.createDocument();
+    newDoc.title = "fake title";
+    var head = treeAdapter.createElement("head", null, []);
+    var body = treeAdapter.createElement("body", 'http://www.w3.org/1999/xhtml', []);
+    this.appendChild(newDoc, head);
+    this.appendChild(newDoc, body);
+    StringMapWrapper.set(newDoc, "head", head);
+    StringMapWrapper.set(newDoc, "body", body);
+    return newDoc;
   }
   defaultDoc() {
     if (defDoc === null) {
-      defDoc = StringMapWrapper.create();
-      defDoc.title = "Default title";
-      StringMapWrapper.set(defDoc, "head", treeAdapter.createElement("head", null, []));
+      defDoc = this.createHtmlDocument();
     }
     return defDoc;
   }
