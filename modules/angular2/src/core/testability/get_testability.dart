@@ -85,12 +85,9 @@ class PublicTestability implements _JsObjectProxyable {
 
 class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
-    js.context['angular2'] = _jsify({
-      'getTestability': (Element elem) {
+    js.context['getAngularTestability'] = _jsify((Element elem) {
         Testability testability = registry.findTestabilityInTree(elem);
         return _jsify(new PublicTestability(testability));
-        },
-      'resumeBootstrap': ([arg]) {},
-    });
+      });
   }
 }
