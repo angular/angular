@@ -48,6 +48,10 @@ export function isFunction(obj): boolean {
   return typeof obj === "function";
 }
 
+export function isType(obj): boolean {
+  return isFunction(obj);
+}
+
 export function stringify(token): string {
   if (typeof token === 'string') {
     return token;
