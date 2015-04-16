@@ -148,13 +148,15 @@ export function main() {
       expect(eventBinding.source.source).toEqual('doItGlobal()');
     });
 
+    //TODO: assertions should be enabled when running tests: https://github.com/angular/angular/issues/1340
     describe('viewport directives', () => {
       it('should not allow multiple viewport directives on the same element', () => {
         expect( () => {
           process(
             el('<template some-vp some-vp2></template>')
           );
-        }).toThrowError('Only one viewport directive is allowed per element - check <template some-vp some-vp2>');
+        }).toThrowError('Only one viewport directive is allowed per element - check '
+          + (assertionsEnabled() ? '<template some-vp some-vp2>' : 'null'));
       });
 
       it('should not allow viewport directives on non <template> elements', () => {
@@ -162,10 +164,12 @@ export function main() {
           process(
             el('<div some-vp></div>')
           );
-        }).toThrowError('Viewport directives need to be placed on <template> elements or elements with template attribute - check <div some-vp>');
+        }).toThrowError('Viewport directives need to be placed on <template> elements or elements with template attribute - check ' 
+          + (assertionsEnabled() ? '<div some-vp>' : 'null'));
       });
     });
 
+    //TODO: assertions should be enabled when running tests: https://github.com/angular/angular/issues/1340
     describe('component directives', () => {
       it('should save the component id', () => {
         var results = process(
@@ -179,7 +183,8 @@ export function main() {
            process(
              el('<div some-comp some-comp2></div>')
            );
-         }).toThrowError('Only one component directive is allowed per element - check <div some-comp some-comp2>');
+         }).toThrowError('Only one component directive is allowed per element - check '
+          + (assertionsEnabled() ? '<div some-comp some-comp2>' : 'null'));
       });
 
       it('should not allow component directives on <template> elements', () => {
@@ -187,7 +192,8 @@ export function main() {
            process(
              el('<template some-comp></template>')
            );
-         }).toThrowError('Only template directives are allowed on template elements - check <template some-comp>');
+         }).toThrowError('Only template directives are allowed on template elements - check '
+          + (assertionsEnabled() ? '<template some-comp>' : 'null'));
        });
     });
 

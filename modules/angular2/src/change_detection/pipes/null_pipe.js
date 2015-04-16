@@ -9,7 +9,7 @@ export class NullPipeFactory {
     return NullPipe.supportsObj(obj);
   }
 
-  create(bpc):Pipe {
+  create(cdRef):Pipe {
     return new NullPipe();
   }
 }

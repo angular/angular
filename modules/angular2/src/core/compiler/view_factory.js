@@ -5,7 +5,6 @@ import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import * as vcModule from './view_container';
 import * as viewModule from './view';
-import {BindingPropagationConfig} from 'angular2/change_detection';
 
 // TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
 export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
@@ -57,7 +56,7 @@ export class ViewFactory {
     var rootElementInjectors = [];
     var preBuiltObjects = ListWrapper.createFixedSize(binders.length);
     var viewContainers = ListWrapper.createFixedSize(binders.length);
-    var componentChildViews = [];
+    var componentChildViews = ListWrapper.createFixedSize(binders.length);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -77,14 +76,13 @@ export class ViewFactory {
       elementInjectors[binderIdx] = elementInjector;
 
       // componentChildViews
-      var bindingPropagationConfig = null;
-      if (isPresent(binder.nestedProtoView) && isPresent(binder.componentDirective)) {
+      var childChangeDetector = null;
+      if (binder.hasStaticComponent()) {
         var childView = this._createView(binder.nestedProtoView);
-        changeDetector.addChild(childView.changeDetector);
-
-        bindingPropagationConfig = new BindingPropagationConfig(childView.changeDetector);
-
-        ListWrapper.push(componentChildViews, childView);
+        childChangeDetector = childView.changeDetector;
+        changeDetector.addShadowDomChild(childChangeDetector);
+        
+        componentChildViews[binderIdx] = childView;
       }
 
       // viewContainers
@@ -97,7 +95,7 @@ export class ViewFactory {
       // preBuiltObjects
       if (isPresent(elementInjector)) {
         preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(view, new NgElement(view, binderIdx), viewContainer,
-          bindingPropagationConfig);
+          childChangeDetector);
       }
     }
 

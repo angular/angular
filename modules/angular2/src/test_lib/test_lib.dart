@@ -1,7 +1,7 @@
 library test_lib.test_lib;
 
 import 'package:guinness/guinness.dart' as gns;
-export 'package:guinness/guinness.dart' hide Expect, expect, NotExpect, beforeEach, it, iit, xit;
+export 'package:guinness/guinness.dart' hide Expect, expect, NotExpect, beforeEach, it, iit, xit, SpyObject;
 import 'package:unittest/unittest.dart' hide expect;
 
 import 'dart:async';
@@ -147,6 +147,13 @@ iit(name, fn) {
 
 xit(name, fn) {
   _it(gns.xit, name, fn);
+}
+
+class SpyObject extends gns.SpyObject {
+  // Need to take an optional type as this is required by
+  // the JS SpyObject.
+  SpyObject([type = null]) {
+  }
 }
 
 String elementText(n) {

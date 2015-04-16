@@ -1,6 +1,6 @@
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  ChangeRecord, BindingRecord, DirectiveRecord, BindingPropagationConfig} from 'angular2/change_detection';
+  ChangeRecord, BindingRecord, DirectiveRecord, ChangeDetectorRef} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';
@@ -143,7 +143,6 @@ export class AppView {
     }
 
     var binders = this.proto.elementBinders;
-    var componentChildViewIndex = 0;
     for (var i = 0; i < binders.length; ++i) {
       var componentDirective = binders[i].componentDirective;
       var shadowDomAppInjector = null;
@@ -176,8 +175,8 @@ export class AppView {
         }
       }
 
-      if (isPresent(binders[i].nestedProtoView) && isPresent(componentDirective)) {
-        renderComponentIndex = this.componentChildViews[componentChildViewIndex].internalHydrateRecurse(
+      if (binders[i].hasStaticComponent()) {
+        renderComponentIndex = this.componentChildViews[i].internalHydrateRecurse(
           renderComponentViewRefs,
           renderComponentIndex,
           shadowDomAppInjector,
@@ -185,7 +184,6 @@ export class AppView {
           elementInjector.getComponent(),
           null
         );
-        componentChildViewIndex++;
       }
     }
     this._hydrateChangeDetector();
@@ -198,7 +196,15 @@ export class AppView {
 
     // componentChildViews
     for (var i = 0; i < this.componentChildViews.length; i++) {
-      this.componentChildViews[i].internalDehydrateRecurse();
+      var componentView = this.componentChildViews[i];
+      if (isPresent(componentView)) {
+        componentView.internalDehydrateRecurse();
+        var binder = this.proto.elementBinders[i];
+        if (binder.hasDynamicComponent()) {
+          this.componentChildViews[i] = null;
+          this.changeDetector.removeShadowDomChild(componentView.changeDetector);
+        }
+      }
     }
 
     // elementInjectors
@@ -250,14 +256,26 @@ export class AppView {
     }
   }
 
-  directive(directive:DirectiveRecord) {
-    var elementInjector:ElementInjector = this.elementInjectors[directive.elementIndex];
+  getDirectiveFor(directive:DirectiveRecord) {
+    var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  addComponentChildView(view:AppView) {
-    ListWrapper.push(this.componentChildViews, view);
+  getDetectorFor(directive:DirectiveRecord) {
+    var elementInjector = this.elementInjectors[directive.elementIndex];
+    return elementInjector.getChangeDetector();
+  }
+
+  setDynamicComponentChildView(boundElementIndex, view:AppView) {
+    if (!this.proto.elementBinders[boundElementIndex].hasDynamicComponent()) {
+      throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`);
+    }
+    if (isPresent(this.componentChildViews[boundElementIndex])) {
+      throw new BaseException(`There already is a bound component at element ${boundElementIndex}`);
+    }
+    this.componentChildViews[boundElementIndex] = view;
     this.changeDetector.addShadowDomChild(view.changeDetector);
+    this.proto.renderer.setDynamicComponentView(this.render, boundElementIndex, view.render);
   }
 
   // implementation of EventDispatcher#dispatchEvent
@@ -445,9 +463,11 @@ export class AppProtoView {
 
     if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
       var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
+      var changeDetection = binding.changeDetection;
+
       MapWrapper.set(this._directiveRecordsMap, id,
         new DirectiveRecord(elementInjectorIndex, directiveIndex,
-          binding.callOnAllChangesDone, binding.callOnChange));
+          binding.callOnAllChangesDone, binding.callOnChange, changeDetection));
     }
 
     return MapWrapper.get(this._directiveRecordsMap, id);

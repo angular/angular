@@ -28,7 +28,7 @@ export function main() {
         }
 
         function dirs(directives:List) {
-          return new FakeDirectives(directives);
+          return new FakeDirectives(directives, []);
         }
 
         function convertLocalsToVariableBindings(locals) {
@@ -246,9 +246,9 @@ export function main() {
             });
 
             describe("updating directives", () => {
-              var dirRecord1 = new DirectiveRecord(0, 0, true, true);
-              var dirRecord2 = new DirectiveRecord(0, 1, true, true);
-              var dirRecordNoCallbacks = new DirectiveRecord(0, 0, false, false);
+              var dirRecord1 = new DirectiveRecord(0, 0, true, true, DEFAULT);
+              var dirRecord2 = new DirectiveRecord(0, 1, true, true, DEFAULT);
+              var dirRecordNoCallbacks = new DirectiveRecord(0, 0, false, false, DEFAULT);
 
               function updateA(exp:string, dirRecord) {
                 return BindingRecord.createForDirective(ast(exp), "a", (o,v) => o.a = v, dirRecord);
@@ -484,6 +484,13 @@ export function main() {
 
               expect(parent.lightDomChildren).toEqual([]);
             });
+
+            it("should remove shadow dom children", () => {
+              parent.addShadowDomChild(child);
+              parent.removeShadowDomChild(child);
+
+              expect(parent.shadowDomChildren.length).toEqual(0);
+            });
           });
         });
 
@@ -545,6 +552,44 @@ export function main() {
             cd.detectChanges();
 
             expect(cd.mode).toEqual(CHECK_ALWAYS);
+          });
+
+          describe("marking ON_PUSH detectors as CHECK_ONCE after an update", () => {
+            var checkedDetector;
+            var dirRecordWithOnPush;
+            var updateDirWithOnPushRecord;
+            var directives;
+
+            beforeEach(() => {
+              var proto = createProtoChangeDetector(null, ON_PUSH);
+              checkedDetector = instantiate(proto, null, [], []);
+              checkedDetector.hydrate(null, null, null);
+              checkedDetector.mode = CHECKED;
+
+              // this directive is a component with ON_PUSH change detection
+              dirRecordWithOnPush = new DirectiveRecord(0, 0, false, false, ON_PUSH);
+
+              // a record updating a component
+              updateDirWithOnPushRecord =
+                BindingRecord.createForDirective(ast("42"), "a", (o,v) => o.a = v, dirRecordWithOnPush);
+
+              var targetDirective = new TestData(null);
+              directives = new FakeDirectives([targetDirective], [checkedDetector]);
+            });
+
+            it("should set the mode to CHECK_ONCE when a binding is updated", () => {
+              var proto = createProtoChangeDetector(null);
+
+              var cd = instantiate(proto, null, [updateDirWithOnPushRecord], [dirRecordWithOnPush]);
+              cd.hydrate(null, null, directives);
+
+              expect(checkedDetector.mode).toEqual(CHECKED);
+
+              // evaluate the record, update the targetDirective, and mark its detector as CHECK_ONCE
+              cd.detectChanges();
+
+              expect(checkedDetector.mode).toEqual(CHECK_ONCE);
+            });
           });
         });
 
@@ -657,7 +702,7 @@ export function main() {
             expect(pipe.destroyCalled).toEqual(true);
           });
 
-          it("should inject the binding propagation configuration " +
+          it("should inject the ChangeDetectorRef " +
             "of the encompassing component into a pipe", () => {
 
             var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
@@ -666,7 +711,7 @@ export function main() {
 
             cd.detectChanges();
 
-            expect(registry.bpc).toBe(cd.bindingPropagationConfig);
+            expect(registry.cdRef).toBe(cd.ref);
           });
         });
 
@@ -755,7 +800,7 @@ class FakePipeRegistry extends PipeRegistry {
   numberOfLookups:number;
   pipeType:string;
   factory:Function;
-  bpc:any;
+  cdRef:any;
 
   constructor(pipeType, factory) {
     super({});
@@ -764,10 +809,10 @@ class FakePipeRegistry extends PipeRegistry {
     this.numberOfLookups = 0;
   }
 
-  get(type:string, obj, bpc) {
+  get(type:string, obj, cdRef) {
     if (type != this.pipeType) return null;
     this.numberOfLookups ++;
-    this.bpc = bpc;
+    this.cdRef = cdRef;
     return this.factory();
   }
 }
@@ -846,13 +891,19 @@ class TestData {
 
 class FakeDirectives {
   directives:List;
+  detectors:List;
 
-  constructor(directives:List) {
+  constructor(directives:List, detectors:List) {
     this.directives = directives;
+    this.detectors = detectors;
   }
 
-  directive(directiveRecord:DirectiveRecord) {
+  getDirectiveFor(directiveRecord:DirectiveRecord) {
     return this.directives[directiveRecord.directiveIndex];
+  }
+
+  getDetectorFor(directiveRecord:DirectiveRecord) {
+    return this.detectors[directiveRecord.directiveIndex];
   }
 }
 

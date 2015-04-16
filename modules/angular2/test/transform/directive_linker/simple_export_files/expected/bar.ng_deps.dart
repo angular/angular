@@ -2,9 +2,8 @@ library bar.ng_deps.dart;
 
 import 'bar.dart';
 import 'package:angular2/src/core/annotations/annotations.dart';
-import 'foo.ng_deps.dart' as i0;
-
 export 'foo.dart';
+import 'foo.ng_deps.dart' as i0;
 
 bool _visited = false;
 void initReflector(reflector) {

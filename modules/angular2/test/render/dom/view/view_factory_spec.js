@@ -1,25 +1,69 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
-
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  ddescribe,
+  xdescribe,
+  describe,
+  el,
+  dispatchEvent,
+  expect,
+  iit,
+  inject,
+  beforeEachBindings,
+  it,
+  xit,
+  SpyObject, proxy
+} from 'angular2/test_lib';
+import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ViewFactory} from 'angular2/src/render/dom/view/view_factory';
 import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {RenderView} from 'angular2/src/render/dom/view/view';
+import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
+import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
+import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom'
+import {EventManager} from 'angular2/src/render/dom/events/event_manager';
 
 export function main() {
-  function createViewFactory({capacity}):ViewFactory {
-    return new ViewFactory(capacity, null, null);
-  }
-
-  function createPv() {
-    return new RenderProtoView({
-      element: el('<div></div>'),
-      isRootView: false,
-      elementBinders: []
-    });
-  }
-
   describe('RenderViewFactory', () => {
+    var eventManager;
+    var shadowDomStrategy;
+
+    function createViewFactory({capacity}):ViewFactory {
+      return new ViewFactory(capacity, eventManager, shadowDomStrategy);
+    }
+
+    function createProtoView(rootEl=null, binders=null) {
+      if (isBlank(rootEl)) {
+        rootEl = el('<div></div>');
+      }
+      if (isBlank(binders)) {
+        binders = [];
+      }
+      return new RenderProtoView({
+        element: rootEl,
+        isRootView: false,
+        elementBinders: binders
+      });
+    }
+
+    function createComponentElBinder(componentId, nestedProtoView = null) {
+      var binder = new ElementBinder({
+        componentId: componentId,
+        textNodeIndices: []
+      });
+      binder.nestedProtoView = nestedProtoView;
+      return binder;
+    }
+
+
+    beforeEach( () => {
+      eventManager = new SpyEventManager();
+      shadowDomStrategy = new SpyShadowDomStrategy();
+    });
+
     it('should create views', () => {
-      var pv = createPv();
+      var pv = createProtoView();
       var vf = createViewFactory({
         capacity: 1
       });
@@ -29,8 +73,8 @@ export function main() {
     describe('caching', () => {
 
       it('should support multiple RenderProtoViews', () => {
-        var pv1 = createPv();
-        var pv2 = createPv();
+        var pv1 = createProtoView();
+        var pv2 = createProtoView();
         var vf = createViewFactory({ capacity: 2 });
         var view1 = vf.getView(pv1);
         var view2 = vf.getView(pv2);
@@ -42,7 +86,7 @@ export function main() {
       });
 
       it('should reuse the newest view that has been returned', () => {
-        var pv = createPv();
+        var pv = createProtoView();
         var vf = createViewFactory({ capacity: 2 });
         var view1 = vf.getView(pv);
         var view2 = vf.getView(pv);
@@ -53,7 +97,7 @@ export function main() {
       });
 
       it('should not add views when the capacity has been reached', () => {
-        var pv = createPv();
+        var pv = createProtoView();
         var vf = createViewFactory({ capacity: 2 });
         var view1 = vf.getView(pv);
         var view2 = vf.getView(pv);
@@ -68,5 +112,73 @@ export function main() {
 
     });
 
+    describe('child components', () => {
+
+      var vf, log;
+
+      beforeEach(() => {
+        vf = createViewFactory({capacity: 1});
+        log = [];
+        shadowDomStrategy.spy('attachTemplate').andCallFake( (el, view) => {
+          ListWrapper.push(log, ['attachTemplate', el, view]);
+        });
+        shadowDomStrategy.spy('constructLightDom').andCallFake( (lightDomView, shadowDomView, el) => {
+          ListWrapper.push(log, ['constructLightDom', lightDomView, shadowDomView, el]);
+          return new SpyLightDom();
+        });
+      });
+
+      it('should create static child component views', () => {
+        var hostPv = createProtoView(el('<div><div class="ng-binding"></div></div>'), [
+          createComponentElBinder(
+            'someComponent',
+            createProtoView()
+          )
+        ]);
+        var hostView = vf.getView(hostPv);
+        var shadowView = hostView.componentChildViews[0];
+        expect(shadowView).toBeTruthy();
+        expect(hostView.lightDoms[0]).toBeTruthy();
+        expect(log[0]).toEqual(['constructLightDom', hostView, shadowView, hostView.boundElements[0]]);
+        expect(log[1]).toEqual(['attachTemplate', hostView.boundElements[0], shadowView]);
+      });
+
+      it('should not create dynamic child component views', () => {
+        var hostPv = createProtoView(el('<div><div class="ng-binding"></div></div>'), [
+          createComponentElBinder(
+            'someComponent',
+            null
+          )
+        ]);
+        var hostView = vf.getView(hostPv);
+        var shadowView = hostView.componentChildViews[0];
+        expect(shadowView).toBeFalsy();
+        expect(hostView.lightDoms[0]).toBeFalsy();
+        expect(log).toEqual([]);
+      });
+
+    });
+
   });
+}
+
+@proxy
+@IMPLEMENTS(EventManager)
+class SpyEventManager extends SpyObject {
+  constructor(){super(EventManager);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
+
+@proxy
+@IMPLEMENTS(ShadowDomStrategy)
+class SpyShadowDomStrategy extends SpyObject {
+  constructor(){super(ShadowDomStrategy);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
+
+@proxy
+@IMPLEMENTS(LightDom)
+class SpyLightDom extends SpyObject {
+  constructor(){super(LightDom);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
 }

@@ -127,6 +127,11 @@ Notes:
 * This will also run `pub get` for the subfolders in `modules` and run `dartanalyzer` for
   every file that matches `<module>/src/<module>.dart`, e.g. `di/src/di.dart`
 
+You can selectively build either the JS or Dart versions as follows:
+
+* `$(npm bin)/gulp build.js`
+* `$(npm bin)/gulp build.dart`
+
 To clean out the `dist` folder use:
 ```shell
 $(npm bin)/gulp clean

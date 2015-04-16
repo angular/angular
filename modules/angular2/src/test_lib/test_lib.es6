@@ -272,6 +272,16 @@ _global.beforeEach(function() {
 });
 
 export class SpyObject {
+  constructor(type = null) {
+    if (type) {
+      for (var prop in type.prototype) {
+        var m = type.prototype[prop];
+        if (typeof m === 'function') {
+          this.spy(prop);
+        }
+      }
+    }
+  }
   spy(name){
     if (! this[name]) {
       this[name] = this._createGuinnessCompatibleSpy();
@@ -286,6 +296,8 @@ export class SpyObject {
   _createGuinnessCompatibleSpy(){
     var newSpy = jasmine.createSpy();
     newSpy.andCallFake = newSpy.and.callFake;
+    // return null by default to satisfy our rtts asserts
+    newSpy.and.returnValue(null);
     return newSpy;
   }
 }

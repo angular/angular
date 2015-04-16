@@ -22,7 +22,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 
 import {Injector, bind} from 'angular2/di';
 import {dynamicChangeDetection,
-  ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, BindingPropagationConfig, ON_PUSH} from 'angular2/change_detection';
+  ChangeDetection, DynamicChangeDetection, Pipe, PipeRegistry, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';
@@ -390,13 +390,13 @@ export function main() {
         })
       }));
 
-      describe("BindingPropagationConfig", () => {
-        it("can be used to disable the change detection of the component's template",
+      describe("ON_PUSH components", () => {
+        it("should use ChangeDetectorRef to manually request a check",
           inject([TestBed, AsyncTestCompleter], (tb, async) => {
 
           tb.overrideView(MyComp, new View({
-            template: '<push-cmp #cmp></push-cmp>',
-            directives: [[[PushBasedComp]]]
+            template: '<push-cmp-with-ref #cmp></push-cmp-with-ref>',
+            directives: [[[PushCmpWithRef]]]
           }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -417,10 +417,33 @@ export function main() {
           })
         }));
 
-        it('should not affect updating properties on the component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        it("should be checked when its bindings got updated",
+          inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
           tb.overrideView(MyComp, new View({
             template: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
-            directives: [[[PushBasedComp]]]
+            directives: [[[PushCmp]]]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            var cmp = view.rawView.locals.get('cmp');
+
+            ctx.ctxProp = "one";
+            view.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(1);
+
+            ctx.ctxProp = "two";
+            view.detectChanges();
+            expect(cmp.numberOfChecks).toEqual(2);
+
+            async.done();
+          })
+        }));
+
+        it('should not affect updating properties on the component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<push-cmp-with-ref [prop]="ctxProp" #cmp></push-cmp-with-ref>',
+            directives: [[[PushCmpWithRef]]]
           }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -567,7 +590,7 @@ export function main() {
             async.done();
           });
         }));
-        
+
         it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<div *if="ctxBoolProp" listener listenerother></div>',
@@ -632,6 +655,40 @@ export function main() {
             var dynamicComponent = view.rawView.locals.get("dynamic");
             dynamicComponent.done.then((ref) => {
               expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
+              async.done();
+            });
+          });
+        }));
+
+        it('should allow to destroy and create them via viewport directives',
+            inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
+            directives: [DynamicComp, If]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            view.context.ctxBoolProp = true;
+            view.detectChanges();
+            var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+            dynamicComponent.done.then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
+
+              view.context.ctxBoolProp = false;
+              view.detectChanges();
+
+              expect(view.rawView.viewContainers[0].length).toBe(0);
+              expect(view.rootNodes).toHaveText('');
+
+              view.context.ctxBoolProp = true;
+              view.detectChanges();
+
+              var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+              return dynamicComponent.done;
+            }).then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
               async.done();
             });
           });
@@ -766,14 +823,36 @@ class MyDir {
   changeDetection:ON_PUSH
 })
 @View({template: '{{field}}'})
-class PushBasedComp {
+class PushCmp {
   numberOfChecks:number;
-  bpc:BindingPropagationConfig;
   prop;
 
-  constructor(bpc:BindingPropagationConfig) {
+  constructor() {
     this.numberOfChecks = 0;
-    this.bpc = bpc;
+  }
+
+  get field(){
+    this.numberOfChecks++;
+    return "fixed";
+  }
+}
+
+ @Component({
+  selector: 'push-cmp-with-ref',
+  properties: {
+    'prop': 'prop'
+  },
+  changeDetection:ON_PUSH
+})
+@View({template: '{{field}}'})
+class PushCmpWithRef {
+  numberOfChecks:number;
+  ref:ChangeDetectorRef;
+  prop;
+
+  constructor(ref:ChangeDetectorRef) {
+    this.numberOfChecks = 0;
+    this.ref = ref;
   }
 
   get field(){
@@ -782,7 +861,7 @@ class PushBasedComp {
   }
 
   propagate() {
-    this.bpc.shouldBePropagatedFromRoot();
+    this.ref.requestCheck();
   }
 }
 
@@ -909,7 +988,7 @@ class DoublePipeFactory {
     return true;
   }
 
-  create(bpc) {
+  create(cdRef) {
     return new DoublePipe();
   }
 }

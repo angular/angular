@@ -1,4 +1,4 @@
-library angular2.src.core.compiler.query_list;
+library angular2.src.core.compiler.base_query_list;
 
 import 'package:angular2/src/core/annotations/annotations.dart';
 import 'dart:collection';
@@ -15,7 +15,7 @@ class BaseQueryList extends Object with IterableMixin<Directive> {
   List _callbacks;
   bool _dirty;
 
-  QueryList(): _results = [], _callbacks = [], _dirty = false;
+  BaseQueryList(): _results = [], _callbacks = [], _dirty = false;
 
   Iterator<Directive> get iterator => _results.iterator;
 

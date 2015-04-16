@@ -11,7 +11,7 @@ export class KeyValueChangesFactory {
     return KeyValueChanges.supportsObj(obj);
   }
 
-  create(bpc):Pipe {
+  create(cdRef):Pipe {
     return new KeyValueChanges();
   }
 }

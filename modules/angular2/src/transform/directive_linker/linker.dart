@@ -2,6 +2,7 @@ library angular2.transform.directive_linker.linker;
 
 import 'dart:async';
 
+import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
@@ -13,32 +14,37 @@ import 'package:path/path.dart' as path;
 Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
   var parser = new Parser(reader);
   NgDeps ngDeps = await parser.parse(entryPoint);
-
   if (ngDeps == null) return null;
-  if (ngDeps.imports.isEmpty) return ngDeps.code;
 
-  var depUris = <String>[]
-    ..addAll(ngDeps.imports.map((i) => i.uri.stringValue))
-    ..addAll(ngDeps.exports.map((i) => i.uri.stringValue));
-  var depList = await _processNgImports(reader, entryPoint, depUris);
+  var allDeps = <UriBasedDirective>[]
+    ..addAll(ngDeps.imports)
+    ..addAll(ngDeps.exports)
+    ..sort((a, b) => a.end.compareTo(b.end));
+  var linkedDepsMap = await _processNgImports(reader, entryPoint, allDeps);
 
-  if (depList.isEmpty) return ngDeps.code;
+  if (linkedDepsMap.isEmpty) return ngDeps.code;
 
   var importBuf = new StringBuffer();
   var declarationBuf = new StringBuffer();
-  for (var i = 0; i < depList.length; ++i) {
-    importBuf.write('''
-        import '${depList[i]}' as i${i};
-    ''');
-    declarationBuf.write('i${i}.${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME});');
+  var code = ngDeps.code;
+  var codeIdx = 0;
+  // Generate import statements for linked deps where necessary.
+  for (var i = 0, it = allDeps.iterator; it.moveNext();) {
+    if (linkedDepsMap.containsKey(it.current)) {
+      importBuf.write(code.substring(codeIdx, it.current.end));
+      codeIdx = it.current.end;
+      importBuf.write('''
+        import '${linkedDepsMap[it.current]}' as i${i};
+      ''');
+      declarationBuf
+          .write('i${i}.${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME});');
+      ++i;
+    }
   }
 
-  var code = ngDeps.code;
-  var importSeamIdx = ngDeps.imports.last.end;
   var declarationSeamIdx = ngDeps.setupMethod.end - 1;
-  return '${code.substring(0, importSeamIdx)}'
-      '$importBuf'
-      '${code.substring(importSeamIdx, declarationSeamIdx)}'
+  return '$importBuf'
+      '${code.substring(codeIdx, declarationSeamIdx)}'
       '$declarationBuf'
       '${code.substring(declarationSeamIdx)}';
 }
@@ -46,21 +52,30 @@ Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
 String _toDepsUri(String importUri) =>
     '${path.withoutExtension(importUri)}${DEPS_EXTENSION}';
 
-bool _isNotDartImport(String importUri) {
-  return !importUri.startsWith('dart:');
+bool _isNotDartDirective(UriBasedDirective directive) {
+  return !stringLiteralToString(directive.uri).startsWith('dart:');
 }
 
-Future<List<String>> _processNgImports(
-    AssetReader reader, AssetId entryPoint, Iterable<String> imports) {
+/// Maps each input [UriBasedDirective] to its associated `.ng_deps.dart`
+/// file, if it exists.
+Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
+    AssetId entryPoint, Iterable<UriBasedDirective> directives) {
   final nullFuture = new Future.value(null);
-  var retVal = <String>[];
+  final retVal = <UriBasedDirective, String>{};
   return Future
-      .wait(imports.where(_isNotDartImport).map(_toDepsUri).map((ngDepsUri) {
-    var importAsset =
-        uriToAssetId(entryPoint, ngDepsUri, logger, null /* span */);
-    if (importAsset == entryPoint) return nullFuture;
-    return reader.hasInput(importAsset).then((hasInput) {
-      if (hasInput) retVal.add(ngDepsUri);
-    });
+      .wait(directives
+          .where(_isNotDartDirective)
+          .map((UriBasedDirective directive) {
+    var ngDepsUri = _toDepsUri(stringLiteralToString(directive.uri));
+    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger,
+        null /*
+    span */
+        );
+    if (ngDepsAsset == entryPoint) return nullFuture;
+    return reader.hasInput(ngDepsAsset).then((hasInput) {
+      if (hasInput) {
+        retVal[directive] = ngDepsUri;
+      }
+    }, onError: (_) => null);
   })).then((_) => retVal);
 }
