@@ -111,24 +111,19 @@ export class VmTurnZone {
       };
     }
 
-    return zone.fork(errorHandling).fork({
-      beforeTask: () => {this._beforeTask()},
-      afterTask: () => {this._afterTask()}
+    return zone.fork(errorHandling).fork(Zone.vmTurnAware).fork({
+      _name: 'inner zone',
+      beforeTurn: () => {this._beforeTurn()},
+      afterTurn: () => {this._afterTurn()}
     });
   }
 
-  _beforeTask(){
-    this._nestedRunCounter ++;
-    if(this._nestedRunCounter === 1 && this._onTurnStart) {
-      this._onTurnStart();
-    }
+  _beforeTurn(){
+    this._onTurnStart && this._onTurnStart();
   }
 
-  _afterTask(){
-    this._nestedRunCounter --;
-    if(this._nestedRunCounter === 0 && this._onTurnDone) {
-      this._onTurnDone();
-    }
+  _afterTurn(){
+    this._onTurnDone && this._onTurnDone();
   }
 
   _onError(zone, e) {
