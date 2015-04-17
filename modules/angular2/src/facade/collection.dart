@@ -135,16 +135,7 @@ class ListWrapper {
   static String join(List l, String s) => l.join(s);
   static bool isEmpty(Iterable list) => list.isEmpty;
   static void fill(List l, value, [int start = 0, int end]) {
-    // JS semantics
-    // see https://github.com/google/traceur-compiler/blob/81880cd3f17bac7de90a4cd0339e9f1a9f61d24c/src/runtime/polyfills/Array.js#L94
-    int len = l.length;
-    start = start < 0 ? max(len + start, 0) : min(start, len);
-    if (end == null) {
-      end = len;
-    } else {
-      end = end < 0 ? max(len + end, 0) : min(end, len);
-    }
-    l.fillRange(start, end, value);
+    l.fillRange(_startOffset(l, start), _endOffset(l, end), value);
   }
   static bool equals(List a, List b) {
     if (a.length != b.length) return false;
@@ -153,10 +144,11 @@ class ListWrapper {
     }
     return true;
   }
-  static List slice(List l, int from, int to) {
-    return l.sublist(from, to);
+  static List slice(List l, [int from = 0, int to]) {
+    return l.sublist(_startOffset(l, from), _endOffset(l, to));
   }
   static List splice(List l, int from, int length) {
+    from = _startOffset(l, from);
     var to = from + length;
     var sub = l.sublist(from, to);
     l.removeRange(from, to);
@@ -164,6 +156,21 @@ class ListWrapper {
   }
   static void sort(List l, compareFn(a,b)) {
     l.sort(compareFn);
+  }
+
+  // JS splice, slice, fill functions can take start < 0 which indicates a position relative to
+  // the end of the list
+  static int _startOffset(List l, int start) {
+    int len = l.length;
+    return start = start < 0 ? max(len + start, 0) : min(start, len);
+  }
+
+  // JS splice, slice, fill functions can take end < 0 which indicates a position relative to
+  // the end of the list
+  static int _endOffset(List l, int end) {
+    int len = l.length;
+    if (end == null) return len;
+    return end < 0 ? max(len + end, 0) : min(end, len);
   }
 }
 

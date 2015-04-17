@@ -170,7 +170,9 @@ export class ListWrapper {
     }
     return true;
   }
-  static slice<T>(l: List<T>, from: int, to: int): List<T> { return l.slice(from, to); }
+  static slice<T>(l: List<T>, from: int = 0, to: int = null): List<T> {
+    return l.slice(from, to === null ? undefined : to);
+  }
   static splice<T>(l: List<T>, from: int, length: int): List<T> { return l.splice(from, length); }
   static sort<T>(l: List<T>, compareFn: (a: T, b: T) => number) { l.sort(compareFn); }
 }
