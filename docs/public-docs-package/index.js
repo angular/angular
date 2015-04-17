@@ -1,8 +1,8 @@
 var Package = require('dgeni').Package;
 var basePackage = require('../dgeni-package');
+var linksPackage = require('../links-package');
 
-
-module.exports = new Package('angular-public', [basePackage])
+module.exports = new Package('angular-public', [basePackage, linksPackage])
 
 .processor(require('./processors/filterPublicDocs'))
 

@@ -107,7 +107,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
   computeIdsProcessor.idTemplates.push({
     docTypes: EXPORT_DOC_TYPES,
     idTemplate: '${moduleDoc.id}.${name}',
-    getAliases: function(doc) { return [doc.id]; }
+    getAliases: function(doc) { return [doc.id, doc.name]; }
   });
 
   computeIdsProcessor.idTemplates.push({
