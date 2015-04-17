@@ -43,6 +43,9 @@ export class LifeCycle {
     this._enforceNoNewChanges = enforceNoNewChanges;
   }
 
+  /**
+   * @private
+   */
   registerWith(zone:VmTurnZone, changeDetector:ChangeDetector = null) {
     if (isPresent(changeDetector)) {
       this._changeDetector=changeDetector;
