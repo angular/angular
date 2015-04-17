@@ -9,6 +9,6 @@ export {Inject, InjectPromise, InjectLazy, Injectable, Optional, DependencyAnnot
 export {Injector} from './src/di/injector';
 export {Binding, ResolvedBinding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry} from './src/di/key';
-export {KeyMetadataError, NoProviderError, ProviderError, AsyncBindingError, CyclicDependencyError,
+export {KeyMetadataError, NoBindingError, AbstractBindingError, AsyncBindingError, CyclicDependencyError,
   InstantiationError, InvalidBindingError, NoAnnotationError} from './src/di/exceptions';
 export {OpaqueToken} from './src/di/opaque_token';

@@ -1,7 +1,8 @@
 import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
+import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
+  AbstractBindingError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
@@ -702,7 +703,7 @@ export class ElementInjector extends TreeNode {
       d8 = length > 8 ? this._getByDependency(deps[8], binding.key) : null;
       d9 = length > 9 ? this._getByDependency(deps[9], binding.key) : null;
     } catch(e) {
-      if (e instanceof ProviderError) e.addKey(binding.key);
+      if (e instanceof AbstractBindingError) e.addKey(binding.key);
       throw e;
     }
 

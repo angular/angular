@@ -30,7 +30,7 @@ function constructResolvingPath(keys:List) {
  *
  * @exportedAs angular2/di_errors
  */
-export class ProviderError extends Error {
+export class AbstractBindingError extends Error {
   keys:List;
   constructResolvingMessage:Function;
   message;
@@ -59,7 +59,7 @@ export class ProviderError extends Error {
  *
  * @exportedAs angular2/di_errors
  */
-export class NoProviderError extends ProviderError {
+export class NoBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -93,7 +93,7 @@ export class NoProviderError extends ProviderError {
  *
  * @exportedAs angular2/di_errors
  */
-export class AsyncBindingError extends ProviderError {
+export class AsyncBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -122,7 +122,7 @@ export class AsyncBindingError extends ProviderError {
  *
  * @exportedAs angular2/di_errors
  */
-export class CyclicDependencyError extends ProviderError {
+export class CyclicDependencyError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -139,7 +139,7 @@ export class CyclicDependencyError extends ProviderError {
  *
  * @exportedAs angular2/di_errors
  */
-export class InstantiationError extends ProviderError {
+export class InstantiationError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(originalException, key) {
     super(key, function (keys:List) {
