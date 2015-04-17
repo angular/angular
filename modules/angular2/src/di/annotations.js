@@ -1,7 +1,7 @@
 import {CONST} from "angular2/src/facade/lang";
 
 /**
- * A parameter annotation that creates a synchronous eager dependency.
+ * A parameter annotation that creates a synchronous arc-eager dependency.
  *
  * ```
  * class AComponent {
@@ -20,7 +20,7 @@ export class Inject {
 }
 
 /**
- * A parameter annotation that creates an asynchronous eager dependency.
+ * A parameter annotation that creates an asynchronous arc-eager dependency.
  *
  * ```
  * class AComponent {
@@ -62,7 +62,7 @@ export class InjectLazy {
 }
 
 /**
- * A parameter annotation that marks a dependency as optional. (Injects `null` if not found.)
+ * A parameter annotation that marks a dependency as optional. Angular injects `null` if the dependency is not found.
  * ```
  * class AComponent {
  *   constructor(@Optional() aService:MyService) {
@@ -82,8 +82,7 @@ export class Optional {
 /**
  * `DependencyAnnotation` is used by the framework to extend DI.
  *
- * Only annotations implementing `DependencyAnnotation` will be added
- * to the list of dependency properties.
+ * Only annotations implementing `DependencyAnnotation` are added to the list of dependency properties.
  *
  * For example:
  *
@@ -118,8 +117,8 @@ export class DependencyAnnotation {
 }
 
 /**
- * A marker annotation that marks a class as available to `Injector`s for creation. Used by tooling for generating 
- * constructor stubs. 
+ * A marker annotation that marks a class as available to `Injector` operators for creation. Used by tooling for
+ * generating constructor stubs.
  *
  * ```
  * class NeedsService {
