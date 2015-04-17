@@ -8,7 +8,7 @@ import 'package:angular2/src/transform/common/logging.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
-/// Creates a mapping of [AssetId]s to the [ClassDeclaration]s which they
+/// Creates a mapping of {@link AssetId}s to the {@link ClassDeclaration}s which they
 /// define.
 Future<Map<AssetId, List<ClassDeclaration>>> createTypeMap(
     AssetReader reader, AssetId id) {

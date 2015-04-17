@@ -8,8 +8,8 @@ import * as modelModule from './model';
  *
  * # Example
  *
- * This example creates a [ControlGroup] that consists of a `login` [Control], and a nested [ControlGroup] that defines
- * a `password` and a `passwordConfirmation` [Control].
+ * This example creates a {@link ControlGroup} that consists of a `login` {@link Control}, and a nested 
+ * {@link ControlGroup} that defines a `password` and a `passwordConfirmation` {@link Control}.
  *
  * ```
  *  var loginForm = builder.group({

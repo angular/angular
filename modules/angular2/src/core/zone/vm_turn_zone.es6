@@ -4,11 +4,11 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
 /**
  * A wrapper around zones that lets you schedule tasks after it has executed a task.
  *
- * The wrapper maintains an "inner" and "outer" [Zone]. The application code will executes
- * in the "inner" zone unless [runOutsideAngular] is explicitely called.
+ * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
+ * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton [VmTurnZone] whose outer [Zone] is the root [Zone]
- * and whose default [onTurnDone] runs the Angular digest.
+ * A typical application will create a singleton `VmTurnZone` whose outer `Zone` is the root `Zone`
+ * and whose default `onTurnDone` runs the Angular digest.
  *
  * @exportedAs angular2/core
  */
@@ -56,7 +56,7 @@ export class VmTurnZone {
   }
 
   /**
-   * Runs [fn] in the inner zone and returns whatever it returns.
+   * Runs `fn` in the inner zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to make use of the
    * Angular's auto digest mechanism.
@@ -74,7 +74,7 @@ export class VmTurnZone {
   }
 
   /**
-   * Runs [fn] in the outer zone and returns whatever it returns.
+   * Runs `fn` in the outer zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to escape Angular's
    * auto-digest mechanism.

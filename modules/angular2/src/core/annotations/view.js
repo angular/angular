@@ -1,7 +1,7 @@
 import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
 
 /**
- * Declare the available HTML templates for an application.
+ * Declares the available HTML templates for an application.
  *
  * Each angular component requires a single `@Component` and at least one `@View` annotation. The @View
  * annotation specifies the HTML template to use, and lists the directives that are active within the template.
@@ -9,7 +9,7 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  * When a component is instantiated, the template is loaded into the component's shadow root, and the
  * expressions and statements in the template are evaluated against the component.
  *
- * For details on the `@Component` annotation, see [Component].
+ * For details on the `@Component` annotation, see {@link Component}.
  *
  * ## Example
  *
@@ -34,21 +34,21 @@ import {ABSTRACT, CONST, Type} from 'angular2/src/facade/lang';
  */
 export class View {
   /**
-   * Specify a template URL for an angular component.
+   * Specifies a template URL for an angular component.
    *
    * NOTE: either `templateURL` or `template` should be used, but not both.
    */
   templateUrl:any; //string;
 
   /**
-   * Specify an inline template for an angular component.
+   * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateURL` or `template` should be used, but not both.
    */
   template:any; //string;
 
   /**
-   * Specify a list of directives that are active within a template. [TODO: true?]
+   * Specifies a list of directives that can be used within a template.
    *
    * Directives must be listed explicitly to provide proper component encapsulation.
    *

@@ -31,9 +31,9 @@ export class Dependency {
 var _EMPTY_LIST = [];  // TODO: make const when supported
 
 /**
- * Describes how the [Injector] should instantiate a given token.
+ * Describes how the {@link Injector} should instantiate a given token.
  *
- * See [bind].
+ * See {@link bind}.
  *
  * ## Example
  *
@@ -50,7 +50,7 @@ var _EMPTY_LIST = [];  // TODO: make const when supported
 export class Binding {
 
   /**
-   * Token used when retrieving this binding. Usually the [Type].
+   * Token used when retrieving this binding. Usually the `Type`.
    */
   token;
 
@@ -103,7 +103,7 @@ export class Binding {
   /**
    * Binds a key to the alias for an existing key.
    *
-   * An alias means that [Injector] returns the same instance as if the alias token was used. This is in contrast to
+   * An alias means that {@link Injector} returns the same instance as if the alias token was used. This is in contrast to
    * `toClass` where a separate instance of `toClass` is returned.
    *
    * ## Example
@@ -171,9 +171,9 @@ export class Binding {
    * ```
    *
    * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
-   * function takes the resolved value. This shows that the [Injector] delays executing the `String` factory
+   * function takes the resolved value. This shows that the {@link Injector} delays executing the `String` factory
    * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
-   * [Injector.asyncGet] API.
+   * `asyncGet` API in the {@link Injector}.
    *
    */
   toAsyncFactory:Function;
@@ -218,9 +218,9 @@ export class Binding {
   }
 
   /**
-   * Converts the [Binding] into [ResolvedBinding].
+   * Converts the {@link Binding} into {@link ResolvedBinding}.
    *
-   * [Injector] internaly only uses [ResolvedBindings], [Binding] contains convenience sugar.
+   * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains convenience binding syntax.
    */
   resolve(): ResolvedBinding {
     var factoryFn:Function;
@@ -254,31 +254,31 @@ export class Binding {
 }
 
 /**
- * An internal resolved representation of a [Binding] used by the [Injector].
+ * An internal resolved representation of a {@link Binding} used by the {@link Injector}.
  *
- * A [Binding] is resolved when it has a factory function. Binding to a class, alias, or value, are just convenience
- * methods, as [Injector] only operates on calling factory functions.
+ * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or value, are just convenience
+ * methods, as {@link Injector} only operates on calling factory functions.
  *
  * @exportedAs angular2/di
  */
 export class ResolvedBinding {
   /**
-   * A key, usually a [Type].
+   * A key, usually a `Type`.
    */
   key:Key;
 
   /**
-   * Factory function which can return an instance of represented by a [key].
+   * Factory function which can return an instance of an object represented by a key.
    */
   factory:Function;
 
   /**
-   * Arguments (dependencies) to the [factory] function.
+   * Arguments (dependencies) to the `factory` function.
    */
   dependencies:List<Dependency>;
 
   /**
-   * Specifies whether the [factory] function returns a [Promise].
+   * Specifies whether the `factory` function returns a `Promise`.
    */
   providedAsPromise:boolean;
 
@@ -291,7 +291,7 @@ export class ResolvedBinding {
 }
 
 /**
- * Provides an API for imperatively constructing [Binding]s.
+ * Provides an API for imperatively constructing {@link Binding}s.
  *
  * This is only relevant for JavaScript. See {@link BindingBuilder}.
  *
@@ -309,7 +309,7 @@ export function bind(token):BindingBuilder {
 }
 
 /**
- * Helper class for the [bind] function.
+ * Helper class for the {@link bind} function.
  *
  * @exportedAs angular2/di
  */
@@ -446,9 +446,9 @@ export class BindingBuilder {
    * ```
    *
    * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
-   * function takes the resolved value. This shows that the [Injector] delays executing of the `String` factory
+   * function takes the resolved value. This shows that the {@link Injector} delays executing of the `String` factory
    * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
-   * [Injector.asyncGet] API.
+   * the `asyncGet` API in the {@link Injector}.
    */
   toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(this.token, {

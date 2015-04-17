@@ -20,7 +20,7 @@ export class Inject {
 }
 
 /**
- * A parameter annotation that specifies a [Promise] of a dependency.
+ * A parameter annotation that specifies a `Promise` of a dependency.
  *
  * ```
  * class AComponent {
@@ -62,9 +62,9 @@ export class InjectLazy {
 }
 
 /**
- * A parameter annotation that marks a dependency as optional. [Injector] provides `null` if the dependency is not 
+ * A parameter annotation that marks a dependency as optional. {@link Injector} provides `null` if the dependency is not
  * found.
- * 
+ *
  * ```
  * class AComponent {
  *   constructor(@Optional() aService:MyService) {

@@ -70,14 +70,15 @@ export class Injector {
    * Turns a list of binding definitions into an internal resolved list of resolved bindings.
    *
    * A resolution is a process of flattening multiple nested lists and converting individual bindings into a
-   * list of [ResolvedBinding]s. The resolution can be cached by [Injector.resolve] for performance-sensitive
-   * code.
+   * list of {@link ResolvedBinding}s. The resolution can be cached by `resolve` for the {@link Injector} for
+   * performance-sensitive code.
    *
-   * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
+   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a recursive
+   * list of more bindings.
    *
-   * The returned list is sparse, indexed by [Key.id]. It is generally not useful to application code other than for
-   * passing it to [Injector] functions that require resolved binding lists, such as [fromResolvedBindings] and
-   * [createChildFromResolved].
+   * The returned list is sparse, indexed by `id` for the {@link Key}. It is generally not useful to application code
+   * other than for passing it to {@link Injector} functions that require resolved binding lists, such as
+   * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):List<ResolvedBinding> {
     var resolvedBindings = _resolveBindings(bindings);
@@ -87,12 +88,14 @@ export class Injector {
 
   /**
    * Resolves bindings and creates an injector based on those bindings. This function is slower than the
-   * corresponding [fromResolvedBindings] because it needs to resolve bindings first. See [Injector.resolve].
+   * corresponding `fromResolvedBindings` because it needs to resolve bindings first. See `resolve` for the
+   * {@link Injector}.
    *
-   * Prefer [fromResolvedBindings] in performance-critical code that creates lots of injectors.
+   * Prefer `fromResolvedBindings` in performance-critical code that creates lots of injectors.
    *
-   * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
-   * @param [defaultBindings] Setting to true will auto-create bindings.
+   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a recursive list of more
+   * bindings.
+   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
   static resolveAndCreate(bindings:List/*<ResolvedBinding|Binding|Type|List>*/, {defaultBindings=false}={}) {
     return new Injector(Injector.resolve(bindings), null, defaultBindings);
@@ -102,17 +105,17 @@ export class Injector {
    * Creates an injector from previously resolved bindings. This bypasses resolution and flattening. This API is the
    * recommended way to construct injectors in performance-sensitive parts.
    *
-   * @param [bindings] A sparse list of [ResolvedBinding]s. See [Injector.resolve].
-   * @param [defaultBindings] Setting to true will auto-create bindings.
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
+   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
   static fromResolvedBindings(bindings:List<ResolvedBinding>, {defaultBindings=false}={}) {
     return new Injector(bindings, null, defaultBindings);
   }
 
   /**
-   * @param [bindings] A sparse list of [ResolvedBinding]s. See [Injector.resolve].
-   * @param [parent] Parent Injector or `null` if root injector.
-   * @param [defaultBindings] Setting to true will auto-create bindings. (Only use with root injector.)
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
+   * @param `parent` Parent Injector or `null` if root Injector.
+   * @param `defaultBindings` Setting to true will auto-create bindings. (Only use with root injector.)
    */
   constructor(bindings:List<ResolvedBinding>, parent:Injector, defaultBindings:boolean) {
     this._bindings = bindings;
@@ -126,7 +129,7 @@ export class Injector {
   /**
    * Retrieves an instance from the injector.
    *
-   * @param [token] usually the [Type] of an object. (Same as the token used while setting up a binding).
+   * @param `token`: usually the `Type` of an object. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Throws if not found.
    */
   get(token) {
@@ -138,7 +141,7 @@ export class Injector {
   /**
    * Retrieves an instance from the injector.
    *
-   * @param [token] usually a [Type]. (Same as the token used while setting up a binding).
+   * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Returns `null` if not found.
    */
   getOptional(token) {
@@ -148,8 +151,8 @@ export class Injector {
   /**
    * Retrieves an instance from the injector asynchronously. Used with asynchronous bindings.
    *
-   * @param [token] usually a [Type]. (Same as token used while setting up a binding).
-   * @returns a [Promise] which resolves to the instance represented by the token.
+   * @param `token`: usually a `Type`. (Same as token used while setting up a binding).
+   * @returns a `Promise` which resolves to the instance represented by the token.
    */
   asyncGet(token):Promise {
     return this._getByKey(Key.get(token), true, false, false);
@@ -159,23 +162,22 @@ export class Injector {
    * Creates a child injector and loads a new set of bindings into it.
    *
    * A resolution is a process of flattening multiple nested lists and converting individual bindings into a
-   * list of [ResolvedBinding]s. The resolution can be cached by [Injector.resolve] for performance-sensitive
-   * code.
+   * list of {@link ResolvedBinding}s. The resolution can be cached by `resolve` for the {@link Injector} for
+   * performance-sensitive code.
    *
-   * See: [Injector.resolve].
+   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a recursive
+   * list of more bindings.
    *
-   * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
-   * @returns a new child `Injector`.
    */
   resolveAndCreateChild(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):Injector {
     return new Injector(Injector.resolve(bindings), this, false);
   }
 
   /**
-   * Creates a child injector and loads a new set of [ResolvedBinding]s into it.
+   * Creates a child injector and loads a new set of {@link ResolvedBinding}s into it.
    *
-   * @param [bindings] A sparse list of [ResolvedBinding]s. See [Injector.resolve].
-   * @returns a new child `Injector`.
+   * @param `bindings`: A sparse list of  {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
+   * @returns a new child {@link Injector}.
    */
   createChildFromResolved(bindings:List<ResolvedBinding>):Injector {
     return new Injector(bindings, this, false);

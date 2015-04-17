@@ -68,8 +68,8 @@ export class CompileControl {
   /**
    * Ignores the current element.
    *
-   * When a step call [ignoreCurrentElement], no further steps are executed on the current
-   * element and no [CompileElement] is added to the result list.
+   * When a step calls `ignoreCurrentElement`, no further steps are executed on the current
+   * element and no `CompileElement` is added to the result list.
    */
   ignoreCurrentElement() {
     this._ignoreCurrentElement = true;

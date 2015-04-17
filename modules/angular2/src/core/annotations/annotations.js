@@ -8,32 +8,32 @@ import {DEFAULT} from 'angular2/change_detection';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * Directive is an abstract concept, instead use concrete directives: [Component], [DynamicComponent], [Decorator]
- * or [Viewport].
+ * Directive is an abstract concept, instead use concrete directives: {@link Component}, {@link DynamicComponent}, {@link Decorator}
+ * or {@link Viewport}.
  *
- * A directive consists of a single directive annotation and a controller class. When the directive's [selector] matches
+ * A directive consists of a single directive annotation and a controller class. When the directive's `selector` matches
  * elements in the DOM, the following steps occur:
  *
- * 1. For each directive, the [ElementInjector] attempts to resolve the directive's constructor arguments.
- * 2. Angular instantiates directives for each matched element using [ElementInjector] in a depth-first order,
+ * 1. For each directive, the `ElementInjector` attempts to resolve the directive's constructor arguments.
+ * 2. Angular instantiates directives for each matched element using `ElementInjector` in a depth-first order,
  *    as declared in the HTML.
  *
  * ## Understanding How Injection Works
  *
  * There are three stages of injection resolution.
  * - *Pre-existing Injectors*:
- *   - The terminal [Injector] cannot resolve dependencies. It either throws an error or, if the dependency was
+ *   - The terminal {@link Injector} cannot resolve dependencies. It either throws an error or, if the dependency was
  *     specified as `@Optional`, returns `null`.
  *   - The platform injector resolves browser singleton resources, such as: cookies, title, location, and others.
- * - *Component Injectors*: Each `@Component` has its own [Injector], and they follow the same parent-child hierarchy
+ * - *Component Injectors*: Each `@Component` has its own {@link Injector}, and they follow the same parent-child hierarchy
  *     as the components in the DOM.
- * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an [ElementInjector]
+ * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an `ElementInjector`
  *     which follow the same parent-child hierarchy as the DOM elements themselves.
  *
  * When a template is instantiated, it also must instantiate the corresponding directives in a depth-first order. The
- * current [ElementInjector] resolves the constructor dependencies for each directive.
+ * current `ElementInjector` resolves the constructor dependencies for each directive.
  *
- * Angular then resolves dependencies as follows, according to the order in which they appear in the [View]:
+ * Angular then resolves dependencies as follows, according to the order in which they appear in the {@link View}:
  *
  * 1. Dependencies on the current element
  * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM boundary
@@ -41,21 +41,21 @@ import {DEFAULT} from 'angular2/change_detection';
  * 4. Dependencies on pre-existing injectors
  *
  *
- * The [ElementInjector] can inject other directives, element-specific special objects, or it can delegate to the parent
+ * The `ElementInjector` can inject other directives, element-specific special objects, or it can delegate to the parent
  * injector.
  *
  * To inject other directives, declare the constructor parameter as:
  * - `directive:DirectiveType`: a directive on the current element only
  * - `@Ancestor() directive:DirectiveType`: any directive that matches the type between the current element and the
- *    Shadow DOM root. Current element is not included in the resolution, therefor even if it could resolve it, it will
+ *    Shadow DOM root. Current element is not included in the resolution, therefore even if it could resolve it, it will
  *    be ignored.
  * - `@Parent() directive:DirectiveType`: any directive that matches the type on a direct parent element only.
- * - `@Children query:Query<DirectiveType>`: A live collection of direct child directives [TO BE IMPLEMENTED].
- * - `@Descendants query:Query<DirectiveType>`: A live collection of any child directives [TO BE IMPLEMENTED].
+ * - `@Children query:Query<DirectiveType>`: A live collection of direct child directives (will be implemented in later release).
+ * - `@Descendants query:Query<DirectiveType>`: A live collection of any child directives (will be implemented in later relaese).
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacement coming)
- * - `viewContainer: ViewContainer` to control child template instantiation, for [Viewport] directives only
+ * - `viewContainer: ViewContainer` to control child template instantiation, for {@link Viewport} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -184,32 +184,35 @@ import {DEFAULT} from 'angular2/change_detection';
  * `dependency="1"`.
  *
  *
- * ### Injecting a live collection of direct child directives [PENDING IMPLEMENTATION]
+ * ### Injecting a live collection of direct child directives
+ *
  *
  * A directive can also query for other child directives. Since parent directives are instantiated before child
- * directives, a directive can't simply inject the list of child directives. Instead, the directive asynchronously
- * injects a [Query], which updates as children are added, removed, or moved by any [ViewPort] directive such as a
- * `for`, an `if`, or a `switch`.
+ * directives, a directive can't simply inject the list of child directives. Instead, the directive 
+ * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved by any 
+ * {@link Viewport} directive such as a `for`, an `if`, or a `switch`.
  *
  * ```
  * @Decorator({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@Children() dependencies:Query<Maker>) {
+ *   constructor(@Query(Marker) dependencies:QueryList<Maker>) {
  *   }
  * }
  * ```
  *
- * This directive would be instantiated with a [Query] which contains `Dependency` 4 and 6. Here, `Dependency` 5 would
- * not be included, because it is not a direct child.
+ * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and 6. Here, `Dependency` 
+ * 5 would not be included, because it is not a direct child.
  *
- * ### Injecting a live collection of direct descendant directives [PENDING IMPLEMENTATION]
+ * ### Injecting a live collection of descendant directives
+ *
+ * Note: This is will be implemented in later release. ()
  *
  * Similar to `@Children` above, but also includes the children of the child elements.
  *
  * ```
  * @Decorator({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@Children() dependencies:Query<Maker>) {
+ *   constructor(@QueryDescendents(Marker) dependencies:QueryList<Maker>) {
  *   }
  * }
  * ```
@@ -279,7 +282,7 @@ export class Directive extends Injectable {
    * - `directiveProperty` specifies the component property where the value is written.
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
-   * You can include [Pipes] when specifying a `bindingProperty` to allow for data transformation and structural
+   * You can include a {@link Pipe} when specifying a `bindingProperty` to allow for data transformation and structural
    * change detection of the value. These pipes will be evaluated in the context of this component.
    *
    *
@@ -333,7 +336,9 @@ export class Directive extends Injectable {
    * You can also use pipes when writing binding definitions for a directive.
    *
    * For example, we could write a binding that updates the directive on structural changes, rather than on reference
-   * changes, as normally occurs in change detection. (See: [Pipe] and [keyValueDiff] documentation for more details.)
+   * changes, as normally occurs in change detection.
+   *
+   * See {@link Pipe} and {@link keyValDiff} documentation for more details.
    *
    * ```
    * @Decorator({
@@ -399,7 +404,7 @@ export class Directive extends Injectable {
    * When writing a directive event binding, you can also refer to the following local variables:
    * - `$event`: Current event object which triggered the event.
    * - `$target`: The source of the event. This will be either a DOM element or an Angular directive.
-   *    [TO BE IMPLEMENTED]
+   *   (will be implemented in later release)
    *
    *
    * ## Syntax
@@ -443,7 +448,7 @@ export class Directive extends Injectable {
   /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
-   * See: [onChange], [onDestroy], [onAllChangesDone] for details.
+   * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
    */
   lifecycle:List; //List<LifecycleEvent>
 
@@ -471,9 +476,9 @@ export class Directive extends Injectable {
   }
 
   /**
-   * Returns true if a directive participates in a given [LifecycleEvent].
+   * Returns true if a directive participates in a given `LifecycleEvent`.
    *
-   * See: [onChange], [onDestroy], [onAllChangesDone] for details.
+   * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
    */
   hasLifecycleHook(hook:string):boolean {
     return isPresent(this.lifecycle) ? ListWrapper.contains(this.lifecycle, hook) : false;
@@ -489,11 +494,11 @@ export class Directive extends Injectable {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child [Injector] which is configured with the [Component.injectables].
+ * - creates a child {@link Injector} which is configured with the `injectables` for the {@link Component}.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
- * For details on the `@View` annotation, see [View].
+ * For details on the `@View` annotation, see {@link View}.
  *
  * ## Example
  *
@@ -530,17 +535,17 @@ export class Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
-   * The [injectables] defined in the Component annotation allow you to configure a set of bindings for the component's
+   * The `injectables` defined in the Component annotation allow you to configure a set of bindings for the component's
    * injector.
    *
    * When a component is instantiated, Angular creates a new child Injector, which is configured with the bindings in
-   * the Component [injectables] annotation. The injectable objects then become available for injection to the component
+   * the Component `injectables` annotation. The injectable objects then become available for injection to the component
    * itself and any of the directives in the component's template, i.e. they are not available to the directives which
    * are children in the component's light DOM.
    *
    *
-   * The syntax for configuring the [injectables] injectable is identical to [Injector] injectable configuration. See
-   * [Injector] for additional detail.
+   * The syntax for configuring the `injectables` injectable is identical to {@link Injector} injectable configuration.
+   * See {@link Injector} for additional detail.
    *
    *
    * ## Simple Example
@@ -656,7 +661,7 @@ export class Component extends Directive {
  */
 export class DynamicComponent extends Directive {
   /**
-   * Same as [Component.injectables].
+   * Same as `injectables` in the {@link Component}.
    */
   // TODO(vsankin): Please extract into AbstractComponent
   injectables:any; //List;
@@ -696,10 +701,10 @@ export class DynamicComponent extends Directive {
  * (see: http://en.wikipedia.org/wiki/Composition_over_inheritance)
  *
  * Decorators:
- * - are simplest form of [Directive]s.
+ * - are simplest form of {@link Directive}s.
  * - are best used as a composition pattern ()
  *
- * Decorators differ from [Component]s in that they:
+ * Decorators differ from {@link Component}s in that they:
  * - can have multiple decorators per element
  * - do not create their own evaluation context
  * - do not have a template (and therefor do not create Shadow DOM)
@@ -788,11 +793,11 @@ export class Decorator extends Directive {
 /**
  * Directive that controls the instantiation, destruction, and positioning of inline template elements.
  *
- * A viewport directive uses a [ViewContainer] to instantiate, insert, move, and destroy views at runtime.
- * The [ViewContainer] is created as a result of `<template>` element, and represents a location in the current view
+ * A viewport directive uses a {@link ViewContainer} to instantiate, insert, move, and destroy views at runtime.
+ * The {@link ViewContainer} is created as a result of `<template>` element, and represents a location in the current view
  * where these actions are performed.
  *
- * Views are always created as children of the current [View], and as siblings of the `<template>` element. Thus a
+ * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
  * directive in a child view cannot inject the viewport directive that created it.
  *
  * Since viewport directives are common in Angular, and using the full `<template>` element syntax is wordy, Angular
@@ -906,7 +911,7 @@ export class Viewport extends Directive {
 //TODO(misko): turn into LifecycleEvent class once we switch to TypeScript;
 
 /**
- * Notify a directive whenever a [View] that contains it is destroyed.
+ * Notify a directive whenever a {@link View} that contains it is destroyed.
  *
  * ## Example
  *

@@ -8,7 +8,7 @@ class TransformerOptions {
   /// The path to the files where the application's calls to `bootstrap` are.
   final List<String> entryPoints;
 
-  /// The paths to the files where the application's [ReflectionCapabilities]
+  /// The paths to the files where the application's {@link ReflectionCapabilities}
   /// are set.
   final List<String> reflectionEntryPoints;
 

@@ -30,7 +30,7 @@ export class TestBed {
   }
 
   /**
-   * Overrides the [View] of a [Component].
+   * Overrides the {@link View} of a {@link Component}.
    *
    * @see setInlineTemplate() to only override the html
    *
@@ -42,8 +42,8 @@ export class TestBed {
   }
 
   /**
-   * Overrides only the html of a [Component].
-   * All the other propoerties of the component's [View] are preserved.
+   * Overrides only the html of a {@link Component}.
+   * All the other propoerties of the component's {@link View} are preserved.
    *
    * @param {Type} component
    * @param {string} html
@@ -53,7 +53,7 @@ export class TestBed {
   }
 
   /**
-   * Overrides the directives from the component [View].
+   * Overrides the directives from the component {@link View}.
    *
    * @param {Type} component
    * @param {Type} from
@@ -64,7 +64,7 @@ export class TestBed {
   }
 
   /**
-   * Creates a [AppView] for the given component.
+   * Creates an `AppView` for the given component.
    *
    * Only either a component or a context needs to be specified but both can be provided for
    * advanced use cases (ie subclassing the context).
@@ -109,7 +109,7 @@ export class TestBed {
 }
 
 /**
- * Proxy to [AppView] return by [TestBed.createView] which offers a high level API for tests.
+ * Proxy to `AppView` return by `createView` in {@link TestBed} which offers a high level API for tests.
  */
 export class ViewProxy {
   _view: AppView;
@@ -142,7 +142,7 @@ export class ViewProxy {
   }
 
   /**
-   * @returns {AppView} return the underlying [AppView].
+   * @returns `AppView` returns the underlying `AppView`.
    *
    * Prefer using the other methods which hide implementation details.
    */

@@ -4,19 +4,19 @@ import 'dart:async' as async;
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
 /**
- * A [Zone] wrapper that lets you schedule tasks after its private microtask queue is exhausted but
+ * A `Zone` wrapper that lets you schedule tasks after its private microtask queue is exhausted but
  * before the next "VM turn", i.e. event loop iteration.
  *
- * This lets you freely schedule microtasks that prepare data, and set an [onTurnDone] handler that
+ * This lets you freely schedule microtasks that prepare data, and set an {@link onTurnDone} handler that
  * will consume that data after it's ready but before the browser has a chance to re-render.
  *
  * A VM turn consist of a single macrotask followed 0 to many microtasks.
  *
- * The wrapper maintains an "inner" and "outer" [Zone]. The application code will executes
- * in the "inner" zone unless [runOutsideAngular] is explicitely called.
+ * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
+ * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton [VmTurnZone] whose outer [Zone] is the root [Zone]
- * and whose default [onTurnDone] runs the Angular digest.
+ * A typical application will create a singleton `VmTurnZone` whose outer `Zone` is the root `Zone`
+ * and whose default `onTurnDone` runs the Angular digest.
  */
 class VmTurnZone {
   Function _onTurnStart;
@@ -32,8 +32,8 @@ class VmTurnZone {
   /**
    * Associates with this
    *
-   * - an "outer" [Zone], which is the one that created this.
-   * - an "inner" [Zone], which is a child of the outer [Zone].
+   * - an "outer" `Zone`, which is the one that created this.
+   * - an "inner" `Zone`, which is a child of the outer `Zone`.
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
@@ -60,7 +60,7 @@ class VmTurnZone {
   }
 
   /**
-   * Runs [fn] in the inner zone and returns whatever it returns.
+   * Runs `fn` in the inner zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to make use of the
    * Angular's auto digest mechanism.
@@ -78,7 +78,7 @@ class VmTurnZone {
   dynamic run(fn()) => _innerZone.run(fn);
 
   /**
-   * Runs [fn] in the outer zone and returns whatever it returns.
+   * Runs `fn` in the outer zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to escape Angular's
    * auto-digest mechanism.

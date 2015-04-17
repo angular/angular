@@ -7,12 +7,12 @@ import 'package:source_span/source_span.dart';
 
 BuildLogger _logger;
 
-/// Prepares [logger] for use throughout the transformer.
+/// Prepares {@link logger} for use throughout the transformer.
 void init(Transform t) {
   _logger = new BuildLogger(t);
 }
 
-/// Sets [logger] directly. Used for testing - in general use [init].
+/// Sets {@link logger} directly. Used for testing - in general use {@link init}.
 void setLogger(BuildLogger logger) {
   _logger = logger;
 }

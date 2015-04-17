@@ -32,6 +32,7 @@ export var defaultPipes = {
   "keyValDiff" : keyValDiff
 };
 
+
 /**
  * @exportedAs angular2/change_detection
  */

@@ -5,7 +5,7 @@ import 'package:analyzer/src/generated/scanner.dart' show Keyword;
 /// Whether `name` is a valid property name.
 bool isValid(String name) => !Keyword.keywords.containsKey(name);
 
-/// Prepares [name] to be emitted inside a string.
+/// Prepares `name` to be emitted inside a string.
 String sanitize(String name) => name.replaceAll('\$', '\\\$');
 
 /// Get a string usable as a lazy invalid setter, that is, one which will

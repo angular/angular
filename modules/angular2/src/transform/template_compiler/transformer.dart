@@ -12,9 +12,9 @@ import 'package:barback/barback.dart';
 
 import 'generator.dart';
 
-/// [Transformer] responsible for detecting and processing Angular 2 templates.
+/// {@link Transformer} responsible for detecting and processing Angular 2 templates.
 ///
-/// [TemplateCompiler] uses the Angular 2 `Compiler` to process the templates,
+/// {@link TemplateCompiler} uses the Angular 2 `Compiler` to process the templates,
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
