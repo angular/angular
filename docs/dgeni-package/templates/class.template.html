@@ -19,7 +19,7 @@ defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ do
   </section>
 {% endif -%}
 
-{%- for member in doc.members %}
+{%- for member in doc.members %}{% if not member.private %}
   <section class="member">
     <h1 class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
     {% marked %}
@@ -27,7 +27,7 @@ defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ do
     {% endmarked %}
   </section>
 
-{% endfor %}
+{% endif %}{% endfor %}
 {%- endif -%}
 
 {% endblock %}
