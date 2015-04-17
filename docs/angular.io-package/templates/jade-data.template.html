@@ -1,7 +1,7 @@
 {
 {%- for item in doc.data %}
-  "{$ item.name $}" : {
-    "title" : "{$ item.name $}"
+  "{$ item.name $}-{$ item.docType $}" : {
+    "title" : "{$ item.name $} {$ item.docType | title $}"
   }{% if not loop.last %},{% endif %}
 {% endfor -%}
 }

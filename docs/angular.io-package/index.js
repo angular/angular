@@ -7,6 +7,7 @@ var MODULES_DOCS_PATH = PARTIAL_PATH + '/api';
 
 module.exports = new Package('angular.io', [basePackage])
 
+.factory(require('./services/renderMarkdown'))
 .processor(require('./processors/addJadeDataDocsProcessor'))
 
 // Configure rendering
@@ -37,7 +38,7 @@ module.exports = new Package('angular.io', [basePackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['jade-data'],
-    pathTemplate: '${originalDoc.id}_data',
-    outputPathTemplate: MODULES_DOCS_PATH + '/${id}.json'
+    pathTemplate: '${originalDoc.id}/_data',
+    outputPathTemplate: MODULES_DOCS_PATH + '/${path}.json'
   });
 });

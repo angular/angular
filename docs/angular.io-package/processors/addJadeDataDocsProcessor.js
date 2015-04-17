@@ -9,7 +9,7 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
       _.forEach(docs, function(doc) {
         if (doc.docType === 'module') {
           extraDocs.push({
-            id: doc.id + "_data",
+            id: doc.id + "-data",
             docType: 'jade-data',
             originalDoc: doc,
             data: doc.exports
