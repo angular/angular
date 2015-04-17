@@ -34,7 +34,7 @@ module.exports = function(gulp, plugins, config) {
 
     function analyze(dirName, done) {
       // analyze files in lib directly – or you mess up package: urls
-      var sources = [].slice.call(glob.sync('lib/*.dart', {
+      var sources = [].slice.call(glob.sync('lib/**/*.dart', {
         cwd: dirName
       }));
 

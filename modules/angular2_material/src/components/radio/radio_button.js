@@ -1,12 +1,12 @@
 import {Component, View, Parent, Ancestor, Attribute, PropertySetter} from 'angular2/angular2';
 import {Optional} from 'angular2/src/di/annotations';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
-import {MdTheme} from 'angular2_material/src/core/theme'
 import {onChange} from 'angular2/src/core/annotations/annotations';
 import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {Math} from 'angular2/src/facade/math';
 import {ListWrapper} from 'angular2/src/facade/collection';
+import {KEY_UP, KEY_DOWN, KEY_SPACE} from 'angular2_material/src/core/constants'
+import {Event, KeyboardEvent} from 'angular2/src/facade/browser';
 
 // TODO(jelbourn): Behaviors to test
 // Disabled radio don't select
@@ -159,14 +159,14 @@ export class MdRadioButton {
 
     this.checked = true;
 
-    if (this.radioGroup) {
+    if (isPresent(this.radioGroup)) {
       this.radioGroup.updateValue(this.value, this.id);
     }
   }
 
   /** Handles pressing the space key to select this focused radio button. */
   onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KeyCodes.SPACE) {
+    if (event.keyCode == KEY_SPACE) {
       event.preventDefault();
       this.select(event);
     }
@@ -293,13 +293,11 @@ export class MdRadioGroup {
     }
 
     switch (event.keyCode) {
-      //case KeyCodes.UP:
-      case 38:
+      case KEY_UP:
         this.stepSelectedRadio(-1);
         event.preventDefault();
         break;
-      //case KeyCodes.DOWN:
-      case 40:
+      case KEY_DOWN:
         this.stepSelectedRadio(1);
         event.preventDefault();
         break;
