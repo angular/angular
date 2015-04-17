@@ -25,17 +25,17 @@ following products on your development machine:
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
   the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
   which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
-  download [page for instructions](https://www.dartlang.org/tools/download.html); note that you can
+  download [page for instructions](https://www.dartlang.org/tools/download.html). You can also
   download both **stable** and **dev** channel versions from the [download
   archive](https://www.dartlang.org/tools/download-archive).
 
-* [Git](http://git-scm.com) and/or the **Github app** (for [Mac](http://mac.github.com) or
-  [Windows](http://windows.github.com)): the [Github Guide to Installing
+* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
+  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org) which is used to run a development web server, run tests, and
-  generate distributable files. We also use Node's Package Manager (`npm`). Depending on your
-  system, you can install Node either from source or as a pre-packaged bundle.
+* [Node.js](http://nodejs.org), which is used to run a development web server, run tests, and
+  generate distributable files. We also use Node's Package Manager, `npm`, which comes with Node.
+  Depending on your system, you can install Node either from source or as a pre-packaged bundle.
 
 * [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
   bleeding edge functionality, built especially for developers (and early adopters).
@@ -45,17 +45,17 @@ following products on your development machine:
 
 ## Getting the Sources
 
-Forking and cloning the Angular repository:
+Fork and clone the Angular repository:
 
-1. Login to your Github account or create one by following the instructions given
+1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
 2. [Fork](http://help.github.com/forking) the [main Angular
    repository](https://github.com/angular/angular).
 3. Clone your fork of the Angular repository and define an `upstream` remote pointing back to
-   the Angular repository that you forked in the first place:
+   the Angular repository that you forked in the first place.
 
 ```shell
-# Clone your Github repository:
+# Clone your GitHub repository:
 git clone git@github.com:<github username>/angular.git
 
 # Go to the Angular directory:
@@ -93,7 +93,7 @@ PATH+=":$DART_SDK/bin"
 
 ## Installing NPM Modules and Dart Packages
 
-Next, install the modules and packages needed to build Angular and run tests:
+Next, install the JavaScript modules and Dart packages needed to build and test Angular:
 
 ```shell
 # Install Angular project dependencies (package.json)
@@ -117,7 +117,7 @@ use in these instructions.
 
 ## Build commands
 
-To build Angular and prepare tests run:
+To build Angular and prepare tests, run:
 
 ```shell
 $(npm bin)/gulp build
@@ -126,14 +126,15 @@ $(npm bin)/gulp build
 Notes:
 * Results are put in the `dist` folder.
 * This will also run `pub get` for the subfolders in `modules` and run `dartanalyzer` for
-  every file that matches `<module>/src/<module>.dart`, e.g. `di/src/di.dart`
+  every file that matches `<module>/src/<module>.dart`, e.g. `di/src/di.dart`.
 
 You can selectively build either the JS or Dart versions as follows:
 
 * `$(npm bin)/gulp build.js`
 * `$(npm bin)/gulp build.dart`
 
-To clean out the `dist` folder use:
+To clean out the `dist` folder, run:
+
 ```shell
 $(npm bin)/gulp clean
 ```
@@ -142,8 +143,8 @@ $(npm bin)/gulp clean
 
 ### Full test suite
 
-* `npm test`: full test suite for both JS and Dart versions of Angular. These are the same tests as
-  those run on Travis.
+* `npm test`: full test suite for both JS and Dart versions of Angular. These are the same tests
+  that run on Travis.
 
 You can selectively run either the JS or Dart versions as follows:
 
@@ -159,7 +160,7 @@ You can run just the unit tests as follows:
 * `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**.
 * `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
 
-If you prefer running tests in "single-run" mode rather than watch mode use:
+If you prefer running tests in "single-run" mode rather than watch mode, run:
 
 * `$(npm bin)/gulp test.unit.js/ci`
 * `$(npm bin)/gulp test.unit.cjs/ci`
@@ -171,15 +172,15 @@ much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test
 tests respectively.
 
 **Note for transpiler tests**: The karma preprocessor is setup in a way so that after every test
-run the transpiler is reloaded. With that it is possible to make changes to the preprocessor and
+run the transpiler is reloaded. Therefore it is possible to make changes to the preprocessor and
 run the tests without exiting karma (just touch a test file that you would like to run).
 
 ### E2e tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder).
-2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs local webserver).
+2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs a local webserver).
 3. `$(npm bin)/protractor protractor-js.conf.js`: JS e2e tests.
-4. `$(npm bin)/protractor protractor-dart2js.conf.js`: Dart2JS e2e tests.
+4. `$(npm bin)/protractor protractor-dart2js.conf.js`: dart2js e2e tests.
 
 Angular specific command line options when running protractor:
   - `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
@@ -187,9 +188,9 @@ Angular specific command line options when running protractor:
 ### Performance tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder)
-2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs local webserver)
+2. `$(npm bin)/gulp serve.js.prod serve.js.dart2js` (runs a local webserver)
 3. `$(npm bin)/protractor protractor-js.conf.js --benchmark`: JS performance tests
-4. `$(npm bin)/protractor protractor-dart2js.conf.js --benchmark`: Dart2JS performance tests
+4. `$(npm bin)/protractor protractor-dart2js.conf.js --benchmark`: dart2js performance tests
 
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
@@ -204,10 +205,10 @@ Angular specific command line options when running protractor (e.g. force gc, ..
 
 ### File suffixes
 
-* `*.js`: javascript files that get transpiled to Dart and EcmaScript 5
-* `*.es6`: javascript files that get transpiled only to EcmaScript 5
-* `*.es5`: javascript files that don't get transpiled
-* `*.dart`: dart files that don't get transpiled
+* `*.js`: JavaScript files that get transpiled to Dart and EcmaScript 5
+* `*.es6`: JavaScript files that get transpiled only to EcmaScript 5
+* `*.es5`: JavaScript files that don't get transpiled
+* `*.dart`: Dart files that don't get transpiled
 
 ## CI using Travis
 
@@ -243,16 +244,18 @@ Notes:
 
 If you need to debug the tests:
 
-- add a `debugger;` statement to the test you want to debug (oe the source code),
+- add a `debugger;` statement to the test you want to debug (or the source code),
 - execute karma `$(npm bin)/gulp test.js`,
 - press the top right "DEBUG" button,
-- open the dev tools and press F5,
-- the execution halt at the `debugger;` statement
+- open the DevTools and press F5,
+- the execution halts at the `debugger;` statement
 
 **Note (WebStorm users)**:
-You can create a Karma run config from WebStorm.
-Then in the "Run" menu, press "Debug 'karma-js.conf.js'", WebStorm will stop in the generated code
-on the `debugger;` statement.
-You can then step into the code and add watches.
+
+1. Create a Karma run config from WebStorm.
+2. Then in the "Run" menu, press "Debug 'karma-js.conf.js'", and WebStorm will stop in the generated
+   code on the `debugger;` statement.
+3. You can then step into the code and add watches.
+
 The `debugger;` statement is needed because WebStorm will stop in a transpiled file. Breakpoints in
 the original source files are not supported at the moment.
