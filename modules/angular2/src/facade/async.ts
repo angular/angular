@@ -1,4 +1,3 @@
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
 /// <reference path="../../typings/rx/rx.all.d.ts" />
 
 // HACK: workaround for Traceur behavior.
@@ -8,7 +7,7 @@ export var __esModule = true;
 
 import {int, global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import * as Rx from 'rx';
+import { default as Rx } from 'rx';
 
 export class PromiseWrapper {
   static resolve(obj): Promise<any> { return Promise.resolve(obj); }
@@ -17,7 +16,7 @@ export class PromiseWrapper {
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
-  static catchError<T>(promise: Promise<T>, onError: (error: any) => T | Thenable<T>): Promise<T> {
+  static catchError<T>(promise: Promise<T>, onError: (error: any) => T | Promise<T>): Promise<T> {
     return promise.catch(onError);
   }
 
@@ -26,8 +25,8 @@ export class PromiseWrapper {
     return Promise.all(promises);
   }
 
-  static then<T>(promise: Promise<T>, success: (value: any) => T | Thenable<T>,
-                 rejection: (error: any) => T | Thenable<T>): Promise<T> {
+  static then<T>(promise: Promise<T>, success: (value: any) => T | Promise<T>,
+                 rejection: (error: any) => T | Promise<T>): Promise<T> {
     return promise.then(success, rejection);
   }
 

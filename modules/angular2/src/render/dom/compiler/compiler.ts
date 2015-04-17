@@ -1,5 +1,3 @@
-/// <reference path="../../../../typings/es6-promise/es6-promise.d.ts" />
-
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 

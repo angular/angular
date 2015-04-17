@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
-
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 

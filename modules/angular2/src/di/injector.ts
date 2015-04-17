@@ -1,5 +1,3 @@
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Binding, BindingBuilder, bind} from './binding';
 import {ProviderError, NoProviderError, InvalidBindingError,
@@ -29,7 +27,7 @@ export class Injector {
   private _defaultBindings:boolean;
   private _asyncStrategy: _AsyncInjectorStrategy;
   private _syncStrategy:_SyncInjectorStrategy;
-  constructor(bindings:List<any>, {parent=null, defaultBindings=false}) {
+  constructor(bindings:List<any>, {parent = null, defaultBindings = false}) {
     var flatten = _flattenBindings(bindings, MapWrapper.create());
     this._bindings = this._createListOfBindings(flatten);
     this._instances = this._createInstances();

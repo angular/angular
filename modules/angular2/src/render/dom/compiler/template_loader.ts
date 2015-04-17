@@ -1,5 +1,3 @@
-/// <reference path="../../../../typings/es6-promise/es6-promise.d.ts" />
-
 import {Injectable} from 'angular2/di';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';

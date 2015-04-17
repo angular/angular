@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/es6-promise/es6-promise.d.ts" />
-
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,

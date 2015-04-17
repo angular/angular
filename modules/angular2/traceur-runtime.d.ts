@@ -1,6 +1,8 @@
 // Extend the ES5 standard library with some ES6 features we polyfill at runtime
 // by loading traceur-runtime.js
 
+/// <reference path="typings/es6-promise/es6-promise.d.ts" />
+
 // These are mostly copied from lib.es6.d.ts
 
 interface String {

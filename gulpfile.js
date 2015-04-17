@@ -128,6 +128,7 @@ var CONFIG = {
     src: {
       js: ['modules/**/*.js', 'modules/**/*.es6'],
       ts: ['modules/**/*.ts'],
+      ts_es6: ['modules/**/*.ts', '!modules/angular2/traceur-runtime.d.ts', '!modules/angular2/typings/es6-promise/es6-promise.d.ts', 'node_modules/typescript/bin/lib.es6.d.ts'],
       dart: ['modules/**/*.js']
     },
     options: {
@@ -313,7 +314,7 @@ gulp.task('build/transpile.ts.cjs', function() {
     // Write external sourcemap next to the js file
     tsResult.js.pipe(sourcemaps.write('.')).pipe(dest),
     tsResult.js.pipe(dest),
-    tsResult.dts.pipe(dest),
+    tsResult.dts.pipe(dest)
   ]);
 });
 
@@ -325,8 +326,26 @@ gulp.task('build/transpile.js.dev.es6', transpile(gulp, gulpPlugins, {
   srcFolderInsertion: CONFIG.srcFolderInsertion.js
 }));
 
+gulp.task('build/transpile.ts.dev.es6', function() {
+  var tsResult = gulp.src(CONFIG.transpile.src.ts_es6)
+    .pipe(sourcemaps.init())
+    .pipe(tsc({
+
+      target: 'ES6',
+      typescript: require('typescript'),
+      noEmitOnError: true,
+      noLib: true
+    }));
+  return merge([
+    tsResult.js.pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(CONFIG.dest.js.dev.es6)),
+    tsResult.js.pipe(gulp.dest(CONFIG.dest.js.dev.es6))
+  ]);
+});
 
 gulp.task('build/transpile.ts.dev.es5', function() {
+  var tsc = require('gulp-typescript');
+
   var tsResult = gulp.src(CONFIG.transpile.src.ts)
                      .pipe(sourcemaps.init())
                      .pipe(tsc({
@@ -353,8 +372,8 @@ gulp.task('build/transpile.js.dev.es5', function() {
 
 gulp.task('build/transpile.js.dev', function(done) {
   runSequence(
-    'build/transpile.js.dev.es6',
-    'build/transpile.js.dev.es5',
+    'build/transpile.ts.dev.es6',
+    'build/transpile.ts.dev.es5',
     done
   );
 });
@@ -702,6 +721,11 @@ function getBrowsersFromCLI() {
 gulp.task('test.unit.js', function (done) {
   karma.start({configFile: __dirname + '/karma-js.conf.js'}, done);
 });
+
+gulp.task('test.unit.ts', function (done) {
+  karma.start({configFile: __dirname + '/karma-ts.conf.js'}, done);
+});
+
 gulp.task('test.unit.dart', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
 });

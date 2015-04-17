@@ -1,5 +1,3 @@
-/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
-
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, Map} from 'angular2/src/facade/collection';
 import {ASTWithSource} from 'angular2/change_detection';

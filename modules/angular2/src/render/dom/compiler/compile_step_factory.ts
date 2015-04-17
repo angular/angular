@@ -1,5 +1,3 @@
-/// <reference path="../../../../typings/es6-promise/es6-promise.d.ts" />
-
 import {List} from 'angular2/src/facade/collection';
 
 import {Parser} from 'angular2/change_detection';

@@ -1,10 +1,44 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES6",
     "noEmitOnError": true,
-    "module": "commonjs",
     "sourceMap": true,
     "declaration": true,
-    "outDir": "../dist2/"
-  }
+    "outDir": "../dist/es6_dev/"
+  },
+  "files": [
+    "angular2/typings/rx/rx-lite.d.ts",
+    "angular2/typings/rx/rx.d.ts",
+    "angular2/typings/rx/rx.aggregates.d.ts",
+    "angular2/typings/rx/rx.time-lite.d.ts",
+    "angular2/typings/rx/rx.time.d.ts",
+    "angular2/typings/rx/rx.async-lite.d.ts",
+    "angular2/typings/rx/rx.async.d.ts",
+    "angular2/typings/rx/rx.binding-lite.d.ts",
+    "angular2/typings/rx/rx.binding.d.ts",
+    "angular2/typings/rx/rx.coincidence-lite.d.ts",
+    "angular2/typings/rx/rx.coincidence.d.ts",
+    "angular2/typings/rx/rx.experimental.d.ts",
+    "angular2/typings/rx/rx.joinpatterns.d.ts",
+    "angular2/typings/rx/rx.virtualtime.d.ts",
+    "angular2/typings/rx/rx.testing.d.ts",
+    "angular2/typings/rx/rx.backpressure-lite.d.ts",
+    "angular2/typings/rx/rx.backpressure.d.ts",
+    "angular2/typings/rx/rx.all.d.ts",
+    "angular2/typings/jasmine/jasmine.d.ts",
+    "angular2/di.ts",
+    "angular2/change_detection.ts",
+    "angular2/core.ts",
+    "angular2/annotations.ts",
+    "angular2/directives.ts",
+    "angular2/forms.ts",
+    "angular2/angular2.ts",
+    "angular2/globals.ts",
+    "angular2/test_lib.ts",
+    "angular2/typings/touch-events/touch-events.d.ts",
+    "angular2/typings/hammerjs/hammerjs.d.ts",
+    "angular2/typings/jasmine/jasmine.d.ts",
+    "angular2/typings/selenium-webdriver/selenium-webdriver.d.ts",
+    "angular2/typings/zone/zone.d.ts"
+  ]
 }
