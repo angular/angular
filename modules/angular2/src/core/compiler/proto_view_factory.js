@@ -109,11 +109,11 @@ export class ProtoViewFactory {
     );
     // text nodes
     for (var i=0; i<renderElementBinder.textBindings.length; i++) {
-      protoView.bindTextNode(renderElementBinder.textBindings[i].ast);
+      protoView.bindTextNode(renderElementBinder.textBindings[i]);
     }
     // element properties
     MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-      protoView.bindElementProperty(astWithSource.ast, propertyName);
+      protoView.bindElementProperty(astWithSource, propertyName);
     });
     // events
     protoView.bindEvent(renderElementBinder.eventBindings, -1);
@@ -136,7 +136,7 @@ export class ProtoViewFactory {
         // TODO: these setters should eventually be created by change detection, to make
         // it monomorphic!
         var setter = reflector.setter(propertyName);
-        protoView.bindDirectiveProperty(i, astWithSource.ast, propertyName, setter);
+        protoView.bindDirectiveProperty(i, astWithSource, propertyName, setter);
       });
       // directive events
       protoView.bindEvent(renderDirectiveMetadata.eventBindings, i);

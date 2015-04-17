@@ -731,8 +731,49 @@ export function main() {
           async.done();
         });
       }));
+    });
 
+    describe("error handling", () => {
 
+      it('should specify a location of an error that happened during change detection (text)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '{{a.b}}'
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('{{a.b}} in MyComp'));
+          async.done();
+        })
+      }));
+
+      it('should specify a location of an error that happened during change detection (element property)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '<div [prop]="a.b"></div>'
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
+          async.done();
+        })
+      }));
+
+      it('should specify a location of an error that happened during change detection (directive property)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '<child-cmp [prop]="a.b"></child-cmp>',
+          directives: [ChildComp]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
+          async.done();
+        })
+      }));
     });
 
     // Disabled until a solution is found, refs:

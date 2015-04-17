@@ -248,7 +248,7 @@ export class EventBuilder extends AstTransformer {
     // var adjustedAst = astWithSource.ast.visit(this);
     var adjustedAst = source.ast;
     var fullName = isPresent(target) ? target + EVENT_TARGET_SEPARATOR + name : name;
-    var result = new api.EventBinding(fullName, new ASTWithSource(adjustedAst, source.source, ''));
+    var result = new api.EventBinding(fullName, new ASTWithSource(adjustedAst, source.source, source.location));
     var event = new Event(name, target, fullName);
     if (isBlank(target)) {
       ListWrapper.push(this.localEvents, event);
