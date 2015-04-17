@@ -2,7 +2,7 @@
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a><br/>
+<p class="module"><span class="location-badge">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></span><br/>
 defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a></p>
 <p>{$ doc.description | marked $}</p>
 

@@ -1,4 +1,8 @@
 var marked = require('marked');
+var Encoder = require('node-html-encoder').Encoder;
+
+// entity type encoder
+var encoder = new Encoder('entity');
 
 /**
  * @dgService renderMarkdown
@@ -9,19 +13,21 @@ module.exports = function renderMarkdown(trimIndentation) {
 
   var renderer = new marked.Renderer();
 
-  // remove the leading whitespace from the code block before it gets to the
-  // markdown code render function
-  renderer.code = function(code, string, language) {
+  renderer.code = function(code, lang, escaped) {
 
+    var cssClasses = ['prettyprint', 'linenums'];
     var trimmedCode = trimIndentation(code);
-    var renderedCode = marked.Renderer.prototype.code.call(this, trimmedCode, string, language);
 
-    // Bug in marked - forgets to add a final newline sometimes
-    if ( !/\n$/.test(renderedCode) ) {
-      renderedCode += '\n';
+    if(lang) {
+      if(lang=='html') {
+        trimmedCode = encoder.htmlEncode(trimmedCode);
+      }
+      cssClasses.push(this.options.langPrefix + escape(lang, true));
     }
 
-    return renderedCode;
+    return '<pre class="' + cssClasses.join(' ') + '"><code>'
+            + trimmedCode
+            + '\n</code></pre>\n';
   };
 
   renderer.heading = function (text, level, raw) {
