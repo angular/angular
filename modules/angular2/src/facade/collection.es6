@@ -193,8 +193,8 @@ export class ListWrapper {
   static slice(l:List, from:int, to:int):List {
     return l.slice(from, to);
   }
-  static splice(l:List, from:int, to:int):List {
-    return l.splice(from, to);
+  static splice(l:List, from:int, length:int):List {
+    return l.splice(from, length);
   }
   static sort(l:List, compareFn:Function) {
     l.sort(compareFn);

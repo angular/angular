@@ -154,7 +154,8 @@ class ListWrapper {
   static List slice(List l, int from, int to) {
     return l.sublist(from, to);
   }
-  static List splice(List l, int from, int to) {
+  static List splice(List l, int from, int length) {
+    var to = from + length;
     var sub = l.sublist(from, to);
     l.removeRange(from, to);
     return sub;

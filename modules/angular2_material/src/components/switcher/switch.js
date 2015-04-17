@@ -65,7 +65,7 @@ export class MdSwitch {
   }
 
   onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KEY_SPACE) {
+    if (event.keyCode === KEY_SPACE) {
       event.preventDefault();
       this.toggle(event);
     }
