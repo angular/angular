@@ -31,7 +31,7 @@ export class Dependency {
 var _EMPTY_LIST = [];  // TODO: make const when supported
 
 /**
- * Describes how the [Injector] should instantiate a given token.
+ * Describes how the [Injector] operator should instantiate a given token.
  *
  * See [bind].
  *
@@ -50,16 +50,18 @@ var _EMPTY_LIST = [];  // TODO: make const when supported
 export class Binding {
 
   /**
-   * Token used when retriving this binding. Usually the [Type].
+   * Token used when retrieving this binding. Usually the [Type].
+   *
+   * @exportedAs angular2/di
    */
   token;
 
   /**
-   * Bind an interface to an implementation / subclass.
+   * Binds an interface to an implementation / subclass.
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy comparison.
+   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
    *
    * ```javascript
    *
@@ -82,11 +84,13 @@ export class Binding {
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toClass:Type;
 
   /**
-   * Bind a key to a value.
+   * Binds a key to a value.
    *
    * ## Example
    *
@@ -97,14 +101,16 @@ export class Binding {
    *
    * expect(injector.get(String)).toEqual('Hello');
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toValue;
 
   /**
-   * Bind a key to an alias of an existing key.
+   * Binds a key to the alias for an existing key.
    *
-   * An alias means that we will return the same instance as if the alias token was used. (This is in contrast to
-   * `toClass` where a separet instance of `toClass` will be returned.)
+   * An alias means that Angular returns the same instance as if the alias token was used. This is in contrast to
+   * `toClass` where a separate instance of `toClass` is returned.
    *
    * ## Example
    *
@@ -127,15 +133,16 @@ export class Binding {
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
-
+   *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
+   * @exportedAs angular2/di
    */
   toAlias;
 
   /**
-   * Bind a key to a function which computes the value.
+   * Binds a key to a function which computes the value.
    *
    * ## Example
    *
@@ -149,11 +156,12 @@ export class Binding {
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
+   * @exportedAs angular2/di
    */
   toFactory:Function;
 
   /**
-   * Bind a key to a function which computes the value asynchronously.
+   * Binds a key to a function which computes the value asynchronously.
    *
    * ## Example
    *
@@ -170,14 +178,16 @@ export class Binding {
    * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
    * ```
    *
-   * The interesting thing to note is that event thougt `Numeber` has an async factory, the `String` factory
-   * function takes the resolved value. This shows that the [Injector] delays executing of the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrive
+   * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
+   * function takes the resolved value. This shows that the [Injector] delays executing the `String` factory
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved.
+   *
+   * @exportedAs angular2/di
    */
   toAsyncFactory:Function;
 
   /**
-   * Used in conjunction with `toFactory` or `toAsyncFactory` and specifies the `token`s which should be injected
+   * Used in conjunction with `toFactory` or `toAsyncFactory` and specifies the `token` objects which should be injected
    * into the factory function.
    *
    * ## Example
@@ -192,6 +202,8 @@ export class Binding {
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
+   *
+   * @exportedAs angular2/di
    */
   dependencies:List;
 
@@ -216,7 +228,7 @@ export class Binding {
   }
 
   /**
-   * 
+   *
    */
   resolve(): ResolvedBinding {
     var factoryFn:Function;
@@ -250,29 +262,37 @@ export class Binding {
 }
 
 /**
- * An internal resolved representaion of a [Binding] used by [Injector].
- * 
- * A [Binding] is resolved when it has a factory fonction. Binding to a class, alias, or value, are just convenience
- * methods, as [Injector] only operates on calling factory functions. 
+ * An internal resolved representation of a [Binding] used by the [Injector] operator.
+ *
+ * A [Binding] is resolved when it has a factory function. Binding to a class, alias, or value, are just convenience
+ * methods, as [Injector] only operates on calling factory functions.
+ *
+ * @exportedAs angular2/di
  */
 export class ResolvedBinding {
   /**
    * A key, usually a [Type].
    */
   key:Key;
-  
+
   /**
-   * Factory function which can return an instance of [key].
+   * Factory function which can return an instance of a [key].
+   *
+   * @exportedAs angular2/di
    */
   factory:Function;
-  
+
   /**
    * Arguments (dependencies) to the [factory] function.
+   *
+   * @exportedAs angular2/di
    */
   dependencies:List<Dependency>;
-  
+
   /**
-   * Specifies if the [factory] function returns an [Promise]
+   * Specifies whether the [factory] function returns a [Promise].
+   *
+   * @exportedAs angular2/di
    */
   providedAsPromise:boolean;
 
@@ -285,7 +305,9 @@ export class ResolvedBinding {
 }
 
 /**
- * Provides fluent API for imperative construction of [Binding] objects. (JavaScript only.)
+ * Provides an API for imperatively constructing [Binding] objects.
+ *
+ * This is only relevant for JavaScript.
  *
  * @exportedAs angular2/di
  */
@@ -294,7 +316,7 @@ export function bind(token):BindingBuilder {
 }
 
 /**
- * Helper class for [bind] function.
+ * Helper class for the [bind] function.
  * @exportedAs angular2/di
  */
 export class BindingBuilder {
@@ -305,11 +327,11 @@ export class BindingBuilder {
   }
 
   /**
-   * Bind an interface to an implementation / subclass.
+   * Binds an interface to an implementation / subclass.
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy comparison.
+   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
    *
    * ```javascript
    *
@@ -332,13 +354,15 @@ export class BindingBuilder {
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toClass(type:Type):Binding {
     return new Binding(this.token, {toClass: type});
   }
 
   /**
-   * Bind a key to a value.
+   * Binds a key to a value.
    *
    * ## Example
    *
@@ -349,20 +373,22 @@ export class BindingBuilder {
    *
    * expect(injector.get(String)).toEqual('Hello');
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toValue(value):Binding {
     return new Binding(this.token, {toValue: value});
   }
 
   /**
-   * Bind a key to an alias of an existing key.
+   * Binds a key to the alias for an existing key.
    *
    * An alias means that we will return the same instance as if the alias token was used. (This is in contrast to
    * `toClass` where a separet instance of `toClass` will be returned.)
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy comparison.
+   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
    *
    * ```javascript
    *
@@ -381,17 +407,19 @@ export class BindingBuilder {
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
-
+   *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toAlias(aliasToken):Binding {
     return new Binding(this.token, {toAlias: aliasToken});
   }
 
   /**
-   * Bind a key to a function which computes the value.
+   * Binds a key to a function which computes the value.
    *
    * ## Example
    *
@@ -404,6 +432,8 @@ export class BindingBuilder {
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
+   *
+   * @exportedAs angular2/di
    */
   toFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(this.token, {
@@ -413,7 +443,7 @@ export class BindingBuilder {
   }
 
   /**
-   * Bind a key to a function which computes the value asynchronously.
+   * Binds a key to a function which computes the value asynchronously.
    *
    * ## Example
    *
@@ -429,9 +459,11 @@ export class BindingBuilder {
    * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
    * ```
    *
-   * The interesting thing to note is that event thougt `Numeber` has an async factory, the `String` factory
+   * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
    * function takes the resolved value. This shows that the [Injector] delays executing of the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrive
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved.
+   *
+   * @exportedAs angular2/di
    */
   toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
     return new Binding(this.token, {
