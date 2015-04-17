@@ -21,7 +21,7 @@
       <li *for="#todo of todoStore.list">
 
         <div class="view"
-            [class.hidden]="todoEdit == todo">
+            [class.hidden]="todoEdit == todo || todo.show == false">
 
           <input class="toggle" type="checkbox"
                  (click)="completeMe(todo)"
@@ -51,13 +51,13 @@
     <div [class.hidden]="true"></div>
     <ul id="filters">
       <li>
-        <a href="#/" class="selected">All</a>
+        <a href="#/" class="selected" (click)="showAll()">All</a>
       </li>
       <li>
-        <a href="#/active">Active</a>
+        <a href="#/" (click)="showActive()">Active</a>
       </li>
       <li>
-        <a href="#/completed">Completed</a>
+        <a href="#/" (click)="showCompleted()">Completed</a>
       </li>
     </ul>
     <button id="clear-completed" (click)="clearCompleted()">Clear completed</button>

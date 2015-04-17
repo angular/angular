@@ -70,6 +70,30 @@ class TodoApp {
   clearCompleted() {
     this.todoStore.removeBy((todo) => todo.completed);
   }
+
+  showAll() {
+    this.todoStore.list.forEach((todo) => {
+      todo.show = true;
+    });
+  }
+
+  showActive() {
+    this.todoStore.list.forEach((todo) => {
+      if(todo.completed)
+        todo.show = false;
+      else
+        todo.show = true;
+    });
+  }
+
+  showCompleted() {
+    this.todoStore.list.forEach((todo) => {
+      if(todo.completed)
+        todo.show = true;
+      else
+        todo.show = false;
+    });
+  }
 }
 
 export function main() {
