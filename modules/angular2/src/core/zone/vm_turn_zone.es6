@@ -37,8 +37,18 @@ export class VmTurnZone {
     this._onTurnDone = null;
     this._onErrorHandler = null;
 
-    this._outerZone = global.zone;
+    this._outerZone = global.zone.fork({
+      '_name': 'outer',
+      beforeTurn: () => {this._beforeTurn()},
+      afterTurn: () => {this._afterTurn()}
+    });
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
+    // little hack
+    Zone.inner = this._innerZone;
+    Zone.debug = true;
+    // hum... why ? BIG hack
+    // Seems like tests are executed from a microtask which is not what we want
+    Zone.drainingMicrotasks = false;
   }
 
   /**
@@ -111,11 +121,7 @@ export class VmTurnZone {
       };
     }
 
-    return zone.fork(errorHandling).fork(Zone.vmTurnAware).fork({
-      _name: 'inner zone',
-      beforeTurn: () => {this._beforeTurn()},
-      afterTurn: () => {this._afterTurn()}
-    });
+    return zone.fork(errorHandling).fork(Zone.vmTurnAware).fork({_name: 'inner'});
   }
 
   _beforeTurn(){

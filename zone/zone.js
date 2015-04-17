@@ -97,27 +97,43 @@ Zone.prototype = {
 
     try {
       this.beforeTask();
-      console.log('parent run');
       return fn.apply(applyTo, applyWith);
     } catch (e) {
-      console.log('parent run error');
-      if (zone.onError && rethrow !== true) {
+      if (zone.onError && !rethrow) {
         zone.onError(e);
       } else {
         throw e;
       }
     } finally {
-      console.log('parent run finally');
       this.afterTask();
-      if (Zone.microtaskQueue.length > 0) {
-        var microtask = Zone.microtaskQueue.shift();
-        microtask();
+      // Check if there are microtasks to execute (unless we are already executing them)
+      if (!Zone.drainingMicrotasks) {
+        this.runMicrotasks();
       }
       exports.zone = zone = oldZone;
     }
-
-
   },
+
+  runMicrotasks: function () {
+    Zone.drainingMicrotasks = true;
+    do {
+      // Drain the microtask queue
+      while (Zone.microtaskQueue.length > 0) {
+        var microtask = Zone.microtaskQueue.shift();
+        microtask();
+      }
+      // Execute the afterTurn hook if inner code has been executed in this turn
+      if (Zone.hasExecutedInnerCode) {
+        // HACK Zone.inner
+        Zone.inner.run(function() { this.afterTurn(); }, Zone.inner);
+        Zone.hasExecutedInnerCode = false;
+      }
+    } while (Zone.microtaskQueue.length > 0)
+    Zone.drainingMicrotasks = false;
+  },
+
+  beforeTurn: function () {},
+  afterTurn: function() {},
 
   beforeTask: function () {},
   onZoneCreated: function () {},
@@ -176,7 +192,12 @@ Zone.patchSetClearFn = function (obj, fnNames) {
 
 Zone.nextId = 1;
 
+// Pending microtasks to be executed after the macrotask
 Zone.microtaskQueue = [];
+// Whether we are currently draining the microtask queue
+Zone.drainingMicrotasks = false;
+// Whether some code has been executed in the inner zone during the current turn
+Zone.hasExecutedInnerCode = false;
 
 Zone.patchSetFn = function (obj, fnNames) {
   fnNames.forEach(function (name) {

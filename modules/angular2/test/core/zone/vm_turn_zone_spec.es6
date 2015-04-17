@@ -30,6 +30,7 @@ export function main() {
 
     describe("run", () => {
       it('should call onTurnStart and onTurnDone', () => {
+
         zone.run(log.fn('run'));
 
         expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
@@ -54,25 +55,26 @@ export function main() {
         expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
       });
 
-      iit('should call onTurnStart and onTurnDone before and after each turn', inject([AsyncTestCompleter], (async) => {
+      it('should call onTurnStart and onTurnDone before and after each turn', () => {
         var a = PromiseWrapper.completer();
         var b = PromiseWrapper.completer();
 
-        console.log('TEST');
         zone.run(() => {
           log.add('run start');
-          a.promise.then((_) => {console.log('a'); log.add('a then'); });
-          b.promise.then((_) => {console.log('b'); log.add('b then'); });
+          a.promise.then((_) => { log.add('a then'); });
+          b.promise.then((_) => { log.add('b then'); });
         });
 
-        a.resolve("a");
-        b.resolve("b");
-
-        PromiseWrapper.all([a.promise, b.promise]).then((_) => {
-          expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; onTurnDone; onTurnStart; b then; onTurnDone');
-          //async.done();
+        zone.runOutsideAngular(() => {
+          a.resolve("a");
+          b.resolve("b");
         });
-      }));
+
+        zone.runOutsideAngular(() => {
+          expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; b then; onTurnDone');
+        });
+
+      });
     });
 
     describe("runOutsideAngular", () => {
