@@ -217,7 +217,7 @@ function setup() {
   });
 
   reflector.registerType(ViewFactory, {
-    "factory": (capacity, renderer) =>
+    "factory": (capacity, renderer, appViewHydrator) =>
       new ViewFactory(capacity, renderer, appViewHydrator),
     "parameters": [[new Inject(VIEW_POOL_CAPACITY)],[Renderer],[AppViewHydrator]],
     "annotations": []
