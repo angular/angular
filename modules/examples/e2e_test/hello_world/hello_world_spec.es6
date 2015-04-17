@@ -4,7 +4,7 @@ describe('hello world', function () {
   afterEach(testUtil.verifyNoBrowserErrors);
 
   describe('static reflection', function() {
-    var URL = 'examples/src/hello_world/index_static.html';
+    var URL = 'examples/src/hello_world/index.html';
 
     it('should greet', function() {
       browser.get(URL);
@@ -21,7 +21,7 @@ describe('hello world', function () {
   });
 
   describe('dynamic reflection', function() {
-    var URL = 'examples/src/hello_world/index.html';
+    var URL = 'examples/src/hello_world/index_dynamic.html';
 
     it('should greet', function() {
       browser.get(URL);
