@@ -80,6 +80,13 @@ export function main() {
         expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1,2);
       });
 
+      it("should support stubs", () => {
+        var s = SpyObject.stub({"a":1}, {"b":2});
+
+        expect(s.a()).toEqual(1);
+        expect(s.b()).toEqual(2);
+      });
+
       it('should create spys for all methods', () => {
         expect(() => spyObj.someFunc()).not.toThrow();
       });

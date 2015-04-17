@@ -1,4 +1,5 @@
 import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
@@ -317,6 +318,12 @@ class EventEmitterAccessor {
   constructor(eventName:string, getter:Function) {
     this.eventName = eventName;
     this.getter = getter;
+  }
+
+  subscribe(view:viewModule.AppView, boundElementIndex:number, directive:Object) {
+    var eventEmitter = this.getter(directive);
+    return ObservableWrapper.subscribe(eventEmitter,
+        eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
   }
 }
 

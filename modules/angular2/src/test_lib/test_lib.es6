@@ -1,4 +1,5 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {bind} from 'angular2/di';
 
@@ -289,6 +290,20 @@ export class SpyObject {
     return this[name];
   }
 
+  static stub(object = null, config = null, overrides = null) {
+    if (!(object instanceof SpyObject)) {
+      overrides = config;
+      config = object;
+      object = new SpyObject();
+    }
+
+    var m = StringMapWrapper.merge(config, overrides);
+    StringMapWrapper.forEach(m, (value, key) => {
+      object.spy(key).andReturn(value);
+    });
+    return object;
+  }
+
   rttsAssert(value) {
     return true;
   }
@@ -296,6 +311,7 @@ export class SpyObject {
   _createGuinnessCompatibleSpy(){
     var newSpy = jasmine.createSpy();
     newSpy.andCallFake = newSpy.and.callFake;
+    newSpy.andReturn = newSpy.and.returnValue;
     // return null by default to satisfy our rtts asserts
     newSpy.and.returnValue(null);
     return newSpy;

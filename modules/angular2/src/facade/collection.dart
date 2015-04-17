@@ -77,7 +77,9 @@ class StringMapWrapper {
   }
   static Map merge(Map a, Map b) {
     var m = new Map.from(a);
-    b.forEach((k, v) => m[k] = v);
+    if (b != null) {
+      b.forEach((k, v) => m[k] = v);
+    }
     return m;
   }
   static bool isEmpty(Map m) => m.isEmpty;

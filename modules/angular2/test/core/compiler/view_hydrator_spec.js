@@ -14,8 +14,8 @@ import {
   xit,
   SpyObject, proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {Renderer, ViewRef} from 'angular2/src/render/api';
@@ -43,12 +43,13 @@ export function main() {
       return DirectiveBinding.createFromType(meta.type, meta.annotation);
     }
 
-    function createElementInjector() {
-      var res = new SpyElementInjector();
-      res.spy('isExportingComponent').andCallFake( () => false );
-      res.spy('isExportingElement').andCallFake( () => false );
-      res.spy('getEventEmitterAccessors').andCallFake( () => [] );
-      return res;
+    function createElementInjector(overrides) {
+      return SpyObject.stub(new SpyElementInjector(), {
+        'isExportingComponent' : false,
+        'isExportingElement' : false,
+        'getEventEmitterAccessors' : [],
+        'getComponent' : null
+      }, overrides);
     }
 
     function createEmptyElBinder() {
@@ -86,13 +87,18 @@ export function main() {
       return view;
     }
 
-    function createHostView(pv, shadowView, componentInstance) {
+    function createHostView(pv, shadowView, componentInstance, elementInjectors = null) {
       var view = new AppView(renderer, null, null, pv, MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
-      var eij = createElementInjector();
-      eij.spy('getComponent').andCallFake( () => componentInstance );
-      view.init(changeDetector, [eij], [eij],
-          [null], [shadowView]);
+
+      var eis;
+      if (isPresent(elementInjectors)) {
+        eis = elementInjectors;
+      } else {
+        eis = [createElementInjector({'getComponent': componentInstance})];
+      }
+
+      view.init(changeDetector, eis, eis, ListWrapper.createFixedSize(eis.length), [shadowView]);
       return view;
     }
 
@@ -128,9 +134,7 @@ export function main() {
         var pv = createHostProtoView(null);
         var shadowView = createEmptyView();
         var view = createHostView(pv, null, null);
-        renderer.spy('createDynamicComponentView').andCallFake( (a,b,c) => {
-          return [new ViewRef(), new ViewRef()];
-        });
+        renderer.spy('createDynamicComponentView').andReturn([new ViewRef(), new ViewRef()]);
         hydrator.hydrateDynamicComponentView(view, 0, shadowView, createDirectiveBinding(SomeComponent), null);
         expect(
           () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
@@ -143,7 +147,7 @@ export function main() {
 
       it('should hydrate existing child components', () => {
         var hostPv = createHostProtoView(createProtoView());
-        var componentInstance = {};
+        var componentInstance = new Object();
         var shadowView = createEmptyView();
         var hostView = createHostView(hostPv, shadowView, componentInstance);
         renderer.spy('createInPlaceHostView').andCallFake( (a,b,c) => {
@@ -155,6 +159,35 @@ export function main() {
         expect(shadowView.hydrated()).toBe(true);
       });
 
+      it("should set up event listeners", () => {
+        var dir = new Object();
+
+        var hostPv = createProtoView([
+          createComponentElBinder(createDirectiveBinding(SomeComponent)),
+          createEmptyElBinder()
+        ]);
+
+        var spyEventAccessor1 = SpyObject.stub({"subscribe" : null});
+        var ei1 = createElementInjector({
+          'getEventEmitterAccessors': [[spyEventAccessor1]],
+          'getDirectiveAtIndex': dir
+        });
+
+        var spyEventAccessor2 = SpyObject.stub({"subscribe" : null});
+        var ei2 = createElementInjector({
+          'getEventEmitterAccessors': [[spyEventAccessor2]],
+          'getDirectiveAtIndex': dir
+        });
+
+        var shadowView = createEmptyView();
+        var hostView = createHostView(hostPv, shadowView, null, [ei1, ei2]);
+        renderer.spy('createInPlaceHostView').andReturn([new ViewRef(), new ViewRef()]);
+
+        hydrate(hostView);
+
+        expect(spyEventAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
+        expect(spyEventAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
+      });
     });
 
     describe('dehydrate... shared functionality', () => {
@@ -162,13 +195,11 @@ export function main() {
       var shadowView;
 
       function createAndHydrate(nestedProtoView) {
-        var componentInstance = {};
+        var componentInstance = new Object();
         shadowView = createEmptyView();
         var hostPv = createHostProtoView(nestedProtoView);
         hostView = createHostView(hostPv, shadowView, componentInstance);
-        renderer.spy('createInPlaceHostView').andCallFake( (a,b,c) => {
-          return [new ViewRef(), new ViewRef()];
-        });
+        renderer.spy('createInPlaceHostView').andReturn([new ViewRef(), new ViewRef()]);
 
         hydrate(hostView);
       }

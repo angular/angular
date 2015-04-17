@@ -2,7 +2,6 @@ import {Injectable, Inject, OpaqueToken, Injector} from 'angular2/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {ObservableWrapper} from 'angular2/src/facade/async';
 import * as vcModule from './view_container';
 import * as viewModule from './view';
 import {BindingPropagationConfig, Locals} from 'angular2/change_detection';
@@ -160,7 +159,7 @@ export class AppViewHydrator {
       var elementInjector = view.elementInjectors[i];
       if (isPresent(elementInjector)) {
         elementInjector.instantiateDirectives(appInjector, hostElementInjector, shadowDomAppInjector, view.preBuiltObjects[i]);
-        this._setUpEventEmitters(view, elementInjector);
+        this._setUpEventEmitters(view, elementInjector, i);
 
         // The exporting of $implicit is a special case. Since multiple elements will all export
         // the different values as $implicit, directly assign $implicit bindings to the variable
@@ -190,7 +189,7 @@ export class AppViewHydrator {
     return renderComponentIndex;
   }
 
-  _setUpEventEmitters(view:viewModule.AppView, elementInjector:eli.ElementInjector) {
+  _setUpEventEmitters(view:viewModule.AppView, elementInjector:eli.ElementInjector, boundElementIndex:number) {
     var emitters = elementInjector.getEventEmitterAccessors();
     for(var directiveIndex = 0; directiveIndex < emitters.length; ++directiveIndex) {
       var directiveEmitters = emitters[directiveIndex];
@@ -198,15 +197,9 @@ export class AppViewHydrator {
 
       for (var eventIndex = 0; eventIndex < directiveEmitters.length; ++eventIndex) {
         var eventEmitterAccessor = directiveEmitters[eventIndex];
-        this._setUpSubscription(view, directive, directiveIndex, eventEmitterAccessor);
+        eventEmitterAccessor.subscribe(view, boundElementIndex, directive);
       }
     }
-  }
-
-  _setUpSubscription(view:viewModule.AppView, directive:Object, directiveIndex:number, eventEmitterAccessor) {
-    var eventEmitter = eventEmitterAccessor.getter(directive);
-    ObservableWrapper.subscribe(eventEmitter,
-        eventObj => view.triggerEventHandlers(eventEmitterAccessor.eventName, eventObj, directiveIndex));
   }
 
   /**
