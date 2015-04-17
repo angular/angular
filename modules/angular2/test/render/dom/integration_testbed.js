@@ -38,7 +38,7 @@ export class IntegrationTestbed {
     var compiler = new Compiler(new DefaultStepFactory(parser, shadowDomStrategy), new FakeTemplateLoader(urlResolver, urlData));
 
     if (isBlank(viewCacheCapacity)) {
-      viewCacheCapacity = 1;
+      viewCacheCapacity = 0;
     }
     if (isBlank(urlData)) {
       urlData = MapWrapper.create();

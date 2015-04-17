@@ -26,12 +26,8 @@ export class ViewFactory {
 
   getView(protoView:viewModule.AppProtoView):viewModule.AppView {
     var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
-    if (isPresent(pooledViews)) {
-      var result = ListWrapper.removeLast(pooledViews);
-      if (pooledViews.length === 0) {
-        MapWrapper.delete(this._pooledViewsPerProtoView, protoView);
-      }
-      return result;
+    if (isPresent(pooledViews) && pooledViews.length > 0) {
+      return ListWrapper.removeLast(pooledViews);
     }
     return this._createView(protoView);
   }
