@@ -2,6 +2,6 @@
  * @module
  * @public
  * @description
- * This is a description
+ * Annotations which controll how the dependencies are resolved by the [Injector].
  */
 

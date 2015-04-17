@@ -2,7 +2,7 @@
  * @module
  * @public
  * @description
- * Describe the directives module here
+ * Common directives shipped with Angualr.
  */
 
 export * from './src/directives/class';

@@ -11,7 +11,7 @@ import * as vhModule from './view_hydrator';
 import {Renderer} from 'angular2/src/render/api';
 
 /**
- * @exportedAs angular2/template
+ * @exportedAs angular2/view
  */
 export class ViewContainer {
   viewFactory: vfModule.ViewFactory;

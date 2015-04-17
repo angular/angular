@@ -41,7 +41,7 @@ export class CompilerCache {
 }
 
 /**
- * @exportedAs angular2/template
+ * @exportedAs angular2/view
  */
 @Injectable()
 export class Compiler {

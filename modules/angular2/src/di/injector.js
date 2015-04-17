@@ -28,7 +28,7 @@ function _isWaiting(obj):boolean {
  * `Injector`.
  *
  * ## Example:
- * 
+ *
  * Suppose that we want to inject an `Engine` into class `Car`, we would define it like this:
  *
  * ```javascript
@@ -41,9 +41,9 @@ function _isWaiting(obj):boolean {
  * }
  *
  * ```
- * 
- * Next we need to write the code that creates and instantiates the `Injector`. We then ask for the `root` object, 
- * `Car`, so that the `Injector` can recursively build all of that object's dependencies. 
+ *
+ * Next we need to write the code that creates and instantiates the `Injector`. We then ask for the `root` object,
+ * `Car`, so that the `Injector` can recursively build all of that object's dependencies.
  *
  * ```javascript
  * main() {
@@ -53,7 +53,7 @@ function _isWaiting(obj):boolean {
  *   var car = injector.get(Car);
  * }
  * ```
- * Notice that we don't use the `new` operator because we explicitly want to have the `Injector` resolve all of the 
+ * Notice that we don't use the `new` operator because we explicitly want to have the `Injector` resolve all of the
  * object's dependencies automatically.
  *
  * @exportedAs angular2/di
@@ -67,11 +67,12 @@ export class Injector {
   _syncStrategy:_SyncInjectorStrategy;
 
   /**
-   * Turns a list of binding definitions into internal resolved list of resolved bindings.
+   * Turns a list of binding definitions into an internal resolved list of resolved bindings.
    *
-   * A resolution is a process of flattening multiple nested lists and converting individual bindings into a 
-   * list of [ResolvedBinding]s. The resolution can be cached for performance sensitive code.
-   * 
+   * A resolution is a process of flattening multiple nested lists and converting individual bindings into a
+   * list of [ResolvedBinding]s. The resolution can be cached by [Injector.resolve] for performance-sensitive
+   * code.
+   *
    * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
    *
    * The returned list is sparse, indexed by [Key.id]. It is generally not useful to application code other than for
@@ -87,7 +88,7 @@ export class Injector {
   /**
    * Resolves bindings and creates an injector based on those bindings. This function is slower than the
    * corresponding [fromResolvedBindings] because it needs to resolve bindings first. See [Injector.resolve].
-   * 
+   *
    * Prefer [fromResolvedBindings] in performance-critical code that creates lots of injectors.
    *
    * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
@@ -98,7 +99,7 @@ export class Injector {
   }
 
   /**
-   * Creates an injector from previously resolved bindings. This bypasses resolution and flattening. This API is
+   * Creates an injector from previously resolved bindings. This bypasses resolution and flattening. This API is the
    * recommended way to construct injectors in performance-sensitive parts.
    *
    * @param [bindings] A sparse list of [ResolvedBinding]s. See [Injector.resolve].
@@ -123,21 +124,21 @@ export class Injector {
   }
 
   /**
-   * Used to retrieve an instance from the injector. 
-   * 
-   * @param [token] usually the [Type] of object. (Same as token used while setting up a binding).
+   * Retrieves an instance from the injector.
+   *
+   * @param [token] usually the [Type] of an object. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Throws if not found.
    */
   get(token) {
-    
+
     return this._getByKey(Key.get(token), false, false, false);
   }
 
 
   /**
-   * Used to retrieve an instance from the injector. 
-   * 
-   * @param [token] usually the [Type] of object. (Same as token used while setting up a binding).
+   * Retrieves an instance from the injector.
+   *
+   * @param [token] usually a [Type]. (Same as the token used while setting up a binding).
    * @returns an instance represented by the token. Returns `null` if not found.
    */
   getOptional(token) {
@@ -145,9 +146,9 @@ export class Injector {
   }
 
   /**
-   * Used to retrieve an instance from the injector asynchronously. Used with asynchronous bindings. 
-   * 
-   * @param [token] usually the [Type] of object. (Same as token used while setting up a binding).
+   * Retrieves an instance from the injector asynchronously. Used with asynchronous bindings.
+   *
+   * @param [token] usually a [Type]. (Same as token used while setting up a binding).
    * @returns a [Promise] which resolves to the instance represented by the token.
    */
   asyncGet(token):Promise {
@@ -155,14 +156,14 @@ export class Injector {
   }
 
   /**
-   * Create a child injector and load a new set of bindings into it. 
-   * 
-   * A resolution is a process of flattening multiple nested and converting individual bindings into a 
-   * list of [ResolvedBinding]s. The resolution can be cached [Injector.resolve] for performance sensitive
+   * Creates a child injector and loads a new set of bindings into it.
+   *
+   * A resolution is a process of flattening multiple nested lists and converting individual bindings into a
+   * list of [ResolvedBinding]s. The resolution can be cached by [Injector.resolve] for performance-sensitive
    * code.
-   * 
+   *
    * See: [Injector.resolve].
-   * 
+   *
    * @param [bindings] can be a list of [Type], [Binding], [ResolvedBinding], or a recursive list of more bindings.
    * @returns a new child `Injector`.
    */
@@ -171,8 +172,8 @@ export class Injector {
   }
 
   /**
-   * Create a child injector and load a new set of [ResolvedBinding] into it. 
-   * 
+   * Creates a child injector and loads a new set of [ResolvedBinding]s into it.
+   *
    * @param [bindings] A sparse list of [ResolvedBinding]s. See [Injector.resolve].
    * @returns a new child `Injector`.
    */

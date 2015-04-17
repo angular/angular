@@ -4,14 +4,14 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 // TODO: uncoment `int` once https://github.com/angular/angular/issues/1414 is fixed
 
 /**
- * A unique object used for retrieving items from the Injector.
+ * A unique object used for retrieving items from the [Injector].
  *
  * [Key]s have:
- * - system wide unique [id].
- * - [token] usually the [Type] of the instance.
+ * - a system-wide unique [id].
+ * - a [token], usually the [Type] of the instance.
  *
- * [Key]s are used internaly in [Injector] becouse they have system wide unique [id]s which allow the injector to
- * index in arrays rather ther look up items in maps.
+ * [Key]s are used internally in [Injector]s because their system-wide unique [id]s allow the
+ * injector to index in arrays rather than looking up items in maps.
  *
  * @exportedAs angular2/di
  */
@@ -26,14 +26,14 @@ export class Key {
   }
 
   /**
-   * Retrieve a [Key] for a token.
+   * Retrieves a [Key] for a token.
    */
   static get(token):Key {
     return _globalKeyRegistry.get(token);
   }
 
   /**
-   * @returns number of [Key]s registered in the system.
+   * @returns the number of [Key]s registered in the system.
    */
   static get numberOfKeys()/* :int */ {
     return _globalKeyRegistry.numberOfKeys;

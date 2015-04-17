@@ -2,7 +2,7 @@
  * @module
  * @public
  * @description
- * This is a description
+ * The `di` module provides dependency injection container services.
  */
 
 export {Inject, InjectPromise, InjectLazy, Injectable, Optional, DependencyAnnotation} from './src/di/annotations';

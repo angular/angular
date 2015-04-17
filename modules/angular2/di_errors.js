@@ -2,6 +2,6 @@
  * @module
  * @public
  * @description
- * This is a description
+ * Errors thrown by the [Injector].
  */
 

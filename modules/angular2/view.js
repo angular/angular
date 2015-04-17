@@ -2,5 +2,5 @@
  * @module
  * @public
  * @description
- * Define public API for Angular here.
+ * Provides API for working with Angular views.
  */
