@@ -367,7 +367,7 @@ export function main() {
 
           var value = view.rawView.locals.get('alice');
           expect(value).not.toBe(null);
-          expect(value.domElement.tagName.toLowerCase()).toEqual('div');
+          expect(value.tagName.toLowerCase()).toEqual('div');
 
           async.done();
         })
@@ -383,7 +383,7 @@ export function main() {
 
           var value = view.rawView.locals.get('superAlice');
           expect(value).not.toBe(null);
-          expect(value.domElement.tagName.toLowerCase()).toEqual('div');
+          expect(value.tagName.toLowerCase()).toEqual('div');
 
           async.done();
         })

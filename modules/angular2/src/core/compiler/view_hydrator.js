@@ -175,7 +175,7 @@ export class AppViewHydrator {
         if (elementInjector.isExportingComponent()) {
           view.locals.set(exportImplicitName, elementInjector.getComponent());
         } else if (elementInjector.isExportingElement()) {
-          view.locals.set(exportImplicitName, elementInjector.getNgElement());
+          view.locals.set(exportImplicitName, elementInjector.getNgElement().domElement);
         }
       }
 
