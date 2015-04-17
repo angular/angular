@@ -406,7 +406,7 @@ function createDirectiveBinding(reader, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new AppProtoView(null, null, null, null, null);
+  var pv = new AppProtoView(null, null, null, null, null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }

@@ -120,7 +120,7 @@ export class ProtoViewFactory {
     var variableNames = this._createVariableNames(parentProtoView, protoLocals);
 
     var protoChangeDetector = this._createProtoChangeDetector(elementBinders, sortedDirectives, componentBinding, variableNames);
-    var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings, protoLocals, variableNames);
+    var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings, protoLocals, variableNames, renderProtoView);
 
     // TODO: vsavkin refactor to pass element binders into proto view
     this._createElementBinders(protoView, elementBinders, sortedDirectives)
