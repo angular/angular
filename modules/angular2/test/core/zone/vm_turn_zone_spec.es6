@@ -16,7 +16,7 @@ import {BaseException} from 'angular2/src/facade/lang';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 export function main() {
-  describe("VmTurnZone", () => {
+  ddescribe("VmTurnZone", () => {
     var log, zone;
 
     beforeEach(() => {
@@ -54,15 +54,15 @@ export function main() {
         expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
       });
 
-
-      it('should call onTurnStart and onTurnDone before and after each turn', inject([AsyncTestCompleter], (async) => {
+      iit('should call onTurnStart and onTurnDone before and after each turn', inject([AsyncTestCompleter], (async) => {
         var a = PromiseWrapper.completer();
         var b = PromiseWrapper.completer();
 
+        console.log('TEST');
         zone.run(() => {
           log.add('run start');
-          a.promise.then((_) => log.add('a then'));
-          b.promise.then((_) => log.add('b then'));
+          a.promise.then((_) => {console.log('a'); log.add('a then'); });
+          b.promise.then((_) => {console.log('b'); log.add('b then'); });
         });
 
         a.resolve("a");
@@ -70,7 +70,7 @@ export function main() {
 
         PromiseWrapper.all([a.promise, b.promise]).then((_) => {
           expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; onTurnDone; onTurnStart; b then; onTurnDone');
-          async.done();
+          //async.done();
         });
       }));
     });

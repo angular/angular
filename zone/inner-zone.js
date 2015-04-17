@@ -3,6 +3,7 @@ Zone.nestedRun = 0;
 Zone.vmTurnAware = {
   '$run': function (parentRun) {
     return function () {
+      console.log('inner zone run 1');
       var ret;
       var oldZone = zone;
 
@@ -20,9 +21,13 @@ Zone.vmTurnAware = {
 
       try {
         // Execute the task + any pending microtasks
-        ret = parentRun.apply(this, arguments);
+        return parentRun.apply(this, arguments);
+      } catch (e) {
+        console.log('catch');
       } finally {
         Zone.nestedRun--;
+
+        console.log('nested = ', Zone.nestedRun);
 
         if (Zone.nestedRun == 0 && this.afterTurn) {
           window.zone = this;
@@ -38,8 +43,6 @@ Zone.vmTurnAware = {
           }
         }
       }
-
-      return ret;
     }
   },
 

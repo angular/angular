@@ -238,9 +238,14 @@
 
     var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
 
-    function lib$es6$promise$$internal$$tryCatch(callback, detail) {
+    function lib$es6$promise$$internal$$tryCatch(callback, detail, zone) {
+      var result;
+
       try {
-        return callback(detail);
+        return zone.run(function() {
+          result = callback(detail);
+          return result;
+        }, zone, [], true);
       } catch(e) {
         lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
         return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
@@ -252,11 +257,10 @@
           value, error, succeeded, failed;
 
       if (hasCallback) {
-        var oldZone = lib$es6$promise$utils$$getCurrentZone();
-        // When zone is specified, run the callback in that zone
-        lib$es6$promise$utils$$setCurrentZone(zone || oldZone);
-        value = lib$es6$promise$$internal$$tryCatch(callback, detail);
-        lib$es6$promise$utils$$setCurrentZone(oldZone);
+        var runInZone = zone || lib$es6$promise$utils$$getCurrentZone();
+
+        value = lib$es6$promise$$internal$$tryCatch(callback, detail, runInZone);
+
 
         if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
           failed = true;

@@ -87,7 +87,7 @@ Zone.prototype = {
     });
   },
 
-  run: function run (fn, applyTo, applyWith) {
+  run: function run (fn, applyTo, applyWith, rethrow) {
     applyWith = applyWith || [];
 
     var oldZone = zone,
@@ -97,14 +97,17 @@ Zone.prototype = {
 
     try {
       this.beforeTask();
-      result = fn.apply(applyTo, applyWith);
+      console.log('parent run');
+      return fn.apply(applyTo, applyWith);
     } catch (e) {
-      if (zone.onError) {
+      console.log('parent run error');
+      if (zone.onError && rethrow !== true) {
         zone.onError(e);
       } else {
         throw e;
       }
     } finally {
+      console.log('parent run finally');
       this.afterTask();
       if (Zone.microtaskQueue.length > 0) {
         var microtask = Zone.microtaskQueue.shift();
@@ -112,21 +115,8 @@ Zone.prototype = {
       }
       exports.zone = zone = oldZone;
     }
-    return result;
-  },
 
-  runUnguarded: function runUnguarded(fn) {
-    var result, oldZone = zone;
 
-    exports.zone = this;
-
-    try {
-      result = fn();
-    } finally {
-      exports.zone = oldZone;
-    }
-
-    return result;
   },
 
   beforeTask: function () {},
