@@ -1,6 +1,6 @@
 import {Map, List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ResolvedBinding, Binding, BindingBuilder, bind} from './binding';
-import {ProviderError, NoProviderError, AsyncBindingError, CyclicDependencyError,
+import {AbstractBindingError, NoBindingError, AsyncBindingError, CyclicDependencyError,
   InstantiationError, InvalidBindingError} from './exceptions';
 import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -205,7 +205,7 @@ export class Injector {
     if (optional) {
       return null;
     } else {
-      throw new NoProviderError(key);
+      throw new NoBindingError(key);
     }
   }
 
@@ -215,7 +215,7 @@ export class Injector {
       return ListWrapper.map(binding.dependencies, getDependency);
     } catch (e) {
       this._clear(key);
-      if (e instanceof ProviderError) e.addKey(key);
+      if (e instanceof AbstractBindingError) e.addKey(key);
       throw e;
     }
   }
@@ -343,7 +343,7 @@ class _AsyncInjectorStrategy {
   }
 
   _errorHandler(key:Key, e):Promise {
-    if (e instanceof ProviderError) e.addKey(key);
+    if (e instanceof AbstractBindingError) e.addKey(key);
     return PromiseWrapper.reject(e);
   }
 

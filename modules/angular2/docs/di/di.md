@@ -316,8 +316,8 @@ ctrlPromise.then((ctrl) {
 	expect(ctrl).toBeAnInstanceOf(UserController);
 	expect(ctrl.ul).toBeAnInstanceOf(UserList);
 });
-// No synchronous provider for UserList, results in a NoProviderError.
-expect(() => inj.get(UserController)).toThrow(new NoProviderError(...));
+// No synchronous provider for UserList, results in a NoBindingError.
+expect(() => inj.get(UserController)).toThrow(new NoBindingError(...));
 ```
 
 
