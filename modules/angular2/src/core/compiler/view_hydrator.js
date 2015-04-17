@@ -70,18 +70,18 @@ export class AppViewHydrator {
   dehydrateDynamicComponentView(parentView:viewModule.AppView, boundElementIndex:number) {
     throw new BaseException('Not yet implemented!');
     // Something along these lines:
-    // var binder = parentView.proto.elementBinders[boundElementIndex];
+    // var binder = parentView.proto.elementBinders{@link boundElementIndex};
     // if (!binder.hasDynamicComponent()) {
     //   throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`);
     // }
-    // var componentView = parentView.componentChildViews[boundElementIndex];
+    // var componentView = parentView.componentChildViews{@link boundElementIndex};
     // if (isBlank(componentView)) {
     //   throw new BaseException(`There is no bound component at element ${boundElementIndex}`);
     // }
     // this._viewDehydrateRecurse(componentView);
     // parentView.changeDetector.removeShadowDomChild(componentView.changeDetector);
     // this._renderer.destroyDynamicComponentChildView(parentView.render, boundElementIndex);
-    // parentView.componentChildViews[boundElementIndex] = null;
+    // parentView.componentChildViews{@link boundElementIndex} = null;
   }
 
   hydrateInPlaceHostView(parentView:viewModule.AppView, hostElementSelector, hostView:viewModule.AppView, injector:Injector) {

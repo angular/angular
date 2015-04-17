@@ -14,7 +14,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
 }
 
 /// Cribbed from the polymer project.
-/// [https://github.com/dart-lang/polymer-dart]
+/// {@link https://github.com/dart-lang/polymer-dart}
 List<String> _readFileList(Map config, String paramName) {
   var value = config[paramName];
   if (value == null) return null;

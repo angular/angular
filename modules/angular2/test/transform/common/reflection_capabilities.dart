@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 library angular2.test.transform;
 
-/// Mocked out version of [ReflectionCapabilities], defined in
+/// Mocked out version of {@link ReflectionCapabilities}, defined in
 /// src/reflection/reflection_capabilities.dart. Importing the actual file in
 /// tests causes issues with resolution due to transitive dependencies.
 class ReflectionCapabilities {}

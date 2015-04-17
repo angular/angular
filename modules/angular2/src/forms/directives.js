@@ -11,7 +11,7 @@ import {Validators} from './validators';
 //}
 
 /**
- * The default accessor for writing a value and listening to changes that is used by a [Control] directive.
+ * The default accessor for writing a value and listening to changes that is used by a {@link Control} directive.
  *
  * This is the default strategy that Angular uses when no other accessor is applied.
  *
@@ -84,13 +84,13 @@ export class CheckboxControlValueAccessor {
  * the control will reflect that change. Likewise, if the value of the control changes, the input element reflects that
  * change.
  *
- * Here we use [FormDirectives], rather than importing each form directive individually, e.g.
+ * Here we use {@link FormDirectives}, rather than importing each form directive individually, e.g.
  * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [FormDirectives],
+ *      directives: {@link FormDirectives},
  *      inline: "<input type='text' [control]='loginControl'>"
  *      })
  * class LoginComp {
@@ -170,13 +170,13 @@ export class ControlDirective {
  * In this example, we bind the control group to the form element, and we bind the login and password controls to the
  * login and password elements.
  *
- * Here we use [FormDirectives], rather than importing each form directive individually, e.g.
+ * Here we use {@link FormDirectives}, rather than importing each form directive individually, e.g.
  * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [FormDirectives],
+ *      directives: {@link FormDirectives},
  *      inline: "<form [control-group]='loginForm'>" +
  *              "Login <input type='text' control='login'>" +
  *              "Password <input type='password' control='password'>" +

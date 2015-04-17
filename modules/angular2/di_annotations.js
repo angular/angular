@@ -2,6 +2,6 @@
  * @module
  * @public
  * @description
- * Annotations which controll how the dependencies are resolved by the [Injector].
+ * Annotations which control how the dependencies are resolved by the {@link Injector}.
  */
 

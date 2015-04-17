@@ -48,7 +48,7 @@ export class PropertyBindingParser extends CompileStep {
           // match: on-event
           this._bindEvent(bindParts[4], attrValue, current, newAttrs);
         } else if (isPresent(bindParts[5])) {
-          // match: [prop]
+          // match: {@link prop}
           this._bindProperty(bindParts[5], attrValue, current, newAttrs);
         } else if (isPresent(bindParts[6])) {
           // match: (event)

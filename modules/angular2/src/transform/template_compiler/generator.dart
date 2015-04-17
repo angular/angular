@@ -26,7 +26,7 @@ import 'recording_reflection_capabilities.dart';
 /// Angular 2 `View` annotations it declares to generate `getter`s,
 /// `setter`s, and `method`s that would otherwise be reflectively accessed.
 ///
-/// This method assumes a [DomAdapter] has been registered.
+/// This method assumes a {@link DomAdapter} has been registered.
 Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
   var parser = new Parser(reader);
   NgDeps ngDeps = await parser.parse(entryPoint);
@@ -150,7 +150,7 @@ class _TemplateExtractor {
   }
 
   // TODO(kegluneq): Rewrite these to `template` where possible.
-  // See [https://github.com/angular/angular/issues/1035].
+  // See {@link https://github.com/angular/angular/issues/1035}.
   Future<String> _readUrlTemplate(String url) async {
     var assetId = uriToAssetId(_entryPoint, url, logger, null);
     var templateExists = await _reader.hasInput(assetId);
@@ -163,7 +163,7 @@ class _TemplateExtractor {
 }
 
 /// Visitor responsible for processing the `annotations` property of a
-/// [RegisterType] object and pulling out template text.
+/// {@link RegisterType} object and pulling out template text.
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   final List<String> inlineValues = [];
   final List<String> urlValues = [];

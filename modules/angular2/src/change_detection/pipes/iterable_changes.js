@@ -210,10 +210,10 @@ export class IterableChanges extends Pipe {
   /**
    * This is the core function which handles differences between collections.
    *
-   * - [record] is the record which we saw at this position last time. If null then it is a new
+   * - {@link record} is the record which we saw at this position last time. If null then it is a new
    *   item.
-   * - [item] is the current item in the collection
-   * - [index] is the position of the item in the collection
+   * - {@link item} is the current item in the collection
+   * - {@link index} is the position of the item in the collection
    */
   _mismatch(record:CollectionChangeRecord, item, index:int):CollectionChangeRecord {
     // The previous record after which we will append the current one.
@@ -249,7 +249,7 @@ export class IterableChanges extends Pipe {
   /**
    * This check is only needed if an array contains duplicates. (Short circuit of nothing dirty)
    *
-   * Use case: `[a, a]` => `[b, a, a]`
+   * Use case: `{@link a, a]` => `[b, a, a}`
    *
    * If we did not have this check then the insertion of `b` would:
    *   1) evict first `a`
@@ -284,9 +284,9 @@ export class IterableChanges extends Pipe {
   }
 
   /**
-   * Get rid of any excess [CollectionChangeRecord]s from the previous collection
+   * Get rid of any excess {@link CollectionChangeRecord}s from the previous collection
    *
-   * - [record] The first excess [CollectionChangeRecord].
+   * - {@link record] The first excess [CollectionChangeRecord}.
    */
   _truncate(record:CollectionChangeRecord) {
     // Anything after that needs to be removed;
@@ -588,7 +588,7 @@ class _DuplicateItemRecordList {
   }
 
   /**
-   * Remove one [CollectionChangeRecord] from the list of duplicates.
+   * Remove one {@link CollectionChangeRecord} from the list of duplicates.
    *
    * Returns whether the list of duplicates is empty.
    */
@@ -640,7 +640,7 @@ class _DuplicateMap {
    * Retrieve the `value` using key. Because the CollectionChangeRecord value maybe one which we
    * have already iterated over, we use the afterIndex to pretend it is not there.
    *
-   * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
+   * Use case: `{@link a, b, c, a, a}` if we are at index `3` which is the second `a` then asking if we
    * have any more `a`s needs to return the last `a` not the first or second.
    */
   get(value, afterIndex = null):CollectionChangeRecord {
@@ -651,7 +651,7 @@ class _DuplicateMap {
   }
 
   /**
-   * Removes an [CollectionChangeRecord] from the list of duplicates.
+   * Removes an {@link CollectionChangeRecord} from the list of duplicates.
    *
    * The list of duplicates also is removed from the map if it gets empty.
    */

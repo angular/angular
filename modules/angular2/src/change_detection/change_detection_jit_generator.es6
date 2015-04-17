@@ -81,12 +81,12 @@ function hydrateTemplate(type:string, mode:string, fieldDefinitions:string, pipe
                          directiveFieldNames:List<String>, detectorFieldNames:List<String>):string {
   var directiveInit = "";
   for(var i = 0; i < directiveFieldNames.length; ++i) {
-    directiveInit += `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}]);\n`;
+    directiveInit += `${directiveFieldNames{@link i]} = directives.getDirectiveFor(this.directiveRecords[${i}}} = directives.getDirectiveFor(this.directiveRecords[${i}]);\n`;
   }
 
   var detectorInit = "";
   for(var i = 0; i < detectorFieldNames.length; ++i) {
-    detectorInit += `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}]);\n`;
+    detectorInit += `${detectorFieldNames{@link i]} = directives.getDetectorFor(this.directiveRecords[${i}}} = directives.getDetectorFor(this.directiveRecords[${i}]);\n`;
   }
 
   return `

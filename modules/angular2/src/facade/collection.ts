@@ -175,7 +175,7 @@ export class ListWrapper {
 export function isListLikeIterable(obj): boolean {
   if (!isJsObject(obj)) return false;
   return ListWrapper.isList(obj) ||
-         (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
+         (!(obj instanceof Map) &&  // JS Map are iterables but return entries as {@link k, v}
           Symbol.iterator in obj);  // JS Iterable have a Symbol.iterator prop
 }
 

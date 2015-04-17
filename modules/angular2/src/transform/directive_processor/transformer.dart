@@ -19,7 +19,7 @@ import 'rewriter.dart';
 /// with @Component, @View, @Decorator, etc.
 ///
 /// This transformer is the first phase in a two-phase transform. It should
-/// be followed by [DirectiveLinker].
+/// be followed by {@link DirectiveLinker}.
 class DirectiveProcessor extends Transformer {
   final TransformerOptions options;
 
