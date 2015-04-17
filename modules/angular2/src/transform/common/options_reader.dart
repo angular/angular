@@ -1,6 +1,7 @@
 library angular2.transform.common.options_reader;
 
 import 'package:barback/barback.dart';
+import 'mirror_mode.dart';
 import 'options.dart';
 
 TransformerOptions parseBarbackSettings(BarbackSettings settings) {
@@ -8,9 +9,27 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var entryPoints = _readFileList(config, ENTRY_POINT_PARAM);
   var reflectionEntryPoints =
       _readFileList(config, REFLECTION_ENTRY_POINT_PARAM);
+  var initReflector = !config.containsKey('init_reflector') ||
+      config['init_reflector'] != false;
+  String mirrorModeVal =
+      config.containsKey('mirror_mode') ? config['mirror_mode'] : '';
+  var mirrorMode = MirrorMode.none;
+  switch (mirrorModeVal) {
+    case 'debug':
+      mirrorMode = MirrorMode.debug;
+      break;
+    case 'verbose':
+      mirrorMode = MirrorMode.verbose;
+      break;
+    default:
+      mirrorMode = MirrorMode.none;
+      break;
+  }
   return new TransformerOptions(entryPoints,
       reflectionEntryPoints: reflectionEntryPoints,
-      modeName: settings.mode.name);
+      modeName: settings.mode.name,
+      mirrorMode: mirrorMode,
+      initReflector: initReflector);
 }
 
 /// Cribbed from the polymer project.

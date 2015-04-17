@@ -3,6 +3,7 @@ library angular2.transform.reflection_remover.transformer;
 import 'dart:async';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
+import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
 import 'package:barback/barback.dart';
@@ -38,8 +39,19 @@ class ReflectionRemover extends Transformer {
       });
       var reader = new AssetReader.fromTransform(transform);
 
+      var mirrorMode = options.mirrorMode;
+      var writeStaticInit = options.initReflector;
+      if (options.modeName == TRANSFORM_DYNAMIC_MODE) {
+        mirrorMode = MirrorMode.debug;
+        writeStaticInit = false;
+        log.logger.info('Running in "${options.modeName}", '
+            'mirrorMode: ${mirrorMode}, '
+            'writeStaticInit: ${writeStaticInit}.');
+      }
+
       var transformedCode = await removeReflectionCapabilities(
-          reader, transform.primaryInput.id, newEntryPoints);
+          reader, transform.primaryInput.id, newEntryPoints,
+          mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(
           new Asset.fromString(transform.primaryInput.id, transformedCode));
     } catch (ex, stackTrace) {
