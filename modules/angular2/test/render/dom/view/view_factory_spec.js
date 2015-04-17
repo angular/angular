@@ -61,10 +61,10 @@ export function main() {
       shadowDomStrategy = new SpyShadowDomStrategy();
     });
 
-    it('should create views', () => {
+    it('should create views without cache', () => {
       var pv = createProtoView();
       var vf = createViewFactory({
-        capacity: 1
+        capacity: 0
       });
       expect(vf.getView(pv) instanceof RenderView).toBe(true);
     });
