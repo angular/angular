@@ -83,10 +83,10 @@ export class ConsoleReporter extends Reporter {
         var sample = ListWrapper.map(validSample, (measureValues) => measureValues.values[metricName]);
         var mean = Statistic.calculateMean(sample);
         var cv = Statistic.calculateCoefficientOfVariation(sample, mean);
-        var formattedCv = NumberWrapper.isNaN(cv) ? 'NaN' : Math.floor(cv);
+        var formattedMean = ConsoleReporter._formatNum(mean)
         // Note: Don't use the unicode character for +- as it might cause
-        // hickups consoles...
-        return `${ConsoleReporter._formatNum(mean)}+-${formattedCv}%`;
+        // hickups for consoles...
+        return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
       })
     );
     return PromiseWrapper.resolve(null);
