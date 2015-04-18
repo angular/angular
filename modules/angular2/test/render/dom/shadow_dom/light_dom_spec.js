@@ -84,7 +84,7 @@ class FakeContentTag {
   }
 
   insert(nodes){
-    this._nodes = ListWrapper.clone(nodes);
+    this._nodes = nodes;
   }
 
   nodes() {
@@ -215,6 +215,30 @@ export function main() {
         expect(toHtml(wildcard.nodes())).toEqual(["<a>1</a>", "<b>2</b>", "<a>3</a>"]);
         expect(toHtml(contentB.nodes())).toEqual([]);
       });
+
+      it("should remove all nodes if there are no content tags", () => {
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
+
+        var lightDom = new LightDom(lightDomView, new FakeView([]), lightDomEl);
+
+        lightDom.redistribute();
+
+        expect(DOM.childNodes(lightDomEl).length).toBe(0);
+      });
+
+      it("should remove all not projected nodes", () => {
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>");
+        var bNode = DOM.childNodes(lightDomEl)[1];
+
+        var lightDom = new LightDom(lightDomView, new FakeView([
+          new FakeContentTag(null, "a")
+        ]), lightDomEl);
+
+        lightDom.redistribute();
+
+        expect(bNode.parentNode).toBe(null);
+      });
+
     });
   });
 }
