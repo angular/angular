@@ -295,7 +295,7 @@ export function main() {
         //  var temp = `<simple>aaa<input type="text" id="focused-input" ng-class="{'aClass' : showClass}"> bbb</simple>`;
         //
         //  compile(temp, (view, lc) => {
-        //    var input = view.rootNodes{@link 1};
+        //    var input = view.rootNodes[1];
         //    input.focus();
         //
         //    expect(document.activeElement.id).toEqual("focused-input");

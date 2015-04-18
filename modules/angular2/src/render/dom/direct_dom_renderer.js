@@ -136,7 +136,7 @@ export class DirectDomRenderer extends api.Renderer {
     throw new BaseException('Not supported yet');
     // Something along these lines:
     // var hostView = _resolveView(hostViewRef);
-    // var componentView = hostView.childComponentViews{@link elementIndex};
+    // var componentView = hostView.childComponentViews[elementIndex];
     // this._viewHydrator.dehydrateDynamicComponentView(hostView, componentView);
   }
 

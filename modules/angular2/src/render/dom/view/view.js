@@ -90,7 +90,7 @@ export class RenderView {
       MapWrapper.set(evalLocals, '$event', event);
       // TODO(tbosch): reenable this when we are parsing element properties
       // out of action expressions
-      // var localValues = this.proto.elementBinders{@link elementIndex}.eventLocals.eval(null, new Locals(null, evalLocals));
+      // var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new Locals(null, evalLocals));
       // this._eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
       this._eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
     }

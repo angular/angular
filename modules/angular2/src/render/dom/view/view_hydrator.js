@@ -41,10 +41,10 @@ export class RenderViewHydrator {
   dehydrateDynamicComponentView(parentView:viewModule.RenderView, boundElementIndex:number) {
     throw new BaseException('Not supported yet');
     // Something along these lines:
-    // var componentView = parentView.componentChildViews{@link boundElementIndex};
+    // var componentView = parentView.componentChildViews[boundElementIndex];
     // vcModule.ViewContainer.removeViewNodes(componentView);
-    // parentView.componentChildViews{@link boundElementIndex} = null;
-    // parentView.lightDoms{@link boundElementIndex} = null;
+    // parentView.componentChildViews[boundElementIndex] = null;
+    // parentView.lightDoms[boundElementIndex] = null;
     // this._viewDehydrateRecurse(componentView);
   }
 

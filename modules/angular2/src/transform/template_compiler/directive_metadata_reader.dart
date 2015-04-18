@@ -65,7 +65,7 @@ class _DirectiveMetadataVisitor extends Object
     var keyString = '${node.name.label}';
     // TODO(kegluneq): Populate the other values in {@link DirectiveMetadata} once
     // they are specified as `hostAttributes` and `hostSetters`.
-    // See {@link https://github.com/angular/angular/issues/1244}
+    // See [https://github.com/angular/angular/issues/1244]
     switch (keyString) {
       case 'selector':
         _populateSelector(node.expression);

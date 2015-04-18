@@ -3,7 +3,7 @@ import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {Injectable} from 'angular2/di';
 import {DEFAULT} from 'angular2/change_detection';
 
-// type StringMap = {{@link idx: string}: string};
+// type StringMap = {[idx: string]: string};
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -918,7 +918,7 @@ export class Viewport extends Directive {
  * ```
  * @Decorator({
  *   ...,
- *   lifecycle: {@link onDestroy}
+ *   lifecycle: [onDestroy]
  * })
  * class ClassSet {
  *   onDestroy() {
@@ -976,7 +976,7 @@ export const onChange = "onChange";
  * ```
  * @Decorator({
  *   selector: '[class-set]',
- *   lifecycle: {@link onAllChangesDone}
+ *   lifecycle: [onAllChangesDone]
  * })
  * class ClassSet {
  *

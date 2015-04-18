@@ -9,7 +9,7 @@ var _SELECTOR_REGEXP =
     RegExpWrapper.create('(\\:not\\()|' + //":not("
     '([-\\w]+)|' +    // "tag"
     '(?:\\.([-\\w]+))|' +                   // ".class"
-    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' + // "{@link name]", "[name=value]" or "[name*=value}"
+    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' + // "[name]", "[name=value]" or "[name*=value]"
     '(?:\\))|' + // ")"
     '(\\s*,\\s*)');  // ","
 

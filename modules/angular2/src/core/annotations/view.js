@@ -59,7 +59,7 @@ export class View {
    *     selector: 'my-component'
    *   })
    * @View({
-   *   directives: {@link For}
+   *   directives: [For]
    *   template: '
    *   <ul>
    *     <li *for="item in items">{{item}}</li>

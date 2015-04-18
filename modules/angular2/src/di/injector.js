@@ -74,12 +74,12 @@ export class Injector {
    * performance-sensitive
    * code.
    *
-   * @param {@link bindings} can be a list of {@link Type}, {@link Binding}, {@link ResolvedBinding}, or a recursive
+   * @param `bindings` can be a list of {@link Type}, {@link Binding}, {@link ResolvedBinding}, or a recursive
    * list of more bindings.
    *
    * The returned list is sparse, indexed by `id` for the {@link Key}. It is generally not useful to application code
    * other than for passing it to {@link Injector} functions that require resolved binding lists, such as
-   * {@link fromResolvedBindings] and {@link createChildFromResolved].
+   * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings:List/*<ResolvedBinding|Binding|Type|List>*/):List<ResolvedBinding> {
     var resolvedBindings = _resolveBindings(bindings);
@@ -94,8 +94,9 @@ export class Injector {
    *
    * Prefer `fromResolvedBindings` in performance-critical code that creates lots of injectors.
    *
-   * @param `bindings` can be a list of [Type], [Binding], [ResolvedBinding}, or a recursive list of more bindings.
-   * @param {@link defaultBindings} Setting to true will auto-create bindings.
+   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a recursive list of more
+   * bindings.
+   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
   static resolveAndCreate(bindings:List/*<ResolvedBinding|Binding|Type|List>*/, {defaultBindings=false}={}) {
     return new Injector(Injector.resolve(bindings), null, defaultBindings);
@@ -105,17 +106,17 @@ export class Injector {
    * Creates an injector from previously resolved bindings. This bypasses resolution and flattening. This API is the
    * recommended way to construct injectors in performance-sensitive parts.
    *
-   * @param `bindings` A sparse list of [ResolvedBinding]s. See [Injector.resolve}.
-   * @param {@link defaultBindings} Setting to true will auto-create bindings.
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
+   * @param `defaultBindings` Setting to true will auto-create bindings.
    */
   static fromResolvedBindings(bindings:List<ResolvedBinding>, {defaultBindings=false}={}) {
     return new Injector(bindings, null, defaultBindings);
   }
 
   /**
-   * @param `bindings` A sparse list of [ResolvedBinding]s. See `resolve` for the {@link Injector}.
-   * @param {@link parent} Parent Injector or `null` if root injector.
-   * @param {@link defaultBindings} Setting to true will auto-create bindings. (Only use with root injector.)
+   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
+   * @param `parent` Parent Injector or `null` if root injector.
+   * @param `defaultBindings` Setting to true will auto-create bindings. (Only use with root injector.)
    */
   constructor(bindings:List<ResolvedBinding>, parent:Injector, defaultBindings:boolean) {
     this._bindings = bindings;
@@ -165,7 +166,7 @@ export class Injector {
    * list of {@link ResolvedBinding}s. The resolution can be cached by `resolve` for the {@link Injector} for
    * performance-sensitive code.
    *
-   * @param {@link bindings} can be a list of {@link Type}, {@link Binding}, {@link ResolvedBinding}, or a recursive
+   * @param `bindings` can be a list of {@link Type}, {@link Binding}, {@link ResolvedBinding}, or a recursive
    * list of more bindings.
    *
    */
@@ -177,7 +178,7 @@ export class Injector {
    * Creates a child injector and loads a new set of {@link ResolvedBinding}s into it.
    *
    * @param `bindings`: A sparse list of  {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
-   * @returns a new child `Injector`.
+   * @returns a new child {@link Injector}.
    */
   createChildFromResolved(bindings:List<ResolvedBinding>):Injector {
     return new Injector(bindings, this, false);

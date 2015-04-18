@@ -188,7 +188,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitPartOfDirective(PartOfDirective node) {
-    // TODO(kegluneq): Consider importing {@link node.libraryName}.
+    // TODO(kegluneq): Consider importing node.libraryName.
     logger.warning('[${importPath}]: '
         'Found `part of` directive while generating ${DEPS_EXTENSION} file, '
         'Transform may fail due to missing imports in generated file.');

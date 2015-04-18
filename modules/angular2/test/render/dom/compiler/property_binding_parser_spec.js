@@ -99,7 +99,7 @@ export function main() {
       var eventBinding = results[0].eventBindings[0];
       expect(eventBinding.source.source).toEqual('b()');
       expect(eventBinding.fullName).toEqual('click');
-      // "(click{@link })" is not an expected syntax and is only used to validate the regexp
+      // "(click[])" is not an expected syntax and is only used to validate the regexp
       results = process(el('<div (click[])="b()"></div>'));
       eventBinding = results[0].eventBindings[0];
       expect(eventBinding.source.source).toEqual('b()');

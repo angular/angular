@@ -206,7 +206,7 @@ export function main() {
       // NOTE(deboer): NOT A LEXER TEST
       //    it('should tokenize negative number', function() {
       //      var tokens:List<Token> = lex("-0.5");
-      //      expectNumberToken(tokens{@link 0}, 0, -0.5);
+      //      expectNumberToken(tokens[0], 0, -0.5);
       //    });
 
       it('should tokenize number with exponent', function() {

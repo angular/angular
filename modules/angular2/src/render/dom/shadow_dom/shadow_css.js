@@ -87,7 +87,7 @@ import {
 
   becomes:
 
-    div{@link x-foo} {
+    div[x-foo] {
       font-weight: bold;
     }
 
@@ -420,7 +420,7 @@ export class ShadowCss {
     return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
-  // scope via name and {@link is=name}
+  // scope via name and [is=name]
   _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
     if (isPresent(RegExpWrapper.firstMatch(_polyfillHostRe, selector))) {
       var replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
@@ -431,8 +431,8 @@ export class ShadowCss {
     }
   }
 
-  // return a selector with {@link name} suffix on each simple selector
-  // e.g. .foo.bar > .zot becomes .foo{@link name].bar[name] > .zot[name}
+  // return a selector with [name] suffix on each simple selector
+  // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]
   _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
     var isRe = RegExpWrapper.create('\\[is=([^\\]]*)\\]');
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);

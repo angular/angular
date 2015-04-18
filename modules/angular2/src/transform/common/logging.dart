@@ -12,7 +12,7 @@ void init(Transform t) {
   _logger = new BuildLogger(t);
 }
 
-/// Sets {@link logger] directly. Used for testing - in general use [init}.
+/// Sets {@link logger} directly. Used for testing - in general use {@link init}.
 void setLogger(BuildLogger logger) {
   _logger = logger;
 }

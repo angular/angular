@@ -39,8 +39,8 @@ class _CtorTransformVisitor extends ToSourceVisitor {
     }
   }
 
-  /// If {@link _withParameterTypes] is true, this method outputs [node}'s type. If
-  /// {@link _withParameterNames] is true, this method outputs [node}'s identifier.
+  /// If `_withParameterTypes` is true, this method outputs `node`'s type. If
+  /// `_withParameterNames` is true, this method outputs `node`'s identifier.
   Object _visitNormalFormalParameter(
       NodeList<Annotation> metadata, TypeName type, SimpleIdentifier name) {
     if (_withParameterAnnotations && metadata != null) {
@@ -144,7 +144,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
 }
 
 /// ToSourceVisitor designed to print 'parameters' values for Angular2's
-/// {@link registerType} calls.
+/// `registerType` calls.
 class ParameterTransformVisitor extends _CtorTransformVisitor {
   ParameterTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterNames = false;
@@ -178,7 +178,7 @@ class ParameterTransformVisitor extends _CtorTransformVisitor {
 }
 
 /// ToSourceVisitor designed to print 'factory' values for Angular2's
-/// {@link registerType} calls.
+/// `registerType` calls.
 class FactoryTransformVisitor extends _CtorTransformVisitor {
   FactoryTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterAnnotations = false;
@@ -200,8 +200,8 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
   }
 }
 
-/// ToSourceVisitor designed to print a {@link ClassDeclaration} node as a
-/// 'annotations' value for Angular2's {@link registerType} calls.
+/// ToSourceVisitor designed to print a `ClassDeclaration` node as a
+/// 'annotations' value for Angular2's `registerType` calls.
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final PrintWriter writer;
   AnnotationsTransformVisitor(PrintWriter writer)

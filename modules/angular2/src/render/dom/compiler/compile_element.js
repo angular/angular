@@ -18,7 +18,7 @@ export class CompileElement {
   distanceToInheritedBinder:number;
   inheritedElementBinder:ElementBinderBuilder;
   compileChildren: boolean;
-  elementDescription: string; // e.g. '<div {@link class}="foo">' : used to provide context in case of error
+  elementDescription: string; // e.g. '<div [class]="foo">' : used to provide context in case of error
 
   constructor(element, compilationUnit = '') {
     this.element = element;

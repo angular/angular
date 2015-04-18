@@ -36,9 +36,9 @@ class Codegen {
   /// Generates code to call the method which sets up Angular2 reflection
   /// statically.
   ///
-  /// If {@link reflectorAssignment} is provided, it is expected to be the node
+  /// If `reflectorAssignment` is provided, it is expected to be the node
   /// representing the {@link ReflectionCapabilities} assignment, and we will
-  /// attempt to parse the access of {@link reflector] from it so that [reflector} is
+  /// attempt to parse the access of `reflector` from it so that `reflector` is
   /// properly prefixed if necessary.
   String codegenSetupReflectionCall(
       {AssignmentExpression reflectorAssignment}) {
@@ -58,7 +58,7 @@ class Codegen {
   }
 }
 
-/// A visitor whose job it is to find the access of {@link reflector}.
+/// A visitor whose job it is to find the access of `reflector`.
 class _ReflectorVisitor extends Object with SimpleAstVisitor<Expression> {
   @override
   Expression visitAssignmentExpression(AssignmentExpression node) {

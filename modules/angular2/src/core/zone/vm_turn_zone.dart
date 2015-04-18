@@ -15,7 +15,7 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
  * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
  * in the "inner" zone unless {@link runOutsideAngular} is explicitely called.
  *
- * A typical application will create a singleton {@link VmTurnZone] whose outer [Zone] is the root [Zone}
+ * A typical application will create a singleton {@link VmTurnZone} whose outer `Zone` is the root `Zone`
  * and whose default {@link onTurnDone} runs the Angular digest.
  */
 class VmTurnZone {
@@ -33,7 +33,7 @@ class VmTurnZone {
    * Associates with this
    *
    * - an "outer" `Zone`, which is the one that created this.
-   * - an "inner" {@link Zone], which is a child of the outer [Zone}.
+   * - an "inner" `Zone`, which is a child of the outer `Zone`.
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
@@ -60,7 +60,7 @@ class VmTurnZone {
   }
 
   /**
-   * Runs {@link fn} in the inner zone and returns whatever it returns.
+   * Runs `fn` in the inner zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to make use of the
    * Angular's auto digest mechanism.
@@ -78,7 +78,7 @@ class VmTurnZone {
   dynamic run(fn()) => _innerZone.run(fn);
 
   /**
-   * Runs {@link fn} in the outer zone and returns whatever it returns.
+   * Runs `fn` in the outer zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to escape Angular's
    * auto-digest mechanism.

@@ -16,7 +16,7 @@ import * as modelModule from './model';
  *    login: ["", Validators.required],
  *
  *    passwordRetry: builder.group({
- *      password: [ "", Validators.required],
+ *      password: ["", Validators.required],
  *      passwordConfirmation: ["", Validators.required]
  *    })
  *  });

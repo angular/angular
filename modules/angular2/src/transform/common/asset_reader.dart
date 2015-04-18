@@ -12,7 +12,7 @@ abstract class AssetReader {
   Future<bool> hasInput(AssetId id);
 
   /// Creates an {@link AssetReader} using the `transform`, which should be a
-  /// {@link Transform] or [AggregateTransform}.
+  /// {@link Transform} or {@link AggregateTransform}.
   factory AssetReader.fromTransform(dynamic transform) =>
       new _TransformAssetReader(transform);
 }

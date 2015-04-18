@@ -150,7 +150,7 @@ class _TemplateExtractor {
   }
 
   // TODO(kegluneq): Rewrite these to `template` where possible.
-  // See {@link https://github.com/angular/angular/issues/1035}.
+  // See [https://github.com/angular/angular/issues/1035].
   Future<String> _readUrlTemplate(String url) async {
     var assetId = uriToAssetId(_entryPoint, url, logger, null);
     var templateExists = await _reader.hasInput(assetId);

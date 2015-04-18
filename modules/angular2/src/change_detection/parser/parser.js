@@ -543,7 +543,7 @@ class _ParseAST {
     if (isBlank(index)) index = this.index;
 
     var location = (index < this.tokens.length)
-      ? `at column ${this.tokens{@link index}.index + 1} in`
+      ? `at column ${this.tokens[index].index + 1} in`
       : `at the end of the expression`;
 
     throw new BaseException(`Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);

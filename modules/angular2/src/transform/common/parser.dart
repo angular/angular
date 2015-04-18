@@ -37,7 +37,7 @@ class Parser {
     return ngDeps;
   }
 
-  /// Parses the `.ng_deps.dart` file represented by {@link id] into an [NgDeps}
+  /// Parses the `.ng_deps.dart` file represented by {@link id} into an {@link NgDeps}
   /// object. All `.ng_deps.dart` files imported by {@link id} are then parsed. The
   /// results are added to {@link allDeps}.
   Future<List<NgDeps>> _recurse(AssetId id,

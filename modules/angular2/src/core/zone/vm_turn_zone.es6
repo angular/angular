@@ -56,7 +56,7 @@ export class VmTurnZone {
   }
 
   /**
-   * Runs {@link fn} in the inner zone and returns whatever it returns.
+   * Runs `fn` in the inner zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to make use of the
    * Angular's auto digest mechanism.
@@ -74,7 +74,7 @@ export class VmTurnZone {
   }
 
   /**
-   * Runs {@link fn} in the outer zone and returns whatever it returns.
+   * Runs `fn` in the outer zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to escape Angular's
    * auto-digest mechanism.
