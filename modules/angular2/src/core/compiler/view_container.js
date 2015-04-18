@@ -92,6 +92,10 @@ export class ViewContainer {
     return view;
   }
 
+  indexOf(view:viewModule.AppView) {
+    return ListWrapper.indexOf(this._views, view);
+  }
+
   remove(atIndex=-1) {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var view = this._views[atIndex];

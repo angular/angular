@@ -75,7 +75,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         // We need to do this here to ensure that we create Testability and
         // it's ready on the window for users.
         registry.registerApplication(appElement, testability);
-        return dynamicComponentLoader.loadIntoNewLocation(appElement, appComponentAnnotatedType.type, null, injector);
+        return dynamicComponentLoader.loadIntoNewLocation(appElement, appComponentAnnotatedType.type, injector);
       }, [DynamicComponentLoader, Injector, appElementToken, appComponentAnnotatedTypeToken,
         Testability, TestabilityRegistry]),
 

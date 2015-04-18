@@ -672,6 +672,10 @@ export class ElementInjector extends TreeNode {
     }
   }
 
+  getElementRef() {
+    return new ElementRef(this);
+  }
+
   getDynamicallyLoadedComponent() {
     return this._dynamicallyCreatedComponent;
   }
@@ -741,7 +745,7 @@ export class ElementInjector extends TreeNode {
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
     if (dep.key.id === StaticKeys.instance().elementRefId) {
-      return new ElementRef(this);
+      return this.getElementRef();
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }

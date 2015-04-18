@@ -16,11 +16,13 @@ export class ComponentRef {
   location:ElementRef;
   instance:any;
   componentView:AppView;
+  _dispose:Function;
 
-  constructor(location:ElementRef, instance:any, componentView:AppView){
+  constructor(location:ElementRef, instance:any, componentView:AppView, dispose:Function){
     this.location = location;
     this.instance = instance;
     this.componentView = componentView;
+    this._dispose = dispose;
   }
 
   get injector() {
@@ -29,6 +31,10 @@ export class ComponentRef {
 
   get hostView() {
     return this.location.hostView;
+  }
+
+  dispose() {
+    this._dispose();
   }
 }
 
@@ -72,16 +78,16 @@ export class DynamicComponentLoader {
       // from the component child views
       // See ViewFactory.returnView
       // See AppViewHydrator.dehydrateDynamicComponentView
-      return new ComponentRef(location, location.elementInjector.getDynamicallyLoadedComponent(), componentView);
+      var dispose = () => {throw "Not implemented";};
+      return new ComponentRef(location, location.elementInjector.getDynamicallyLoadedComponent(), componentView, dispose);
     });
   }
 
   /**
-   * Loads a component as a child of the View given by the provided ElementRef. The loaded
-   * component receives injection normally as a hosted view.
+   * Loads a component in the element specified by elementOrSelector. The loaded component receives
+   * injection normally as a hosted view.
    */
-  loadIntoNewLocation(elementOrSelector:any, type:Type, location:ElementRef,
-                      injector:Injector = null):Promise<ComponentRef> {
+  loadIntoNewLocation(elementOrSelector:any, type:Type, injector:Injector = null):Promise<ComponentRef> {
     this._assertTypeIsComponent(type);
 
     return  this._compiler.compileInHost(type).then(hostProtoView => {
@@ -91,9 +97,30 @@ export class DynamicComponentLoader {
       // TODO(vsavkin): return a component ref that dehydrates the host view
       // See ViewFactory.returnView
       // See AppViewHydrator.dehydrateInPlaceHostView
-      var newLocation = new ElementRef(hostView.elementInjectors[0]);
+      var newLocation = hostView.elementInjectors[0].getElementRef();
       var component = hostView.elementInjectors[0].getComponent();
-      return new ComponentRef(newLocation, component, hostView.componentChildViews[0]);
+      var dispose = () => {throw "Not implemented";};
+      return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
+    });
+  }
+
+  /**
+   * Loads a component next to the provided ElementRef. The loaded component receives
+   * injection normally as a hosted view.
+   */
+  loadNextToExistingLocation(type:Type, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
+    this._assertTypeIsComponent(type);
+
+    return this._compiler.compileInHost(type).then(hostProtoView => {
+      var hostView = location.viewContainer.create(-1, hostProtoView, injector);
+
+      var newLocation = hostView.elementInjectors[0].getElementRef();
+      var component = hostView.elementInjectors[0].getComponent();
+      var dispose = () => {
+        var index = location.viewContainer.indexOf(hostView);
+        location.viewContainer.remove(index);
+      };
+      return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
     });
   }
 

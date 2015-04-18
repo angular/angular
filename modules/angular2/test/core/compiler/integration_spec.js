@@ -28,8 +28,6 @@ import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/cor
 import {View} from 'angular2/src/core/annotations/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {Attribute} from 'angular2/src/core/annotations/di';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
 import {If} from 'angular2/src/directives/if';
 
@@ -643,75 +641,6 @@ export function main() {
         }));
       }
 
-      describe("dynamic components", () => {
-        it('should support loading components dynamically', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<dynamic-comp #dynamic></dynamic-comp>',
-            directives: [DynamicComp]
-          }));
-
-          tb.createView(MyComp).then((view) => {
-            var dynamicComponent = view.rawView.locals.get("dynamic");
-            expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
-
-            dynamicComponent.done.then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
-              async.done();
-            });
-          });
-        }));
-
-        it('should inject dependencies of the dynamically-loaded component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<dynamic-comp #dynamic></dynamic-comp>',
-            directives: [DynamicComp]
-          }));
-
-          tb.createView(MyComp).then((view) => {
-            var dynamicComponent = view.rawView.locals.get("dynamic");
-            dynamicComponent.done.then((ref) => {
-              expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
-              async.done();
-            });
-          });
-        }));
-
-        it('should allow to destroy and create them via viewport directives',
-            inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
-            directives: [DynamicComp, If]
-          }));
-
-          tb.createView(MyComp).then((view) => {
-            view.context.ctxBoolProp = true;
-            view.detectChanges();
-            var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
-            dynamicComponent.done.then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
-
-              view.context.ctxBoolProp = false;
-              view.detectChanges();
-
-              expect(view.rawView.viewContainers[0].length).toBe(0);
-              expect(view.rootNodes).toHaveText('');
-
-              view.context.ctxBoolProp = true;
-              view.detectChanges();
-
-              var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
-              return dynamicComponent.done;
-            }).then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
-              async.done();
-            });
-          });
-        }));
-      });
-
       describe('dynamic ViewContainers', () => {
 
         it('should allow to create a ViewContainer at any bound location',
@@ -865,34 +794,6 @@ class DynamicViewport {
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
       vc.create(0, hostPv, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
     });
-  }
-}
-
-class DynamicallyCreatedComponentService {}
-
-@DynamicComponent({
-  selector: 'dynamic-comp'
-})
-class DynamicComp {
-  done;
-  constructor(loader:DynamicComponentLoader, location:ElementRef) {
-    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, location);
-  }
-}
-
-@Component({
-  selector: 'hello-cmp',
-  injectables: [DynamicallyCreatedComponentService]
-})
-@View({
-  template: "{{greeting}}"
-})
-class DynamicallyCreatedCmp {
-  greeting:string;
-  dynamicallyCreatedComponentService:DynamicallyCreatedComponentService;
-  constructor(a:DynamicallyCreatedComponentService) {
-    this.greeting = "hello";
-    this.dynamicallyCreatedComponentService = a;
   }
 }
 
