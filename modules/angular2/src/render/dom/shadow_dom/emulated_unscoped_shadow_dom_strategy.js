@@ -34,7 +34,6 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
   }
 
   attachTemplate(el, view:viewModule.RenderView) {
-    DOM.clearNodes(el);
     moveViewNodesIntoParent(el, view);
   }
 

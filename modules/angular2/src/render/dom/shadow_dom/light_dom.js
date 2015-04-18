@@ -37,10 +37,7 @@ export class LightDom {
   }
 
   redistribute() {
-    var tags = this.contentTags();
-    if (tags.length > 0) {
-      redistributeNodes(tags, this.expandedDomNodes());
-    }
+    redistributeNodes(this.contentTags(), this.expandedDomNodes());
   }
 
   contentTags(): List<Content> {
@@ -122,16 +119,22 @@ function redistributeNodes(contents:List<Content>, nodes:List) {
   for (var i = 0; i < contents.length; ++i) {
     var content = contents[i];
     var select = content.select;
-    var matchSelector = (n) => DOM.elementMatches(n, select);
 
     // Empty selector is identical to <content/>
     if (select.length === 0) {
-      content.insert(nodes);
+      content.insert(ListWrapper.clone(nodes));
       ListWrapper.clear(nodes);
     } else {
+      var matchSelector = (n) => DOM.elementMatches(n, select);
       var matchingNodes = ListWrapper.filter(nodes, matchSelector);
       content.insert(matchingNodes);
       ListWrapper.removeAll(nodes, matchingNodes);
+    }
+  }
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    if (isPresent(node.parentNode)) {
+      DOM.remove(nodes[i]);
     }
   }
 }

@@ -54,10 +54,11 @@ export function main() {
 
         var testbed, renderer, rootEl, compile, compileRoot;
 
-        function createRenderer({templates}) {
+        function createRenderer({templates, viewCacheCapacity}) {
           testbed = new IntegrationTestbed({
             shadowDomStrategy: strategyFactory(),
-            templates: ListWrapper.concat(templates, componentTemplates)
+            templates: ListWrapper.concat(templates, componentTemplates),
+            viewCacheCapacity: viewCacheCapacity
           });
           renderer = testbed.renderer;
           compileRoot = (rootEl) => testbed.compileRoot(rootEl);
@@ -82,6 +83,25 @@ export function main() {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('SIMPLE(A)');
+
+            async.done();
+          });
+        }));
+
+        it('should not show the light dom event if there is not content tag', inject([AsyncTestCompleter], (async) => {
+          createRenderer({
+            templates: [new ViewDefinition({
+              componentId: 'main',
+              template: '<empty>' +
+                '<div>A</div>' +
+                '</empty>',
+              directives: [empty]
+            })]
+          });
+          compileRoot('main').then( (pv) => {
+            renderer.createInPlaceHostView(null, rootEl, pv.render);
+
+            expect(rootEl).toHaveText('');
 
             async.done();
           });
@@ -289,6 +309,46 @@ export function main() {
           });
         }));
 
+        it("should support tabs with view caching", inject([AsyncTestCompleter], (async) => {
+          createRenderer({
+            templates: [new ViewDefinition({
+              componentId: 'main',
+              template:
+                '(<tab><span>0</span></tab>'+
+                '<tab><span>1</span></tab>'+
+                '<tab><span>2</span></tab>)',
+              directives: [tabComponent]
+            })],
+            viewCacheCapacity: 5
+          });
+          compileRoot('main').then( (pv) => {
+            var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
+            var vcRef0 = new ViewContainerRef(viewRefs[2], 0);
+            var vcRef1 = new ViewContainerRef(viewRefs[3], 0);
+            var vcRef2 = new ViewContainerRef(viewRefs[4], 0);
+            var mainPv = pv.elementBinders[0].nestedProtoView;
+            var pvRef = mainPv.elementBinders[0].nestedProtoView.elementBinders[0].nestedProtoView.render;
+
+            expect(rootEl).toHaveText('()');
+
+            renderer.createViewInContainer(vcRef0, 0, pvRef);
+
+            expect(rootEl).toHaveText('(TAB(0))');
+
+            renderer.destroyViewInContainer(vcRef0, 0);
+            renderer.createViewInContainer(vcRef1, 0, pvRef);
+
+            expect(rootEl).toHaveText('(TAB(1))');
+
+            renderer.destroyViewInContainer(vcRef1, 0);
+            renderer.createViewInContainer(vcRef2, 0, pvRef);
+
+            expect(rootEl).toHaveText('(TAB(2))');
+
+            async.done();
+          });
+        }));
+
         //Implement once NgElement support changing a class
         //it("should redistribute when a class has been added or removed");
         //it('should not lose focus', () => {
@@ -315,6 +375,12 @@ export function main() {
 var simple = new DirectiveMetadata({
   selector: 'simple',
   id: 'simple',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var empty = new DirectiveMetadata({
+  selector: 'empty',
+  id: 'empty',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
@@ -372,10 +438,27 @@ var autoViewportDirective = new DirectiveMetadata({
   type: DirectiveMetadata.VIEWPORT_TYPE
 });
 
+var tabGroupComponent = new DirectiveMetadata({
+  selector: 'tab-group',
+  id: 'tab-group',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+
+var tabComponent = new DirectiveMetadata({
+  selector: 'tab',
+  id: 'tab',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
+
 var componentTemplates = [
   new ViewDefinition({
     componentId: 'simple',
     template: 'SIMPLE(<content></content>)',
+    directives: []
+  }),
+  new ViewDefinition({
+    componentId: 'empty',
+    template: '',
     directives: []
   }),
   new ViewDefinition({
@@ -406,6 +489,16 @@ var componentTemplates = [
   new ViewDefinition({
     componentId: 'conditional-content',
     template: '<div>(<div *auto="cond"><content select=".left"></content></div>, <content></content>)</div>',
+    directives: [autoViewportDirective]
+  }),
+  new ViewDefinition({
+    componentId: 'tab-group',
+    template: 'GROUP(<content></content>)',
+    directives: []
+  }),
+  new ViewDefinition({
+    componentId: 'tab',
+    template: '<div><div *auto="cond">TAB(<content></content>)</div></div>',
     directives: [autoViewportDirective]
   })
 ];
