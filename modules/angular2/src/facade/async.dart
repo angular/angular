@@ -37,6 +37,14 @@ class ObservableWrapper {
     return s.listen(onNext, onError: onError, onDone: onComplete, cancelOnError: true);
   }
 
+  static bool isObservable(obs) {
+    return obs is Stream;
+  }
+
+  static void dispose(StreamSubscription s) {
+    s.cancel();
+  }
+
   static void callNext(EventEmitter emitter, value) {
     emitter.add(value);
   }

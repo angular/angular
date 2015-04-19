@@ -58,6 +58,14 @@ export class ObservableWrapper {
     return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
   }
 
+  static dispose(subscription:any) {
+    subscription.dispose();
+  }
+
+  static isObservable(obs):boolean {
+    return obs instanceof Observable;
+  }
+
   static callNext(emitter:EventEmitter, value:any) {
     emitter.next(value);
   }
