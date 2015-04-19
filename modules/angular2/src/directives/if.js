@@ -40,7 +40,7 @@ export class If {
     this.prevCondition = null;
   }
 
-  set condition(newCondition) {
+  set condition(newCondition /* boolean */) {
     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
       this.prevCondition = true;
       this.viewContainer.create();

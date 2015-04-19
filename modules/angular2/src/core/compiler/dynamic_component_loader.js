@@ -123,7 +123,7 @@ export class DynamicComponentLoader {
   }
 
   /** Asserts that the type being dynamically instantiated is a Component. */
-  _assertTypeIsComponent(type:Type) {
+  _assertTypeIsComponent(type:Type):void {
     var annotation = this._directiveMetadataReader.read(type).annotation;
     if (!(annotation instanceof Component)) {
       throw new BaseException(`Could not load '${stringify(type)}' because it is not a component.`);

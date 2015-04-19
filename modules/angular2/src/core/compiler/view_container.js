@@ -27,17 +27,17 @@ export class ViewContainer {
     this._views = [];
   }
 
-  getRender() {
+  getRender():ViewContainerRef {
     return new ViewContainerRef(this.parentView.render, this.elementInjector.getBoundElementIndex());
   }
 
-  internalClearWithoutRender() {
+  internalClearWithoutRender():void {
     for (var i = this._views.length - 1; i >= 0; i--) {
       this._detachInjectors(i);
     }
   }
 
-  clear() {
+  clear():void {
     for (var i = this._views.length - 1; i >= 0; i--) {
       this.remove(i);
     }
@@ -47,22 +47,22 @@ export class ViewContainer {
     return this._views[index];
   }
 
-  get length() {
+  get length() /* :int */ {
     return this._views.length;
   }
 
-  _siblingInjectorToLinkAfter(index: number) {
+  _siblingInjectorToLinkAfter(index: number):eiModule.ElementInjector {
     if (index == 0) return null;
     return ListWrapper.last(this._views[index - 1].rootElementInjectors)
   }
 
-  hydrated() {
+  hydrated():boolean {
     return this.parentView.hydrated();
   }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex=-1, protoView:viewModule.AppProtoView = null, injector:Injector = null): viewModule.AppView {
+  create(atIndex:number=-1, protoView:viewModule.AppProtoView = null, injector:Injector = null): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length;
     if (!this.hydrated()) throw new BaseException(
         'Cannot create views on a dehydrated ViewContainer');
@@ -77,7 +77,7 @@ export class ViewContainer {
     return newView;
   }
 
-  insert(view, atIndex=-1): viewModule.AppView {
+  insert(view:viewModule.AppView, atIndex:number=-1): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length;
     this._insertInjectors(view, atIndex);
     this.parentView.changeDetector.addChild(view.changeDetector);
@@ -85,7 +85,7 @@ export class ViewContainer {
     return view;
   }
 
-  _insertInjectors(view, atIndex): viewModule.AppView {
+  _insertInjectors(view:viewModule.AppView, atIndex:number): viewModule.AppView {
     ListWrapper.insert(this._views, atIndex, view);
     this._linkElementInjectors(this._siblingInjectorToLinkAfter(atIndex), view);
 
@@ -96,7 +96,7 @@ export class ViewContainer {
     return ListWrapper.indexOf(this._views, view);
   }
 
-  remove(atIndex=-1) {
+  remove(atIndex:number=-1):void {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var view = this._views[atIndex];
     // opposite order as in create
@@ -110,7 +110,7 @@ export class ViewContainer {
    * The method can be used together with insert to implement a view move, i.e.
    * moving the dom nodes while the directives in the view stay intact.
    */
-  detach(atIndex=-1): viewModule.AppView {
+  detach(atIndex:number=-1): viewModule.AppView {
     if (atIndex == -1) atIndex = this._views.length - 1;
     var detachedView = this._detachInjectors(atIndex);
     detachedView.changeDetector.remove();
@@ -118,20 +118,20 @@ export class ViewContainer {
     return detachedView;
   }
 
-  _detachInjectors(atIndex): viewModule.AppView {
+  _detachInjectors(atIndex:number): viewModule.AppView {
     var detachedView = this.get(atIndex);
     ListWrapper.removeAt(this._views, atIndex);
     this._unlinkElementInjectors(detachedView);
     return detachedView;
   }
 
-  _linkElementInjectors(sibling, view) {
+  _linkElementInjectors(sibling, view:viewModule.AppView):void {
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
       view.rootElementInjectors[i].linkAfter(this.elementInjector, sibling);
     }
   }
 
-  _unlinkElementInjectors(view) {
+  _unlinkElementInjectors(view:viewModule.AppView):void {
     for (var i = 0; i < view.rootElementInjectors.length; ++i) {
       view.rootElementInjectors[i].unlink();
     }
