@@ -12,3 +12,6 @@ transformers:
     html_files:
       - web/src/naive_infinite_scroll/scroll_area.html
       - web/src/naive_infinite_scroll/scroll_item.html
+- $dart2js:
+    commandLineOptions:
+    - --show-package-warnings

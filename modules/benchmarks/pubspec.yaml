@@ -25,4 +25,8 @@ transformers:
         - web/src/tree/tree_benchmark.dart
 - $dart2js:
     minify: false
-    commandLineOptions: ['--dump-info', '--trust-type-annotations', '--trust-primitives']
+    commandLineOptions:
+    - --dump-info
+    - --trust-type-annotations
+    - --trust-primitives
+    - --show-package-warnings
