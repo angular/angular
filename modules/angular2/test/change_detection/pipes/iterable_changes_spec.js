@@ -4,8 +4,8 @@ import {IterableChanges} from 'angular2/src/change_detection/pipes/iterable_chan
 import {NumberWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
-import {TestIterable} from './iterable';
-import {iterableChangesAsString} from './util';
+import {TestIterable} from '../iterable';
+import {iterableChangesAsString} from '../util';
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
 export function main() {
