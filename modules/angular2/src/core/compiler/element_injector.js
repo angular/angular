@@ -59,7 +59,7 @@ class StaticKeys {
     this.elementRefId = Key.get(ElementRef).id;
   }
 
-  static instance() {
+  static instance():StaticKeys {
     if (isBlank(_staticKeys)) _staticKeys = new StaticKeys();
     return _staticKeys;
   }
@@ -77,17 +77,17 @@ export class TreeNode {
     if (isPresent(parent)) parent.addChild(this);
   }
 
-  _assertConsistency() {
+  _assertConsistency():void {
     this._assertHeadBeforeTail();
     this._assertTailReachable();
     this._assertPresentInParentList();
   }
 
-  _assertHeadBeforeTail() {
+  _assertHeadBeforeTail():void {
     if (isBlank(this._tail) && isPresent(this._head)) throw new BaseException('null tail but non-null head');
   }
 
-  _assertTailReachable() {
+  _assertTailReachable():void {
     if (isBlank(this._tail)) return;
     if (isPresent(this._tail._next)) throw new BaseException('node after tail');
     var p = this._head;
@@ -95,7 +95,7 @@ export class TreeNode {
     if (isBlank(p) && isPresent(this._tail)) throw new BaseException('tail not reachable.')
   }
 
-  _assertPresentInParentList() {
+  _assertPresentInParentList():void {
     var p = this._parent;
     if (isBlank(p)) {
       return;
@@ -108,7 +108,7 @@ export class TreeNode {
   /**
    * Adds a child to the parent node. The child MUST NOT be a part of a tree.
    */
-  addChild(child:TreeNode) {
+  addChild(child:TreeNode):void {
     if (isPresent(this._tail)) {
       this._tail._next = child;
       this._tail = child;
@@ -124,7 +124,7 @@ export class TreeNode {
    * Adds a child to the parent node after a given sibling.
    * The child MUST NOT be a part of a tree and the sibling must be present.
    */
-  addChildAfter(child:TreeNode, prevSibling:TreeNode) {
+  addChildAfter(child:TreeNode, prevSibling:TreeNode):void {
     this._assertConsistency();
     if (isBlank(prevSibling)) {
       var prevHead = this._head;
@@ -146,7 +146,7 @@ export class TreeNode {
   /**
    * Detaches a node from the parent's tree.
    */
-  remove() {
+  remove():void {
     this._assertConsistency();
     if (isBlank(this.parent)) return;
     var nextSibling = this._next;
@@ -209,7 +209,7 @@ export class DirectiveDependency extends Dependency {
     this._verify();
   }
 
-  _verify() {
+  _verify():void {
     var count = 0;
     if (isPresent(this.propSetterName)) count++;
     if (isPresent(this.queryDirective)) count++;

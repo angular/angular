@@ -15,7 +15,7 @@ export class CSSClass {
     this._domEl = ngEl.domElement;
   }
 
-  _toggleClass(className, enabled) {
+  _toggleClass(className, enabled):void {
     if (enabled) {
       DOM.addClass(this._domEl, className);
     } else {

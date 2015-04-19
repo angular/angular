@@ -97,7 +97,7 @@ export class Injector {
    * bindings.
    * @param `defaultBindings` Setting to true will auto-create bindings.
    */
-  static resolveAndCreate(bindings:List/*<ResolvedBinding|Binding|Type|List>*/, {defaultBindings=false}={}) {
+  static resolveAndCreate(bindings:List/*<ResolvedBinding|Binding|Type|List>*/, {defaultBindings=false}={}): Injector {
     return new Injector(Injector.resolve(bindings), null, defaultBindings);
   }
 
@@ -108,7 +108,7 @@ export class Injector {
    * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the {@link Injector}.
    * @param `defaultBindings` Setting to true will auto-create bindings.
    */
-  static fromResolvedBindings(bindings:List<ResolvedBinding>, {defaultBindings=false}={}) {
+  static fromResolvedBindings(bindings:List<ResolvedBinding>, {defaultBindings=false}={}): Injector {
     return new Injector(bindings, null, defaultBindings);
   }
 
@@ -133,7 +133,6 @@ export class Injector {
    * @returns an instance represented by the token. Throws if not found.
    */
   get(token) {
-
     return this._getByKey(Key.get(token), false, false, false);
   }
 
@@ -227,7 +226,7 @@ export class Injector {
     return ListWrapper.get(this._instances, key.id);
   }
 
-  _setInstance(key:Key, obj) {
+  _setInstance(key:Key, obj):void {
     ListWrapper.set(this._instances, key.id, obj);
   }
 
@@ -243,11 +242,11 @@ export class Injector {
     }
   }
 
-  _markAsConstructing(key:Key) {
+  _markAsConstructing(key:Key):void {
     this._setInstance(key, _constructing);
   }
 
-  _clear(key:Key) {
+  _clear(key:Key):void {
     this._setInstance(key, null);
   }
 }
@@ -325,7 +324,7 @@ class _AsyncInjectorStrategy {
     }
   }
 
-  instantiate(key:Key) {
+  instantiate(key:Key) /* Promise?? */ {
     var binding = this.injector._getBinding(key);
     if (isBlank(binding)) return _notFound;
 
@@ -395,7 +394,7 @@ function _createListOfBindings(flattenedBindings):List {
   return bindings;
 }
 
-function _flattenBindings(bindings:List, res:Map) {
+function _flattenBindings(bindings:List, res:Map):Map {
   ListWrapper.forEach(bindings, function (b) {
     if (b instanceof ResolvedBinding) {
       MapWrapper.set(res, b.key.id, b);

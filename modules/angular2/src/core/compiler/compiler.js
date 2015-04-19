@@ -26,7 +26,7 @@ export class CompilerCache {
     this._cache = MapWrapper.create();
   }
 
-  set(component:Type, protoView:AppProtoView) {
+  set(component:Type, protoView:AppProtoView):void {
     MapWrapper.set(this._cache, component, protoView);
   }
 
@@ -35,7 +35,7 @@ export class CompilerCache {
     return normalizeBlank(result);
   }
 
-  clear() {
+  clear():void {
     MapWrapper.clear(this._cache);
   }
 }
@@ -73,7 +73,7 @@ export class Compiler {
     this._protoViewFactory = protoViewFactory;
   }
 
-  _bindDirective(directiveTypeOrBinding) {
+  _bindDirective(directiveTypeOrBinding):DirectiveBinding {
     if (directiveTypeOrBinding instanceof DirectiveBinding) {
       return directiveTypeOrBinding;
     }
@@ -190,7 +190,7 @@ export class Compiler {
     }
   }
 
-  _buildRenderTemplate(component, view, directives) {
+  _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
     var componentUrl = this._urlResolver.resolve(
         this._appUrl, this._componentUrlMapper.getUrl(component)
     );
@@ -211,7 +211,7 @@ export class Compiler {
     });
   }
 
-  static buildRenderDirective(directiveBinding) {
+  static buildRenderDirective(directiveBinding):renderApi.DirectiveMetadata {
     var ann = directiveBinding.annotation;
     var renderType;
     var compileChildren = true;
@@ -254,7 +254,7 @@ export class Compiler {
     return directives;
   }
 
-  _flattenList(tree:List<any>, out:List<Type>) {
+  _flattenList(tree:List<any>, out:List<Type>):void {
     for (var i = 0; i < tree.length; i++) {
       var item = tree[i];
       if (ListWrapper.isList(item)) {

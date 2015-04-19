@@ -34,7 +34,7 @@ export class Locals {
     throw new BaseException(`Cannot find '${name}'`);
   }
 
-  set(name:string, value) {
+  set(name:string, value):void {
     // TODO(rado): consider removing this check if we can guarantee this is not
     // exposed to the public API.
     // TODO: vsavkin maybe it should check only the local map
@@ -45,7 +45,7 @@ export class Locals {
     }
   }
 
-  clearValues() {
+  clearValues():void {
     MapWrapper.clearValues(this.current);
   }
 }
