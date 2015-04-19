@@ -32,7 +32,7 @@ module.exports = function renderMarkdown(trimIndentation) {
 
     return 'pre(class="' + cssClasses.join(' ') + '")\n'
             + indentString('code.\n', ' ', 2)
-            + indentString(trimmedCode, ' ', 4);
+            + trimmedCode;
   };
 
   renderer.heading = function (text, level, raw) {
@@ -47,11 +47,6 @@ module.exports = function renderMarkdown(trimIndentation) {
   };
 
   return function(content) {
-    var html = '';
-    html2jade.convertHtml(content, {bodyless: true}, function (err, jade) {
-      html = indentString(jade, ' ', 2);
-    });
-
-    return marked(html, { renderer: renderer });
+    return marked(content, { renderer: renderer });
   };
 };

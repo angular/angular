@@ -6,8 +6,8 @@ p.
   <span class="location-badge">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></span>
   defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a>
 
-p.
-  {$ doc.description | marked $}
+:markdown
+{$ doc.description | indent(2, true) $}
 
 {%- if doc.constructorDoc or doc.members.length -%}
 .l-main-section
@@ -16,26 +16,32 @@ p.
 {%- if doc.constructorDoc %}
   .l-sub-section
     h3 {$ doc.constructorDoc.name $}
+
+    {% if doc.constructorDoc.params %}
     pre.prettyprint
       code.
-        {$ paramList(doc.constructorDoc.params) $}
+    {$ paramList(doc.constructorDoc.params) | indent(4, true) $}
+    {% endif %}
 
-    {% marked %}
-      {$ doc.constructorDoc.description $}
-    {% endmarked %}
+    :markdown
+{$ doc.constructorDoc.description | indent(6, true) $}
+
 
 {% endif -%}
 
 {%- for member in doc.members %}
   .l-sub-section
     h3 {$ member.name $}
+
+    {% if member.params %}
     pre.prettyprint
       code.
-        {$ paramList(member.params) $}
+    {$ paramList(member.params) | indent(4, true) $}
+    {% endif %}
 
-    {% marked %}
-      {$ member.description $}
-    {% endmarked %}
+    :markdown
+{$ member.description | indent(6, true) $}
+
 
 
 {% endfor %}

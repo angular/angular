@@ -4,6 +4,7 @@
 .l-main-section
   h2 {$ doc.name $} <span class="type">variable</span>
   p(class="module") exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
-  p.
-    {$ doc.description | marked $}
+
+  :markdown
+    {$ doc.description | escape | indent(2, true) $}
 {% endblock %}
