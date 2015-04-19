@@ -24,7 +24,7 @@ p.
     {% endif %}
 
     :markdown
-{$ doc.constructorDoc.description | indent(6, true) $}
+{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') $}
 
 
 {% endif -%}
@@ -40,7 +40,7 @@ p.
     {% endif %}
 
     :markdown
-{$ member.description | indent(6, true) $}
+{$ member.description | indent(6, true) | replace('## Example', '')  $}
 
 
 
