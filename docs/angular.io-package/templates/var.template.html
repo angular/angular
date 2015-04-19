@@ -1,8 +1,9 @@
 {% extends 'layout/base.template.html' %}
 
 {% block body %}
-<h1>{$ doc.name $} <span class="type">variable</span></h1>
-<p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></p>
-<p>{$ doc.description | marked $}</p>
-
+.l-main-section
+  h2 {$ doc.name $} <span class="type">variable</span>
+  p(class="module") exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+  p.
+    {$ doc.description | marked $}
 {% endblock %}

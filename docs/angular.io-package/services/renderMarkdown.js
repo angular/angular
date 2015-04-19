@@ -1,8 +1,13 @@
 var marked = require('marked');
 var Encoder = require('node-html-encoder').Encoder;
+var html2jade = require('html2jade');
+var indentString = require('indent-string');
+var S = require('string');
 
 // entity type encoder
 var encoder = new Encoder('entity');
+
+
 
 /**
  * @dgService renderMarkdown
@@ -25,20 +30,28 @@ module.exports = function renderMarkdown(trimIndentation) {
       cssClasses.push(this.options.langPrefix + escape(lang, true));
     }
 
-    return '<pre class="' + cssClasses.join(' ') + '"><code>'
-            + trimmedCode
-            + '\n</code></pre>\n';
+    return 'pre(class="' + cssClasses.join(' ') + '")\n'
+            + indentString('code.\n', ' ', 2)
+            + indentString(trimmedCode, ' ', 4);
   };
 
   renderer.heading = function (text, level, raw) {
     var headingText = marked.Renderer.prototype.heading.call(renderer, text, level, raw);
+    var title = 'h2 ' + S(headingText).stripTags().s;
+
     if (level==2) {
-      headingText = '<div class="l-main-section">\n' + headingText + '</div>';
+      title = '.l-main-section\n' + indentString(title, ' ', 2) ;
     }
-    return headingText;
+
+    return title;
   };
 
   return function(content) {
-    return marked(content, { renderer: renderer });
+    var html = '';
+    html2jade.convertHtml(content, {bodyless: true}, function (err, jade) {
+      html = indentString(jade, ' ', 2);
+    });
+
+    return marked(html, { renderer: renderer });
   };
 };

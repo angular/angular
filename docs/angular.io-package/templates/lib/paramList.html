@@ -1,7 +1,7 @@
 {% macro paramList(params) -%}
-  {%- if params -%}<span class="params">(
-    {%- for param in params -%}
-      <span class="param">{$ param | escape $}{% if not loop.last %}, {% endif %}</span>
-    {%- endfor %})</span>
+  {%- if params -%}
+      ({%- for param in params -%}
+        {$ param | escape $}{% if not loop.last %}, {% endif %}
+      {%- endfor %})
   {%- endif %}
 {%- endmacro -%}

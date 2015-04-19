@@ -2,29 +2,41 @@
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-<p class="module"><span class="location-badge">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></span><br/>
-defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a></p>
-<p>{$ doc.description | marked $}</p>
+p.
+  <span class="location-badge">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></span>
+  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a>
+
+p.
+  {$ doc.description | marked $}
 
 {%- if doc.constructorDoc or doc.members.length -%}
-<h2>Members</h2>
+.l-main-section
+  h2 Members
 
 {%- if doc.constructorDoc %}
-  <section class="member constructor">
-    <h1 class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
+  .l-sub-section
+    h3 {$ doc.constructorDoc.name $}
+    pre.prettyprint
+      code.
+        {$ paramList(doc.constructorDoc.params) $}
+
     {% marked %}
       {$ doc.constructorDoc.description $}
     {% endmarked %}
-  </section>
+
 {% endif -%}
 
 {%- for member in doc.members %}
-  <section class="member">
-    <h1 class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
+  .l-sub-section
+    h3 {$ member.name $}
+    pre.prettyprint
+      code.
+        {$ paramList(member.params) $}
+
     {% marked %}
       {$ member.description $}
     {% endmarked %}
-  </section>
+
 
 {% endfor %}
 {%- endif -%}
