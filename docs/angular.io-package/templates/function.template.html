@@ -2,11 +2,15 @@
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-h2(class="function export".
-  {$ doc.name $}{$ paramList(doc.parameters) $}
-p(class="module").
-  exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
-:markdown
-  {$ doc.description  | escape | indent(2, true)$}
+.l-main-section
+  h2(class="function export") {$ doc.name $}
+
+  p <code>{$ paramList(doc.parameters) $}</code>
+
+  p(class="module").
+    exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+
+  :markdown
+{$ doc.description | indent(4, true) $}
 
 {% endblock %}

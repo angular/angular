@@ -6,5 +6,5 @@
   p(class="module") exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
 
   :markdown
-    {$ doc.description | escape | indent(2, true) $}
+{$ doc.description | indent(4, true) $}
 {% endblock %}
