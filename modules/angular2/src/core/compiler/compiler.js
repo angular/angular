@@ -114,14 +114,21 @@ export class Compiler {
     }
 
     var template = this._templateResolver.resolve(component);
-    var directives = ListWrapper.map(
-      this._flattenDirectives(template),
-      (directive) => this._bindDirective(directive)
-    );
-    var renderTemplate = this._buildRenderTemplate(component, template, directives);
-    pvPromise = this._renderer.compile(renderTemplate).then( (renderPv) => {
-      return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
-    });
+    if (isPresent(template.renderer)) {
+      var directives = [];
+      pvPromise = this._renderer.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
+        return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
+      });
+    } else {
+      var directives = ListWrapper.map(
+        this._flattenDirectives(template),
+        (directive) => this._bindDirective(directive)
+      );
+      var renderTemplate = this._buildRenderTemplate(component, template, directives);
+      pvPromise = this._renderer.compile(renderTemplate).then( (renderPv) => {
+        return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
+      });
+    }
 
     MapWrapper.set(this._compiling, component, pvPromise);
     return pvPromise;

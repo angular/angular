@@ -33,6 +33,9 @@ import {If} from 'angular2/src/directives/if';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 
 export function main() {
   describe('integration tests', function() {
@@ -602,7 +605,7 @@ export function main() {
             DOM.dispatchEvent(view.rootNodes[1], DOM.createMouseEvent('click'));
             expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
             expect(DOM.getChecked(view.rootNodes[1])).toBeTruthy();
-            async.done();        
+            async.done();
           });
         }));
 
@@ -722,6 +725,18 @@ export function main() {
       }));
     });
 
+    it('should support imperative views',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      tb.overrideView(MyComp, new View({
+        template: '<simple-imp-cmp></simple-imp-cmp>',
+        directives: [SimpleImperativeViewComponent]
+      }));
+      tb.createView(MyComp).then((view) => {
+        expect(view.rootNodes).toHaveText('hello imp view');
+        async.done();
+      });
+    }));
+
     // Disabled until a solution is found, refs:
     // - https://github.com/angular/angular/issues/776
     // - https://github.com/angular/angular/commit/81f3f32
@@ -782,6 +797,21 @@ export function main() {
 
   });
 }
+
+@Component({
+  selector: 'simple-imp-cmp'
+})
+@View({
+  renderer: 'simple-imp-cmp-renderer'
+})
+class SimpleImperativeViewComponent {
+  done;
+
+  constructor(self:ElementRef, renderer:DirectDomRenderer) {
+    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [el('hello imp view')]);
+  }
+}
+
 
 @Decorator({
   selector: 'dynamic-vp'
@@ -888,7 +918,7 @@ class ComponentWithPipes {
 
 @Component({
   selector: 'child-cmp',
-  injectables: [MyService]
+  injectables: [MyService],
 })
 @View({
   directives: [MyDir],

@@ -79,6 +79,7 @@ function _getAppBindings() {
     bind(ShadowDomStrategy).toFactory(
         (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
         [StyleUrlResolver, appDocumentToken]),
+    bind(DirectDomRenderer).toClass(DirectDomRenderer),
     bind(Renderer).toClass(DirectDomRenderer),
     bind(rc.Compiler).toClass(rc.DefaultCompiler),
     rvf.ViewFactory,

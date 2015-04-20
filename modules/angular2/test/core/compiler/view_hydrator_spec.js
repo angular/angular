@@ -21,21 +21,24 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {Renderer, ViewRef} from 'angular2/src/render/api';
 import {ChangeDetector} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
-import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
+import {DirectiveBinding, ElementInjector, ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
+import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 
 export function main() {
   describe('AppViewHydrator', () => {
     var renderer;
     var reader;
     var hydrator;
+    var viewFactory;
 
     beforeEach( () => {
       renderer = new SpyRenderer();
       reader = new DirectiveMetadataReader();
-      hydrator = new AppViewHydrator(renderer);
+      viewFactory = new SpyViewFactory();
+      hydrator = new AppViewHydrator(renderer, viewFactory);
     });
 
     function createDirectiveBinding(type) {
@@ -81,14 +84,14 @@ export function main() {
     }
 
     function createEmptyView() {
-      var view = new AppView(renderer, null, null, createProtoView(), MapWrapper.create());
+      var view = new AppView(renderer, null, createProtoView(), MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
       view.init(changeDetector, [], [], [], []);
       return view;
     }
 
     function createHostView(pv, shadowView, componentInstance, elementInjectors = null) {
-      var view = new AppView(renderer, null, null, pv, MapWrapper.create());
+      var view = new AppView(renderer, null, pv, MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
 
       var eis;
@@ -117,7 +120,7 @@ export function main() {
         var view = createHostView(pv, null, null);
         var shadowView = createEmptyView();
         expect(
-          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
+          () => hydrator.hydrateDynamicComponentView(new ElementRef(null, view, 0, null), shadowView, null, null)
         ).toThrowError('There is no dynamic component directive at element 0');
       });
 
@@ -126,7 +129,7 @@ export function main() {
         var view = createHostView(pv, null, null);
         var shadowView = createEmptyView();
         expect(
-          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
+          () => hydrator.hydrateDynamicComponentView(new ElementRef(null, view, 0, null), shadowView, null, null)
         ).toThrowError('There is no dynamic component directive at element 0');
       });
 
@@ -135,9 +138,10 @@ export function main() {
         var shadowView = createEmptyView();
         var view = createHostView(pv, null, null);
         renderer.spy('createDynamicComponentView').andReturn([new ViewRef(), new ViewRef()]);
-        hydrator.hydrateDynamicComponentView(view, 0, shadowView, createDirectiveBinding(SomeComponent), null);
+        var elRef = new ElementRef(null, view, 0, null);
+        hydrator.hydrateDynamicComponentView(elRef, shadowView, createDirectiveBinding(SomeComponent), null);
         expect(
-          () => hydrator.hydrateDynamicComponentView(view, 0, shadowView, null, null)
+          () => hydrator.hydrateDynamicComponentView(elRef, shadowView, null, null)
         ).toThrowError('There already is a bound component at element 0');
       });
 
@@ -217,6 +221,7 @@ export function main() {
 
         expect(hostView.componentChildViews[0]).toBe(shadowView);
         expect(hostView.changeDetector.spy('removeShadowDomChild')).not.toHaveBeenCalled();
+        expect(viewFactory.spy('returnView')).not.toHaveBeenCalled();
       });
 
       it('should clear dynamic child components', () => {
@@ -225,6 +230,19 @@ export function main() {
 
         expect(hostView.componentChildViews[0]).toBe(null);
         expect(hostView.changeDetector.spy('removeShadowDomChild')).toHaveBeenCalledWith(shadowView.changeDetector);
+        expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(shadowView);
+      });
+
+      it('should clear imperatively added child components', () => {
+        createAndHydrate(createProtoView());
+        var impHostView = createHostView(createHostProtoView(createProtoView()), createEmptyView(), null);
+        shadowView.imperativeHostViews = [impHostView];
+
+        dehydrate(hostView);
+
+        expect(shadowView.imperativeHostViews).toEqual([]);
+        expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(impHostView);
+        expect(shadowView.changeDetector.spy('removeChild')).toHaveBeenCalledWith(impHostView.changeDetector);
       });
 
     });
@@ -253,5 +271,12 @@ class SpyChangeDetector extends SpyObject {
 @IMPLEMENTS(ElementInjector)
 class SpyElementInjector extends SpyObject {
   constructor(){super(ElementInjector);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
+
+@proxy
+@IMPLEMENTS(ViewFactory)
+class SpyViewFactory extends SpyObject {
+  constructor(){super(ViewFactory);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }

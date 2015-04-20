@@ -25,6 +25,9 @@ export class AppView {
   elementInjectors:List<ElementInjector>;
   changeDetector:ChangeDetector;
   componentChildViews: List<AppView>;
+  /// Host views that were added by an imperative view.
+  /// This is a dynamically growing / shrinking array.
+  imperativeHostViews: List<AppView>;
   viewContainers: List<ViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
@@ -46,7 +49,7 @@ export class AppView {
    */
   locals:Locals;
 
-  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, viewHydrator:vhModule.AppViewHydrator, proto:AppProtoView, protoLocals:Map) {
+  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
@@ -59,7 +62,8 @@ export class AppView {
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
     this.renderer = renderer;
     this.viewFactory = viewFactory;
-    this.viewHydrator = viewHydrator;
+    this.viewHydrator = null;
+    this.imperativeHostViews = [];
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List,
@@ -151,7 +155,7 @@ export class AppView {
         }
         var result = expr.eval(context, new Locals(this.locals, locals));
         if (isPresent(result)) {
-          allowDefaultBehavior = allowDefaultBehavior && result;  
+          allowDefaultBehavior = allowDefaultBehavior && result;
         }
       });
     }

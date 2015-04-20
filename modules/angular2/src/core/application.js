@@ -75,7 +75,7 @@ function _injectorBindings(appComponentType): List<Binding> {
         // We need to do this here to ensure that we create Testability and
         // it's ready on the window for users.
         registry.registerApplication(appElement, testability);
-        return dynamicComponentLoader.loadIntoNewLocation(appElement, appComponentAnnotatedType.type, injector);
+        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, appElement, injector);
       }, [DynamicComponentLoader, Injector, appElementToken, appComponentAnnotatedTypeToken,
         Testability, TestabilityRegistry]),
 
@@ -91,6 +91,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       bind(ShadowDomStrategy).toFactory(
           (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
           [StyleUrlResolver, appDocumentToken]),
+      DirectDomRenderer,
       bind(Renderer).toClass(DirectDomRenderer),
       bind(rc.Compiler).toClass(rc.DefaultCompiler),
       // TODO(tbosch): We need an explicit factory here, as
@@ -105,8 +106,8 @@ function _injectorBindings(appComponentType): List<Binding> {
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
       bind(ViewFactory).toFactory(
-        (capacity, renderer, appViewHydrator) => new ViewFactory(capacity, renderer, appViewHydrator),
-        [VIEW_POOL_CAPACITY, Renderer, AppViewHydrator]
+        (capacity, renderer) => new ViewFactory(capacity, renderer),
+        [VIEW_POOL_CAPACITY, Renderer]
       ),
       bind(VIEW_POOL_CAPACITY).toValue(10000),
       AppViewHydrator,

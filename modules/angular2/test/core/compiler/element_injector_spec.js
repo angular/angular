@@ -714,7 +714,7 @@ export function main() {
       beforeEach( () => {
         renderer = new FakeRenderer();
         var protoView = new AppProtoView(null, null);
-        view = new AppView(renderer, null, null, protoView, MapWrapper.create());
+        view = new AppView(renderer, null, protoView, MapWrapper.create());
         view.render = new ViewRef();
       });
 

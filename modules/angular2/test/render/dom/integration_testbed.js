@@ -46,7 +46,7 @@ export class IntegrationTestbed {
     this.eventPlugin = new FakeEventManagerPlugin();
     var eventManager = new EventManager([this.eventPlugin], new FakeVmTurnZone());
     var viewFactory = new ViewFactory(viewCacheCapacity, eventManager, shadowDomStrategy);
-    var viewHydrator = new RenderViewHydrator(eventManager, viewFactory);
+    var viewHydrator = new RenderViewHydrator(eventManager, viewFactory, shadowDomStrategy);
     this.renderer = new DirectDomRenderer(compiler, viewFactory, viewHydrator, shadowDomStrategy);
   }
 

@@ -26,26 +26,20 @@ var _staticKeys;
  * @exportedAs angular2/view
  */
 export class ElementRef {
+  hostView:viewModule.AppView;
+  boundElementIndex:number;
+  injector:Injector;
   elementInjector:ElementInjector;
 
-  constructor(elementInjector:ElementInjector){
+  constructor(elementInjector, hostView, boundElementIndex, injector){
     this.elementInjector = elementInjector;
-  }
-
-  get hostView() {
-    return this.elementInjector._preBuiltObjects.view;
+    this.hostView = hostView;
+    this.boundElementIndex = boundElementIndex;
+    this.injector = injector;
   }
 
   get viewContainer() {
     return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
-  }
-
-  get injector() {
-    return this.elementInjector._lightDomAppInjector;
-  }
-
-  get boundElementIndex() {
-    return this.elementInjector._proto.index;
   }
 }
 
@@ -673,7 +667,7 @@ export class ElementInjector extends TreeNode {
   }
 
   getElementRef() {
-    return new ElementRef(this);
+    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector);
   }
 
   getDynamicallyLoadedComponent() {

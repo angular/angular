@@ -5,7 +5,6 @@ import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import * as viewModule from './view';
 import {Renderer} from 'angular2/src/render/api';
-import {AppViewHydrator} from './view_hydrator';
 
 // TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
 export const VIEW_POOL_CAPACITY = 'ViewFactory.viewPoolCapacity';
@@ -15,13 +14,11 @@ export class ViewFactory {
   _poolCapacityPerProtoView:number;
   _pooledViewsPerProtoView:Map<viewModule.AppProtoView, List<viewModule.AppView>>;
   _renderer:Renderer;
-  _viewHydrator:AppViewHydrator;
 
-  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView, renderer:Renderer, viewHydrator:AppViewHydrator) {
+  constructor(@Inject(VIEW_POOL_CAPACITY) poolCapacityPerProtoView, renderer:Renderer) {
     this._poolCapacityPerProtoView = poolCapacityPerProtoView;
     this._pooledViewsPerProtoView = MapWrapper.create();
     this._renderer = renderer;
-    this._viewHydrator = viewHydrator;
   }
 
   getView(protoView:viewModule.AppProtoView):viewModule.AppView {
@@ -48,7 +45,7 @@ export class ViewFactory {
   }
 
   _createView(protoView:viewModule.AppProtoView): viewModule.AppView {
-    var view = new viewModule.AppView(this._renderer, this, this._viewHydrator, protoView, protoView.protoLocals);
+    var view = new viewModule.AppView(this._renderer, this, protoView, protoView.protoLocals);
     var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
       protoView.getVariableBindings(), protoView.getdirectiveRecords());
 

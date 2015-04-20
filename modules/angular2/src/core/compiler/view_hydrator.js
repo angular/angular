@@ -7,6 +7,7 @@ import * as viewModule from './view';
 import {BindingPropagationConfig, Locals} from 'angular2/change_detection';
 
 import * as renderApi from 'angular2/src/render/api';
+import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
 
 /**
  * A dehydrated view is a state of the view that allows it to be moved around
@@ -27,13 +28,17 @@ import * as renderApi from 'angular2/src/render/api';
 @Injectable()
 export class AppViewHydrator {
   _renderer:renderApi.Renderer;
+  _viewFactory:ViewFactory;
 
-  constructor(renderer:renderApi.Renderer) {
+  constructor(renderer:renderApi.Renderer, viewFactory:ViewFactory) {
     this._renderer = renderer;
+    this._viewFactory = viewFactory;
   }
 
-  hydrateDynamicComponentView(hostView:viewModule.AppView, boundElementIndex:number,
+  hydrateDynamicComponentView(location:eli.ElementRef,
       componentView:viewModule.AppView, componentDirective:eli.DirectiveBinding, injector:Injector) {
+    var hostView = location.hostView;
+    var boundElementIndex = location.boundElementIndex;
     var binder = hostView.proto.elementBinders[boundElementIndex];
     if (!binder.hasDynamicComponent()) {
       throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`);
@@ -84,16 +89,23 @@ export class AppViewHydrator {
     // parentView.componentChildViews[boundElementIndex] = null;
   }
 
-  hydrateInPlaceHostView(parentView:viewModule.AppView, hostElementSelector, hostView:viewModule.AppView, injector:Injector) {
+  hydrateInPlaceHostView(parentComponentLocation:eli.ElementRef,
+      hostElementSelector, hostView:viewModule.AppView, injector:Injector) {
     var parentRenderViewRef = null;
-    if (isPresent(parentView)) {
-      // Needed for user views
-      throw new BaseException('Not yet supported');
+    if (isPresent(parentComponentLocation)) {
+      var parentView = parentComponentLocation.hostView.componentChildViews[parentComponentLocation.boundElementIndex];
+      parentRenderViewRef = parentView.render;
+      parentView.changeDetector.addChild(hostView.changeDetector);
+      ListWrapper.push(parentView.imperativeHostViews, hostView);
+
+      if (isBlank(injector)) {
+        injector = parentComponentLocation.injector;
+      }
     }
+
     var binder = hostView.proto.elementBinders[0];
     var shadowDomAppInjector = this._createShadowDomAppInjector(binder.componentDirective, injector);
 
-    // render views
     var renderViewRefs = this._renderer.createInPlaceHostView(parentRenderViewRef, hostElementSelector, hostView.proto.render);
 
     this._viewHydrateRecurse(
@@ -101,11 +113,13 @@ export class AppViewHydrator {
     );
   }
 
-  dehydrateInPlaceHostView(parentView:viewModule.AppView, hostView:viewModule.AppView) {
+  dehydrateInPlaceHostView(parentComponentLocation:eli.ElementRef, hostView:viewModule.AppView) {
     var parentRenderViewRef = null;
-    if (isPresent(parentView)) {
-      // Needed for user views
-      throw new BaseException('Not yet supported');
+    if (isPresent(parentComponentLocation)) {
+      var parentView = parentComponentLocation.hostView.componentChildViews[parentComponentLocation.boundElementIndex];
+      parentRenderViewRef = parentView.render;
+      ListWrapper.remove(parentView.imperativeHostViews, hostView);
+      parentView.changeDetector.removeChild(hostView.changeDetector);
     }
     var render = hostView.render;
     this._viewDehydrateRecurse(hostView);
@@ -137,7 +151,7 @@ export class AppViewHydrator {
       appInjector: Injector, hostElementInjector: eli.ElementInjector,
       context: Object, locals:Locals):number {
     if (view.hydrated()) throw new BaseException('The view is already hydrated.');
-
+    view.viewHydrator = this;
     view.render = renderComponentViewRefs[renderComponentIndex++];
 
     view.context = context;
@@ -215,11 +229,21 @@ export class AppViewHydrator {
         this._viewDehydrateRecurse(componentView);
         var binder = view.proto.elementBinders[i];
         if (binder.hasDynamicComponent()) {
-          view.componentChildViews[i] = null;
           view.changeDetector.removeShadowDomChild(componentView.changeDetector);
+          view.componentChildViews[i] = null;
+          this._viewFactory.returnView(componentView);
         }
       }
     }
+
+    // imperativeHostViews
+    for (var i = 0; i < view.imperativeHostViews.length; i++) {
+      var hostView = view.imperativeHostViews[i];
+      this._viewDehydrateRecurse(hostView);
+      view.changeDetector.removeChild(hostView.changeDetector);
+      this._viewFactory.returnView(hostView);
+    }
+    view.imperativeHostViews = [];
 
     // elementInjectors
     for (var i = 0; i < view.elementInjectors.length; i++) {

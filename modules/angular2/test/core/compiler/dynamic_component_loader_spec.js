@@ -21,6 +21,7 @@ import {View} from 'angular2/src/core/annotations/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {If} from 'angular2/src/directives/if';
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 
 export function main() {
   describe('DynamicComponentLoader', function () {
@@ -134,7 +135,69 @@ export function main() {
           });
         }));
     });
+
+    describe('loading into a new location', () => {
+      it('should allow to create, update and destroy components',
+          inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<imp-ng-cmp #impview></imp-ng-cmp>',
+          directives: [ImperativeViewComponentUsingNgComponent]
+        }));
+        tb.createView(MyComp).then((view) => {
+          var userViewComponent = view.rawView.locals.get("impview");
+
+          userViewComponent.done.then((childComponentRef) => {
+            view.detectChanges();
+
+            expect(view.rootNodes).toHaveText('hello');
+
+            childComponentRef.instance.ctxProp = 'new';
+
+            view.detectChanges();
+
+            expect(view.rootNodes).toHaveText('new');
+
+            childComponentRef.dispose();
+
+            expect(view.rootNodes).toHaveText('');
+
+            async.done();
+          });
+        });
+      }));
+
+    });
+
   });
+}
+
+@Component({
+  selector: 'imp-ng-cmp'
+})
+@View({
+  renderer: 'imp-ng-cmp-renderer'
+})
+class ImperativeViewComponentUsingNgComponent {
+  done;
+
+  constructor(self:ElementRef, dynamicComponentLoader:DynamicComponentLoader, renderer:DirectDomRenderer) {
+    var div = el('<div></div>');
+    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [div]);
+    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, div, null);
+  }
+}
+
+@Component({
+  selector: 'child-cmp',
+})
+@View({
+  template: '{{ctxProp}}'
+})
+class ChildComp {
+  ctxProp:string;
+  constructor() {
+    this.ctxProp = 'hello';
+  }
 }
 
 
