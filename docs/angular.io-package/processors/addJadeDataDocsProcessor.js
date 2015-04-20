@@ -36,13 +36,16 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
       extraDocs.push({
         docType: 'jade-data',
         originalDoc: { id: 'angular2' },
-        data: _.map(modules, function(moduleDoc) {
+        data: _.map(_.filter(modules, 'public'), function(moduleDoc) {
           var dataDoc = {
             name: path.basename(moduleDoc.id),
             title: _.map(path.basename(moduleDoc.id).split('_'), function(part) {
               return titleCase(part);
             }).join(' ')
           };
+          if (!moduleDoc.public) {
+            console.log(moduleDoc.id);
+          }
           return dataDoc;
         })
       });
