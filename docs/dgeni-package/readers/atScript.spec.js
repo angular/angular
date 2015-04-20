@@ -33,7 +33,7 @@ describe('atScript file reader', function() {
 
 
   it('should provide a default pattern', function() {
-    expect(reader.defaultPattern).toEqual(/\.js$/);
+    expect(reader.defaultPattern).toEqual(/\.js|\.es6$/);
   });
 
 
