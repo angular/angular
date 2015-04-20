@@ -11,15 +11,23 @@ export class RenderProtoView {
   elementBinders:List<ElementBinder>;
   isTemplateElement:boolean;
   rootBindingOffset:int;
+  imperativeRendererId:string;
 
   constructor({
     elementBinders,
-    element
+    element,
+    imperativeRendererId
   }) {
     this.element = element;
     this.elementBinders = elementBinders;
-    this.isTemplateElement = DOM.isTemplateElement(this.element);
-    this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
+    this.imperativeRendererId = imperativeRendererId;
+    if (isPresent(imperativeRendererId)) {
+      this.rootBindingOffset = 0;
+      this.isTemplateElement = false;
+    } else {
+      this.isTemplateElement = DOM.isTemplateElement(this.element);
+      this.rootBindingOffset = (isPresent(this.element) && DOM.hasClass(this.element, NG_BINDING_CLASS)) ? 1 : 0;
+    }
   }
 
   mergeChildComponentProtoViews(componentProtoViews:List<RenderProtoView>) {

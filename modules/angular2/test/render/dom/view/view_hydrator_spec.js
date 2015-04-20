@@ -14,7 +14,7 @@ import {
   xit,
   SpyObject, proxy
 } from 'angular2/test_lib';
-import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
@@ -76,7 +76,7 @@ export function main() {
     function createHostView(pv, shadowDomView) {
       var view = new RenderView(pv, [el('<div></div>')],
         [], [el('<div></div>')], [null]);
-      viewFactory.setComponentView(view, 0, shadowDomView);
+      ViewFactory.setComponentView(shadowDomStrategy, view, 0, shadowDomView);
       return view;
     }
 
@@ -94,8 +94,8 @@ export function main() {
       shadowDomStrategy.spy('constructLightDom').andCallFake( (lightDomView, shadowDomView, el) => {
         return new SpyLightDom();
       });
-      viewFactory = new ViewFactory(1, eventManager, shadowDomStrategy);
-      viewHydrator = new RenderViewHydrator(eventManager, viewFactory);
+      viewFactory = new SpyViewFactory();
+      viewHydrator = new RenderViewHydrator(eventManager, viewFactory, shadowDomStrategy);
     });
 
     describe('hydrateDynamicComponentView', () => {
@@ -107,6 +107,59 @@ export function main() {
         viewHydrator.hydrateDynamicComponentView(hostView, 0, shadowView);
         var lightDomSpy:SpyLightDom = hostView.lightDoms[0];
         expect(lightDomSpy.spy('redistribute')).toHaveBeenCalled();
+      });
+
+    });
+
+    describe('hydrateInPlaceHostView', () => {
+
+      function createInPlaceHostView() {
+        var hostPv = createHostProtoView(createProtoView());
+        var shadowView = createEmptyView();
+        return createHostView(hostPv, shadowView);
+      }
+
+      it('should hydrate the view', () => {
+        var hostView = createInPlaceHostView();
+        viewHydrator.hydrateInPlaceHostView(null, hostView);
+
+        expect(hostView.hydrated).toBe(true);
+      });
+
+      it('should store the view in the parent view', () => {
+        var parentView = createEmptyView();
+        var hostView = createInPlaceHostView();
+
+        viewHydrator.hydrateInPlaceHostView(parentView, hostView);
+
+        expect(parentView.imperativeHostViews).toEqual([hostView]);
+
+      });
+
+    });
+
+    describe('dehydrateInPlaceHostView', () => {
+
+      function createAndHydrateInPlaceHostView(parentView) {
+        var hostPv = createHostProtoView(createProtoView());
+        var shadowView = createEmptyView();
+        var hostView = createHostView(hostPv, shadowView);
+        viewHydrator.hydrateInPlaceHostView(parentView, hostView);
+        return hostView;
+      }
+
+      it('should clear the host view', () => {
+        var parentView = createEmptyView();
+        var hostView = createAndHydrateInPlaceHostView(parentView);
+
+        var rootNodes = hostView.rootNodes;
+        expect(rootNodes[0].parentNode).toBeTruthy();
+
+        viewHydrator.dehydrateInPlaceHostView(parentView, hostView);
+
+        expect(parentView.imperativeHostViews).toEqual([]);
+        expect(rootNodes[0].parentNode).toBeFalsy();
+        expect(hostView.rootNodes).toEqual([]);
       });
 
     });
@@ -128,9 +181,12 @@ export function main() {
     describe('dehydrate... shared functionality', () => {
       var hostView;
 
-      function createAndHydrate(nestedProtoView, shadowView) {
+      function createAndHydrate(nestedProtoView, shadowView, imperativeHostView = null) {
         var hostPv = createHostProtoView(nestedProtoView);
         hostView = createHostView(hostPv, shadowView);
+        if (isPresent(imperativeHostView)) {
+          viewHydrator.hydrateInPlaceHostView(hostView, imperativeHostView);
+        }
 
         hydrate(hostView);
       }
@@ -152,15 +208,36 @@ export function main() {
 
         expect(hostView.componentChildViews[0]).toBe(shadowView);
         expect(shadowView.rootNodes[0].parentNode).toBeTruthy();
+        expect(viewFactory.spy('returnView')).not.toHaveBeenCalled();
       });
 
       it('should clear dynamic child components', () => {
         var shadowView = createEmptyView();
         createAndHydrate(null, shadowView);
+        expect(shadowView.rootNodes[0].parentNode).toBeTruthy();
+
         dehydrate(hostView);
 
         expect(hostView.componentChildViews[0]).toBe(null);
         expect(shadowView.rootNodes[0].parentNode).toBe(null);
+        expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(shadowView);
+      });
+
+      it('should clear imperatively added child components', () => {
+        var shadowView = createEmptyView();
+        createAndHydrate(createProtoView(), shadowView);
+        var impHostView = createHostView(createHostProtoView(createProtoView()), createEmptyView());
+        shadowView.imperativeHostViews = [impHostView];
+
+        var rootNodes = impHostView.rootNodes;
+        expect(rootNodes[0].parentNode).toBeTruthy();
+
+        dehydrate(hostView);
+
+        expect(shadowView.imperativeHostViews).toEqual([]);
+        expect(impHostView.rootNodes).toEqual([]);
+        expect(rootNodes[0].parentNode).toBeFalsy();
+        expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(impHostView);
       });
 
     });
@@ -189,3 +266,9 @@ class SpyLightDom extends SpyObject {
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
 
+@proxy
+@IMPLEMENTS(ViewFactory)
+class SpyViewFactory extends SpyObject {
+  constructor(){super(ViewFactory);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}

@@ -151,7 +151,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   void appendChild(Node el, Node node) {
     el.append(node);
   }
-  void removeChild(Element el, Node node) {
+  void removeChild(el, Node node) {
     node.remove();
   }
   void replaceChild(Node el, Node newNode, Node oldNode) {

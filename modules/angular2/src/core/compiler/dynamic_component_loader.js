@@ -70,15 +70,10 @@ export class DynamicComponentLoader {
 
     return this._compiler.compile(type).then(componentProtoView => {
       var componentView = this._viewFactory.getView(componentProtoView);
-      var hostView = location.hostView;
       this._viewHydrator.hydrateDynamicComponentView(
-        hostView, location.boundElementIndex, componentView, componentBinding, injector);
+        location, componentView, componentBinding, injector);
 
-      // TODO(vsavkin): return a component ref that dehydrates the component view and removes it
-      // from the component child views
-      // See ViewFactory.returnView
-      // See AppViewHydrator.dehydrateDynamicComponentView
-      var dispose = () => {throw "Not implemented";};
+      var dispose = () => {throw new BaseException("Not implemented");};
       return new ComponentRef(location, location.elementInjector.getDynamicallyLoadedComponent(), componentView, dispose);
     });
   }
@@ -87,19 +82,22 @@ export class DynamicComponentLoader {
    * Loads a component in the element specified by elementOrSelector. The loaded component receives
    * injection normally as a hosted view.
    */
-  loadIntoNewLocation(elementOrSelector:any, type:Type, injector:Injector = null):Promise<ComponentRef> {
+  loadIntoNewLocation(type:Type, parentComponentLocation:ElementRef, elementOrSelector:any,
+                      injector:Injector = null):Promise<ComponentRef> {
     this._assertTypeIsComponent(type);
 
     return  this._compiler.compileInHost(type).then(hostProtoView => {
       var hostView = this._viewFactory.getView(hostProtoView);
-      this._viewHydrator.hydrateInPlaceHostView(null, elementOrSelector, hostView, injector);
+      this._viewHydrator.hydrateInPlaceHostView(
+        parentComponentLocation, elementOrSelector, hostView, injector
+      );
 
-      // TODO(vsavkin): return a component ref that dehydrates the host view
-      // See ViewFactory.returnView
-      // See AppViewHydrator.dehydrateInPlaceHostView
       var newLocation = hostView.elementInjectors[0].getElementRef();
       var component = hostView.elementInjectors[0].getComponent();
-      var dispose = () => {throw "Not implemented";};
+      var dispose = () => {
+        this._viewHydrator.dehydrateInPlaceHostView(parentComponentLocation, hostView);
+        this._viewFactory.returnView(hostView);
+      };
       return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
     });
   }

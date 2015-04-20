@@ -58,6 +58,12 @@ export class ViewFactory {
   }
 
   _createView(protoView:pvModule.RenderProtoView, inplaceElement): viewModule.RenderView {
+    if (isPresent(protoView.imperativeRendererId)) {
+      return new viewModule.RenderView(
+        protoView, [], [], [], []
+      );
+    }
+
     var rootElementClone = isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
     var elementsWithBindingsDynamic;
     if (protoView.isTemplateElement) {
@@ -125,7 +131,7 @@ export class ViewFactory {
       // static child components
       if (binder.hasStaticComponent()) {
         var childView = this._createView(binder.nestedProtoView, null);
-        this.setComponentView(view, binderIdx, childView);
+        ViewFactory.setComponentView(this._shadowDomStrategy, view, binderIdx, childView);
       }
 
       // events
@@ -148,10 +154,10 @@ export class ViewFactory {
   // This method is used by the ViewFactory and the ViewHydrator
   // TODO(tbosch): change shadow dom emulation so that LightDom
   // instances don't need to be recreated by instead hydrated/dehydrated
-  setComponentView(hostView:viewModule.RenderView, elementIndex:number, componentView:viewModule.RenderView) {
+  static setComponentView(shadowDomStrategy:ShadowDomStrategy, hostView:viewModule.RenderView, elementIndex:number, componentView:viewModule.RenderView) {
     var element = hostView.boundElements[elementIndex];
-    var lightDom = this._shadowDomStrategy.constructLightDom(hostView, componentView, element);
-    this._shadowDomStrategy.attachTemplate(element, componentView);
+    var lightDom = shadowDomStrategy.constructLightDom(hostView, componentView, element);
+    shadowDomStrategy.attachTemplate(element, componentView);
     hostView.lightDoms[elementIndex] = lightDom;
     hostView.componentChildViews[elementIndex] = componentView;
   }

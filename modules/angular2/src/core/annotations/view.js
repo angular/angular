@@ -71,19 +71,28 @@ export class View {
    */
   directives:any; //List<Type>;
 
+  /**
+   * Specify a custom renderer for this View.
+   * If this is set, neither `template`, `templateURL` nor `directives` are used.
+   */
+  renderer:any; // string;
+
   @CONST()
   constructor({
       templateUrl,
       template,
-      directives
+      directives,
+      renderer
     }: {
       templateUrl: string,
       template: string,
-      directives: List<Type>
+      directives: List<Type>,
+      renderer: string
     })
   {
     this.templateUrl = templateUrl;
     this.template = template;
     this.directives = directives;
+    this.renderer = renderer;
   }
 }

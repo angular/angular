@@ -12,6 +12,7 @@ import {Compiler} from './compiler/compiler';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
 import {ProtoViewBuilder} from './view/proto_view_builder';
 import {DOM} from 'angular2/src/dom/dom_adapter';
+import {ViewContainer} from './view/view_container';
 
 function _resolveViewContainer(vc:api.ViewContainerRef) {
   return _resolveView(vc.view).getOrCreateViewContainer(vc.elementIndex);
@@ -90,6 +91,12 @@ export class DirectDomRenderer extends api.Renderer {
     return PromiseWrapper.resolve(hostProtoViewBuilder.build());
   }
 
+  createImperativeComponentProtoView(rendererId):Promise<api.ProtoViewDto> {
+    var protoViewBuilder = new ProtoViewBuilder(null);
+    protoViewBuilder.setImperativeRendererId(rendererId);
+    return PromiseWrapper.resolve(protoViewBuilder.build());
+  }
+
   compile(template:api.ViewDefinition):Promise<api.ProtoViewDto> {
     // Note: compiler already uses a DirectDomProtoViewRef, so we don't
     // need to do anything here
@@ -154,6 +161,21 @@ export class DirectDomRenderer extends api.Renderer {
     var parentView = _resolveView(parentViewRef);
     var hostView = _resolveView(hostViewRef);
     this._viewHydrator.dehydrateInPlaceHostView(parentView, hostView);
+  }
+
+  setImperativeComponentRootNodes(parentViewRef:api.ViewRef, elementIndex:number, nodes:List):void {
+    var parentView = _resolveView(parentViewRef);
+    var hostElement = parentView.boundElements[elementIndex];
+    var componentView = parentView.componentChildViews[elementIndex];
+    if (isBlank(componentView)) {
+      throw new BaseException(`There is no componentChildView at index ${elementIndex}`);
+    }
+    if (isBlank(componentView.proto.imperativeRendererId)) {
+      throw new BaseException(`This component view has no imperative renderer`);
+    }
+    ViewContainer.removeViewNodes(componentView);
+    componentView.rootNodes = nodes;
+    this._shadowDomStrategy.attachTemplate(hostElement, componentView);
   }
 
   setElementProperty(viewRef:api.ViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {

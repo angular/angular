@@ -50,6 +50,16 @@ export function main() {
       });
     }));
 
+    it('should create imperative proto views', inject([AsyncTestCompleter], (async) => {
+      createRenderer();
+      renderer.createImperativeComponentProtoView('someRenderId').then( (rootProtoView) => {
+        expect(rootProtoView.elementBinders).toEqual([]);
+
+        expect(rootProtoView.render.delegate.imperativeRendererId).toBe('someRenderId');
+        async.done();
+      });
+    }));
+
     it('should add a static component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
       renderer.createHostProtoView('someComponentId').then( (rootProtoView) => {
