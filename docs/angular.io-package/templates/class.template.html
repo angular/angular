@@ -20,7 +20,7 @@ p.
     {% if doc.constructorDoc.params %}
     pre.prettyprint
       code.
-    {$ paramList(doc.constructorDoc.params) | indent(4, true) $}
+        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) | indent(4, true) | trim $}
     {% endif %}
 
     :markdown
@@ -36,7 +36,7 @@ p.
     {% if member.params %}
     pre.prettyprint
       code.
-    {$ paramList(member.params) | indent(4, true) $}
+        {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
     {% endif %}
 
     :markdown
