@@ -2,6 +2,6 @@
  * @module
  * @public
  * @description
- * Errors thrown by the [Injector].
+ * Errors thrown by the {@link Injector}.
  */
 

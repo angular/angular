@@ -54,8 +54,8 @@ export class AbstractBindingError extends Error {
 }
 
 /**
- * Thrown when trying to retrieve a dependency by [Key] from [Injector], but the [Injector] does not have a [Binding]
- * for [Key].
+ * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the {@link Injector} does not have a
+ * {@link Binding} for {@link Key}.
  *
  * @exportedAs angular2/di_errors
  */
@@ -70,7 +70,7 @@ export class NoBindingError extends AbstractBindingError {
 }
 
 /**
- * Thrown when trying to retrieve an async [Binding] using the sync API.
+ * Thrown when trying to retrieve an async {@link Binding} using the sync API.
  *
  * ## Example
  *
@@ -151,7 +151,7 @@ export class InstantiationError extends AbstractBindingError {
 }
 
 /**
- * Thrown when an object other then [Binding] (or [Type]) is passed to [Injector] creation.
+ * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector} creation.
  *
  * @exportedAs angular2/di_errors
  */
@@ -170,7 +170,7 @@ export class InvalidBindingError extends Error {
 /**
  * Thrown when the class has no annotation information.
  *
- * Lack of annotation information prevents the [Injector] from determining which dependencies need to be injected into
+ * Lack of annotation information prevents the {@link Injector} from determining which dependencies need to be injected into
  * the constructor.
  *
  * @exportedAs angular2/di_errors

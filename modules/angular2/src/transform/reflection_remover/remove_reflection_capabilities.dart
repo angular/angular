@@ -9,10 +9,10 @@ import 'codegen.dart';
 import 'rewriter.dart';
 
 /// Finds the call to the Angular2 `ReflectionCapabilities` constructor
-/// in [reflectionEntryPoint] and replaces it with a call to
-/// `setupReflection` in [newEntryPoint].
+/// in `reflectionEntryPoint` and replaces it with a call to
+/// `setupReflection` in `newEntryPoint`.
 ///
-/// This only searches the code in [reflectionEntryPoint], not `part`s,
+/// This only searches the code in `reflectionEntryPoint`, not `part`s,
 /// `import`s, `export`s, etc.
 Future<String> removeReflectionCapabilities(AssetReader reader,
     AssetId reflectionEntryPoint, Iterable<AssetId> newEntryPoints) async {

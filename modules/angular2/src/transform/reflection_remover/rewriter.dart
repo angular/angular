@@ -16,9 +16,9 @@ class Rewriter {
       : _tester = tester == null ? const AstTester() : tester;
 
   /// Rewrites the provided code removing imports of the
-  /// [ReflectionCapabilities] library and instantiations of
-  /// [ReflectionCapabilities], as detected by the (potentially) provided
-  /// [AstTester].
+  /// {@link ReflectionCapabilities} library and instantiations of
+  /// {@link ReflectionCapabilities}, as detected by the (potentially) provided
+  /// {@link AstTester}.
   ///
   /// To the extent possible, this method does not change line numbers or
   /// offsets in the provided code to facilitate debugging via source maps.
@@ -86,7 +86,7 @@ class Rewriter {
 }
 
 /// Visitor responsible for rewriting the Angular 2 code which instantiates
-/// [ReflectionCapabilities] and removing its associated import.
+/// {@link ReflectionCapabilities} and removing its associated import.
 ///
 /// This breaks our dependency on dart:mirrors, which enables smaller code
 /// size and better performance.

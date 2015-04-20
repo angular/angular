@@ -56,7 +56,7 @@ bool _isNotDartDirective(UriBasedDirective directive) {
   return !stringLiteralToString(directive.uri).startsWith('dart:');
 }
 
-/// Maps each input [UriBasedDirective] to its associated `.ng_deps.dart`
+/// Maps each input {@link UriBasedDirective} to its associated `.ng_deps.dart`
 /// file, if it exists.
 Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
     AssetId entryPoint, Iterable<UriBasedDirective> directives) {

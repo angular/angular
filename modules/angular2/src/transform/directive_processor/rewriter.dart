@@ -9,24 +9,24 @@ import 'package:path/path.dart' as path;
 
 import 'visitors.dart';
 
-/// Generates a file registering all Angular 2 `Directive`s found in [code] in
-/// ngDeps format [TODO(kegluneq): documentation reference needed]. [path] is
-/// the path to the file (or asset) containing [code].
+/// Generates a file registering all Angular 2 `Directive`s found in {@link code} in
+/// ngDeps format {@link TODO(kegluneq): documentation reference needed]. [path} is
+/// the path to the file (or asset) containing {@link code}.
 ///
-/// If no Angular 2 `Directive`s are found in [code], returns the empty
-/// string unless [forceGenerate] is true, in which case an empty ngDeps
+/// If no Angular 2 `Directive`s are found in {@link code}, returns the empty
+/// string unless {@link forceGenerate} is true, in which case an empty ngDeps
 /// file is created.
 String createNgDeps(String code, String path,
     Map<AssetId, List<ClassDeclaration>> assetClasses) {
   // TODO(kegluneq): Shortcut if we can determine that there are no
-  // [Directive]s present, taking into account `export`s.
+  // {@link Directive}s present, taking into account `export`s.
   var writer = new PrintStringWriter();
   var visitor = new CreateNgDepsVisitor(writer, path, assetClasses);
   parseCompilationUnit(code, name: path).accept(visitor);
   return '$writer';
 }
 
-/// Visitor responsible for processing [CompilationUnit] and creating an
+/// Visitor responsible for processing {@link CompilationUnit} and creating an
 /// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final PrintWriter writer;
@@ -188,7 +188,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitPartOfDirective(PartOfDirective node) {
-    // TODO(kegluneq): Consider importing [node.libraryName].
+    // TODO(kegluneq): Consider importing node.libraryName.
     logger.warning('[${importPath}]: '
         'Found `part of` directive while generating ${DEPS_EXTENSION} file, '
         'Transform may fail due to missing imports in generated file.');

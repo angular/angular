@@ -4,7 +4,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:angular2/src/transform/common/names.dart';
 
-/// An object that checks for [ReflectionCapabilities] syntactically, that is,
+/// An object that checks for {@link ReflectionCapabilities} syntactically, that is,
 /// without resolution information.
 class AstTester {
   const AstTester();
@@ -17,7 +17,7 @@ class AstTester {
   }
 }
 
-/// An object that checks for [ReflectionCapabilities] using a fully resolved
+/// An object that checks for {@link ReflectionCapabilities} using a fully resolved
 /// Ast.
 class ResolvedTester implements AstTester {
   final ClassElement _forbiddenClass;

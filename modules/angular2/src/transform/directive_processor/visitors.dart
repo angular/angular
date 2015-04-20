@@ -4,7 +4,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
-/// `ToSourceVisitor` designed to accept [ConstructorDeclaration] nodes.
+/// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
 class _CtorTransformVisitor extends ToSourceVisitor {
   bool _withParameterAnnotations = true;
   bool _withParameterTypes = true;
@@ -12,7 +12,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
   final PrintWriter writer;
 
   /// Maps field names to their declared types. This is populated whenever
-  /// the listener visits a [ConstructorDeclaration] node.
+  /// the listener visits a {@link ConstructorDeclaration} node.
   final Map<String, TypeName> _fieldNameToType = {};
 
   _CtorTransformVisitor(PrintWriter writer)
@@ -39,8 +39,8 @@ class _CtorTransformVisitor extends ToSourceVisitor {
     }
   }
 
-  /// If [_withParameterTypes] is true, this method outputs [node]'s type. If
-  /// [_withParameterNames] is true, this method outputs [node]'s identifier.
+  /// If `_withParameterTypes` is true, this method outputs `node`'s type. If
+  /// `_withParameterNames` is true, this method outputs `node`'s identifier.
   Object _visitNormalFormalParameter(
       NodeList<Annotation> metadata, TypeName type, SimpleIdentifier name) {
     if (_withParameterAnnotations && metadata != null) {
@@ -144,7 +144,7 @@ class _CtorTransformVisitor extends ToSourceVisitor {
 }
 
 /// ToSourceVisitor designed to print 'parameters' values for Angular2's
-/// [registerType] calls.
+/// `registerType` calls.
 class ParameterTransformVisitor extends _CtorTransformVisitor {
   ParameterTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterNames = false;
@@ -178,7 +178,7 @@ class ParameterTransformVisitor extends _CtorTransformVisitor {
 }
 
 /// ToSourceVisitor designed to print 'factory' values for Angular2's
-/// [registerType] calls.
+/// `registerType` calls.
 class FactoryTransformVisitor extends _CtorTransformVisitor {
   FactoryTransformVisitor(PrintWriter writer) : super(writer) {
     _withParameterAnnotations = false;
@@ -200,8 +200,8 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
   }
 }
 
-/// ToSourceVisitor designed to print a [ClassDeclaration] node as a
-/// 'annotations' value for Angular2's [registerType] calls.
+/// ToSourceVisitor designed to print a `ClassDeclaration` node as a
+/// 'annotations' value for Angular2's `registerType` calls.
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final PrintWriter writer;
   AnnotationsTransformVisitor(PrintWriter writer)

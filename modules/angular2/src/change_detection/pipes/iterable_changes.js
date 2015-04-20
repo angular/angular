@@ -210,10 +210,10 @@ export class IterableChanges extends Pipe {
   /**
    * This is the core function which handles differences between collections.
    *
-   * - [record] is the record which we saw at this position last time. If null then it is a new
+   * - `record` is the record which we saw at this position last time. If null then it is a new
    *   item.
-   * - [item] is the current item in the collection
-   * - [index] is the position of the item in the collection
+   * - `item` is the current item in the collection
+   * - `index` is the position of the item in the collection
    */
   _mismatch(record:CollectionChangeRecord, item, index:int):CollectionChangeRecord {
     // The previous record after which we will append the current one.
@@ -284,9 +284,9 @@ export class IterableChanges extends Pipe {
   }
 
   /**
-   * Get rid of any excess [CollectionChangeRecord]s from the previous collection
+   * Get rid of any excess {@link CollectionChangeRecord}s from the previous collection
    *
-   * - [record] The first excess [CollectionChangeRecord].
+   * - `record` The first excess {@link CollectionChangeRecord}.
    */
   _truncate(record:CollectionChangeRecord) {
     // Anything after that needs to be removed;
@@ -588,7 +588,7 @@ class _DuplicateItemRecordList {
   }
 
   /**
-   * Remove one [CollectionChangeRecord] from the list of duplicates.
+   * Remove one {@link CollectionChangeRecord} from the list of duplicates.
    *
    * Returns whether the list of duplicates is empty.
    */
@@ -651,7 +651,7 @@ class _DuplicateMap {
   }
 
   /**
-   * Removes an [CollectionChangeRecord] from the list of duplicates.
+   * Removes a {@link CollectionChangeRecord} from the list of duplicates.
    *
    * The list of duplicates also is removed from the map if it gets empty.
    */

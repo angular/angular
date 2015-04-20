@@ -7,14 +7,14 @@ import {isPresent} from 'angular2/src/facade/lang';
 /**
  * Provides access to explicitly trigger change detection in an application.
  *
- * By default, [Zone] triggers change detection in Angular on each virtual machine (VM) turn. When testing, or in some
+ * By default, `Zone` triggers change detection in Angular on each virtual machine (VM) turn. When testing, or in some
  * limited application use cases, a developer can also trigger change detection with the `lifecycle.tick()` method.
  *
  * Each Angular application has a single `LifeCycle` instance.
  *
  * # Example
  *
- * This is a contrived example, since the bootstrap automatically runs inside of the [Zone], which invokes
+ * This is a contrived example, since the bootstrap automatically runs inside of the `Zone`, which invokes
  * `lifecycle.tick()` on your behalf.
  *
  * ```javascript

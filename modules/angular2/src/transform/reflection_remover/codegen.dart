@@ -25,7 +25,7 @@ class Codegen {
   /// Angular2 reflection statically.
   ///
   /// The code generated here should follow the example of code generated for
-  /// an [ImportDirective] node.
+  /// an {@link ImportDirective} node.
   String codegenImport() {
     var count = 0;
     return importUris
@@ -36,9 +36,9 @@ class Codegen {
   /// Generates code to call the method which sets up Angular2 reflection
   /// statically.
   ///
-  /// If [reflectorAssignment] is provided, it is expected to be the node
-  /// representing the [ReflectionCapabilities] assignment, and we will
-  /// attempt to parse the access of [reflector] from it so that [reflector] is
+  /// If `reflectorAssignment` is provided, it is expected to be the node
+  /// representing the {@link ReflectionCapabilities} assignment, and we will
+  /// attempt to parse the access of `reflector` from it so that `reflector` is
   /// properly prefixed if necessary.
   String codegenSetupReflectionCall(
       {AssignmentExpression reflectorAssignment}) {
@@ -58,7 +58,7 @@ class Codegen {
   }
 }
 
-/// A visitor whose job it is to find the access of [reflector].
+/// A visitor whose job it is to find the access of `reflector`.
 class _ReflectorVisitor extends Object with SimpleAstVisitor<Expression> {
   @override
   Expression visitAssignmentExpression(AssignmentExpression node) {

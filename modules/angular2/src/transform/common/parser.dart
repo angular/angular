@@ -13,8 +13,8 @@ import 'registered_type.dart';
 
 export 'registered_type.dart';
 
-/// A parser that reads `.ng_deps.dart` files (represented by [AssetId]s into
-/// easier to manage [NgDeps] files.
+/// A parser that reads `.ng_deps.dart` files (represented by {@link AssetId}s into
+/// easier to manage {@link NgDeps} files.
 class Parser {
   final AssetReader _reader;
   final _ParseNgDepsVisitor _visitor = new _ParseNgDepsVisitor();
@@ -28,7 +28,7 @@ class Parser {
   }
 
   /// Parses only the `.ng_deps.dart` file represented by `id`.
-  /// See also [parseRecursive].
+  /// See also {@link parseRecursive}.
   Future<NgDeps> parse(AssetId id) async {
     if (!(await _reader.hasInput(id))) return null;
     var ngDeps = new NgDeps(await _reader.readAsString(id));
@@ -37,9 +37,9 @@ class Parser {
     return ngDeps;
   }
 
-  /// Parses the `.ng_deps.dart` file represented by [id] into an [NgDeps]
-  /// object. All `.ng_deps.dart` files imported by [id] are then parsed. The
-  /// results are added to [allDeps].
+  /// Parses the `.ng_deps.dart` file represented by {@link id} into an {@link NgDeps}
+  /// object. All `.ng_deps.dart` files imported by {@link id} are then parsed. The
+  /// results are added to {@link allDeps}.
   Future<List<NgDeps>> _recurse(AssetId id,
       [List<NgDeps> allDeps, Set<AssetId> seen]) async {
     if (seen == null) seen = new Set<AssetId>();

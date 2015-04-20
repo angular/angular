@@ -820,7 +820,7 @@ export function main() {
       // comparison function to support user-defined definition of matching.
 
       //it('should support super class directives', () => {
-      //  var inj = injector([NeedsQuery, FancyCountingDirective], null, null, preBuildObjects);
+      //  var inj = injector[NeedsQuery, FancyCountingDirective], null, null, preBuildObjects);
       //
       //  expectDirectives(inj.get(NeedsQuery).query, FancyCountingDirective, [0]);
       //});

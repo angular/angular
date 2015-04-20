@@ -5,7 +5,7 @@ import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/parser.dart';
 
-/// Reads [DirectiveMetadata] from the `attributes` of `t`.
+/// Reads {@link DirectiveMetadata} from the `attributes` of `t`.
 DirectiveMetadata readDirectiveMetadata(RegisteredType t) {
   var visitor = new _DirectiveMetadataVisitor();
   t.annotations.accept(visitor);
@@ -27,7 +27,7 @@ num _getDirectiveType(String annotationName) {
 }
 
 /// Visitor responsible for processing the `annotations` property of a
-/// [RegisterType] object and pulling out [DirectiveMetadata].
+/// {@link RegisterType] object and pulling out [DirectiveMetadata}.
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
   DirectiveMetadata meta;
@@ -63,7 +63,7 @@ class _DirectiveMetadataVisitor extends Object
       return null;
     }
     var keyString = '${node.name.label}';
-    // TODO(kegluneq): Populate the other values in [DirectiveMetadata] once
+    // TODO(kegluneq): Populate the other values in {@link DirectiveMetadata} once
     // they are specified as `hostAttributes` and `hostSetters`.
     // See [https://github.com/angular/angular/issues/1244]
     switch (keyString) {
