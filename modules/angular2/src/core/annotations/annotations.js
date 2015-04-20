@@ -24,7 +24,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * - *Pre-existing Injectors*:
  *   - The terminal [Injector] cannot resolve dependencies. It either throws an error or, if the dependency was
  *     specified as `@Optional`, returns `null`.
- *   - The primordial injector resolves browser singleton resources, such as: cookies, title, location, and others.
+ *   - The platform injector resolves browser singleton resources, such as: cookies, title, location, and others.
  * - *Component Injectors*: Each `@Component` has its own [Injector], and they follow the same parent-child hierarchy
  *     as the components in the DOM.
  * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an [ElementInjector]
@@ -830,7 +830,7 @@ export class Decorator extends Directive {
  * @Viewport({
  *   selector: '[unless]',
  *   properties: {
- *     'condition': 'unless'
+ *     'unless': 'unless'
  *   }
  * })
  * export class Unless {
@@ -842,7 +842,7 @@ export class Decorator extends Directive {
  *     this.prevCondition = null;
  *   }
  *
- *   set condition(newCondition) {
+ *   set unless(newCondition) {
  *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
  *       this.prevCondition = true;
  *       this.viewContainer.clear();

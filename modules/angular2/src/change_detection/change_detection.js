@@ -7,15 +7,29 @@ import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector} from './interfaces';
 import {Injectable} from 'angular2/di';
 
+/**
+ * Structural diffing for `Object`s and `Map`s.
+ *
+ * @exportedAs angular2/pipes
+ */
+export var keyValDiff = [
+  new KeyValueChangesFactory(),
+  new NullPipeFactory()
+];
+
+/**
+ * Structural diffing for `Iterable` types such as `Array`s.
+ *
+ * @exportedAs angular2/pipes
+ */
+export var iterableDiff = [
+  new IterableChangesFactory(),
+  new NullPipeFactory()
+];
+
 export var defaultPipes = {
-  "iterableDiff" : [
-    new IterableChangesFactory(),
-    new NullPipeFactory()
-  ],
-  "keyValDiff" : [
-    new KeyValueChangesFactory(),
-    new NullPipeFactory()
-  ]
+  "iterableDiff" : iterableDiff,
+  "keyValDiff" : keyValDiff
 };
 
 /**

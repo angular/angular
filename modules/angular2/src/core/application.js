@@ -196,7 +196,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *
  *  1. It uses the component's `selector` property to locate the DOM element which needs to be upgraded into
  *     the angular component.
- *  2. It creates a new child injector (from the primordial injector) and configures the injector with the component's
+ *  2. It creates a new child injector (from the platform injector) and configures the injector with the component's
  *     `injectables`. Optionally, you can also override the injector configuration for an app by invoking
  *     `bootstrap` with the `componentInjectableBindings` argument.
  *  3. It creates a new [Zone] and connects it to the angular application's change detection domain instance.
@@ -226,12 +226,12 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * single change detection zone is created and therefore data can be shared across the applications.
  *
  *
- * ## Primordial Injector
+ * ## Platform Injector
  *
  * When working within a browser window, there are many singleton resources: cookies, title, location, and others.
  * Angular services that represent these resources must likewise be shared across all Angular applications that
- * occupy the same browser window.  For this reason, Angular creates exactly one global primordial injector which stores
- * all shared services, and each angular application injector has the primordial injector as its parent.
+ * occupy the same browser window.  For this reason, Angular creates exactly one global platform injector which stores
+ * all shared services, and each angular application injector has the platform injector as its parent.
  *
  * Each application has its own private injector as well. When there are multiple applications on a page, Angular treats
  * each application injector's services as private to that application.

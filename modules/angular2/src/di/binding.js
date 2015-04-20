@@ -172,7 +172,7 @@ export class Binding {
    *
    * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
    * function takes the resolved value. This shows that the [Injector] delays executing the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the 
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
    * [Injector.asyncGet] API.
    *
    */
@@ -293,7 +293,14 @@ export class ResolvedBinding {
 /**
  * Provides an API for imperatively constructing [Binding]s.
  *
- * This is only relevant for JavaScript.
+ * This is only relevant for JavaScript. See {@link BindingBuilder}.
+ *
+ * ## Example
+ *
+ * ```javascript
+ * bind(MyInterface).toClass(MyClass)
+ *
+ * ```
  *
  * @exportedAs angular2/di
  */
@@ -440,7 +447,7 @@ export class BindingBuilder {
    *
    * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
    * function takes the resolved value. This shows that the [Injector] delays executing of the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the 
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
    * [Injector.asyncGet] API.
    */
   toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
