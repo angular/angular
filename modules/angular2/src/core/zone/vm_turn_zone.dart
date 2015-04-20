@@ -3,6 +3,8 @@ library angular.zone;
 import 'dart:async' as async;
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
+import 'dart:mirrors';
+
 /**
  * A `Zone` wrapper that lets you schedule tasks after its private microtask queue is exhausted but
  * before the next "VM turn", i.e. event loop iteration.
@@ -26,15 +28,6 @@ class VmTurnZone {
   async.Zone _outerZone;
   async.Zone _innerZone;
 
-  // onRun depth
-  int _runningInTurn = 0;
-
-  // Number of pending microtasks in the inner zone
-  int _pendingInnerMicrotasks = 0;
-
-  // True when microtasks are scheduled in onTurnDone and an artifical turn needs to be created
-  bool _startFakeTurn = false;
-
   int _pendingMicrotasks = 0;
 
   bool _hasExecutedCodeInInnerZone = false;
@@ -51,16 +44,36 @@ class VmTurnZone {
    *               enabled in development mode as they significantly impact perf.
    */
   VmTurnZone({bool enableLongStackTrace}) {
-    _outerZone = async.Zone.current.fork(
-      specification: new async.ZoneSpecification(
-        scheduleMicrotask: _scheduleMicrotask,
-        run: _outerRun,
-        runUnary: _outerRunUnary,
-        runBinary: _outerRunBinary
-      ),
-      zoneValues: {#_name: 'outer'}
-    );
-    _innerZone = _createInnerZoneWithErrorHandling(enableLongStackTrace);
+    if (enableLongStackTrace) {
+      _outerZone = Chain.capture(
+        () {
+          return async.Zone.current.fork(
+              specification: new async.ZoneSpecification(
+                  scheduleMicrotask: _scheduleMicrotask,
+                  run: _outerRun,
+                  runUnary: _outerRunUnary,
+                  runBinary: _outerRunBinary
+                  //,handleUncaughtError: (self, parent, zone, error, trace) => null
+              ),
+              zoneValues: {#_name: 'outer'}
+          );
+        }, onError: _onErrorWithLongStackTrace);
+  } else {
+      _outerZone = async.Zone.current.fork(
+        specification: new async.ZoneSpecification(
+          scheduleMicrotask: _scheduleMicrotask,
+          run: _outerRun,
+          runUnary: _outerRunUnary,
+          runBinary: _outerRunBinary,
+          handleUncaughtError: (self, parent, zone, error, trace) => _onErrorWithoutLongStackTrace(error, trace)
+        ),
+        zoneValues: {#_name: 'outer'}
+      );
+    }
+
+
+    //_innerZone = _createInnerZoneWithErrorHandling(enableLongStackTrace);
+    _innerZone = _createInnerZone(_outerZone);
   }
 
   /**
@@ -115,18 +128,6 @@ class VmTurnZone {
    */
   dynamic runOutsideAngular(fn()) => _outerZone.run(fn);
 
-  async.Zone _createInnerZoneWithErrorHandling(bool enableLongStackTrace) {
-    if (enableLongStackTrace) {
-      return Chain.capture(() {
-        return _createInnerZone(_outerZone);
-      }, onError: _onErrorWithLongStackTrace);
-    } else {
-      return async.runZoned(() {
-        return _createInnerZone(_outerZone);
-      }, onError: _onErrorWithoutLongStackTrace);
-    }
-  }
-
   async.Zone _createInnerZone(async.Zone zone) {
     return zone.fork(
       specification: new async.ZoneSpecification(
@@ -136,72 +137,6 @@ class VmTurnZone {
       ),
       zoneValues: {#_name: 'inner'}
     );
-  }
-
-  dynamic _onRunBase(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
-    try {
-      _runningInTurn++;
-      // _onRunBase could be called recursively to execute a single macrotask but we only call
-      // _onTurnStart on the first call.
-      if ((_runningInTurn == 1 && _pendingInnerMicrotasks == 0 || _startFakeTurn) &&
-          _onTurnStart != null) {
-        _startFakeTurn = false;
-        parent.run(zone, _onTurnStart);
-      }
-      return parent.run(zone, fn);
-    } catch (e, s) {
-      // When _runningInTurn > 1, the error handler is called by the zone (via onError)
-      if (_onErrorHandler != null && _runningInTurn == 1) {
-        _onErrorHandler(e, [s.toString()]);
-      } else {
-        rethrow;
-      }
-    } finally {
-      _runningInTurn--;
-      // _onRunBase could be called recursively to execute a single macrotask but we only call
-      // _onTurnDone on the first call.
-      if (_runningInTurn == 0 && _pendingInnerMicrotasks == 0 && _onTurnDone != null) {
-        try {
-          parent.run(zone, _onTurnDone);
-        } catch (e, s) {
-          if (_onErrorHandler != null) {
-            _onErrorHandler(e, [s.toString()]);
-          } else {
-            rethrow;
-          }
-        }
-
-        // _onTurnDone might schedule more microtasks.
-        // In such a case, they will be executed as part of the current VM Turn. However _onTurnDone
-        // will be called after the microtasks are executed. We need to call _onTurnStart for
-        // symetry (Note that in such a case _onTurnStart..._onTurnEnd is actually executed in the
-        // current turn)
-        if (_pendingInnerMicrotasks > 0) {
-          _startFakeTurn = true;
-        }
-      }
-    }
-  }
-
-  dynamic _onRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) =>
-      _onRunBase(self, parent, zone, () => parent.run(zone, fn));
-
-  dynamic _onRunUnary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(args), args) =>
-      _onRunBase(self, parent, zone, () => parent.runUnary(zone, fn, args));
-
-  /**
-   * Called when a microtask is scheduled in the inner zone
-   */
-  void _onMicrotaskOld(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
-    _pendingInnerMicrotasks++;
-    var microtask = () {
-      try {
-        fn();
-      } finally {
-        _pendingInnerMicrotasks--;
-      }
-    };
-    parent.scheduleMicrotask(zone, microtask);
   }
 
   dynamic _innerRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
@@ -221,49 +156,39 @@ class VmTurnZone {
 
   void _maybeStartVmTurn(async.ZoneDelegate parent, async.Zone zone) {
     if (!_hasExecutedCodeInInnerZone) {
+
       _hasExecutedCodeInInnerZone = true;
       if (_onTurnStart != null) {
         _inTurnStart = true;
-
         parent.run(zone, _onTurnStart);
       }
     }
   }
 
-
   dynamic _outerRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
     try {
-      _runningInTurn++;
-      print('++++');
       return parent.run(zone, fn);
-    } catch(e, s) {
-      print('catch turn = $_runningInTurn');
+    } catch (e, trace) {
       if (_onErrorHandler != null) {
-        _onErrorHandler(e, [s.toString()]);
-      } else {
-        rethrow;
+        _onErrorHandler(e, [trace.toString()]);
       }
+      rethrow;
     } finally {
-      print('---');
-      _runningInTurn--;
-      if (_runningInTurn == 0) {
-        if (_pendingMicrotasks == 0) {
-          if (_onTurnDone != null && !_inTurnStart && _hasExecutedCodeInInnerZone) {
-            try {
-              parent.run(_innerZone, _onTurnDone);
-            } catch (e, s) {
-              if (_onErrorHandler != null) {
-                _onErrorHandler(e, [s.toString()]);
-              } else {
-                rethrow;
-              }
-            } finally {
-              _hasExecutedCodeInInnerZone = false;
+      if (_pendingMicrotasks == 0) {
+        if (_onTurnDone != null && !_inTurnStart && _hasExecutedCodeInInnerZone) {
+          try {
+            parent.run(_innerZone, _onTurnDone);
+          } catch (e, trace) {
+            if (_onErrorHandler != null) {
+              _onErrorHandler(e, [trace.toString()]);
             }
+            rethrow;
+          } finally {
+            _hasExecutedCodeInInnerZone = false;
           }
         }
-        _inTurnStart = false;
       }
+      _inTurnStart = false;
     }
   }
 
@@ -286,19 +211,21 @@ class VmTurnZone {
   }
 
   void _onErrorWithLongStackTrace(exception, Chain chain) {
+    print('+[_onErrorWithLongStackTrace]');
     final traces = chain.terse.traces.map((t) => t.toString()).toList();
     _onError(exception, traces, chain.traces[0]);
   }
 
   void _onErrorWithoutLongStackTrace(exception, StackTrace trace) {
+    print('+[_onErrorWithoutLongStackTrace]');
     _onError(exception, [trace.toString()], trace);
   }
 
   void _onError(exception, List<String> traces, StackTrace singleTrace) {
+    print('+[_onError]');
     if (_onErrorHandler != null) {
       _onErrorHandler(exception, traces);
-    } else {
-      _outerZone.handleUncaughtError(exception, singleTrace);
     }
+    throw exception;
   }
 }

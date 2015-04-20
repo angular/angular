@@ -123,10 +123,11 @@ oldtests() {
         zone.initCallbacks(onErrorHandler: saveStackTrace);
 
         macroTask(() {
-          zone.run(() {
-            print('-> throw');
-            throw new BaseException('aaa');
-          });
+          expect(() {
+            zone.run(() {
+              throw new BaseException('aaa');
+            });
+          }).toThrowError('aaa');
         });
 
         macroTask(() {
@@ -164,21 +165,23 @@ oldtests() {
 
       it('should produce long stack traces (when using microtasks)', inject(
           [AsyncTestCompleter], (async) {
-            zone.initCallbacks(onErrorHandler: saveStackTrace);
-            var c = PromiseWrapper.completer();
-            zone.run(() {
-              microTask(() {
-                microTask(() {
-                  c.resolve(null);
-                  throw new BaseException("ddd");
-                });
-              });
+
+        zone.initCallbacks(onErrorHandler: saveStackTrace);
+        var c = PromiseWrapper.completer();
+        zone.run(() {
+          microTask(() {
+            microTask(() {
+              c.resolve(null);
+              throw new BaseException("ddd");
             });
-            c.promise.then((_) {
-              expect(trace.length).toBeGreaterThan(1);
-              async.done();
-            });
-          }));
+          });
+        });
+
+        c.promise.then((_) {
+          expect(trace.length).toBeGreaterThan(1);
+          async.done();
+        });
+      }));
 
       it('should disable long stack traces', inject([AsyncTestCompleter], (async) {
         var zone = new VmTurnZone(enableLongStackTrace: false);
@@ -255,13 +258,15 @@ newTests() {
         onErrorHandler: (e, s) { errors.add(e); },
         onTurnDone: () { throw "fromOnTurnDone"; });
 
-//      expect(() {
-//        zone.run(() { });
-//      }).toThrowWith(message: 'fromOnTurnDone');
-
       macroTask(() {
-        zone.run(() {});
+        expect(() {
+          zone.run(() { });
+        }).toThrowWith(message: 'fromOnTurnDone');
       });
+
+//      macroTask(() {
+//        zone.run(() {});
+//      });
 
       macroTask(() {
         expect(errors).toEqual(["fromOnTurnDone"]);
