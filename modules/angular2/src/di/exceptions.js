@@ -140,13 +140,17 @@ export class CyclicDependencyError extends AbstractBindingError {
  * @exportedAs angular2/di_errors
  */
 export class InstantiationError extends AbstractBindingError {
+  cause;
+  causeKey;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(originalException, key) {
+  constructor(cause, key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
-        ` ORIGINAL ERROR: ${originalException}`;
+        ` ORIGINAL ERROR: ${cause}`;
     });
+    this.cause = cause;
+    this.causeKey = key;
   }
 }
 
