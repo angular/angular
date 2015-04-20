@@ -35,6 +35,12 @@ class VmTurnZone {
   // True when microtasks are scheduled in onTurnDone and an artifical turn needs to be created
   bool _startFakeTurn = false;
 
+  int _pendingMicrotasks = 0;
+
+  bool _hasExecutedCodeInInnerZone = false;
+
+  bool _inTurnStart = false;
+
   /**
    * Associates with this
    *
@@ -45,7 +51,15 @@ class VmTurnZone {
    *               enabled in development mode as they significantly impact perf.
    */
   VmTurnZone({bool enableLongStackTrace}) {
-    _outerZone = async.Zone.current;
+    _outerZone = async.Zone.current.fork(
+      specification: new async.ZoneSpecification(
+        scheduleMicrotask: _scheduleMicrotask,
+        run: _outerRun,
+        runUnary: _outerRunUnary,
+        runBinary: _outerRunBinary
+      ),
+      zoneValues: {#_name: 'outer'}
+    );
     _innerZone = _createInnerZoneWithErrorHandling(enableLongStackTrace);
   }
 
@@ -104,21 +118,24 @@ class VmTurnZone {
   async.Zone _createInnerZoneWithErrorHandling(bool enableLongStackTrace) {
     if (enableLongStackTrace) {
       return Chain.capture(() {
-        return _createInnerZone(async.Zone.current);
+        return _createInnerZone(_outerZone);
       }, onError: _onErrorWithLongStackTrace);
     } else {
       return async.runZoned(() {
-        return _createInnerZone(async.Zone.current);
+        return _createInnerZone(_outerZone);
       }, onError: _onErrorWithoutLongStackTrace);
     }
   }
 
   async.Zone _createInnerZone(async.Zone zone) {
-    return zone.fork(specification: new async.ZoneSpecification(
-        run: _onRun,
-        runUnary: _onRunUnary,
-        scheduleMicrotask: _onMicrotask
-    ));
+    return zone.fork(
+      specification: new async.ZoneSpecification(
+        run: _innerRun,
+        runUnary: _innerRunUnary,
+        runBinary: _innerRunBinary
+      ),
+      zoneValues: {#_name: 'inner'}
+    );
   }
 
   dynamic _onRunBase(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
@@ -175,13 +192,94 @@ class VmTurnZone {
   /**
    * Called when a microtask is scheduled in the inner zone
    */
-  void _onMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
+  void _onMicrotaskOld(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
     _pendingInnerMicrotasks++;
     var microtask = () {
       try {
         fn();
       } finally {
         _pendingInnerMicrotasks--;
+      }
+    };
+    parent.scheduleMicrotask(zone, microtask);
+  }
+
+  dynamic _innerRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
+    _maybeStartVmTurn(parent, zone);
+    return parent.run(zone, fn);
+  }
+
+  dynamic _innerRunUnary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(arg), arg) {
+    _maybeStartVmTurn(parent, zone);
+    return parent.runUnary(zone, fn, arg);
+  }
+
+  dynamic _innerRunBinary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(arg1, arg2), arg1, arg2) {
+    _maybeStartVmTurn(parent, zone);
+    return parent.runBinary(zone, fn, arg1, arg2);
+  }
+
+  void _maybeStartVmTurn(async.ZoneDelegate parent, async.Zone zone) {
+    if (!_hasExecutedCodeInInnerZone) {
+      _hasExecutedCodeInInnerZone = true;
+      if (_onTurnStart != null) {
+        _inTurnStart = true;
+
+        parent.run(zone, _onTurnStart);
+      }
+    }
+  }
+
+
+  dynamic _outerRun(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn()) {
+    try {
+      _runningInTurn++;
+      print('++++');
+      return parent.run(zone, fn);
+    } catch(e, s) {
+      print('catch turn = $_runningInTurn');
+      if (_onErrorHandler != null) {
+        _onErrorHandler(e, [s.toString()]);
+      } else {
+        rethrow;
+      }
+    } finally {
+      print('---');
+      _runningInTurn--;
+      if (_runningInTurn == 0) {
+        if (_pendingMicrotasks == 0) {
+          if (_onTurnDone != null && !_inTurnStart && _hasExecutedCodeInInnerZone) {
+            try {
+              parent.run(_innerZone, _onTurnDone);
+            } catch (e, s) {
+              if (_onErrorHandler != null) {
+                _onErrorHandler(e, [s.toString()]);
+              } else {
+                rethrow;
+              }
+            } finally {
+              _hasExecutedCodeInInnerZone = false;
+            }
+          }
+        }
+        _inTurnStart = false;
+      }
+    }
+  }
+
+  dynamic _outerRunUnary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(arg), arg) =>
+    _outerRun(self, parent, zone, () => fn(arg));
+
+  dynamic _outerRunBinary(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn(arg1, arg2), arg1, arg2) =>
+    _outerRun(self, parent, zone, () => fn(arg1, arg2));
+
+  void _scheduleMicrotask(async.Zone self, async.ZoneDelegate parent, async.Zone zone, fn) {
+    _pendingMicrotasks++;
+    var microtask = () {
+      try {
+        fn();
+      } finally {
+        _pendingMicrotasks--;
       }
     };
     parent.scheduleMicrotask(zone, microtask);

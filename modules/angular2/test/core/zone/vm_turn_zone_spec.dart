@@ -61,11 +61,20 @@ oldtests() {
         expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
       });
 
-      it('should call onTurnStart and onTurnDone before and after each top-level run', () {
-        zone.run(log.fn('run1'));
-        zone.run(log.fn('run2'));
-        expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
-      });
+      it('should call onTurnStart and onTurnDone before and after each top-level run',
+         inject([AsyncTestCompleter], (async) {
+        macroTask(() {
+          zone.run(log.fn('run1'));
+          zone.run(log.fn('run2'));
+        });
+
+        macroTask(() {
+
+          expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
+          async.done();
+        });
+
+      }));
 
       it('should call onTurnStart and onTurnDone before and after each turn',
       inject([AsyncTestCompleter], (async) {
@@ -115,6 +124,7 @@ oldtests() {
 
         macroTask(() {
           zone.run(() {
+            print('-> throw');
             throw new BaseException('aaa');
           });
         });
