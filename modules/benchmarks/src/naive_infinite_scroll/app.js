@@ -1,8 +1,6 @@
 import {int, isPresent} from 'angular2/src/facade/lang';
-import {reflector} from 'angular2/src/reflection/reflection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {bootstrap, Component, Viewport, View, ViewContainer, Compiler}
-    from 'angular2/angular2';
+import {Component, View} from 'angular2/angular2';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';

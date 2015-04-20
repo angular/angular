@@ -2,9 +2,9 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 
 // base model for RecordStore
 export class KeyModel {
-  _key: number;
-  constructor(key: number) {
-    this._key = key;
+  key:number;
+  constructor(k:number) {
+    this.key = k;
   }
 }
 
@@ -45,7 +45,7 @@ export class Store {
   }
 
   add(record: KeyModel) {
-    this.list.push(record);
+    ListWrapper.push(this.list, record);
   }
 
   remove(record: KeyModel) {
@@ -60,7 +60,7 @@ export class Store {
   spliceOut(record: KeyModel) {
     var i = this.indexFor(record);
     if( i > -1 ) {
-      return this.list.splice(i, 1)[0];
+      return ListWrapper.splice(this.list, i, 1)[0];
     }
     return null;
   }

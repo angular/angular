@@ -1,11 +1,5 @@
-import {int, FINAL} from 'angular2/src/facade/lang';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {Component, Viewport, View, ViewContainer, Compiler}
-    from 'angular2/angular2';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Component, View} from 'angular2/angular2';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Math} from 'angular2/src/facade/math';
 
 import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,

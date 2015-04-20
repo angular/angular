@@ -69,9 +69,9 @@ export class Attribute extends DependencyAnnotation {
 }
 
 /**
- * Specifies that a [QueryList] should be injected.
+ * Specifies that a {@link QueryList} should be injected.
  *
- * See: [QueryList] for usage and example.
+ * See {@link QueryList} for usage and example.
  *
  * @exportedAs angular2/annotations
  */

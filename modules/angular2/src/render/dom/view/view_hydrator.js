@@ -63,33 +63,21 @@ export class RenderViewHydrator {
   }
 
   hydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.RenderView) {
-    this._viewHydrateRecurse(view, viewContainer.hostLightDom);
+    this._viewHydrateRecurse(view, viewContainer.parentView.hostLightDom);
   }
 
   dehydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.RenderView) {
     this._viewDehydrateRecurse(view);
   }
 
-  _getViewDestLightDom(view, binderIndex) {
-    var binder = view.proto.elementBinders[binderIndex];
-    var destLightDom = null;
-    if (binder.parentIndex !== -1 && binder.distanceToParent === 1) {
-      destLightDom = view.lightDoms[binder.parentIndex];
-    }
-    return destLightDom;
-  }
-
   _viewHydrateRecurse(view, hostLightDom: ldModule.LightDom) {
     if (view.hydrated) throw new BaseException('The view is already hydrated.');
     view.hydrated = true;
+    view.hostLightDom = hostLightDom;
 
-    // viewContainers and content tags
-    for (var i = 0; i < view.viewContainers.length; i++) {
-      var vc = view.viewContainers[i];
-      var destLightDom = this._getViewDestLightDom(view, i);
-      if (isPresent(vc)) {
-        this._viewContainerHydrateRecurse(vc, destLightDom, hostLightDom);
-      }
+    // content tags
+    for (var i = 0; i < view.contentTags.length; i++) {
+      var destLightDom = view.getDirectParentLightDom(i);
       var ct = view.contentTags[i];
       if (isPresent(ct)) {
         ct.hydrate(destLightDom);
@@ -167,15 +155,10 @@ export class RenderViewHydrator {
       view.eventHandlerRemovers[i]();
     }
 
+    view.hostLightDom = null;
     view.eventHandlerRemovers = null;
     view.setEventDispatcher(null);
     view.hydrated = false;
-  }
-
-  _viewContainerHydrateRecurse(viewContainer, destLightDom: ldModule.LightDom, hostLightDom: ldModule.LightDom) {
-    viewContainer.hydrated = true;
-    viewContainer.hostLightDom = hostLightDom;
-    viewContainer.lightDom = destLightDom;
   }
 
   _viewContainerDehydrateRecurse(viewContainer) {
@@ -183,10 +166,6 @@ export class RenderViewHydrator {
       this._viewDehydrateRecurse(viewContainer.views[i]);
     }
     viewContainer.clear();
-
-    viewContainer.hostLightDom = null;
-    viewContainer.lightDom = null;
-    viewContainer.hydrated = false;
   }
 
 }

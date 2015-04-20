@@ -1,8 +1,6 @@
+// TODO: switch to proper enums when we support them.
 
-// TODO: this is not how TS&Dart enums are defined and it definitely won't
-//       work in Dart. Switch to proper enums when we support them.
-//export var KeyCodes = {
-//   SPACE: 32,
-//   UP: 38,
-//   DOWN: 40
-//};
+// Key codes
+export const KEY_SPACE = 32;
+export const KEY_UP = 38;
+export const KEY_DOWN = 40;

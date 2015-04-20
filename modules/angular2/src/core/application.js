@@ -105,8 +105,8 @@ function _injectorBindings(appComponentType): List<Binding> {
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
       bind(ViewFactory).toFactory(
-        (capacity, renderer) => new ViewFactory(capacity, renderer),
-        [VIEW_POOL_CAPACITY, Renderer]
+        (capacity, renderer, appViewHydrator) => new ViewFactory(capacity, renderer, appViewHydrator),
+        [VIEW_POOL_CAPACITY, Renderer, AppViewHydrator]
       ),
       bind(VIEW_POOL_CAPACITY).toValue(10000),
       AppViewHydrator,
@@ -196,10 +196,10 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *
  *  1. It uses the component's `selector` property to locate the DOM element which needs to be upgraded into
  *     the angular component.
- *  2. It creates a new child injector (from the primordial injector) and configures the injector with the component's
+ *  2. It creates a new child injector (from the platform injector) and configures the injector with the component's
  *     `injectables`. Optionally, you can also override the injector configuration for an app by invoking
  *     `bootstrap` with the `componentInjectableBindings` argument.
- *  3. It creates a new [Zone] and connects it to the angular application's change detection domain instance.
+ *  3. It creates a new `Zone` and connects it to the angular application's change detection domain instance.
  *  4. It creates a shadow DOM on the selected component's host element and loads the template into it.
  *  5. It instantiates the specified component.
  *  6. Finally, Angular performs change detection to apply the initial data bindings for the application.
@@ -214,7 +214,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  *
  * Angular creates a new application each time that the `bootstrap()` method is invoked. When multiple applications
  * are created for a page, Angular treats each application as independent within an isolated change detection and
- * [Zone] domain. If you need to share data between applications, use the strategy described in the next
+ * `Zone` domain. If you need to share data between applications, use the strategy described in the next
  * section, "Applications That Share Change Detection."
  *
  *
@@ -226,25 +226,25 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  * single change detection zone is created and therefore data can be shared across the applications.
  *
  *
- * ## Primordial Injector
+ * ## Platform Injector
  *
  * When working within a browser window, there are many singleton resources: cookies, title, location, and others.
  * Angular services that represent these resources must likewise be shared across all Angular applications that
- * occupy the same browser window.  For this reason, Angular creates exactly one global primordial injector which stores
- * all shared services, and each angular application injector has the primordial injector as its parent.
+ * occupy the same browser window.  For this reason, Angular creates exactly one global platform injector which stores
+ * all shared services, and each angular application injector has the platform injector as its parent.
  *
  * Each application has its own private injector as well. When there are multiple applications on a page, Angular treats
  * each application injector's services as private to that application.
  *
  *
  * # API
- * - [appComponentType]: The root component which should act as the application. This is a reference to a [Type]
+ * - `appComponentType`: The root component which should act as the application. This is a reference to a `Type`
  *   which is annotated with `@Component(...)`.
- * - [componentInjectableBindings]: An additional set of bindings that can be added to the [Component.injectables] to
- *   override default injection behavior.
- * - [errorReporter]: `function(exception:any, stackTrace:string)` a default error reporter for unhandled exceptions.
+ * - `componentInjectableBindings`: An additional set of bindings that can be added to `injectables` for the
+ * {@link Component} to override default injection behavior.
+ * - `errorReporter`: `function(exception:any, stackTrace:string)` a default error reporter for unhandled exceptions.
  *
- * Returns a [Promise] with the application`s private [Injector].
+ * Returns a `Promise` with the application`s private {@link Injector}.
  *
  * @exportedAs angular2/core
  */

@@ -1,4 +1,3 @@
-import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';

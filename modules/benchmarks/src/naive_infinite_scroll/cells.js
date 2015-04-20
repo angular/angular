@@ -1,9 +1,4 @@
-import {int} from 'angular2/src/facade/lang';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {bootstrap, Component, Viewport, View, ViewContainer, Compiler}
-    from 'angular2/angular2';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Component, View} from 'angular2/angular2';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST}
     from './common';

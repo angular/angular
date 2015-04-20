@@ -34,6 +34,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {If} from 'angular2/src/directives/if';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
 
 export function main() {
   describe('integration tests', function() {
@@ -367,7 +368,7 @@ export function main() {
 
           var value = view.rawView.locals.get('alice');
           expect(value).not.toBe(null);
-          expect(value.domElement.tagName.toLowerCase()).toEqual('div');
+          expect(value.tagName.toLowerCase()).toEqual('div');
 
           async.done();
         })
@@ -383,7 +384,7 @@ export function main() {
 
           var value = view.rawView.locals.get('superAlice');
           expect(value).not.toBe(null);
-          expect(value.domElement.tagName.toLowerCase()).toEqual('div');
+          expect(value.tagName.toLowerCase()).toEqual('div');
 
           async.done();
         })
@@ -590,6 +591,23 @@ export function main() {
           });
         }));
 
+        it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
+            directives: [DecoratorListeningDomEventPrevent, DecoratorListeningDomEventNoPrevent]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
+            expect(DOM.getChecked(view.rootNodes[1])).toBeFalsy();
+            DOM.dispatchEvent(view.rootNodes[0], DOM.createMouseEvent('click'));
+            DOM.dispatchEvent(view.rootNodes[1], DOM.createMouseEvent('click'));
+            expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
+            expect(DOM.getChecked(view.rootNodes[1])).toBeTruthy();
+            async.done();        
+          });
+        }));
+
         it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<div *if="ctxBoolProp" listener listenerother></div>',
@@ -694,6 +712,27 @@ export function main() {
         }));
       });
 
+      describe('dynamic ViewContainers', () => {
+
+        it('should allow to create a ViewContainer at any bound location',
+            inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
+            directives: [DynamicViewport]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            var dynamicVp = view.rawView.elementInjectors[0].get(DynamicViewport);
+            dynamicVp.done.then( (_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('dynamic greet');
+              async.done();
+            });
+          });
+        }));
+
+      });
+
       it('should support static attributes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<input static type="text" title>',
@@ -709,8 +748,49 @@ export function main() {
           async.done();
         });
       }));
+    });
 
+    describe("error handling", () => {
 
+      it('should specify a location of an error that happened during change detection (text)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '{{a.b}}'
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('{{a.b}} in MyComp'));
+          async.done();
+        })
+      }));
+
+      it('should specify a location of an error that happened during change detection (element property)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '<div [prop]="a.b"></div>'
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
+          async.done();
+        })
+      }));
+
+      it('should specify a location of an error that happened during change detection (directive property)',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          template: '<child-cmp [prop]="a.b"></child-cmp>',
+          directives: [ChildComp]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
+          async.done();
+        })
+      }));
     });
 
     // Disabled until a solution is found, refs:
@@ -774,8 +854,21 @@ export function main() {
   });
 }
 
-class DynamicallyCreatedComponentService {
+@Decorator({
+  selector: 'dynamic-vp'
+})
+class DynamicViewport {
+  done;
+  constructor(vc:ViewContainer, inj:Injector, compiler:Compiler) {
+    var myService = new MyService();
+    myService.greeting = 'dynamic greet';
+    this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
+      vc.create(0, hostPv, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
+    });
+  }
 }
+
+class DynamicallyCreatedComponentService {}
 
 @DynamicComponent({
   selector: 'dynamic-comp'
@@ -906,6 +999,19 @@ class ChildComp {
   constructor(service: MyService) {
     this.ctxProp = service.greeting;
     this.dirProp = null;
+  }
+}
+
+@Component({
+  selector: 'child-cmp-svc'
+})
+@View({
+  template: '{{ctxProp}}'
+})
+class ChildCompUsingService {
+  ctxProp:string;
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
   }
 }
 
@@ -1070,6 +1176,30 @@ class DecoratorListeningDomEventOther {
   onEvent(eventType: string) {
     globalCounter++;
     this.eventType = "other_" + eventType;
+  }
+}
+
+@Decorator({
+  selector: '[listenerprevent]',
+  hostListeners: {
+    'click': 'onEvent($event)'
+  }
+})
+class DecoratorListeningDomEventPrevent {
+  onEvent(event) {
+    return false;
+  }
+}
+
+@Decorator({
+  selector: '[listenernoprevent]',
+  hostListeners: {
+    'click': 'onEvent($event)'
+  }
+})
+class DecoratorListeningDomEventNoPrevent {
+  onEvent(event) {
+    return true;
   }
 }
 

@@ -1,11 +1,14 @@
+.DS_STORE
+
 # Don’t commit the following directories created by pub.
+packages
+pubspec.lock
+.pub
+
 /dist/
-packages/
 .buildlog
 node_modules
 bower_components
-.pub
-.DS_STORE
 
 # Or broccoli working directory
 tmp

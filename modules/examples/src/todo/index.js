@@ -39,7 +39,6 @@ class TodoApp {
     var target = $event.target;
     if(which === 13) {
       todo.title = target.value;
-      this.todoStore.save(todo);
       this.todoEdit = null;
     } else if (which === 27) {
       this.todoEdit = null;
@@ -63,7 +62,6 @@ class TodoApp {
     var isComplete = $event.target.checked;
     this.todoStore.list.forEach((todo) => {
       todo.completed = isComplete;
-      this.todoStore.save(todo);
     });
   }
 

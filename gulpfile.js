@@ -214,7 +214,6 @@ var CONFIG = {
   }
 };
 CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
-CONFIG.test.js.cjs.push('!**/core/application_spec.js'); //Disabled in nodejs because it relies on Zone.js
 CONFIG.test.js.cjs.push('!**/core/zone/vm_turn_zone_spec.js'); //Disabled in nodejs because it relies on Zone.js
 CONFIG.test.js.cjs.push('!**/render/dom/events/event_manager_spec.js'); //Disabled in nodejs because it relies on DOM events
 
@@ -352,24 +351,6 @@ gulp.task('serve/benchmarks.dart', pubserve(gulp, gulpPlugins, {
 
 gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
-  path: CONFIG.dest.dart + '/benchmarks_external'
-}));
-
-gulp.task('serve/examples.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
-  path: CONFIG.dest.dart + '/examples'
-}));
-
-gulp.task('serve/benchmarks.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
-  path: CONFIG.dest.dart + '/benchmarks'
-}));
-
-gulp.task('serve/benchmarks_external.dart.static', pubserve(gulp, gulpPlugins, {
-  command: DART_SDK.PUB,
-  mode: 'ngstatic',
   path: CONFIG.dest.dart + '/benchmarks_external'
 }));
 

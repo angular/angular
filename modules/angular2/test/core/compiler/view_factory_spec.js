@@ -35,7 +35,7 @@ export function main() {
     });
 
     function createViewFactory({capacity}):ViewFactory {
-      return new ViewFactory(capacity, renderer);
+      return new ViewFactory(capacity, renderer, null);
     }
 
     function createProtoChangeDetector() {
@@ -66,10 +66,10 @@ export function main() {
       return binder;
     }
 
-    it('should create views', () => {
+    it('should create views without cache', () => {
       var pv = createProtoView();
       var vf = createViewFactory({
-        capacity: 1
+        capacity: 0
       });
       expect(vf.getView(pv) instanceof AppView).toBe(true);
     });

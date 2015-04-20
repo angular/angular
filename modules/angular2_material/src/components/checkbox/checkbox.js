@@ -1,6 +1,7 @@
 import {Component, View, Attribute, PropertySetter} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
-import {KeyCodes} from 'angular2_material/src/core/constants'
+import {KEY_SPACE} from 'angular2_material/src/core/constants'
+import {KeyboardEvent} from 'angular2/src/facade/browser';
 
 @Component({
   selector: 'md-checkbox',
@@ -19,6 +20,9 @@ import {KeyCodes} from 'angular2_material/src/core/constants'
 export class MdCheckbox {
   /** Whether this checkbox is checked. */
   checked_: boolean;
+
+  /** Whether this checkbox is disabled. */
+  disabled_: boolean;
 
   /** Setter for `aria-checked` attribute. */
   ariaCheckedSetter: Function;
@@ -59,7 +63,7 @@ export class MdCheckbox {
   }
 
   onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KeyCodes.SPACE) {
+    if (event.keyCode == KEY_SPACE) {
       event.preventDefault();
       this.toggle(event);
     }

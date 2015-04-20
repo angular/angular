@@ -2,7 +2,9 @@ library angular2.transform.reflection_remover.rewriter;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/common/names.dart';
+import 'package:path/path.dart' as path;
 
 import 'ast_tester.dart';
 import 'codegen.dart';
@@ -11,14 +13,19 @@ class Rewriter {
   final String _code;
   final Codegen _codegen;
   final AstTester _tester;
+  final MirrorMode _mirrorMode;
+  final bool _writeStaticInit;
 
-  Rewriter(this._code, this._codegen, {AstTester tester})
-      : _tester = tester == null ? const AstTester() : tester;
+  Rewriter(this._code, this._codegen, {AstTester tester,
+      MirrorMode mirrorMode: MirrorMode.none, bool writeStaticInit: true})
+      : _mirrorMode = mirrorMode,
+        _writeStaticInit = writeStaticInit,
+        _tester = tester == null ? const AstTester() : tester;
 
   /// Rewrites the provided code removing imports of the
-  /// [ReflectionCapabilities] library and instantiations of
-  /// [ReflectionCapabilities], as detected by the (potentially) provided
-  /// [AstTester].
+  /// {@link ReflectionCapabilities} library and instantiations of
+  /// {@link ReflectionCapabilities}, as detected by the (potentially) provided
+  /// {@link AstTester}.
   ///
   /// To the extent possible, this method does not change line numbers or
   /// offsets in the provided code to facilitate debugging via source maps.
@@ -51,8 +58,12 @@ class Rewriter {
             'Found import prefix "${_codegen.prefix}" in source file.'
             ' Transform may not succeed.');
       }
-      buf.write(_commentedNode(node));
-      if (!importAdded) {
+      if (_mirrorMode != MirrorMode.none) {
+        buf.write(_importDebugReflectionCapabilities(node));
+      } else {
+        buf.write(_commentedNode(node));
+      }
+      if (!importAdded && _writeStaticInit) {
         buf.write(_codegen.codegenImport());
         importAdded = true;
       }
@@ -67,8 +78,19 @@ class Rewriter {
         node = node.parent;
       }
       buf.write(_code.substring(lastIdx, node.offset));
-      buf.write(_commentedNode(node));
-      if (!setupAdded) {
+      switch (_mirrorMode) {
+        case MirrorMode.debug:
+          buf.write(node);
+          break;
+        case MirrorMode.verbose:
+          buf.write(_instantiateVerboseReflectionCapabilities(assignNode));
+          break;
+        case MirrorMode.none:
+        default:
+          buf.write(_commentedNode(node));
+          break;
+      }
+      if (!setupAdded && _writeStaticInit) {
         buf.write(_codegen.codegenSetupReflectionCall(
             reflectorAssignment: assignNode));
         setupAdded = true;
@@ -79,14 +101,30 @@ class Rewriter {
     return buf.toString();
   }
 
+  String _instantiateVerboseReflectionCapabilities(
+      AssignmentExpression assignNode) {
+    if (assignNode.rightHandSide is! InstanceCreationExpression) {
+      return '$assignNode;';
+    }
+    var rhs = (assignNode.rightHandSide as InstanceCreationExpression);
+    return '${assignNode.leftHandSide} ${assignNode.operator} '
+        'new ${rhs.constructorName}(verbose: true);';
+  }
+
+  String _importDebugReflectionCapabilities(ImportDirective node) {
+    var uri = '${node.uri}';
+    uri = path.join(path.dirname(uri), 'debug_${path.basename(uri)}');
+    var asClause = node.prefix != null ? ' as ${node.prefix}' : '';
+    return 'import $uri$asClause;';
+  }
+
   String _commentedNode(AstNode node) {
-    // TODO(kegluneq): Return commented code once we generate all needed code.
     return '/*${_code.substring(node.offset, node.end)}*/';
   }
 }
 
 /// Visitor responsible for rewriting the Angular 2 code which instantiates
-/// [ReflectionCapabilities] and removing its associated import.
+/// {@link ReflectionCapabilities} and removing its associated import.
 ///
 /// This breaks our dependency on dart:mirrors, which enables smaller code
 /// size and better performance.

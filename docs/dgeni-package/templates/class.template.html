@@ -12,7 +12,7 @@ defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ do
 
 {%- if doc.constructorDoc %}
   <section class="member constructor">
-    <h1 class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
+    <h1 id="constructor" class="name">{$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) $}</h1>
     {% marked %}
       {$ doc.constructorDoc.description $}
     {% endmarked %}
@@ -21,7 +21,7 @@ defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ do
 
 {%- for member in doc.members %}{% if not member.private %}
   <section class="member">
-    <h1 class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
+    <h1 id="{$ member.name $}" class="name">{$ member.name $}{$ paramList(member.params) $}</h1>
     {% marked %}
       {$ member.description $}
     {% endmarked %}

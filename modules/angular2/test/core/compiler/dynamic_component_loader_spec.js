@@ -47,15 +47,15 @@ export function main() {
     }
 
     function createEmptyView() {
-      var view = new AppView(null, createProtoView(), MapWrapper.create());
-      view.init(null, [], [], [], [], []);
+      var view = new AppView(null, null, null, createProtoView(), MapWrapper.create());
+      view.init(null, [], [], [], []);
       return view;
     }
 
     function createElementRef(view, boundElementIndex) {
       var peli = new ProtoElementInjector(null, boundElementIndex, []);
       var eli = new ElementInjector(peli, null);
-      var preBuiltObjects = new PreBuiltObjects(view, null, null, null);
+      var preBuiltObjects = new PreBuiltObjects(view, null, null);
       eli.instantiateDirectives(null, null, null, preBuiltObjects);
       return new ElementRef(eli);
     }

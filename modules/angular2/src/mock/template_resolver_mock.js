@@ -19,7 +19,7 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Overrides the [View] for a component.
+   * Overrides the {@link View} for a component.
    *
    * @param {Type} component
    * @param {ViewDefinition} view
@@ -41,7 +41,7 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Overrides a directive from the component [View].
+   * Overrides a directive from the component {@link View}.
    *
    * @param {Type} component
    * @param {Type} from
@@ -61,11 +61,11 @@ export class MockTemplateResolver extends TemplateResolver {
   }
 
   /**
-   * Returns the [View] for a component:
-   * - Set the [View] to the overridden template when it exists or fallback to the default
-   *   [TemplateResolver], see [setView]
-   * - Override the directives, see [overrideTemplateDirective]
-   * - Override the @View definition, see [setInlineTemplate]
+   * Returns the {@link View} for a component:
+   * - Set the {@link View} to the overridden template when it exists or fallback to the default `TemplateResolver`,
+   *   see `setView`.
+   * - Override the directives, see `overrideTemplateDirective`.
+   * - Override the @View definition, see `setInlineTemplate`.
    *
    * @param component
    * @returns {ViewDefinition}

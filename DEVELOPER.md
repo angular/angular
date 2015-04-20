@@ -10,6 +10,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Running Tests Locally](#running-tests-locally)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
+* [Transforming Dart code](#transforming-dart-code)
 * [Debugging](#debugging)
 
 See the [contribution guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
@@ -212,6 +213,10 @@ Angular specific command line options when running protractor (e.g. force gc, ..
 
 For instructions on setting up Continuous Integration using Travis, see the instructions given
 [here](https://github.com/angular/angular.dart/blob/master/travis.md).
+
+## Transforming Dart code
+
+See the [wiki](//github.com/angular/angular/wiki/Angular-2-Dart-Transformer).
 
 ## Debugging
 

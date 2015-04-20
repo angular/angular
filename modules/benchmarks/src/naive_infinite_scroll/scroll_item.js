@@ -1,11 +1,5 @@
-import {int} from 'angular2/src/facade/lang';
-import {reflector} from 'angular2/src/reflection/reflection';
-import {Component, Viewport, View, ViewContainer, Compiler}
-    from 'angular2/angular2';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Component, View} from 'angular2/angular2';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/dom/dom_adapter';
-import {Math} from 'angular2/src/facade/math';
 import {CompanyNameComponent, OpportunityNameComponent,
     OfferingNameComponent, StageButtonsComponent, AccountCellComponent,
     FormattedCellComponent} from './cells';
@@ -14,7 +8,6 @@ import {Offering, ITEM_HEIGHT, COMPANY_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH,
     OFFERING_NAME_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH,
     KICKER_POINTS_WIDTH, STAGE_BUTTONS_WIDTH, BUNDLES_WIDTH, DUE_DATE_WIDTH,
     END_DATE_WIDTH, AAT_STATUS_WIDTH} from './common';
-import {generateOfferings} from './random_data';
 
 @Component({
   selector: 'scroll-item',

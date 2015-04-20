@@ -10,24 +10,30 @@ import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
 @proxy
 @IMPLEMENTS(RenderView)
 class FakeView {
+  boundElements;
   contentTags;
   viewContainers;
 
   constructor(containers = null) {
+    this.boundElements = [];
     this.contentTags = [];
     this.viewContainers = [];
     if (isPresent(containers)) {
       ListWrapper.forEach(containers, (c) => {
+        var boundElement = null;
+        var contentTag = null;
+        var vc = null;
         if (c instanceof FakeContentTag) {
-          ListWrapper.push(this.contentTags, c);
-        } else {
-          ListWrapper.push(this.contentTags, null);
+          contentTag = c;
+          boundElement = c.contentStartElement;
         }
         if (c instanceof FakeViewContainer) {
-          ListWrapper.push(this.viewContainers, c);
-        } else {
-          ListWrapper.push(this.viewContainers, null);
+          vc = c;
+          boundElement = c.templateElement;
         }
+        ListWrapper.push(this.contentTags, contentTag);
+        ListWrapper.push(this.viewContainers, vc);
+        ListWrapper.push(this.boundElements, boundElement);
       });
     }
   }
@@ -40,9 +46,9 @@ class FakeView {
 @proxy
 @IMPLEMENTS(ViewContainer)
 class FakeViewContainer {
-  templateElement;
   _nodes;
   _contentTagContainers;
+  templateElement;
 
   constructor(templateEl, nodes = null, views = null) {
     this.templateElement = templateEl;
@@ -78,7 +84,7 @@ class FakeContentTag {
   }
 
   insert(nodes){
-    this._nodes = ListWrapper.clone(nodes);
+    this._nodes = nodes;
   }
 
   nodes() {
@@ -209,6 +215,30 @@ export function main() {
         expect(toHtml(wildcard.nodes())).toEqual(["<a>1</a>", "<b>2</b>", "<a>3</a>"]);
         expect(toHtml(contentB.nodes())).toEqual([]);
       });
+
+      it("should remove all nodes if there are no content tags", () => {
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
+
+        var lightDom = new LightDom(lightDomView, new FakeView([]), lightDomEl);
+
+        lightDom.redistribute();
+
+        expect(DOM.childNodes(lightDomEl).length).toBe(0);
+      });
+
+      it("should remove all not projected nodes", () => {
+        var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>");
+        var bNode = DOM.childNodes(lightDomEl)[1];
+
+        var lightDom = new LightDom(lightDomView, new FakeView([
+          new FakeContentTag(null, "a")
+        ]), lightDomEl);
+
+        lightDom.redistribute();
+
+        expect(bNode.parentNode).toBe(null);
+      });
+
     });
   });
 }

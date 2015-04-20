@@ -26,7 +26,7 @@ export class CssSelector {
   static parse(selector:string): List<CssSelector> {
     var results = ListWrapper.create();
     var _addResult = (res, cssSel) => {
-      if (isPresent(cssSel.notSelector) && isBlank(cssSel.element) 
+      if (isPresent(cssSel.notSelector) && isBlank(cssSel.element)
         && ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
         cssSel.element = "*";
       }
@@ -276,7 +276,7 @@ export class SelectorMatcher {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }
-    
+
     var selectables = MapWrapper.get(map, name);
     var starSelectables = MapWrapper.get(map, "*");
     if (isPresent(starSelectables)) {

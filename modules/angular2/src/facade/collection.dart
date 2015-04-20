@@ -77,7 +77,9 @@ class StringMapWrapper {
   }
   static Map merge(Map a, Map b) {
     var m = new Map.from(a);
-    b.forEach((k, v) => m[k] = v);
+    if (b != null) {
+      b.forEach((k, v) => m[k] = v);
+    }
     return m;
   }
   static bool isEmpty(Map m) => m.isEmpty;
@@ -153,6 +155,12 @@ class ListWrapper {
   }
   static List slice(List l, int from, int to) {
     return l.sublist(from, to);
+  }
+  static List splice(List l, int from, int length) {
+    var to = from + length;
+    var sub = l.sublist(from, to);
+    l.removeRange(from, to);
+    return sub;
   }
   static void sort(List l, compareFn(a,b)) {
     l.sort(compareFn);

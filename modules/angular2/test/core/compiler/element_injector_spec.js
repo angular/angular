@@ -21,7 +21,7 @@ class DummyDirective extends Directive {
 
 @proxy
 @IMPLEMENTS(AppView)
-class DummyView extends SpyObject {noSuchMethod(m){super.noSuchMethod(m)}}
+class DummyView extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
 
 
 class SimpleDirective {
@@ -203,7 +203,7 @@ class TestNode extends TreeNode {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
 
   function humanize(tree, names:List) {
@@ -476,7 +476,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -602,28 +602,32 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(AppView)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
       it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null, null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, viewContainer, null));
+        var viewContainer = new ViewContainer(null, null, null);
+        var view = new DummyView();
+        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
+          return viewContainer;
+        });
+        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
 
         expect(inj.get(ViewContainer)).toEqual(viewContainer);
       });
 
       it('should return changeDetectorRef', function () {
         var cd = new DynamicChangeDetector(null, null, null, [], []);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, cd));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, cd));
 
         expect(inj.get(ChangeDetectorRef)).toBe(cd.ref);
       });
@@ -710,12 +714,12 @@ export function main() {
       beforeEach( () => {
         renderer = new FakeRenderer();
         var protoView = new AppProtoView(null, null);
-        view = new AppView(renderer, protoView, MapWrapper.create());
+        view = new AppView(renderer, null, null, protoView, MapWrapper.create());
         view.render = new ViewRef();
       });
 
       it('should be injectable and callable', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null, null);
+        var preBuildObject = new PreBuiltObjects(view, null, null);
         var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
         var component = inj.get(NeedsPropertySetter);
         component.setProp('foobar');
@@ -734,7 +738,7 @@ export function main() {
       });
 
       it('should be injectable and callable without specifying param type annotation', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null, null);
+        var preBuildObject = new PreBuiltObjects(view, null, null);
         var inj = injector([NeedsPropertySetterNoType], null, null, preBuildObject);
         var component = inj.get(NeedsPropertySetterNoType);
         component.setProp('foobar');
@@ -772,6 +776,16 @@ export function main() {
       it("should inject ElementRef", () => {
         var inj = injector([NeedsElementRef]);
         expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
+      });
+
+      it('should return the viewContainer from the view', () => {
+        var viewContainer = new ViewContainer(null, null, null);
+        var view = new DummyView();
+        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
+          return viewContainer;
+        });
+        var inj = injector([NeedsElementRef], null, null, new PreBuiltObjects(view, null, null));
+        expect(inj.get(NeedsElementRef).elementRef.viewContainer).toBe(viewContainer);
       });
     });
 

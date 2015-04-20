@@ -14,7 +14,7 @@ import {ProtoViewBuilder} from './view/proto_view_builder';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 function _resolveViewContainer(vc:api.ViewContainerRef) {
-  return _resolveView(vc.view).viewContainers[vc.elementIndex];
+  return _resolveView(vc.view).getOrCreateViewContainer(vc.elementIndex);
 }
 
 function _resolveView(viewRef:DirectDomViewRef) {

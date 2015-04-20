@@ -200,7 +200,7 @@ class Html5LibDomAdapter implements DomAdapter {
   String tagName(element) => element.localName;
 
   attributeMap(element) {
-    // `attributes` keys can be [AttributeName]s.
+    // `attributes` keys can be {@link AttributeName}s.
     var map = <String, String>{};
     element.attributes.forEach((key, value) {
       map['$key'] = value;

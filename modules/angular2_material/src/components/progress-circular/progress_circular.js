@@ -1,6 +1,4 @@
 import {Component, View} from 'angular2/angular2';
-import {isPresent} from 'angular2/src/facade/lang';
-
 
 @Component({
   selector: 'md-progress-circular'

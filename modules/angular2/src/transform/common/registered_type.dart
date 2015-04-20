@@ -19,7 +19,7 @@ class RegisteredType {
   RegisteredType._(this.typeName, this.registerMethod, this.factoryFn,
       this.parameters, this.annotations);
 
-  /// Creates a [RegisteredType] given a [MethodInvocation] node representing
+  /// Creates a {@link RegisteredType} given a {@link MethodInvocation} node representing
   /// a call to `registerType`.
   factory RegisteredType.fromMethodInvocation(MethodInvocation registerMethod) {
     var visitor = new _ParseRegisterTypeVisitor();

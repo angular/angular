@@ -35,7 +35,7 @@ export function main() {
     it('should attach the view nodes to the shadow root', () => {
       var host = el('<div><span>original content</span></div>');
       var nodes = el('<div>view</div>');
-      var view = new RenderView(null, [nodes], [], [], [], []);
+      var view = new RenderView(null, [nodes], [], [], []);
 
       strategy.attachTemplate(host, view);
       var shadowRoot = DOM.getShadowRoot(host);

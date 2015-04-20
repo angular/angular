@@ -3,7 +3,6 @@ library tree_benchmark_ng10;
 
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory.dart';
-import 'dart:html';
 import 'package:angular2/src/test_lib/benchmark_util.dart';
 
 setup() {

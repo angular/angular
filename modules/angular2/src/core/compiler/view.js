@@ -8,6 +8,8 @@ import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {ViewContainer} from './view_container';
 import * as renderApi from 'angular2/src/render/api';
+import * as vfModule from './view_factory';
+import * as vhModule from './view_hydrator';
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
@@ -17,7 +19,6 @@ import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
 // @IMPLEMENTS(renderApi.EventDispatcher)
 export class AppView {
-
   render:renderApi.ViewRef;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
@@ -28,6 +29,8 @@ export class AppView {
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
   renderer: renderApi.Renderer;
+  viewFactory: vfModule.ViewFactory;
+  viewHydrator: vhModule.AppViewHydrator;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
@@ -43,28 +46,38 @@ export class AppView {
    */
   locals:Locals;
 
-  constructor(renderer:renderApi.Renderer, proto:AppProtoView, protoLocals:Map) {
+  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, viewHydrator:vhModule.AppViewHydrator, proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
     this.elementInjectors = null;
     this.rootElementInjectors = null;
     this.componentChildViews = null;
-    this.viewContainers = null;
+    this.viewContainers = ListWrapper.createFixedSize(this.proto.elementBinders.length);
     this.preBuiltObjects = null;
     this.context = null;
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
     this.renderer = renderer;
+    this.viewFactory = viewFactory;
+    this.viewHydrator = viewHydrator;
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List,
-      viewContainers:List, preBuiltObjects:List, componentChildViews:List) {
+      preBuiltObjects:List, componentChildViews:List) {
     this.changeDetector = changeDetector;
     this.elementInjectors = elementInjectors;
     this.rootElementInjectors = rootElementInjectors;
-    this.viewContainers = viewContainers;
     this.preBuiltObjects = preBuiltObjects;
     this.componentChildViews = componentChildViews;
+  }
+
+  getOrCreateViewContainer(boundElementIndex:number) {
+    var viewContainer = this.viewContainers[boundElementIndex];
+    if (isBlank(viewContainer)) {
+      viewContainer = new ViewContainer(this, this.proto.elementBinders[boundElementIndex].nestedProtoView, this.elementInjectors[boundElementIndex]);
+      this.viewContainers[boundElementIndex] = viewContainer;
+    }
+    return viewContainer;
   }
 
   setLocal(contextName: string, value) {
@@ -118,17 +131,17 @@ export class AppView {
   }
 
   // implementation of EventDispatcher#dispatchEvent
-  dispatchEvent(
-    elementIndex:number, eventName:string, locals:Map<string, any>
-  ):void {
+  // returns false if preventDefault must be applied to the DOM event
+  dispatchEvent(elementIndex:number, eventName:string, locals:Map<string, any>): boolean {
     // Most of the time the event will be fired only when the view is in the live document.
     // However, in a rare circumstance the view might get dehydrated, in between the event
     // queuing up and firing.
+    var allowDefaultBehavior = true;
     if (this.hydrated()) {
       var elBinder = this.proto.elementBinders[elementIndex];
-      if (isBlank(elBinder.hostListeners)) return;
+      if (isBlank(elBinder.hostListeners)) return allowDefaultBehavior;
       var eventMap = elBinder.hostListeners[eventName];
-      if (isBlank(eventMap)) return;
+      if (isBlank(eventMap)) return allowDefaultBehavior;
       MapWrapper.forEach(eventMap, (expr, directiveIndex) => {
         var context;
         if (directiveIndex === -1) {
@@ -136,9 +149,13 @@ export class AppView {
         } else {
           context = this.elementInjectors[elementIndex].getDirectiveAtIndex(directiveIndex);
         }
-        expr.eval(context, new Locals(this.locals, locals));
+        var result = expr.eval(context, new Locals(this.locals, locals));
+        if (isPresent(result)) {
+          allowDefaultBehavior = allowDefaultBehavior && result;  
+        }
       });
     }
+    return allowDefaultBehavior;
   }
 }
 

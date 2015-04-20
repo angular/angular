@@ -1,6 +1,5 @@
 import {bootstrap, Component, View} from 'angular2/angular2';
 import {MdGridList, MdGridTile} from 'angular2_material/src/components/grid_list/grid_list'
-import {MdTheme} from 'angular2_material/src/core/theme'
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';

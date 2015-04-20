@@ -26,11 +26,11 @@ function constructResolvingPath(keys:List) {
 
 
 /**
- * Base class for all errors arising from missconfigured bindings.
+ * Base class for all errors arising from misconfigured bindings.
  *
  * @exportedAs angular2/di_errors
  */
-export class ProviderError extends Error {
+export class AbstractBindingError extends Error {
   keys:List;
   constructResolvingMessage:Function;
   message;
@@ -54,12 +54,12 @@ export class ProviderError extends Error {
 }
 
 /**
- * Thrown when trying to retrieve a dependency by [Key] from [Injector], but [Injector] does not have a [Binding] for
- * said [Key].
+ * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the {@link Injector} does not have a
+ * {@link Binding} for {@link Key}.
  *
  * @exportedAs angular2/di_errors
  */
-export class NoProviderError extends ProviderError {
+export class NoBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -70,7 +70,7 @@ export class NoProviderError extends ProviderError {
 }
 
 /**
- * Throw when trying to retrieve async [Binding] using sync API.
+ * Thrown when trying to retrieve an async {@link Binding} using the sync API.
  *
  * ## Example
  *
@@ -88,12 +88,12 @@ export class NoProviderError extends ProviderError {
  * }).toThrowError(AsycBindingError);
  * ```
  *
- * The above example throws because `String` dependes no `Numeber` which is async. If any binding in the dependency
- * graph is async then the graph can only be retrieved using `asyncGet` API.
+ * The above example throws because `String` depends on `Number` which is async. If any binding in the dependency
+ * graph is async then the graph can only be retrieved using the `asyncGet` API.
  *
  * @exportedAs angular2/di_errors
  */
-export class AsyncBindingError extends ProviderError {
+export class AsyncBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -105,7 +105,7 @@ export class AsyncBindingError extends ProviderError {
 }
 
 /**
- * Throw when dependencies from a cyle.
+ * Thrown when dependencies form a cycle.
  *
  * ## Example:
  *
@@ -118,11 +118,11 @@ export class AsyncBindingError extends ProviderError {
  * }
  * ```
  *
- * Retrieving `A` or `B` will throw `CyclicDependencyError` as such a graph can not be constructed.
+ * Retrieving `A` or `B` throws a `CyclicDependencyError` as the graph above cannot be constructed.
  *
  * @exportedAs angular2/di_errors
  */
-export class CyclicDependencyError extends ProviderError {
+export class CyclicDependencyError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
     super(key, function (keys:List) {
@@ -132,14 +132,14 @@ export class CyclicDependencyError extends ProviderError {
 }
 
 /**
- * Thrown when constructing type returns with an Error.
+ * Thrown when a constructing type returns with an Error.
  *
- * The `InstantiationError` class contains the original error plus dependency graph which caused this object to be
+ * The `InstantiationError` class contains the original error plus the dependency graph which caused this object to be
  * instantiated.
  *
  * @exportedAs angular2/di_errors
  */
-export class InstantiationError extends ProviderError {
+export class InstantiationError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(originalException, key) {
     super(key, function (keys:List) {
@@ -151,7 +151,7 @@ export class InstantiationError extends ProviderError {
 }
 
 /**
- * Thrown when object other then [Binding] (or [Type]) is passed to [Injector] creation.
+ * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector} creation.
  *
  * @exportedAs angular2/di_errors
  */
@@ -168,10 +168,10 @@ export class InvalidBindingError extends Error {
 }
 
 /**
- * Thrown when the class as no annotation information.
+ * Thrown when the class has no annotation information.
  *
- * Lack of annotation prevents the [Injector] from determininig what dependencies need to be injected int the
- * constructor.
+ * Lack of annotation information prevents the {@link Injector} from determining which dependencies need to be injected into
+ * the constructor.
  *
  * @exportedAs angular2/di_errors
  */

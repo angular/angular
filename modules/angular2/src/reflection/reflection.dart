@@ -6,7 +6,7 @@ export 'reflector.dart';
 import 'package:angular2/src/facade/lang.dart';
 
 class NoReflectionCapabilities {
-  Function factory(Type type){
+  Function factory(Type type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 

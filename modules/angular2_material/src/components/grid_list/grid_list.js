@@ -1,8 +1,7 @@
 import {Component, View, onAllChangesDone, Parent} from 'angular2/angular2';
 import {onDestroy, onChange} from 'angular2/src/core/annotations/annotations';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {CONST} from 'angular2/src/facade/lang';
-import {isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isString, NumberWrapper, stringify} from 'angular2/src/facade/lang';
 import {PropertySetter} from 'angular2/src/core/annotations/di';
 
 // TODO(jelbourn): Set appropriate aria attributes for grid list elements.
@@ -20,7 +19,7 @@ import {PropertySetter} from 'angular2/src/core/annotations/di';
 })
 export class MdGridList {
   /** List of tiles that are being rendered. */
-  tiles: Array<MdGridTile>;
+  tiles: List<MdGridTile>;
 
   /** Number of columns being rendered. Can be either string or number */
   cols;
@@ -37,8 +36,8 @@ export class MdGridList {
   /** The amount of space between tiles. This will be something like '5px' or '2em'. */
   gutterSize: string;
 
-  /** Array used to track the amount of space available. */
-  spaceTracker: Array<number>;
+  /** List used to track the amount of space available. */
+  spaceTracker: List<number>;
 
   constructor() {
     this.tiles = [];
@@ -144,8 +143,8 @@ export class MdGridList {
     switch (this.rowHeightMode) {
       case 'fixed':
         // In fixed mode, simply use the given row height.
-        tileStyle.top = getTilePosition(this.fixedRowHeight, rowIndex);
-        tileStyle.height = getTileSize(this.fixedRowHeight, tile.rowspan);
+        tileStyle.top = getTilePosition(stringify(this.fixedRowHeight), rowIndex);
+        tileStyle.height = getTileSize(stringify(this.fixedRowHeight), tile.rowspan);
         break;
 
       case 'ratio':
@@ -160,8 +159,6 @@ export class MdGridList {
         break;
 
       case 'fit':
-        var percentHeightPerTile;
-
         break;
     }
 

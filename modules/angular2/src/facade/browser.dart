@@ -11,7 +11,9 @@ export 'dart:html' show
   location,
   window,
   Element,
-  Node;
+  Node,
+  KeyboardEvent,
+  Event;
 
 final _gc = context['gc'];
 

@@ -1,7 +1,9 @@
 import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoProviderError, ProviderError, CyclicDependencyError} from 'angular2/di';
+import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
+  AbstractBindingError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
@@ -32,6 +34,10 @@ export class ElementRef {
 
   get hostView() {
     return this.elementInjector._preBuiltObjects.view;
+  }
+
+  get viewContainer() {
+    return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
   }
 
   get injector() {
@@ -297,13 +303,10 @@ export class DirectiveBinding extends ResolvedBinding {
 export class PreBuiltObjects {
   view:viewModule.AppView;
   element:NgElement;
-  viewContainer:ViewContainer;
   changeDetector:ChangeDetector;
-  constructor(view, element:NgElement, viewContainer:ViewContainer,
-              changeDetector:ChangeDetector) {
+  constructor(view, element:NgElement, changeDetector:ChangeDetector) {
     this.view = view;
     this.element = element;
-    this.viewContainer = viewContainer;
     this.changeDetector = changeDetector;
   }
 }
@@ -315,6 +318,12 @@ class EventEmitterAccessor {
   constructor(eventName:string, getter:Function) {
     this.eventName = eventName;
     this.getter = getter;
+  }
+
+  subscribe(view:viewModule.AppView, boundElementIndex:number, directive:Object) {
+    var eventEmitter = this.getter(directive);
+    return ObservableWrapper.subscribe(eventEmitter,
+        eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
   }
 }
 
@@ -702,7 +711,7 @@ export class ElementInjector extends TreeNode {
       d8 = length > 8 ? this._getByDependency(deps[8], binding.key) : null;
       d9 = length > 9 ? this._getByDependency(deps[9], binding.key) : null;
     } catch(e) {
-      if (e instanceof ProviderError) e.addKey(binding.key);
+      if (e instanceof AbstractBindingError) e.addKey(binding.key);
       throw e;
     }
 
@@ -928,7 +937,7 @@ export class ElementInjector extends TreeNode {
     // TODO: AppView should not be injectable. Remove it.
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.viewContainer;
+    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.view.getOrCreateViewContainer(this._proto.index);
     if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetector.ref;
 
     //TODO add other objects as needed
@@ -982,6 +991,18 @@ export class ElementInjector extends TreeNode {
   /** Get the name to which this element's $implicit is to be assigned. */
   getExportImplicitName() {
     return this._proto.exportImplicitName;
+  }
+
+  getLightDomAppInjector() {
+    return this._lightDomAppInjector;
+  }
+
+  getHost() {
+    return this._host;
+  }
+
+  getBoundElementIndex() {
+    return this._proto.index;
   }
 }
 

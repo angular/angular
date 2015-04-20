@@ -1,7 +1,7 @@
 library test_lib.test_lib;
 
 import 'package:guinness/guinness.dart' as gns;
-export 'package:guinness/guinness.dart' hide Expect, expect, NotExpect, beforeEach, it, iit, xit, SpyObject;
+export 'package:guinness/guinness.dart' hide Expect, expect, NotExpect, beforeEach, it, iit, xit;
 import 'package:unittest/unittest.dart' hide expect;
 
 import 'dart:async';
@@ -13,6 +13,7 @@ import 'package:angular2/src/reflection/reflection_capabilities.dart';
 
 import 'package:angular2/src/di/binding.dart' show bind;
 import 'package:angular2/src/di/injector.dart' show Injector;
+import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
 import './test_injector.dart';
 export './test_injector.dart' show inject;
@@ -149,12 +150,39 @@ xit(name, fn) {
   _it(gns.xit, name, fn);
 }
 
-class SpyObject extends gns.SpyObject {
-  // Need to take an optional type as this is required by
-  // the JS SpyObject.
-  SpyObject([type = null]) {
+class SpyFunction extends gns.SpyFunction {
+  SpyFunction(name): super(name);
+
+  // TODO: vsavkin move to guinness
+  andReturn(value) {
+    return andCallFake(([a0, a1, a2, a3, a4, a5]) => value);
   }
 }
+
+class SpyObject extends gns.SpyObject {
+  final Map<String, SpyFunction> _spyFuncs = {};
+
+  SpyObject([arg]){}
+
+  SpyFunction spy(String funcName) =>
+    _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));
+
+  static stub([object = null, config = null, overrides = null]) {
+    if (object is! SpyObject) {
+      overrides = config;
+      config = object;
+      object = new SpyObject();
+    }
+
+    var m = StringMapWrapper.merge(config, overrides);
+    StringMapWrapper.forEach(m, (value, key){
+      object.spy(key).andReturn(value);
+    });
+    return object;
+  }
+}
+
+
 
 String elementText(n) {
   hasNodes(n) {

@@ -1,4 +1,4 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper} from 'angular2/src/facade/collection';
 
 /**
  * Class for radio buttons to coordinate unique selection based on name.
@@ -6,7 +6,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  */
 export class MdRadioDispatcher {
   // TODO(jelbourn): Change this to TypeScript syntax when supported.
-  listeners_: Array<Function>;
+  listeners_: List<Function>;
 
   constructor() {
     this.listeners_ = [];
