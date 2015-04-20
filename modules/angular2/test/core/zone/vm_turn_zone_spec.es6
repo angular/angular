@@ -15,6 +15,15 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
+function macroTask(fn) {
+  PromiseWrapper.setTimeout(fn, 0);
+}
+
+function microTask(fn) {
+  PromiseWrapper.resolve(null).then((_) => fn);
+}
+
+
 export function main() {
   ddescribe("VmTurnZone", () => {
     var log, zone;
@@ -29,52 +38,69 @@ export function main() {
     });
 
     describe("run", () => {
-      it('should call onTurnStart and onTurnDone', () => {
+      it('should call onTurnStart and onTurnDone', inject([AsyncTestCompleter], (async) => {
+        macroTask(() => {
+          zone.run(log.fn('run'));
+        });
 
-        zone.run(log.fn('run'));
-
-        expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
-      });
+        macroTask(function() {
+          expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
+          async.done();
+        });
+      }));
 
       it('should return the body return value from run', () => {
         expect(zone.run(() => 6)).toEqual(6);
       });
 
-      it('should not run onTurnStart and onTurnDone for nested Zone.run', () => {
-        zone.run(() => {
-          zone.run(log.fn('run'));
+      it('should not run onTurnStart and onTurnDone for nested Zone.run', inject([AsyncTestCompleter], (async) => {
+        macroTask(() => {
+          zone.run(() => {
+            zone.run(log.fn('run'));
+          });
         });
-        expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
-      });
+
+        macroTask(() => {
+          expect(log.result()).toEqual('onTurnStart; run; onTurnDone');
+          async.done();
+        })
+      }));
 
 
-      it('should call onTurnStart and onTurnDone before and after each top-level run', () => {
-        zone.run(log.fn('run1'));
-        zone.run(log.fn('run2'));
+      it('should call onTurnStart and onTurnDone before and after each top-level run', inject([AsyncTestCompleter], (async) => {
+        macroTask(() => {
+          zone.run(log.fn('run1'));
+          zone.run(log.fn('run2'));
+        });
 
-        expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
-      });
+        macroTask(() => {
+          expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
+          async.done();
+        });
+      }));
 
-      it('should call onTurnStart and onTurnDone before and after each turn', () => {
+      it('should call onTurnStart and onTurnDone before and after each turn', inject([AsyncTestCompleter], (async) => {
         var a = PromiseWrapper.completer();
         var b = PromiseWrapper.completer();
 
-        zone.run(() => {
-          log.add('run start');
-          a.promise.then((_) => { log.add('a then'); });
-          b.promise.then((_) => { log.add('b then'); });
+        macroTask(() => {
+          zone.run(() => {
+            log.add('run start');
+            a.promise.then((_) => { log.add('a then'); });
+            b.promise.then((_) => { log.add('b then'); });
+          });
         });
 
-        zone.runOutsideAngular(() => {
+        macroTask(() => {
           a.resolve("a");
           b.resolve("b");
         });
 
-        zone.runOutsideAngular(() => {
+        macroTask(() => {
           expect(log.result()).toEqual('onTurnStart; run start; onTurnDone; onTurnStart; a then; b then; onTurnDone');
+          async.done();
         });
-
-      });
+      }));
     });
 
     describe("runOutsideAngular", () => {

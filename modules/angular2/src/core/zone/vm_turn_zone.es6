@@ -45,10 +45,8 @@ export class VmTurnZone {
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
     // little hack
     Zone.inner = this._innerZone;
+    // TODO(vicb) remove the following line (only needed to help debug)
     Zone.debug = true;
-    // hum... why ? BIG hack
-    // Seems like tests are executed from a microtask which is not what we want
-    Zone.drainingMicrotasks = false;
   }
 
   /**
