@@ -18,7 +18,7 @@ describe('ng2 largetable benchmark', function () {
     'interpolationAttr',
     'interpolationFn'
   ].forEach(function(benchmarkType) {
-    it('should log the ng stats with: ' + benchmarkType, function() {
+    it('should log the ng stats with: ' + benchmarkType, function(done) {
       console.log('executing for type', benchmarkType);
       perfUtil.runClickBenchmark({
         url: URL,
@@ -36,12 +36,12 @@ describe('ng2 largetable benchmark', function () {
           name: 'benchmarkType',
           value: benchmarkType
         }]
-      });
+      }).then(done, done.fail);
     });
   });
 
 
-  it('should log the baseline stats', function() {
+  it('should log the baseline stats', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
@@ -58,7 +58,7 @@ describe('ng2 largetable benchmark', function () {
         name: 'benchmarkType',
         value: 'baseline'
       }]
-    });
+    }).then(done, done.fail);;
   });
 
 });
