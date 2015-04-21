@@ -2,7 +2,6 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} fr
 import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {document} from 'angular2/src/facade/browser';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -71,7 +70,7 @@ export function main() {
     it('bubbled events are caught when fired from a child', () => {
       var element = el('<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
-      DOM.appendChild(document.body, element);
+      DOM.appendChild(DOM.defaultDoc().body, element);
 
       var child = DOM.firstChild(element);
       var dispatchedEvent = DOM.createMouseEvent('click');
@@ -86,7 +85,7 @@ export function main() {
 
     it('should add and remove global event listeners with correct bubbling', () => {
       var element = el('<div><div></div></div>');
-      DOM.appendChild(document.body, element);
+      DOM.appendChild(DOM.defaultDoc().body, element);
       var dispatchedEvent = DOM.createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };

@@ -545,53 +545,53 @@ export function main() {
         });
       }));
 
+      it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div listener></div>',
+          directives: [DecoratorListeningDomEvent]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+
+          var injector = view.rawView.elementInjectors[0];
+
+          var listener = injector.get(DecoratorListeningDomEvent);
+
+          dispatchEvent(view.rootNodes[0], 'domEvent');
+
+          expect(listener.eventType).toEqual('domEvent');
+
+          async.done();
+        });
+      }));
+
+      it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div listener></div>',
+          directives: [DecoratorListeningDomEvent]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var injector = view.rawView.elementInjectors[0];
+
+          var listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(listener.eventType).toEqual('window_domEvent');
+
+          listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
+          expect(listener.eventType).toEqual('document_domEvent');
+
+          view.destroy();
+          listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
+          expect(listener.eventType).toEqual('');
+
+          async.done();
+        });
+      }));
+
       if (DOM.supportsDOMEvents()) {
-        it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div listener></div>',
-            directives: [DecoratorListeningDomEvent]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-
-            var injector = view.rawView.elementInjectors[0];
-
-            var listener = injector.get(DecoratorListeningDomEvent);
-
-            dispatchEvent(view.rootNodes[0], 'domEvent');
-
-            expect(listener.eventType).toEqual('domEvent');
-
-            async.done();
-          });
-        }));
-
-        it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div listener></div>',
-            directives: [DecoratorListeningDomEvent]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-            var injector = view.rawView.elementInjectors[0];
-
-            var listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(listener.eventType).toEqual('window_domEvent');
-
-            listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
-            expect(listener.eventType).toEqual('document_domEvent');
-
-            view.destroy();
-            listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
-            expect(listener.eventType).toEqual('');
-
-            async.done();
-          });
-        }));
-
         it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
@@ -608,41 +608,41 @@ export function main() {
             async.done();
           });
         }));
-
-        it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div *if="ctxBoolProp" listener listenerother></div>',
-            directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-            globalCounter = 0;
-            ctx.ctxBoolProp = true;
-            view.detectChanges();
-
-            var subview = view.rawView.viewContainers[0].get(0);
-            var injector = subview.elementInjectors[0];
-            var listener = injector.get(DecoratorListeningDomEvent);
-            var listenerother = injector.get(DecoratorListeningDomEventOther);
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(listener.eventType).toEqual('window_domEvent');
-            expect(listenerother.eventType).toEqual('other_domEvent');
-            expect(globalCounter).toEqual(1);
-
-            ctx.ctxBoolProp = false;
-            view.detectChanges();
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(globalCounter).toEqual(1);
-
-            ctx.ctxBoolProp = true;
-            view.detectChanges();
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(globalCounter).toEqual(2);
-
-            async.done();
-          });
-        }));
       }
+
+      it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div *if="ctxBoolProp" listener listenerother></div>',
+          directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          globalCounter = 0;
+          ctx.ctxBoolProp = true;
+          view.detectChanges();
+
+          var subview = view.rawView.viewContainers[0].get(0);
+          var injector = subview.elementInjectors[0];
+          var listener = injector.get(DecoratorListeningDomEvent);
+          var listenerother = injector.get(DecoratorListeningDomEventOther);
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(listener.eventType).toEqual('window_domEvent');
+          expect(listenerother.eventType).toEqual('other_domEvent');
+          expect(globalCounter).toEqual(1);
+
+          ctx.ctxBoolProp = false;
+          view.detectChanges();
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(globalCounter).toEqual(1);
+
+          ctx.ctxBoolProp = true;
+          view.detectChanges();
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(globalCounter).toEqual(2);
+
+          async.done();
+        });
+      }));
 
       describe('dynamic ViewContainers', () => {
 

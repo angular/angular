@@ -1,6 +1,7 @@
 import {Decorator} from 'angular2/angular2';
 
-import {ControlDirective, Validators} from 'angular2/forms';
+import {Validators} from './validators';
+import {ControlDirective} from './directives';
 
 @Decorator({
   selector: '[required]'
