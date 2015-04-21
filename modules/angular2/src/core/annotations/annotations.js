@@ -120,7 +120,6 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type from the parent
  * component's injector.
- *
  * ```
  * @Decorator({ selector: '[my-directive]' })
  * class MyDirective {
@@ -372,17 +371,17 @@ export class Directive extends Injectable {
    *
    * ```
    * @Component({
-   *   events: ['status-change']
+   *   events: ['statusChange']
    * })
    * class TaskComponent {
    *   statusChange:EventEmitter;
    *
    *   constructor() {
-   *     this.complete = new EventEmitter();
+   *     this.statusChange = new EventEmitter();
    *   }
    *
    *   onComplete() {
-   *     this.statusChange.next("completed");
+   *     this.statusChange.next('completed');
    *   }
    * }
    * ```
