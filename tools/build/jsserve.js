@@ -4,7 +4,12 @@ module.exports = function(gulp, plugins, config) {
       root: [__dirname+'/../../'+config.path],
       port: config.port,
       livereload: false,
-      open: false
+      open: false,
+      middleware: function(connect, opt) {
+        return [
+          connect.favicon()
+        ]
+      }
     })();
   };
 };
