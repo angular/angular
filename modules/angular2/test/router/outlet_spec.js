@@ -25,6 +25,8 @@ import {Router, RouterOutlet, RouterLink, RouteConfig, RouteParams} from 'angula
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
+import {DummyLocation} from 'angular2/src/mock/location_mock';
+
 export function main() {
   describe('Outlet Directive', () => {
 
@@ -36,7 +38,7 @@ export function main() {
     }));
 
     beforeEachBindings(() => {
-      router = new RootRouter(new Pipeline());
+      router = new RootRouter(new Pipeline(), new DummyLocation());
       return [
         bind(Router).toValue(router)
       ];

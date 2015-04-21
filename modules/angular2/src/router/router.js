@@ -6,6 +6,7 @@ import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
 import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
+import {Location} from './location';
 
 /**
  * # Router
@@ -28,17 +29,21 @@ export class Router {
   _outlets:Map<any, RouterOutlet>;
   _children:Map<any, Router>;
   _subject:EventEmitter;
-
-  constructor(registry:RouteRegistry, pipeline:Pipeline, parent:Router = null, name = '/') {
+  _location:Location;
+  
+  constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, parent:Router = null, name = '/') {
     this.name = name;
     this.navigating = false;
     this.parent = parent;
     this.previousUrl = null;
     this._outlets = MapWrapper.create();
     this._children = MapWrapper.create();
+    this._location = location;
     this._registry = registry;
     this._pipeline = pipeline;
     this._subject = new EventEmitter();
+    this._location.subscribe((url) => this.navigate(url));
+    this.navigate(location.path());
   }
 
 
@@ -97,6 +102,9 @@ export class Router {
     this._startNavigating();
 
     var result = this._pipeline.process(instruction)
+        .then((_) => {
+          this._location.go(instruction.matchedUrl);
+        })
         .then((_) => {
           ObservableWrapper.callNext(this._subject, instruction.matchedUrl);
         })
@@ -170,19 +178,19 @@ export class Router {
   }
 
   static getRoot():Router {
-    return new RootRouter(new Pipeline());
+    return new RootRouter(new Pipeline(), new Location());
   }
 }
 
 export class RootRouter extends Router {
-  constructor(pipeline:Pipeline) {
-    super(new RouteRegistry(), pipeline, null, '/');
+  constructor(pipeline:Pipeline, location:Location) {
+    super(new RouteRegistry(), pipeline, location, null, '/');
   }
 }
 
 class ChildRouter extends Router {
   constructor(parent, name) {
-    super(parent._registry, parent._pipeline, parent, name);
+    super(parent._registry, parent._pipeline, parent._location, parent, name);
     this.parent = parent;
   }
 }

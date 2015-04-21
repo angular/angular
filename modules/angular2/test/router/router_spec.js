@@ -12,15 +12,46 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
-
+import {DummyLocation} from 'angular2/src/mock/location_mock'
 
 export function main() {
   describe('Router', () => {
-    var router;
+    var router,
+        location;
 
     beforeEach(() => {
-      router = new RootRouter(new Pipeline());
+      location = new DummyLocation();
+      router = new RootRouter(new Pipeline(), location);
     });
+
+
+    it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
+      var outlet = makeDummyRef();
+
+      router.config('/', {'component': 'Index' })
+        .then((_) => router.registerOutlet(outlet))
+        .then((_) => {
+          expect(outlet.spy('activate')).toHaveBeenCalled();
+          expect(location.urlChanges).toEqual(['/']);
+          async.done();
+        });
+    }));
+
+
+    it('should activate viewports and update URL on navigate', inject([AsyncTestCompleter], (async) => {
+      var outlet = makeDummyRef();
+
+      router.registerOutlet(outlet)
+        .then((_) => {
+          return router.config('/a', {'component': 'A' });
+        })
+        .then((_) => router.navigate('/a'))
+        .then((_) => {
+          expect(outlet.spy('activate')).toHaveBeenCalled();
+          expect(location.urlChanges).toEqual(['/a']);
+          async.done();
+        });
+    }));
 
     it('should navigate after being configured', inject([AsyncTestCompleter], (async) => {
       var outlet = makeDummyRef();
