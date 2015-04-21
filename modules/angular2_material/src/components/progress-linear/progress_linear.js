@@ -1,4 +1,4 @@
-import {Component, View, Attribute, PropertySetter, onChange} from 'angular2/angular2';
+import {Component, View, Attribute, onChange} from 'angular2/angular2';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
@@ -8,6 +8,12 @@ import {Math} from 'angular2/src/facade/math';
   properties: {
     'value': 'value',
     'bufferValue': 'buffer-value'
+  },
+  hostProperties: {
+    'role': 'attr.role',
+    'ariaValuemin': 'attr.aria-valuemin',
+    'ariaValuemax': 'attr.aria-valuemax',
+    'ariaValuenow': 'attr.aria-valuenow'
   }
 })
 @View({
@@ -33,19 +39,20 @@ export class MdProgressLinear {
   /** CSS `transform` property applied to the secondary bar. */
   secondaryBarTransform: string;
 
-  constructor(
-      @Attribute('md-mode') mode: string,
-      @PropertySetter('attr.role') roleSetter: Function,
-      @PropertySetter('attr.aria-valuemin') ariaValueMinSetter: Function,
-      @PropertySetter('attr.aria-valuemax') ariaValueMaxSetter: Function,
-      @PropertySetter('attr.aria-valuenow') ariaValueNowSetter: Function) {
+
+  role:any;
+  ariaValuemin:any;
+  ariaValuemax:any;
+  ariaValuenow:any;
+
+  constructor(@Attribute('md-mode') mode: string) {
     this.ariaValueNowSetter = ariaValueNowSetter;
     this.primaryBarTransform = '';
     this.secondaryBarTransform = '';
 
-    roleSetter('progressbar');
-    ariaValueMinSetter('0');
-    ariaValueMaxSetter('100');
+    this.role = 'progressbar';
+    this.ariaValuemin = '0';
+    this.ariaValuemax = '100';
 
     this.mode = isPresent(mode) ? mode : Mode.DETERMINATE;
   }

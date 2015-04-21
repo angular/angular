@@ -450,7 +450,7 @@ export class AstVisitor {
 
 export class AstTransformer {
   visitImplicitReceiver(ast:ImplicitReceiver) {
-    return new ImplicitReceiver();
+    return ast;
   }
 
   visitInterpolation(ast:Interpolation) {

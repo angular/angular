@@ -72,12 +72,14 @@ export class DirectiveBinder {
   // that replaced the values that should be extracted from the element
   // with a local name
   eventBindings: List<EventBinding>;
+  hostPropertyBindings: Map<string, ASTWithSource>;
   constructor({
-    directiveIndex, propertyBindings, eventBindings
+    directiveIndex, propertyBindings, eventBindings, hostPropertyBindings
   }) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = propertyBindings;
     this.eventBindings = eventBindings;
+    this.hostPropertyBindings = hostPropertyBindings;
   }
 }
 
@@ -114,17 +116,17 @@ export class DirectiveMetadata {
   selector:string;
   compileChildren:boolean;
   hostListeners:Map<string, string>;
+  hostProperties:Map<string, string>;
   properties:Map<string, string>;
-  setters:List<string>;
   readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, hostListeners, properties, setters, readAttributes, type}) {
+  constructor({id, selector, compileChildren, hostListeners, hostProperties, properties, readAttributes, type}) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.hostListeners = hostListeners;
+    this.hostProperties = hostProperties;
     this.properties = properties;
-    this.setters = setters;
     this.readAttributes = readAttributes;
     this.type = type;
   }
@@ -248,7 +250,7 @@ export class Renderer {
 
   /**
    * Sets a property on an element.
-   * Note: This will fail if the property was not mentioned previously as a propertySetter
+   * Note: This will fail if the property was not mentioned previously as a host property
    * in the View.
    */
   setElementProperty(view:ViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {}

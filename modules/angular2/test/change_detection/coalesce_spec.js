@@ -5,7 +5,7 @@ import {RECORD_TYPE_SELF, ProtoRecord} from 'angular2/src/change_detection/proto
 
 export function main() {
   function r(funcOrValue, args, contextIndex, selfIndex, lastInBinding = false) {
-    return new ProtoRecord(99,  "name", funcOrValue, args, null, contextIndex, selfIndex,
+    return new ProtoRecord(99,  "name", funcOrValue, args, null, contextIndex, null, selfIndex,
       null, null, lastInBinding, false);
   }
 
@@ -73,7 +73,7 @@ export function main() {
 
       expect(rs[1]).toEqual(new ProtoRecord(
         RECORD_TYPE_SELF, "self", null,
-        [], null, 1, 2,
+        [], null, 1, null, 2,
         null, null,
         true, false)
       );

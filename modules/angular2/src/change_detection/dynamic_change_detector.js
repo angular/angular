@@ -3,7 +3,6 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {BindingRecord} from './binding_record';
-import {DirectiveRecord} from './directive_record';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {ChangeDetectionUtil, uninitialized} from './change_detection_util';
 
@@ -111,12 +110,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
       if (proto.lastInDirective) {
         if (isPresent(changes)) {
-          this._getDirectiveFor(directiveRecord).onChange(changes);
+          this._getDirectiveFor(directiveRecord.directiveIndex).onChange(changes);
           changes = null;
         }
 
         if (isChanged && bindingRecord.isOnPushChangeDetection()) {
-          this._getDetectorFor(directiveRecord).markAsCheckOnce();
+          this._getDetectorFor(directiveRecord.directiveIndex).markAsCheckOnce();
         }
 
         isChanged = false;
@@ -129,7 +128,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {
-        this._getDirectiveFor(dir).onAllChangesDone();
+        this._getDirectiveFor(dir.directiveIndex).onAllChangesDone();
       }
     }
   }
@@ -138,7 +137,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     if (isBlank(bindingRecord.directiveRecord)) {
       this.dispatcher.notifyOnBinding(bindingRecord, change.currentValue);
     } else {
-      bindingRecord.setter(this._getDirectiveFor(bindingRecord.directiveRecord), change.currentValue);
+      var directiveIndex = bindingRecord.directiveRecord.directiveIndex;
+      bindingRecord.setter(this._getDirectiveFor(directiveIndex), change.currentValue);
     }
   }
 
@@ -150,12 +150,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _getDirectiveFor(directive:DirectiveRecord) {
-    return this.directives.getDirectiveFor(directive);
+  _getDirectiveFor(directiveIndex) {
+    return this.directives.getDirectiveFor(directiveIndex);
   }
 
-  _getDetectorFor(directive:DirectiveRecord) {
-    return this.directives.getDetectorFor(directive);
+  _getDetectorFor(directiveIndex) {
+    return this.directives.getDetectorFor(directiveIndex);
   }
 
   _check(proto:ProtoRecord) {
@@ -235,6 +235,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var pipe = this._pipeFor(proto, context);
 
     var newValue = pipe.transform(context);
+
     if (! ChangeDetectionUtil.noChangeMarker(newValue)) {
       var prevValue = this._readSelf(proto);
       this._writeSelf(proto, newValue);
@@ -272,6 +273,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   }
 
   _readContext(proto:ProtoRecord) {
+    if (proto.contextIndex == -1) {
+      return this._getDirectiveFor(proto.directiveIndex);
+    } else {
+      return this.values[proto.contextIndex];
+    }
+
     return this.values[proto.contextIndex];
   }
 

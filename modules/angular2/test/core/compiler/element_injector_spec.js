@@ -4,7 +4,7 @@ import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from '
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode, ElementRef}
   from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
@@ -84,51 +84,6 @@ class HasEventEmitter {
   emitter;
   constructor() {
     this.emitter = "emitter";
-  }
-}
-
-class NeedsPropertySetter {
-  propSetter;
-  roleSetter;
-  classSetter;
-  classWithDashSetter;
-  styleSetter;
-  unitSetter;
-  constructor(@PropertySetter('title') propSetter: Function, @PropertySetter('attr.role') roleSetter: Function,
-    @PropertySetter('class.active') classSetter: Function, @PropertySetter('class.foo-bar') classWithDashSetter: Function,
-    @PropertySetter('style.width') styleSetter: Function, @PropertySetter('style.height.px') unitSetter: Function) {
-    this.propSetter = propSetter;
-    this.roleSetter = roleSetter;
-    this.classSetter = classSetter;
-    this.classWithDashSetter = classWithDashSetter;
-    this.styleSetter = styleSetter;
-    this.unitSetter = unitSetter;
-  }
-  setProp(value) {
-    this.propSetter(value);
-  }
-  setRole(value) {
-    this.roleSetter(value);
-  }
-  setClass(value) {
-    this.classSetter(value);
-  }
-  setStyle(value) {
-    this.styleSetter(value);
-  }
-  setStyleWithUnit(value) {
-    this.unitSetter(value);
-  }
-}
-
-class NeedsPropertySetterNoType {
-  propSetter;
-  constructor(@PropertySetter('title') propSetter) {
-    this.propSetter = propSetter;
-  }
-
-  setProp(value) {
-    this.propSetter(value);
   }
 }
 
@@ -705,45 +660,6 @@ export function main() {
         var appInjector = Injector.resolveAndCreate([bind("service").toValue("Service")]);
         inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedsService, null), appInjector);
         expect(inj.getDynamicallyLoadedComponent().service).toEqual("Service");
-      });
-    });
-
-    describe('property setter', () => {
-      var renderer, view;
-
-      beforeEach( () => {
-        renderer = new FakeRenderer();
-        var protoView = new AppProtoView(null, null);
-        view = new AppView(renderer, null, protoView, MapWrapper.create());
-        view.render = new ViewRef();
-      });
-
-      it('should be injectable and callable', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null);
-        var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
-        var component = inj.get(NeedsPropertySetter);
-        component.setProp('foobar');
-        component.setRole('button');
-        component.setClass(true);
-        component.classWithDashSetter(true);
-        component.setStyle('40px');
-        component.setStyleWithUnit(50);
-
-        expect(renderer.log[0]).toEqual([view.render, 0, 'title', 'foobar']);
-        expect(renderer.log[1]).toEqual([view.render, 0, 'attr.role', 'button']);
-        expect(renderer.log[2]).toEqual([view.render, 0, 'class.active', true]);
-        expect(renderer.log[3]).toEqual([view.render, 0, 'class.foo-bar', true]);
-        expect(renderer.log[4]).toEqual([view.render, 0, 'style.width', '40px']);
-        expect(renderer.log[5]).toEqual([view.render, 0, 'style.height.px', 50]);
-      });
-
-      it('should be injectable and callable without specifying param type annotation', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null);
-        var inj = injector([NeedsPropertySetterNoType], null, null, preBuildObject);
-        var component = inj.get(NeedsPropertySetterNoType);
-        component.setProp('foobar');
-
-        expect(renderer.log[0]).toEqual([view.render, 0, 'title', 'foobar']);
       });
     });
 

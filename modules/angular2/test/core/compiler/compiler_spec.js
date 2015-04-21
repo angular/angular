@@ -22,7 +22,7 @@ import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component, DynamicComponent, Viewport, Decorator} from 'angular2/src/core/annotations/annotations';
-import {PropertySetter, Attribute} from 'angular2/src/core/annotations/di';
+import {Attribute} from 'angular2/src/core/annotations/di';
 import {View} from 'angular2/src/core/annotations/view';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
@@ -185,18 +185,20 @@ export function main() {
         });
       }));
 
-      it('should set directive.bind', inject([AsyncTestCompleter], (async) => {
-        captureDirective(DirectiveWithBind).then( (renderDir) => {
-          expect(renderDir.properties).toEqual(MapWrapper.createFromStringMap({
-            'a': 'b'
+      it('should set directive.hostProperties', inject([AsyncTestCompleter], (async) => {
+        captureDirective(DirectiveWithProperties).then( (renderDir) => {
+          expect(renderDir.hostProperties).toEqual(MapWrapper.createFromStringMap({
+            'someField': 'someProp'
           }));
           async.done();
         });
       }));
 
-      it('should read @PropertySetter', inject([AsyncTestCompleter], (async) => {
-        captureDirective(DirectiveWithPropertySetters).then( (renderDir) => {
-          expect(renderDir.setters).toEqual(['someProp']);
+      it('should set directive.bind', inject([AsyncTestCompleter], (async) => {
+        captureDirective(DirectiveWithBind).then( (renderDir) => {
+          expect(renderDir.properties).toEqual(MapWrapper.createFromStringMap({
+            'a': 'b'
+          }));
           async.done();
         });
       }));
@@ -501,14 +503,14 @@ class IgnoreChildrenDecoratorDirective {}
 class DirectiveWithEvents {}
 
 @Decorator({
+  hostProperties: {'someField': 'someProp'}
+})
+class DirectiveWithProperties {}
+
+@Decorator({
   properties: {'a': 'b'}
 })
 class DirectiveWithBind {}
-
-@Decorator()
-class DirectiveWithPropertySetters {
-  constructor(@PropertySetter('someProp') someProp) {}
-}
 
 @Decorator()
 class DirectiveWithAttributes {
@@ -568,7 +570,8 @@ class FakeProtoViewFactory extends ProtoViewFactory {
     this._results = results;
   }
 
-  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto, directives:List<DirectiveBinding>):AppProtoView {
+  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
+                  directives:List<DirectiveBinding>):AppProtoView {
     ListWrapper.push(this.requests, [componentBinding, renderProtoView, directives]);
     return ListWrapper.removeAt(this._results, 0);
   }

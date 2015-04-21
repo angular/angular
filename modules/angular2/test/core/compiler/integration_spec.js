@@ -190,7 +190,6 @@ export function main() {
             }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
-
             ctx.ctxProp = 'a';
             view.detectChanges();
 
@@ -586,6 +585,26 @@ export function main() {
           listener = injector.get(DecoratorListeningDomEvent);
           dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
           expect(listener.eventType).toEqual('');
+
+          async.done();
+        });
+      }));
+
+      it('should support updating host element via hostProperties', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div update-host-properties></div>',
+          directives: [DecoratorUpdatingHostProperties]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var injector = view.rawView.elementInjectors[0];
+          var updateHost = injector.get(DecoratorUpdatingHostProperties);
+
+          updateHost.id = "newId";
+
+          view.detectChanges();
+
+          expect(view.rootNodes[0].id).toEqual("newId");
 
           async.done();
         });
@@ -1044,6 +1063,20 @@ class DecoratorEmitingEvent {
 
   fireEvent(msg: string) {
     ObservableWrapper.callNext(this.event, msg);
+  }
+}
+
+@Decorator({
+  selector: '[update-host-properties]',
+  hostProperties: {
+    'id' : 'id'
+  }
+})
+class DecoratorUpdatingHostProperties {
+  id:string;
+
+  constructor() {
+    this.id = "one";
   }
 }
 

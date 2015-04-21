@@ -3,7 +3,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 
 import {AbstractChangeDetector} from './abstract_change_detector';
 import {ChangeDetectionUtil} from './change_detection_util';
-import {DirectiveRecord} from './directive_record';
+import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 import {
   ProtoRecord,
@@ -81,12 +81,12 @@ function hydrateTemplate(type:string, mode:string, fieldDefinitions:string, pipe
                          directiveFieldNames:List<String>, detectorFieldNames:List<String>):string {
   var directiveInit = "";
   for(var i = 0; i < directiveFieldNames.length; ++i) {
-    directiveInit += `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}]);\n`;
+    directiveInit += `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}].directiveIndex);\n`;
   }
 
   var detectorInit = "";
   for(var i = 0; i < detectorFieldNames.length; ++i) {
-    detectorInit += `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}]);\n`;
+    detectorInit += `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}].directiveIndex);\n`;
   }
 
   return `
@@ -313,18 +313,18 @@ export class ChangeDetectorJITGenerator {
   }
 
   getDirectiveFieldNames():List<string> {
-    return this.directiveRecords.map((d) => this.getDirective(d));
+    return this.directiveRecords.map((d) => this.getDirective(d.directiveIndex));
   }
 
   getDetectorFieldNames():List<string> {
-    return this.directiveRecords.filter(r => r.isOnPushChangeDetection()).map((d) => this.getDetector(d));
+    return this.directiveRecords.filter(r => r.isOnPushChangeDetection()).map((d) => this.getDetector(d.directiveIndex));
   }
 
-  getDirective(d:DirectiveRecord) {
+  getDirective(d:DirectiveIndex) {
     return `this.directive_${d.name}`;
   }
 
-  getDetector(d:DirectiveRecord) {
+  getDetector(d:DirectiveIndex) {
     return `this.detector_${d.name}`;
   }
 
@@ -359,7 +359,7 @@ export class ChangeDetectorJITGenerator {
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {
-        var directive = `this.directive_${dir.name}`;
+        var directive = `this.directive_${dir.directiveIndex.name}`;
         notifications.push(onAllChangesDoneTemplate(directive));
       }
     }
@@ -425,7 +425,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   genUpdateCurrentValue(r:ProtoRecord):string {
-    var context = this.localNames[r.contextIndex];
+    var context = this.getContext(r);
     var newValue = this.localNames[r.selfIndex];
     var args = this.genArgs(r);
 
@@ -463,6 +463,14 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
+  getContext(r:ProtoRecord):string {
+    if (r.contextIndex == -1) {
+      return this.getDirective(r.directiveIndex);
+    } else {
+      return this.localNames[r.contextIndex];
+    }
+  }
+
   ifChangedGuard(r:ProtoRecord, body:string):string {
     return ifChangedGuardTemplate(r.args.map((a) => this.changeNames[a]), body);
   }
@@ -491,7 +499,7 @@ export class ChangeDetectorJITGenerator {
 
     var br = r.bindingRecord;
     if (br.isDirective()) {
-      var directiveProperty = `${this.getDirective(br.directiveRecord)}.${br.propertyName}`;
+      var directiveProperty = `${this.getDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
       return updateDirectiveTemplate(oldValue, newValue, directiveProperty);
     } else {
       return updateElementTemplate(oldValue, newValue);
@@ -513,7 +521,7 @@ export class ChangeDetectorJITGenerator {
   genNotifyOnChanges(r:ProtoRecord):string{
     var br = r.bindingRecord;
     if (r.lastInDirective && br.callOnChange()) {
-      return notifyOnChangesTemplate(this.getDirective(br.directiveRecord));
+      return notifyOnChangesTemplate(this.getDirective(br.directiveRecord.directiveIndex));
     } else {
       return "";
     }
@@ -522,7 +530,7 @@ export class ChangeDetectorJITGenerator {
   genNotifyOnPushDetectors(r:ProtoRecord):string{
     var br = r.bindingRecord;
     if (r.lastInDirective && br.isOnPushChangeDetection()) {
-      return notifyOnPushDetectorsTemplate(this.getDetector(br.directiveRecord));
+      return notifyOnPushDetectorsTemplate(this.getDetector(br.directiveRecord.directiveIndex));
     } else {
       return "";
     }

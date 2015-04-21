@@ -56,21 +56,21 @@ export class DirectiveParser extends CompileStep {
     this._selectorMatcher.match(cssSelector, (selector, directiveIndex) => {
       var elementBinder = current.bindElement();
       var directive = this._directives[directiveIndex];
-      var directiveBinder = elementBinder.bindDirective(directiveIndex);
+      var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
       current.compileChildren = current.compileChildren && directive.compileChildren;
       if (isPresent(directive.properties)) {
         MapWrapper.forEach(directive.properties, (bindConfig, dirProperty) => {
-          this._bindDirectiveProperty(dirProperty, bindConfig, current, directiveBinder);
+          this._bindDirectiveProperty(dirProperty, bindConfig, current, directiveBinderBuilder);
         });
       }
       if (isPresent(directive.hostListeners)) {
         MapWrapper.forEach(directive.hostListeners, (action, eventName) => {
-          this._bindDirectiveEvent(eventName, action, current, directiveBinder);
+          this._bindDirectiveEvent(eventName, action, current, directiveBinderBuilder);
         });
       }
-      if (isPresent(directive.setters)) {
-        ListWrapper.forEach(directive.setters, (propertyName) => {
-          elementBinder.bindPropertySetter(propertyName);
+      if (isPresent(directive.hostProperties)) {
+        MapWrapper.forEach(directive.hostProperties, (hostPropertyName, directivePropertyName) => {
+          this._bindHostProperty(hostPropertyName, directivePropertyName, current, directiveBinderBuilder);
         });
       }
       if (isPresent(directive.readAttributes)) {
@@ -102,7 +102,7 @@ export class DirectiveParser extends CompileStep {
     });
   }
 
-  _bindDirectiveProperty(dirProperty, bindConfig, compileElement, directiveBinder) {
+  _bindDirectiveProperty(dirProperty, bindConfig, compileElement, directiveBinderBuilder) {
     var pipes = this._splitBindConfig(bindConfig);
     var elProp = ListWrapper.removeAt(pipes, 0);
 
@@ -124,21 +124,27 @@ export class DirectiveParser extends CompileStep {
     // Bindings are optional, so this binding only needs to be set up if an expression is given.
     if (isPresent(bindingAst)) {
       var fullExpAstWithBindPipes = this._parser.addPipes(bindingAst, pipes);
-      directiveBinder.bindProperty(
+      directiveBinderBuilder.bindProperty(
         dirProperty, fullExpAstWithBindPipes
       );
     }
   }
 
-  _bindDirectiveEvent(eventName, action, compileElement, directiveBinder) {
+  _bindDirectiveEvent(eventName, action, compileElement, directiveBinderBuilder) {
     var ast = this._parser.parseAction(action, compileElement.elementDescription);
     if (StringWrapper.contains(eventName, EVENT_TARGET_SEPARATOR)) {
       var parts = eventName.split(EVENT_TARGET_SEPARATOR);
-      directiveBinder.bindEvent(parts[1], ast, parts[0]);
+      directiveBinderBuilder.bindEvent(parts[1], ast, parts[0]);
     } else {
-      directiveBinder.bindEvent(eventName, ast);
+      directiveBinderBuilder.bindEvent(eventName, ast);
     }
-    
+
+  }
+
+  _bindHostProperty(hostPropertyName, directivePropertyName, compileElement, directiveBinderBuilder) {
+    var ast = this._parser.parseBinding(directivePropertyName,
+      `hostProperties of ${compileElement.elementDescription}`);
+    directiveBinderBuilder.bindHostProperty(hostPropertyName, ast);
   }
 
   _splitBindConfig(bindConfig:string) {

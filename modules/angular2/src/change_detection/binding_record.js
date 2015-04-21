@@ -1,7 +1,7 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {SetterFn} from 'angular2/src/reflection/types';
 import {AST} from './parser/ast';
-import {DirectiveRecord} from './directive_record';
+import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
 const DIRECTIVE="directive";
 const ELEMENT="element";
@@ -11,14 +11,16 @@ export class BindingRecord {
   mode:string;
   ast:AST;
 
+  implicitReceiver:any; //number | DirectiveIndex
   elementIndex:number;
   propertyName:string;
   setter:SetterFn;
 
   directiveRecord:DirectiveRecord;
 
-  constructor(mode:string, ast:AST, elementIndex:number, propertyName:string, setter:SetterFn, directiveRecord:DirectiveRecord) {
+  constructor(mode:string, implicitReceiver:any, ast:AST, elementIndex:number, propertyName:string, setter:SetterFn, directiveRecord:DirectiveRecord) {
     this.mode = mode;
+    this.implicitReceiver = implicitReceiver;
     this.ast = ast;
 
     this.elementIndex = elementIndex;
@@ -49,14 +51,18 @@ export class BindingRecord {
   }
 
   static createForDirective(ast:AST, propertyName:string, setter:SetterFn, directiveRecord:DirectiveRecord) {
-    return new BindingRecord(DIRECTIVE, ast, 0, propertyName, setter, directiveRecord);
+    return new BindingRecord(DIRECTIVE, 0, ast, 0, propertyName, setter, directiveRecord);
   }
 
   static createForElement(ast:AST, elementIndex:number, propertyName:string) {
-    return new BindingRecord(ELEMENT, ast, elementIndex, propertyName, null, null);
+    return new BindingRecord(ELEMENT, 0, ast, elementIndex, propertyName, null, null);
+  }
+
+  static createForHostProperty(directiveIndex:DirectiveIndex, ast:AST, propertyName:string) {
+    return new BindingRecord(ELEMENT, directiveIndex, ast, directiveIndex.elementIndex, propertyName, null, null);
   }
 
   static createForTextNode(ast:AST, elementIndex:number) {
-    return new BindingRecord(TEXT_NODE, ast, elementIndex, null, null, null);
+    return new BindingRecord(TEXT_NODE, 0, ast, elementIndex, null, null, null);
   }
 }

@@ -223,12 +223,8 @@ export class Compiler {
       renderType = renderApi.DirectiveMetadata.DECORATOR_TYPE;
       compileChildren = ann.compileChildren;
     }
-    var setters = [];
     var readAttributes = [];
     ListWrapper.forEach(directiveBinding.dependencies, (dep) => {
-      if (isPresent(dep.propSetterName)) {
-        ListWrapper.push(setters, dep.propSetterName);
-      }
       if (isPresent(dep.attributeName)) {
         ListWrapper.push(readAttributes, dep.attributeName);
       }
@@ -239,8 +235,8 @@ export class Compiler {
       selector: ann.selector,
       compileChildren: compileChildren,
       hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
+      hostProperties: isPresent(ann.hostProperties) ? MapWrapper.createFromStringMap(ann.hostProperties) : null,
       properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
-      setters: setters,
       readAttributes: readAttributes
     });
   }

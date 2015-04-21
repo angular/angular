@@ -1,4 +1,4 @@
-import {Component, View, Parent, Ancestor, Attribute, PropertySetter} from 'angular2/angular2';
+import {Component, View, Parent, Ancestor, Attribute} from 'angular2/angular2';
 import {Optional} from 'angular2/src/di/annotations';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
 import {onChange} from 'angular2/src/core/annotations/annotations';
@@ -34,6 +34,13 @@ var _uniqueIdCounter:number = 0;
   },
   hostListeners: {
     'keydown': 'onKeydown($event)'
+  },
+  hostProperties: {
+    'id': 'id',
+    'tabindex': 'tabindex',
+    'role': 'attr.role',
+    'checked': 'attr.aria-checked',
+    'disabled': 'attr.aria-disabled'
   }
 })
 @View({
@@ -42,7 +49,7 @@ var _uniqueIdCounter:number = 0;
 })
 export class MdRadioButton {
   /** Whether this radio is checked. */
-  checked_: boolean;
+  checked: boolean;
 
   /** Whether the radio is disabled. */
   disabled_: boolean;
@@ -62,36 +69,26 @@ export class MdRadioButton {
   /** Dispatcher for coordinating radio unique-selection by name. */
   radioDispatcher: MdRadioDispatcher;
 
-  /** Setter for `aria-checked` attribute. */
-  ariaCheckedSetter: Function;
-
-  /** Setter for `aria-disabled` attribute. */
-  ariaDisabledSetter: Function;
+  tabindex:any;
+  
+  role:any;
 
   constructor(
       @Optional() @Parent() radioGroup: MdRadioGroup,
       @Attribute('id') id: string,
       @Attribute('tabindex') tabindex: string,
-      @PropertySetter('id') idSetter: Function,
-      @PropertySetter('tabindex') tabindexSetter: Function,
-      @PropertySetter('attr.role') roleSetter: Function,
-      @PropertySetter('attr.aria-checked') ariaCheckedSetter: Function,
-      @PropertySetter('attr.aria-disabled') ariaDisabledSetter: Function,
       radioDispatcher: MdRadioDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
 
     this.radioGroup = radioGroup;
     this.radioDispatcher = radioDispatcher;
-    this.ariaCheckedSetter = ariaCheckedSetter;
-    this.ariaDisabledSetter = ariaDisabledSetter;
     this.value = null;
 
-    roleSetter('radio');
+    this.role = 'radio';
     this.checked = false;
 
-    this.id = isPresent(id) ? id : `md-radio-${_uniqueIdCounter++}`;
-    idSetter(this.id);
+    this.id = isPresent(id) ? id : `md-radio-${_uniqueIdCounter++}`;;
 
     // Whenever a radio button with the same name is checked, uncheck this radio button.
     radioDispatcher.listen((name) => {
@@ -108,7 +105,7 @@ export class MdRadioButton {
 
     // If the user has not set a tabindex, default to zero (in the normal document flow).
     if (!isPresent(radioGroup)) {
-      tabindexSetter(isPresent(tabindex) ? tabindex : '0');
+      this.tabindex = isPresent(tabindex) ? tabindex : '0';
     }
   }
 
@@ -129,22 +126,12 @@ export class MdRadioButton {
         (isPresent(this.radioGroup) && this.radioGroup.disabled);
   }
 
-  get checked() {
-    return this.checked_;
-  }
-
-  set checked(value) {
-    this.checked_ = value;
-    this.ariaCheckedSetter(value);
-  }
-
   get disabled() {
     return this.disabled_;
   }
 
   set disabled(value) {
     this.disabled_ = isPresent(value) && value !== false;
-    this.ariaDisabledSetter(this.disabled_);
   }
 
   /** Select this radio button. */
@@ -183,6 +170,13 @@ export class MdRadioButton {
   },
   hostListeners: {
     'keydown': 'onKeydown($event)'
+  },
+  hostProperties: {
+    'tabindex': 'tabindex',
+    'role': 'attr.role',
+    'checked': 'attr.aria-checked',
+    'disabled': 'attr.aria-disabled',
+    'activedescendant': 'attr.aria-activedescendant'
   }
 })
 @View({
@@ -201,11 +195,7 @@ export class MdRadioGroup {
   /** List of child radio buttons. */
   radios_: List<MdRadioButton>;
 
-  changeEmitter: Function;
-
-  ariaActiveDescendantSetter: Function;
-
-  ariaDisabledSetter: Function;
+  activedescendant: any;
 
   disabled_: boolean;
 
@@ -214,30 +204,28 @@ export class MdRadioGroup {
 
   change:EventEmitter;
 
+  tabindex:any;
+
+  role:any;
+
   constructor(
       @Attribute('tabindex') tabindex: string,
       @Attribute('disabled') disabled: string,
-      @PropertySetter('tabindex') tabindexSetter: Function,
-      @PropertySetter('attr.role') roleSetter: Function,
-      @PropertySetter('attr.aria-disabled') ariaDisabledSetter: Function,
-      @PropertySetter('attr.aria-activedescendant') ariaActiveDescendantSetter: Function,
       radioDispatcher: MdRadioDispatcher) {
     this.name_ = `md-radio-group-${_uniqueIdCounter++}`;
     this.radios_ = [];
     this.change = new EventEmitter();
-    this.ariaActiveDescendantSetter = ariaActiveDescendantSetter;
-    this.ariaDisabledSetter = ariaDisabledSetter;
     this.radioDispatcher = radioDispatcher;
     this.selectedRadioId = '';
     this.disabled_ = false;
 
-    roleSetter('radiogroup');
+    this.role = 'radiogroup';
 
     // The simple presence of the `disabled` attribute dictates disabled state.
     this.disabled = isPresent(disabled);
 
     // If the user has not set a tabindex, default to zero (in the normal document flow).
-    tabindexSetter(isPresent(tabindex) ? tabindex : '0');
+    this.tabindex = isPresent(tabindex) ? tabindex : '0';
   }
 
   /** Gets the name of this group, as to be applied in the HTML 'name' attribute. */
@@ -251,7 +239,6 @@ export class MdRadioGroup {
 
   set disabled(value) {
     this.disabled_ = isPresent(value) && value !== false;
-    this.ariaDisabledSetter(this.disabled_);
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
@@ -267,7 +254,7 @@ export class MdRadioGroup {
         if (radio.value == this.value) {
           radio.checked = true;
           this.selectedRadioId = radio.id;
-          this.ariaActiveDescendantSetter(radio.id);
+          this.activedescendant = radio.id;
         }
       });
     }
@@ -277,7 +264,7 @@ export class MdRadioGroup {
   updateValue(value: any, id: string) {
     this.value = value;
     this.selectedRadioId = id;
-    this.ariaActiveDescendantSetter(id);
+    this.activedescendant = id;
     ObservableWrapper.callNext(this.change, null);
   }
 
@@ -335,6 +322,6 @@ export class MdRadioGroup {
 
     this.value = radio.value;
     this.selectedRadioId = radio.id;
-    this.ariaActiveDescendantSetter(radio.id);
+    this.activedescendant = radio.id;
   }
 }

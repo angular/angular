@@ -16,7 +16,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Inject} from 'angular2/di';
 
-import {Component, Decorator, View, PropertySetter} from 'angular2/angular2';
+import {Component, Decorator, View} from 'angular2/angular2';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
@@ -374,8 +374,8 @@ export function main() {
   ControlDirective,
   WrappedValue,
   RequiredValidatorDirective,
-  CheckboxControlValueAccessor,
-  DefaultValueAccessor]})
+  DefaultValueAccessor,
+  CheckboxControlValueAccessor]})
 class MyComp {
   form:any;
   name:string;
@@ -390,19 +390,21 @@ class MyComp {
   selector:'[wrapped-value]',
   hostListeners: {
     'change' : 'handleOnChange($event.target.value)'
+  },
+  hostProperties: {
+    'value' : 'value'
   }
 })
 class WrappedValue {
-  _setProperty:Function;
+  value;
   onChange:Function;
 
-  constructor(cd:ControlDirective, @PropertySetter('value') setProperty:Function) {
-    this._setProperty = setProperty;
+  constructor(cd:ControlDirective) {
     cd.valueAccessor = this;
   }
 
   writeValue(value) {
-    this._setProperty(`!${value}!`);
+    this.value = `!${value}!`;
   }
 
   handleOnChange(value) {

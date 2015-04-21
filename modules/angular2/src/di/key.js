@@ -1,5 +1,5 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
-//import {int} from 'angular2/src/facade/lang';
+import {stringify} from 'angular2/src/facade/lang';
 
 // TODO: uncoment `int` once https://github.com/angular/angular/issues/1414 is fixed
 
@@ -21,6 +21,10 @@ export class Key {
   constructor(token, id/* :int */) {
     this.token = token;
     this.id = id;
+  }
+
+  get displayName() {
+    return stringify(this.token);
   }
 
   /**

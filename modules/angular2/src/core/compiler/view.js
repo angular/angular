@@ -1,6 +1,6 @@
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
-  ChangeRecord, BindingRecord, DirectiveRecord, ChangeDetectorRef} from 'angular2/change_detection';
+  ChangeRecord, BindingRecord, DirectiveRecord, DirectiveIndex, ChangeDetectorRef} from 'angular2/change_detection';
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';
@@ -124,12 +124,12 @@ export class AppView {
     }
   }
 
-  getDirectiveFor(directive:DirectiveRecord) {
+  getDirectiveFor(directive:DirectiveIndex) {
     var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getDirectiveAtIndex(directive.directiveIndex);
   }
 
-  getDetectorFor(directive:DirectiveRecord) {
+  getDetectorFor(directive:DirectiveIndex) {
     var elementInjector = this.elementInjectors[directive.elementIndex];
     return elementInjector.getChangeDetector();
   }
@@ -268,6 +268,14 @@ export class AppProtoView {
   }
 
   /**
+   * Adds an host property binding for the last created ElementBinder via bindElement
+   */
+  bindHostElementProperty(expression:AST, setterName:string, directiveIndex:DirectiveIndex):void {
+    var b = BindingRecord.createForHostProperty(directiveIndex, expression, setterName);
+    ListWrapper.push(this.bindings, b);
+  }
+
+  /**
    * Adds an event binding for the last created ElementBinder via bindElement.
    *
    * If the directive index is a positive integer, the event is evaluated in the context of
@@ -323,7 +331,7 @@ export class AppProtoView {
       var changeDetection = binding.changeDetection;
 
       MapWrapper.set(this._directiveRecordsMap, id,
-        new DirectiveRecord(elementInjectorIndex, directiveIndex,
+        new DirectiveRecord(new DirectiveIndex(elementInjectorIndex, directiveIndex),
           binding.callOnAllChangesDone, binding.callOnChange, changeDetection));
     }
 

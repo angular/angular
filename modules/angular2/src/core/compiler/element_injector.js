@@ -5,7 +5,7 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
   AbstractBindingError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
@@ -195,15 +195,13 @@ export class TreeNode {
 
 export class DirectiveDependency extends Dependency {
   depth:int;
-  propSetterName:string;
   attributeName:string;
   queryDirective;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean, properties:List,
-              depth:int, propSetterName: string, attributeName:string, queryDirective) {
+              depth:int, attributeName:string, queryDirective) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
-    this.propSetterName = propSetterName;
     this.attributeName = attributeName;
     this.queryDirective = queryDirective;
     this._verify();
@@ -211,17 +209,15 @@ export class DirectiveDependency extends Dependency {
 
   _verify():void {
     var count = 0;
-    if (isPresent(this.propSetterName)) count++;
     if (isPresent(this.queryDirective)) count++;
     if (isPresent(this.attributeName)) count++;
     if (count > 1) throw new BaseException(
-      'A directive injectable can contain only one of the following @PropertySetter, @Attribute or @Query.');
+      'A directive injectable can contain only one of the following @Attribute or @Query.');
   }
 
   static createFrom(d:Dependency):Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
       d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._propSetterName(d.properties),
       DirectiveDependency._attributeName(d.properties),
       DirectiveDependency._query(d.properties)
     );
@@ -232,11 +228,6 @@ export class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
-  }
-
-  static _propSetterName(properties):string {
-    var p = ListWrapper.find(properties, (p) => p instanceof PropertySetter);
-    return isPresent(p) ? p.propName : null;
   }
 
   static _attributeName(properties):string {
@@ -266,6 +257,10 @@ export class DirectiveBinding extends ResolvedBinding {
     if (annotation instanceof Component && isPresent(annotation.injectables)) {
       this.resolvedInjectables = Injector.resolve(annotation.injectables);
     }
+  }
+
+  get displayName() {
+    return this.key.displayName;
   }
 
   get eventEmitters():List<string> {
@@ -735,22 +730,12 @@ export class ElementInjector extends TreeNode {
   }
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
-    if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
     if (dep.key.id === StaticKeys.instance().elementRefId) {
       return this.getElementRef();
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
-  }
-
-  _buildPropSetter(dep) {
-    var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    var renderer = view.renderer;
-    var index = this._proto.index;
-    return function(v) {
-      renderer.setElementProperty(view.render, index, dep.propSetterName, v);
-    };
   }
 
   _buildAttribute(dep): string {

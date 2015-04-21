@@ -1,5 +1,6 @@
 import {List} from 'angular2/src/facade/collection';
 import {BindingRecord} from './binding_record';
+import {DirectiveIndex} from './directive_record';
 
 export const RECORD_TYPE_SELF = 0;
 export const RECORD_TYPE_CONST = 1;
@@ -19,7 +20,10 @@ export class ProtoRecord {
   funcOrValue:any;
   args:List;
   fixedArgs:List;
+
   contextIndex:number;
+  directiveIndex:DirectiveIndex;
+
   selfIndex:number;
   bindingRecord:BindingRecord;
   lastInBinding:boolean;
@@ -32,6 +36,7 @@ export class ProtoRecord {
               args:List,
               fixedArgs:List,
               contextIndex:number,
+              directiveIndex:DirectiveIndex,
               selfIndex:number,
               bindingRecord:BindingRecord,
               expressionAsString:string,
@@ -43,7 +48,10 @@ export class ProtoRecord {
     this.funcOrValue = funcOrValue;
     this.args = args;
     this.fixedArgs = fixedArgs;
+
     this.contextIndex = contextIndex;
+    this.directiveIndex = directiveIndex;
+
     this.selfIndex = selfIndex;
     this.bindingRecord = bindingRecord;
     this.lastInBinding = lastInBinding;
