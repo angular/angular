@@ -1,5 +1,7 @@
 import {bootstrap, Component, View, For} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
+import {reflector} from 'angular2/src/reflection/reflection';
+import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 
 @Component({
   selector: 'todo-app',
@@ -71,5 +73,6 @@ class TodoApp {
 }
 
 export function main() {
+  reflector.reflectionCapabilities = new ReflectionCapabilities(); // for the Dart version
   bootstrap(TodoApp);
 }
