@@ -876,18 +876,6 @@ export class ElementInjector extends TreeNode {
     if (this._query2 == query) this._query2 = null;
   }
 
-  /*
-   * It is fairly easy to annotate keys with metadata.
-   * For example, key.metadata = 'directive'.
-   *
-   * This would allows to do the lookup more efficiently.
-   *
-   * for example
-   * we would lookup pre built objects only when metadata = 'preBuilt'
-   * we would lookup directives only when metadata = 'directive'
-   *
-   * Write benchmarks before doing this optimization.
-   */
   _getByKey(key:Key, depth:number, optional:boolean, requestor:Key) {
     var ei = this;
     if (! this._shouldIncludeSelf(depth)) {

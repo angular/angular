@@ -18,11 +18,9 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 export class Key {
   token;
   id/* :int */;
-  metadata:any;
   constructor(token, id/* :int */) {
     this.token = token;
     this.id = id;
-    this.metadata = null;
   }
 
   /**
