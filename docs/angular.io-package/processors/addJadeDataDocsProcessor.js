@@ -5,7 +5,7 @@ var titleCase = function(text) {
   return text.replace(/(.)(.*)/, function(_, first, rest) {
     return first.toUpperCase() + rest;
   });
-}
+};
 
 module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
   return {
@@ -25,7 +25,7 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
               var dataDoc = {
                 name: exportDoc.name + '-' + exportDoc.docType,
                 title: exportDoc.name + ' ' + titleCase(exportDoc.docType)
-              }
+              };
               return dataDoc;
             })
           };
@@ -49,6 +49,7 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
           return dataDoc;
         })
       });
+
 
       return docs.concat(extraDocs);
     }
