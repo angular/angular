@@ -2,8 +2,8 @@
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-p.
-  <span class="location-badge">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a></span>
+p.location-badge.
+  exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
   defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a>
 
 :markdown
@@ -23,7 +23,7 @@ p.
         {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) | indent(4, true) | trim $}
     {% endif %}
     :markdown
-{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') $}
+{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') $}
 
 
 {% endif -%}
@@ -38,7 +38,7 @@ p.
         {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
     {% endif %}
     :markdown
-{$ member.description | indent(6, true) | replace('## Example', '')  $}
+{$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
 
 
 
