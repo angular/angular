@@ -22,7 +22,6 @@ p.
       code.
         {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) | indent(4, true) | trim $}
     {% endif %}
-
     :markdown
 {$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') $}
 
@@ -38,7 +37,6 @@ p.
       code.
         {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
     {% endif %}
-
     :markdown
 {$ member.description | indent(6, true) | replace('## Example', '')  $}
 

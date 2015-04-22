@@ -1,8 +1,12 @@
 {% extends 'layout/base.template.html' -%}
 {% block body -%}
+
 ul
   for page, slug in public.docs[current.path[1]][current.path[2]][current.path[3]][current.path[4]]._data
-    name = page.menuTitle || page.title
-    selected =  current.path[4] == slug ? 'is-selected':''
-    li <a class="#{selected}" href="/docs/#{current.path[1]}/#{current.path[2]}/#{current.path[3]}/#{current.path[4]}/#{slug}.html" md-button> #{page.title}</a>
+    if slug != 'index'
+      url = "/docs/" + current.path[1] + "/" + current.path[2] + "/" + current.path[3] + "/" + current.path[4] + "/" + slug + ".html"
+
+      li.c8
+        != partial("../../../../_includes/_hover-card", {name: page.title, url: url })
+
 {% endblock %}
