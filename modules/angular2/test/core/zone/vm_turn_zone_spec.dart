@@ -15,7 +15,7 @@ import 'package:angular2/src/facade/async.dart' show PromiseWrapper;
 import 'package:angular2/src/facade/lang.dart' show BaseException;
 import 'package:angular2/src/core/zone/vm_turn_zone.dart' show VmTurnZone;
 
-import 'dart:async' show Future, Completer;
+import 'dart:async';
 
 macroTask(fn) {
   PromiseWrapper.setTimeout(fn, 0);
@@ -49,7 +49,8 @@ oldtests() {
       log = new Log();
       zone = new VmTurnZone(enableLongStackTrace: true);
       zone.initCallbacks(
-          onTurnStart: log.fn('onTurnStart'), onTurnDone: log.fn('onTurnDone'));
+          onTurnStart: log.fn('onTurnStart'),
+          onTurnDone: log.fn('onTurnDone'));
     });
 
     describe("run", () {
@@ -69,7 +70,6 @@ oldtests() {
         });
 
         macroTask(() {
-
           expect(log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
           async.done();
         });
@@ -78,23 +78,32 @@ oldtests() {
 
       it('should call onTurnStart and onTurnDone before and after each turn',
       inject([AsyncTestCompleter], (async) {
-        var a = PromiseWrapper.completer();
-        var b = PromiseWrapper.completer();
-        zone.run(() {
-          log.add('run start');
-          a.promise.then((_) {
-            return log.add('a then');
+
+        zone.runOutsideAngular(() {
+          macroTask(() {
+            var a = PromiseWrapper.completer();
+            var b = PromiseWrapper.completer();
+
+            zone.run(() {
+              log.add('run start');
+              a.promise.then((_) {
+                return log.add('a then');
+              });
+              b.promise.then((_) {
+                return log.add('b then');
+              });
+            });
+
+            a.resolve("a");
+            b.resolve("b");
           });
-          b.promise.then((_) {
-            return log.add('b then');
+
+          macroTask(() {
+            expect(log.result()).toEqual(
+                'onTurnStart; run start; onTurnDone; onTurnStart; a then; b then; onTurnDone');
+            async.done();
           });
-        });
-        a.resolve("a");
-        b.resolve("b");
-        PromiseWrapper.all([a.promise, b.promise]).then((_) {
-          expect(log.result()).toEqual(
-              'onTurnStart; run start; onTurnDone; onTurnStart; a then; onTurnDone; onTurnStart; b then; onTurnDone');
-          async.done();
+
         });
       }));
     });
@@ -123,11 +132,9 @@ oldtests() {
         zone.initCallbacks(onErrorHandler: saveStackTrace);
 
         macroTask(() {
-          expect(() {
-            zone.run(() {
-              throw new BaseException('aaa');
-            });
-          }).toThrowError('aaa');
+          zone.run(() {
+            throw new BaseException('aaa');
+          });
         });
 
         macroTask(() {
@@ -210,6 +217,7 @@ oldtests() {
 newTests() {
   var log;
   var zone;
+  var errorZone;
 
   beforeEach(() {
     log = new Log();
@@ -220,56 +228,53 @@ newTests() {
   });
 
   describe('exceptions', () {
-    // TODO(vicb): run() does not rethrow in ng2, check why
-    xit('should rethrow exceptions from the body and call onError', () {
+    it('should rethrow exceptions from the body and call onError', () {
       var errors = [];
       zone.initCallbacks(onErrorHandler: (e, s) { errors.add(e); });
 
-      expect(() {
-        zone.run(() {
-          throw 'hello';
-        });
-      }).toThrowWith(message: 'hello');
+      zone.run(() {
+        throw 'hello';
+      });
 
       expect(errors).toEqual(['hello']);
     });
 
     it('should call onError for errors from microtasks', inject([AsyncTestCompleter], (async) {
       var errors = [];
-      zone.initCallbacks(onErrorHandler: (e, s) { errors.add(e); });
+      zone.initCallbacks(onErrorHandler: (e, s) {
+        errors.add(e);
+      });
+
+      var exception = new BaseException('async exception');
 
       macroTask(() {
         zone.run(() {
-          microTask(() { throw "async exception"; });
+          microTask(() { throw exception; });
         });
       });
 
       macroTask(() {
-        expect(errors).toEqual(["async exception"]);
+        expect(errors).toEqual([exception]);
         async.done();
       });
     }));
 
-    // TODO(vicb) - rethrow ?
     it('should rethrow exceptions from the onTurnDone and call onError when the zone is sync',
         inject([AsyncTestCompleter], (async) {
       var errors = [];
+
+      var exception = new BaseException('fromOnTurnDone');
+
       zone.initCallbacks(
         onErrorHandler: (e, s) { errors.add(e); },
-        onTurnDone: () { throw "fromOnTurnDone"; });
+        onTurnDone: () { throw exception; });
 
       macroTask(() {
-        expect(() {
-          zone.run(() { });
-        }).toThrowWith(message: 'fromOnTurnDone');
+        zone.run(() { });
       });
 
-//      macroTask(() {
-//        zone.run(() {});
-//      });
-
       macroTask(() {
-        expect(errors).toEqual(["fromOnTurnDone"]);
+        expect(errors).toEqual([exception]);
         async.done();
       });
     }));
@@ -279,17 +284,11 @@ newTests() {
       var errors = [];
       var asyncRan = false;
 
+      var exception = new BaseException('fromOnTurnDone');
+
       zone.initCallbacks(
         onErrorHandler: (e, s) { errors.add(e); },
-        onTurnDone: () { throw "fromOnTurnDone"; });
-
-//      expect(() {
-//        zone.run(() {
-//          new Future.value(null).then((_) {
-//            asyncRan = true;
-//          });
-//        });
-//      }).toThrowWith(message: 'fromOnTurnDone');
+        onTurnDone: () { throw exception; });
 
       macroTask(() {
         zone.run(() {
@@ -299,7 +298,7 @@ newTests() {
 
       macroTask(() {
         expect(asyncRan).toBe(true);
-        expect(errors).toEqual(["fromOnTurnDone"]);
+        expect(errors).toEqual([exception]);
         async.done();
       });
     }));
@@ -313,7 +312,13 @@ newTests() {
 
   it('should call onTurnStart and onTurnDone when an inner microtask is scheduled from outside angular',
         inject([AsyncTestCompleter], (async) {
-    Completer c = new Completer();
+    Completer c;
+
+    macroTask(() {
+      zone.runOutsideAngular(() {
+        c = new Completer();
+      });
+    });
 
     macroTask(() {
       zone.run(() {
@@ -324,8 +329,10 @@ newTests() {
     });
 
     macroTask(() {
-      log.add('scheduling a microtask');
-      c.complete(null);
+      zone.runOutsideAngular(() {
+        log.add('scheduling a microtask');
+        c.complete(null);
+      });
     });
 
     macroTask(() {
@@ -343,11 +350,14 @@ newTests() {
 
   it('should not call onTurnStart and onTurnDone when an outer microtask is scheduled from inside angular',
         inject([AsyncTestCompleter], (async) {
-    Completer c = new Completer();
+    Completer c;
 
     macroTask(() {
-      c.future.then((_) {
-        log.add('executedMicrotask');
+      zone.runOutsideAngular(() {
+       c = new Completer();
+       c.future.then((_) {
+         log.add('executedMicrotask');
+       });
       });
     });
 
@@ -360,10 +370,7 @@ newTests() {
 
     macroTask(() {
       expect(log.result()).toEqual(
-          // First VM turn
-          'onTurnStart; scheduling a microtask; onTurnDone; '
-          // Second VM turn (outside of anguler)
-          'executedMicrotask'
+          'onTurnStart; scheduling a microtask; executedMicrotask; onTurnDone'
       );
       async.done();
     });
@@ -461,11 +468,6 @@ newTests() {
       async.done();
     });
   }));
-
-  // TODO(vicb)
-  // Future.value is already tested as a way to enqueue microtasks (for JS compatibility)
-  // Is testing chained future valuable ?
-  // it('should work for Future.value as well', async((Logger log) {
 
   it('should execute futures scheduled in onTurnStart before Futures scheduled in run',
      inject([AsyncTestCompleter], (async) {
@@ -587,17 +589,18 @@ newTests() {
 
   it('should call onTurnStart and onTurnDone for futures created outside of run body',
      inject([AsyncTestCompleter], (async) {
-    var turn = 0;
-    var future = new Future.value(4).then((x) => new Future.value(x));
+    var future;
 
     zone.initCallbacks(
       onTurnStart: log.fn('onTurnStart'),
-      onTurnDone: () {
-        turn++;
-        log.add('onTurnDone');
-      });
+      onTurnDone: log.fn('onTurnDone')
+    );
 
     macroTask(() {
+      zone.runOutsideAngular(() {
+        future = new Future.value(4).then((x) => new Future.value(x));
+      });
+
       zone.run(() {
         future.then((_) {
           log.add('future then');
@@ -607,83 +610,10 @@ newTests() {
     });
 
     macroTask(() {
-      expect(log.result()).toEqual(
-          'onTurnStart; zone run; onTurnDone; '
-          'onTurnStart; future then; onTurnDone');
+      expect(log.result()).toEqual('onTurnStart; zone run; future then; onTurnDone');
       async.done();
     });
 
   }));
-
-  it('should call onTurnDone even if there was an exception in body', (() {
-    zone.initCallbacks(
-      onTurnStart: log.fn('onTurnStart'),
-      onTurnDone: log.fn('onTurnDone'),
-      onErrorHandler: (e, s) { log.add('onError'); }
-    );
-
-//    expect(() => zone.run(() {
-//      log.add('zone run');
-//      throw 'zoneError';
-//    })).toThrowError('zoneError');
-
-    // TODO(vicb): ng.dart rethrow the error while ng2 doesn't
-    // is that something that we want ?
-    // check with vics
-    zone.run(() {
-      log.add('zone run');
-      throw 'zoneError';
-    });
-
-    expect(log.result()).toEqual('onTurnStart; zone run; onError; onTurnDone');
-  }));
-
-  it('should call onTurnDone even if there was an exception in onTurnStart',
-     inject([AsyncTestCompleter], (async) {
-
-    zone.initCallbacks(
-      onTurnStart: () { log.add('onTurnStart'); throw 'zoneError';},
-      onTurnDone: log.fn('onTurnDone'),
-      onErrorHandler: (e, s) { log.add('onError'); }
-    );
-
-    // TODO(vicb): see above
-//    expect(() => zone.run(() {
-//      log('zone run');
-//    })).toThrowWith(message: 'zoneError');
-
-    macroTask(() {
-      zone.run(() { log.add('zone run'); });
-    });
-
-    macroTask(() {
-      expect(log.result()).toEqual('onTurnStart; onError; onTurnDone');
-      async.done();
-    });
-
-
-
-  }));
-
-  it('should call onTurnDone even if there was an exception in scheduleMicrotask', (() {
-    zone.initCallbacks(
-      onTurnStart: log.fn('onTurnStart'),
-      onTurnDone: log.fn('onTurnDone'),
-      onErrorHandler: (e, s) { log.add('onError'); }
-    );
-
-    zone.run(() {
-      log.add('zone run');
-      microTask(() {
-        log('scheduleMicrotask');
-        throw new Error();
-      });
-    });
-
-    zone.run(() {
-      expect(log.result()).toEqual('onTurnStart; zone run; scheduleMicrotask; onError; onTurnDone');
-    });
-  }));
-
 
 }
