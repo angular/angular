@@ -26,14 +26,14 @@ module.exports = new Package('angular.io', [basePackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
-    pathTemplate: '${id}',
+    pathTemplate: '${id}.html',
     outputPathTemplate: MODULES_DOCS_PATH + '/${id}.jade'
   });
 
   computePathsProcessor.pathTemplates.push({
     docTypes: EXPORT_DOC_TYPES,
-    pathTemplate: '${moduleDoc.path}/${name}-${docType}',
-    outputPathTemplate: MODULES_DOCS_PATH + '/${path}.jade'
+    pathTemplate: '${moduleDoc.id}/${name}-${docType}.html',
+    outputPathTemplate: MODULES_DOCS_PATH + '/${moduleDoc.id}/${name}-${docType}.jade',
   });
 
   computePathsProcessor.pathTemplates.push({
@@ -41,4 +41,8 @@ module.exports = new Package('angular.io', [basePackage])
     pathTemplate: '${originalDoc.id}/_data',
     outputPathTemplate: MODULES_DOCS_PATH + '/${path}.json'
   });
+})
+
+.config(function(getLinkInfo) {
+  getLinkInfo.relativeLinks = true;
 });
