@@ -10,6 +10,7 @@ export * from './src/core/annotations/view';
 export * from './src/core/application';
 export * from './src/core/application_tokens';
 export * from './src/core/annotations/di';
+export * from './src/core/compiler/query_list';
 
 export * from './src/core/compiler/compiler';
 
