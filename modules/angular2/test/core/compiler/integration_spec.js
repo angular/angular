@@ -274,6 +274,31 @@ export function main() {
         });
       }));
 
+      it('should allow specifying directives as bindings', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<child-cmp></child-cmp>',
+          directives: [bind(ChildComp).toClass(ChildComp)]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          view.detectChanges();
+
+          expect(view.rootNodes).toHaveText('hello');
+          async.done();
+        });
+      }));
+
+      it('should read directives metadata from their binding token', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div public-api><div needs-public-api></div></div>',
+          directives: [bind(PublicApi).toClass(PrivateImpl), NeedsPublicApi]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          async.done();
+        });
+      }));
+
       it('should support template directives via `<template>` elements.', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp,
           new View({
@@ -1189,5 +1214,26 @@ class NeedsAttribute {
     this.typeAttribute = typeAttribute;
     this.titleAttribute = titleAttribute;
     this.fooAttribute = fooAttribute;
+  }
+}
+
+@Decorator({
+  selector: '[public-api]'
+})
+class PublicApi {
+}
+
+@Decorator({
+  selector: '[private-impl]'
+})
+class PrivateImpl extends PublicApi {
+}
+
+@Decorator({
+  selector: '[needs-public-api]'
+})
+class NeedsPublicApi {
+  constructor(@Parent() api:PublicApi) {
+    expect(api instanceof PrivateImpl).toBe(true);
   }
 }
