@@ -57,7 +57,7 @@ export function main() {
     }
 
     function createViewWithOneBoundElement(pv) {
-      var view = new AppView(renderer, null, null, pv, MapWrapper.create());
+      var view = new AppView(renderer, null, pv, MapWrapper.create());
       var changeDetector = new SpyChangeDetector();
       var eij = createElementInjector();
       view.init(changeDetector, [eij], [eij],

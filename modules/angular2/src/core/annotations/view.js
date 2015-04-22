@@ -38,14 +38,14 @@ export class View {
    *
    * NOTE: either `templateURL` or `template` should be used, but not both.
    */
-  templateUrl:any; //string;
+  templateUrl:string;
 
   /**
    * Specifies an inline template for an angular component.
    *
    * NOTE: either `templateURL` or `template` should be used, but not both.
    */
-  template:any; //string;
+  template:string;
 
   /**
    * Specifies a list of directives that can be used within a template.
@@ -69,21 +69,30 @@ export class View {
    * }
    * ```
    */
-  directives:any; //List<Type>;
+  directives:List<Type>;
+
+  /**
+   * Specify a custom renderer for this View.
+   * If this is set, neither `template`, `templateURL` nor `directives` are used.
+   */
+  renderer:any; // string;
 
   @CONST()
   constructor({
       templateUrl,
       template,
-      directives
+      directives,
+      renderer
     }: {
       templateUrl: string,
       template: string,
-      directives: List<Type>
+      directives: List<Type>,
+      renderer: string
     })
   {
     this.templateUrl = templateUrl;
     this.template = template;
     this.directives = directives;
+    this.renderer = renderer;
   }
 }

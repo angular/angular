@@ -129,6 +129,9 @@ export class ListWrapper {
   static filter(array, pred:Function) {
     return array.filter(pred);
   }
+  static indexOf(array, value, startIndex = -1) {
+    return array.indexOf(value, startIndex);
+  }
   static any(list:List, pred:Function) {
     for (var i = 0 ; i < list.length; ++i) {
       if (pred(list[i])) return true;

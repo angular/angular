@@ -6,7 +6,7 @@ export class AST {
     throw new BaseException("Not supported");
   }
 
-  get isAssignable() {
+  get isAssignable():boolean {
     return false;
   }
 
@@ -113,7 +113,7 @@ export class AccessMember extends AST {
     }
   }
 
-  get isAssignable() {
+  get isAssignable():boolean {
     return true;
   }
 
@@ -148,7 +148,7 @@ export class KeyedAccess extends AST {
     return obj[key];
   }
 
-  get isAssignable() {
+  get isAssignable():boolean {
     return true;
   }
 
@@ -397,7 +397,7 @@ export class ASTWithSource extends AST {
     return this.ast.eval(context, locals);
   }
 
-  get isAssignable() {
+  get isAssignable():boolean {
     return this.ast.isAssignable;
   }
 

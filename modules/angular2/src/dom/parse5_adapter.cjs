@@ -84,19 +84,46 @@ export class Parse5DomAdapter extends DomAdapter {
     return result;
   }
   on(el, evt, listener) {
-    //Do nothing, in order to not break forms integration tests
+    var listenersMap = el._eventListenersMap;
+    if (isBlank(listenersMap)) {
+      var listenersMap = StringMapWrapper.create();
+      el._eventListenersMap = listenersMap;
+    }
+    var listeners = StringMapWrapper.get(listenersMap, evt);
+    if (isBlank(listeners)) {
+      listeners = ListWrapper.create();
+    }
+    ListWrapper.push(listeners, listener);
+    StringMapWrapper.set(listenersMap, evt, listeners);
   }
   onAndCancel(el, evt, listener): Function {
-    //Do nothing, in order to not break forms integration tests
+    this.on(el, evt, listener);
+    return () => {ListWrapper.remove(StringMapWrapper.get(el._eventListenersMap, evt), listener);};
   }
   dispatchEvent(el, evt) {
-    throw _notImplemented('dispatchEvent');
+    if (isBlank(evt.target)) {
+      evt.target = el;
+    }
+    if (isPresent(el._eventListenersMap)) {
+      var listeners = StringMapWrapper.get(el._eventListenersMap, evt.type);
+      if (isPresent(listeners)) {
+        for (var i = 0; i < listeners.length; i++) {
+          listeners[i](evt);
+        }
+      }
+    }
+    if (isPresent(el.parent)) {
+      this.dispatchEvent(el.parent, evt);
+    }
+    if (isPresent(el._window)) {
+      this.dispatchEvent(el._window, evt);
+    }
   }
   createMouseEvent(eventType) {
-    throw _notImplemented('createMouseEvent');
+    return this.createEvent(eventType);
   }
   createEvent(eventType) {
-    throw _notImplemented('createEvent');
+    return {type: eventType};
   }
   getInnerHTML(el) {
     return serializer.serialize(this.templateAwareRoot(el));
@@ -378,6 +405,7 @@ export class Parse5DomAdapter extends DomAdapter {
     this.appendChild(newDoc, body);
     StringMapWrapper.set(newDoc, "head", head);
     StringMapWrapper.set(newDoc, "body", body);
+    StringMapWrapper.set(newDoc, "_window", StringMapWrapper.create());
     return newDoc;
   }
   defaultDoc() {
@@ -481,6 +509,15 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   supportsNativeShadowDOM(): boolean {
     return false;
+  }
+  getGlobalEventTarget(target:string) {
+    if (target == "window") {
+      return this.defaultDoc()._window;
+    } else if (target == "document") {
+      return this.defaultDoc();
+    } else if (target == "body") {
+      return this.defaultDoc().body;
+    }
   }
 }
 

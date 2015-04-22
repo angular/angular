@@ -10,10 +10,11 @@ import {
   inject,
   IS_DARTIUM,
   it,
+  SpyObject, proxy
 } from 'angular2/test_lib';
 
 import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
@@ -30,20 +31,28 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import * as renderApi from 'angular2/src/render/api';
+// TODO(tbosch): Spys don't support named modules...
+import {Renderer} from 'angular2/src/render/api';
 
 export function main() {
   describe('compiler', function() {
-    var reader, tplResolver, renderer, protoViewFactory, cmpUrlMapper;
+    var reader, tplResolver, renderer, protoViewFactory, cmpUrlMapper, renderCompileRequests;
 
     beforeEach(() => {
       reader = new DirectiveMetadataReader();
       tplResolver = new FakeTemplateResolver();
       cmpUrlMapper = new RuntimeComponentUrlMapper();
+      renderer = new SpyRenderer();
     });
 
     function createCompiler(renderCompileResults:List, protoViewFactoryResults:List<AppProtoView>) {
       var urlResolver = new FakeUrlResolver();
-      renderer = new FakeRenderer(renderCompileResults);
+      renderCompileRequests = [];
+      renderer.spy('compile').andCallFake( (template) => {
+        ListWrapper.push(renderCompileRequests, template);
+        return PromiseWrapper.resolve(ListWrapper.removeAt(renderCompileResults, 0));
+      });
+
       protoViewFactory = new FakeProtoViewFactory(protoViewFactoryResults)
       return new Compiler(
         reader,
@@ -62,8 +71,8 @@ export function main() {
         tplResolver.setView(MainComponent, template);
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
         return compiler.compile(MainComponent).then( (protoView) => {
-          expect(renderer.requests.length).toBe(1);
-          return renderer.requests[0];
+          expect(renderCompileRequests.length).toBe(1);
+          return renderCompileRequests[0];
         });
       }
 
@@ -362,6 +371,11 @@ export function main() {
     }));
 
     it('should create host proto views', inject([AsyncTestCompleter], (async) => {
+      renderer.spy('createHostProtoView').andCallFake( (componentId) => {
+        return PromiseWrapper.resolve(
+          createRenderProtoView([createRenderComponentElementBinder(0)])
+        );
+      });
       tplResolver.setView(MainComponent, new View({template: '<div></div>'}));
       var rootProtoView = createProtoView([
         createComponentElementBinder(reader, MainComponent)
@@ -376,6 +390,25 @@ export function main() {
       compiler.compileInHost(MainComponent).then( (protoView) => {
         expect(protoView).toBe(rootProtoView);
         expect(rootProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
+        async.done();
+      });
+    }));
+
+    it('should create imperative proto views', inject([AsyncTestCompleter], (async) => {
+      renderer.spy('createImperativeComponentProtoView').andCallFake( (rendererId) => {
+        return PromiseWrapper.resolve(
+          createRenderProtoView([])
+        );
+      });
+      tplResolver.setView(MainComponent, new View({renderer: 'some-renderer'}));
+      var mainProtoView = createProtoView();
+      var compiler = createCompiler(
+        [],
+        [mainProtoView]
+      );
+      compiler.compile(MainComponent).then( (protoView) => {
+        expect(protoView).toBe(mainProtoView);
+        expect(renderer.spy('createImperativeComponentProtoView')).toHaveBeenCalledWith('some-renderer');
         async.done();
       });
     }));
@@ -482,26 +515,11 @@ class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr:string) {}
 }
 
-class FakeRenderer extends renderApi.Renderer {
-  requests:List<renderApi.ViewDefinition>;
-  _results:List;
-
-  constructor(results) {
-    super();
-    this._results = results;
-    this.requests = [];
-  }
-
-  compile(template:renderApi.ViewDefinition):Promise<renderApi.ProtoViewDto> {
-    ListWrapper.push(this.requests, template);
-    return PromiseWrapper.resolve(ListWrapper.removeAt(this._results, 0));
-  }
-
-  createHostProtoView(componentId):Promise<renderApi.ProtoViewDto> {
-    return PromiseWrapper.resolve(
-      createRenderProtoView([createRenderComponentElementBinder(0)])
-    );
-  }
+@proxy
+@IMPLEMENTS(Renderer)
+class SpyRenderer extends SpyObject {
+  constructor(){super(Renderer);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
 }
 
 class FakeUrlResolver extends UrlResolver {

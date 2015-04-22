@@ -28,7 +28,7 @@ export class NgElement {
     return domViewRef.delegate.boundElements[this._boundElementIndex];
   }
 
-  getAttribute(name:string) {
+  getAttribute(name:string):string {
     return normalizeBlank(DOM.getAttribute(this.domElement, name));
   }
 }

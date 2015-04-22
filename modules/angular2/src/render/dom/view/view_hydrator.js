@@ -7,6 +7,7 @@ import {EventManager} from '../events/event_manager';
 import {ViewFactory} from './view_factory';
 import * as vcModule from './view_container';
 import * as viewModule from './view';
+import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
 
 /**
  * A dehydrated view is a state of the view that allows it to be moved around
@@ -23,14 +24,16 @@ import * as viewModule from './view';
 export class RenderViewHydrator {
   _eventManager:EventManager;
   _viewFactory:ViewFactory;
+  _shadowDomStrategy:ShadowDomStrategy;
 
-  constructor(eventManager:EventManager, viewFactory:ViewFactory) {
+  constructor(eventManager:EventManager, viewFactory:ViewFactory, shadowDomStrategy:ShadowDomStrategy) {
     this._eventManager = eventManager;
     this._viewFactory = viewFactory;
+    this._shadowDomStrategy = shadowDomStrategy;
   }
 
   hydrateDynamicComponentView(hostView:viewModule.RenderView, boundElementIndex:number, componentView:viewModule.RenderView) {
-    this._viewFactory.setComponentView(hostView, boundElementIndex, componentView);
+    ViewFactory.setComponentView(this._shadowDomStrategy, hostView, boundElementIndex, componentView);
     var lightDom = hostView.lightDoms[boundElementIndex];
     this._viewHydrateRecurse(componentView, lightDom);
     if (isPresent(lightDom)) {
@@ -50,15 +53,17 @@ export class RenderViewHydrator {
 
   hydrateInPlaceHostView(parentView:viewModule.RenderView, hostView:viewModule.RenderView) {
     if (isPresent(parentView)) {
-      throw new BaseException('Not supported yet');
+      ListWrapper.push(parentView.imperativeHostViews, hostView);
     }
     this._viewHydrateRecurse(hostView, null);
   }
 
   dehydrateInPlaceHostView(parentView:viewModule.RenderView, hostView:viewModule.RenderView) {
     if (isPresent(parentView)) {
-      throw new BaseException('Not supported yet');
+      ListWrapper.remove(parentView.imperativeHostViews, hostView);
     }
+    vcModule.ViewContainer.removeViewNodes(hostView);
+    hostView.rootNodes = [];
     this._viewDehydrateRecurse(hostView);
   }
 
@@ -130,11 +135,23 @@ export class RenderViewHydrator {
         this._viewDehydrateRecurse(cv);
         if (view.proto.elementBinders[i].hasDynamicComponent()) {
           vcModule.ViewContainer.removeViewNodes(cv);
+          this._viewFactory.returnView(cv);
           view.lightDoms[i] = null;
           view.componentChildViews[i] = null;
         }
       }
     }
+
+    // imperativeHostViews
+    for (var i = 0; i < view.imperativeHostViews.length; i++) {
+      var hostView = view.imperativeHostViews[i];
+      this._viewDehydrateRecurse(hostView);
+      vcModule.ViewContainer.removeViewNodes(hostView);
+      hostView.rootNodes = [];
+      this._viewFactory.returnView(hostView);
+    }
+    view.imperativeHostViews = [];
+
 
     // viewContainers and content tags
     if (isPresent(view.viewContainers)) {

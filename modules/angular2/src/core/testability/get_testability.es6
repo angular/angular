@@ -19,20 +19,13 @@ class PublicTestability {
 
 export class GetTestability {
   static addToWindow(registry: TestabilityRegistry) {
-    if (!global.angular2) {
-      global.angular2 = {};
-    }
-    global.angular2.getTestability = function(elem): PublicTestability {
+    global.getAngularTestability = function(elem): PublicTestability {
       var testability = registry.findTestabilityInTree(elem);
 
       if (testability == null) {
         throw new Error('Could not find testability for element.');
       }
       return new PublicTestability(testability);
-    };
-    global.angular2.resumeBootstrap = function() {
-      // Intentionally left blank. This will allow Protractor to run
-      // against angular2 without turning off Angular synchronization.
     };
   }
 }

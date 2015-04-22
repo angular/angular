@@ -1,7 +1,7 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {stringify} from 'angular2/src/facade/lang';
 
-function findFirstClosedCycle(keys:List) {
+function findFirstClosedCycle(keys:List):List {
   var res = [];
   for(var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
@@ -14,7 +14,7 @@ function findFirstClosedCycle(keys:List) {
   return res;
 }
 
-function constructResolvingPath(keys:List) {
+function constructResolvingPath(keys:List):string {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
@@ -43,12 +43,12 @@ export class AbstractBindingError extends Error {
   }
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  addKey(key) {
+  addKey(key):void {
     ListWrapper.push(this.keys, key);
     this.message = this.constructResolvingMessage(this.keys);
   }
 
-  toString() {
+  toString():string {
     return this.message;
   }
 }
@@ -140,13 +140,17 @@ export class CyclicDependencyError extends AbstractBindingError {
  * @exportedAs angular2/di_errors
  */
 export class InstantiationError extends AbstractBindingError {
+  cause;
+  causeKey;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(originalException, key) {
+  constructor(cause, key) {
     super(key, function (keys:List) {
       var first = stringify(ListWrapper.first(keys).token);
       return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
-        ` ORIGINAL ERROR: ${originalException}`;
+        ` ORIGINAL ERROR: ${cause}`;
     });
+    this.cause = cause;
+    this.causeKey = key;
   }
 }
 
@@ -162,7 +166,7 @@ export class InvalidBindingError extends Error {
     this.message = `Invalid binding ${binding}`;
   }
 
-  toString() {
+  toString():string {
     return this.message;
   }
 }
@@ -183,7 +187,7 @@ export class NoAnnotationError extends Error {
       ` Make sure they all have valid type or annotations.`;
   }
 
-  toString() {
+  toString():string {
     return this.message;
   }
 }

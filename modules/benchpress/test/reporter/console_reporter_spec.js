@@ -96,6 +96,22 @@ export function main() {
       ]);
     });
 
+    it('should print the coefficient of variation only when it is meaningful', () => {
+      createReporter({
+        columnWidth: 8,
+        metrics: { 'a': '', 'b': '' }
+      });
+      log = [];
+      reporter.reportSample([], [
+          mv(0, 0, { 'a': 3, 'b': 0 }),
+          mv(1, 1, { 'a': 5, 'b': 0 })
+      ]);
+      expect(log).toEqual([
+        '======== | ========',
+        '4.00+-25% |     0.00'
+      ]);
+    });
+
   });
 }
 

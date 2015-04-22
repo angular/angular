@@ -25,6 +25,9 @@ export class AppView {
   elementInjectors:List<ElementInjector>;
   changeDetector:ChangeDetector;
   componentChildViews: List<AppView>;
+  /// Host views that were added by an imperative view.
+  /// This is a dynamically growing / shrinking array.
+  imperativeHostViews: List<AppView>;
   viewContainers: List<ViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
@@ -46,7 +49,7 @@ export class AppView {
    */
   locals:Locals;
 
-  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, viewHydrator:vhModule.AppViewHydrator, proto:AppProtoView, protoLocals:Map) {
+  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
@@ -59,7 +62,8 @@ export class AppView {
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
     this.renderer = renderer;
     this.viewFactory = viewFactory;
-    this.viewHydrator = viewHydrator;
+    this.viewHydrator = null;
+    this.imperativeHostViews = [];
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List,
@@ -71,7 +75,7 @@ export class AppView {
     this.componentChildViews = componentChildViews;
   }
 
-  getOrCreateViewContainer(boundElementIndex:number) {
+  getOrCreateViewContainer(boundElementIndex:number):ViewContainer {
     var viewContainer = this.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
       viewContainer = new ViewContainer(this, this.proto.elementBinders[boundElementIndex].nestedProtoView, this.elementInjectors[boundElementIndex]);
@@ -80,7 +84,7 @@ export class AppView {
     return viewContainer;
   }
 
-  setLocal(contextName: string, value) {
+  setLocal(contextName: string, value):void {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
     if (!MapWrapper.contains(this.proto.variableBindings, contextName)) {
       return;
@@ -89,7 +93,7 @@ export class AppView {
     this.locals.set(templateName, value);
   }
 
-  hydrated() {
+  hydrated():boolean {
     return isPresent(this.context);
   }
 
@@ -102,14 +106,14 @@ export class AppView {
    * @param {*} eventObj
    * @param {int} binderIndex
    */
-  triggerEventHandlers(eventName: string, eventObj, binderIndex: int) {
+  triggerEventHandlers(eventName: string, eventObj, binderIndex: int): void {
     var locals = MapWrapper.create();
     MapWrapper.set(locals, '$event', eventObj);
     this.dispatchEvent(binderIndex, eventName, locals);
   }
 
   // dispatch to element injector or text nodes based on context
-  notifyOnBinding(b:BindingRecord, currentValue:any) {
+  notifyOnBinding(b:BindingRecord, currentValue:any): void {
     if (b.isElement()) {
       this.renderer.setElementProperty(
         this.render, b.elementIndex, b.propertyName, currentValue
@@ -151,7 +155,7 @@ export class AppView {
         }
         var result = expr.eval(context, new Locals(this.locals, locals));
         if (isPresent(result)) {
-          allowDefaultBehavior = allowDefaultBehavior && result;  
+          allowDefaultBehavior = allowDefaultBehavior && result;
         }
       });
     }
@@ -195,7 +199,7 @@ export class AppProtoView {
   //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of AppProtoView once we separate
   // AppProtoView and ProtoViewBuilder
-  getVariableBindings() {
+  getVariableBindings(): List {
     if (isPresent(this._variableBindings)) {
       return this._variableBindings;
     }
@@ -213,7 +217,7 @@ export class AppProtoView {
   //TODO: Tobias or Victor. Moving it into the constructor.
   // this work should be done the constructor of ProtoView once we separate
   // AppProtoView and ProtoViewBuilder
-  getdirectiveRecords() {
+  getdirectiveRecords(): List {
     if (isPresent(this._directiveRecords)) {
       return this._directiveRecords;
     }
@@ -232,7 +236,7 @@ export class AppProtoView {
     return this._directiveRecords;
   }
 
-  bindVariable(contextName:string, templateName:string) {
+  bindVariable(contextName:string, templateName:string): void {
     MapWrapper.set(this.variableBindings, contextName, templateName);
     MapWrapper.set(this.protoLocals, templateName, null);
   }
@@ -248,7 +252,7 @@ export class AppProtoView {
   /**
    * Adds a text node binding for the last created ElementBinder via bindElement
    */
-  bindTextNode(expression:AST) {
+  bindTextNode(expression:AST):void {
     var textNodeIndex = this.textNodesWithBindingCount++;
     var b = BindingRecord.createForTextNode(expression, textNodeIndex);
     ListWrapper.push(this.bindings, b);
@@ -257,7 +261,7 @@ export class AppProtoView {
   /**
    * Adds an element property binding for the last created ElementBinder via bindElement
    */
-  bindElementProperty(expression:AST, setterName:string) {
+  bindElementProperty(expression:AST, setterName:string):void {
     var elementIndex = this.elementBinders.length-1;
     var b = BindingRecord.createForElement(expression, elementIndex, setterName);
     ListWrapper.push(this.bindings, b);
@@ -276,7 +280,7 @@ export class AppProtoView {
    * @param {int} directiveIndex The directive index in the binder or -1 when the event is not bound
    *                             to a directive
    */
-  bindEvent(eventBindings: List<renderApi.EventBinding>, directiveIndex: int = -1) {
+  bindEvent(eventBindings: List<renderApi.EventBinding>, directiveIndex: int = -1): void {
     var elBinder = this.elementBinders[this.elementBinders.length - 1];
     var events = elBinder.hostListeners;
     if (isBlank(events)) {
@@ -302,7 +306,7 @@ export class AppProtoView {
     directiveIndex:number,
     expression:AST,
     setterName:string,
-    setter:SetterFn) {
+    setter:SetterFn): void {
 
     var elementIndex = this.elementBinders.length-1;
     var directiveRecord = this._getDirectiveRecord(elementIndex, directiveIndex);
@@ -310,7 +314,7 @@ export class AppProtoView {
     ListWrapper.push(this.bindings, b);
   }
 
-  _getDirectiveRecord(elementInjectorIndex:number, directiveIndex:number) {
+  _getDirectiveRecord(elementInjectorIndex:number, directiveIndex:number): DirectiveRecord {
     var id = elementInjectorIndex * 100 + directiveIndex;
     var protoElementInjector = this.elementBinders[elementInjectorIndex].protoElementInjector;
 

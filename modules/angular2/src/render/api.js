@@ -166,6 +166,14 @@ export class Renderer {
   createHostProtoView(componentId):Promise<ProtoViewDto> { return null; }
 
   /**
+   * Creats a ProtoViewDto for a component that will use an imperative View using the given
+   * renderer.
+   * Note: Rigth now, the renderer argument is ignored, but will be used in the future to define
+   * a custom handler.
+   */
+  createImperativeComponentProtoView(rendererId):Promise<ProtoViewDto> { return null; }
+
+  /**
    * Compiles a single RenderProtoView. Non recursive so that
    * we don't need to serialize all possible components over the wire,
    * but only the needed ones based on previous calls.

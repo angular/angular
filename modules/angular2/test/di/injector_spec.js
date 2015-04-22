@@ -1,4 +1,4 @@
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank, BaseException} from 'angular2/src/facade/lang';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {Injector, Inject, InjectLazy, Optional, bind, ResolvedBinding} from 'angular2/di';
 
@@ -7,7 +7,7 @@ class Engine {
 
 class BrokenEngine {
   constructor() {
-    throw "Broken Engine";
+    throw new BaseException("Broken Engine");
   }
 }
 
@@ -251,6 +251,8 @@ export function main() {
         throw "Must throw";
       } catch (e) {
         expect(e.message).toContain("Error during instantiation of Engine! (Car -> Engine)");
+        expect(e.cause instanceof BaseException).toBeTruthy();
+        expect(e.causeKey.token).toEqual(Engine);
       }
     });
 

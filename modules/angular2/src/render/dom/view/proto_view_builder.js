@@ -20,12 +20,18 @@ export class ProtoViewBuilder {
   rootElement;
   variableBindings: Map<string, string>;
   elements:List<ElementBinderBuilder>;
-  isRootView:boolean;
+  imperativeRendererId:string;
 
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.elements = [];
     this.variableBindings = MapWrapper.create();
+    this.imperativeRendererId = null;
+  }
+
+  setImperativeRendererId(id:string):ProtoViewBuilder {
+    this.imperativeRendererId = id;
+    return this;
   }
 
   bindElement(element, description = null):ElementBinderBuilder {
@@ -90,7 +96,8 @@ export class ProtoViewBuilder {
     return new api.ProtoViewDto({
       render: new directDomRenderer.DirectDomProtoViewRef(new RenderProtoView({
         element: this.rootElement,
-        elementBinders: renderElementBinders
+        elementBinders: renderElementBinders,
+        imperativeRendererId: this.imperativeRendererId
       })),
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings

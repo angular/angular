@@ -114,6 +114,9 @@ export class ListWrapper {
     }
     return null;
   }
+  static indexOf(array: List<any>, value, startIndex = -1) {
+    return array.indexOf(value, startIndex);
+  }
   static reduce<T>(list: List<T>,
                    fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
                    init: T) {

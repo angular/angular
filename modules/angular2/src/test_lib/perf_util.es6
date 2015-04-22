@@ -33,7 +33,7 @@ function runBenchmark(config) {
     }
     var url = encodeURI(config.url + '?' + urlParams.join('&'));
     return browser.get(url).then(function() {
-      benchpressRunner.sample({
+      return benchpressRunner.sample({
         id: config.id,
         execute: config.work,
         prepare: config.prepare,

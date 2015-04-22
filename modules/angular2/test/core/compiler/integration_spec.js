@@ -28,13 +28,14 @@ import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/cor
 import {View} from 'angular2/src/core/annotations/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {Attribute} from 'angular2/src/core/annotations/di';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
 import {If} from 'angular2/src/directives/if';
 
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 
 export function main() {
   describe('integration tests', function() {
@@ -544,53 +545,53 @@ export function main() {
         });
       }));
 
+      it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div listener></div>',
+          directives: [DecoratorListeningDomEvent]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+
+          var injector = view.rawView.elementInjectors[0];
+
+          var listener = injector.get(DecoratorListeningDomEvent);
+
+          dispatchEvent(view.rootNodes[0], 'domEvent');
+
+          expect(listener.eventType).toEqual('domEvent');
+
+          async.done();
+        });
+      }));
+
+      it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div listener></div>',
+          directives: [DecoratorListeningDomEvent]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var injector = view.rawView.elementInjectors[0];
+
+          var listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(listener.eventType).toEqual('window_domEvent');
+
+          listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
+          expect(listener.eventType).toEqual('document_domEvent');
+
+          view.destroy();
+          listener = injector.get(DecoratorListeningDomEvent);
+          dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
+          expect(listener.eventType).toEqual('');
+
+          async.done();
+        });
+      }));
+
       if (DOM.supportsDOMEvents()) {
-        it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div listener></div>',
-            directives: [DecoratorListeningDomEvent]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-
-            var injector = view.rawView.elementInjectors[0];
-
-            var listener = injector.get(DecoratorListeningDomEvent);
-
-            dispatchEvent(view.rootNodes[0], 'domEvent');
-
-            expect(listener.eventType).toEqual('domEvent');
-
-            async.done();
-          });
-        }));
-
-        it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div listener></div>',
-            directives: [DecoratorListeningDomEvent]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-            var injector = view.rawView.elementInjectors[0];
-
-            var listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(listener.eventType).toEqual('window_domEvent');
-
-            listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
-            expect(listener.eventType).toEqual('document_domEvent');
-
-            view.destroy();
-            listener = injector.get(DecoratorListeningDomEvent);
-            dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
-            expect(listener.eventType).toEqual('');
-
-            async.done();
-          });
-        }));
-
         it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
@@ -604,113 +605,44 @@ export function main() {
             DOM.dispatchEvent(view.rootNodes[1], DOM.createMouseEvent('click'));
             expect(DOM.getChecked(view.rootNodes[0])).toBeFalsy();
             expect(DOM.getChecked(view.rootNodes[1])).toBeTruthy();
-            async.done();        
-          });
-        }));
-
-        it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div *if="ctxBoolProp" listener listenerother></div>',
-            directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
-          }));
-
-          tb.createView(MyComp, {context: ctx}).then((view) => {
-            globalCounter = 0;
-            ctx.ctxBoolProp = true;
-            view.detectChanges();
-
-            var subview = view.rawView.viewContainers[0].get(0);
-            var injector = subview.elementInjectors[0];
-            var listener = injector.get(DecoratorListeningDomEvent);
-            var listenerother = injector.get(DecoratorListeningDomEventOther);
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(listener.eventType).toEqual('window_domEvent');
-            expect(listenerother.eventType).toEqual('other_domEvent');
-            expect(globalCounter).toEqual(1);
-
-            ctx.ctxBoolProp = false;
-            view.detectChanges();
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(globalCounter).toEqual(1);
-
-            ctx.ctxBoolProp = true;
-            view.detectChanges();
-            dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
-            expect(globalCounter).toEqual(2);
-
             async.done();
           });
         }));
       }
 
-      describe("dynamic components", () => {
-        it('should support loading components dynamically', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<dynamic-comp #dynamic></dynamic-comp>',
-            directives: [DynamicComp]
-          }));
-
-          tb.createView(MyComp).then((view) => {
-            var dynamicComponent = view.rawView.locals.get("dynamic");
-            expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
-
-            dynamicComponent.done.then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
-              async.done();
-            });
-          });
+      it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div *if="ctxBoolProp" listener listenerother></div>',
+          directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
         }));
 
-        it('should inject dependencies of the dynamically-loaded component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<dynamic-comp #dynamic></dynamic-comp>',
-            directives: [DynamicComp]
-          }));
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          globalCounter = 0;
+          ctx.ctxBoolProp = true;
+          view.detectChanges();
 
-          tb.createView(MyComp).then((view) => {
-            var dynamicComponent = view.rawView.locals.get("dynamic");
-            dynamicComponent.done.then((ref) => {
-              expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
-              async.done();
-            });
-          });
-        }));
+          var subview = view.rawView.viewContainers[0].get(0);
+          var injector = subview.elementInjectors[0];
+          var listener = injector.get(DecoratorListeningDomEvent);
+          var listenerother = injector.get(DecoratorListeningDomEventOther);
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(listener.eventType).toEqual('window_domEvent');
+          expect(listenerother.eventType).toEqual('other_domEvent');
+          expect(globalCounter).toEqual(1);
 
-        it('should allow to destroy and create them via viewport directives',
-            inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          tb.overrideView(MyComp, new View({
-            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
-            directives: [DynamicComp, If]
-          }));
+          ctx.ctxBoolProp = false;
+          view.detectChanges();
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(globalCounter).toEqual(1);
 
-          tb.createView(MyComp).then((view) => {
-            view.context.ctxBoolProp = true;
-            view.detectChanges();
-            var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
-            dynamicComponent.done.then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
+          ctx.ctxBoolProp = true;
+          view.detectChanges();
+          dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
+          expect(globalCounter).toEqual(2);
 
-              view.context.ctxBoolProp = false;
-              view.detectChanges();
-
-              expect(view.rawView.viewContainers[0].length).toBe(0);
-              expect(view.rootNodes).toHaveText('');
-
-              view.context.ctxBoolProp = true;
-              view.detectChanges();
-
-              var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
-              return dynamicComponent.done;
-            }).then((_) => {
-              view.detectChanges();
-              expect(view.rootNodes).toHaveText('hello');
-              async.done();
-            });
-          });
-        }));
-      });
+          async.done();
+        });
+      }));
 
       describe('dynamic ViewContainers', () => {
 
@@ -793,6 +725,18 @@ export function main() {
       }));
     });
 
+    it('should support imperative views',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      tb.overrideView(MyComp, new View({
+        template: '<simple-imp-cmp></simple-imp-cmp>',
+        directives: [SimpleImperativeViewComponent]
+      }));
+      tb.createView(MyComp).then((view) => {
+        expect(view.rootNodes).toHaveText('hello imp view');
+        async.done();
+      });
+    }));
+
     // Disabled until a solution is found, refs:
     // - https://github.com/angular/angular/issues/776
     // - https://github.com/angular/angular/commit/81f3f32
@@ -854,6 +798,21 @@ export function main() {
   });
 }
 
+@Component({
+  selector: 'simple-imp-cmp'
+})
+@View({
+  renderer: 'simple-imp-cmp-renderer'
+})
+class SimpleImperativeViewComponent {
+  done;
+
+  constructor(self:ElementRef, renderer:DirectDomRenderer) {
+    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [el('hello imp view')]);
+  }
+}
+
+
 @Decorator({
   selector: 'dynamic-vp'
 })
@@ -865,34 +824,6 @@ class DynamicViewport {
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
       vc.create(0, hostPv, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
     });
-  }
-}
-
-class DynamicallyCreatedComponentService {}
-
-@DynamicComponent({
-  selector: 'dynamic-comp'
-})
-class DynamicComp {
-  done;
-  constructor(loader:DynamicComponentLoader, location:ElementRef) {
-    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, location);
-  }
-}
-
-@Component({
-  selector: 'hello-cmp',
-  injectables: [DynamicallyCreatedComponentService]
-})
-@View({
-  template: "{{greeting}}"
-})
-class DynamicallyCreatedCmp {
-  greeting:string;
-  dynamicallyCreatedComponentService:DynamicallyCreatedComponentService;
-  constructor(a:DynamicallyCreatedComponentService) {
-    this.greeting = "hello";
-    this.dynamicallyCreatedComponentService = a;
   }
 }
 
@@ -987,7 +918,7 @@ class ComponentWithPipes {
 
 @Component({
   selector: 'child-cmp',
-  injectables: [MyService]
+  injectables: [MyService],
 })
 @View({
   directives: [MyDir],

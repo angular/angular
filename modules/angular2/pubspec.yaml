@@ -17,7 +17,10 @@ dependencies:
   logging: '>=0.9.0 <0.11.0'
   source_span: '^1.0.0'
   stack_trace: '^1.1.1'
-transformers:
-  - angular2
 dev_dependencies:
   guinness: "^0.1.17"
+transformers:
+- angular2
+- $dart2js:
+    commandLineOptions:
+    - --show-package-warnings

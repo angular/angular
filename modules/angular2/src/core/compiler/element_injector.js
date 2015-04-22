@@ -26,26 +26,20 @@ var _staticKeys;
  * @exportedAs angular2/view
  */
 export class ElementRef {
+  hostView:viewModule.AppView;
+  boundElementIndex:number;
+  injector:Injector;
   elementInjector:ElementInjector;
 
-  constructor(elementInjector:ElementInjector){
+  constructor(elementInjector, hostView, boundElementIndex, injector){
     this.elementInjector = elementInjector;
-  }
-
-  get hostView() {
-    return this.elementInjector._preBuiltObjects.view;
+    this.hostView = hostView;
+    this.boundElementIndex = boundElementIndex;
+    this.injector = injector;
   }
 
   get viewContainer() {
     return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
-  }
-
-  get injector() {
-    return this.elementInjector._lightDomAppInjector;
-  }
-
-  get boundElementIndex() {
-    return this.elementInjector._proto.index;
   }
 }
 
@@ -65,7 +59,7 @@ class StaticKeys {
     this.elementRefId = Key.get(ElementRef).id;
   }
 
-  static instance() {
+  static instance():StaticKeys {
     if (isBlank(_staticKeys)) _staticKeys = new StaticKeys();
     return _staticKeys;
   }
@@ -83,17 +77,17 @@ export class TreeNode {
     if (isPresent(parent)) parent.addChild(this);
   }
 
-  _assertConsistency() {
+  _assertConsistency():void {
     this._assertHeadBeforeTail();
     this._assertTailReachable();
     this._assertPresentInParentList();
   }
 
-  _assertHeadBeforeTail() {
+  _assertHeadBeforeTail():void {
     if (isBlank(this._tail) && isPresent(this._head)) throw new BaseException('null tail but non-null head');
   }
 
-  _assertTailReachable() {
+  _assertTailReachable():void {
     if (isBlank(this._tail)) return;
     if (isPresent(this._tail._next)) throw new BaseException('node after tail');
     var p = this._head;
@@ -101,7 +95,7 @@ export class TreeNode {
     if (isBlank(p) && isPresent(this._tail)) throw new BaseException('tail not reachable.')
   }
 
-  _assertPresentInParentList() {
+  _assertPresentInParentList():void {
     var p = this._parent;
     if (isBlank(p)) {
       return;
@@ -114,7 +108,7 @@ export class TreeNode {
   /**
    * Adds a child to the parent node. The child MUST NOT be a part of a tree.
    */
-  addChild(child:TreeNode) {
+  addChild(child:TreeNode):void {
     if (isPresent(this._tail)) {
       this._tail._next = child;
       this._tail = child;
@@ -130,7 +124,7 @@ export class TreeNode {
    * Adds a child to the parent node after a given sibling.
    * The child MUST NOT be a part of a tree and the sibling must be present.
    */
-  addChildAfter(child:TreeNode, prevSibling:TreeNode) {
+  addChildAfter(child:TreeNode, prevSibling:TreeNode):void {
     this._assertConsistency();
     if (isBlank(prevSibling)) {
       var prevHead = this._head;
@@ -152,7 +146,7 @@ export class TreeNode {
   /**
    * Detaches a node from the parent's tree.
    */
-  remove() {
+  remove():void {
     this._assertConsistency();
     if (isBlank(this.parent)) return;
     var nextSibling = this._next;
@@ -215,7 +209,7 @@ export class DirectiveDependency extends Dependency {
     this._verify();
   }
 
-  _verify() {
+  _verify():void {
     var count = 0;
     if (isPresent(this.propSetterName)) count++;
     if (isPresent(this.queryDirective)) count++;
@@ -672,6 +666,10 @@ export class ElementInjector extends TreeNode {
     }
   }
 
+  getElementRef() {
+    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector);
+  }
+
   getDynamicallyLoadedComponent() {
     return this._dynamicallyCreatedComponent;
   }
@@ -741,7 +739,7 @@ export class ElementInjector extends TreeNode {
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
     if (dep.key.id === StaticKeys.instance().elementRefId) {
-      return new ElementRef(this);
+      return this.getElementRef();
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }

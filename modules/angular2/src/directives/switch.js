@@ -65,7 +65,7 @@ export class Switch {
     this._switchValue = value;
   }
 
-  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainer) {
+  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainer):void {
     this._deregisterViewContainer(oldWhen, viewContainer);
     this._registerViewContainer(newWhen, viewContainer);
 
@@ -88,7 +88,7 @@ export class Switch {
     }
   }
 
-  _emptyAllActiveViewContainers() {
+  _emptyAllActiveViewContainers():void {
     var activeContainers = this._activeViewContainers;
     for (var i = 0; i < activeContainers.length; i++) {
       activeContainers[i].remove();
@@ -96,7 +96,7 @@ export class Switch {
     this._activeViewContainers = ListWrapper.create();
   }
 
-  _activateViewContainers(containers: List<ViewContainer>) {
+  _activateViewContainers(containers: List<ViewContainer>):void {
     // TODO(vicb): assert(this._activeViewContainers.length === 0);
     if (isPresent(containers)) {
       for (var i = 0; i < containers.length; i++) {
@@ -106,7 +106,7 @@ export class Switch {
     }
   }
 
-  _registerViewContainer(value, container: ViewContainer) {
+  _registerViewContainer(value, container: ViewContainer): void {
     var containers = MapWrapper.get(this._valueViewContainers, value);
     if (isBlank(containers)) {
       containers = ListWrapper.create();
@@ -115,7 +115,7 @@ export class Switch {
     ListWrapper.push(containers, container);
   }
 
-  _deregisterViewContainer(value, container: ViewContainer) {
+  _deregisterViewContainer(value, container: ViewContainer):void {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
     var containers = MapWrapper.get(this._valueViewContainers, value);

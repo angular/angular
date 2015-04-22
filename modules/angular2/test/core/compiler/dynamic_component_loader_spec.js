@@ -11,88 +11,158 @@ import {
   inject,
   beforeEachBindings,
   it,
-  xit,
-  SpyObject, proxy
-} from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
-import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+  xit
+  } from 'angular2/test_lib';
+
+import {TestBed} from 'angular2/src/test_lib/test_bed';
+
+import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
+import {View} from 'angular2/src/core/annotations/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {Decorator, Viewport, Component} from 'angular2/src/core/annotations/annotations';
-import {ElementRef, ElementInjector, ProtoElementInjector, PreBuiltObjects} from 'angular2/src/core/compiler/element_injector';
-import {Compiler} from 'angular2/src/core/compiler/compiler';
-import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
-import {ViewFactory} from 'angular2/src/core/compiler/view_factory'
-import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
+import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {If} from 'angular2/src/directives/if';
+import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 
 export function main() {
-  describe("DynamicComponentLoader", () => {
-    var compiler;
-    var viewFactory;
-    var directiveMetadataReader;
-    var viewHydrator;
-    var loader;
+  describe('DynamicComponentLoader', function () {
+    describe("loading into existing location", () => {
+      it('should work', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<dynamic-comp #dynamic></dynamic-comp>',
+          directives: [DynamicComp]
+        }));
 
-    beforeEach( () => {
-      compiler = new SpyCompiler();
-      viewFactory = new SpyViewFactory();
-      viewHydrator = new SpyAppViewHydrator();
-      directiveMetadataReader = new DirectiveMetadataReader();
-      loader = new DynamicComponentLoader(compiler, directiveMetadataReader, viewFactory, viewHydrator);
+        tb.createView(MyComp).then((view) => {
+          var dynamicComponent = view.rawView.locals.get("dynamic");
+          expect(dynamicComponent).toBeAnInstanceOf(DynamicComp);
+
+          dynamicComponent.done.then((_) => {
+            view.detectChanges();
+            expect(view.rootNodes).toHaveText('hello');
+            async.done();
+          });
+        });
+      }));
+
+      it('should inject dependencies of the dynamically-loaded component', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<dynamic-comp #dynamic></dynamic-comp>',
+          directives: [DynamicComp]
+        }));
+
+        tb.createView(MyComp).then((view) => {
+          var dynamicComponent = view.rawView.locals.get("dynamic");
+          dynamicComponent.done.then((ref) => {
+            expect(ref.instance.dynamicallyCreatedComponentService).toBeAnInstanceOf(DynamicallyCreatedComponentService);
+            async.done();
+          });
+        });
+      }));
+
+      it('should allow to destroy and create them via viewport directives',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
+            directives: [DynamicComp, If]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            view.context.ctxBoolProp = true;
+            view.detectChanges();
+            var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+            dynamicComponent.done.then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
+
+              view.context.ctxBoolProp = false;
+              view.detectChanges();
+
+              expect(view.rawView.viewContainers[0].length).toBe(0);
+              expect(view.rootNodes).toHaveText('');
+
+              view.context.ctxBoolProp = true;
+              view.detectChanges();
+
+              var dynamicComponent = view.rawView.viewContainers[0].get(0).locals.get("dynamic");
+              return dynamicComponent.done;
+            }).then((_) => {
+              view.detectChanges();
+              expect(view.rootNodes).toHaveText('hello');
+              async.done();
+            });
+          });
+        }));
     });
 
-    function createProtoView() {
-      return new AppProtoView(null, null);
-    }
+    describe("loading next to an existing location", () => {
+      it('should work', inject([DynamicComponentLoader, TestBed, AsyncTestCompleter],
+        (loader, tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><location #loc></location></div>',
+            directives: [Location]
+          }));
 
-    function createEmptyView() {
-      var view = new AppView(null, null, null, createProtoView(), MapWrapper.create());
-      view.init(null, [], [], [], []);
-      return view;
-    }
+          tb.createView(MyComp).then((view) => {
+            var location = view.rawView.locals.get("loc");
 
-    function createElementRef(view, boundElementIndex) {
-      var peli = new ProtoElementInjector(null, boundElementIndex, []);
-      var eli = new ElementInjector(peli, null);
-      var preBuiltObjects = new PreBuiltObjects(view, null, null);
-      eli.instantiateDirectives(null, null, null, preBuiltObjects);
-      return new ElementRef(eli);
-    }
+            loader.loadNextToExistingLocation(DynamicallyLoaded, location.elementRef).then(ref => {
+              expect(view.rootNodes).toHaveText("Location;DynamicallyLoaded;")
+              async.done();
+            });
+          });
+        }));
 
-    describe("loadIntoExistingLocation", () => {
-      describe('Load errors', () => {
-        it('should throw when trying to load a decorator', () => {
-          expect(() => loader.loadIntoExistingLocation(SomeDecorator, null))
-            .toThrowError("Could not load 'SomeDecorator' because it is not a component.");
-        });
+      it('should return a disposable component ref', inject([DynamicComponentLoader, TestBed, AsyncTestCompleter],
+        (loader, tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><location #loc></location></div>',
+            directives: [Location]
+          }));
 
-        it('should throw when trying to load a viewport', () => {
-          expect(() => loader.loadIntoExistingLocation(SomeViewport, null))
-            .toThrowError("Could not load 'SomeViewport' because it is not a component.");
-        });
-      });
+          tb.createView(MyComp).then((view) => {
+            var location = view.rawView.locals.get("loc");
+            loader.loadNextToExistingLocation(DynamicallyLoaded, location.elementRef).then(ref => {
+              loader.loadNextToExistingLocation(DynamicallyLoaded2, location.elementRef).then(ref2 => {
+                expect(view.rootNodes).toHaveText("Location;DynamicallyLoaded;DynamicallyLoaded2;")
 
-      it('should compile, create and hydrate the view', inject([AsyncTestCompleter], (async) => {
-        var log = [];
-        var protoView = createProtoView();
-        var hostView = createEmptyView();
-        var childView = createEmptyView();
-        viewHydrator.spy('hydrateDynamicComponentView').andCallFake( (hostView, boundElementIndex,
-            componentView, componentDirective, injector) => {
-          ListWrapper.push(log, ['hydrateDynamicComponentView', hostView, boundElementIndex, componentView]);
-        });
-        viewFactory.spy('getView').andCallFake( (protoView) => {
-          ListWrapper.push(log, ['getView', protoView]);
-          return childView;
-        });
-        compiler.spy('compile').andCallFake( (_) => PromiseWrapper.resolve(protoView));
+                ref2.dispose();
 
-        var elementRef = createElementRef(hostView, 23);
-        loader.loadIntoExistingLocation(SomeComponent, elementRef).then( (componentRef) => {
-          expect(log[0]).toEqual(['getView', protoView]);
-          expect(log[1]).toEqual(['hydrateDynamicComponentView', hostView, 23, childView]);
-          async.done();
+                expect(view.rootNodes).toHaveText("Location;DynamicallyLoaded;")
+
+                async.done();
+              });
+            });
+          });
+        }));
+    });
+
+    describe('loading into a new location', () => {
+      it('should allow to create, update and destroy components',
+          inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<imp-ng-cmp #impview></imp-ng-cmp>',
+          directives: [ImperativeViewComponentUsingNgComponent]
+        }));
+        tb.createView(MyComp).then((view) => {
+          var userViewComponent = view.rawView.locals.get("impview");
+
+          userViewComponent.done.then((childComponentRef) => {
+            view.detectChanges();
+
+            expect(view.rootNodes).toHaveText('hello');
+
+            childComponentRef.instance.ctxProp = 'new';
+
+            view.detectChanges();
+
+            expect(view.rootNodes).toHaveText('new');
+
+            childComponentRef.dispose();
+
+            expect(view.rootNodes).toHaveText('');
+
+            async.done();
+          });
         });
       }));
 
@@ -101,28 +171,97 @@ export function main() {
   });
 }
 
-@Decorator({selector: 'someDecorator'})
-class SomeDecorator {}
+@Component({
+  selector: 'imp-ng-cmp'
+})
+@View({
+  renderer: 'imp-ng-cmp-renderer'
+})
+class ImperativeViewComponentUsingNgComponent {
+  done;
 
-@Viewport({selector: 'someViewport'})
-class SomeViewport {}
+  constructor(self:ElementRef, dynamicComponentLoader:DynamicComponentLoader, renderer:DirectDomRenderer) {
+    var div = el('<div></div>');
+    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [div]);
+    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, div, null);
+  }
+}
 
-@Component({selector: 'someComponent'})
-class SomeComponent {}
+@Component({
+  selector: 'child-cmp',
+})
+@View({
+  template: '{{ctxProp}}'
+})
+class ChildComp {
+  ctxProp:string;
+  constructor() {
+    this.ctxProp = 'hello';
+  }
+}
 
 
-@proxy
-@IMPLEMENTS(Compiler)
-class SpyCompiler extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+class DynamicallyCreatedComponentService {
+}
 
-@proxy
-@IMPLEMENTS(ViewFactory)
-class SpyViewFactory extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+@DynamicComponent({
+  selector: 'dynamic-comp'
+})
+class DynamicComp {
+  done;
 
-@proxy
-@IMPLEMENTS(AppViewHydrator)
-class SpyAppViewHydrator extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+  constructor(loader:DynamicComponentLoader, location:ElementRef) {
+    this.done = loader.loadIntoExistingLocation(DynamicallyCreatedCmp, location);
+  }
+}
 
-@proxy
-@IMPLEMENTS(AppView)
-class SpyAppView extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+@Component({
+  selector: 'hello-cmp',
+  injectables: [DynamicallyCreatedComponentService]
+})
+@View({
+  template: "{{greeting}}"
+})
+class DynamicallyCreatedCmp {
+  greeting:string;
+  dynamicallyCreatedComponentService:DynamicallyCreatedComponentService;
+
+  constructor(a:DynamicallyCreatedComponentService) {
+    this.greeting = "hello";
+    this.dynamicallyCreatedComponentService = a;
+  }
+}
+
+@Component({selector: 'dummy'})
+@View({template: "DynamicallyLoaded;"})
+class DynamicallyLoaded {
+}
+
+@Component({selector: 'dummy'})
+@View({template: "DynamicallyLoaded2;"})
+class DynamicallyLoaded2 {
+}
+
+@Component({
+  selector: 'location'
+})
+@View({template: "Location;"})
+class Location {
+  elementRef:ElementRef;
+
+  constructor(elementRef:ElementRef) {
+    this.elementRef = elementRef;
+  }
+}
+
+@Component()
+@View({
+  directives: []
+})
+class MyComp {
+  ctxBoolProp:boolean;
+
+  constructor() {
+    this.ctxBoolProp = false;
+  }
+}

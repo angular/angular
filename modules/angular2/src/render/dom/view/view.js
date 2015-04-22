@@ -31,6 +31,9 @@ export class RenderView {
   hydrated: boolean;
   _eventDispatcher: any/*EventDispatcher*/;
   eventHandlerRemovers: List<Function>;
+  /// Host views that were added by an imperative view.
+  /// This is a dynamically growing / shrinking array.
+  imperativeHostViews: List<RenderView>;
 
   constructor(
       proto:RenderProtoView, rootNodes:List,
@@ -46,7 +49,8 @@ export class RenderView {
     this.componentChildViews = ListWrapper.createFixedSize(boundElements.length);
     this.hostLightDom = null;
     this.hydrated = false;
-    this.eventHandlerRemovers = null;
+    this.eventHandlerRemovers = [];
+    this.imperativeHostViews = [];
   }
 
   getDirectParentLightDom(boundElementIndex:number) {

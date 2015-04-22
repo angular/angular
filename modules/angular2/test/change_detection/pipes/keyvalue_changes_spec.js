@@ -2,7 +2,7 @@ import {describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/te
 import {KeyValueChanges} from 'angular2/src/change_detection/pipes/keyvalue_changes';
 import {NumberWrapper, isJsObject} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {kvChangesAsString} from './util';
+import {kvChangesAsString} from '../util';
 
 // todo(vicb): Update the code & tests for object equality
 export function main() {

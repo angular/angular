@@ -2,6 +2,7 @@ import {DynamicProtoChangeDetector, JitProtoChangeDetector} from './proto_change
 import {PipeRegistry} from './pipes/pipe_registry';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
+import {AsyncPipeFactory} from './pipes/async_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector} from './interfaces';
@@ -27,9 +28,20 @@ export var iterableDiff = [
   new NullPipeFactory()
 ];
 
+/**
+ * Async binding to such types as Observable.
+ *
+ * @exportedAs angular2/pipes
+ */
+export var async = [
+  new AsyncPipeFactory(),
+  new NullPipeFactory()
+];
+
 export var defaultPipes = {
   "iterableDiff" : iterableDiff,
-  "keyValDiff" : keyValDiff
+  "keyValDiff" : keyValDiff,
+  "async" : async
 };
 
 
