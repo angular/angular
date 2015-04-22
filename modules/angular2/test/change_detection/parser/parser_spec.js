@@ -104,6 +104,7 @@ export function main() {
         it('should parse unary ! expressions', () => {
           expectEval("!true").toEqual(!true);
           expectEval("!!true").toEqual(!!true);
+          expectEval("!!!true").toEqual(!!!true);
         });
 
         it('should parse multiplicative expressions', () => {
@@ -123,7 +124,23 @@ export function main() {
 
         it('should parse equality expressions', () => {
           expectEval("2==3").toEqual(2 == 3);
+          expectEval("2=='2'").toEqual(2 == '2');
+          expectEval("2=='3'").toEqual(2 == '3');
           expectEval("2!=3").toEqual(2 != 3);
+          expectEval("2!='3'").toEqual(2 != '3');
+          expectEval("2!='2'").toEqual(2 != '2');
+          expectEval("2!=!false").toEqual(2!=!false);
+        });
+
+        it('should parse strict equality expressions', () => {
+          expectEval("2===3").toEqual(2 === 3);
+          expectEval("2==='3'").toEqual(2 === '3');
+          expectEval("2==='2'").toEqual(2 === '2');
+          expectEval("2!==3").toEqual(2 !== 3);
+          expectEval("2!=='3'").toEqual(2 !== '3');
+          expectEval("2!=='2'").toEqual(2 !== '2');
+          expectEval("false===!true").toEqual(false===!true);
+          expectEval("false!==!!true").toEqual(false!==!!true);
         });
 
         it('should parse logicalAND expressions', () => {
