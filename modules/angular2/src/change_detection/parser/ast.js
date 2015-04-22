@@ -281,6 +281,8 @@ export class Binary extends AST {
       case '%'  : return left % right;
       case '==' : return left == right;
       case '!=' : return left != right;
+      case '===' : return left === right;
+      case '!==' : return left !== right;
       case '<'  : return left < right;
       case '>'  : return left > right;
       case '<=' : return left <= right;

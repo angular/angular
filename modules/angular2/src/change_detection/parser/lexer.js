@@ -304,7 +304,7 @@ class _Scanner {
     assert(this.peek == StringWrapper.charCodeAt(one, 0));
     this.advance();
     var str:string = one;
-    if (this.peek == code) {
+    while (this.peek == code) {
       this.advance();
       str += two;
     }
@@ -461,6 +461,8 @@ var OPERATORS = SetWrapper.createFromList([
   '=',
   '==',
   '!=',
+  '===',
+  '!==',
   '<',
   '>',
   '<=',
