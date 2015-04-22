@@ -238,11 +238,13 @@
 
     var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
 
+    // .then(successCb, errorCb) microtasks should run in the zone where they were scheduled
+    // For this to work, the zone error handler should rethrow excpetions
     function lib$es6$promise$$internal$$tryCatch(callback, detail, zone) {
       try {
         return zone.run(function() {
           return callback(detail);
-        }, null, null, false);
+        });
       } catch(e) {
         lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
         return lib$es6$promise$$internal$$TRY_CATCH_ERROR;

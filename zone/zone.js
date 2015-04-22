@@ -65,7 +65,7 @@ Zone.prototype = {
 
   bind: function (fn, skipEnqueue) {
     skipEnqueue || this.enqueueTask(fn);
-    var zone = this.fork();
+    var zone = this; //.fork();
     return function zoneBoundFn() {
       return zone.run(fn, this, arguments);
     };
@@ -87,7 +87,7 @@ Zone.prototype = {
     });
   },
 
-  run: function run (fn, applyTo, applyWith, rethrow) {
+  run: function run (fn, applyTo, applyWith) {
     applyWith = applyWith || [];
 
     var oldZone = zone,
@@ -99,7 +99,7 @@ Zone.prototype = {
       this.beforeTask();
       return fn.apply(applyTo, applyWith);
     } catch (e) {
-      if (zone.onError && !rethrow) {
+      if (zone.onError) {
         zone.onError(e);
       } else {
         throw e;
