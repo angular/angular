@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable, Binding} from 'angular2/di';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
@@ -76,9 +76,13 @@ export class Compiler {
   _bindDirective(directiveTypeOrBinding):DirectiveBinding {
     if (directiveTypeOrBinding instanceof DirectiveBinding) {
       return directiveTypeOrBinding;
+    } else if (directiveTypeOrBinding instanceof Binding) {
+      let meta = this._reader.read(directiveTypeOrBinding.token);
+      return DirectiveBinding.createFromBinding(directiveTypeOrBinding, meta.annotation);
+    } else {
+      let meta = this._reader.read(directiveTypeOrBinding);
+      return DirectiveBinding.createFromType(meta.type, meta.annotation);
     }
-    var meta = this._reader.read(directiveTypeOrBinding);
-    return DirectiveBinding.createFromType(meta.type, meta.annotation);
   }
 
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
