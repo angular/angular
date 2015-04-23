@@ -15,14 +15,14 @@ export class PipeRegistry {
   get(type:string, obj, cdRef:ChangeDetectorRef):Pipe {
     var listOfConfigs = this.config[type];
     if (isBlank(listOfConfigs)) {
-      throw new BaseException(`Cannot find a pipe for type '${type}' object '${obj}'`);
+      throw new BaseException(`Cannot find '${type}' pipe supporting object '${obj}'`);
     }
 
     var matchingConfig = ListWrapper.find(listOfConfigs,
       (pipeConfig) => pipeConfig.supports(obj));
 
     if (isBlank(matchingConfig)) {
-      throw new BaseException(`Cannot find a pipe for type '${type}' object '${obj}'`);
+      throw new BaseException(`Cannot find '${type}' pipe supporting object '${obj}'`);
     }
 
     return matchingConfig.create(cdRef);
