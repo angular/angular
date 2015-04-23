@@ -8,3 +8,6 @@ export {win as window};
 export var document = window.document;
 export var location = window.location;
 export var gc = window.gc ? () => window.gc() : () => null;
+export {Event as Event};
+export {MouseEvent as MouseEvent};
+export {KeyboardEvent as KeyboardEvent};

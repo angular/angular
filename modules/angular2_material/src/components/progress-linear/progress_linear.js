@@ -13,7 +13,7 @@ import {Math} from 'angular2/src/facade/math';
     'role': 'attr.role',
     'ariaValuemin': 'attr.aria-valuemin',
     'ariaValuemax': 'attr.aria-valuemax',
-    'ariaValuenow': 'attr.aria-valuenow'
+    'value': 'attr.aria-valuenow'
   }
 })
 @View({
@@ -30,23 +30,17 @@ export class MdProgressLinear {
   /** The render mode for the progress bar. */
   mode: string;
 
-  /** Attribute setter for aria-valuenow. */
-  ariaValueNowSetter: Function;
-
   /** CSS `transform` property applied to the primary bar. */
   primaryBarTransform: string;
 
   /** CSS `transform` property applied to the secondary bar. */
   secondaryBarTransform: string;
 
-
-  role:any;
-  ariaValuemin:any;
-  ariaValuemax:any;
-  ariaValuenow:any;
+  role: string;
+  ariaValuemin: string;
+  ariaValuemax: string;
 
   constructor(@Attribute('md-mode') mode: string) {
-    this.ariaValueNowSetter = ariaValueNowSetter;
     this.primaryBarTransform = '';
     this.secondaryBarTransform = '';
 
@@ -64,7 +58,6 @@ export class MdProgressLinear {
   set value(v) {
     if (isPresent(v)) {
       this.value_ = MdProgressLinear.clamp(v);
-      this.ariaValueNowSetter(this.value_);
     }
   }
 

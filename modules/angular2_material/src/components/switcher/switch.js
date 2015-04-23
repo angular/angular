@@ -2,6 +2,7 @@ import {Component, View, Attribute} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 import {KEY_SPACE} from 'angular2_material/src/core/constants'
 import {KeyboardEvent} from 'angular2/src/facade/browser';
+import {NumberWrapper} from 'angular2/src/facade/lang';
 
 // TODO(jelbourn): without gesture support, this is identical to MdCheckbox.
 
@@ -31,13 +32,13 @@ export class MdSwitch {
   /** Whether this switch is disabled. */
   disabled_: boolean;
 
-  tabindex:any;
-  role:any;
+  tabindex: number;
+  role: string;
 
   constructor(@Attribute('tabindex') tabindex: string) {
     this.role = 'checkbox';
     this.checked = false;
-    this.tabindex = isPresent(tabindex) ? tabindex : '0';
+    this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
   }
 
   get disabled() {
