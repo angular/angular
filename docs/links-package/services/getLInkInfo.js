@@ -12,7 +12,7 @@ var path = require('canonical-path');
  *
  * @property {boolean} relativeLinks Whether we expect the links to be relative to the originating doc
  */
-module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock) {
+module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
 
   return function getLinkInfoImpl(url, title, currentDoc) {
     var linkInfo = {
@@ -41,8 +41,11 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock) {
       linkInfo.type = 'doc';
 
       if ( getLinkInfoImpl.relativeLinks && currentDoc && currentDoc.path ) {
-        linkInfo.url = path.relative(path.join('/', currentDoc.path), path.join('/', linkInfo.url));
-        console.log(linkInfo.url);
+        var currentFolder = path.dirname(currentDoc.path);
+        var docFolder = path.dirname(linkInfo.url);
+        var relativeFolder = path.relative(path.join('/', currentFolder), path.join('/', docFolder));
+        linkInfo.url = path.join(relativeFolder, path.basename(linkInfo.url));
+        log.debug(currentDoc.path, docs[0].path, linkInfo.url);
       }
 
     } else if ( url.indexOf('#') > 0 ) {
