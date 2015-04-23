@@ -179,7 +179,6 @@ const $a =  97, $b =  98, $c =  99, $d = 100, $e = 101, $f = 102, $g = 103,
 export const $LBRACE = 123;
 export const $BAR    = 124;
 export const $RBRACE = 125;
-const $TILDE  = 126;
 const $NBSP   = 160;
 
 
@@ -275,8 +274,6 @@ class _Scanner {
         return this.scanComplexOperator(start, $AMPERSAND, '&', '&');
       case $BAR:
         return this.scanComplexOperator(start, $BAR, '|', '|');
-      case $TILDE:
-        return this.scanComplexOperator(start, $SLASH, '~', '/');
       case $NBSP:
         while (isWhitespace(this.peek)) this.advance();
         return this.scanToken();
@@ -455,7 +452,6 @@ var OPERATORS = SetWrapper.createFromList([
   '-',
   '*',
   '/',
-  '~/',
   '%',
   '^',
   '=',
@@ -482,5 +478,5 @@ var KEYWORDS = SetWrapper.createFromList([
     'null',
     'undefined',
     'true',
-    'false',
+    'false'
 ]);
