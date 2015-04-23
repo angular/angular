@@ -18,6 +18,8 @@ import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 import './test_injector.dart';
 export './test_injector.dart' show inject;
 
+import 'package:collection/equality.dart';
+
 bool IS_DARTIUM = true;
 
 List _testBindings = [];
@@ -76,6 +78,8 @@ Expect expect(actual, [matcher]) {
   return expect;
 }
 
+const _u = null;
+
 class Expect extends gns.Expect {
   Expect(actual) : super(actual);
 
@@ -87,7 +91,32 @@ class Expect extends gns.Expect {
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() => _expect(double.NAN.compareTo(actual) == 0, equals(true));
   void toHaveText(expected) => _expect(elementText(actual), expected);
+  void toHaveBeenCalledWith([a = _u, b = _u, c = _u, d = _u, e = _u, f = _u]) =>
+      _expect(_argsMatch(actual, a, b, c, d, e, f), true, reason: 'method invoked with correct arguments');
   Function get _expect => gns.guinness.matchers.expect;
+
+  // TODO(tbosch): move this hack into Guinness
+  _argsMatch(spyFn, [a0 = _u, a1 = _u, a2 = _u, a3 = _u, a4 = _u, a5 = _u]) {
+    var calls = spyFn.calls;
+    final toMatch = _takeDefined([a0, a1, a2, a3, a4, a5]);
+    if (calls.isEmpty) {
+      return false;
+    } else {
+      gns.SamePropsMatcher matcher = new gns.SamePropsMatcher(toMatch);
+      for (var i=0; i<calls.length; i++) {
+        var call = calls[i];
+        // TODO: create a better error message, not just 'Expected: <true> Actual: <false>'.
+        // For hacking this is good:
+        // print(call.positionalArguments);
+        if (matcher.matches(call.positionalArguments, null)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  List _takeDefined(List iter) => iter.takeWhile((_) => _ != _u).toList();
 }
 
 class NotExpect extends gns.NotExpect {
