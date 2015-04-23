@@ -22,7 +22,7 @@ export function main() {
     it("should throw when no matching type", () => {
       var r = new PipeRegistry({});
       expect(() => r.get("unknown", "some object", null)).toThrowError(
-        `Cannot find a pipe for type 'unknown' object 'some object'`
+        `Cannot find 'unknown' pipe supporting object 'some object'`
       );
     });
 
@@ -32,7 +32,7 @@ export function main() {
       });
 
       expect(() => r.get("type", "some object", null)).toThrowError(
-        `Cannot find a pipe for type 'type' object 'some object'`
+        `Cannot find 'type' pipe supporting object 'some object'`
       );
     });
   });
