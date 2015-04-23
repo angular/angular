@@ -343,3 +343,7 @@ function elementText(n) {
 
   return DOM.getText(n);
 }
+
+function getCurrentZoneName(): string {
+  return zone._name;
+}

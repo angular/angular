@@ -58,7 +58,7 @@ class VmTurnZone {
                   runUnary: _outerRunUnary,
                   runBinary: _outerRunBinary
               ),
-              zoneValues: {#_name: 'outer'}
+              zoneValues: {'_name': 'outer'}
           );
         }, onError: _onErrorWithLongStackTrace);
   } else {
@@ -71,7 +71,7 @@ class VmTurnZone {
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, error, StackTrace trace) =>
               _onErrorWithoutLongStackTrace(error, trace)
         ),
-        zoneValues: {#_name: 'outer'}
+        zoneValues: {'_name': 'outer'}
       );
     }
 
@@ -83,7 +83,7 @@ class VmTurnZone {
         runUnary: _innerRunUnary,
         runBinary: _innerRunBinary
       ),
-      zoneValues: {#_name: 'inner'});
+      zoneValues: {'_name': 'inner'});
   }
 
   /**
