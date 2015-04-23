@@ -650,7 +650,7 @@ gulp.task('build', ['build.js', 'build.dart']);
 
 // ------------
 // angular material testing rules
-gulp.task('build/css.js.dev', function() {
+gulp.task('build.js.material', ['build.js.dev'], function() {
   return gulp.src('modules/*/src/**/*.scss')
       .pipe(sass())
       .pipe(autoprefixer())
@@ -658,14 +658,12 @@ gulp.task('build/css.js.dev', function() {
 });
 
 // TODO: this target is temporary until we find a way to use the SASS transformer
-gulp.task('build/css.dart', function() {
-  return gulp.src('dist/dart/angular2_material/lib/src/**/*.scss')
+gulp.task('build.dart.material', ['build/packages.dart'], function() {
+  return gulp.src('dist/dart/angular2_material/src/**/*.scss')
       .pipe(sass())
       .pipe(autoprefixer())
       .pipe(gulp.dest('dist/dart/angular2_material/lib/src'));
 });
-
-gulp.task('build.material', ['build.js.dev', 'build/css.js.dev']);
 
 
 gulp.task('cleanup.builder', function() {

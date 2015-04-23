@@ -2,7 +2,7 @@ import {Component, View, Parent, Ancestor, Attribute} from 'angular2/angular2';
 import {Optional} from 'angular2/src/di/annotations';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
 import {onChange} from 'angular2/src/core/annotations/annotations';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {KEY_UP, KEY_DOWN, KEY_SPACE} from 'angular2_material/src/core/constants'
@@ -69,9 +69,9 @@ export class MdRadioButton {
   /** Dispatcher for coordinating radio unique-selection by name. */
   radioDispatcher: MdRadioDispatcher;
 
-  tabindex:any;
-  
-  role:any;
+  tabindex: number;
+
+  role: string;
 
   constructor(
       @Optional() @Parent() radioGroup: MdRadioGroup,
@@ -105,7 +105,9 @@ export class MdRadioButton {
 
     // If the user has not set a tabindex, default to zero (in the normal document flow).
     if (!isPresent(radioGroup)) {
-      this.tabindex = isPresent(tabindex) ? tabindex : '0';
+      this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
+    } else {
+      this.tabindex = -1;
     }
   }
 
@@ -169,12 +171,12 @@ export class MdRadioButton {
     'value': 'value'
   },
   hostListeners: {
-    'keydown': 'onKeydown($event)'
+    // TODO(jelbourn): Remove ^ when event retargeting is fixed.
+    '^keydown': 'onKeydown($event)'
   },
   hostProperties: {
     'tabindex': 'tabindex',
     'role': 'attr.role',
-    'checked': 'attr.aria-checked',
     'disabled': 'attr.aria-disabled',
     'activedescendant': 'attr.aria-activedescendant'
   }
@@ -202,11 +204,11 @@ export class MdRadioGroup {
   /** The ID of the selected radio button. */
   selectedRadioId: string;
 
-  change:EventEmitter;
+  change: EventEmitter;
 
-  tabindex:any;
+  tabindex: number;
 
-  role:any;
+  role: string;
 
   constructor(
       @Attribute('tabindex') tabindex: string,
@@ -225,7 +227,7 @@ export class MdRadioGroup {
     this.disabled = isPresent(disabled);
 
     // If the user has not set a tabindex, default to zero (in the normal document flow).
-    this.tabindex = isPresent(tabindex) ? tabindex : '0';
+    this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
   }
 
   /** Gets the name of this group, as to be applied in the HTML 'name' attribute. */
@@ -319,6 +321,7 @@ export class MdRadioGroup {
 
     this.radioDispatcher.notify(this.name_);
     radio.checked = true;
+    ObservableWrapper.callNext(this.change, null);
 
     this.value = radio.value;
     this.selectedRadioId = radio.id;

@@ -13,13 +13,13 @@ export function commonDemoSetup(): void {
 }
 
 @Injectable()
-@IMPLEMENTS(UrlResolver)
-export class DemoUrlResolver {
+export class DemoUrlResolver extends UrlResolver {
     static a;
 
     isInPubServe:boolean;
 
     constructor() {
+        super();
         if (isBlank(UrlResolver.a)) {
             UrlResolver.a = DOM.createElement('a');
         }
