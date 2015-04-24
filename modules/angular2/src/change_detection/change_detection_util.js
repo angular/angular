@@ -2,7 +2,7 @@ import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang'
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
-import {NO_CHANGE} from './pipes/pipe';
+import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
 export var uninitialized = new Object();
@@ -109,8 +109,12 @@ export class ChangeDetectionUtil {
     return obj[args[0]];
   }
 
-  static noChangeMarker(value):boolean {
-    return value === NO_CHANGE;
+  static unwrapValue(value:any):any {
+    if (value instanceof WrappedValue) {
+      return value.wrapped;
+    } else {
+      return value;
+    }
   }
 
   static throwOnChange(proto:ProtoRecord, change) {

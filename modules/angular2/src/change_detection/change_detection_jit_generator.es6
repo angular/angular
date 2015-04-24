@@ -156,7 +156,8 @@ if (${pipe} === ${UTIL}.unitialized()) {
 }
 
 ${newValue} = ${pipe}.transform(${context});
-if (! ${UTIL}.noChangeMarker(${newValue})) {
+if (${oldValue} !== ${newValue}) {
+  ${newValue} = ${UTIL}.unwrapValue(${newValue});
   ${change} = true;
   ${update}
   ${addToChanges}

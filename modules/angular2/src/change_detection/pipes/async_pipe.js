@@ -1,6 +1,6 @@
 import {Observable, ObservableWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {Pipe, NO_CHANGE} from './pipe';
+import {Pipe, WrappedValue} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -67,10 +67,10 @@ export class AsyncPipe extends Pipe {
     }
 
     if (this._latestValue === this._latestReturnedValue) {
-      return NO_CHANGE;
+      return this._latestReturnedValue;
     } else {
       this._latestReturnedValue = this._latestValue;
-      return this._latestValue;
+      return WrappedValue.wrap(this._latestValue);
     }
   }
 

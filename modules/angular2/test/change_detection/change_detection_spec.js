@@ -8,7 +8,7 @@ import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
 
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord, DirectiveIndex,
-  PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT} from 'angular2/change_detection';
+  PipeRegistry, Pipe, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT, WrappedValue} from 'angular2/change_detection';
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
 
@@ -733,7 +733,7 @@ export function main() {
           });
         });
 
-        it("should do nothing when returns NO_CHANGE", () => {
+        it("should do nothing when no change", () => {
           var registry = new FakePipeRegistry('pipe', () => new IdentityPipe())
           var ctx = new Person("Megatron");
 
@@ -742,15 +742,26 @@ export function main() {
           var dispatcher = c["dispatcher"];
 
           cd.detectChanges();
-          cd.detectChanges();
 
           expect(dispatcher.log).toEqual(['memo=Megatron']);
 
-          ctx.name = "Optimus Prime";
           dispatcher.clear();
           cd.detectChanges();
 
-          expect(dispatcher.log).toEqual(['memo=Optimus Prime']);
+          expect(dispatcher.log).toEqual([]);
+        });
+
+        it("should unwrap the wrapped value", () => {
+          var registry = new FakePipeRegistry('pipe', () => new WrappedPipe())
+          var ctx = new Person("Megatron");
+
+          var c  = createChangeDetector("memo", "name | pipe", ctx, null, registry);
+          var cd = c["changeDetector"];
+          var dispatcher = c["dispatcher"];
+
+          cd.detectChanges();
+
+          expect(dispatcher.log).toEqual(['memo=Megatron']);
         });
       });
   });
@@ -798,19 +809,14 @@ class OncePipe extends Pipe {
 }
 
 class IdentityPipe extends Pipe {
-  state:any;
-
-  supports(newValue) {
-    return true;
-  }
-
   transform(value) {
-    if (this.state === value) {
-      return NO_CHANGE;
-    } else {
-      this.state = value;
-      return value;
-    }
+    return value;
+  }
+}
+
+class WrappedPipe extends Pipe {
+  transform(value) {
+    return WrappedValue.wrap(value);
   }
 }
 

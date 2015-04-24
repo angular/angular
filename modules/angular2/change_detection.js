@@ -23,7 +23,7 @@ export {DynamicChangeDetector} from './src/change_detection/dynamic_change_detec
 export {ChangeDetectorRef} from './src/change_detection/change_detector_ref';
 export {PipeRegistry} from './src/change_detection/pipes/pipe_registry';
 export {uninitialized} from './src/change_detection/change_detection_util';
-export {NO_CHANGE, Pipe} from './src/change_detection/pipes/pipe';
+export {WrappedValue, Pipe} from './src/change_detection/pipes/pipe';
 export {
   defaultPipes, DynamicChangeDetection, JitChangeDetection, defaultPipeRegistry
 } from './src/change_detection/change_detection';

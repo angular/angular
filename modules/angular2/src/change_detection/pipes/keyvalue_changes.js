@@ -1,7 +1,7 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {stringify, looseIdentical, isJsObject} from 'angular2/src/facade/lang';
 
-import {NO_CHANGE, Pipe} from './pipe';
+import {WrappedValue, Pipe} from './pipe';
 
 /**
  * @exportedAs angular2/pipes
@@ -54,9 +54,9 @@ export class KeyValueChanges extends Pipe {
 
   transform(map){
     if (this.check(map)) {
-      return this;
+      return WrappedValue.wrap(this);
     } else {
-      return NO_CHANGE;
+      return this;
     }
   }
 

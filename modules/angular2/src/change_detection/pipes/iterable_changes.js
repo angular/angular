@@ -14,7 +14,7 @@ import {
   looseIdentical,
 } from 'angular2/src/facade/lang';
 
-import {NO_CHANGE, Pipe} from './pipe';
+import {WrappedValue, Pipe} from './pipe';
 
 export class IterableChangesFactory {
   supports(obj):boolean {
@@ -117,9 +117,9 @@ export class IterableChanges extends Pipe {
 
   transform(collection){
     if (this.check(collection)) {
-      return this;
+      return WrappedValue.wrap(this);
     } else {
-      return NO_CHANGE;
+      return this;
     }
   }
 
