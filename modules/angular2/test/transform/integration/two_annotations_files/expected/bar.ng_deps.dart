@@ -1,12 +1,13 @@
 library bar.ng_deps.dart;
 
+import 'dart:core' as boolScope show bool;
 import 'bar.dart';
 import 'package:angular2/src/core/annotations/annotations.dart';
 import 'package:angular2/src/core/annotations/annotations.ng_deps.dart' as i0;
 import 'package:angular2/src/core/annotations/view.dart';
 import 'package:angular2/src/core/annotations/view.ng_deps.dart' as i1;
 
-bool _visited = false;
+boolScope.bool _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

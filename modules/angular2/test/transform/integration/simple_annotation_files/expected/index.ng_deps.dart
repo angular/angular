@@ -1,5 +1,6 @@
 library web_foo.ng_deps.dart;
 
+import 'dart:core' as boolScope show bool;
 import 'index.dart';
 import 'package:angular2/src/core/application.dart';
 import 'package:angular2/src/core/application.ng_deps.dart' as i0;
@@ -8,7 +9,7 @@ import 'index.ng_deps.dart' as ngStaticInit0;
 import 'bar.dart';
 import 'bar.ng_deps.dart' as i1;
 
-bool _visited = false;
+boolScope.bool _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

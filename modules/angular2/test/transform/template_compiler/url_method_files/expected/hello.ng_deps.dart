@@ -1,10 +1,11 @@
 library examples.src.hello_world.index_common_dart;
 
+import 'dart:core' as boolScope show bool;
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
     show bootstrap, Component, Decorator, View, NgElement;
 
-bool _visited = false;
+boolScope.bool _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
