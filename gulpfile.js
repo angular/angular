@@ -508,9 +508,67 @@ gulp.task('test.transpiler.unittest', function() {
 // -----------------
 // orchestrated targets
 
+// Pure Dart packages only contain Dart code and conform to pub package layout.
+// These packages need no transpilation. All code is copied over to `dist`
+// unmodified and directory structure is preserved.
+//
+// This task also fixes relative `dependency_overrides` paths in `pubspec.yaml`
+// files.
+gulp.task('build/pure-packages.dart', function() {
+  var through2 = require('through2');
+  var yaml = require('js-yaml');
+  var originalPrefix = '../../dist/dart/';
+
+  return gulp
+    .src([
+      'modules_dart/**/*.dart',
+      'modules_dart/**/pubspec.yaml',
+    ])
+    .pipe(through2.obj(function(file, enc, done) {
+      if (file.path.endsWith('pubspec.yaml')) {
+        // Pure packages specify dependency_overrides relative to
+        // `modules_dart`, so they have to walk up and into `dist`.
+        //
+        // Example:
+        // 
+        // dependency_overrides:
+        //   angular2:
+        //     path: ../../dist/dart/angular2
+        //
+        // When we copy a pure package into `dist` the relative path
+        // must be updated. The code below replaces paths accordingly.
+        // So the example above is turned into:
+        // 
+        // dependency_overrides:
+        //   angular2:
+        //     path: ../angular2
+        //
+        var pubspec = yaml.safeLoad(file.contents.toString());
+        var overrides = pubspec['dependency_overrides'];
+        if (overrides) {
+          Object.keys(overrides).forEach(function(pkg) {
+            var overridePath = overrides[pkg]['path'];
+            if (overridePath.startsWith(originalPrefix)) {
+              overrides[pkg]['path'] = overridePath.replace(originalPrefix, '../');
+            }
+          });
+          file.contents = new Buffer(yaml.safeDump(pubspec));
+        }
+      }
+      this.push(file);
+      done();
+    }))
+    .pipe(gulp.dest('dist/dart'));
+});
+
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
-  runSequence('build/tree.dart', 'build/format.dart', done);
+  runSequence(
+    'build/tree.dart',
+    // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
+    'build/pure-packages.dart',
+    'build/format.dart',
+    done);
 });
 
 // Builds and compiles all Dart packages
