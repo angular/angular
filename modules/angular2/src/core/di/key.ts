@@ -3,6 +3,8 @@ import {stringify} from 'angular2/src/facade/lang';
 
 // TODO: uncoment `int` once https://github.com/angular/angular/issues/1414 is fixed
 
+interface Token {}
+
 /**
  * A unique object used for retrieving items from the {@link Injector}.
  *
@@ -16,42 +18,29 @@ import {stringify} from 'angular2/src/facade/lang';
  * @exportedAs angular2/di
  */
 export class Key {
-  token;
-  id/* :int */;
-  constructor(token, id/* :int */) {
-    this.token = token;
-    this.id = id;
-  }
+  constructor(public token: Token, public id: number) {}
 
-  get displayName() {
-    return stringify(this.token);
-  }
+  get displayName() { return stringify(this.token); }
 
   /**
    * Retrieves a `Key` for a token.
    */
-  static get(token):Key {
-    return _globalKeyRegistry.get(token);
-  }
+  static get(token): Key { return _globalKeyRegistry.get(token); }
 
   /**
    * @returns the number of keys registered in the system.
    */
-  static get numberOfKeys()/* :int */ {
-    return _globalKeyRegistry.numberOfKeys;
-  }
+  static get numberOfKeys():number { return _globalKeyRegistry.numberOfKeys; }
 }
 
 /**
  * @private
  */
 export class KeyRegistry {
-  _allKeys:Map;
-  constructor() {
-    this._allKeys = MapWrapper.create();
-  }
+  _allKeys: Map<Token, Key>;
+  constructor() { this._allKeys = MapWrapper.create(); }
 
-  get(token):Key {
+  get(token: Token): Key {
     if (token instanceof Key) return token;
 
     if (MapWrapper.contains(this._allKeys, token)) {
@@ -63,9 +52,7 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys()/* :int */ {
-    return MapWrapper.size(this._allKeys);
-  }
+  get numberOfKeys() /* :int */ { return MapWrapper.size(this._allKeys); }
 }
 
 var _globalKeyRegistry = new KeyRegistry();

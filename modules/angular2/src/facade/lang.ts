@@ -28,7 +28,9 @@ if (assertionsEnabled_) {
 }
 export {int};
 
-export class CONST {}
+export function CONST() {
+  return (target) => target;
+};
 export class ABSTRACT {}
 export class IMPLEMENTS {}
 
