@@ -1,9 +1,10 @@
 library dinner.soup.ng_deps.dart;
 
-import 'package:angular2/src/core/annotations/annotations.dart';
+import 'dart:core' as boolScope show bool;
 import 'soup.dart';
+import 'package:angular2/src/core/annotations/annotations.dart';
 
-bool _visited = false;
+boolScope.bool _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

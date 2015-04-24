@@ -1,10 +1,11 @@
 library dinner.tortilla_soup.ng_deps.dart;
 
+import 'dart:core' as boolScope show bool;
 import 'tortilla_soup.dart';
 import 'package:angular2/di.dart' show Injectable;
 import 'package:angular2/src/facade/lang.dart' show CONST;
 
-bool _visited = false;
+boolScope.bool _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

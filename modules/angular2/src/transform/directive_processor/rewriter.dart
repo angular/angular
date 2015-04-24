@@ -71,27 +71,28 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   /// Write the import to the file the .ng_deps.dart file is based on if it
   /// has not yet been written.
-  void _maybeWriteImport() {
+  void _maybeWriteImports() {
     if (_wroteImport) return;
     _wroteImport = true;
-    writer.print('''import '${path.basename(importPath)}';''');
+    writer.print('''import 'dart:core' as boolScope show bool;'''
+        '''import '${path.basename(importPath)}';''');
   }
 
   @override
   Object visitImportDirective(ImportDirective node) {
-    _maybeWriteImport();
+    _maybeWriteImports();
     return node.accept(_copyVisitor);
   }
 
   @override
   Object visitExportDirective(ExportDirective node) {
-    _maybeWriteImport();
+    _maybeWriteImports();
     return node.accept(_copyVisitor);
   }
 
   void _openFunctionWrapper() {
-    _maybeWriteImport();
-    writer.print('bool _visited = false;'
+    _maybeWriteImports();
+    writer.print('boolScope.bool _visited = false;'
         'void ${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME}) {'
         'if (_visited) return; _visited = true;');
   }
