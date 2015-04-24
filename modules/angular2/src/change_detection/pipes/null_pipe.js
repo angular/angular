@@ -1,5 +1,5 @@
 import {isBlank} from 'angular2/src/facade/lang';
-import {Pipe, NO_CHANGE} from './pipe';
+import {Pipe, WrappedValue} from './pipe';
 
 /**
  * @exportedAs angular2/pipes
@@ -35,9 +35,9 @@ export class NullPipe extends Pipe {
   transform(value) {
     if (! this.called) {
       this.called = true;
-      return null;
+      return WrappedValue.wrap(null);
     } else {
-      return NO_CHANGE;
+      return null;
     }
   }
 }

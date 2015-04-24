@@ -1,13 +1,33 @@
 /**
- * Indicates that the result of a {@link Pipe} transformation has not changed since the last time the pipe was called.
+ * Indicates that the result of a {@link Pipe} transformation has changed even though the reference has not changed.
  *
- * Suppose we have a pipe that computes changes in an array by performing a simple diff operation. If
- * we call this pipe with the same array twice, it will return `NO_CHANGE` the second time.
+ * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
  *
  * @exportedAs angular2/pipes
  */
+export class WrappedValue {
+  wrapped:any;
 
-export var NO_CHANGE = new Object();
+  constructor(wrapped:any) {
+    this.wrapped = wrapped;
+  }
+
+  static wrap(value:any):WrappedValue {
+    var w = _wrappedValues[_wrappedIndex++ % 5];
+    w.wrapped = value;
+    return w;
+  }
+}
+
+var _wrappedValues = [
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null),
+  new WrappedValue(null)
+];
+
+var _wrappedIndex = 0;
 
 /**
  * An interface for extending the list of pipes known to Angular.

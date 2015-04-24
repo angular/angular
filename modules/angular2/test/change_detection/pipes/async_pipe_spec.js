@@ -2,8 +2,8 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
   AsyncTestCompleter, inject, proxy, SpyObject} from 'angular2/test_lib';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
+import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {AsyncPipe} from 'angular2/src/change_detection/pipes/async_pipe';
-import {NO_CHANGE} from 'angular2/src/change_detection/pipes/pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import {EventEmitter, Observable, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -36,25 +36,25 @@ export function main() {
         expect(pipe.transform(emitter)).toBe(null);
       });
 
-      it("should return the latest available value", inject([AsyncTestCompleter], (async) => {
+      it("should return the latest available value wrapped", inject([AsyncTestCompleter], (async) => {
         pipe.transform(emitter);
 
         ObservableWrapper.callNext(emitter, message);
 
         PromiseWrapper.setTimeout(() => {
-          expect(pipe.transform(emitter)).toEqual(message);
+          expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
           async.done();
         }, 0)
       }));
 
-      it("should return NO_CHANGE when nothing has changed since the last call",
+      it("should return same value when nothing has changed since the last call",
           inject([AsyncTestCompleter], (async) => {
         pipe.transform(emitter);
         ObservableWrapper.callNext(emitter, message);
 
         PromiseWrapper.setTimeout(() => {
           pipe.transform(emitter);
-          expect(pipe.transform(emitter)).toBe(NO_CHANGE);
+          expect(pipe.transform(emitter)).toBe(message);
           async.done();
         }, 0)
       }));
@@ -66,11 +66,11 @@ export function main() {
         var newEmitter = new EventEmitter();
         expect(pipe.transform(newEmitter)).toBe(null);
 
-        // this should not affect the pipe, so it should return NO_CHANGE
+        // this should not affect the pipe
         ObservableWrapper.callNext(emitter, message);
 
         PromiseWrapper.setTimeout(() => {
-          expect(pipe.transform(newEmitter)).toBe(NO_CHANGE);
+          expect(pipe.transform(newEmitter)).toBe(null);
           async.done();
         }, 0)
       }));
