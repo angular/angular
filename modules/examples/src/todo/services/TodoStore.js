@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/di';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 // base model for RecordStore
@@ -19,6 +20,7 @@ export class Todo extends KeyModel {
   }
 }
 
+@Injectable()
 export class TodoFactory {
   _uid: number;
 
@@ -37,6 +39,7 @@ export class TodoFactory {
 }
 
 // Store manages any generic item that inherits from KeyModel
+@Injectable()
 export class Store {
   list: List<KeyModel>;
 
