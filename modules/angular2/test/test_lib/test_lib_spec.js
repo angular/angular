@@ -22,6 +22,7 @@ class SpyTestObj extends SpyObject {
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
 
+
 export function main() {
   describe('test_lib', () => {
     describe('equality', () => {

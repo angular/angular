@@ -77,6 +77,7 @@ class NoAnnotations {
 
 export function main() {
   describe('injector', function () {
+
     it('should instantiate a class without dependencies', function () {
       var injector = Injector.resolveAndCreate([Engine]);
       var engine = injector.get(Engine);
@@ -211,7 +212,7 @@ export function main() {
         .toThrowError('Invalid binding - only instances of Binding and Type are allowed, got: blah');
       expect(() => Injector.resolveAndCreate([bind("blah")]))
         .toThrowError('Invalid binding - only instances of Binding and Type are allowed, ' +
-        'got: BindingBuilder with blah token');
+        'got: blah');
     });
 
     it('should provide itself', function () {

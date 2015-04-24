@@ -9,6 +9,18 @@ export var __esModule = true;
 export var Type = Function;
 export type Type = typeof Function;
 
+export class BaseException extends Error {
+  message;
+  stack;
+  constructor(message?: string) {
+    super(message);
+    this.message = message;
+    this.stack = (<any>new Error()).stack;
+  }
+
+  toString(): string { return this.message; }
+}
+
 export var Math = _global.Math;
 export var Date = _global.Date;
 
@@ -28,7 +40,9 @@ if (assertionsEnabled_) {
 }
 export {int};
 
-export class CONST {}
+export function CONST() {
+  return (target) => target;
+};
 export class ABSTRACT {}
 export class IMPLEMENTS {}
 
@@ -111,10 +125,10 @@ export class StringJoiner {
   toString(): string { return this.parts.join(""); }
 }
 
-export class NumberParseError implements Error {
+export class NumberParseError extends BaseException {
   name: string;
 
-  constructor(public message: string) {}
+  constructor(public message: string) { super(); }
 
   toString() { return this.message; }
 }
@@ -190,9 +204,6 @@ export class RegExpMatcherWrapper {
 export class FunctionWrapper {
   static apply(fn: Function, posArgs) { return fn.apply(null, posArgs); }
 }
-
-// No subclass so that we preserve error stack.
-export var BaseException = Error;
 
 // JS has NaN !== NaN
 export function looseIdentical(a, b): boolean {

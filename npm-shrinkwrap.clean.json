@@ -9509,7 +9509,7 @@
     },
     "typescript": {
       "version": "1.5.0-beta",
-      "resolved": "git://github.com/alexeagle/TypeScript#cddc1867c44b6bed9095dc30f0b0f552cbc003a9"
+      "resolved": "git://github.com/alexeagle/TypeScript#be9a7edff73ac2592e508732c771c85357041385"
     },
     "vinyl": {
       "version": "0.4.6",

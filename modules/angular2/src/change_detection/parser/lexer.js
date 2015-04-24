@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/di/annotations_impl';
 import {List, ListWrapper, SetWrapper} from "angular2/src/facade/collection";
-import {int, NumberWrapper, StringJoiner, StringWrapper} from "angular2/src/facade/lang";
+import {int, NumberWrapper, StringJoiner, StringWrapper, BaseException} from "angular2/src/facade/lang";
 
 export const TOKEN_TYPE_CHARACTER  = 1;
 export const TOKEN_TYPE_IDENTIFIER = 2;
@@ -176,7 +176,7 @@ export const $RBRACE = 125;
 const $NBSP   = 160;
 
 
-export class ScannerError extends Error {
+export class ScannerError extends BaseException {
   message:string;
   constructor(message) {
     super();

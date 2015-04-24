@@ -2,20 +2,21 @@ import {Type, isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
-import {Inject, InjectLazy, InjectPromise, Optional, DependencyAnnotation} from './annotations_impl';
+import {
+  Inject,
+  InjectLazy,
+  InjectPromise,
+  Optional,
+  DependencyAnnotation
+} from './annotations_impl';
 import {NoAnnotationError} from './exceptions';
 
 /**
  * @private
  */
 export class Dependency {
-  key:Key;
-  asPromise:boolean;
-  lazy:boolean;
-  optional:boolean;
-  properties:List;
-
-  constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean, properties:List) {
+  constructor(public key: Key, public asPromise: boolean, public lazy: boolean,
+              public optional: boolean, public properties: List<any>) {
     this.key = key;
     this.asPromise = asPromise;
     this.lazy = lazy;
@@ -23,9 +24,7 @@ export class Dependency {
     this.properties = properties;
   }
 
-  static fromKey(key:Key) {
-    return new Dependency(key, false, false, false, []);
-  }
+  static fromKey(key: Key) { return new Dependency(key, false, false, false, []); }
 }
 
 var _EMPTY_LIST = [];  // TODO: make const when supported
@@ -47,8 +46,8 @@ var _EMPTY_LIST = [];  // TODO: make const when supported
  *
  * @exportedAs angular2/di
  */
+@CONST()
 export class Binding {
-
   /**
    * Token used when retrieving this binding. Usually the `Type`.
    */
@@ -59,7 +58,8 @@ export class Binding {
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
+   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy
+   * comparison.
    *
    * ```javascript
    *
@@ -83,7 +83,7 @@ export class Binding {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass:Type;
+  toClass: Type;
 
   /**
    * Binds a key to a value.
@@ -103,12 +103,13 @@ export class Binding {
   /**
    * Binds a key to the alias for an existing key.
    *
-   * An alias means that {@link Injector} returns the same instance as if the alias token was used. This is in contrast to
-   * `toClass` where a separate instance of `toClass` is returned.
+   * An alias means that {@link Injector} returns the same instance as if the alias token was used.
+   * This is in contrast to `toClass` where a separate instance of `toClass` is returned.
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy comparison.
+   * Becuse `toAlias` and `toClass` are often confused the example contains both use cases for easy
+   * comparison.
    *
    * ```javascript
    *
@@ -150,7 +151,7 @@ export class Binding {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  toFactory:Function;
+  toFactory: Function;
 
   /**
    * Binds a key to a function which computes the value asynchronously.
@@ -170,17 +171,19 @@ export class Binding {
    * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
    * ```
    *
-   * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
-   * function takes the resolved value. This shows that the {@link Injector} delays executing the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
-   * `asyncGet` API in the {@link Injector}.
+   * The interesting thing to note is that event though `Number` has an async factory, the `String`
+   * factory function takes the resolved value. This shows that the {@link Injector} delays
+   *executing the
+   *`String` factory
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using
+   * the `asyncGet` API in the {@link Injector}.
    *
    */
-  toAsyncFactory:Function;
+  toAsyncFactory: Function;
 
   /**
-   * Used in conjunction with `toFactory` or `toAsyncFactory` and specifies a set of dependencies (as `token`s) which
-   * should be injected into the factory function.
+   * Used in conjunction with `toFactory` or `toAsyncFactory` and specifies a set of dependencies
+   * (as `token`s) which should be injected into the factory function.
    *
    * ## Example
    *
@@ -195,19 +198,11 @@ export class Binding {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  dependencies:List;
+  dependencies: List<any>;
 
-  @CONST()
-  constructor(
-      token,
-      {
-        toClass,
-        toValue,
-        toAlias,
-        toFactory,
-        toAsyncFactory,
-        deps
-      }) {
+  constructor(token, {toClass, toValue, toAlias, toFactory, toAsyncFactory, deps}: {
+                         toClass ?: Type, toValue ?: any, toAlias ?: any, toFactory ?: Function,
+                         toAsyncFactory ?: Function, deps ?: List<any>}) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
@@ -220,10 +215,11 @@ export class Binding {
   /**
    * Converts the {@link Binding} into {@link ResolvedBinding}.
    *
-   * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains convenience binding syntax.
+   * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains
+   * convenience binding syntax.
    */
   resolve(): ResolvedBinding {
-    var factoryFn:Function;
+    var factoryFn: Function;
     var resolvedDeps;
     var isAsync = false;
     if (isPresent(this.toClass)) {
@@ -244,20 +240,16 @@ export class Binding {
       resolvedDeps = _EMPTY_LIST;
     }
 
-    return new ResolvedBinding(
-      Key.get(this.token),
-      factoryFn,
-      resolvedDeps,
-      isAsync
-    );
+    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps, isAsync);
   }
 }
 
 /**
  * An internal resolved representation of a {@link Binding} used by the {@link Injector}.
  *
- * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or value, are just convenience
- * methods, as {@link Injector} only operates on calling factory functions.
+ * A {@link Binding} is resolved when it has a factory function. Binding to a class, alias, or
+ * value, are just convenience methods, as {@link Injector} only operates on calling factory
+ * functions.
  *
  * @exportedAs angular2/di
  */
@@ -265,24 +257,25 @@ export class ResolvedBinding {
   /**
    * A key, usually a `Type`.
    */
-  key:Key;
+  key: Key;
 
   /**
    * Factory function which can return an instance of an object represented by a key.
    */
-  factory:Function;
+  factory: Function;
 
   /**
    * Arguments (dependencies) to the `factory` function.
    */
-  dependencies:List<Dependency>;
+  dependencies: List<Dependency>;
 
   /**
    * Specifies whether the `factory` function returns a `Promise`.
    */
-  providedAsPromise:boolean;
+  providedAsPromise: boolean;
 
-  constructor(key:Key, factory:Function, dependencies:List<Dependency>, providedAsPromise:boolean) {
+  constructor(key: Key, factory: Function, dependencies: List<Dependency>,
+              providedAsPromise: boolean) {
     this.key = key;
     this.factory = factory;
     this.dependencies = dependencies;
@@ -304,7 +297,7 @@ export class ResolvedBinding {
  *
  * @exportedAs angular2/di
  */
-export function bind(token):BindingBuilder {
+export function bind(token): BindingBuilder {
   return new BindingBuilder(token);
 }
 
@@ -316,16 +309,15 @@ export function bind(token):BindingBuilder {
 export class BindingBuilder {
   token;
 
-  constructor(token) {
-    this.token = token;
-  }
+  constructor(token) { this.token = token; }
 
   /**
    * Binds an interface to an implementation / subclass.
    *
    * ## Example
    *
-   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
+   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
+   * easy comparison.
    *
    * ```javascript
    *
@@ -349,9 +341,7 @@ export class BindingBuilder {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass(type:Type):Binding {
-    return new Binding(this.token, {toClass: type});
-  }
+  toClass(type: Type): Binding { return new Binding(this.token, {toClass: type}); }
 
   /**
    * Binds a key to a value.
@@ -366,19 +356,18 @@ export class BindingBuilder {
    * expect(injector.get(String)).toEqual('Hello');
    * ```
    */
-  toValue(value):Binding {
-    return new Binding(this.token, {toValue: value});
-  }
+  toValue(value): Binding { return new Binding(this.token, {toValue: value}); }
 
   /**
    * Binds a key to the alias for an existing key.
    *
-   * An alias means that we will return the same instance as if the alias token was used. (This is in contrast to
-   * `toClass` where a separet instance of `toClass` will be returned.)
+   * An alias means that we will return the same instance as if the alias token was used. (This is
+   * in contrast to `toClass` where a separet instance of `toClass` will be returned.)
    *
    * ## Example
    *
-   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy comparison.
+   * Becuse `toAlias` and `toClass` are often confused, the example contains both use cases for easy
+   * comparison.
    *
    * ```javascript
    *
@@ -402,9 +391,7 @@ export class BindingBuilder {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toAlias(aliasToken):Binding {
-    return new Binding(this.token, {toAlias: aliasToken});
-  }
+  toAlias(aliasToken): Binding { return new Binding(this.token, {toAlias: aliasToken}); }
 
   /**
    * Binds a key to a function which computes the value.
@@ -421,11 +408,8 @@ export class BindingBuilder {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  toFactory(factoryFunction:Function, dependencies:List = null):Binding {
-    return new Binding(this.token, {
-      toFactory: factoryFunction,
-      deps: dependencies
-    });
+  toFactory(factoryFunction: Function, dependencies?: List<any>): Binding {
+    return new Binding(this.token, {toFactory: factoryFunction, deps: dependencies});
   }
 
   /**
@@ -445,26 +429,24 @@ export class BindingBuilder {
    * injector.asyncGet(String).then((v) => expect(v).toBe('Value: 3'));
    * ```
    *
-   * The interesting thing to note is that event though `Number` has an async factory, the `String` factory
-   * function takes the resolved value. This shows that the {@link Injector} delays executing of the `String` factory
-   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using the
+   * The interesting thing to note is that event though `Number` has an async factory, the `String`
+   * factory function takes the resolved value. This shows that the {@link Injector} delays
+   * executing of the `String` factory
+   * until after the `Number` is resolved. This can only be done if the `token` is retrieved using
    * the `asyncGet` API in the {@link Injector}.
    */
-  toAsyncFactory(factoryFunction:Function, dependencies:List = null):Binding {
-    return new Binding(this.token, {
-      toAsyncFactory: factoryFunction,
-      deps: dependencies
-    });
+  toAsyncFactory(factoryFunction: Function, dependencies?: List<any>): Binding {
+    return new Binding(this.token, {toAsyncFactory: factoryFunction, deps: dependencies});
   }
 }
 
-function _constructDependencies(factoryFunction:Function, dependencies:List) {
+function _constructDependencies(factoryFunction: Function, dependencies: List<any>) {
   return isBlank(dependencies) ?
-    _dependenciesFor(factoryFunction) :
-    ListWrapper.map(dependencies, (t) => Dependency.fromKey(Key.get(t)));
+             _dependenciesFor(factoryFunction) :
+             ListWrapper.map(dependencies, (t) => Dependency.fromKey(Key.get(t)));
 }
 
-function _dependenciesFor(typeOrFunc):List {
+function _dependenciesFor(typeOrFunc): List<any> {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
   if (ListWrapper.any(params, (p) => isBlank(p))) throw new NoAnnotationError(typeOrFunc);
@@ -500,10 +482,9 @@ function _extractToken(typeOrFunc, annotations) {
 
     } else if (paramAnnotation instanceof DependencyAnnotation) {
       if (isPresent(paramAnnotation.token)) {
-       token = paramAnnotation.token;
+        token = paramAnnotation.token;
       }
       ListWrapper.push(depProps, paramAnnotation);
-
     }
   }
 
@@ -514,6 +495,6 @@ function _extractToken(typeOrFunc, annotations) {
   }
 }
 
-function _createDependency(token, asPromise, lazy, optional, depProps):Dependency {
+function _createDependency(token, asPromise, lazy, optional, depProps): Dependency {
   return new Dependency(Key.get(token), asPromise, lazy, optional, depProps);
 }

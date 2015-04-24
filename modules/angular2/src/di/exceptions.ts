@@ -1,9 +1,9 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {stringify} from 'angular2/src/facade/lang';
+import {stringify, BaseException} from 'angular2/src/facade/lang';
 
-function findFirstClosedCycle(keys:List):List {
+function findFirstClosedCycle(keys: List<any>): List<any> {
   var res = [];
-  for(var i = 0; i < keys.length; ++i) {
+  for (var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
       ListWrapper.push(res, keys[i]);
       return res;
@@ -14,7 +14,7 @@ function findFirstClosedCycle(keys:List):List {
   return res;
 }
 
-function constructResolvingPath(keys:List):string {
+function constructResolvingPath(keys: List<any>): string {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
@@ -30,12 +30,13 @@ function constructResolvingPath(keys:List):string {
  *
  * @exportedAs angular2/di_errors
  */
-export class AbstractBindingError extends Error {
-  keys:List;
-  constructResolvingMessage:Function;
-  message;
+export class AbstractBindingError extends BaseException {
+  name: string;
+  message: string;
+  keys: List<any>;
+  constructResolvingMessage: Function;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  constructor(key, constructResolvingMessage:Function) {
+  constructor(key, constructResolvingMessage: Function) {
     super();
     this.keys = [key];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -43,26 +44,24 @@ export class AbstractBindingError extends Error {
   }
 
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
-  addKey(key):void {
+  addKey(key): void {
     ListWrapper.push(this.keys, key);
     this.message = this.constructResolvingMessage(this.keys);
   }
 
-  toString():string {
-    return this.message;
-  }
+  toString(): string { return this.message; }
 }
 
 /**
- * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the {@link Injector} does not have a
- * {@link Binding} for {@link Key}.
+ * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the
+ * {@link Injector} does not have a {@link Binding} for {@link Key}.
  *
  * @exportedAs angular2/di_errors
  */
 export class NoBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function (keys:List) {
+    super(key, function (keys:List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
       return `No provider for ${first}!${constructResolvingPath(keys)}`;
     });
@@ -88,18 +87,17 @@ export class NoBindingError extends AbstractBindingError {
  * }).toThrowError(AsycBindingError);
  * ```
  *
- * The above example throws because `String` depends on `Number` which is async. If any binding in the dependency
- * graph is async then the graph can only be retrieved using the `asyncGet` API.
+ * The above example throws because `String` depends on `Number` which is async. If any binding in
+ * the dependency graph is async then the graph can only be retrieved using the `asyncGet` API.
  *
  * @exportedAs angular2/di_errors
  */
 export class AsyncBindingError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function (keys:List) {
+    super(key, function (keys:List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Cannot instantiate ${first} synchronously. ` +
-        `It is provided as a promise!${constructResolvingPath(keys)}`;
+      return `Cannot instantiate ${first} synchronously. It is provided as a promise!${constructResolvingPath(keys)}`;
     });
   }
 }
@@ -125,7 +123,7 @@ export class AsyncBindingError extends AbstractBindingError {
 export class CyclicDependencyError extends AbstractBindingError {
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(key) {
-    super(key, function (keys:List) {
+    super(key, function (keys:List<any>) {
       return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
     });
   }
@@ -134,8 +132,8 @@ export class CyclicDependencyError extends AbstractBindingError {
 /**
  * Thrown when a constructing type returns with an Error.
  *
- * The `InstantiationError` class contains the original error plus the dependency graph which caused this object to be
- * instantiated.
+ * The `InstantiationError` class contains the original error plus the dependency graph which caused
+ * this object to be instantiated.
  *
  * @exportedAs angular2/di_errors
  */
@@ -144,10 +142,9 @@ export class InstantiationError extends AbstractBindingError {
   causeKey;
   // TODO(tbosch): Can't do key:Key as this results in a circular dependency!
   constructor(cause, key) {
-    super(key, function (keys:List) {
+    super(key, function (keys:List<any>) {
       var first = stringify(ListWrapper.first(keys).token);
-      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}.` +
-        ` ORIGINAL ERROR: ${cause}`;
+      return `Error during instantiation of ${first}!${constructResolvingPath(keys)}. ORIGINAL ERROR: ${cause}`;
     });
     this.cause = cause;
     this.causeKey = key;
@@ -155,39 +152,38 @@ export class InstantiationError extends AbstractBindingError {
 }
 
 /**
- * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector} creation.
+ * Thrown when an object other then {@link Binding} (or `Type`) is passed to {@link Injector}
+ * creation.
  *
  * @exportedAs angular2/di_errors
  */
-export class InvalidBindingError extends Error {
-  message:string;
+export class InvalidBindingError extends BaseException {
+  message: string;
   constructor(binding) {
     super();
-    this.message = `Invalid binding - only instances of Binding and Type are allowed, got: ${binding}`;
+    this.message = "Invalid binding - only instances of Binding and Type are allowed, got: " +
+                   binding.toString();
   }
 
-  toString():string {
-    return this.message;
-  }
+  toString(): string { return this.message; }
 }
 
 /**
  * Thrown when the class has no annotation information.
  *
- * Lack of annotation information prevents the {@link Injector} from determining which dependencies need to be injected into
- * the constructor.
+ * Lack of annotation information prevents the {@link Injector} from determining which dependencies
+ * need to be injected into the constructor.
  *
  * @exportedAs angular2/di_errors
  */
-export class NoAnnotationError extends Error {
-  message:string;
+export class NoAnnotationError extends BaseException {
+  name: string;
+  message: string;
   constructor(typeOrFunc) {
     super();
-    this.message = `Cannot resolve all parameters for ${stringify(typeOrFunc)}.` +
-      ` Make sure they all have valid type or annotations.`;
+    this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + ". " +
+                   'Make sure they all have valid type or annotations.';
   }
 
-  toString():string {
-    return this.message;
-  }
+  toString(): string { return this.message; }
 }

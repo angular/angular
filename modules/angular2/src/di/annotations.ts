@@ -10,4 +10,4 @@ export {
   Optional as OptionalAnnotation,
   Injectable as InjectableAnnotation,
   DependencyAnnotation,  // abstract base class, does not need a decorator
-  } from './annotations_impl';
+} from './annotations_impl';

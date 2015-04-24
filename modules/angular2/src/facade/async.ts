@@ -10,6 +10,8 @@ import {int, global, isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import * as Rx from 'rx';
 
+export var Promise = (<any>global).Promise;
+
 export class PromiseWrapper {
   static resolve(obj): Promise<any> { return Promise.resolve(obj); }
 

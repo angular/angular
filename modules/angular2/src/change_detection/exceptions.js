@@ -1,6 +1,7 @@
 import {ProtoRecord} from './proto_record';
+import {BaseException} from "angular2/src/facade/lang";
 
-export class ExpressionChangedAfterItHasBeenChecked extends Error {
+export class ExpressionChangedAfterItHasBeenChecked extends BaseException {
   message:string;
 
   constructor(proto:ProtoRecord, change:any) {
@@ -14,7 +15,7 @@ export class ExpressionChangedAfterItHasBeenChecked extends Error {
   }
 }
 
-export class ChangeDetectionError extends Error {
+export class ChangeDetectionError extends BaseException {
   message:string;
   originalException:any;
   location:string;

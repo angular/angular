@@ -3,7 +3,8 @@ import {
   InjectPromiseAnnotation,
   InjectLazyAnnotation,
   OptionalAnnotation,
-  InjectableAnnotation} from './annotations';
+  InjectableAnnotation
+} from './annotations';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 
 export var Inject = makeParamDecorator(InjectAnnotation);

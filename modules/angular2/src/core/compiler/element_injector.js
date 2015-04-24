@@ -966,7 +966,7 @@ export class ElementInjector extends TreeNode {
   }
 }
 
-class OutOfBoundsAccess extends Error {
+class OutOfBoundsAccess extends BaseException {
   message:string;
   constructor(index) {
     super();
@@ -978,7 +978,7 @@ class OutOfBoundsAccess extends Error {
   }
 }
 
-class QueryError extends Error {
+class QueryError extends BaseException {
   message:string;
   // TODO(rado): pass the names of the active directives.
   constructor() {
