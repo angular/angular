@@ -41,11 +41,9 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
             name: path.basename(moduleDoc.id),
             title: _.map(path.basename(moduleDoc.id).split('_'), function(part) {
               return titleCase(part);
-            }).join(' ')
+            }).join(' '),
+            description: moduleDoc.description.replace('"', '\"')
           };
-          if (!moduleDoc.public) {
-            console.log(moduleDoc.id);
-          }
           return dataDoc;
         })
       });
