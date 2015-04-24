@@ -12333,6 +12333,23 @@
       "from": "minimist@>=1.1.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.1.1.tgz"
     },
+    "mock-fs": {
+      "version": "2.5.0",
+      "from": "mock-fs@>=2.5.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/mock-fs/-/mock-fs-2.5.0.tgz",
+      "dependencies": {
+        "rewire": {
+          "version": "2.0.1",
+          "from": "rewire@>=2.0.0 <2.1.0",
+          "resolved": "https://registry.npmjs.org/rewire/-/rewire-2.0.1.tgz"
+        },
+        "semver": {
+          "version": "4.3.3",
+          "from": "semver@>=4.2.0 <5.0.0",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-4.3.3.tgz"
+        }
+      }
+    },
     "node-uuid": {
       "version": "1.4.3",
       "from": "node-uuid@>=1.4.0 <1.5.0",

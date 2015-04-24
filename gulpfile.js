@@ -501,6 +501,32 @@ gulp.task('test.unit.cjs', ['build.broccoli.tools'], function (done) {
   });
 });
 
+
+gulp.task('test.unit.broccoli', function(done) {
+
+  function buildAndTest() {
+    runSequence('build.broccoli.tools', function() {
+      var doneDeferred = Q.defer();
+      var jasmineProcess = fork('./tools/traceur-jasmine', ['dist/broccoli/**/*.spec.js'], {
+        stdio: 'inherit'
+      });
+
+      jasmineProcess.on('close', function (code) {
+        doneDeferred.resolve();
+      });
+
+      return doneDeferred.promise;
+    });
+  }
+
+  buildAndTest();
+
+  gulp.watch('tools/broccoli/**', function(event) {
+    buildAndTest();
+  });
+
+});
+
 // ------------------
 // server tests
 //     These tests run on the VM on the command-line and are
