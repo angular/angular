@@ -8,11 +8,11 @@ import 'package:angular2/src/reflection/types.dart';
 /// reflectively accessed at runtime.
 class RecordingReflectionCapabilities implements ReflectionCapabilities {
   /// The names of all requested `getter`s.
-  final List<String> getterNames = <String>[];
+  final Set<String> getterNames = new Set<String>();
   /// The names of all requested `setter`s.
-  final List<String> setterNames = <String>[];
+  final Set<String> setterNames = new Set<String>();
   /// The names of all requested `method`s.
-  final List<String> methodNames = <String>[];
+  final Set<String> methodNames = new Set<String>();
 
   _notImplemented(String name) => throw 'Not implemented: $name';
 

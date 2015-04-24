@@ -56,6 +56,14 @@ void allTests() {
     _formatThenExpectEquals(output, expected);
   });
 
+  it('should not generated duplicate getters/setters', () async {
+    var inputPath = 'template_compiler/duplicate_files/hello.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
+    var output = await processTemplates(reader, new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
   describe('DirectiveMetadataReader', () {
     Future<DirectiveMetadata> readMetadata(inputPath) async {
       var ngDeps = await parser.parse(new AssetId('a', inputPath));

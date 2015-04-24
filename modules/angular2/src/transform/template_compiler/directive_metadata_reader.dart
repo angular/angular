@@ -147,7 +147,8 @@ class _DirectiveMetadataVisitor extends Object
       return;
     }
     for (MapLiteralEntry entry in (hostPropertyValue as MapLiteral).entries) {
-      var sKey = _expressionToString(entry.key, 'Directive#hostProperties keys');
+      var sKey =
+          _expressionToString(entry.key, 'Directive#hostProperties keys');
       var sVal =
           _expressionToString(entry.value, 'Directive#hostProperties values');
       meta.hostProperties[sKey] = sVal;
