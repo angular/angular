@@ -1,4 +1,4 @@
-/// <reference path="./broccoli-writer.d.ts" />
+/// <reference path="./broccoli.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 
@@ -15,7 +15,7 @@ type Set = {
 class TypeScriptToDartTranspiler extends Writer {
   constructor(private inputTree, private includePattern = /\.(js|ts)$/) { super(); }
 
-  write(readTree, destDir): Promise<void> {
+  write(readTree, destDir): Promise<string> {
     return readTree(this.inputTree).then(dir => this.transpile(dir, destDir));
   }
 

@@ -35,7 +35,7 @@ var insert = require('gulp-insert');
 function missingDynamicBroccoli() {
   throw new Error('ERROR: build.broccoli.tools task should have been run before using broccoli');
 }
-var getBroccoli = missingDynamicBroccoli;
+var getBroccoliBuilder = missingDynamicBroccoli;
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -236,7 +236,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // transpile
 
 gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDartTree().buildOnce();
+  return getBroccoliBuilder().forDartTree().buildOnce();
 });
 
 // ------------
@@ -471,19 +471,23 @@ gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
     var relPath = path.relative(__dirname, event.path).replace(/\\/g, "/");
     gulp.src(relPath)
       .pipe(gulpPlugins.rename({extname: '.'+ 'js'}))
+      .pipe(util.insertSrcFolder(gulpPlugins, CONFIG.srcFolderInsertion.js))
       .pipe(gulpTraceur(CONFIG.transpile.options.js.cjs, file2moduleName))
       .pipe(transformCJSTests())
       .pipe(gulp.dest(CONFIG.dest.js.cjs + path.dirname(relPath.replace("modules", ""))));
   });
-  //Watcher to run tests when dist/js/cjs/angular2 is updated by the first watcher (after clearing the node cache)
-  gulp.watch(CONFIG.dest.js.cjs + '/angular2/**/*.js', function(event) {
-    for (var id in require.cache) {
-      if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
-        delete require.cache[id];
+
+  //Watcher to transpile and run tests when file changed (after clearing the node cache)
+  gulp.watch('modules/**', function(event) {
+    builder.doBuild().then(function() {
+      for (var id in require.cache) {
+        if (id.replace(/\\/g, "/").indexOf(CONFIG.dest.js.cjs) > -1) {
+          delete require.cache[id];
+        }
       }
-    }
-    global.assert = undefined; // https://github.com/angular/angular/issues/1340
-    runSequence('test.unit.cjs/ci', function() {});
+      global.assert = undefined; // https://github.com/angular/angular/issues/1340
+      runSequence('test.unit.cjs/ci', function() {});
+    });
   });
 
 });
@@ -592,16 +596,18 @@ gulp.task('build.broccoli.tools', function() {
   return tsResult.js.pipe(gulp.dest('dist/broccoli'))
       .on('end', function() {
         var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
-        getBroccoli = function() { return BroccoliBuilder; };
+        getBroccoliBuilder = function() {
+          return BroccoliBuilder;
+        };
       });
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDevTree().buildOnce();
+  return getBroccoliBuilder().forDevTree().buildOnce();
 });
 
 gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
-  return getBroccoli().forProdTree().buildOnce();
+  return getBroccoliBuilder().forProdTree().buildOnce();
 });
 
 gulp.task('build.js.dev', function(done) {
@@ -616,7 +622,7 @@ gulp.task('build.js.dev', function(done) {
 gulp.task('build.js.prod', ['broccoli.js.prod']);
 
 gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
-  return getBroccoli().forNodeTree().buildOnce();
+  return getBroccoliBuilder().forNodeTree().buildOnce();
 });
 gulp.task('build.js.cjs', function(done) {
   runSequence(

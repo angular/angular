@@ -1,11 +1,11 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
     var nodeModulesDir = path.join(config.dir, 'node_modules');
     if (!fs.existsSync(nodeModulesDir)) {
-      fs.mkdirSync(nodeModulesDir);
+      fs.mkdirsSync(nodeModulesDir);
     }
     getSubdirs(config.dir).forEach(function(relativeFolder) {
       if (relativeFolder === 'node_modules') {

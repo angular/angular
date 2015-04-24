@@ -1,4 +1,4 @@
-/// <reference path="./broccoli-filter.d.ts" />
+/// <reference path="./broccoli.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 
