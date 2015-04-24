@@ -91,7 +91,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   void _openFunctionWrapper() {
     _maybeWriteImport();
-    writer.print('bool _visited = false;'
+    writer.print('var _visited = false;'
         'void ${SETUP_METHOD_NAME}(${REFLECTOR_VAR_NAME}) {'
         'if (_visited) return; _visited = true;');
   }

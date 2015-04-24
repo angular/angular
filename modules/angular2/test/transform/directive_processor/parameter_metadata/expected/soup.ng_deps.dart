@@ -3,7 +3,7 @@ library dinner.soup.ng_deps.dart;
 import 'soup.dart';
 import 'package:angular2/src/core/annotations/annotations.dart';
 
-bool _visited = false;
+var _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
