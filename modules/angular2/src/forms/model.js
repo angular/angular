@@ -32,7 +32,7 @@ export const INVALID = "INVALID";
 /**
  * Omitting from external API doc as this is really an abstract internal concept.
  */
-export class AbstractControl {
+class AbstractControl {
   _value:any;
   _status:string;
   _errors:StringMap;
