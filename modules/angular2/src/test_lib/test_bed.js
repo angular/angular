@@ -116,6 +116,7 @@ export class ViewProxy {
 
   detectChanges(): void {
     this._view.changeDetector.detectChanges();
+    this._view.changeDetector.checkNoChanges();
   }
 
   querySelector(selector) {
