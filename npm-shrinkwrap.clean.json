@@ -7997,6 +7997,17 @@
     "minimist": {
       "version": "1.1.1"
     },
+    "mock-fs": {
+      "version": "2.5.0",
+      "dependencies": {
+        "rewire": {
+          "version": "2.0.1"
+        },
+        "semver": {
+          "version": "4.3.3"
+        }
+      }
+    },
     "node-uuid": {
       "version": "1.4.3"
     },
