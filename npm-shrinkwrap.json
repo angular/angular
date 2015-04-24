@@ -12244,6 +12244,11 @@
       "from": "https://registry.npmjs.org/merge/-/merge-1.2.0.tgz",
       "resolved": "https://registry.npmjs.org/merge/-/merge-1.2.0.tgz"
     },
+    "merge2": {
+      "version": "0.3.5",
+      "from": "merge2@*",
+      "resolved": "https://registry.npmjs.org/merge2/-/merge2-0.3.5.tgz"
+    },
     "minijasminenode2": {
       "version": "1.0.0",
       "from": "minijasminenode2@>=1.0.0 <2.0.0",
