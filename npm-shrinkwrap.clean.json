@@ -1332,14 +1332,6 @@
               "version": "0.0.8"
             }
           }
-        },
-        "symlink-or-copy": {
-          "version": "1.0.1",
-          "dependencies": {
-            "copy-dereference": {
-              "version": "1.0.0"
-            }
-          }
         }
       }
     },
@@ -1374,14 +1366,6 @@
                 }
               }
             },
-            "symlink-or-copy": {
-              "version": "1.0.1",
-              "dependencies": {
-                "copy-dereference": {
-                  "version": "1.0.0"
-                }
-              }
-            },
             "underscore": {
               "version": "1.8.3"
             }
@@ -1397,14 +1381,6 @@
           "dependencies": {
             "rsvp": {
               "version": "3.0.18"
-            }
-          }
-        },
-        "symlink-or-copy": {
-          "version": "1.0.1",
-          "dependencies": {
-            "copy-dereference": {
-              "version": "1.0.0"
             }
           }
         }
@@ -1513,14 +1489,6 @@
             },
             "rimraf": {
               "version": "2.3.2"
-            },
-            "symlink-or-copy": {
-              "version": "1.0.1",
-              "dependencies": {
-                "copy-dereference": {
-                  "version": "1.0.0"
-                }
-              }
             }
           }
         },
@@ -4808,14 +4776,6 @@
             }
           }
         },
-        "minijasminenode2": {
-          "version": "1.0.0",
-          "dependencies": {
-            "jasmine-core": {
-              "version": "2.0.0"
-            }
-          }
-        },
         "require-uncached": {
           "version": "1.0.2",
           "dependencies": {
@@ -7978,6 +7938,14 @@
     "merge": {
       "version": "1.2.0"
     },
+    "minijasminenode2": {
+      "version": "1.0.0",
+      "dependencies": {
+        "jasmine-core": {
+          "version": "2.0.0"
+        }
+      }
+    },
     "minimatch": {
       "version": "2.0.4",
       "dependencies": {
@@ -8295,6 +8263,14 @@
     },
     "sprintf-js": {
       "version": "1.0.2"
+    },
+    "symlink-or-copy": {
+      "version": "1.0.1",
+      "dependencies": {
+        "copy-dereference": {
+          "version": "1.0.0"
+        }
+      }
     },
     "systemjs": {
       "version": "0.9.3"
@@ -8955,5 +8931,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.19"
+  "version": "2.0.0-alpha.20"
 }

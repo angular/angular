@@ -94,6 +94,7 @@
     "sorted-object": "^1.0.0",
     "source-map": "^0.3.0",
     "sprintf-js": "1.0.*",
+    "symlink-or-copy": "^1.0.1",
     "systemjs-builder": "^0.10.3",
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",

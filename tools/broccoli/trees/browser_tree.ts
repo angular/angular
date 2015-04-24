@@ -8,7 +8,7 @@ var path = require('path');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var TraceurCompiler = require('../traceur');
+var traceurCompiler = require('../traceur');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
 
@@ -19,7 +19,7 @@ module.exports = function makeBrowserTree(options) {
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
   // Use Traceur to transpile original sources to ES6
-  var es6Tree = new TraceurCompiler(modulesTree, '.es6', '.map', {
+  var es6Tree = traceurCompiler(modulesTree, '.es6', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
@@ -34,7 +34,7 @@ module.exports = function makeBrowserTree(options) {
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree =
-      new TraceurCompiler(es6Tree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
+      traceurCompiler(es6Tree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
   // Now we add a few more files to the es6 tree that Traceur should not see
   ['angular2', 'rtts_assert'].forEach(function(destDir) {
@@ -53,7 +53,7 @@ module.exports = function makeBrowserTree(options) {
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.all.js',
       'tools/build/snippets/runtime_paths.js',
-      path.relative(projectRootDir, TraceurCompiler.RUNTIME_PATH)
+      path.relative(projectRootDir, traceurCompiler.RUNTIME_PATH)
     ]
   }));
   var vendorScripts_benchmark =
