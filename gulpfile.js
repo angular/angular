@@ -503,29 +503,15 @@ gulp.task('test.unit.cjs', ['build.broccoli.tools'], function (done) {
 });
 
 
-gulp.task('test.unit.broccoli', function(done) {
+gulp.task('test.unit.broccoli/ci', ['build.broccoli.tools'], function(done) {
+  fork('./tools/traceur-jasmine', ['dist/broccoli/**/*.spec.js'], {
+    stdio: 'inherit'
+  }).on('close', done);
+});
 
-  function buildAndTest() {
-    runSequence('build.broccoli.tools', function() {
-      var doneDeferred = Q.defer();
-      var jasmineProcess = fork('./tools/traceur-jasmine', ['dist/broccoli/**/*.spec.js'], {
-        stdio: 'inherit'
-      });
 
-      jasmineProcess.on('close', function (code) {
-        doneDeferred.resolve();
-      });
-
-      return doneDeferred.promise;
-    });
-  }
-
-  buildAndTest();
-
-  gulp.watch('tools/broccoli/**', function(event) {
-    buildAndTest();
-  });
-
+gulp.task('test.unit.broccoli', ['test.unit.broccoli/ci'], function() {
+  gulp.watch('tools/broccoli/**', ['test.unit.broccoli/ci']);
 });
 
 // ------------------
@@ -623,17 +609,20 @@ gulp.task('build.dart', function(done) {
 });
 
 gulp.task('build.broccoli.tools', function() {
+  var mergedStream;
+
   var tsResult = gulp.src('tools/broccoli/**/*.ts')
                      .pipe(sourcemaps.init())
-                     .pipe(tsc({target: 'ES5', module: 'commonjs'}))
-                     .on('error', function() {
-                       console.log("ERROR: Broccoli tools failed to build.");
-                       process.exit(1);
+                     .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter()}))
+                     .on('error', function(error) {
+                        // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
+                        // forwarding the error into the merged stream
+                        mergedStream.emit('error', error);
                      });
 
   var destDir = gulp.dest('dist/broccoli');
 
-  return merge2([
+  mergedStream = merge2([
     tsResult.js.pipe(sourcemaps.write('.')).pipe(destDir),
     tsResult.js.pipe(destDir)
   ]).on('end', function() {
@@ -641,6 +630,7 @@ gulp.task('build.broccoli.tools', function() {
     getBroccoli = function() { return BroccoliBuilder; };
   });
 
+  return mergedStream;
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
