@@ -7938,6 +7938,9 @@
     "merge": {
       "version": "1.2.0"
     },
+    "merge2": {
+      "version": "0.3.5"
+    },
     "minijasminenode2": {
       "version": "1.0.0",
       "dependencies": {

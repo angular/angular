@@ -8,6 +8,7 @@ var shell = require('gulp-shell');
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
+var merge2 = require('merge2');
 var path = require('path');
 var Q = require('q');
 
@@ -623,16 +624,23 @@ gulp.task('build.dart', function(done) {
 
 gulp.task('build.broccoli.tools', function() {
   var tsResult = gulp.src('tools/broccoli/**/*.ts')
+                     .pipe(sourcemaps.init())
                      .pipe(tsc({target: 'ES5', module: 'commonjs'}))
                      .on('error', function() {
                        console.log("ERROR: Broccoli tools failed to build.");
                        process.exit(1);
                      });
-  return tsResult.js.pipe(gulp.dest('dist/broccoli'))
-      .on('end', function() {
-        var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
-        getBroccoli = function() { return BroccoliBuilder; };
-      });
+
+  var destDir = gulp.dest('dist/broccoli');
+
+  return merge2([
+    tsResult.js.pipe(sourcemaps.write('.')).pipe(destDir),
+    tsResult.js.pipe(destDir)
+  ]).on('end', function() {
+    var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
+    getBroccoli = function() { return BroccoliBuilder; };
+  });
+
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
