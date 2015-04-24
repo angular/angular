@@ -15,9 +15,10 @@ See https://github.com/npm/npm/issues/3581 for related npm issue.
 To add a new dependency do the following:
 
 1. add a new dependency via `npm install -D <packagename>`
-2. run `./tools/npm/clean-shrinkwrap.js`
-3. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
-4. commit changes to these three files and you are done
+2. update npm-shrinkwrap.json with `npm shrinkwrap --dev`
+3. run `./tools/npm/clean-shrinkwrap.js`
+4. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
+5. commit changes to these three files and you are done
 
 
 To update existing dependency do the following:
