@@ -54,14 +54,13 @@ export class BroccoliBuilder {
                 printSlowTrees(hash.graph);
               })
         .catch(err => {
+          console.log(err.toString());
           // Should show file and line/col if present
           if (err.file) {
             console.error('File: ' + err.file);
           }
           if (err.stack) {
             console.error(err.stack);
-          } else {
-            console.error(err);
           }
           throw err;
         });

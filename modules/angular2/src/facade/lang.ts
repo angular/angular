@@ -7,6 +7,8 @@ export {_global as global};
 export var __esModule = true;
 
 export var Type = Function;
+export type Type = typeof Function;
+
 export var Math = _global.Math;
 export var Date = _global.Date;
 

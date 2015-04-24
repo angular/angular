@@ -530,7 +530,7 @@ gulp.task('build/pure-packages.dart', function() {
         // `modules_dart`, so they have to walk up and into `dist`.
         //
         // Example:
-        // 
+        //
         // dependency_overrides:
         //   angular2:
         //     path: ../../dist/dart/angular2
@@ -538,7 +538,7 @@ gulp.task('build/pure-packages.dart', function() {
         // When we copy a pure package into `dist` the relative path
         // must be updated. The code below replaces paths accordingly.
         // So the example above is turned into:
-        // 
+        //
         // dependency_overrides:
         //   angular2:
         //     path: ../angular2
