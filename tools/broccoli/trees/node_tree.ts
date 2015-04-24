@@ -7,7 +7,7 @@ var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var TraceurCompiler = require('../traceur');
+var traceurCompiler = require('../traceur');
 var TypescriptCompiler = require('../typescript');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
@@ -29,7 +29,7 @@ module.exports = function makeNodeTree() {
     ]
   });
 
-  var nodeTree = new TraceurCompiler(modulesTree, '.js', '.map', {
+  var nodeTree = traceurCompiler(modulesTree, '.js', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
