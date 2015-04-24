@@ -60,6 +60,11 @@ class WithFields {
   static id: number;
 }
 
+class WithInitializers {
+  static a = 'a';
+  b = 'b';
+}
+
 export function main() {
   describe('classes', function() {
     it('should work', function() {
@@ -101,6 +106,17 @@ export function main() {
         var obj = new WithFields();
         obj.name = 'Vojta';
         WithFields.id = 12;
+      });
+    });
+
+    describe('initializers', function() {
+      it('should support initialized static properties', () => {
+        expect(WithInitializers.a).toEqual('a');
+      });
+
+      it('should support initialized instance properties', () => {
+        var c = new WithInitializers();
+        expect(c.b).toEqual('b');
       });
     });
   });
