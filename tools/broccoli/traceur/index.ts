@@ -1,6 +1,7 @@
-/// <reference path="../broccoli-writer.d.ts" />
+/// <reference path="../broccoli.d.ts" />
 /// <reference path="../../typings/fs-extra/fs-extra.d.ts" />
 /// <reference path="../../typings/node/node.d.ts" />
+
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
@@ -12,7 +13,7 @@ var xtend = require('xtend');
 class TraceurFilter extends Writer {
   static RUNTIME_PATH = traceur.RUNTIME_PATH;
 
-  constructor(private inputTree, private destExtension: string,
+  constructor(private inputTree: Tree, private destExtension: string,
               private destSourceMapExtension: string, private options = {}) {
     super();
   }

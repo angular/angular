@@ -32,10 +32,9 @@ var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 
 // dynamic require in build.broccoli.tools so we can bootstrap TypeScript compilation
-function missingDynamicBroccoli() {
+var getBroccoliBuilder = function missingDynamicBroccoli() {
   throw new Error('ERROR: build.broccoli.tools task should have been run before using broccoli');
-}
-var getBroccoli = missingDynamicBroccoli;
+};
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -236,7 +235,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // transpile
 
 gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDartTree().buildOnce();
+  return getBroccoliBuilder().forDartTree().buildOnce();
 });
 
 // ------------
@@ -592,16 +591,16 @@ gulp.task('build.broccoli.tools', function() {
   return tsResult.js.pipe(gulp.dest('dist/broccoli'))
       .on('end', function() {
         var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
-        getBroccoli = function() { return BroccoliBuilder; };
+        getBroccoliBuilder = function() { return BroccoliBuilder; };
       });
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDevTree().buildOnce();
+  return getBroccoliBuilder().forDevTree().buildOnce();
 });
 
 gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
-  return getBroccoli().forProdTree().buildOnce();
+  return getBroccoliBuilder().forProdTree().buildOnce();
 });
 
 gulp.task('build.js.dev', function(done) {
@@ -616,7 +615,7 @@ gulp.task('build.js.dev', function(done) {
 gulp.task('build.js.prod', ['broccoli.js.prod']);
 
 gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
-  return getBroccoli().forNodeTree().buildOnce();
+  return getBroccoliBuilder().forNodeTree().buildOnce();
 });
 gulp.task('build.js.cjs', function(done) {
   runSequence(

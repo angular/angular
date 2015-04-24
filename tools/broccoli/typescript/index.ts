@@ -1,4 +1,4 @@
-/// <reference path="../broccoli-writer.d.ts" />
+/// <reference path="../broccoli.d.ts" />
 /// <reference path="../../typings/node/node.d.ts" />
 /// <reference path="../../../node_modules/typescript/bin/typescript.d.ts" />
 

@@ -1,5 +1,5 @@
 var broccoli = require('broccoli');
-var destCopy = require('./broccoli-dest-copy');
+var destCopy = require('./dest_copy');
 var fse = require('fs-extra');
 var makeBrowserTree = require('./trees/browser_tree');
 var makeNodeTree = require('./trees/node_tree');
