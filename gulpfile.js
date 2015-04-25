@@ -288,7 +288,8 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
 }));
 
 function doCheckFormat() {
-  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
+  return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
+                   '!tools/broccoli/tree-differ.ts']) // See https://github.com/angular/clang-format/issues/4
     .pipe(format.checkFormat('file'));
 }
 
