@@ -1,0 +1,48 @@
+{% include "lib/paramList.html" -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+p.location-badge.
+  exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a>
+
+:markdown
+{$ doc.description | indent(2, true) $}
+
+{%- if doc.constructorDoc or doc.members.length -%}
+.l-main-section
+  h2 Members
+
+{%- if doc.constructorDoc %}
+  .l-sub-section
+    h3 {$ doc.constructorDoc.name $}
+
+    {% if doc.constructorDoc.params %}
+    pre.prettyprint
+      code.
+        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) | indent(4, true) | trim $}
+    {% endif %}
+    :markdown
+{$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') $}
+
+
+{% endif -%}
+
+{%- for member in doc.members %}
+  .l-sub-section
+    h3 {$ member.name $}
+
+    {% if member.params %}
+    pre.prettyprint
+      code.
+        {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
+    {% endif %}
+    :markdown
+{$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
+
+
+
+{% endfor %}
+{%- endif -%}
+
+{% endblock %}
