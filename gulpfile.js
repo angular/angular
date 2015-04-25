@@ -1,3 +1,5 @@
+'use strict';
+
 var autoprefixer = require('gulp-autoprefixer');
 var format = require('gulp-clang-format');
 var fork = require('child_process').fork;
@@ -376,10 +378,10 @@ gulp.task('docs/bower', function() {
 });
 
 
-function createDocsTasks(public) {
-  var dgeniPackage = public ? './docs/public-docs-package' : './docs/dgeni-package';
-  var distDocsPath = public ? 'dist/public_docs' : 'dist/docs';
-  var taskPrefix = public ? 'public_docs' : 'docs';
+function createDocsTasks(publicBuild) {
+  var dgeniPackage = publicBuild ? './docs/public-docs-package' : './docs/dgeni-package';
+  var distDocsPath = publicBuild ? 'dist/public_docs' : 'dist/docs';
+  var taskPrefix = publicBuild ? 'public_docs' : 'docs';
 
   gulp.task(taskPrefix + '/dgeni', function() {
     try {
