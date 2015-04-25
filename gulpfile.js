@@ -284,6 +284,18 @@ function createDocsTasks(publicBuild) {
 createDocsTasks(true);
 createDocsTasks(false);
 
+gulp.task('docs/angular.io', function() {
+  try {
+    var dgeni = new Dgeni([require('./docs/angular.io-package')]);
+    return dgeni.generate();
+  } catch(x) {
+    console.log(x);
+    console.log(x.stack);
+    throw x;
+  }
+});
+
+
 // ------------------
 // CI tests suites
 

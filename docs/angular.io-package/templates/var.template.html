@@ -1,0 +1,11 @@
+{% extends 'layout/base.template.html' %}
+
+{% block body %}
+.l-main-section
+  h2 {$ doc.name $} <span class="type">variable</span>
+  p.location-badge.
+    exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+
+  :markdown
+{$ doc.description | indent(4, true) $}
+{% endblock %}
