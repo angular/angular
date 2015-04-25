@@ -16,7 +16,7 @@ There are three different kinds of directives (described in more detail in later
 
 ## CSS Selectors
 
-Decorators are instantiated whenever the decorator CSS selector matches the DOM structure. 
+Directives are instantiated whenever the CSS selector matches the DOM structure. 
 
 Angular supports these CSS selector constructs:
 * Element name: `name`
