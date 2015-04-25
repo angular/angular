@@ -1,108 +1,68 @@
 import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
-import {BaseException} from 'angular2/src/facade/lang';
 import {Injector} from 'angular2/di';
 import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 import * as viewModule from './view';
-import {ViewContainerRef} from 'angular2/src/render/api';
+import * as avmModule from './view_manager';
 
 /**
  * @exportedAs angular2/view
  */
 export class ViewContainer {
-  parentView: viewModule.AppView;
-  defaultProtoView: viewModule.AppProtoView;
-  _views: List<viewModule.AppView>;
-  elementInjector: eiModule.ElementInjector;
+  _viewManager: avmModule.AppViewManager;
+  _location: eiModule.ElementRef;
+  _defaultProtoView: viewModule.AppProtoView;
 
-  constructor(parentView: viewModule.AppView,
-              defaultProtoView: viewModule.AppProtoView,
-              elementInjector: eiModule.ElementInjector) {
-    this.parentView = parentView;
-    this.defaultProtoView = defaultProtoView;
-    this.elementInjector = elementInjector;
-
-    // The order in this list matches the DOM order.
-    this._views = [];
+  constructor(viewManager: avmModule.AppViewManager,
+              location: eiModule.ElementRef,
+              defaultProtoView: viewModule.AppProtoView) {
+    this._viewManager = viewManager;
+    this._location = location;
+    this._defaultProtoView = defaultProtoView;
   }
 
-  getRender():ViewContainerRef {
-    return new ViewContainerRef(this.parentView.render, this.elementInjector.getBoundElementIndex());
-  }
-
-  internalClearWithoutRender():void {
-    for (var i = this._views.length - 1; i >= 0; i--) {
-      this._detachInjectors(i);
-    }
+  _getViews() {
+    var vc = this._location.hostView.viewContainers[this._location.boundElementIndex];
+    return isPresent(vc) ? vc.views : [];
   }
 
   clear():void {
-    for (var i = this._views.length - 1; i >= 0; i--) {
+    for (var i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }
   }
 
   get(index: number): viewModule.AppView {
-    return this._views[index];
+    return this._getViews()[index];
   }
 
   get length() /* :int */ {
-    return this._views.length;
-  }
-
-  _siblingInjectorToLinkAfter(index: number):eiModule.ElementInjector {
-    if (index == 0) return null;
-    return ListWrapper.last(this._views[index - 1].rootElementInjectors)
-  }
-
-  hydrated():boolean {
-    return this.parentView.hydrated();
+    return this._getViews().length;
   }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
   create(atIndex:number=-1, protoView:viewModule.AppProtoView = null, injector:Injector = null): viewModule.AppView {
-    if (atIndex == -1) atIndex = this._views.length;
-    if (!this.hydrated()) throw new BaseException(
-        'Cannot create views on a dehydrated ViewContainer');
+    if (atIndex == -1) atIndex = this.length;
     if (isBlank(protoView)) {
-      protoView = this.defaultProtoView;
+      protoView = this._defaultProtoView;
     }
-    var newView = this.parentView.viewFactory.getView(protoView);
-    // insertion must come before hydration so that element injector trees are attached.
-    this._insertInjectors(newView, atIndex);
-    this.parentView.viewHydrator.hydrateViewInViewContainer(this, atIndex, newView, injector);
-
-    return newView;
+    return this._viewManager.createViewInContainer(this._location, atIndex, protoView, injector);
   }
 
   insert(view:viewModule.AppView, atIndex:number=-1): viewModule.AppView {
-    if (atIndex == -1) atIndex = this._views.length;
-    this._insertInjectors(view, atIndex);
-    this.parentView.changeDetector.addChild(view.changeDetector);
-    this.parentView.renderer.insertViewIntoContainer(this.getRender(), atIndex, view.render);
-    return view;
-  }
-
-  _insertInjectors(view:viewModule.AppView, atIndex:number): viewModule.AppView {
-    ListWrapper.insert(this._views, atIndex, view);
-    this._linkElementInjectors(this._siblingInjectorToLinkAfter(atIndex), view);
-
-    return view;
+    if (atIndex == -1) atIndex = this.length;
+    return this._viewManager.attachViewInContainer(this._location, atIndex, view);
   }
 
   indexOf(view:viewModule.AppView) {
-    return ListWrapper.indexOf(this._views, view);
+    return ListWrapper.indexOf(this._getViews(), view);
   }
 
   remove(atIndex:number=-1):void {
-    if (atIndex == -1) atIndex = this._views.length - 1;
-    var view = this._views[atIndex];
-    // opposite order as in create
-    this.parentView.viewHydrator.dehydrateViewInViewContainer(this, atIndex, view);
-    this._detachInjectors(atIndex);
-    this.parentView.viewFactory.returnView(view);
+    if (atIndex == -1) atIndex = this.length - 1;
+    this._viewManager.destroyViewInContainer(this._location, atIndex);
     // view is intentionally not returned to the client.
   }
 
@@ -111,29 +71,7 @@ export class ViewContainer {
    * moving the dom nodes while the directives in the view stay intact.
    */
   detach(atIndex:number=-1): viewModule.AppView {
-    if (atIndex == -1) atIndex = this._views.length - 1;
-    var detachedView = this._detachInjectors(atIndex);
-    detachedView.changeDetector.remove();
-    this.parentView.renderer.detachViewFromContainer(this.getRender(), atIndex);
-    return detachedView;
-  }
-
-  _detachInjectors(atIndex:number): viewModule.AppView {
-    var detachedView = this.get(atIndex);
-    ListWrapper.removeAt(this._views, atIndex);
-    this._unlinkElementInjectors(detachedView);
-    return detachedView;
-  }
-
-  _linkElementInjectors(sibling, view:viewModule.AppView):void {
-    for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
-      view.rootElementInjectors[i].linkAfter(this.elementInjector, sibling);
-    }
-  }
-
-  _unlinkElementInjectors(view:viewModule.AppView):void {
-    for (var i = 0; i < view.rootElementInjectors.length; ++i) {
-      view.rootElementInjectors[i].unlink();
-    }
+    if (atIndex == -1) atIndex = this.length - 1;
+    return this._viewManager.detachViewInContainer(this._location, atIndex);
   }
 }

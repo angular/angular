@@ -7,6 +7,7 @@ import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingErro
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
+import * as avmModule from './view_manager';
 import {ViewContainer} from 'angular2/src/core/compiler/view_container';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
@@ -30,28 +31,30 @@ export class ElementRef {
   boundElementIndex:number;
   injector:Injector;
   elementInjector:ElementInjector;
+  viewContainer:ViewContainer;
 
-  constructor(elementInjector, hostView, boundElementIndex, injector){
+  constructor(elementInjector, hostView, boundElementIndex, injector, viewManager, defaultProtoView){
     this.elementInjector = elementInjector;
     this.hostView = hostView;
     this.boundElementIndex = boundElementIndex;
     this.injector = injector;
-  }
-
-  get viewContainer() {
-    return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
+    this.viewContainer = new ViewContainer(viewManager, this, defaultProtoView);
   }
 }
 
 class StaticKeys {
+  viewManagerId:number;
   viewId:number;
   ngElementId:number;
+  defaultProtoViewId:number;
   viewContainerId:number;
   changeDetectorRefId:number;
   elementRefId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(AppView), 'static')
+    this.viewManagerId = Key.get(avmModule.AppViewManager).id;
+    this.defaultProtoViewId = Key.get(viewModule.AppProtoView).id;
     this.viewId = Key.get(viewModule.AppView).id;
     this.ngElementId = Key.get(NgElement).id;
     this.viewContainerId = Key.get(ViewContainer).id;
@@ -290,13 +293,15 @@ export class DirectiveBinding extends ResolvedBinding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
+  viewManager:avmModule.AppViewManager;
+  defaultProtoView:viewModule.AppProtoView;
   view:viewModule.AppView;
   element:NgElement;
-  changeDetector:ChangeDetector;
-  constructor(view, element:NgElement, changeDetector:ChangeDetector) {
+  constructor(viewManager:avmModule.AppViewManager, view:viewModule.AppView, element:NgElement, defaultProtoView:viewModule.AppProtoView) {
+    this.viewManager = viewManager;
     this.view = view;
+    this.defaultProtoView = defaultProtoView;
     this.element = element;
-    this.changeDetector = changeDetector;
   }
 }
 
@@ -649,10 +654,6 @@ export class ElementInjector extends TreeNode {
     return this._preBuiltObjects.element;
   }
 
-  getChangeDetector() {
-    return this._preBuiltObjects.changeDetector;
-  }
-
   getComponent() {
     if (this._proto._binding0IsComponent) {
       return this._obj0;
@@ -662,7 +663,8 @@ export class ElementInjector extends TreeNode {
   }
 
   getElementRef() {
-    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector);
+    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector,
+        this._preBuiltObjects.viewManager, this._preBuiltObjects.defaultProtoView);
   }
 
   getDynamicallyLoadedComponent() {
@@ -732,8 +734,15 @@ export class ElementInjector extends TreeNode {
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
+    if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
+      var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
+      return componentView.changeDetector.ref;
+    }
     if (dep.key.id === StaticKeys.instance().elementRefId) {
       return this.getElementRef();
+    }
+    if (dep.key.id === StaticKeys.instance().viewContainerId) {
+      return this.getElementRef().viewContainer;
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
   }
@@ -906,10 +915,10 @@ export class ElementInjector extends TreeNode {
   _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
     // TODO: AppView should not be injectable. Remove it.
+    if (keyId === staticKeys.viewManagerId) return this._preBuiltObjects.viewManagerId;
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.view.getOrCreateViewContainer(this._proto.index);
-    if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetector.ref;
+    if (keyId === staticKeys.defaultProtoViewId) return this._preBuiltObjects.defaultProtoView;
 
     //TODO add other objects as needed
     return _undefined;
@@ -966,6 +975,10 @@ export class ElementInjector extends TreeNode {
 
   getLightDomAppInjector() {
     return this._lightDomAppInjector;
+  }
+
+  getShadowDomAppInjector() {
+    return this._shadowDomAppInjector;
   }
 
   getHost() {

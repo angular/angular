@@ -6,7 +6,7 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 
 import {App} from './app';
 
-import {VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind} from 'angular2/di';
 
 export function main() {
@@ -15,7 +15,7 @@ export function main() {
 }
 
 function createBindings():List {
-  return [bind(VIEW_POOL_CAPACITY).toValue(100000)];
+  return [bind(APP_VIEW_POOL_CAPACITY).toValue(100000)];
 }
 
 export function setupReflector() {

@@ -6,10 +6,18 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding
 import {ElementBinder} from './element_binder';
 import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {ViewContainer} from './view_container';
 import * as renderApi from 'angular2/src/render/api';
-import * as vfModule from './view_factory';
-import * as vhModule from './view_hydrator';
+
+// TODO(tbosch): rename ViewContainer -> ViewContainerRef
+// and InternalAppViewContainer -> ViewContainer!
+export class InternalAppViewContainer {
+  views: List<AppView>;
+
+  constructor() {
+    // The order in this list matches the DOM order.
+    this.views = [];
+  }
+}
 
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
@@ -28,12 +36,10 @@ export class AppView {
   /// Host views that were added by an imperative view.
   /// This is a dynamically growing / shrinking array.
   imperativeHostViews: List<AppView>;
-  viewContainers: List<ViewContainer>;
+  viewContainers: List<InternalAppViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
   renderer: renderApi.Renderer;
-  viewFactory: vfModule.ViewFactory;
-  viewHydrator: vhModule.AppViewHydrator;
 
   /**
    * The context against which data-binding expressions in this view are evaluated against.
@@ -49,7 +55,7 @@ export class AppView {
    */
   locals:Locals;
 
-  constructor(renderer:renderApi.Renderer, viewFactory:vfModule.ViewFactory, proto:AppProtoView, protoLocals:Map) {
+  constructor(renderer:renderApi.Renderer, proto:AppProtoView, protoLocals:Map) {
     this.render = null;
     this.proto = proto;
     this.changeDetector = null;
@@ -61,8 +67,6 @@ export class AppView {
     this.context = null;
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
     this.renderer = renderer;
-    this.viewFactory = viewFactory;
-    this.viewHydrator = null;
     this.imperativeHostViews = [];
   }
 
@@ -73,15 +77,6 @@ export class AppView {
     this.rootElementInjectors = rootElementInjectors;
     this.preBuiltObjects = preBuiltObjects;
     this.componentChildViews = componentChildViews;
-  }
-
-  getOrCreateViewContainer(boundElementIndex:number):ViewContainer {
-    var viewContainer = this.viewContainers[boundElementIndex];
-    if (isBlank(viewContainer)) {
-      viewContainer = new ViewContainer(this, this.proto.elementBinders[boundElementIndex].nestedProtoView, this.elementInjectors[boundElementIndex]);
-      this.viewContainers[boundElementIndex] = viewContainer;
-    }
-    return viewContainer;
   }
 
   setLocal(contextName: string, value):void {
@@ -130,8 +125,8 @@ export class AppView {
   }
 
   getDetectorFor(directive:DirectiveIndex) {
-    var elementInjector = this.elementInjectors[directive.elementIndex];
-    return elementInjector.getChangeDetector();
+    var childView = this.componentChildViews[directive.elementIndex];
+    return isPresent(childView) ? childView.changeDetector : null;
   }
 
   // implementation of EventDispatcher#dispatchEvent

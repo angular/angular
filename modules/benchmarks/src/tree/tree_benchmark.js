@@ -9,7 +9,7 @@ import {window, document, gc} from 'angular2/src/facade/browser';
 import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 import {If} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
-import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
 import {bind} from 'angular2/di';
 
@@ -17,7 +17,7 @@ function createBindings():List {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [
     bind(rvf.VIEW_POOL_CAPACITY).toValue(viewCacheCapacity),
-    bind(VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
+    bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
   ];
 }
 

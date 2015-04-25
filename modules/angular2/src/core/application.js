@@ -28,8 +28,9 @@ import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_res
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
 import {ComponentRef, DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
-import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
@@ -105,12 +106,13 @@ function _injectorBindings(appComponentType): List<Binding> {
       ProtoViewFactory,
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
-      bind(ViewFactory).toFactory(
-        (capacity, renderer) => new ViewFactory(capacity, renderer),
-        [VIEW_POOL_CAPACITY, Renderer]
+      bind(AppViewPool).toFactory(
+        (capacity) => new AppViewPool(capacity),
+        [APP_VIEW_POOL_CAPACITY]
       ),
-      bind(VIEW_POOL_CAPACITY).toValue(10000),
-      AppViewHydrator,
+      bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
+      AppViewManager,
+      AppViewManagerUtils,
       Compiler,
       CompilerCache,
       TemplateResolver,

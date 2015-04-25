@@ -537,7 +537,7 @@ export function main() {
         tb.createView(MyComp, {context: ctx}).then((view) => {
           view.detectChanges();
 
-          var subview = view.rawView.viewContainers[1].get(0);
+          var subview = view.rawView.viewContainers[1].views[0];
           var childComponent = subview.locals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 
@@ -665,7 +665,7 @@ export function main() {
           ctx.ctxBoolProp = true;
           view.detectChanges();
 
-          var subview = view.rawView.viewContainers[0].get(0);
+          var subview = view.rawView.viewContainers[0].views[0];
           var injector = subview.elementInjectors[0];
           var listener = injector.get(DecoratorListeningDomEvent);
           var listenerother = injector.get(DecoratorListeningDomEventOther);

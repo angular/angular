@@ -21,7 +21,16 @@ class DummyDirective extends Directive {
 
 @proxy
 @IMPLEMENTS(AppView)
-class DummyView extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+class DummyView extends SpyObject {
+  componentChildViews;
+  changeDetector;
+  constructor() {
+    super();
+    this.componentChildViews = [];
+    this.changeDetector = null;
+  }
+  noSuchMethod(m){return super.noSuchMethod(m);}
+}
 
 
 class SimpleDirective {
@@ -119,6 +128,20 @@ class NeedsElementRef {
   }
 }
 
+class NeedsViewContainer {
+  viewContainer;
+  constructor(vc:ViewContainer) {
+    this.viewContainer = vc;
+  }
+}
+
+class NeedsChangeDetectorRef {
+  changeDetectorRef;
+  constructor(cdr:ChangeDetectorRef) {
+    this.changeDetectorRef = cdr;
+  }
+}
+
 class A_Needs_B {
   constructor(dep){}
 }
@@ -158,7 +181,7 @@ class TestNode extends TreeNode {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
 
   function humanize(tree, names:List) {
@@ -431,7 +454,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(null, view, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -557,34 +580,23 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, view, null, null));
 
         expect(inj.get(AppView)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, element, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
-      it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null);
-        var view = new DummyView();
-        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
-          return viewContainer;
-        });
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
+      it("should return default ProtoView", function () {
+        var protoView = new AppProtoView(null, null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, protoView));
 
-        expect(inj.get(ViewContainer)).toEqual(viewContainer);
-      });
-
-      it('should return changeDetectorRef', function () {
-        var cd = new DynamicChangeDetector(null, null, null, [], []);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, cd));
-
-        expect(inj.get(ChangeDetectorRef)).toBe(cd.ref);
+        expect(inj.get(AppProtoView)).toEqual(protoView);
       });
     });
 
@@ -694,14 +706,20 @@ export function main() {
         expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
       });
 
-      it('should return the viewContainer from the view', () => {
-        var viewContainer = new ViewContainer(null, null, null);
+      it('should inject ChangeDetectorRef', function () {
+        var cd = new DynamicChangeDetector(null, null, null, [], []);
         var view = new DummyView();
-        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
-          return viewContainer;
-        });
-        var inj = injector([NeedsElementRef], null, null, new PreBuiltObjects(view, null, null));
-        expect(inj.get(NeedsElementRef).elementRef.viewContainer).toBe(viewContainer);
+        var childView = new DummyView();
+        childView.changeDetector = cd;
+        view.componentChildViews = [childView];
+        var inj = injector([NeedsChangeDetectorRef], null, null, new PreBuiltObjects(null, view, null, null));
+
+        expect(inj.get(NeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+      });
+
+      it('should inject ViewContainer', () => {
+        var inj = injector([NeedsViewContainer]);
+        expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainer);
       });
     });
 

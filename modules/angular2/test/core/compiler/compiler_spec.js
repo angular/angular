@@ -414,6 +414,13 @@ export function main() {
         async.done();
       });
     }));
+
+    it('should throw for non component types', () => {
+      var compiler = createCompiler([], []);
+      expect(
+        () => compiler.compile(SomeDecoratorDirective)
+      ).toThrowError(`Could not load '${stringify(SomeDecoratorDirective)}' because it is not a component.`);
+    });
   });
 }
 

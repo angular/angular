@@ -18,8 +18,6 @@ import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 import './test_injector.dart';
 export './test_injector.dart' show inject;
 
-import 'package:collection/equality.dart';
-
 bool IS_DARTIUM = true;
 
 List _testBindings = [];

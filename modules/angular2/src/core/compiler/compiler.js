@@ -88,13 +88,17 @@ export class Compiler {
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
   compileInHost(componentTypeOrBinding:any):Promise<AppProtoView> {
+    var componentBinding = this._bindDirective(componentTypeOrBinding);
+    this._assertTypeIsComponent(componentBinding);
     return this._renderer.createHostProtoView('host').then( (hostRenderPv) => {
-      return this._compileNestedProtoViews(null, hostRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
+      return this._compileNestedProtoViews(null, hostRenderPv, [componentBinding], true);
     });
   }
 
   compile(component: Type):Promise<AppProtoView> {
-    var protoView = this._compile(this._bindDirective(component));
+    var componentBinding = this._bindDirective(component);
+    this._assertTypeIsComponent(componentBinding);
+    var protoView = this._compile(componentBinding);
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
 
@@ -265,4 +269,9 @@ export class Compiler {
     }
   }
 
+  _assertTypeIsComponent(directiveBinding:DirectiveBinding):void {
+    if (!(directiveBinding.annotation instanceof Component)) {
+      throw new BaseException(`Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
+    }
+  }
 }
