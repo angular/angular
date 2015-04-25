@@ -27,7 +27,7 @@ module.exports = new Package('angular.io', [basePackage])
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
     pathTemplate: '${id}.html',
-    outputPathTemplate: MODULES_DOCS_PATH + '/${id}.jade'
+    outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.jade'
   });
 
   computePathsProcessor.pathTemplates.push({
