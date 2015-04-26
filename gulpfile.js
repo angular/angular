@@ -362,7 +362,6 @@ gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
 // doc generation
 var Dgeni = require('dgeni');
 var bower = require('bower');
-var jasmine = require('gulp-jasmine');
 var webserver = require('gulp-webserver');
 
 gulp.task('docs/bower', function() {
@@ -408,11 +407,12 @@ function createDocsTasks(publicBuild) {
     return gulp.watch('docs/app/**/*', [taskPrefix + '/app']);
   });
 
-  gulp.task(taskPrefix + '/test', function () {
-    return gulp.src('docs/**/*.spec.js')
-        .pipe(jasmine({
-          includeStackTrace: true
-        }));
+  gulp.task(taskPrefix + '/test', function (done) {
+    fork('./tools/traceur-jasmine', ['docs/**/*.spec.js'], {
+      stdio: 'inherit'
+    }).on('close', function (exitCode) {
+      done(exitCode);
+    });
   });
 
   gulp.task(taskPrefix + '/serve', function() {
@@ -501,11 +501,12 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {
 
 // -----------------
 // test builders
-gulp.task('test.transpiler.unittest', function() {
-  return gulp.src('tools/transpiler/unittest/**/*.js')
-      .pipe(jasmine({
-        includeStackTrace: true
-      }));
+gulp.task('test.transpiler.unittest', function(done) {
+  fork('./tools/traceur-jasmine', ['tools/transpiler/unittest/**/*.js'], {
+    stdio: 'inherit'
+  }).on('close', function (exitCode) {
+    done(exitCode);
+  });
 });
 
 // -----------------

@@ -64,7 +64,6 @@
     "gulp-clang-format": "^1.0.3",
     "gulp-concat": "^2.5.2",
     "gulp-connect": "~1.0.5",
-    "gulp-jasmine": "^1.0.1",
     "gulp-load-plugins": "^0.7.1",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^1.3.3",
