@@ -246,7 +246,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // ------------
 // transpile
 
-gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
+gulp.task('build/tree.dart', ['build.tools'], function() {
   return angularBuilder.rebuildDartTree();
 });
 
@@ -480,15 +480,15 @@ gulp.task('test.unit.cjs', ['test.unit.cjs/ci'], function () {
 });
 
 
-gulp.task('test.unit.broccoli/ci', ['build.broccoli.tools'], function(done) {
-  fork('./tools/traceur-jasmine', ['dist/broccoli/**/*.spec.js'], {
+gulp.task('test.unit.tools/ci', ['build.tools'], function(done) {
+  fork('./tools/traceur-jasmine', ['dist/tools/**/*.spec.js'], {
     stdio: 'inherit'
   }).on('close', done);
 });
 
 
-gulp.task('test.unit.broccoli', ['test.unit.broccoli/ci'], function() {
-  gulp.watch('tools/broccoli/**', ['test.unit.broccoli/ci']);
+gulp.task('test.unit.tools', ['test.unit.tools/ci'], function() {
+  gulp.watch('tools/**', ['test.unit.tools/ci']);
 });
 
 // ------------------
@@ -585,10 +585,10 @@ gulp.task('build.dart', function(done) {
   );
 });
 
-gulp.task('build.broccoli.tools', function() {
+gulp.task('build.tools', function() {
   var mergedStream;
 
-  var tsResult = gulp.src('tools/broccoli/**/*.ts')
+  var tsResult = gulp.src('tools/**/*.ts')
                      .pipe(sourcemaps.init())
                      .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter()}))
                      .on('error', function(error) {
@@ -597,20 +597,20 @@ gulp.task('build.broccoli.tools', function() {
                         mergedStream.emit('error', error);
                      });
 
-  var destDir = gulp.dest('dist/broccoli');
+  var destDir = gulp.dest('dist/tools/');
 
   mergedStream = merge2([
     tsResult.js.pipe(sourcemaps.write('.')).pipe(destDir),
     tsResult.js.pipe(destDir)
   ]).on('end', function() {
-    var BroccoliBuilder = require('./dist/broccoli/broccoli_builder').BroccoliBuilder;
-    getBroccoli = function() { return BroccoliBuilder; };
+    var AngularBuilder = require('./dist/tools/broccoli/angular_builder').AngularBuilder;
+    angularBuilder = new AngularBuilder('dist');
   });
 
   return mergedStream;
 });
 
-gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
+gulp.task('broccoli.js.dev', ['build.tools'], function() {
   return angularBuilder.rebuildBrowserDevTree();
 });
 
@@ -624,14 +624,14 @@ gulp.task('build.js.dev', function(done) {
   );
 });
 
-gulp.task('build.js.prod', ['build.broccoli.tools'], function() {
+gulp.task('build.js.prod', ['build.tools'], function() {
   return angularBuilder.rebuildBrowserProdTree();
 });
 
 
 var firstBuildJsCjs = true;
 
-gulp.task('build.js.cjs', ['build.broccoli.tools'], function() {
+gulp.task('build.js.cjs', ['build.tools'], function() {
   return angularBuilder.rebuildNodeTree().then(function() {
     if (firstBuildJsCjs) {
       firstBuildJsCjs = false;

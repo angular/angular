@@ -92,7 +92,7 @@ function getHtmlSourcesTree() {
 
 function getTemplatedPubspecsTree() {
   // The JSON structure for templating pubspec.yaml files.
-  var BASE_PACKAGE_JSON = require('../../../package.json');
+  var BASE_PACKAGE_JSON = require('../../../../package.json');
   var COMMON_PACKAGE_JSON = {
     version: BASE_PACKAGE_JSON.version,
     homepage: BASE_PACKAGE_JSON.homepage,

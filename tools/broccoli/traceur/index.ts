@@ -9,7 +9,7 @@ import path = require('path');
 import TreeDiffer = require('../tree-differ');
 import Writer = require('broccoli-writer');
 
-let traceur = require('../../../tools/transpiler');
+let traceur = require('../../../../tools/transpiler');
 let symlinkOrCopy = require('symlink-or-copy');
 let xtend = require('xtend');
 
