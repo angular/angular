@@ -29,7 +29,6 @@ var karma = require('karma').server;
 var minimist = require('minimist');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var sourcemaps = require('gulp-sourcemaps');
-var transformCJSTests = require('./tools/build/transformCJSTests');
 var tsc = require('gulp-typescript');
 var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
