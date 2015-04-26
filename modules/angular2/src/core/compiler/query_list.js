@@ -20,7 +20,7 @@ import {BaseQueryList} from './base_query_list';
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *for="o in objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *for="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -32,7 +32,7 @@ import {BaseQueryList} from './base_query_list';
  * partialy since `*for` could rearange the list of `<pane>` components which would not be reported to `<tabs>`
  * component and thus the list of `<pane>` componets would be out of sync with respect to the list of `<pane>` elements.
  *
- * A prefferd solution is to inject a `QueryList` which is a live list of directives in the component`s light DOM.
+ * A preferred solution is to inject a `QueryList` which is a live list of directives in the component`s light DOM.
  *
  * ```javascript
  * @Component({
@@ -41,7 +41,7 @@ import {BaseQueryList} from './base_query_list';
  * @View({
  *  template: `
  *    <ul>
- *      <li *for="pane of panes">{{pane.title}}</li>
+ *      <li *for="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `
