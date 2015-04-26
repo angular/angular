@@ -1,7 +1,8 @@
 /// <reference path="../../typings/node/node.d.ts" />
 'use strict';
 
-import {MultiCopy} from './multi_copy';
+import {MultiCopy} from './../multi_copy';
+var destCopy = require('../broccoli-dest-copy');
 var Funnel = require('broccoli-funnel');
 var glob = require('glob');
 var mergeTrees = require('broccoli-merge-trees');
@@ -137,12 +138,11 @@ function getDocsTree() {
   return mergeTrees([licenses, mdTree, docs]);
 }
 
-module.exports = function makeDartTree() {
+module.exports = function makeDartTree(destinationPath) {
   var sourceTree = mergeTrees([getSourceTree(), getHtmlSourcesTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 
-  var mergedResult = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
+  var dartTree = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
 
-  // Move the tree under the 'dart' folder.
-  return stew.mv(mergedResult, 'dart');
+  return destCopy(dartTree, destinationPath);
 };

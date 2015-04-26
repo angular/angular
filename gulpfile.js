@@ -12,7 +12,6 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
-var Q = require('q');
 
 var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 var clean = require('./tools/build/clean');
@@ -35,11 +34,19 @@ var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 
-// dynamic require in build.broccoli.tools so we can bootstrap TypeScript compilation
-function missingDynamicBroccoli() {
-  throw new Error('ERROR: build.broccoli.tools task should have been run before using broccoli');
+
+// dynamic require in build.tools so we can bootstrap TypeScript compilation
+function throwToolsBuildMissingError() {
+  throw new Error('ERROR: build.tools task should have been run before using angularBuilder');
 }
-var getBroccoli = missingDynamicBroccoli;
+
+var angularBuilder = {
+  rebuildBrowserDevTree: throwToolsBuildMissingError,
+  rebuildBrowserProdTree: throwToolsBuildMissingError,
+  rebuildNodeTree: throwToolsBuildMissingError,
+  rebuildDartTree: throwToolsBuildMissingError,
+  cleanup: function() {}
+};
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 
@@ -240,7 +247,7 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // transpile
 
 gulp.task('build/tree.dart', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDartTree().buildOnce();
+  return angularBuilder.rebuildDartTree();
 });
 
 // ------------
@@ -253,13 +260,6 @@ gulp.task('pubget.dart', pubget.dir(gulp, gulpPlugins, { dir: '.', command: DART
 gulp.task('build/pubspec.dart', pubget.subDir(gulp, gulpPlugins, {
   dir: CONFIG.dest.dart,
   command: DART_SDK.PUB
-}));
-
-// ------------
-// linknodemodules
-
-gulp.task('build/linknodemodules.js.cjs', linknodemodules(gulp, gulpPlugins, {
-  dir: CONFIG.dest.js.cjs
 }));
 
 // ------------
@@ -464,44 +464,19 @@ gulp.task('test.unit.dart/ci', function (done) {
   karma.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
-gulp.task('test.unit.cjs/ci', function () {
-  return gulp.src(CONFIG.test.js.cjs).pipe(jasmine({includeStackTrace: true, timeout: 1000}));
-});
-gulp.task('test.unit.cjs', ['build.js.cjs'], function () {
-  //Run tests once
-  runSequence('test.unit.cjs/ci', function() {});
-});
 
-function runNodeJasmineTests() {
-  var doneDeferred = Q.defer();
-  var jasmineProcess = fork('./tools/traceur-jasmine', ['dist/js/cjs/angular2/test/**/*_spec.js'], {
+
+gulp.task('test.unit.cjs/ci', function(done) {
+  fork('./tools/traceur-jasmine', ['dist/js/cjs/angular2/test/**/*_spec.js'], {
     stdio: 'inherit'
+  }).on('close', function (exitCode) {
+    done(exitCode);
   });
-
-  jasmineProcess.on('close', function (code) {
-    doneDeferred.resolve();
-  });
-
-  return doneDeferred.promise;
-}
-
-gulp.task('test.unit.cjs/ci', runNodeJasmineTests);
-
-gulp.task('test.unit.cjs', ['build.broccoli.tools'], function (done) {
-  //Run tests once
-  var nodeBroccoliBuilder = getBroccoli().forNodeTree();
+});
 
 
-  nodeBroccoliBuilder.doBuild().then(function() {
-    gulp.start('build/linknodemodules.js.cjs');
-    return runNodeJasmineTests();
-  }).then(function() {
-    //Watcher to transpile file changed
-    gulp.watch('modules/**', function(event) {
-      console.log("fs changes detected", event);
-      nodeBroccoliBuilder.doBuild().then(runNodeJasmineTests);
-    });
-  });
+gulp.task('test.unit.cjs', ['test.unit.cjs/ci'], function () {
+  gulp.watch('modules/**', ['test.unit.cjs/ci']);
 });
 
 
@@ -636,12 +611,9 @@ gulp.task('build.broccoli.tools', function() {
 });
 
 gulp.task('broccoli.js.dev', ['build.broccoli.tools'], function() {
-  return getBroccoli().forDevTree().buildOnce();
+  return angularBuilder.rebuildBrowserDevTree();
 });
 
-gulp.task('broccoli.js.prod', ['build.broccoli.tools'], function() {
-  return getBroccoli().forProdTree().buildOnce();
-});
 
 gulp.task('build.js.dev', function(done) {
   runSequence(
@@ -652,18 +624,26 @@ gulp.task('build.js.dev', function(done) {
   );
 });
 
-gulp.task('build.js.prod', ['broccoli.js.prod']);
+gulp.task('build.js.prod', ['build.broccoli.tools'], function() {
+  return angularBuilder.rebuildBrowserProdTree();
+});
 
-gulp.task('broccoli.js.cjs', ['build.broccoli.tools'], function() {
-  return getBroccoli().forNodeTree().buildOnce();
+
+var firstBuildJsCjs = true;
+
+gulp.task('build.js.cjs', ['build.broccoli.tools'], function() {
+  return angularBuilder.rebuildNodeTree().then(function() {
+    if (firstBuildJsCjs) {
+      firstBuildJsCjs = false;
+      console.log('creating node_modules symlink hack');
+      // linknodemodules is all sync
+      linknodemodules(gulp, gulpPlugins, {
+        dir: CONFIG.dest.js.cjs
+      })();
+    }
+  });
 });
-gulp.task('build.js.cjs', function(done) {
-  runSequence(
-    'broccoli.js.cjs',
-    'build/linknodemodules.js.cjs',
-    done
-  );
-});
+
 
 var bundleConfig = {
   paths: {
@@ -789,3 +769,20 @@ gulp.task('build/css.dart', function() {
 });
 
 gulp.task('build.material', ['build.js.dev', 'build/css.js.dev']);
+
+
+gulp.task('cleanup.builder', function() {
+  angularBuilder.cleanup();
+});
+
+
+// register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
+process.on('SIGINT', function() {
+  gulp.start('cleanup.builder');
+  process.exit();
+});
+
+// register cleanup listener for all non-persistent tasks
+process.on('beforeExit', function() {
+  gulp.start('cleanup.builder');
+});
