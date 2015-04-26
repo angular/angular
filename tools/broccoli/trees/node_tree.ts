@@ -11,7 +11,7 @@ var ts2dart = require('../broccoli-ts2dart');
 var traceurCompiler = require('../traceur');
 var TypescriptCompiler = require('../typescript');
 
-var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
+var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
 
 module.exports = function makeNodeTree(destinationPath) {

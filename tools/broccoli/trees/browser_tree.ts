@@ -12,7 +12,7 @@ var ts2dart = require('../broccoli-ts2dart');
 var traceurCompiler = require('../traceur');
 
 
-var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
+var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
 
 module.exports = function makeBrowserTree(options, destinationPath) {
