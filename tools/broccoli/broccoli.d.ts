@@ -73,7 +73,7 @@ interface BroccoliBuilder {
    * Cleans up the whole build tree by calling `.cleanup()` method on all trees that are part of the
    * pipeline.
    */
-  cleanup();
+  cleanup(): Promise<any>;
 }
 
 

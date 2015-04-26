@@ -1,5 +1,6 @@
 'use strict';
 
+var destCopy = require('../broccoli-dest-copy');
 var Funnel = require('broccoli-funnel');
 var flatten = require('broccoli-flatten');
 var htmlReplace = require('../html-replace');
@@ -10,10 +11,11 @@ var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
 var traceurCompiler = require('../traceur');
 
+
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
 
 
-module.exports = function makeBrowserTree(options) {
+module.exports = function makeBrowserTree(options, destinationPath) {
   var modulesTree = new Funnel(
       'modules',
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
@@ -113,8 +115,7 @@ module.exports = function makeBrowserTree(options) {
 
   es5Tree = mergeTrees([es5Tree, htmlTree]);
 
-  return mergeTrees([
-    stew.mv(es6Tree, 'js/' + options.name + '/es6'),
-    stew.mv(es5Tree, 'js/' + options.name + '/es5')
-  ]);
+  var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
+
+  return destCopy(mergedTree, destinationPath);
 };

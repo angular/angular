@@ -1,5 +1,6 @@
 'use strict';
 
+var destCopy = require('../broccoli-dest-copy');
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var path = require('path');
@@ -13,7 +14,7 @@ var TypescriptCompiler = require('../typescript');
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
 
 
-module.exports = function makeNodeTree() {
+module.exports = function makeNodeTree(destinationPath) {
   // list of npm packages that this build will create
   var outputPackages = ['angular2', 'benchpress', 'rtts_assert'];
 
@@ -112,5 +113,5 @@ module.exports = function makeNodeTree() {
   nodeTree = mergeTrees([nodeTree, typescriptTree], { overwrite: true });
   nodeTree = mergeTrees([nodeTree, docs, packageJsons]);
 
-  return stew.mv(nodeTree, 'js/cjs');
+  return destCopy(nodeTree, destinationPath);
 };
