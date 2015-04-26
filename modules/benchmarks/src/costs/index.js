@@ -2,7 +2,10 @@ import {
   bootstrap,
   Component,
   Decorator,
-  View
+  View,
+  DynamicComponentLoader,
+  ElementRef,
+  DynamicComponent
 } from 'angular2/angular2';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -39,12 +42,18 @@ export function main() {
       app.createComponentsWithDecorators();
       lifeCycle.tick();
     });
+
+    // Components with decorators
+    bindAction('#createDynamicComponents', function() {
+      app.createDynamicComponents();
+      lifeCycle.tick();
+    });
   });
 }
 
 @Component({selector: 'app'})
 @View({
-  directives: [If, For, DummyComponent, DummyDecorator],
+  directives: [If, For, DummyComponent, DummyDecorator, DynamicDummy],
   template: `
     <div *if="testingPlainComponents">
       <dummy *for="#i of list"></dummy>
@@ -53,12 +62,17 @@ export function main() {
     <div *if="testingWithDecorators">
       <dummy dummy-decorator *for="#i of list"></dummy>
     </div>
+
+    <div *if="testingDynamicComponents">
+      <dynamic-dummy *for="#i of list"></dynamic-dummy>
+    </div>
   `
 })
 class AppComponent {
   list:List;
   testingPlainComponents:boolean;
   testingWithDecorators:boolean;
+  testingDynamicComponents:boolean;
 
   constructor() {
     this.reset();
@@ -68,6 +82,7 @@ class AppComponent {
     this.list = [];
     this.testingPlainComponents = false;
     this.testingWithDecorators = false;
+    this.testingDynamicComponents = false;
   }
 
   createPlainComponents():void {
@@ -79,6 +94,11 @@ class AppComponent {
     this.list = testList;
     this.testingWithDecorators = true;
   }
+
+  createDynamicComponents():void {
+    this.list = testList;
+    this.testingDynamicComponents = true;
+  }
 }
 
 @Component({selector: 'dummy'})
@@ -87,3 +107,10 @@ class DummyComponent {}
 
 @Decorator({selector: '[dummy-decorator]'})
 class DummyDecorator {}
+
+@DynamicComponent({selector: 'dynamic-dummy'})
+class DynamicDummy {
+  constructor(loader:DynamicComponentLoader, location:ElementRef) {
+    loader.loadIntoExistingLocation(DummyComponent, location);
+  }
+}
