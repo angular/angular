@@ -70,8 +70,8 @@ export class AppViewManager {
       parentRenderViewRef = parentView.render;
     }
     var hostViewRenderRef = hostView.render;
-    this._utils.dehydrateAndDetachInPlaceHostView(parentView, hostView);
     this._viewDehydrateRecurse(hostView);
+    this._utils.detachInPlaceHostView(parentView, hostView);
     this._renderer.destroyInPlaceHostView(parentRenderViewRef, hostViewRenderRef);
     this._destroyView(hostView);
   }
@@ -95,7 +95,6 @@ export class AppViewManager {
     var boundElementIndex:number = viewContainerLocation.boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
-    this._utils.dehydrateView(view);
     this._viewDehydrateRecurse(view);
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
     this._renderer.destroyViewInContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex);
@@ -167,11 +166,11 @@ export class AppViewManager {
   }
 
   _viewDehydrateRecurse(view:viewModule.AppView) {
+    this._utils.dehydrateView(view);
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; i++) {
       var componentView = view.componentChildViews[i];
       if (isPresent(componentView)) {
-        this._utils.dehydrateView(componentView);
         this._viewDehydrateRecurse(componentView);
         if (binders[i].hasDynamicComponent()) {
           this._utils.detachComponentView(view, i);
@@ -182,7 +181,7 @@ export class AppViewManager {
       if (isPresent(vc)) {
         for (var j = vc.views.length - 1; j >= 0; j--) {
           var childView = vc.views[j];
-          this._utils.dehydrateView(childView);
+          this._viewDehydrateRecurse(childView);
           this._utils.detachViewInContainer(view, i, j);
           this._destroyView(childView);
         }
@@ -193,7 +192,7 @@ export class AppViewManager {
     for (var i = 0; i < view.imperativeHostViews.length; i++) {
       var hostView = view.imperativeHostViews[i];
       this._viewDehydrateRecurse(hostView);
-      this._utils.dehydrateAndDetachInPlaceHostView(view, hostView);
+      this._utils.detachInPlaceHostView(view, hostView);
       this._destroyView(hostView);
     }
     view.render = null;
