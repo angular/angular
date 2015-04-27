@@ -78,15 +78,23 @@ export class Observable {
  */
 export class EventEmitter extends Observable {
   _subject: Rx.Subject<any>;
+  _immediateScheduler;
 
   constructor() {
     super();
-    this._subject = new Rx.Subject<any>();
+
+    // System creates a different object for import * than Typescript es5 emit.
+    if (Rx.hasOwnProperty('default')) {
+      this._subject = new (<any>Rx).default.Rx.Subject();
+      this._immediateScheduler = (<any>Rx).default.Rx.Scheduler.immediate;
+    } else {
+      this._subject = new Rx.Subject<any>();
+      this._immediateScheduler = (<any>Rx.Scheduler).immediate;
+    }
   }
 
   observer(generator) {
-    var immediateScheduler = (<any>Rx.Scheduler).immediate;
-    return this._subject.observeOn(immediateScheduler)
+    return this._subject.observeOn(this._immediateScheduler)
         .subscribe((value) => { setTimeout(() => generator.next(value)); },
                    (error) => generator.throw ? generator.throw(error) : null,
                    () => generator.return ? generator.return () : null);

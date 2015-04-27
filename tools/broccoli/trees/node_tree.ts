@@ -98,17 +98,14 @@ module.exports = function makeNodeTree(destinationPath) {
     target: 'ES5',
     sourceMap: true,
     mapRoot: '', /* force sourcemaps to use relative path */
-    module: /*system.js*/ 'commonjs',
+    module: 'commonjs',
     allowNonTsExtensions: false,
     typescript: require('typescript'),
-    // declarationFiles: true,
     noEmitOnError: true,
     outDir: 'angular2'
   });
 
-  // For now, we just overwrite the Traceur-compiled files with their Typescript equivalent
-  nodeTree = mergeTrees([nodeTree, typescriptTree], { overwrite: true });
-  nodeTree = mergeTrees([nodeTree, docs, packageJsons]);
+  nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
 
   // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
   //   ENOENT error is thrown while doing fs.readdirSync on inputRoot

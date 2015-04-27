@@ -10,6 +10,7 @@ var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
 var traceurCompiler = require('../traceur');
+var TypescriptCompiler = require('../typescript');
 
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
@@ -20,19 +21,35 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'modules',
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
-  // Use Traceur to transpile original sources to ES6
-  var es6Tree = traceurCompiler(modulesTree, '.es6', '.map', {
+  // Use Traceur to transpile *.js sources to ES6
+  var traceurTree = traceurCompiler(modulesTree, '.es6', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
     script: false,          // parse as a module
     memberVariables: true,  // parse class fields
     modules: 'instantiate',
-    typeAssertionModule: 'rtts_assert/rtts_assert',
-    typeAssertions: options.typeAssertions,
+    // typeAssertionModule: 'rtts_assert/rtts_assert',
+    // typeAssertions: options.typeAssertions,
     outputLanguage: 'es6'
   });
 
+  // Use TypeScript to transpile the *.ts files to ES6
+  // We don't care about errors: we let the TypeScript compilation to ES5
+  // in node_tree.ts do the type-checking.
+  var typescriptTree = new TypescriptCompiler(modulesTree, {
+    target: 'ES6',
+    sourceMap: true,
+    mapRoot: '', /* force sourcemaps to use relative path */
+    allowNonTsExtensions: false,
+    typescript: require('typescript'),
+    noEmitOnError: false,
+    emitDecoratorMetadata: true,
+    outDir: 'angular2'
+  });
+  typescriptTree = stew.rename(typescriptTree, '.js', '.es6');
+
+  var es6Tree = mergeTrees([traceurTree, typescriptTree]);
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree =
@@ -53,7 +70,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/systemjs/lib/extension-cjs.js',
-      'node_modules/rx/dist/rx.all.js',
+      'node_modules/rx/dist/rx.js',
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/snippets/runtime_paths.js',
       path.relative(projectRootDir, traceurCompiler.RUNTIME_PATH)

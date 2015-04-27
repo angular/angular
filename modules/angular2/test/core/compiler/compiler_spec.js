@@ -518,7 +518,7 @@ class DirectiveWithBind {}
 
 @Directive()
 class DirectiveWithAttributes {
-  constructor(@Attribute('someAttr') someAttr:string) {}
+  constructor(@Attribute('someAttr') someAttr:String) {}
 }
 
 @proxy

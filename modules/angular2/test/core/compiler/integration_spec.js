@@ -1209,7 +1209,7 @@ class NeedsAttribute {
   typeAttribute;
   titleAttribute;
   fooAttribute;
-  constructor(@Attribute('type') typeAttribute: string, @Attribute('title') titleAttribute: string, @Attribute('foo') fooAttribute: string) {
+  constructor(@Attribute('type') typeAttribute: String, @Attribute('title') titleAttribute: String, @Attribute('foo') fooAttribute: String) {
     this.typeAttribute = typeAttribute;
     this.titleAttribute = titleAttribute;
     this.fooAttribute = fooAttribute;

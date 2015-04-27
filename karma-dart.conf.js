@@ -61,13 +61,14 @@ module.exports = function(config) {
 
     preprocessors: {
       'modules/**/*.js': ['ts2dart'],
+      'modules/angular2/src/reflection/reflector.ts': ['ts2dart'],
       'tools/**/*.js': ['ts2dart']
     },
 
     ts2dartPreprocessor: {
       resolveModuleName: file2moduleName,
       transformPath: function(fileName) {
-        return fileName.replace(/.js$/, '.dart');
+        return fileName.replace(/\.(js|ts)$/, '.dart');
       }
     },
 

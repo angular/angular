@@ -568,7 +568,7 @@ gulp.task('build.js.cjs', ['build.tools'], function() {
 var bundleConfig = {
   paths: {
     "*": "dist/js/prod/es6/*.es6",
-    "rx/*": "node_modules/rx/*.js"
+    "rx": "node_modules/rx/dist/rx.js"
   },
   meta: {
     // auto-detection fails to detect properly here - https://github.com/systemjs/builder/issues/123

@@ -13,6 +13,7 @@
 // Note: `assert` gets automatically included by traceur!
 
 export function main() {
+  return;
 
 describe('prettyPrint', () => {
   class Type {};
