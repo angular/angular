@@ -225,7 +225,7 @@
         if (child) {
           lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail, zone);
         } else {
-          zone.run(function () { callback(detail); }, zone);
+          zone.run(callback, null, [detail]);
         }
       }
 
@@ -242,9 +242,7 @@
     // For this to work, the zone error handler should rethrow excpetions
     function lib$es6$promise$$internal$$tryCatch(callback, detail, zone) {
       try {
-        return zone.run(function() {
-          return callback(detail);
-        });
+        return zone.run(callback, null, [detail]);
       } catch(e) {
         lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
         return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
@@ -256,7 +254,7 @@
           value, error, succeeded, failed;
 
       if (hasCallback) {
-        value = lib$es6$promise$$internal$$tryCatch(callback, detail, zone || lib$es6$promise$utils$$getCurrentZone());
+        value = lib$es6$promise$$internal$$tryCatch(callback, detail, zone);
 
         if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
           failed = true;
@@ -911,11 +909,12 @@
 
         var child = new this.constructor(lib$es6$promise$$internal$$noop);
         var result = parent._result;
+        var zone = lib$es6$promise$utils$$getCurrentZone();
 
         if (state) {
           var callback = arguments[state - 1];
-          lib$es6$promise$asap$microtask$$default(function(){
-            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+          lib$es6$promise$asap$microtask$$default(function() {
+            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result, zone);
           });
         } else {
           lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);

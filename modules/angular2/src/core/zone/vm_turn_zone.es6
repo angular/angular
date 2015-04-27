@@ -7,8 +7,8 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
  * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
  * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton `VmTurnZone` whose outer `Zone` is the root `Zone`
- * and whose default `onTurnDone` runs the Angular digest.
+ * A typical application will create a singleton `VmTurnZone`. The outer `Zone` is a fork of the root
+ * `Zone`. The default `onTurnDone` runs the Angular change detection.
  *
  * @exportedAs angular2/core
  */
@@ -20,8 +20,6 @@ export class VmTurnZone {
   _onTurnDone:Function;
   _onErrorHandler:Function;
 
-  _nestedRunCounter:number;
-
   /**
    * Associates with this
    *
@@ -32,7 +30,6 @@ export class VmTurnZone {
    *               enabled in development mode as they significantly impact perf.
    */
   constructor({enableLongStackTrace}) {
-    this._nestedRunCounter = 0;
     this._onTurnStart = null;
     this._onTurnDone = null;
     this._onErrorHandler = null;
@@ -70,10 +67,10 @@ export class VmTurnZone {
    * Angular's auto digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = <ref to the application zone>;
+   * var zone: VmTurnZone = [ref to the application zone];
    *
    * zone.run(() => {
-   *   // auto-digest will run after this function is called from JS
+   *   // the change detection will run after this function and the microtasks it enqueues have executed.
    * });
    * ```
    */
@@ -88,7 +85,7 @@ export class VmTurnZone {
    * auto-digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = <ref to the application zone>;
+   * var zone: VmTurnZone = [ref to the application zone];
    *
    * zone.runOusideAngular(() => {
    *   element.onClick(() => {

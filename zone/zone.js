@@ -54,7 +54,6 @@ function Zone(parentZone, data) {
   return zone;
 }
 
-
 Zone.prototype = {
   constructor: Zone,
 
@@ -65,7 +64,7 @@ Zone.prototype = {
 
   bind: function (fn, skipEnqueue) {
     skipEnqueue || this.enqueueTask(fn);
-    var zone = this; //.fork();
+    var zone = this.fork();
     return function zoneBoundFn() {
       return zone.run(fn, this, arguments);
     };
@@ -83,7 +82,7 @@ Zone.prototype = {
   scheduleMicrotask: function (fn) {
     var executionZone = this;
     Zone.microtaskQueue.push(function() {
-      executionZone.run(fn, this);
+      executionZone.run(fn);
     });
   },
 
@@ -96,6 +95,7 @@ Zone.prototype = {
     exports.zone = zone = this;
 
     try {
+      Zone.nestedRun++;
       this.beforeTask();
       return fn.apply(applyTo, applyWith);
     } catch (e) {
@@ -105,9 +105,12 @@ Zone.prototype = {
         throw e;
       }
     } finally {
+      Zone.nestedRun--;
       this.afterTask();
-      // Check if there are microtasks to execute (unless we are already executing them)
-      if (!Zone.drainingMicrotasks) {
+      // Check if there are microtasks to execute unless:
+      // - we are already executing them (drainingMicrotasks is true),
+      // - we are in a recursive call to run (nesetdRun > 0)
+      if (!Zone.drainingMicrotasks && Zone.nestedRun == 0) {
         this.runMicrotasks();
       }
       exports.zone = zone = oldZone;
@@ -191,13 +194,14 @@ Zone.patchSetClearFn = function (obj, fnNames) {
 };
 
 Zone.nextId = 1;
-
 // Pending microtasks to be executed after the macrotask
 Zone.microtaskQueue = [];
 // Whether we are currently draining the microtask queue
 Zone.drainingMicrotasks = false;
 // Whether some code has been executed in the inner zone during the current turn
-Zone.hasExecutedInnerCode = false;
+Zone.hasExecutedInnerCode = false
+// Recursive calls to run
+Zone.nestedRun = 0;
 
 Zone.patchSetFn = function (obj, fnNames) {
   fnNames.forEach(function (name) {

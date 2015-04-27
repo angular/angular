@@ -2,8 +2,6 @@
 
 (function (exports) {
 
-Zone.nestedRun = 0;
-
 Zone.vmTurnAware = {
   '$run': function (parentRun) {
     return function() {

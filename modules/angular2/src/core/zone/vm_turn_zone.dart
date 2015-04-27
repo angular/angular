@@ -15,8 +15,8 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
  * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
  * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton `VmTurnZone` whose outer `Zone` is the root `Zone`
- * and whose default `onTurnDone` runs the Angular digest.
+ * A typical application will create a singleton `VmTurnZone`. The outer `Zone` is a fork of the root
+ * `Zone`. The default `onTurnDone` runs the Angular change detection.
  */
 class VmTurnZone {
   Function _onTurnStart;
@@ -35,6 +35,11 @@ class VmTurnZone {
   bool _hasExecutedCodeInInnerZone = false;
   // Whether the onTurnStart hook is executing
   bool _inTurnStart = false;
+  // _outerRun() call depth. 0 at the end of a macrotask
+  // zone.run(() => {         // top-level call
+  //   zone.run(() => {});    // nested call -> in-turn
+  // });                      // we should only check for the end of a turn once the top-level run ends
+  int _nestedRun = 0;
 
   /**
    * Associates with this
@@ -119,7 +124,12 @@ class VmTurnZone {
    * }
    * ```
    */
-  dynamic run(fn()) => _innerZone.run(fn);
+  dynamic run(fn()) {
+    // Using runGuarded() is required when executing sync code with Dart otherwise handleUncaughtError()
+    // would not be called on exceptions.
+    // see https://code.google.com/p/dart/issues/detail?id=19566 for details.
+    return _innerZone.runGuarded(fn);
+  }
 
   /**
    * Runs `fn` in the outer zone and returns whatever it returns.
@@ -140,7 +150,9 @@ class VmTurnZone {
    * }
    * ```
    */
-  dynamic runOutsideAngular(fn()) => _outerZone.run(fn);
+  dynamic runOutsideAngular(fn()) {
+    return _outerZone.runGuarded(fn);
+  }
 
   // Executes code in the [_innerZone] & trigger the onTurnStart hook when code is executed for the
   // first time in a turn.
@@ -171,30 +183,18 @@ class VmTurnZone {
 
   dynamic _outerRun(Zone self, ZoneDelegate parent, Zone zone, fn()) {
     try {
+      _nestedRun++;
       return parent.run(zone, fn);
-    } catch (error, stackTrace) {
-      // By default, Dart would propagate synchronous errors outside of the error zone,
-      // see https://code.google.com/p/dart/issues/detail?id=19566
-      // However we want to have the same behacior as for asynchronous error which is to call
-      // the zone's handleUncaughtError.
-      if (_onErrorHandler != null) {
-        zone.handleUncaughtError(error, stackTrace);
-      } else {
-        rethrow;
-      }
     } finally {
+      _nestedRun--;
       // If there are no more pending microtasks, we are at the end of a VM turn (or in onTurnStart)
-      if (_pendingMicrotasks == 0) {
+      // _nestedRun will be 0 at the end of a macrotasks (it could be > 0 when there are nested calls
+      // to _outerRun()).
+      if (_pendingMicrotasks == 0 && _nestedRun == 0) {
         if (_onTurnDone != null && !_inTurnStart && _hasExecutedCodeInInnerZone) {
           // Trigger onTurnDone at the end of a turn if _innerZone has executed some code
           try {
             parent.run(_innerZone, _onTurnDone);
-          } catch (error, stackTrace) {
-            if (_onErrorHandler != null) {
-              parent.handleUncaughtError(zone, error, stackTrace);
-            } else {
-              rethrow;
-            }
           } finally {
             _hasExecutedCodeInInnerZone = false;
           }
@@ -222,20 +222,22 @@ class VmTurnZone {
     parent.scheduleMicrotask(zone, microtask);
   }
 
-  void _onErrorWithLongStackTrace(exception, Chain chain) {
-    final traces = chain.terse.traces.map((t) => t.toString()).toList();
-    _onError(exception, traces, chain.traces[0]);
-  }
-
-  void _onErrorWithoutLongStackTrace(exception, StackTrace trace) {
-    _onError(exception, [trace.toString()], trace);
-  }
-
-  void _onError(exception, List<String> traces, StackTrace singleTrace) {
+  // Called by Chain.capture() on errors when long stack traces are enabled
+  void _onErrorWithLongStackTrace(error, Chain chain) {
     if (_onErrorHandler != null) {
-      _onErrorHandler(exception, traces);
+      final traces = chain.terse.traces.map((t) => t.toString()).toList();
+      _onErrorHandler(error, traces);
     } else {
-      throw exception;
+      throw error;
+    }
+  }
+
+  // Outer zone handleUnchaughtError when long stack traces are not used
+  void _onErrorWithoutLongStackTrace(error, StackTrace trace) {
+    if (_onErrorHandler != null) {
+      _onErrorHandler(error, [trace.toString()]);
+    } else {
+      throw error;
     }
   }
 }

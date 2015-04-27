@@ -135,11 +135,14 @@ function _it(jsmFn, name, fn) {
     if (!(fn instanceof FunctionWithParamTokens)) {
       fn = inject([], fn);
     }
-    inIt = true;
-    fn.execute(injector);
-    inIt = false;
 
-    if (!async) done();
+    // run tests in a macrotask
+    setTimeout(() => {
+      inIt = true;
+      fn.execute(injector);
+      inIt = false;
+      if (!async) done();
+    }, 0);
   });
 }
 
