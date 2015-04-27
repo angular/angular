@@ -5,6 +5,7 @@ var path = require('path');
 var glob = require('glob');
 var fs = require('fs');
 var util = require('./util');
+var yaml = require('js-yaml');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
@@ -12,7 +13,15 @@ module.exports = function(gulp, plugins, config) {
     return util.forEachSubDirSequential(
       config.dest,
       function(dir) {
-        var srcFiles = [].slice.call(glob.sync('web/**/*.dart', {
+        var pubspecContents = fs.readFileSync(path.join(dir, 'pubspec.yaml'));
+        var pubspec = yaml.safeLoad(pubspecContents);
+        var packageName = pubspec.name;
+
+        var libFiles = [].slice.call(glob.sync('lib/**/*.dart', {
+          cwd: dir
+        }));
+
+        var webFiles = [].slice.call(glob.sync('web/**/*.dart', {
           cwd: dir
         }));
 
@@ -20,9 +29,12 @@ module.exports = function(gulp, plugins, config) {
           cwd: dir
         }));
         var analyzeFile = ['library _analyzer;'];
-        srcFiles.concat(testFiles).forEach(function(fileName, index) {
+        libFiles.concat(testFiles).concat(webFiles).forEach(function(fileName, index) {
           if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
-            analyzeFile.push('import "./' + fileName + '" as mod' + index + ';');
+            if (fileName.indexOf('lib') == 0) {
+              fileName = 'package:' + packageName + '/' + path.relative('lib', fileName);
+            }
+            analyzeFile.push('import "' + fileName + '" as mod' + index + ';');
           }
         });
         fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
@@ -33,15 +45,8 @@ module.exports = function(gulp, plugins, config) {
     );
 
     function analyze(dirName, done) {
-      // analyze files in lib directly – or you mess up package: urls
-      var sources = [].slice.call(glob.sync('lib/**/*.dart', {
-        cwd: dirName
-      }));
-
-      sources.push(tempFile);
-
       //TODO remove --package-warnings once dartanalyzer handles transitive libraries
-      var args = ['--fatal-warnings', '--package-warnings'].concat(sources);
+      var args = ['--fatal-warnings', '--package-warnings'].concat(tempFile);
 
       var stream = spawn(config.command, args, {
         // inherit stdin and stderr, but filter stdout
