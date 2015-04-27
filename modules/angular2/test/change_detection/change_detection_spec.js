@@ -474,11 +474,11 @@ export function main() {
               var address = new Address('Grenoble');
               var person = new Person('Victor', address);
               var locals = new Locals(null,
-                  MapWrapper.createFromPairs([["city", "Paris"]]));
+                  MapWrapper.createFromPairs([['city', 'MTV']]));
               expect(executeWatch('address.city', 'address.city', person, locals))
                 .toEqual(['address.city=Grenoble']);
               expect(executeWatch('city', 'city', person, locals))
-                .toEqual(['city=Paris']);
+                .toEqual(['city=MTV']);
             });
 
           });
