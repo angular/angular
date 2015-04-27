@@ -13,7 +13,6 @@ var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
 
-var gulpTraceur = require('./tools/transpiler/gulp-traceur');
 var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
 var pubget = require('./tools/build/pubget');
@@ -55,50 +54,6 @@ var DART_SDK = require('./tools/build/dartdetect')(gulp);
 // -----------------------
 // configuration
 
-var _COMPILER_CONFIG_JS_DEFAULT = {
-  sourceMaps: true,
-  annotations: true, // parse annotations
-  types: true, // parse types
-  script: false, // parse as a module
-  memberVariables: true, // parse class fields
-  modules: 'instantiate'
-};
-
-var _HTML_DEFAULT_SCRIPTS_JS = [
-  {src: gulpTraceur.RUNTIME_PATH, mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
-      mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/zone.js/zone.js', mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/zone.js/long-stack-trace-zone.js', mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/systemjs/dist/system.src.js', mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/systemjs/lib/extension-register.js', mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/systemjs/lib/extension-cjs.js', mimeType: 'text/javascript', copy: true},
-  {src: 'node_modules/rx/dist/rx.all.js', mimeType: 'text/javascript', copy: true},
-  {src: 'tools/build/snippets/runtime_paths.js', mimeType: 'text/javascript', copy: true},
-  {
-    inline: 'System.import(\'$MODULENAME$\').then(function(m) { m.main(); }, console.error.bind(console))',
-    mimeType: 'text/javascript'
-  }
-];
-
-var BASE_PACKAGE_JSON = require('./package.json');
-var COMMON_PACKAGE_JSON = {
-  version: BASE_PACKAGE_JSON.version,
-  homepage: BASE_PACKAGE_JSON.homepage,
-  bugs: BASE_PACKAGE_JSON.bugs,
-  license: BASE_PACKAGE_JSON.license,
-  contributors: BASE_PACKAGE_JSON.contributors,
-  dependencies: BASE_PACKAGE_JSON.dependencies,
-  devDependencies: {
-    "yargs": BASE_PACKAGE_JSON.devDependencies['yargs'],
-    "gulp-sourcemaps": BASE_PACKAGE_JSON.devDependencies['gulp-sourcemaps'],
-    "gulp-traceur": BASE_PACKAGE_JSON.devDependencies['gulp-traceur'],
-    "gulp": BASE_PACKAGE_JSON.devDependencies['gulp'],
-    "gulp-rename": BASE_PACKAGE_JSON.devDependencies['gulp-rename'],
-    "through2": BASE_PACKAGE_JSON.devDependencies['through2']
-  }
-};
-
 var CONFIG = {
   dest: {
     js: {
@@ -117,115 +72,11 @@ var CONFIG = {
     dart: 'dist/dart',
     docs: 'dist/docs'
   },
-  transpile: {
-    src: {
-      js: ['modules/**/*.js', 'modules/**/*.es6'],
-      ts: ['modules/**/*.ts'],
-    },
-    options: {
-      js: {
-        dev: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
-          typeAssertionModule: 'rtts_assert/rtts_assert',
-          typeAssertions: true,
-          outputLanguage: 'es6'
-        }),
-        prod: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
-          typeAssertions: false,
-          outputLanguage: 'es6'
-        }),
-        cjs: merge(true, _COMPILER_CONFIG_JS_DEFAULT, {
-          typeAssertionModule: 'rtts_assert/rtts_assert',
-          // Don't use type assertions since this is partly transpiled by typescript
-          typeAssertions: false,
-          modules: 'commonjs'
-        })
-      }
-    }
-  },
-  copy: {
-    js: {
-      cjs: {
-        src: [
-          'modules/**/*.md', '!modules/**/*.dart.md', 'modules/**/*.png',
-          'modules/**/package.json'
-        ],
-        pipes: {
-          '**/*.js.md': gulpPlugins.rename(function(file) {
-            file.basename = file.basename.substring(0, file.basename.lastIndexOf('.'));
-          }),
-          '**/package.json': gulpPlugins.template({ 'packageJson': COMMON_PACKAGE_JSON })
-        }
-      },
-      dev: {
-        src: ['modules/**/*.css'],
-        pipes: {}
-      },
-      prod: {
-        src: ['modules/**/*.css'],
-        pipes: {}
-      }
-    }
-  },
-  multicopy: {
-    js: {
-      cjs: {
-        src: [
-          'LICENSE'
-        ],
-        pipes: {}
-      },
-      dev: {
-        es6: {
-          src: ['tools/build/es5build.js'],
-          pipes: {}
-        }
-      },
-      prod: {
-        es6: {
-          src: ['tools/build/es5build.js'],
-          pipes: {}
-        }
-      }
-    },
-  },
-  html: {
-    src: {
-      js: ['modules/*/src/**/*.html'],
-    },
-    scriptsPerFolder: {
-      js: {
-        '**': _HTML_DEFAULT_SCRIPTS_JS,
-        'benchmarks/**':
-          [
-            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
-        'benchmarks_external/**':
-          [
-            { src: 'node_modules/angular/angular.js', mimeType: 'text/javascript', copy: true },
-            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ].concat(_HTML_DEFAULT_SCRIPTS_JS),
-        'benchmarks_external/**/*polymer*/**':
-          [
-            { src: 'bower_components/polymer/lib/polymer.html', copyOnly: true },
-            { src: 'tools/build/snippets/url_params_to_form.js', mimeType: 'text/javascript', copy: true }
-          ]
-      },
-    }
-  },
   formatDart: {
     packageName: 'dart_style',
     args: ['dart_style:format', '-w', 'dist/dart']
-  },
-  test: {
-    js: {
-      cjs: [
-        '/angular2/test/**/*_spec.js'
-      ]
-    }
   }
 };
-CONFIG.test.js.cjs = CONFIG.test.js.cjs.map(function(s) {return CONFIG.dest.js.cjs + s});
-CONFIG.test.js.cjs.push('!**/core/zone/vm_turn_zone_spec.js'); //Disabled in nodejs because it relies on Zone.js
 
 // ------------
 // clean
