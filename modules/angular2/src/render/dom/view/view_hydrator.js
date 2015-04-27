@@ -180,7 +180,9 @@ export class RenderViewHydrator {
 
   _viewContainerDehydrateRecurse(viewContainer) {
     for (var i=0; i<viewContainer.views.length; i++) {
-      this._viewDehydrateRecurse(viewContainer.views[i]);
+      var view = viewContainer.views[i];
+      this._viewDehydrateRecurse(view);
+      this._viewFactory.returnView(view);
     }
     viewContainer.clear();
   }
