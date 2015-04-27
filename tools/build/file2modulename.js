@@ -3,6 +3,8 @@ function file2moduleName(filePath) {
     // module name should be relative to `modules` and `tools` folder
     .replace(/.*\/modules\//, '')
     .replace(/.*\/tools\//, '')
+    //  and 'dist' folder
+    .replace(/.*\/dist\/js\/dev\/es5\//, '')
     // module name should not include `lib`, `web` folders
     // as they are wrapper packages for dart
     .replace(/\/web\//, '/')
