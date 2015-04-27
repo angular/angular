@@ -24,7 +24,7 @@ var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var rundartpackage = require('./tools/build/rundartpackage');
 var file2moduleName = require('./tools/build/file2modulename');
-var karma = require('karma').server;
+var karma = require('karma');
 var minimist = require('minimist');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var sourcemaps = require('gulp-sourcemaps');
@@ -320,18 +320,41 @@ function getBrowsersFromCLI() {
   var args = minimist(process.argv.slice(2));
   return [args.browsers?args.browsers:'DartiumWithWebPlatform']
 }
-gulp.task('test.unit.js', function (done) {
-  karma.start({configFile: __dirname + '/karma-js.conf.js'}, done);
+
+gulp.task('test.unit.js', ['build/clean.js'], function (neverDone) {
+
+  function buildAndTest() {
+    runSequence(
+      'broccoli.js.dev',
+      'test.unit.dev/karma-run'
+    );
+  }
+
+  karma.server.start({configFile: __dirname + '/karma-js.conf.js'});
+  buildAndTest();
+
+  gulp.watch('modules/**', function() {
+    console.log('args', arguments);
+    buildAndTest();
+  });
 });
+
+gulp.task('test.unit.dev/karma-run', function(done) {
+  karma.runner.run({configFile: __dirname + '/karma-js.conf.js'}, done);
+});
+
+
 gulp.task('test.unit.dart', function (done) {
-  karma.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
+  karma.server.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
 });
+
 gulp.task('test.unit.js/ci', function (done) {
-  karma.start({configFile: __dirname + '/karma-js.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+  karma.server.start({configFile: __dirname + '/karma-js.conf.js',
+    singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
+
 gulp.task('test.unit.dart/ci', function (done) {
-  karma.start({configFile: __dirname + '/karma-dart.conf.js',
+  karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
       singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
 

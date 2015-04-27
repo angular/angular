@@ -9,15 +9,16 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 // we will call `__karma__.start()` later, once all the specs are loaded.
 __karma__.loaded = function() {};
 
-
-System.baseURL = '/base/modules/';
+System.baseURL = '/base/';
 
 // So that we can import packages like `core/foo`, instead of `core/src/foo`.
 System.paths = {
   '*': './*.js',
-  'transpiler/*': '../tools/transpiler/*.js',
-  'rx/*': '../node_modules/rx/*.js'
-}
+  'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
+  'angular2/*': 'dist/js/dev/es5/angular2/*.js',
+  'rtts_assert/*': 'dist/js/dev/es5/rtts_assert/*.js',
+  'rx/*': 'node_modules/rx/*.js'
+};
 
 // Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
 System.import('angular2/src/dom/browser_adapter').then(function(browser_adapter) {
