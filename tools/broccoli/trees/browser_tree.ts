@@ -117,5 +117,10 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
 
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  mergedTree = stew.mv(mergedTree, '');
+
   return destCopy(mergedTree, destinationPath);
 };
