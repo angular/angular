@@ -1,6 +1,7 @@
 'use strict';
 
 var autoprefixer = require('gulp-autoprefixer');
+var del = require('del');
 var format = require('gulp-clang-format');
 var fork = require('child_process').fork;
 var gulp = require('gulp');
@@ -81,9 +82,11 @@ var CONFIG = {
 // ------------
 // clean
 
-gulp.task('build/clean.tools', clean(gulp, gulpPlugins, {
-  path: path.join('dist', 'tools')
-}));
+gulp.task('build/clean.tools', function() {
+  if (rebuildTools && 'AngularBuilder' in global) {
+    del(path.join('dist', 'tools'));
+  };
+});
 
 gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
   path: CONFIG.dest.js.all
@@ -330,8 +333,17 @@ gulp.task('test.unit.cjs/ci', function(done) {
 });
 
 
-gulp.task('test.unit.cjs', ['test.unit.cjs/ci'], function () {
-  gulp.watch('modules/**', ['test.unit.cjs/ci']);
+gulp.task('test.unit.cjs', ['build/clean.js'], function (done) {
+  function buildAndTest() {
+    runSequence(
+      'build.js.cjs',
+      'test.unit.cjs/ci'
+    );
+  }
+
+  buildAndTest();
+
+  gulp.watch('modules/**', buildAndTest);
 });
 
 
@@ -343,6 +355,8 @@ gulp.task('test.unit.tools/ci', function(done) {
 
 
 gulp.task('test.unit.tools', function(done) {
+  rebuildTools = true;
+
   function buildAndTest() {
     runSequence(
       'build.tools',
@@ -354,6 +368,7 @@ gulp.task('test.unit.tools', function(done) {
 
   gulp.watch('tools/**', buildAndTest);
 });
+
 
 // ------------------
 // server tests
@@ -451,8 +466,12 @@ gulp.task('build.dart', function(done) {
 });
 
 
+var rebuildTools = false;
+
 gulp.task('build.tools', ['build/clean.tools'], function() {
-  var mergedStream;
+  if (!rebuildTools && angularBuilder.rebuildNodeTree !== throwToolsBuildMissingError) {
+    return;
+  }
 
   var tsResult = gulp.src('tools/**/*.ts')
                      .pipe(sourcemaps.init())
@@ -465,7 +484,7 @@ gulp.task('build.tools', ['build/clean.tools'], function() {
 
   var destDir = gulp.dest('dist/tools/');
 
-  mergedStream = merge2([
+  var mergedStream = merge2([
     tsResult.js.pipe(sourcemaps.write('.')).pipe(destDir),
     tsResult.js.pipe(destDir)
   ]).on('end', function() {
