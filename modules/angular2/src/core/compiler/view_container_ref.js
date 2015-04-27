@@ -9,7 +9,7 @@ import * as avmModule from './view_manager';
 /**
  * @exportedAs angular2/view
  */
-export class ViewContainer {
+export class ViewContainerRef {
   _viewManager: avmModule.AppViewManager;
   _location: eiModule.ElementRef;
   _defaultProtoView: viewModule.AppProtoView;

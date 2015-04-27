@@ -18,8 +18,8 @@ import {Injector, bind} from 'angular2/di';
 import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {AppProtoView, AppView, InternalAppViewContainer} from 'angular2/src/core/compiler/view';
-import {Renderer, ViewRef, ProtoViewRef, ViewContainerRef} from 'angular2/src/render/api';
+import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
+import {Renderer, ViewRef, ProtoViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveBinding, ElementInjector, ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -122,7 +122,7 @@ export function main() {
       utils.spy('attachViewInContainer').andCallFake( (parentView, elementIndex, atIndex, childView) => {
         var viewContainer = parentView.viewContainers[elementIndex];
         if (isBlank(viewContainer)) {
-          viewContainer = new InternalAppViewContainer();
+          viewContainer = new AppViewContainer();
           parentView.viewContainers[elementIndex] = viewContainer;
         }
         ListWrapper.insert(viewContainer.views, atIndex, childView);
@@ -385,7 +385,7 @@ export function main() {
           childProtoView = createProtoView();
         });
 
-        it('should create a ViewContainer if not yet existing', () => {
+        it('should create a ViewContainerRef if not yet existing', () => {
           manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
           expect(parentView.viewContainers[0]).toBeTruthy();
         });
@@ -411,7 +411,7 @@ export function main() {
         it('should create and set the render view', () => {
           manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
           expect(renderer.spy('createViewInContainer')).toHaveBeenCalledWith(
-            new ViewContainerRef(parentView.render, 0), 0, childProtoView.render);
+            new RenderViewContainerRef(parentView.render, 0), 0, childProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
@@ -451,7 +451,7 @@ export function main() {
 
         it('should destroy and clear the render view', () => {
           manager.destroyViewInContainer(elementRef(parentView, 0), 0);
-          expect(renderer.spy('destroyViewInContainer')).toHaveBeenCalledWith(new ViewContainerRef(parentView.render, 0), 0);
+          expect(renderer.spy('destroyViewInContainer')).toHaveBeenCalledWith(new RenderViewContainerRef(parentView.render, 0), 0);
           expect(childView.render).toBe(null);
         });
 

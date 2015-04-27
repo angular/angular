@@ -23,7 +23,7 @@ export * from './src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy
 export * from './src/core/compiler/dynamic_component_loader';
 export {ElementRef, ComponentRef} from './src/core/compiler/element_injector';
 export * from './src/core/compiler/view';
-export * from './src/core/compiler/view_container';
+export * from './src/core/compiler/view_container_ref';
 
 export * from './src/core/compiler/ng_element';
 

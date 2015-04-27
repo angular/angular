@@ -3,7 +3,7 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as eli from './element_injector';
 import * as viewModule from './view';
-import {Renderer, ViewRef, ViewContainerRef} from 'angular2/src/render/api';
+import {Renderer, ViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 
@@ -121,7 +121,7 @@ export class AppViewManager {
   }
 
   _getRenderViewContainerRef(parentView:viewModule.AppView, boundElementIndex:number) {
-    return new ViewContainerRef(parentView.render, boundElementIndex);
+    return new RenderViewContainerRef(parentView.render, boundElementIndex);
   }
 
   _createViewRecurse(protoView:viewModule.AppProtoView) {

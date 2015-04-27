@@ -55,7 +55,7 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacement coming)
- * - `viewContainer: ViewContainer` to control child template instantiation, for {@link Viewport} directives only
+ * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Viewport} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -827,8 +827,8 @@ export class Decorator extends Directive {
 /**
  * Directive that controls the instantiation, destruction, and positioning of inline template elements.
  *
- * A viewport directive uses a {@link ViewContainer} to instantiate, insert, move, and destroy views at runtime.
- * The {@link ViewContainer} is created as a result of `<template>` element, and represents a location in the current view
+ * A viewport directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
+ * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
  * where these actions are performed.
  *
  * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
@@ -873,10 +873,10 @@ export class Decorator extends Directive {
  *   }
  * })
  * export class Unless {
- *   viewContainer: ViewContainer;
+ *   viewContainer: ViewContainerRef;
  *   prevCondition: boolean;
  *
- *   constructor(viewContainer: ViewContainer) {
+ *   constructor(viewContainer: ViewContainerRef) {
  *     this.viewContainer = viewContainer;
  *     this.prevCondition = null;
  *   }

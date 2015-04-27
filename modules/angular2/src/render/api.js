@@ -138,7 +138,7 @@ export class ProtoViewRef {}
 // An opaque reference to a RenderView
 export class ViewRef {}
 
-export class ViewContainerRef {
+export class RenderViewContainerRef {
   view:ViewRef;
   elementIndex:number;
   constructor(view:ViewRef, elementIndex: number) {
@@ -193,27 +193,27 @@ export class Renderer {
 
   /**
    * Creates a view and inserts it into a ViewContainer.
-   * @param {ViewContainerRef} viewContainerRef
+   * @param {RenderViewContainerRef} viewContainerRef
    * @param {ProtoViewRef} protoViewRef A ProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE or ProtoViewDto.EMBEDDED_VIEW_TYPE
    * @param {number} atIndex
    * @return {List<ViewRef>} the view and all of its nested child component views
    */
-  createViewInContainer(vcRef:ViewContainerRef, atIndex:number, protoViewRef:ProtoViewRef):List<ViewRef> { return null; }
+  createViewInContainer(vcRef:RenderViewContainerRef, atIndex:number, protoViewRef:ProtoViewRef):List<ViewRef> { return null; }
 
   /**
    * Destroys the view in the given ViewContainer
    */
-  destroyViewInContainer(vcRef:ViewContainerRef, atIndex:number):void {}
+  destroyViewInContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
 
   /**
    * Inserts a detached view into a viewContainer.
    */
-  insertViewIntoContainer(vcRef:ViewContainerRef, atIndex:number, view:ViewRef):void {}
+  insertViewIntoContainer(vcRef:RenderViewContainerRef, atIndex:number, view:ViewRef):void {}
 
   /**
    * Detaches a view from a container so that it can be inserted later on
    */
-  detachViewFromContainer(vcRef:ViewContainerRef, atIndex:number):void {}
+  detachViewFromContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
 
   /**
    * Creates a view and

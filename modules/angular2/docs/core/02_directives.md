@@ -6,7 +6,7 @@ Directives are the cornerstone of an Angular application. We use Directives to b
 
 Angular applications do not have a main method. Instead they have a root Component. Dependency Injection then assembles the directives into a working Angular application.
 
-There are three different kinds of directives (described in more detail in later sections). 
+There are three different kinds of directives (described in more detail in later sections).
 
 1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
 2. *Components*: Components have an encapsulated view and can configure injectors.
@@ -16,7 +16,7 @@ There are three different kinds of directives (described in more detail in later
 
 ## CSS Selectors
 
-Directives are instantiated whenever the CSS selector matches the DOM structure. 
+Directives are instantiated whenever the CSS selector matches the DOM structure.
 
 Angular supports these CSS selector constructs:
 * Element name: `name`
@@ -29,7 +29,7 @@ Angular supports these CSS selector constructs:
 
 Angular does not support these (and any CSS selector which crosses element boundaries):
 * Descendant: `body div`
-* Direct descendant: `body > div` 
+* Direct descendant: `body > div`
 * Adjacent: `div + table`
 * Sibling: `div ~ table`
 * Wildcard: `*`
@@ -68,10 +68,10 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
 @Decorator({
   selector: '[tooltip]', // CSS Selector which triggers the decorator
   properties: {          // List which properties need to be bound
-    text: 'tooltip'      //  - DOM element tooltip property should be 
+    text: 'tooltip'      //  - DOM element tooltip property should be
   },                     //    mapped to the directive text property.
   hostListeners: {       // List which events need to be mapped.
-    mouseover: 'show'    //  - Invoke the show() method every time 
+    mouseover: 'show'    //  - Invoke the show() method every time
   }                      //    the mouseover event is fired.
 })
 class Form {             // Directive controller class, instantiated
@@ -121,14 +121,14 @@ Example of a component:
   templateUrl: 'pane.html'                |  - URL of template HTML
 })                                |
 class Pane {                      | Component controller class
-  title:string;                   |  - title property 
+  title:string;                   |  - title property
   open:boolean;
-  
+
   constructor() {
     this.title = '';
     this.open = true;
   }
-  
+
   // Public API
   toggle() => this.open = !this.open;
   open() => this.open = true;
@@ -165,12 +165,12 @@ Example of usage:
 
 ## Viewport
 
-Viewport is a directive which can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.) 
+Viewport is a directive which can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.)
 
 * Viewports can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
 * Only one viewport can be present per DOM template element.
-* The viewport is created over the `template` element. This is known as the `ViewContainer`. 
-* Viewport can insert child views into the `ViewContainer`. The child views show up as siblings of the `Viewport` in the DOM.
+* The viewport is created over the `template` element. This is known as the `ViewContainerRef`.
+* Viewport can insert child views into the `ViewContainerRef`. The child views show up as siblings of the `Viewport` in the DOM.
 
 >> TODO(misko): Relationship with Injection
 >> TODO(misko): Instantiator can not be injected into child Views
@@ -184,10 +184,10 @@ Viewport is a directive which can control instantiation of child views which are
   }
 })
 export class If {
-  viewContainer: ViewContainer;
+  viewContainer: ViewContainerRef;
   view: View;
 
-  constructor(viewContainer: ViewContainer) {
+  constructor(viewContainer: ViewContainerRef) {
     this.viewContainer = viewContainer;
     this.view = null;
   }
@@ -220,30 +220,30 @@ To better understand the kinds of injections which are supported in Angular we h
 
 ### Injecting Services
 
-Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `injectables` and then letting the directive ask for the configured service. 
+Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `injectables` and then letting the directive ask for the configured service.
 
 This example illustrates how to inject `MyService` into `House` directive.
 
 
 ```
-class MyService {}                   | Assume a service which needs to be injected 
+class MyService {}                   | Assume a service which needs to be injected
                                      | into a directive.
                                      |
-@Component({                         | Assume a top level application component which 
+@Component({                         | Assume a top level application component which
   selector: 'my-app',                | configures the services to be injected.
-  injectables: [MyService]           | 
+  injectables: [MyService]           |
 })                                   |
 @View({                              | Assume we have a template that needs to be
   templateUrl: 'my_app.html',                | configured with directives to be injected.
-  directives: [House]                | 
+  directives: [House]                |
 })                                   |
 class MyApp {}                       |
                                      |
-@Decorator({                         | This is the directive into which we would like 
+@Decorator({                         | This is the directive into which we would like
   selector: '[house]'                | to inject the MyService.
 })                                   |
 class House {                        |
-  constructor(myService:MyService) { | Notice that in the constructor we can simply  
+  constructor(myService:MyService) { | Notice that in the constructor we can simply
   }                                  | ask for MyService.
 }                                    |
 
@@ -252,7 +252,7 @@ class House {                        |
 
 Assume the following DOM structure for `my_app.html`:
 ```
-<div house>     | The house attribute triggers the creation of the House directive. 
+<div house>     | The house attribute triggers the creation of the House directive.
 </div>          | This is equivalent to:
                 |   new House(injector.get(MyService));
 ```
@@ -264,7 +264,7 @@ Injecting other directives into directives follows a similar mechanism as inject
 
 There are five kinds of visibilities:
 
-* (no annotation): Inject dependant directives only if they are on the current element. 
+* (no annotation): Inject dependant directives only if they are on the current element.
 * `@ancestor`: Inject a directive if it is at any element above the current element.
 * `@parent`: Inject a directive which is direct parent of the current element.
 * `@child`: Inject a list of direct children which match a given type. (Used with `Query`)
@@ -278,8 +278,8 @@ Here is an example of the kinds of injections which can be achieved:
 ```
 @Component({                         |
   selector: 'my-app'                 |
-})                                   | 
-@View({                              | 
+})                                   |
+@View({                              |
   templateUrl: 'my_app.html',        |
   directives: [Form, FieldSet,       |
     Field, Primary]                  |
@@ -290,15 +290,15 @@ class MyApp {}                       |
 class Form {                         |
   constructor(                       |
     @descendant sets:Query<FieldSet> |
-  ) {                                | 
-  }                                  | 
+  ) {                                |
+  }                                  |
 }                                    |
                                      |
 @Decorator({ selector: 'fieldset' }) |
 class FieldSet {                     |
   constructor(                       |
     @child sets:Query<Field>         |
-  ) { ... }                          | 
+  ) { ... }                          |
 }                                    |
                                      |
 @Decorator({ selector: 'field' })    |
@@ -306,12 +306,12 @@ class Field {                        |
   constructor(                       |
     @ancestor field:Form,            |
     @parent field:FieldSet,          |
-  ) { ... }                          | 
+  ) { ... }                          |
 }                                    |
                                      |
 @Decorator({ selector: '[primary]'}) |
 class Primary {                      |
-  constructor(field:Field ) { ... }  | 
+  constructor(field:Field ) { ... }  |
 }                                    |
 ```
 
@@ -324,7 +324,7 @@ Assume the following DOM structure for `my_app.html`:
        <field></field>         |
     </fieldset>                |
   </div>                       |
-</form>                        |  
+</form>                        |
 ```
 
 
