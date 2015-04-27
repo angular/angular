@@ -69,6 +69,13 @@ export class CssSelector {
     this.notSelector = null;
   }
 
+  isElementSelector():boolean {
+    return isPresent(this.element) &&
+      ListWrapper.isEmpty(this.classNames) &&
+      ListWrapper.isEmpty(this.attrs) &&
+      isBlank(this.notSelector);
+  }
+
   setElement(element:string = null) {
     if (isPresent(element)) {
       element = element.toLowerCase();

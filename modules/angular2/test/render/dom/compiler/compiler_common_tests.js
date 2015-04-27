@@ -17,7 +17,7 @@ import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 import {Compiler, CompilerCache} from 'angular2/src/render/dom/compiler/compiler';
-import {ProtoViewDto, ViewDefinition} from 'angular2/src/render/api';
+import {ProtoViewDto, ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step'
 import {CompileStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
@@ -47,6 +47,22 @@ export function runCompilerCommonTests() {
         componentId: 'someComponent',
         template: '<div></div>'
       })).then( (protoView) => {
+        expect(protoView.variableBindings).toEqual(MapWrapper.createFromStringMap({
+          'a': 'b'
+        }));
+        async.done();
+      });
+    }));
+
+    it('should run the steps and build the proto view', inject([AsyncTestCompleter], (async) => {
+      var compiler = createCompiler((parent, current, control) => {
+        current.inheritedProtoView.bindVariable('b', 'a');
+      });
+
+      var dirMetadata = new DirectiveMetadata({id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
+      compiler.compileHost(dirMetadata).then( (protoView) => {
+        expect(DOM.tagName(protoView.render.delegate.element)).toEqual('CUSTOM')
+        expect(mockStepFactory.viewDef.directives).toEqual([dirMetadata]);
         expect(protoView.variableBindings).toEqual(MapWrapper.createFromStringMap({
           'a': 'b'
         }));
@@ -124,11 +140,14 @@ export function runCompilerCommonTests() {
 class MockStepFactory extends CompileStepFactory {
   steps:List<CompileStep>;
   subTaskPromises:List<Promise>;
+  viewDef:ViewDefinition;
+
   constructor(steps) {
     super();
     this.steps = steps;
   }
-  createSteps(template, subTaskPromises) {
+  createSteps(viewDef, subTaskPromises) {
+    this.viewDef = viewDef;
     this.subTaskPromises = subTaskPromises;
     ListWrapper.forEach(this.subTaskPromises, (p) => ListWrapper.push(subTaskPromises, p) );
     return this.steps;

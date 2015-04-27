@@ -41,7 +41,7 @@ export function main() {
 
     it('should create host views while using the given elements in place', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView('someComponentId').then( (rootProtoView) => {
+      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
         expect(rootProtoView.elementBinders[0].directives[0].directiveIndex).toBe(0);
         var viewRefs = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render);
         expect(viewRefs.length).toBe(1);
@@ -62,7 +62,7 @@ export function main() {
 
     it('should add a static component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView('someComponentId').then( (rootProtoView) => {
+      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
         var template = new ViewDefinition({
           componentId: 'someComponent',
           template: 'hello',
@@ -79,7 +79,7 @@ export function main() {
 
     it('should add a a dynamic component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView('someComponentId').then( (rootProtoView) => {
+      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
         var template = new ViewDefinition({
           componentId: 'someComponent',
           template: 'hello',
@@ -102,7 +102,7 @@ export function main() {
           directives: []
         })]
       });
-      compileRoot('someComponent').then( (rootProtoView) => {
+      compileRoot(someComponent).then( (rootProtoView) => {
         var viewRefs = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render);
         renderer.setText(viewRefs[1], 0, 'hello');
         expect(rootEl).toHaveText('hello');
@@ -118,7 +118,7 @@ export function main() {
           directives: []
         })]
       });
-      compileRoot('someComponent').then( (rootProtoView) => {
+      compileRoot(someComponent).then( (rootProtoView) => {
         var viewRefs = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render);
         renderer.setElementProperty(viewRefs[1], 0, 'value', 'hello');
         expect(DOM.childNodes(rootEl)[0].value).toEqual('hello');
@@ -134,7 +134,7 @@ export function main() {
           directives: []
         })]
       });
-      compileRoot('someComponent').then( (rootProtoView) => {
+      compileRoot(someComponent).then( (rootProtoView) => {
         var viewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[1];
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
@@ -162,7 +162,7 @@ export function main() {
         })],
         viewCacheCapacity: 2
       });
-      compileRoot('someComponent').then( (rootProtoView) => {
+      compileRoot(someComponent).then( (rootProtoView) => {
         var viewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[1];
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
@@ -189,7 +189,7 @@ export function main() {
           directives: []
         })]
       });
-      compileRoot('someComponent').then( (rootProtoView) => {
+      compileRoot(someComponent).then( (rootProtoView) => {
         var viewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[1];
         var dispatcher = new LoggingEventDispatcher();
         renderer.setEventDispatcher(viewRef, dispatcher);

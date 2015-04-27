@@ -2,8 +2,9 @@ import {Injectable} from 'angular2/di';
 
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {ViewDefinition, ProtoViewDto} from '../../api';
+import {ViewDefinition, ProtoViewDto, DirectiveMetadata} from '../../api';
 import {CompilePipeline} from './compile_pipeline';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
@@ -32,12 +33,21 @@ export class Compiler {
     );
   }
 
-  _compileTemplate(template: ViewDefinition, tplElement):Promise<ProtoViewDto> {
-    var subTaskPromises = [];
-    var pipeline = new CompilePipeline(this._stepFactory.createSteps(template, subTaskPromises));
-    var compileElements;
+  compileHost(directiveMetadata: DirectiveMetadata):Promise<ProtoViewDto> {
+    var hostViewDef = new ViewDefinition({
+      componentId: directiveMetadata.id,
+      absUrl: null,
+      template: null,
+      directives: [directiveMetadata]
+    });
+    var element = DOM.createElement(directiveMetadata.selector);
+    return this._compileTemplate(hostViewDef, element);
+  }
 
-    compileElements = pipeline.process(tplElement, template.componentId);
+  _compileTemplate(viewDef: ViewDefinition, tplElement):Promise<ProtoViewDto> {
+    var subTaskPromises = [];
+    var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
+    var compileElements = pipeline.process(tplElement, viewDef.componentId);
 
     var protoView = compileElements[0].inheritedProtoView.build();
 

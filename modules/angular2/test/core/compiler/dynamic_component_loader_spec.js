@@ -22,6 +22,8 @@ import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_compone
 import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {If} from 'angular2/src/directives/if';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import {DOM} from 'angular2/src/dom/dom_adapter';
+
 
 export function main() {
   describe('DynamicComponentLoader', function () {
@@ -134,6 +136,29 @@ export function main() {
             });
           });
         }));
+
+      it('should update host properties', inject([DynamicComponentLoader, TestBed, AsyncTestCompleter],
+        (loader, tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div><location #loc></location></div>',
+            directives: [Location]
+          }));
+
+          tb.createView(MyComp).then((view) => {
+            var location = view.rawView.locals.get("loc");
+
+            loader.loadNextToExistingLocation(DynamicallyLoadedWithHostProps, location.elementRef).then(ref => {
+              ref.instance.id = "new value";
+
+              view.detectChanges();
+
+              var newlyInsertedElement = DOM.childNodesAsList(view.rootNodes[0])[1];
+              expect(newlyInsertedElement.id).toEqual("new value")
+
+              async.done();
+            });
+          });
+        }));
     });
 
     describe('loading into a new location', () => {
@@ -243,6 +268,19 @@ class DynamicallyLoaded2 {
 }
 
 @Component({
+  selector: 'dummy',
+  hostProperties: {'id' : 'id'}
+})
+@View({template: "DynamicallyLoadedWithHostProps;"})
+class DynamicallyLoadedWithHostProps {
+  id:string;
+
+  constructor() {
+    this.id = "default";
+  }
+}
+
+@Component({
   selector: 'location'
 })
 @View({template: "Location;"})
@@ -254,7 +292,9 @@ class Location {
   }
 }
 
-@Component()
+@Component({
+  selector: 'my-comp'
+})
 @View({
   directives: []
 })

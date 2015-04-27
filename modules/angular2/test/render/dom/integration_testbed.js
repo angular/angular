@@ -50,14 +50,9 @@ export class IntegrationTestbed {
     this.renderer = new DirectDomRenderer(compiler, viewFactory, viewHydrator, shadowDomStrategy);
   }
 
-  compileRoot(componentId):Promise<ProtoViewDto> {
-    return this.renderer.createHostProtoView(componentId).then( (rootProtoView) => {
-      return this._compileNestedProtoViews(rootProtoView, [
-        new DirectiveMetadata({
-          type: DirectiveMetadata.COMPONENT_TYPE,
-          id: componentId
-        })
-      ]);
+  compileRoot(componentMetadata):Promise<ProtoViewDto> {
+    return this.renderer.createHostProtoView(componentMetadata).then( (rootProtoView) => {
+      return this._compileNestedProtoViews(rootProtoView, [componentMetadata]);
     });
   }
 

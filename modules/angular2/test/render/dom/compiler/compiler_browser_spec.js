@@ -1,4 +1,4 @@
-/*
+ /*
  * Runs compiler tests using in-browser DOM adapter.
  */
 

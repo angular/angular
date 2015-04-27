@@ -11,7 +11,6 @@ import {RenderViewHydrator} from './view/view_hydrator';
 import {Compiler} from './compiler/compiler';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
 import {ProtoViewBuilder} from './view/proto_view_builder';
-import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ViewContainer} from './view/view_container';
 
 function _resolveViewContainer(vc:api.RenderViewContainerRef) {
@@ -80,15 +79,8 @@ export class DirectDomRenderer extends api.Renderer {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  createHostProtoView(componentId):Promise<api.ProtoViewDto> {
-    var rootElement = DOM.createElement('div');
-    var hostProtoViewBuilder = new ProtoViewBuilder(rootElement);
-    var elBinder = hostProtoViewBuilder.bindElement(rootElement, 'root element');
-    elBinder.setComponentId(componentId);
-    elBinder.bindDirective(0);
-
-    this._shadowDomStrategy.processElement(null, componentId, rootElement);
-    return PromiseWrapper.resolve(hostProtoViewBuilder.build());
+  createHostProtoView(directiveMetadata:api.DirectiveMetadata):Promise<api.ProtoViewDto> {
+    return this._compiler.compileHost(directiveMetadata);
   }
 
   createImperativeComponentProtoView(rendererId):Promise<api.ProtoViewDto> {
@@ -97,10 +89,10 @@ export class DirectDomRenderer extends api.Renderer {
     return PromiseWrapper.resolve(protoViewBuilder.build());
   }
 
-  compile(template:api.ViewDefinition):Promise<api.ProtoViewDto> {
+  compile(view:api.ViewDefinition):Promise<api.ProtoViewDto> {
     // Note: compiler already uses a DirectDomProtoViewRef, so we don't
     // need to do anything here
-    return this._compiler.compile(template);
+    return this._compiler.compile(view);
   }
 
   mergeChildComponentProtoViews(protoViewRef:api.ProtoViewRef, protoViewRefs:List<api.ProtoViewRef>) {
