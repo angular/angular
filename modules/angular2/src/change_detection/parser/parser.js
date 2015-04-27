@@ -31,7 +31,6 @@ import {
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
-var QUOTE_REGEXP = RegExpWrapper.create("'");
 
 @Injectable()
 export class Parser {
@@ -492,7 +491,7 @@ class _ParseAST {
     var positionals = [];
     do {
       ListWrapper.push(positionals, this.parseExpression());
-    } while (this.optionalCharacter($COMMA))
+    } while (this.optionalCharacter($COMMA));
     return positionals;
   }
 
@@ -538,7 +537,7 @@ class _ParseAST {
       ListWrapper.push(bindings, new TemplateBinding(key, keyIsVar, name, expression));
       if (!this.optionalCharacter($SEMICOLON)) {
         this.optionalCharacter($COMMA);
-      };
+      }
     }
     return bindings;
   }
