@@ -285,7 +285,7 @@ createDocsTasks(false);
 // CI tests suites
 
 gulp.task('test.js', function(done) {
-  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
+  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
               'test.unit.cjs/ci', done);
 });
 
