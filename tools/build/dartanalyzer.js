@@ -8,24 +8,9 @@ var util = require('./util');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
-    var tempFile = '_analyzer.dart';
     return util.forEachSubDirSequential(
       config.dest,
       function(dir) {
-        var srcFiles = [].slice.call(glob.sync('web/**/*.dart', {
-          cwd: dir
-        }));
-
-        var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
-          cwd: dir
-        }));
-        var analyzeFile = ['library _analyzer;'];
-        srcFiles.concat(testFiles).forEach(function(fileName, index) {
-          if (fileName !== tempFile && fileName.indexOf("/packages/") === -1) {
-            analyzeFile.push('import "./' + fileName + '" as mod' + index + ';');
-          }
-        });
-        fs.writeFileSync(path.join(dir, tempFile), analyzeFile.join('\n'));
         var defer = Q.defer();
         analyze(dir, defer.makeNodeResolver());
         return defer.promise;
@@ -33,15 +18,28 @@ module.exports = function(gulp, plugins, config) {
     );
 
     function analyze(dirName, done) {
-      // analyze files in lib directly – or you mess up package: urls
+      var allFiles = [];
+
+      // lib files
       var sources = [].slice.call(glob.sync('lib/**/*.dart', {
         cwd: dirName
       }));
+      allFiles = allFiles.concat(sources);
 
-      sources.push(tempFile);
+      // add test files
+      var testFiles = [].slice.call(glob.sync('test/**/*_spec.dart', {
+        cwd: dirName
+      }));
+      allFiles = allFiles.concat(testFiles);
+
+      // add web files
+      var webFiles = [].slice.call(glob.sync('web/**/*.dart', {
+        cwd: dirName
+      }));
+      allFiles = allFiles.concat(webFiles);
 
       //TODO remove --package-warnings once dartanalyzer handles transitive libraries
-      var args = ['--fatal-warnings', '--package-warnings'].concat(sources);
+      var args = ['--fatal-warnings', '--package-warnings'].concat(allFiles);
 
       var stream = spawn(config.command, args, {
         // inherit stdin and stderr, but filter stdout
