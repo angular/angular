@@ -1,9 +1,11 @@
-import {View, Component, Decorator, Ancestor, onChange, ElementRef} from 'angular2/angular2';
+import {Decorator, onChange} from 'angular2/src/core/annotations/annotations';
+import {Ancestor} from 'angular2/src/core/annotations/visibility';
+import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 import {Optional} from 'angular2/di';
 import {Renderer} from 'angular2/src/render/api';
-import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {ControlGroup, Control} from './model';
+import {isPresent, isString} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {ControlGroup} from './model';
 import {Validators} from './validators';
 
 //export interface ControlValueAccessor {
