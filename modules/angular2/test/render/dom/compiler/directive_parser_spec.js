@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, assertionsEnabled} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
@@ -17,11 +17,11 @@ export function main() {
       annotatedDirectives = [
         someComponent,
         someComponent2,
-        someComponent3,
         someViewport,
         someViewport2,
         someDecorator,
         someDecoratorIgnoringChildren,
+        decoratorWithMultipleAttrs,
         someDecoratorWithProps,
         someDecoratorWithHostProperties,
         someDecoratorWithEvents,
@@ -30,7 +30,9 @@ export function main() {
       parser = new Parser(new Lexer());
     });
 
-    function createPipeline(propertyBindings = null) {
+    function createPipeline(propertyBindings = null, directives = null) {
+      if (isBlank(directives)) directives = annotatedDirectives;
+
       return new CompilePipeline([
         new MockStep( (parent, current, control) => {
           if (isPresent(propertyBindings)) {
@@ -39,12 +41,12 @@ export function main() {
             });
           }
         }),
-        new DirectiveParser(parser, annotatedDirectives)
+        new DirectiveParser(parser, directives)
       ]);
     }
 
-    function process(el, propertyBindings = null) {
-      var pipeline = createPipeline(propertyBindings);
+    function process(el, propertyBindings = null, directives = null) {
+      var pipeline = createPipeline(propertyBindings, directives);
       return ListWrapper.map(pipeline.process(el), (ce) => ce.inheritedElementBinder );
     }
 
@@ -63,7 +65,7 @@ export function main() {
     it('should detect directives with multiple attributes', () => {
       var results = process(el('<input type=text control=one></input>'));
       expect(results[0].directives[0].directiveIndex).toBe(
-        annotatedDirectives.indexOf(someComponent3)
+        annotatedDirectives.indexOf(decoratorWithMultipleAttrs)
       );
     });
 
@@ -176,30 +178,27 @@ export function main() {
     describe('component directives', () => {
       it('should save the component id', () => {
         var results = process(
-          el('<div some-comp></div>')
+          el('<some-comp></some-comp>')
         );
         expect(results[0].componentId).toEqual('someComponent');
+      });
+
+      it('should throw when the provided selector is not an element selector', () => {
+        expect( () => {
+          createPipeline(null, [componentWithNonElementSelector]);
+        }).toThrowError(`Component 'componentWithNonElementSelector' can only have an element selector, but had '[attr]'`);
       });
 
       it('should not allow multiple component directives on the same element', () => {
          expect( () => {
            process(
-             el('<div some-comp some-comp2></div>')
+             el('<some-comp></some-comp>'),
+             null,
+             [someComponent, someComponentDup]
            );
-         }).toThrowError('Only one component directive is allowed per element - check '
-          + (assertionsEnabled() ? '<div some-comp some-comp2>' : 'null'));
+         }).toThrowError(new RegExp('Only one component directive is allowed per element' ));
       });
-
-      it('should not allow component directives on <template> elements', () => {
-         expect( () => {
-           process(
-             el('<template some-comp></template>')
-           );
-         }).toThrowError('Only template directives are allowed on template elements - check '
-          + (assertionsEnabled() ? '<template some-comp>' : 'null'));
-       });
     });
-
   });
 }
 
@@ -215,20 +214,20 @@ class MockStep extends CompileStep {
 }
 
 var someComponent = new DirectiveMetadata({
-  selector: '[some-comp]',
+  selector: 'some-comp',
   id: 'someComponent',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var someComponent2 = new DirectiveMetadata({
-  selector: '[some-comp2]',
-  id: 'someComponent2',
+var someComponentDup = new DirectiveMetadata({
+  selector: 'some-comp',
+  id: 'someComponentDup',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var someComponent3 = new DirectiveMetadata({
-  selector: 'input[type=text][control]',
-  id: 'someComponent3',
+var someComponent2 = new DirectiveMetadata({
+  selector: 'some-comp2',
+  id: 'someComponent2',
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
@@ -245,12 +244,21 @@ var someViewport2 = new DirectiveMetadata({
 });
 
 var someDecorator = new DirectiveMetadata({
-  selector: '[some-decor]'
+  selector: '[some-decor]',
+  type: DirectiveMetadata.DECORATOR_TYPE
 });
 
 var someDecoratorIgnoringChildren = new DirectiveMetadata({
   selector: '[some-decor-ignoring-children]',
-  compileChildren: false
+  compileChildren: false,
+  type: DirectiveMetadata.DECORATOR_TYPE
+
+});
+
+var decoratorWithMultipleAttrs = new DirectiveMetadata({
+  selector: 'input[type=text][control]',
+  id: 'decoratorWithMultipleAttrs',
+  type: DirectiveMetadata.DECORATOR_TYPE
 });
 
 var someDecoratorWithProps = new DirectiveMetadata({
@@ -281,4 +289,10 @@ var someDecoratorWithGlobalEvents = new DirectiveMetadata({
   hostListeners: MapWrapper.createFromStringMap({
     'window:resize': 'doItGlobal()'
   })
+});
+
+var componentWithNonElementSelector = new DirectiveMetadata({
+  id: 'componentWithNonElementSelector',
+  selector: '[attr]',
+  type: DirectiveMetadata.COMPONENT_TYPE
 });

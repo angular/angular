@@ -255,20 +255,19 @@ export function main() {
         tb.overrideView(MyComp,
           new View({
             template: '<p [id]="ctxProp"></p>',
-            directives: [IdComponent]
+            directives: [IdDir]
           }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
+          var idDir = view.rawView.elementInjectors[0].get(IdDir);
 
           ctx.ctxProp = 'some_id';
           view.detectChanges();
-          expect(view.rootNodes[0].id).toEqual('some_id');
-          expect(view.rootNodes).toHaveText('Matched on id with some_id');
+          expect(idDir.id).toEqual('some_id');
 
           ctx.ctxProp = 'other_id';
           view.detectChanges();
-          expect(view.rootNodes[0].id).toEqual('other_id');
-          expect(view.rootNodes).toHaveText('Matched on id with other_id');
+          expect(idDir.id).toEqual('other_id');
 
           async.done();
         });
@@ -932,7 +931,9 @@ class PushCmpWithRef {
   }
 }
 
-@Component()
+@Component({
+  selector: 'my-comp'
+})
 @View({directives: [
 ]})
 class MyComp {
@@ -1192,14 +1193,11 @@ class DecoratorListeningDomEventNoPrevent {
   }
 }
 
-@Component({
+@Decorator({
   selector: '[id]',
   properties: {'id': 'id'}
 })
-@View({
-  template: '<div>Matched on id with {{id}}</div>'
-})
-class IdComponent {
+class IdDir {
   id: string;
 }
 

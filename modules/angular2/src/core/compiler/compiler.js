@@ -90,7 +90,9 @@ export class Compiler {
   compileInHost(componentTypeOrBinding:any):Promise<AppProtoView> {
     var componentBinding = this._bindDirective(componentTypeOrBinding);
     this._assertTypeIsComponent(componentBinding);
-    return this._renderer.createHostProtoView('host').then( (hostRenderPv) => {
+    
+    var directiveMetadata = Compiler.buildRenderDirective(componentBinding);
+    return this._renderer.createHostProtoView(directiveMetadata).then( (hostRenderPv) => {
       return this._compileNestedProtoViews(null, hostRenderPv, [componentBinding], true);
     });
   }

@@ -79,7 +79,7 @@ export function main() {
               directives: [simple]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('SIMPLE(A)');
@@ -98,7 +98,7 @@ export function main() {
               directives: [empty]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('');
@@ -117,7 +117,7 @@ export function main() {
               directives: [dynamicComponent]
             })]
           });
-          compileRoot('main').then( (rootPv) => {
+          compileRoot(mainDir).then( (rootPv) => {
             compile('simple').then( (simplePv) => {
               var views = renderer.createInPlaceHostView(null, rootEl, rootPv.render);
               renderer.createDynamicComponentView(views[1], 0, simplePv.render);
@@ -141,7 +141,7 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('(A, BC)');
@@ -161,7 +161,7 @@ export function main() {
               directives: [multipleContentTagsComponent]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('(, BAC)');
@@ -181,7 +181,7 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -211,7 +211,7 @@ export function main() {
               directives: [multipleContentTagsComponent, manualViewportDirective]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -241,7 +241,7 @@ export function main() {
               directives: [outerWithIndirectNestedComponent]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             renderer.createInPlaceHostView(null, rootEl, pv.render);
 
             expect(rootEl).toHaveText('OUTER(SIMPLE(AB))');
@@ -262,7 +262,7 @@ export function main() {
               directives: [outerComponent, manualViewportDirective]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -288,7 +288,7 @@ export function main() {
               directives: [conditionalContentComponent]
             })]
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef = new RenderViewContainerRef(viewRefs[2], 0);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
@@ -321,7 +321,7 @@ export function main() {
             })],
             viewCacheCapacity: 5
           });
-          compileRoot('main').then( (pv) => {
+          compileRoot(mainDir).then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
             var vcRef0 = new RenderViewContainerRef(viewRefs[2], 0);
             var vcRef1 = new RenderViewContainerRef(viewRefs[3], 0);
@@ -371,6 +371,12 @@ export function main() {
   });
 }
 
+
+var mainDir = new DirectiveMetadata({
+  selector: 'main',
+  id: 'main',
+  type: DirectiveMetadata.COMPONENT_TYPE
+});
 
 var simple = new DirectiveMetadata({
   selector: 'simple',

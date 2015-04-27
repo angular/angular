@@ -150,7 +150,9 @@ class ParentCmp {
   constructor() {}
 }
 
-@Component()
+@Component({
+  selector: 'my-comp'
+})
 class MyComp {
   name;
 }
