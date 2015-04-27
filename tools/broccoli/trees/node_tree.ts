@@ -23,8 +23,7 @@ module.exports = function makeNodeTree(destinationPath) {
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
       'angular2/src/core/zone/vm_turn_zone.es6',
-      'angular2/test/core/zone/**',
-      'angular2/test/forms/integration_spec.js'
+      'angular2/test/core/zone/**'
     ]
   });
 
