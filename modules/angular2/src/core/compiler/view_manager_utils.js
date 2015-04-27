@@ -98,10 +98,8 @@ export class AppViewManagerUtils {
     this._hydrateView(hostView, injector, hostElementInjector, new Object(), null);
   }
 
-  dehydrateAndDetachInPlaceHostView(parentView:viewModule.AppView,
+  detachInPlaceHostView(parentView:viewModule.AppView,
       hostView:viewModule.AppView) {
-    this.dehydrateView(hostView);
-
     if (isPresent(parentView)) {
       parentView.changeDetector.removeChild(hostView.changeDetector);
       ListWrapper.remove(parentView.imperativeHostViews, hostView);

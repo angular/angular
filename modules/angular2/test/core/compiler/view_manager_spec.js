@@ -232,7 +232,15 @@ export function main() {
 
       });
 
-      describe('recurse into static child component views', () => {
+      describe('recursively destroy dynamic child component views', () => {
+        // TODO
+      });
+
+    });
+
+    describe('static child components', () => {
+
+      describe('recursively create when not cached', () => {
         var hostView, componentProtoView, nestedProtoView;
         beforeEach( () => {
           hostView = createView(createProtoView(
@@ -267,19 +275,16 @@ export function main() {
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(cmpView.render, cmpView);
         });
       });
-    });
 
-    describe('createDynamicComponentView', () => {
-      // TODO: implement this!
-      describe('recurse into static child component views', () => {
-        // TODO
+      describe('recursively hydrate when getting from from the cache', () => {
+        // TODO(tbosch): implement this
       });
 
-      describe('recurse into dynamic child component views', () => {
-        // TODO
+      describe('recursively dehydrate', () => {
+        // TODO(tbosch): implement this
       });
-    });
 
+    });
 
     describe('createInPlaceHostView', () => {
 
@@ -347,9 +352,14 @@ export function main() {
           hostRenderViewRef = hostView.render;
         });
 
-        it('should dehydrateAndDetach', () => {
+        it('should dehydrate', () => {
           manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
-          expect(utils.spy('dehydrateAndDetachInPlaceHostView')).toHaveBeenCalledWith(parentView, hostView);
+          expect(utils.spy('detachInPlaceHostView')).toHaveBeenCalledWith(parentView, hostView);
+        });
+
+        it('should detach', () => {
+          manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
+          expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(hostView);
         });
 
         it('should destroy and clear the render view', () => {
@@ -364,16 +374,13 @@ export function main() {
         });
       });
 
-      describe('recurse into imperativeHostViews', () => {
+      describe('recursively destroy inPlaceHostViews', () => {
         // TODO
       });
 
     });
 
     describe('createViewInContainer', () => {
-
-      // Note: We don't add tests for recursion or viewpool here as we assume that
-      // this is using the same mechanism as the other methods...
 
       describe('basic functionality', () => {
         var parentView, childProtoView;
@@ -425,8 +432,6 @@ export function main() {
     });
 
     describe('destroyViewInContainer', () => {
-      // Note: We don't add tests for recursion here as we assume that
-      // this is using the same mechanism as the other methods...
 
       describe('basic functionality', () => {
         var parentView, childProtoView, childView;
@@ -461,8 +466,38 @@ export function main() {
         });
       });
 
-      describe('recurse into ViewContainers', () => {
-        // TODO
+      describe('recursively destroy views in ViewContainers', () => {
+        var parentView, childProtoView, childView;
+        beforeEach( () => {
+          parentView = createView(createProtoView(
+            [createEmptyElBinder()]
+          ));
+          parentView.render = new ViewRef();
+          childProtoView = createProtoView();
+          childView = manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+        });
+
+        it('should dehydrate', () => {
+          manager.destroyInPlaceHostView(null, parentView);
+          expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(parentView.viewContainers[0].views[0]);
+        });
+
+        it('should detach', () => {
+          manager.destroyInPlaceHostView(null, parentView);
+          expect(utils.spy('detachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0);
+        });
+
+        it('should not destroy but clear the render view', () => {
+          manager.destroyInPlaceHostView(null, parentView);
+          expect(renderer.spy('destroyViewInContainer')).not.toHaveBeenCalled();
+          expect(childView.render).toBe(null);
+        });
+
+        it('should return the view to the pool', () => {
+          manager.destroyInPlaceHostView(null, parentView);
+          expect(viewPool.spy('returnView')).toHaveBeenCalledWith(childView);
+        });
+
       });
 
     });
