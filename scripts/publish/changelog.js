@@ -52,12 +52,13 @@ var parseRawCommit = function(raw) {
 
   if (!match || !match[1] || !match[3]) {
     warn('Incorrect message: %s %s', msg.hash, msg.subject);
-    return null;
+    msg.type = 'other';
+    msg.component = 'other';
+  } else {
+    msg.type = match[1];
+    msg.component = match[2];
+    msg.subject = match[3];
   }
-
-  msg.type = match[1];
-  msg.component = match[2];
-  msg.subject = match[3];
 
   return msg;
 };
@@ -86,10 +87,13 @@ var currentDate = function() {
 var printSection = function(stream, title, section, printCommitLinks) {
   printCommitLinks = printCommitLinks === undefined ? true : printCommitLinks;
   var components = Object.getOwnPropertyNames(section).sort();
+  var buffer = '';
+  var sectionIsEmpty = true;
 
-  if (!components.length) return;
-
-  stream.write(util.format('\n## %s\n\n', title));
+  var write = function(str) {
+    buffer += str;
+    sectionIsEmpty = false;
+  }
 
   components.forEach(function(name) {
     var prefix = '-';
@@ -97,7 +101,7 @@ var printSection = function(stream, title, section, printCommitLinks) {
 
     if (name !== EMPTY_COMPONENT) {
       if (nested) {
-        stream.write(util.format('- **%s:**\n', name));
+        write(util.format('- **%s:**\n', name));
         prefix = '  -';
       } else {
         prefix = util.format('- **%s:**', name);
@@ -106,17 +110,24 @@ var printSection = function(stream, title, section, printCommitLinks) {
 
     section[name].forEach(function(commit) {
       if (printCommitLinks) {
-        stream.write(util.format('%s %s\n  (%s', prefix, commit.subject, linkToCommit(commit.hash)));
+        write(util.format('%s %s\n  (%s', prefix, commit.subject, linkToCommit(commit.hash)));
         if (commit.closes.length) {
-          stream.write(',\n   ' + commit.closes.map(linkToIssue).join(', '));
+          write(',\n   ' + commit.closes.map(linkToIssue).join(', '));
         }
-        stream.write(')\n');
+        write(')\n');
       } else {
-        stream.write(util.format('%s %s\n', prefix, commit.subject));
+        write(util.format('%s %s\n', prefix, commit.subject));
       }
     });
   });
 
+  if (sectionIsEmpty) {
+    // Nothing in this section. Skip.
+    return;
+  }
+
+  stream.write(util.format('\n## %s\n\n', title));
+  stream.write(buffer);
   stream.write('\n');
 };
 
@@ -145,7 +156,8 @@ var writeChangelog = function(stream, commits, version) {
     fix: {},
     feat: {},
     perf: {},
-    breaks: {}
+    breaks: {},
+    other: {}
   };
 
   sections.breaks[EMPTY_COMPONENT] = [];
@@ -173,6 +185,7 @@ var writeChangelog = function(stream, commits, version) {
   printSection(stream, 'Features', sections.feat);
   printSection(stream, 'Performance Improvements', sections.perf);
   printSection(stream, 'Breaking Changes', sections.breaks, false);
+  printSection(stream, 'Other (malformed commit messages)', sections.other);
 };
 
 
