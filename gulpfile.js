@@ -81,6 +81,10 @@ var CONFIG = {
 // ------------
 // clean
 
+gulp.task('build/clean.tools', clean(gulp, gulpPlugins, {
+  path: path.join('dist', 'tools')
+}));
+
 gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
   path: CONFIG.dest.js.all
 }));
@@ -331,15 +335,24 @@ gulp.task('test.unit.cjs', ['test.unit.cjs/ci'], function () {
 });
 
 
-gulp.task('test.unit.tools/ci', ['build.tools'], function(done) {
+gulp.task('test.unit.tools/ci', function(done) {
   fork('./tools/traceur-jasmine', ['dist/tools/**/*.spec.js'], {
     stdio: 'inherit'
   }).on('close', done);
 });
 
 
-gulp.task('test.unit.tools', ['test.unit.tools/ci'], function() {
-  gulp.watch('tools/**', ['test.unit.tools/ci']);
+gulp.task('test.unit.tools', function(done) {
+  function buildAndTest() {
+    runSequence(
+      'build.tools',
+      'test.unit.tools/ci'
+    );
+  }
+
+  buildAndTest();
+
+  gulp.watch('tools/**', buildAndTest);
 });
 
 // ------------------
@@ -437,7 +450,8 @@ gulp.task('build.dart', function(done) {
   );
 });
 
-gulp.task('build.tools', function() {
+
+gulp.task('build.tools', ['build/clean.tools'], function() {
   var mergedStream;
 
   var tsResult = gulp.src('tools/**/*.ts')
@@ -598,7 +612,7 @@ gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundl
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
 
-gulp.task('clean', ['build/clean.js', 'build/clean.dart', 'build/clean.docs']);
+gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', 'build/clean.docs']);
 
 gulp.task('build', ['build.js', 'build.dart']);
 
