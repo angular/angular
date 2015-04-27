@@ -15,7 +15,7 @@ import {
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {ProtoViewDto, ViewDefinition, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
+import {ProtoViewDto, ViewDefinition, RenderViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
 
 import {IntegrationTestbed, LoggingEventDispatcher, FakeEvent} from './integration_testbed';
 
@@ -138,7 +138,7 @@ export function main() {
         var viewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[1];
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
-        var vcRef = new ViewContainerRef(viewRef, 0);
+        var vcRef = new RenderViewContainerRef(viewRef, 0);
         expect(rootEl).toHaveText('');
         var childViewRef = renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
         expect(rootEl).toHaveText('hello');
@@ -166,7 +166,7 @@ export function main() {
         var viewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[1];
         var vcProtoViewRef = rootProtoView.elementBinders[0]
           .nestedProtoView.elementBinders[0].nestedProtoView.render;
-        var vcRef = new ViewContainerRef(viewRef, 0);
+        var vcRef = new RenderViewContainerRef(viewRef, 0);
 
         var viewRef1 = renderer.createViewInContainer(vcRef, 0, vcProtoViewRef)[0];
         renderer.destroyViewInContainer(vcRef, 0);

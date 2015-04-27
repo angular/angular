@@ -6,7 +6,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Parser, Lexer} from 'angular2/change_detection';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import {Compiler} from 'angular2/src/render/dom/compiler/compiler';
-import {ProtoViewRef, ProtoViewDto, ViewDefinition, ViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
+import {ProtoViewRef, ProtoViewDto, ViewDefinition, RenderViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
 import {DefaultStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/services/url_resolver';

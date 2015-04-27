@@ -8,9 +8,7 @@ import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 
-// TODO(tbosch): rename ViewContainer -> ViewContainerRef
-// and InternalAppViewContainer -> ViewContainer!
-export class InternalAppViewContainer {
+export class AppViewContainer {
   views: List<AppView>;
 
   constructor() {
@@ -36,7 +34,7 @@ export class AppView {
   /// Host views that were added by an imperative view.
   /// This is a dynamically growing / shrinking array.
   imperativeHostViews: List<AppView>;
-  viewContainers: List<InternalAppViewContainer>;
+  viewContainers: List<AppViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
   renderer: renderApi.Renderer;

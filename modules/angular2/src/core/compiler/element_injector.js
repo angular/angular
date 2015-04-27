@@ -8,7 +8,7 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
 import * as avmModule from './view_manager';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
@@ -31,14 +31,14 @@ export class ElementRef {
   boundElementIndex:number;
   injector:Injector;
   elementInjector:ElementInjector;
-  viewContainer:ViewContainer;
+  viewContainer:ViewContainerRef;
 
   constructor(elementInjector, hostView, boundElementIndex, injector, viewManager, defaultProtoView){
     this.elementInjector = elementInjector;
     this.hostView = hostView;
     this.boundElementIndex = boundElementIndex;
     this.injector = injector;
-    this.viewContainer = new ViewContainer(viewManager, this, defaultProtoView);
+    this.viewContainer = new ViewContainerRef(viewManager, this, defaultProtoView);
   }
 }
 
@@ -57,7 +57,7 @@ class StaticKeys {
     this.defaultProtoViewId = Key.get(viewModule.AppProtoView).id;
     this.viewId = Key.get(viewModule.AppView).id;
     this.ngElementId = Key.get(NgElement).id;
-    this.viewContainerId = Key.get(ViewContainer).id;
+    this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
   }

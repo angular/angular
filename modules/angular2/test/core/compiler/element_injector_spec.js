@@ -8,7 +8,7 @@ import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
@@ -130,7 +130,7 @@ class NeedsElementRef {
 
 class NeedsViewContainer {
   viewContainer;
-  constructor(vc:ViewContainer) {
+  constructor(vc:ViewContainerRef) {
     this.viewContainer = vc;
   }
 }
@@ -717,9 +717,9 @@ export function main() {
         expect(inj.get(NeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
       });
 
-      it('should inject ViewContainer', () => {
+      it('should inject ViewContainerRef', () => {
         var inj = injector([NeedsViewContainer]);
-        expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainer);
+        expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainerRef);
       });
     });
 

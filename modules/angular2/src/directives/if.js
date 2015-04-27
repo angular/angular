@@ -1,5 +1,5 @@
 import {Viewport} from 'angular2/src/core/annotations/annotations';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -32,10 +32,10 @@ import {isBlank} from 'angular2/src/facade/lang';
   }
 })
 export class If {
-  viewContainer: ViewContainer;
+  viewContainer: ViewContainerRef;
   prevCondition: boolean;
 
-  constructor(viewContainer: ViewContainer) {
+  constructor(viewContainer: ViewContainerRef) {
     this.viewContainer = viewContainer;
     this.prevCondition = null;
   }

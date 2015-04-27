@@ -112,7 +112,7 @@ export class AppViewManagerUtils {
     parentView.changeDetector.addChild(view.changeDetector);
     var viewContainer = parentView.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
-      viewContainer = new viewModule.InternalAppViewContainer();
+      viewContainer = new viewModule.AppViewContainer();
       parentView.viewContainers[boundElementIndex] = viewContainer;
     }
     ListWrapper.insert(viewContainer.views, atIndex, view);

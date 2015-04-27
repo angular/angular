@@ -1,5 +1,5 @@
 import {Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {Parent} from 'angular2/src/core/annotations/visibility';
@@ -41,7 +41,7 @@ export class Switch {
   _switchValue: any;
   _useDefault: boolean;
   _valueViewContainers: Map;
-  _activeViewContainers: List<ViewContainer>;
+  _activeViewContainers: List<ViewContainerRef>;
 
   constructor() {
     this._valueViewContainers = MapWrapper.create();
@@ -65,7 +65,7 @@ export class Switch {
     this._switchValue = value;
   }
 
-  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainer):void {
+  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainerRef):void {
     this._deregisterViewContainer(oldWhen, viewContainer);
     this._registerViewContainer(newWhen, viewContainer);
 
@@ -96,7 +96,7 @@ export class Switch {
     this._activeViewContainers = ListWrapper.create();
   }
 
-  _activateViewContainers(containers: List<ViewContainer>):void {
+  _activateViewContainers(containers: List<ViewContainerRef>):void {
     // TODO(vicb): assert(this._activeViewContainers.length === 0);
     if (isPresent(containers)) {
       for (var i = 0; i < containers.length; i++) {
@@ -106,7 +106,7 @@ export class Switch {
     }
   }
 
-  _registerViewContainer(value, container: ViewContainer): void {
+  _registerViewContainer(value, container: ViewContainerRef): void {
     var containers = MapWrapper.get(this._valueViewContainers, value);
     if (isBlank(containers)) {
       containers = ListWrapper.create();
@@ -115,7 +115,7 @@ export class Switch {
     ListWrapper.push(containers, container);
   }
 
-  _deregisterViewContainer(value, container: ViewContainer):void {
+  _deregisterViewContainer(value, container: ViewContainerRef):void {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
     var containers = MapWrapper.get(this._valueViewContainers, value);
@@ -153,9 +153,9 @@ export class Switch {
 export class SwitchWhen {
   _value: any;
   _switch: Switch;
-  _viewContainer: ViewContainer;
+  _viewContainer: ViewContainerRef;
 
-  constructor(viewContainer: ViewContainer, @Parent() sswitch: Switch) {
+  constructor(viewContainer: ViewContainerRef, @Parent() sswitch: Switch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
@@ -186,7 +186,7 @@ export class SwitchWhen {
   selector: '[switch-default]'
 })
 export class SwitchDefault {
-  constructor(viewContainer: ViewContainer, @Parent() sswitch: Switch) {
+  constructor(viewContainer: ViewContainerRef, @Parent() sswitch: Switch) {
     sswitch._registerViewContainer(_whenDefault, viewContainer);
   }
 }

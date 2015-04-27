@@ -31,7 +31,7 @@ import {Attribute} from 'angular2/src/core/annotations/di';
 
 import {If} from 'angular2/src/directives/if';
 
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
@@ -690,7 +690,7 @@ export function main() {
 
       describe('dynamic ViewContainers', () => {
 
-        it('should allow to create a ViewContainer at any bound location',
+        it('should allow to create a ViewContainerRef at any bound location',
             inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
           tb.overrideView(MyComp, new View({
             template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
@@ -862,7 +862,7 @@ class SimpleImperativeViewComponent {
 })
 class DynamicViewport {
   done;
-  constructor(vc:ViewContainer, inj:Injector, compiler:Compiler) {
+  constructor(vc:ViewContainerRef, inj:Injector, compiler:Compiler) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
@@ -1040,7 +1040,7 @@ class ChildComp2 {
   selector: '[some-viewport]'
 })
 class SomeViewport {
-  constructor(container: ViewContainer) {
+  constructor(container: ViewContainerRef) {
     container.create().setLocal('some-tmpl', 'hello');
     container.create().setLocal('some-tmpl', 'again');
   }

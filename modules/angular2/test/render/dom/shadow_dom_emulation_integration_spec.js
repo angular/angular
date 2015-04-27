@@ -17,7 +17,7 @@ import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {
-  ProtoViewDto, ViewDefinition, ViewContainerRef, DirectiveMetadata
+  ProtoViewDto, ViewDefinition, RenderViewContainerRef, DirectiveMetadata
 } from 'angular2/src/render/api';
 
 import {EmulatedScopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_scoped_shadow_dom_strategy';
@@ -183,7 +183,7 @@ export function main() {
           });
           compileRoot('main').then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
-            var vcRef = new ViewContainerRef(viewRefs[1], 1);
+            var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
             expect(rootEl).toHaveText('(, B)');
@@ -213,7 +213,7 @@ export function main() {
           });
           compileRoot('main').then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
-            var vcRef = new ViewContainerRef(viewRefs[1], 1);
+            var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
             expect(rootEl).toHaveText('(, B)');
@@ -264,7 +264,7 @@ export function main() {
           });
           compileRoot('main').then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
-            var vcRef = new ViewContainerRef(viewRefs[1], 1);
+            var vcRef = new RenderViewContainerRef(viewRefs[1], 1);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[1].nestedProtoView.render;
             expect(rootEl).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
@@ -290,7 +290,7 @@ export function main() {
           });
           compileRoot('main').then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
-            var vcRef = new ViewContainerRef(viewRefs[2], 0);
+            var vcRef = new RenderViewContainerRef(viewRefs[2], 0);
             var vcProtoViewRef = pv.elementBinders[0].nestedProtoView
               .elementBinders[0].nestedProtoView
               .elementBinders[0].nestedProtoView.render;
@@ -323,9 +323,9 @@ export function main() {
           });
           compileRoot('main').then( (pv) => {
             var viewRefs = renderer.createInPlaceHostView(null, rootEl, pv.render);
-            var vcRef0 = new ViewContainerRef(viewRefs[2], 0);
-            var vcRef1 = new ViewContainerRef(viewRefs[3], 0);
-            var vcRef2 = new ViewContainerRef(viewRefs[4], 0);
+            var vcRef0 = new RenderViewContainerRef(viewRefs[2], 0);
+            var vcRef1 = new RenderViewContainerRef(viewRefs[3], 0);
+            var vcRef2 = new RenderViewContainerRef(viewRefs[4], 0);
             var mainPv = pv.elementBinders[0].nestedProtoView;
             var pvRef = mainPv.elementBinders[0].nestedProtoView.elementBinders[0].nestedProtoView.render;
 
