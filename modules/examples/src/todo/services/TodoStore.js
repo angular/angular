@@ -1,4 +1,4 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
 
 // base model for RecordStore
 export class KeyModel {
@@ -46,6 +46,11 @@ export class Store {
 
   add(record: KeyModel) {
     ListWrapper.push(this.list, record);
+  }
+
+  save(record: KeyModel) {
+    var i = this.indexFor(record);
+    this.list[i] = record;
   }
 
   remove(record: KeyModel) {
