@@ -1,4 +1,4 @@
-import {Component, Decorator, View, NgElement} from 'angular2/angular2';
+import {Component, Decorator, View, ElementRef} from 'angular2/angular2';
 import {Injectable} from 'angular2/di';
 
 // Angular 2.0 supports 3 basic types of directives:
@@ -46,9 +46,9 @@ export class HelloCmp {
   selector: '[red]'
 })
 class RedDec {
-  // NgElement is always injectable and it wraps the element on which the
+  // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
-  constructor(el: NgElement) {
+  constructor(el: ElementRef) {
     el.domElement.style.color = 'red';
   }
 }

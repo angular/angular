@@ -276,7 +276,15 @@ export class SpyObject {
   constructor(type = null) {
     if (type) {
       for (var prop in type.prototype) {
-        var m = type.prototype[prop];
+        var m = null;
+        try {
+          m = type.prototype[prop];
+        } catch (e) {
+          // As we are creating spys for abstract classes,
+          // these classes might have getters that throw when they are accessed.
+          // As we are only auto creating spys for methods, this
+          // should not matter.
+        }
         if (typeof m === 'function') {
           this.spy(prop);
         }

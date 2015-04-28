@@ -19,9 +19,11 @@ import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
-import {Renderer, ViewRef, ProtoViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
+import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {Renderer, RenderViewRef, RenderProtoViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
-import {DirectiveBinding, ElementInjector, ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations/annotations';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
@@ -40,8 +42,16 @@ export function main() {
     var createdViews;
     var createdRenderViews;
 
+    function wrapPv(protoView:AppProtoView):ProtoViewRef {
+      return new ProtoViewRef(protoView);
+    }
+
+    function wrapView(view:AppView):ViewRef {
+      return new ViewRef(view);
+    }
+
     function elementRef(parentView, boundElementIndex) {
-      return new ElementRef(null, parentView, boundElementIndex, null, null, null);
+      return new ElementRef(parentView, boundElementIndex);
     }
 
     function createDirectiveBinding(type) {
@@ -130,7 +140,7 @@ export function main() {
       var createRenderViewRefs = function(renderPvRef) {
         var res = [];
         for (var i=0; i<renderPvRef.nestedComponentCount+1; i++) {
-          var renderViewRef = new ViewRef();
+          var renderViewRef = new RenderViewRef();
           ListWrapper.push(res, renderViewRef);
           ListWrapper.push(createdRenderViews, renderViewRef);
         }
@@ -155,13 +165,13 @@ export function main() {
           hostView = createView(createProtoView(
             [createComponentElBinder(null)]
           ));
-          hostView.render = new ViewRef();
+          hostView.render = new RenderViewRef();
           componentProtoView = createProtoView();
         });
 
         it('should create the view', () => {
           expect(
-              manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null)
+              internalView(manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null))
           ).toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(componentProtoView);
         });
@@ -173,36 +183,36 @@ export function main() {
             return createdView;
           });
           expect(
-              manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null)
+              internalView(manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null))
           ).toBe(createdView);
           expect(utils.spy('createView')).not.toHaveBeenCalled();
         });
 
         it('should attach the view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null)
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null)
           expect(utils.spy('attachComponentView')).toHaveBeenCalledWith(hostView, 0, createdViews[0]);
         });
 
         it('should hydrate the dynamic component', () => {
           var injector = new Injector([], null, false);
           var componentBinding = bind(SomeComponent).toClass(SomeComponent);
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, componentBinding, injector);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), componentBinding, injector);
           expect(utils.spy('hydrateDynamicComponentInElementInjector')).toHaveBeenCalledWith(hostView, 0, componentBinding, injector);
         });
 
         it('should hydrate the view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           expect(utils.spy('hydrateComponentView')).toHaveBeenCalledWith(hostView, 0);
         });
 
         it('should create and set the render view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           expect(renderer.spy('createDynamicComponentView')).toHaveBeenCalledWith(hostView.render, 0, componentProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
         it('should set the event dispatcher', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           var cmpView = createdViews[0];
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(cmpView.render, cmpView);
         });
@@ -216,7 +226,7 @@ export function main() {
           ));
           var componentProtoView = createProtoView();
           expect(
-            () => manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null)
+            () => manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null)
           ).toThrowError('There is no dynamic component directive at element 0');
         });
 
@@ -226,7 +236,7 @@ export function main() {
           ));
           var componentProtoView = createProtoView();
           expect(
-            () => manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null)
+            () => manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null)
           ).toThrowError('There is no dynamic component directive at element 0');
         });
 
@@ -246,7 +256,7 @@ export function main() {
           hostView = createView(createProtoView(
             [createComponentElBinder(null)]
           ));
-          hostView.render = new ViewRef();
+          hostView.render = new RenderViewRef();
           nestedProtoView = createProtoView();
           componentProtoView = createProtoView([
             createComponentElBinder(nestedProtoView)
@@ -254,23 +264,23 @@ export function main() {
         });
 
         it('should create the view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           expect(createdViews[0].proto).toBe(componentProtoView);
           expect(createdViews[1].proto).toBe(nestedProtoView);
         });
 
         it('should hydrate the view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           expect(utils.spy('hydrateComponentView')).toHaveBeenCalledWith(createdViews[0], 0);
         });
 
         it('should set the render view', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           expect(createdViews[1].render).toBe(createdRenderViews[1])
         });
 
         it('should set the event dispatcher', () => {
-          manager.createDynamicComponentView(elementRef(hostView, 0), componentProtoView, null, null);
+          manager.createDynamicComponentView(elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null);
           var cmpView = createdViews[1];
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(cmpView.render, cmpView);
         });
@@ -299,7 +309,7 @@ export function main() {
           ));
           parentView = createView();
           utils.attachComponentView(parentHostView, 0, parentView);
-          parentView.render = new ViewRef();
+          parentView.render = new RenderViewRef();
           hostProtoView = createProtoView(
             [createComponentElBinder(null)]
           );
@@ -307,26 +317,26 @@ export function main() {
 
         it('should create the view', () => {
           expect(
-            manager.createInPlaceHostView(elementRef(parentHostView, 0), null, hostProtoView, null)
+            internalView(manager.createInPlaceHostView(elementRef(wrapView(parentHostView), 0), null, wrapPv(hostProtoView), null))
           ).toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(hostProtoView);
         });
 
         it('should attachAndHydrate the view', () => {
           var injector = new Injector([], null, false);
-          manager.createInPlaceHostView(elementRef(parentHostView, 0), null, hostProtoView, injector);
+          manager.createInPlaceHostView(elementRef(wrapView(parentHostView), 0), null, wrapPv(hostProtoView), injector);
           expect(utils.spy('attachAndHydrateInPlaceHostView')).toHaveBeenCalledWith(parentHostView, 0, createdViews[0], injector);
         });
 
         it('should create and set the render view', () => {
           var elementOrSelector = 'someSelector';
-          manager.createInPlaceHostView(elementRef(parentHostView, 0), elementOrSelector, hostProtoView, null)
+          manager.createInPlaceHostView(elementRef(wrapView(parentHostView), 0), elementOrSelector, wrapPv(hostProtoView), null)
           expect(renderer.spy('createInPlaceHostView')).toHaveBeenCalledWith(parentView.render, elementOrSelector, hostProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
         it('should set the event dispatcher', () => {
-          manager.createInPlaceHostView(elementRef(parentHostView, 0), null, hostProtoView, null);
+          manager.createInPlaceHostView(elementRef(wrapView(parentHostView), 0), null, wrapPv(hostProtoView), null);
           var cmpView = createdViews[0];
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(cmpView.render, cmpView);
         });
@@ -344,32 +354,32 @@ export function main() {
           ));
           parentView = createView();
           utils.attachComponentView(parentHostView, 0, parentView);
-          parentView.render = new ViewRef();
+          parentView.render = new RenderViewRef();
           hostProtoView = createProtoView(
             [createComponentElBinder(null)]
           );
-          hostView = manager.createInPlaceHostView(elementRef(parentHostView, 0), null, hostProtoView, null);
+          hostView = internalView(manager.createInPlaceHostView(elementRef(wrapView(parentHostView), 0), null, wrapPv(hostProtoView), null));
           hostRenderViewRef = hostView.render;
         });
 
         it('should dehydrate', () => {
-          manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
+          manager.destroyInPlaceHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
           expect(utils.spy('detachInPlaceHostView')).toHaveBeenCalledWith(parentView, hostView);
         });
 
         it('should detach', () => {
-          manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
+          manager.destroyInPlaceHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
           expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(hostView);
         });
 
         it('should destroy and clear the render view', () => {
-          manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
+          manager.destroyInPlaceHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
           expect(renderer.spy('destroyInPlaceHostView')).toHaveBeenCalledWith(parentView.render, hostRenderViewRef);
           expect(hostView.render).toBe(null);
         });
 
         it('should return the view to the pool', () => {
-          manager.destroyInPlaceHostView(elementRef(parentHostView, 0), hostView);
+          manager.destroyInPlaceHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
           expect(viewPool.spy('returnView')).toHaveBeenCalledWith(hostView);
         });
       });
@@ -388,42 +398,42 @@ export function main() {
           parentView = createView(createProtoView(
             [createEmptyElBinder()]
           ));
-          parentView.render = new ViewRef();
+          parentView.render = new RenderViewRef();
           childProtoView = createProtoView();
         });
 
         it('should create a ViewContainerRef if not yet existing', () => {
-          manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null);
           expect(parentView.viewContainers[0]).toBeTruthy();
         });
 
         it('should create the view', () => {
           expect(
-            manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null)
+            internalView(manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null))
           ).toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(childProtoView);
         });
 
         it('should attach the view', () => {
-          manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null)
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null)
           expect(utils.spy('attachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0, createdViews[0]);
         });
 
         it('should hydrate the view', () => {
           var injector = new Injector([], null, false);
-          manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, injector);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), injector);
           expect(utils.spy('hydrateViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0, injector);
         });
 
         it('should create and set the render view', () => {
-          manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null);
           expect(renderer.spy('createViewInContainer')).toHaveBeenCalledWith(
             new RenderViewContainerRef(parentView.render, 0), 0, childProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
         it('should set the event dispatcher', () => {
-          manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null);
           var childView = createdViews[0];
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(childView.render, childView);
         });
@@ -439,29 +449,29 @@ export function main() {
           parentView = createView(createProtoView(
             [createEmptyElBinder()]
           ));
-          parentView.render = new ViewRef();
+          parentView.render = new RenderViewRef();
           childProtoView = createProtoView();
-          childView = manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+          childView = internalView(manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null));
         });
 
         it('should dehydrate', () => {
-          manager.destroyViewInContainer(elementRef(parentView, 0), 0);
+          manager.destroyViewInContainer(elementRef(wrapView(parentView), 0), 0);
           expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(parentView.viewContainers[0].views[0]);
         });
 
         it('should detach', () => {
-          manager.destroyViewInContainer(elementRef(parentView, 0), 0);
+          manager.destroyViewInContainer(elementRef(wrapView(parentView), 0), 0);
           expect(utils.spy('detachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0);
         });
 
         it('should destroy and clear the render view', () => {
-          manager.destroyViewInContainer(elementRef(parentView, 0), 0);
+          manager.destroyViewInContainer(elementRef(wrapView(parentView), 0), 0);
           expect(renderer.spy('destroyViewInContainer')).toHaveBeenCalledWith(new RenderViewContainerRef(parentView.render, 0), 0);
           expect(childView.render).toBe(null);
         });
 
         it('should return the view to the pool', () => {
-          manager.destroyViewInContainer(elementRef(parentView, 0), 0);
+          manager.destroyViewInContainer(elementRef(wrapView(parentView), 0), 0);
           expect(viewPool.spy('returnView')).toHaveBeenCalledWith(childView);
         });
       });
@@ -472,29 +482,29 @@ export function main() {
           parentView = createView(createProtoView(
             [createEmptyElBinder()]
           ));
-          parentView.render = new ViewRef();
+          parentView.render = new RenderViewRef();
           childProtoView = createProtoView();
-          childView = manager.createViewInContainer(elementRef(parentView, 0), 0, childProtoView, null);
+          childView = internalView(manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null));
         });
 
         it('should dehydrate', () => {
-          manager.destroyInPlaceHostView(null, parentView);
+          manager.destroyInPlaceHostView(null, wrapView(parentView));
           expect(utils.spy('dehydrateView')).toHaveBeenCalledWith(parentView.viewContainers[0].views[0]);
         });
 
         it('should detach', () => {
-          manager.destroyInPlaceHostView(null, parentView);
+          manager.destroyInPlaceHostView(null, wrapView(parentView));
           expect(utils.spy('detachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0);
         });
 
         it('should not destroy but clear the render view', () => {
-          manager.destroyInPlaceHostView(null, parentView);
+          manager.destroyInPlaceHostView(null, wrapView(parentView));
           expect(renderer.spy('destroyViewInContainer')).not.toHaveBeenCalled();
           expect(childView.render).toBe(null);
         });
 
         it('should return the view to the pool', () => {
-          manager.destroyInPlaceHostView(null, parentView);
+          manager.destroyInPlaceHostView(null, wrapView(parentView));
           expect(viewPool.spy('returnView')).toHaveBeenCalledWith(childView);
         });
 
@@ -513,7 +523,7 @@ export function main() {
   });
 }
 
-class MockProtoViewRef extends ProtoViewRef {
+class MockProtoViewRef extends RenderProtoViewRef {
   nestedComponentCount:number;
   constructor(nestedComponentCount:number) {
     super();

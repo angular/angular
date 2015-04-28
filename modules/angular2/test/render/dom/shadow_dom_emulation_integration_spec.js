@@ -349,7 +349,7 @@ export function main() {
           });
         }));
 
-        //Implement once NgElement support changing a class
+        //Implement once ElementRef support changing a class
         //it("should redistribute when a class has been added or removed");
         //it('should not lose focus', () => {
         //  var temp = `<simple>aaa<input type="text" id="focused-input" ng-class="{'aClass' : showClass}"> bbb</simple>`;

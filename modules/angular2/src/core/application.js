@@ -37,10 +37,10 @@ import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
 import * as rvh from 'angular2/src/render/dom/view/view_hydrator';
+import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {
   appComponentRefToken,
-  appChangeDetectorToken,
   appElementToken,
   appComponentAnnotatedTypeToken,
   appDocumentToken,
@@ -80,8 +80,6 @@ function _injectorBindings(appComponentType): List<Binding> {
       }, [DynamicComponentLoader, Injector, appElementToken, appComponentAnnotatedTypeToken,
         Testability, TestabilityRegistry]),
 
-      bind(appChangeDetectorToken).toFactory((ref) => ref.hostView.changeDetector,
-          [appComponentRefToken]),
       bind(appComponentType).toFactory((ref) => ref.instance,
           [appComponentRefToken]),
       bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
@@ -253,7 +251,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
  */
 export function bootstrap(appComponentType: Type,
                           componentInjectableBindings: List<Binding> = null,
-                          errorReporter: Function = null): Promise<ComponentRef> {
+                          errorReporter: Function = null): Promise<ApplicationRef> {
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
@@ -266,13 +264,13 @@ export function bootstrap(appComponentType: Type,
 
     PromiseWrapper.then(appInjector.asyncGet(appComponentRefToken),
       (componentRef) => {
-        var appChangeDetector = componentRef.hostView.changeDetector;
+        var appChangeDetector = internalView(componentRef.hostView).changeDetector;
         // retrieve life cycle: may have already been created if injected in root component
         var lc = appInjector.get(LifeCycle);
         lc.registerWith(zone, appChangeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
-        bootstrapProcess.resolve(componentRef);
+        bootstrapProcess.resolve(new ApplicationRef(componentRef, appInjector));
       },
 
       (err) => {
@@ -281,6 +279,28 @@ export function bootstrap(appComponentType: Type,
   });
 
   return bootstrapProcess.promise;
+}
+
+export class ApplicationRef {
+  _hostComponent:ComponentRef;
+  _injector:Injector;
+  constructor(hostComponent:ComponentRef, injector:Injector) {
+    this._hostComponent = hostComponent;
+    this._injector = injector;
+  }
+
+  get hostComponent() {
+    return this._hostComponent.instance;
+  }
+
+  dispose() {
+    // TODO: We also need to clean up the Zone, ... here!
+    return this._hostComponent.dispose();
+  }
+
+  get injector() {
+    return this._injector;
+  }
 }
 
 function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zone: VmTurnZone): Injector {

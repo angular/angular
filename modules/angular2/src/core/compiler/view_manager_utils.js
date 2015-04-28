@@ -2,7 +2,6 @@ import {Injectable, Injector, Binding} from 'angular2/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {Renderer} from 'angular2/src/render/api';
@@ -15,6 +14,16 @@ export class AppViewManagerUtils {
 
   constructor(metadataReader:DirectiveMetadataReader) {
     this._metadataReader = metadataReader;
+  }
+
+  getComponentInstance(parentView:viewModule.AppView, boundElementIndex:number):any {
+    var binder = parentView.proto.elementBinders[boundElementIndex];
+    var eli = parentView.elementInjectors[boundElementIndex];
+    if (binder.hasDynamicComponent()) {
+      return eli.getDynamicallyLoadedComponent();
+    } else {
+      return eli.getComponent();
+    }
   }
 
   createView(protoView:viewModule.AppProtoView, viewManager:avmModule.AppViewManager, renderer:Renderer): viewModule.AppView {
@@ -48,7 +57,7 @@ export class AppViewManagerUtils {
       // preBuiltObjects
       if (isPresent(elementInjector)) {
         var defaultProtoView = isPresent(binder.viewportDirective) ? binder.nestedProtoView : null;
-        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(viewManager, view, new NgElement(view, binderIdx), defaultProtoView);
+        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(viewManager, view, defaultProtoView);
       }
     }
 
@@ -74,13 +83,7 @@ export class AppViewManagerUtils {
   hydrateComponentView(hostView:viewModule.AppView, boundElementIndex:number, injector:Injector = null) {
     var elementInjector = hostView.elementInjectors[boundElementIndex];
     var componentView = hostView.componentChildViews[boundElementIndex];
-    var binder = hostView.proto.elementBinders[boundElementIndex];
-    var component;
-    if (binder.hasDynamicComponent()) {
-      component = elementInjector.getDynamicallyLoadedComponent();
-    } else {
-      component = elementInjector.getComponent();
-    }
+    var component = this.getComponentInstance(hostView, boundElementIndex);
     this._hydrateView(
       componentView, injector, elementInjector, component, null
     );
@@ -106,7 +109,8 @@ export class AppViewManagerUtils {
     }
   }
 
-  attachViewInContainer(parentView:viewModule.AppView, boundElementIndex:number, atIndex:number, view:viewModule.AppView) {
+  attachViewInContainer(parentView:viewModule.AppView, boundElementIndex:number,
+      atIndex:number, view:viewModule.AppView) {
     parentView.changeDetector.addChild(view.changeDetector);
     var viewContainer = parentView.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
@@ -136,7 +140,8 @@ export class AppViewManagerUtils {
     }
   }
 
-  hydrateViewInContainer(parentView:viewModule.AppView, boundElementIndex:number, atIndex:number, injector:Injector) {
+  hydrateViewInContainer(parentView:viewModule.AppView, boundElementIndex:number,
+      atIndex:number, injector:Injector) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     var elementInjector = parentView.elementInjectors[boundElementIndex];
@@ -203,7 +208,7 @@ export class AppViewManagerUtils {
         if (elementInjector.isExportingComponent()) {
           view.locals.set(exportImplicitName, elementInjector.getComponent());
         } else if (elementInjector.isExportingElement()) {
-          view.locals.set(exportImplicitName, elementInjector.getNgElement().domElement);
+          view.locals.set(exportImplicitName, elementInjector.getElementRef().domElement);
         }
       }
     }

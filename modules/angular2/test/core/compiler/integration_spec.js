@@ -33,7 +33,7 @@ import {If} from 'angular2/src/directives/if';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
-import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 
@@ -851,7 +851,7 @@ class SimpleImperativeViewComponent {
   done;
 
   constructor(self:ElementRef, renderer:DirectDomRenderer) {
-    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [el('hello imp view')]);
+    renderer.setImperativeComponentRootNodes(self.parentView.render, self.boundElementIndex, [el('hello imp view')]);
   }
 }
 

@@ -54,7 +54,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * - `@Descendants query:Query<DirectiveType>`: A live collection of any child directives (will be implemented in later relaese).
  *
  * To inject element-specific special objects, declare the constructor parameter as:
- * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacement coming)
+ * - `element: ElementRef` to obtain a reference to logical element in the view.
  * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Viewport} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *

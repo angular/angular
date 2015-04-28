@@ -24,6 +24,7 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 import {Component, DynamicComponent, Viewport, Decorator} from 'angular2/src/core/annotations/annotations';
 import {Attribute} from 'angular2/src/core/annotations/di';
 import {View} from 'angular2/src/core/annotations/view';
+import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {ComponentUrlMapper, RuntimeComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
@@ -70,7 +71,7 @@ export function main() {
       function captureTemplate(template:View):Promise<renderApi.ViewDefinition> {
         tplResolver.setView(MainComponent, template);
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
-        return compiler.compile(MainComponent).then( (protoView) => {
+        return compiler.compile(MainComponent).then( (_) => {
           expect(renderCompileRequests.length).toBe(1);
           return renderCompileRequests[0];
         });
@@ -226,7 +227,7 @@ export function main() {
         var renderProtoView = createRenderProtoView();
         var expectedProtoView = createProtoView();
         var compiler = createCompiler([renderProtoView], [expectedProtoView]);
-        compiler.compile(MainComponent).then( (protoView) => {
+        compiler.compile(MainComponent).then( (_) => {
           var request = protoViewFactory.requests[0];
           expect(request[1]).toBe(renderProtoView);
           async.done();
@@ -236,7 +237,7 @@ export function main() {
       it('should pass the component binding', inject([AsyncTestCompleter], (async) => {
         tplResolver.setView(MainComponent, new View({template: '<div></div>'}));
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
-        compiler.compile(MainComponent).then( (protoView) => {
+        compiler.compile(MainComponent).then( (_) => {
           var request = protoViewFactory.requests[0];
           expect(request[0].key.token).toBe(MainComponent);
           async.done();
@@ -251,7 +252,7 @@ export function main() {
           })
         );
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
-        compiler.compile(MainComponent).then( (protoView) => {
+        compiler.compile(MainComponent).then( (_) => {
           var request = protoViewFactory.requests[0];
           var binding = request[2][0];
           expect(binding.key.token).toBe(SomeDecoratorDirective);
@@ -264,8 +265,8 @@ export function main() {
         var renderProtoView = createRenderProtoView();
         var expectedProtoView = createProtoView();
         var compiler = createCompiler([renderProtoView], [expectedProtoView]);
-        compiler.compile(MainComponent).then( (protoView) => {
-          expect(protoView).toBe(expectedProtoView);
+        compiler.compile(MainComponent).then( (protoViewRef) => {
+          expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
           async.done();
         });
       }));
@@ -286,8 +287,8 @@ export function main() {
         ],
         [mainProtoView, nestedProtoView]
       );
-      compiler.compile(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(mainProtoView);
+      compiler.compile(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
         // parentProtoView of nested components has to be null as components can
         // be used by multiple other components.
@@ -319,8 +320,8 @@ export function main() {
         ],
         [mainProtoView, viewportProtoView, nestedProtoView]
       );
-      compiler.compile(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(mainProtoView);
+      compiler.compile(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(viewportProtoView);
         expect(viewportProtoView.parentProtoView).toBe(mainProtoView);
         expect(viewportProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
@@ -337,11 +338,11 @@ export function main() {
       var renderProtoView = createRenderProtoView();
       var expectedProtoView = createProtoView();
       var compiler = createCompiler([renderProtoView], [expectedProtoView]);
-      compiler.compile(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(expectedProtoView);
+      compiler.compile(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
         return compiler.compile(MainComponent);
-      }).then( (protoView) => {
-        expect(protoView).toBe(expectedProtoView);
+      }).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(expectedProtoView);
         async.done();
       });
     }));
@@ -355,9 +356,9 @@ export function main() {
       PromiseWrapper.all([
         compiler.compile(MainComponent),
         compiler.compile(MainComponent)
-      ]).then( (protoViews) => {
-        expect(protoViews[0]).toBe(expectedProtoView);
-        expect(protoViews[1]).toBe(expectedProtoView);
+      ]).then( (protoViewRefs) => {
+        expect(internalProtoView(protoViewRefs[0])).toBe(expectedProtoView);
+        expect(internalProtoView(protoViewRefs[1])).toBe(expectedProtoView);
         async.done();
       });
     }));
@@ -373,8 +374,8 @@ export function main() {
         ])],
         [mainProtoView]
       );
-      compiler.compile(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(mainProtoView);
+      compiler.compile(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
         async.done();
       });
@@ -397,8 +398,8 @@ export function main() {
         ],
         [rootProtoView, mainProtoView]
       );
-      compiler.compileInHost(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(rootProtoView);
+      compiler.compileInHost(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(rootProtoView);
         expect(rootProtoView.elementBinders[0].nestedProtoView).toBe(mainProtoView);
         async.done();
       });
@@ -416,8 +417,8 @@ export function main() {
         [],
         [mainProtoView]
       );
-      compiler.compile(MainComponent).then( (protoView) => {
-        expect(protoView).toBe(mainProtoView);
+      compiler.compile(MainComponent).then( (protoViewRef) => {
+        expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(renderer.spy('createImperativeComponentProtoView')).toHaveBeenCalledWith('some-renderer');
         async.done();
       });

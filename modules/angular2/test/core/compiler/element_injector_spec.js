@@ -1,7 +1,7 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObject, proxy, el} from 'angular2/test_lib';
 import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from 'angular2/src/facade/collection';
-import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode, ElementRef}
+import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode}
   from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations/di';
@@ -9,7 +9,8 @@ import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
+import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
 import {ViewRef, Renderer} from 'angular2/src/render/api';
@@ -135,6 +136,13 @@ class NeedsViewContainer {
   }
 }
 
+class NeedsProtoViewRef {
+  protoViewRef;
+  constructor(ref:ProtoViewRef) {
+    this.protoViewRef = ref;
+  }
+}
+
 class NeedsChangeDetectorRef {
   changeDetectorRef;
   constructor(cdr:ChangeDetectorRef) {
@@ -148,13 +156,6 @@ class A_Needs_B {
 
 class B_Needs_A {
   constructor(dep){}
-}
-
-class NeedsView {
-  view:any;
-  constructor(@Inject(AppView) view) {
-    this.view = view;
-  }
 }
 
 class DirectiveWithDestroy {
@@ -181,7 +182,7 @@ class TestNode extends TreeNode {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
 
   function humanize(tree, names:List) {
@@ -453,10 +454,10 @@ export function main() {
       });
 
       it("should instantiate directives that depend on pre built objects", function () {
-        var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(null, view, null, null));
+        var protoView = new AppProtoView(null, null);
+        var inj = injector([NeedsProtoViewRef], null, null, new PreBuiltObjects(null, null, protoView));
 
-        expect(inj.get(NeedsView).view).toBe(view);
+        expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
       });
 
       it("should instantiate directives that depend on the containing component", function () {
@@ -577,29 +578,6 @@ export function main() {
       });
     });
 
-    describe("pre built objects", function () {
-      it("should return view", function () {
-        var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(null, view, null, null));
-
-        expect(inj.get(AppView)).toEqual(view);
-      });
-
-      it("should return element", function () {
-        var element = new NgElement(null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, element, null));
-
-        expect(inj.get(NgElement)).toEqual(element);
-      });
-
-      it("should return default ProtoView", function () {
-        var protoView = new AppProtoView(null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, protoView));
-
-        expect(inj.get(AppProtoView)).toEqual(protoView);
-      });
-    });
-
     describe("dynamicallyCreateComponent", () => {
       it("should create a component dynamically", () => {
         var inj = injector([]);
@@ -700,7 +678,7 @@ export function main() {
       });
     });
 
-    describe("ElementRef", () => {
+    describe("refs", () => {
       it("should inject ElementRef", () => {
         var inj = injector([NeedsElementRef]);
         expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
@@ -712,7 +690,7 @@ export function main() {
         var childView = new DummyView();
         childView.changeDetector = cd;
         view.componentChildViews = [childView];
-        var inj = injector([NeedsChangeDetectorRef], null, null, new PreBuiltObjects(null, view, null, null));
+        var inj = injector([NeedsChangeDetectorRef], null, null, new PreBuiltObjects(null, view, null));
 
         expect(inj.get(NeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
       });
@@ -720,6 +698,13 @@ export function main() {
       it('should inject ViewContainerRef', () => {
         var inj = injector([NeedsViewContainer]);
         expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainerRef);
+      });
+
+      it("should inject ProtoViewRef", function () {
+        var protoView = new AppProtoView(null, null);
+        var inj = injector([NeedsProtoViewRef], null, null, new PreBuiltObjects(null, null, protoView));
+
+        expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
       });
     });
 

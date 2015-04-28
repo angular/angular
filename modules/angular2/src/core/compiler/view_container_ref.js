@@ -1,29 +1,27 @@
-import {ListWrapper, MapWrapper, List} from 'angular2/src/facade/collection';
+import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {Injector} from 'angular2/di';
-import * as eiModule from 'angular2/src/core/compiler/element_injector';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
-import * as viewModule from './view';
 import * as avmModule from './view_manager';
 
-/**
- * @exportedAs angular2/view
- */
+import {ElementRef} from './element_ref';
+import {ViewRef, ProtoViewRef, internalView} from './view_ref';
+
 export class ViewContainerRef {
   _viewManager: avmModule.AppViewManager;
-  _location: eiModule.ElementRef;
-  _defaultProtoView: viewModule.AppProtoView;
+  _element: ElementRef;
+  _defaultProtoViewRef: ProtoViewRef;
 
   constructor(viewManager: avmModule.AppViewManager,
-              location: eiModule.ElementRef,
-              defaultProtoView: viewModule.AppProtoView) {
+              element: ElementRef,
+              defaultProtoViewRef: ProtoViewRef) {
     this._viewManager = viewManager;
-    this._location = location;
-    this._defaultProtoView = defaultProtoView;
+    this._element = element;
+    this._defaultProtoViewRef = defaultProtoViewRef;
   }
 
   _getViews() {
-    var vc = this._location.hostView.viewContainers[this._location.boundElementIndex];
+    var vc = internalView(this._element.parentView).viewContainers[this._element.boundElementIndex];
     return isPresent(vc) ? vc.views : [];
   }
 
@@ -33,8 +31,8 @@ export class ViewContainerRef {
     }
   }
 
-  get(index: number): viewModule.AppView {
-    return this._getViews()[index];
+  get(index: number): ViewRef {
+    return new ViewRef(this._getViews()[index]);
   }
 
   get length() /* :int */ {
@@ -43,26 +41,26 @@ export class ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex:number=-1, protoView:viewModule.AppProtoView = null, injector:Injector = null): viewModule.AppView {
+  create(atIndex:number=-1, protoViewRef:ProtoViewRef = null, injector:Injector = null): ViewRef {
     if (atIndex == -1) atIndex = this.length;
-    if (isBlank(protoView)) {
-      protoView = this._defaultProtoView;
+    if (isBlank(protoViewRef)) {
+      protoViewRef = this._defaultProtoViewRef;
     }
-    return this._viewManager.createViewInContainer(this._location, atIndex, protoView, injector);
+    return this._viewManager.createViewInContainer(this._element, atIndex, protoViewRef, injector);
   }
 
-  insert(view:viewModule.AppView, atIndex:number=-1): viewModule.AppView {
+  insert(viewRef:ViewRef, atIndex:number=-1): ViewRef {
     if (atIndex == -1) atIndex = this.length;
-    return this._viewManager.attachViewInContainer(this._location, atIndex, view);
+    return this._viewManager.attachViewInContainer(this._element, atIndex, viewRef);
   }
 
-  indexOf(view:viewModule.AppView) {
-    return ListWrapper.indexOf(this._getViews(), view);
+  indexOf(viewRef:ViewRef) {
+    return ListWrapper.indexOf(this._getViews(), internalView(viewRef));
   }
 
   remove(atIndex:number=-1):void {
     if (atIndex == -1) atIndex = this.length - 1;
-    this._viewManager.destroyViewInContainer(this._location, atIndex);
+    this._viewManager.destroyViewInContainer(this._element, atIndex);
     // view is intentionally not returned to the client.
   }
 
@@ -70,8 +68,8 @@ export class ViewContainerRef {
    * The method can be used together with insert to implement a view move, i.e.
    * moving the dom nodes while the directives in the view stay intact.
    */
-  detach(atIndex:number=-1): viewModule.AppView {
+  detach(atIndex:number=-1): ViewRef {
     if (atIndex == -1) atIndex = this.length - 1;
-    return this._viewManager.detachViewInContainer(this._location, atIndex);
+    return this._viewManager.detachViewInContainer(this._element, atIndex);
   }
 }
