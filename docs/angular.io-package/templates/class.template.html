@@ -28,7 +28,7 @@ p.location-badge.
 
 {% endif -%}
 
-{%- for member in doc.members %}
+{%- for member in doc.members %}{% if not member.private %}
   .l-sub-section
     h3 {$ member.name $}
 
@@ -38,11 +38,12 @@ p.location-badge.
         {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
     {% endif %}
     :markdown
+}
 {$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
 
 
 
-{% endfor %}
+{% endif %}{% endfor %}
 {%- endif -%}
 
 {% endblock %}
