@@ -13,6 +13,12 @@ module.exports = function(config) {
       {pattern: 'modules/**', included: false},
       {pattern: 'tools/transpiler/spec/**', included: false},
 
+      'zone/es6-promise.js',
+      'zone/zone.js',
+      'zone/inner-zone.js',
+      'zone/long-stack-trace-zone.js',
+
+
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
@@ -20,8 +26,8 @@ module.exports = function(config) {
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.all.js',
-      'node_modules/zone.js/zone.js',
-      'node_modules/zone.js/long-stack-trace-zone.js',
+//      'node_modules/zone.js/zone.js',
+//      'node_modules/zone.js/long-stack-trace-zone.js',
 
       'tools/build/file2modulename.js',
       'test-main.js'
