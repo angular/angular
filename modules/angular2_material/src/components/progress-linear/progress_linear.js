@@ -42,7 +42,7 @@ export class MdProgressLinear {
   ariaValuemin: string;
   ariaValuemax: string;
 
-  constructor(@Attribute('md-mode') mode: string) {
+  constructor(@Attribute('md-mode') mode: String) {
     this.primaryBarTransform = '';
     this.secondaryBarTransform = '';
 

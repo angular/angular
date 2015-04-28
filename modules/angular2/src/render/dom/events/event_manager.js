@@ -54,7 +54,7 @@ export class EventManagerPlugin {
 
   // We are assuming here that all plugins support bubbled and non-bubbled events.
   // That is equivalent to having supporting $event.target
-  // The bubbling flag (currently ^) is stripped before calling the supports and 
+  // The bubbling flag (currently ^) is stripped before calling the supports and
   // addEventListener methods.
   supports(eventName: string): boolean {
     return false;

@@ -39,7 +39,7 @@ export class MdCheckbox {
   /** Setter for tabindex */
   tabindex: number;
 
-  constructor(@Attribute('tabindex') tabindex: string) {
+  constructor(@Attribute('tabindex') tabindex: String) {
     this.role = 'checkbox';
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
