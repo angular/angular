@@ -379,7 +379,7 @@ function _resolveBindings(bindings:List): List {
     } else if (unresolved instanceof List) {
       resolved = _resolveBindings(unresolved);
     } else if (unresolved instanceof BindingBuilder) {
-      throw new InvalidBindingError(unresolved.token);
+      throw new InvalidBindingError('BindingBuilder with ' + unresolved.token + ' token');
     } else {
       throw new InvalidBindingError(unresolved);
     }
