@@ -55,7 +55,7 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: NgElement` to obtain a DOM element (DEPRECATED: replacement coming)
- * - `viewContainer: ViewContainer` to control child template instantiation, for {@link Viewport} directives only
+ * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Viewport} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -187,8 +187,8 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  *
  * A directive can also query for other child directives. Since parent directives are instantiated before child
- * directives, a directive can't simply inject the list of child directives. Instead, the directive 
- * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved by any 
+ * directives, a directive can't simply inject the list of child directives. Instead, the directive
+ * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved by any
  * {@link Viewport} directive such as a `for`, an `if`, or a `switch`.
  *
  * ```
@@ -199,7 +199,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * }
  * ```
  *
- * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and 6. Here, `Dependency` 
+ * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and 6. Here, `Dependency`
  * 5 would not be included, because it is not a direct child.
  *
  * ### Injecting a live collection of descendant directives
@@ -444,6 +444,29 @@ export class Directive extends Injectable {
    */
   hostListeners:any; //  StringMap
 
+
+  /**
+   * Specifies which DOM properties a directives updates.
+   *
+   * ## Syntax
+   *
+   * ```
+   * @Decorator({
+   *   selector: 'input',
+   *   hostProperties: {
+   *     'value': 'value'
+   *   }
+   * })
+   * class InputDecorator {
+   *   value:string;
+   * }
+   *
+   * In this example every time the value property of the decorator changes, Angular will update the value property of
+   * the host element.
+   * ```
+   */
+  hostProperties:any; // String map
+
   /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
@@ -457,12 +480,14 @@ export class Directive extends Injectable {
       properties,
       events,
       hostListeners,
+      hostProperties,
       lifecycle
     }:{
       selector:string,
       properties:any,
       events:List,
       hostListeners: any,
+      hostProperties: any,
       lifecycle:List
     }={})
   {
@@ -471,6 +496,7 @@ export class Directive extends Injectable {
     this.properties = properties;
     this.events = events;
     this.hostListeners = hostListeners;
+    this.hostProperties = hostProperties;
     this.lifecycle = lifecycle;
   }
 
@@ -579,20 +605,22 @@ export class Component extends Directive {
    */
   injectables:List;
 
-@CONST()
+  @CONST()
   constructor({
-    selector,
-    properties,
-    events,
-    hostListeners,
-    injectables,
-    lifecycle,
-    changeDetection = DEFAULT
+      selector,
+      properties,
+      events,
+      hostListeners,
+      hostProperties,
+      injectables,
+      lifecycle,
+      changeDetection = DEFAULT
     }:{
       selector:string,
       properties:Object,
       events:List,
-      hostListeners:Object,
+      hostListeners:any,
+      hostProperties:any,
       injectables:List,
       lifecycle:List,
       changeDetection:string
@@ -603,6 +631,7 @@ export class Component extends Directive {
       properties: properties,
       events: events,
       hostListeners: hostListeners,
+      hostProperties: hostProperties,
       lifecycle: lifecycle
     });
 
@@ -667,17 +696,19 @@ export class DynamicComponent extends Directive {
 
   @CONST()
   constructor({
-    selector,
-    properties,
-    events,
-    hostListeners,
-    injectables,
-    lifecycle
+      selector,
+      properties,
+      events,
+      hostListeners,
+      hostProperties,
+      injectables,
+      lifecycle
     }:{
       selector:string,
-      properties:Object,
+      properties:any,
       events:List,
-      hostListeners:Object,
+      hostListeners:any,
+      hostProperties:any,
       injectables:List,
       lifecycle:List
     }={}) {
@@ -686,6 +717,7 @@ export class DynamicComponent extends Directive {
       properties: properties,
       events: events,
       hostListeners: hostListeners,
+      hostProperties: hostProperties,
       lifecycle: lifecycle
     });
 
@@ -767,6 +799,7 @@ export class Decorator extends Directive {
       properties,
       events,
       hostListeners,
+      hostProperties,
       lifecycle,
       compileChildren = true,
     }:{
@@ -774,16 +807,18 @@ export class Decorator extends Directive {
       properties:any,
       events:List,
       hostListeners:any,
+      hostProperties:any,
       lifecycle:List,
       compileChildren:boolean
     }={})
   {
     super({
-        selector: selector,
-        properties: properties,
-        events: events,
-        hostListeners: hostListeners,
-        lifecycle: lifecycle
+      selector: selector,
+      properties: properties,
+      events: events,
+      hostListeners: hostListeners,
+      hostProperties: hostProperties,
+      lifecycle: lifecycle
     });
     this.compileChildren = compileChildren;
   }
@@ -792,8 +827,8 @@ export class Decorator extends Directive {
 /**
  * Directive that controls the instantiation, destruction, and positioning of inline template elements.
  *
- * A viewport directive uses a {@link ViewContainer} to instantiate, insert, move, and destroy views at runtime.
- * The {@link ViewContainer} is created as a result of `<template>` element, and represents a location in the current view
+ * A viewport directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
+ * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
  * where these actions are performed.
  *
  * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
@@ -838,10 +873,10 @@ export class Decorator extends Directive {
  *   }
  * })
  * export class Unless {
- *   viewContainer: ViewContainer;
+ *   viewContainer: ViewContainerRef;
  *   prevCondition: boolean;
  *
- *   constructor(viewContainer: ViewContainer) {
+ *   constructor(viewContainer: ViewContainerRef) {
  *     this.viewContainer = viewContainer;
  *     this.prevCondition = null;
  *   }
@@ -889,20 +924,24 @@ export class Viewport extends Directive {
       properties,
       events,
       hostListeners,
+      hostProperties,
       lifecycle
     }:{
-      selector:string,
-      properties:any,
-      events:List,
-      lifecycle:List
+    selector:string,
+    properties:any,
+    hostListeners:any,
+    hostProperties:any,
+    events:List,
+    lifecycle:List
     }={})
   {
     super({
-        selector: selector,
-        properties: properties,
-        events: events,
-        hostListeners: hostListeners,
-        lifecycle: lifecycle
+      selector: selector,
+      properties: properties,
+      events: events,
+      hostListeners: hostListeners,
+      hostProperties: hostProperties,
+      lifecycle: lifecycle
     });
   }
 }

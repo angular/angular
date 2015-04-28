@@ -223,6 +223,17 @@ export function main() {
         expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(shadowView);
       });
 
+      it('should clear views in ViewContainers', () => {
+        createAndHydrate(null, null);
+        var vc = hostView.getOrCreateViewContainer(0);
+        var childView = createEmptyView();
+        vc.insert(childView);
+
+        dehydrate(hostView);
+
+        expect(viewFactory.spy('returnView')).toHaveBeenCalledWith(childView);
+      });
+
       it('should clear imperatively added child components', () => {
         var shadowView = createEmptyView();
         createAndHydrate(createProtoView(), shadowView);

@@ -6,7 +6,7 @@ import 'package:angular2/src/core/annotations/annotations.ng_deps.dart' as i0;
 import 'foo.dart' as prefix;
 import 'foo.ng_deps.dart' as i1;
 
-bool _visited = false;
+var _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

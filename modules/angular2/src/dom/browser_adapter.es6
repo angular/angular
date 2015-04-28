@@ -102,7 +102,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nodeValue(node:Node):string {
     return node.nodeValue;
   }
-  type(node:string) {
+  type(node:Node) {
     return node.type;
   }
   content(node:HTMLElement):Node {

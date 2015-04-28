@@ -14,7 +14,7 @@ import {ProtoViewBuilder} from './view/proto_view_builder';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ViewContainer} from './view/view_container';
 
-function _resolveViewContainer(vc:api.ViewContainerRef) {
+function _resolveViewContainer(vc:api.RenderViewContainerRef) {
   return _resolveView(vc.view).getOrCreateViewContainer(vc.elementIndex);
 }
 
@@ -109,7 +109,7 @@ export class DirectDomRenderer extends api.Renderer {
     );
   }
 
-  createViewInContainer(vcRef:api.ViewContainerRef, atIndex:number, protoViewRef:api.ProtoViewRef):List<api.ViewRef> {
+  createViewInContainer(vcRef:api.RenderViewContainerRef, atIndex:number, protoViewRef:api.ProtoViewRef):List<api.ViewRef> {
     var view = this._viewFactory.getView(_resolveProtoView(protoViewRef));
     var vc = _resolveViewContainer(vcRef);
     this._viewHydrator.hydrateViewInViewContainer(vc, view);
@@ -117,18 +117,18 @@ export class DirectDomRenderer extends api.Renderer {
     return _collectComponentChildViewRefs(view);
   }
 
-  destroyViewInContainer(vcRef:api.ViewContainerRef, atIndex:number):void {
+  destroyViewInContainer(vcRef:api.RenderViewContainerRef, atIndex:number):void {
     var vc = _resolveViewContainer(vcRef);
     var view = vc.detach(atIndex);
     this._viewHydrator.dehydrateViewInViewContainer(vc, view);
     this._viewFactory.returnView(view);
   }
 
-  insertViewIntoContainer(vcRef:api.ViewContainerRef, atIndex=-1, viewRef:api.ViewRef):void {
+  insertViewIntoContainer(vcRef:api.RenderViewContainerRef, atIndex=-1, viewRef:api.ViewRef):void {
     _resolveViewContainer(vcRef).insert(_resolveView(viewRef), atIndex);
   }
 
-  detachViewFromContainer(vcRef:api.ViewContainerRef, atIndex:number):void {
+  detachViewFromContainer(vcRef:api.RenderViewContainerRef, atIndex:number):void {
     _resolveViewContainer(vcRef).detach(atIndex);
   }
 

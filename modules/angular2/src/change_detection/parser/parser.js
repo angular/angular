@@ -277,13 +277,17 @@ class _ParseAST {
   }
 
   parseEquality() {
-    // '==','!='
+    // '==','!=','===','!=='
     var result = this.parseRelational();
     while (true) {
       if (this.optionalOperator('==')) {
         result = new Binary('==', result, this.parseRelational());
+      } else if (this.optionalOperator('===')) {
+        result = new Binary('===', result, this.parseRelational());
       } else if (this.optionalOperator('!=')) {
         result = new Binary('!=', result, this.parseRelational());
+      } else if (this.optionalOperator('!==')) {
+        result = new Binary('!==', result, this.parseRelational());
       } else {
         return result;
       }

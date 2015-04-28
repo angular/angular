@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable, Binding} from 'angular2/di';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
@@ -76,21 +76,29 @@ export class Compiler {
   _bindDirective(directiveTypeOrBinding):DirectiveBinding {
     if (directiveTypeOrBinding instanceof DirectiveBinding) {
       return directiveTypeOrBinding;
+    } else if (directiveTypeOrBinding instanceof Binding) {
+      let meta = this._reader.read(directiveTypeOrBinding.token);
+      return DirectiveBinding.createFromBinding(directiveTypeOrBinding, meta.annotation);
+    } else {
+      let meta = this._reader.read(directiveTypeOrBinding);
+      return DirectiveBinding.createFromType(meta.type, meta.annotation);
     }
-    var meta = this._reader.read(directiveTypeOrBinding);
-    return DirectiveBinding.createFromType(meta.type, meta.annotation);
   }
 
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
   compileInHost(componentTypeOrBinding:any):Promise<AppProtoView> {
+    var componentBinding = this._bindDirective(componentTypeOrBinding);
+    this._assertTypeIsComponent(componentBinding);
     return this._renderer.createHostProtoView('host').then( (hostRenderPv) => {
-      return this._compileNestedProtoViews(null, hostRenderPv, [this._bindDirective(componentTypeOrBinding)], true);
+      return this._compileNestedProtoViews(null, hostRenderPv, [componentBinding], true);
     });
   }
 
   compile(component: Type):Promise<AppProtoView> {
-    var protoView = this._compile(this._bindDirective(component));
+    var componentBinding = this._bindDirective(component);
+    this._assertTypeIsComponent(componentBinding);
+    var protoView = this._compile(componentBinding);
     return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
   }
 
@@ -223,12 +231,8 @@ export class Compiler {
       renderType = renderApi.DirectiveMetadata.DECORATOR_TYPE;
       compileChildren = ann.compileChildren;
     }
-    var setters = [];
     var readAttributes = [];
     ListWrapper.forEach(directiveBinding.dependencies, (dep) => {
-      if (isPresent(dep.propSetterName)) {
-        ListWrapper.push(setters, dep.propSetterName);
-      }
       if (isPresent(dep.attributeName)) {
         ListWrapper.push(readAttributes, dep.attributeName);
       }
@@ -239,8 +243,8 @@ export class Compiler {
       selector: ann.selector,
       compileChildren: compileChildren,
       hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
+      hostProperties: isPresent(ann.hostProperties) ? MapWrapper.createFromStringMap(ann.hostProperties) : null,
       properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
-      setters: setters,
       readAttributes: readAttributes
     });
   }
@@ -265,4 +269,9 @@ export class Compiler {
     }
   }
 
+  _assertTypeIsComponent(directiveBinding:DirectiveBinding):void {
+    if (!(directiveBinding.annotation instanceof Component)) {
+      throw new BaseException(`Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
+    }
+  }
 }

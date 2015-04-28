@@ -5,7 +5,6 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {
   ASTWithSource, AST, AstTransformer, AccessMember, LiteralArray, ImplicitReceiver
 } from 'angular2/change_detection';
-import {SetterFn} from 'angular2/src/reflection/types';
 
 import {RenderProtoView} from './proto_view';
 import {ElementBinder, Event} from './element_binder';
@@ -57,17 +56,26 @@ export class ProtoViewBuilder {
     var apiElementBinders = [];
     ListWrapper.forEach(this.elements, (ebb) => {
       var propertySetters = MapWrapper.create();
-      var apiDirectiveBinders = ListWrapper.map(ebb.directives, (db) => {
-        ebb.eventBuilder.merge(db.eventBuilder);
+
+      var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb) => {
+        ebb.eventBuilder.merge(dbb.eventBuilder);
+
+        MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
+          MapWrapper.set(propertySetters, hostPropertyName, setterFactory(hostPropertyName));
+        });
+
         return new api.DirectiveBinder({
-          directiveIndex: db.directiveIndex,
-          propertyBindings: db.propertyBindings,
-          eventBindings: db.eventBindings
+          directiveIndex: dbb.directiveIndex,
+          propertyBindings: dbb.propertyBindings,
+          eventBindings: dbb.eventBindings,
+          hostPropertyBindings: dbb.hostPropertyBindings
         });
       });
-      MapWrapper.forEach(ebb.propertySetters, (setter, propertyName) => {
-        MapWrapper.set(propertySetters, propertyName, setter);
+
+      MapWrapper.forEach(ebb.propertyBindings, (_, propertyName) => {
+        MapWrapper.set(propertySetters, propertyName, setterFactory(propertyName));
       });
+
       var nestedProtoView =
           isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
@@ -119,7 +127,6 @@ export class ElementBinderBuilder {
   textBindingIndices: List<number>;
   textBindings: List<ASTWithSource>;
   contentTagSelector:string;
-  propertySetters: Map<string, SetterFn>;
   readAttributes: Map<string, string>;
   componentId: string;
 
@@ -137,7 +144,6 @@ export class ElementBinderBuilder {
     this.textBindings = [];
     this.textBindingIndices = [];
     this.contentTagSelector = null;
-    this.propertySetters = MapWrapper.create();
     this.componentId = null;
     this.readAttributes = MapWrapper.create();
   }
@@ -172,11 +178,10 @@ export class ElementBinderBuilder {
 
   bindProperty(name, expression) {
     MapWrapper.set(this.propertyBindings, name, expression);
-    this.bindPropertySetter(name);
-  }
 
-  bindPropertySetter(name) {
-    MapWrapper.set(this.propertySetters, name, setterFactory(name));
+    //TODO: required for Dart transformers. Remove when Dart transformers
+    //run all the steps of the render compiler
+    setterFactory(name);
   }
 
   bindVariable(name, value) {
@@ -216,18 +221,24 @@ export class ElementBinderBuilder {
 export class DirectiveBuilder {
   directiveIndex:number;
   propertyBindings: Map<string, ASTWithSource>;
+  hostPropertyBindings: Map<string, ASTWithSource>;
   eventBindings: List<api.EventBinding>;
   eventBuilder: EventBuilder;
 
   constructor(directiveIndex) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = MapWrapper.create();
+    this.hostPropertyBindings = MapWrapper.create();
     this.eventBindings = ListWrapper.create();
     this.eventBuilder = new EventBuilder();
   }
 
   bindProperty(name, expression) {
     MapWrapper.set(this.propertyBindings, name, expression);
+  }
+
+  bindHostProperty(name, expression) {
+    MapWrapper.set(this.hostPropertyBindings, name, expression);
   }
 
   bindEvent(name, expression, target = null) {

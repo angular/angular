@@ -52,6 +52,12 @@ export function main() {
       expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('{{b}}');
     });
 
+    it('should store property setters as camel case', () => {
+      var element = el('<div bind-some-prop="1">');
+      var results = process(element);
+      expect(MapWrapper.get(results[0].propertyBindings, 'someProp')).toBeTruthy();
+    });
+
     it('should detect var- syntax', () => {
       var results = process(el('<template var-a="b"></template>'));
       expect(MapWrapper.get(results[0].variableBindings, 'b')).toEqual('a');
@@ -142,20 +148,6 @@ export function main() {
       var results = createPipeline().process(el('<div var-a="b" #c="d"></div>'));
       expect(MapWrapper.get(results[0].attrs(), 'a')).toEqual('b');
       expect(MapWrapper.get(results[0].attrs(), 'c')).toEqual('d');
-    });
-
-    it('should store working property setters', () => {
-      var element = el('<input bind-value="1">');
-      var results = process(element);
-      var setter = MapWrapper.get(results[0].propertySetters, 'value');
-      setter(element, 'abc');
-      expect(element.value).toEqual('abc');
-    });
-
-    it('should store property setters as camel case', () => {
-      var element = el('<div bind-some-prop="1">');
-      var results = process(element);
-      expect(MapWrapper.get(results[0].propertySetters, 'someProp')).toBeTruthy();
     });
   });
 }

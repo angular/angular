@@ -2,7 +2,6 @@ import {Component, View, onAllChangesDone, Parent} from 'angular2/angular2';
 import {onDestroy, onChange} from 'angular2/src/core/annotations/annotations';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isString, NumberWrapper, stringify} from 'angular2/src/facade/lang';
-import {PropertySetter} from 'angular2/src/core/annotations/di';
 
 // TODO(jelbourn): Set appropriate aria attributes for grid list elements.
 
@@ -172,6 +171,15 @@ export class MdGridList {
     'rowspan': 'rowspan',
     'colspan': 'colspan'
   },
+  hostProperties: {
+    'styleHeight': 'style.height',
+    'styleWidth': 'style.width',
+    'styleTop': 'style.top',
+    'styleLeft': 'style.left',
+    'styleMarginTop': 'style.marginTop',
+    'stylePaddingTop': 'style.paddingTop',
+    'role': 'role'
+  },
   lifecycle: [onDestroy, onChange]
 })
 @View({
@@ -181,40 +189,28 @@ export class MdGridTile {
   gridList: MdGridList;
   rowspan: number;
   colspan: number;
-  heightSetter;
-  widthSetter;
-  topSetter;
-  leftSetter;
-  marginTopSetter;
-  paddingTopSetter;
+
+  styleHeight:any;
+  styleWidth:any;
+  styleTop:any;
+  styleLeft:any;
+  styleMarginTop:any;
+  stylePaddingTop:any;
+  role:any;
 
   isRegisteredWithGridList: boolean;
 
-  constructor(
-      @Parent() gridList: MdGridList,
-      @PropertySetter('style.height') heightSetter: Function,
-      @PropertySetter('style.width') widthSetter: Function,
-      @PropertySetter('style.top') topSetter: Function,
-      @PropertySetter('style.left') leftSetter: Function,
-      @PropertySetter('style.marginTop') marginTopSetter: Function,
-      @PropertySetter('style.paddingTop') paddingTopSetter: Function,
-      @PropertySetter('role') roleSetter: Function
-      ) {
+  constructor(@Parent() gridList: MdGridList) {
     this.gridList = gridList;
-    this.heightSetter = heightSetter;
-    this.widthSetter = widthSetter;
-    this.topSetter = topSetter;
-    this.leftSetter = leftSetter;
-    this.marginTopSetter = marginTopSetter;
-    this.paddingTopSetter = paddingTopSetter;
-    roleSetter('listitem');
+
+    this.role = 'listitem';
 
     // Tiles default to 1x1, but rowspan and colspan can be changed via binding.
     this.rowspan = 1;
     this.colspan = 1;
 
     // DEBUG
-    heightSetter(`${gridList.tiles.length * 100}px`);
+    this.styleHeight = `${gridList.tiles.length * 100}px`;
   }
 
   /**

@@ -72,12 +72,14 @@ export class DirectiveBinder {
   // that replaced the values that should be extracted from the element
   // with a local name
   eventBindings: List<EventBinding>;
+  hostPropertyBindings: Map<string, ASTWithSource>;
   constructor({
-    directiveIndex, propertyBindings, eventBindings
+    directiveIndex, propertyBindings, eventBindings, hostPropertyBindings
   }) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = propertyBindings;
     this.eventBindings = eventBindings;
+    this.hostPropertyBindings = hostPropertyBindings;
   }
 }
 
@@ -114,17 +116,17 @@ export class DirectiveMetadata {
   selector:string;
   compileChildren:boolean;
   hostListeners:Map<string, string>;
+  hostProperties:Map<string, string>;
   properties:Map<string, string>;
-  setters:List<string>;
   readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, hostListeners, properties, setters, readAttributes, type}) {
+  constructor({id, selector, compileChildren, hostListeners, hostProperties, properties, readAttributes, type}) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.hostListeners = hostListeners;
+    this.hostProperties = hostProperties;
     this.properties = properties;
-    this.setters = setters;
     this.readAttributes = readAttributes;
     this.type = type;
   }
@@ -136,7 +138,7 @@ export class ProtoViewRef {}
 // An opaque reference to a RenderView
 export class ViewRef {}
 
-export class ViewContainerRef {
+export class RenderViewContainerRef {
   view:ViewRef;
   elementIndex:number;
   constructor(view:ViewRef, elementIndex: number) {
@@ -191,27 +193,27 @@ export class Renderer {
 
   /**
    * Creates a view and inserts it into a ViewContainer.
-   * @param {ViewContainerRef} viewContainerRef
+   * @param {RenderViewContainerRef} viewContainerRef
    * @param {ProtoViewRef} protoViewRef A ProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE or ProtoViewDto.EMBEDDED_VIEW_TYPE
    * @param {number} atIndex
    * @return {List<ViewRef>} the view and all of its nested child component views
    */
-  createViewInContainer(vcRef:ViewContainerRef, atIndex:number, protoViewRef:ProtoViewRef):List<ViewRef> { return null; }
+  createViewInContainer(vcRef:RenderViewContainerRef, atIndex:number, protoViewRef:ProtoViewRef):List<ViewRef> { return null; }
 
   /**
    * Destroys the view in the given ViewContainer
    */
-  destroyViewInContainer(vcRef:ViewContainerRef, atIndex:number):void {}
+  destroyViewInContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
 
   /**
    * Inserts a detached view into a viewContainer.
    */
-  insertViewIntoContainer(vcRef:ViewContainerRef, atIndex:number, view:ViewRef):void {}
+  insertViewIntoContainer(vcRef:RenderViewContainerRef, atIndex:number, view:ViewRef):void {}
 
   /**
    * Detaches a view from a container so that it can be inserted later on
    */
-  detachViewFromContainer(vcRef:ViewContainerRef, atIndex:number):void {}
+  detachViewFromContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
 
   /**
    * Creates a view and
@@ -248,7 +250,7 @@ export class Renderer {
 
   /**
    * Sets a property on an element.
-   * Note: This will fail if the property was not mentioned previously as a propertySetter
+   * Note: This will fail if the property was not mentioned previously as a host property
    * in the View.
    */
   setElementProperty(view:ViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {}

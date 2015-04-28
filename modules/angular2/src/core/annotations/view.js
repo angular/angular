@@ -36,14 +36,14 @@ export class View {
   /**
    * Specifies a template URL for an angular component.
    *
-   * NOTE: either `templateURL` or `template` should be used, but not both.
+   * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   templateUrl:string;
 
   /**
    * Specifies an inline template for an angular component.
    *
-   * NOTE: either `templateURL` or `template` should be used, but not both.
+   * NOTE: either `templateUrl` or `template` should be used, but not both.
    */
   template:string;
 

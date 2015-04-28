@@ -31,7 +31,7 @@ import {Attribute} from 'angular2/src/core/annotations/di';
 
 import {If} from 'angular2/src/directives/if';
 
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_injector';
 
@@ -190,7 +190,6 @@ export function main() {
             }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
-
             ctx.ctxProp = 'a';
             view.detectChanges();
 
@@ -271,6 +270,31 @@ export function main() {
           expect(view.rootNodes[0].id).toEqual('other_id');
           expect(view.rootNodes).toHaveText('Matched on id with other_id');
 
+          async.done();
+        });
+      }));
+
+      it('should allow specifying directives as bindings', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<child-cmp></child-cmp>',
+          directives: [bind(ChildComp).toClass(ChildComp)]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          view.detectChanges();
+
+          expect(view.rootNodes).toHaveText('hello');
+          async.done();
+        });
+      }));
+
+      it('should read directives metadata from their binding token', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div public-api><div needs-public-api></div></div>',
+          directives: [bind(PublicApi).toClass(PrivateImpl), NeedsPublicApi]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
           async.done();
         });
       }));
@@ -513,7 +537,7 @@ export function main() {
         tb.createView(MyComp, {context: ctx}).then((view) => {
           view.detectChanges();
 
-          var subview = view.rawView.viewContainers[1].get(0);
+          var subview = view.rawView.viewContainers[1].views[0];
           var childComponent = subview.locals.get('child');
           expect(childComponent.myAncestor).toBeAnInstanceOf(SomeDirective);
 
@@ -591,6 +615,26 @@ export function main() {
         });
       }));
 
+      it('should support updating host element via hostProperties', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div update-host-properties></div>',
+          directives: [DecoratorUpdatingHostProperties]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var injector = view.rawView.elementInjectors[0];
+          var updateHost = injector.get(DecoratorUpdatingHostProperties);
+
+          updateHost.id = "newId";
+
+          view.detectChanges();
+
+          expect(view.rootNodes[0].id).toEqual("newId");
+
+          async.done();
+        });
+      }));
+
       if (DOM.supportsDOMEvents()) {
         it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
@@ -621,7 +665,7 @@ export function main() {
           ctx.ctxBoolProp = true;
           view.detectChanges();
 
-          var subview = view.rawView.viewContainers[0].get(0);
+          var subview = view.rawView.viewContainers[0].views[0];
           var injector = subview.elementInjectors[0];
           var listener = injector.get(DecoratorListeningDomEvent);
           var listenerother = injector.get(DecoratorListeningDomEventOther);
@@ -646,7 +690,7 @@ export function main() {
 
       describe('dynamic ViewContainers', () => {
 
-        it('should allow to create a ViewContainer at any bound location',
+        it('should allow to create a ViewContainerRef at any bound location',
             inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
           tb.overrideView(MyComp, new View({
             template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
@@ -818,7 +862,7 @@ class SimpleImperativeViewComponent {
 })
 class DynamicViewport {
   done;
-  constructor(vc:ViewContainer, inj:Injector, compiler:Compiler) {
+  constructor(vc:ViewContainerRef, inj:Injector, compiler:Compiler) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
@@ -996,7 +1040,7 @@ class ChildComp2 {
   selector: '[some-viewport]'
 })
 class SomeViewport {
-  constructor(container: ViewContainer) {
+  constructor(container: ViewContainerRef) {
     container.create().setLocal('some-tmpl', 'hello');
     container.create().setLocal('some-tmpl', 'again');
   }
@@ -1044,6 +1088,20 @@ class DecoratorEmitingEvent {
 
   fireEvent(msg: string) {
     ObservableWrapper.callNext(this.event, msg);
+  }
+}
+
+@Decorator({
+  selector: '[update-host-properties]',
+  hostProperties: {
+    'id' : 'id'
+  }
+})
+class DecoratorUpdatingHostProperties {
+  id:string;
+
+  constructor() {
+    this.id = "one";
   }
 }
 
@@ -1156,5 +1214,26 @@ class NeedsAttribute {
     this.typeAttribute = typeAttribute;
     this.titleAttribute = titleAttribute;
     this.fooAttribute = fooAttribute;
+  }
+}
+
+@Decorator({
+  selector: '[public-api]'
+})
+class PublicApi {
+}
+
+@Decorator({
+  selector: '[private-impl]'
+})
+class PrivateImpl extends PublicApi {
+}
+
+@Decorator({
+  selector: '[needs-public-api]'
+})
+class NeedsPublicApi {
+  constructor(@Parent() api:PublicApi) {
+    expect(api instanceof PrivateImpl).toBe(true);
   }
 }

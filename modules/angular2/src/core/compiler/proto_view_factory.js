@@ -3,7 +3,7 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
-import {ChangeDetection} from 'angular2/change_detection';
+import {ChangeDetection, DirectiveIndex} from 'angular2/change_detection';
 import {Component, Viewport, DynamicComponent} from '../annotations/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
@@ -18,7 +18,8 @@ export class ProtoViewFactory {
     this._changeDetection = changeDetection;
   }
 
-  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto, directives:List<DirectiveBinding>):AppProtoView {
+  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
+                  directives:List<DirectiveBinding>):AppProtoView {
     var protoChangeDetector;
     if (isBlank(componentBinding)) {
       protoChangeDetector = this._changeDetection.createProtoChangeDetector('root', null);
@@ -43,7 +44,7 @@ export class ProtoViewFactory {
       this._createElementBinder(
         protoView, renderElementBinder, protoElementInjector, sortedDirectives
       );
-      this._createDirectiveBinders(protoView, sortedDirectives);
+      this._createDirectiveBinders(protoView, i, sortedDirectives);
     }
     MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
       protoView.bindVariable(varName, mappedName);
@@ -128,27 +129,34 @@ export class ProtoViewFactory {
     return elBinder;
   }
 
-  _createDirectiveBinders(protoView, sortedDirectives) {
-    for (var i=0; i<sortedDirectives.renderDirectives.length; i++) {
-      var renderDirectiveMetadata = sortedDirectives.renderDirectives[i];
+  _createDirectiveBinders(protoView, boundElementIndex, sortedDirectives) {
+    for (var i = 0; i < sortedDirectives.renderDirectives.length; i++) {
+      var directiveBinder = sortedDirectives.renderDirectives[i];
+
       // directive properties
-      MapWrapper.forEach(renderDirectiveMetadata.propertyBindings, (astWithSource, propertyName) => {
+      MapWrapper.forEach(directiveBinder.propertyBindings, (astWithSource, propertyName) => {
         // TODO: these setters should eventually be created by change detection, to make
         // it monomorphic!
         var setter = reflector.setter(propertyName);
         protoView.bindDirectiveProperty(i, astWithSource, propertyName, setter);
       });
+
+      // host properties
+      MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
+        var directiveIndex = new DirectiveIndex(boundElementIndex, i);
+        protoView.bindHostElementProperty(astWithSource, propertyName, directiveIndex);
+      });
+
       // directive events
-      protoView.bindEvent(renderDirectiveMetadata.eventBindings, i);
+      protoView.bindEvent(directiveBinder.eventBindings, i);
     }
   }
-
 }
 
 class SortedDirectives {
   componentDirective: DirectiveBinding;
   viewportDirective: DirectiveBinding;
-  renderDirectives: List<renderApi.DirectiveMetadata>;
+  renderDirectives: List<renderApi.DirectiveBinder>;
   directives: List<DirectiveBinding>;
 
   constructor(renderDirectives, allDirectives) {
@@ -156,18 +164,18 @@ class SortedDirectives {
     this.directives = [];
     this.viewportDirective = null;
     this.componentDirective = null;
-    ListWrapper.forEach(renderDirectives, (renderDirectiveMetadata) => {
-      var directiveBinding = allDirectives[renderDirectiveMetadata.directiveIndex];
+    ListWrapper.forEach(renderDirectives, (renderDirectiveBinder) => {
+      var directiveBinding = allDirectives[renderDirectiveBinder.directiveIndex];
       if ((directiveBinding.annotation instanceof Component) || (directiveBinding.annotation instanceof DynamicComponent)) {
         // component directives need to be the first binding in ElementInjectors!
         this.componentDirective = directiveBinding;
-        ListWrapper.insert(this.renderDirectives, 0, renderDirectiveMetadata);
+        ListWrapper.insert(this.renderDirectives, 0, renderDirectiveBinder);
         ListWrapper.insert(this.directives, 0, directiveBinding);
       } else {
         if (directiveBinding.annotation instanceof Viewport) {
           this.viewportDirective = directiveBinding;
         }
-        ListWrapper.push(this.renderDirectives, renderDirectiveMetadata);
+        ListWrapper.push(this.renderDirectives, renderDirectiveBinder);
         ListWrapper.push(this.directives, directiveBinding);
       }
     });

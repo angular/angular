@@ -35,8 +35,9 @@ import {Injector} from 'angular2/di';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper} from 'angular2/src/facade/lang';
 
-import {ViewFactory, VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_factory';
-import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
@@ -86,9 +87,10 @@ function _getAppBindings() {
     rvh.RenderViewHydrator,
     bind(rvf.VIEW_POOL_CAPACITY).toValue(500),
     ProtoViewFactory,
-    ViewFactory,
-    AppViewHydrator,
-    bind(VIEW_POOL_CAPACITY).toValue(500),
+    AppViewPool,
+    AppViewManager,
+    AppViewManagerUtils,
+    bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
     bind(TemplateResolver).toClass(MockTemplateResolver),

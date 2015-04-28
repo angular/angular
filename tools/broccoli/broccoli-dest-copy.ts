@@ -1,33 +1,63 @@
-/// <reference path="./broccoli-filter.d.ts" />
+/// <reference path="./broccoli.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
 
-import Filter = require('broccoli-filter');
+import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
+import TreeDiffer = require('./tree-differ');
 
 /**
  * Intercepts each file as it is copied to the destination tempdir,
  * and tees a copy to the given path outside the tmp dir.
  */
-class DestCopy extends Filter {
-  constructor(private inputTree, private outputRoot: string) { super(inputTree); }
+export = function destCopy(inputTree, outputRoot) { return new DestCopy(inputTree, outputRoot); }
 
-  getDestFilePath(relativePath: string): string { return relativePath; }
 
-  processString(content: string, relativePath: string): string { return content; }
+class DestCopy implements BroccoliTree {
+  treeDirtyChecker: TreeDiffer;
+  initialized = false;
 
-  processFile(srcDir, destDir, relativePath): Promise<any> {
-    return super.processFile(srcDir, destDir, relativePath)
-        .then(x => {
-          var destFile = path.join(this.outputRoot, this.getDestFilePath(relativePath));
-          var dir = path.dirname(destFile);
-          fse.mkdirsSync(dir);
-          fse.copySync(path.join(srcDir, relativePath), destFile);
-        });
+  // props monkey-patched by broccoli builder:
+  inputPath = null;
+  cachePath = null;
+  outputPath = null;
+
+
+  constructor(public inputTree: BroccoliTree, public outputRoot: string) {}
+
+
+  rebuild() {
+    let firstRun = !this.initialized;
+    this.init();
+
+    let diffResult = this.treeDirtyChecker.diffTree();
+    diffResult.log(!firstRun);
+
+    diffResult.changedPaths.forEach((changedFilePath) => {
+      var destFilePath = path.join(this.outputRoot, changedFilePath);
+
+      var destDirPath = path.dirname(destFilePath);
+      fse.mkdirsSync(destDirPath);
+      fse.copySync(path.join(this.inputPath, changedFilePath), destFilePath);
+    });
+
+    diffResult.removedPaths.forEach((removedFilePath) => {
+      var destFilePath = path.join(this.outputRoot, removedFilePath);
+
+      // TODO: what about obsolete directories? we are not cleaning those up yet
+      fs.unlinkSync(destFilePath);
+    });
   }
-}
 
-export = function destCopy(inputTree, outputRoot) {
-  return new DestCopy(inputTree, outputRoot);
+
+  private init() {
+    if (!this.initialized) {
+      this.initialized = true;
+      this.treeDirtyChecker = new TreeDiffer(this.inputPath);
+    }
+  }
+
+
+  cleanup() {}
 }

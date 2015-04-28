@@ -2,28 +2,6 @@ import {CONST} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/di';
 
 /**
- * Specifies that a function for setting host properties should be injected.
- *
- * NOTE: This is changing pre 1.0.
- *
- * The directive can inject a property setter that would allow setting this property on the host element.
- *
- * @exportedAs angular2/annotations
- */
-export class PropertySetter extends DependencyAnnotation {
-  propName: string;
-  @CONST()
-  constructor(propName) {
-    super();
-    this.propName = propName;
-  }
-
-  get token() {
-    return Function;
-  }
-}
-
-/**
  * Specifies that a constant attribute value should be injected.
  *
  * The directive can inject constant string literals of host element attributes.

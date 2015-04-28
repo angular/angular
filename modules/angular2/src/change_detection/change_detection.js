@@ -46,6 +46,10 @@ export var defaultPipes = {
 
 
 /**
+ * Implements change detection that does not require `eval()`.
+ *
+ * This is slower than {@link JitChangeDetection}.
+ *
  * @exportedAs angular2/change_detection
  */
 @Injectable()
@@ -63,6 +67,10 @@ export class DynamicChangeDetection extends ChangeDetection {
 }
 
 /**
+ * Implements faster change detection, by generating source code.
+ *
+ * This requires `eval()`. For change detection that does not require `eval()`, see {@link DynamicChangeDetection}.
+ *
  * @exportedAs angular2/change_detection
  */
 @Injectable()

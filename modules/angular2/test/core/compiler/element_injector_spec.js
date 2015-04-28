@@ -4,11 +4,11 @@ import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from '
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode, ElementRef}
   from 'angular2/src/core/compiler/element_injector';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import {onDestroy} from 'angular2/src/core/annotations/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive} from 'angular2/src/core/annotations/annotations';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
@@ -21,7 +21,16 @@ class DummyDirective extends Directive {
 
 @proxy
 @IMPLEMENTS(AppView)
-class DummyView extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+class DummyView extends SpyObject {
+  componentChildViews;
+  changeDetector;
+  constructor() {
+    super();
+    this.componentChildViews = [];
+    this.changeDetector = null;
+  }
+  noSuchMethod(m){return super.noSuchMethod(m);}
+}
 
 
 class SimpleDirective {
@@ -87,51 +96,6 @@ class HasEventEmitter {
   }
 }
 
-class NeedsPropertySetter {
-  propSetter;
-  roleSetter;
-  classSetter;
-  classWithDashSetter;
-  styleSetter;
-  unitSetter;
-  constructor(@PropertySetter('title') propSetter: Function, @PropertySetter('attr.role') roleSetter: Function,
-    @PropertySetter('class.active') classSetter: Function, @PropertySetter('class.foo-bar') classWithDashSetter: Function,
-    @PropertySetter('style.width') styleSetter: Function, @PropertySetter('style.height.px') unitSetter: Function) {
-    this.propSetter = propSetter;
-    this.roleSetter = roleSetter;
-    this.classSetter = classSetter;
-    this.classWithDashSetter = classWithDashSetter;
-    this.styleSetter = styleSetter;
-    this.unitSetter = unitSetter;
-  }
-  setProp(value) {
-    this.propSetter(value);
-  }
-  setRole(value) {
-    this.roleSetter(value);
-  }
-  setClass(value) {
-    this.classSetter(value);
-  }
-  setStyle(value) {
-    this.styleSetter(value);
-  }
-  setStyleWithUnit(value) {
-    this.unitSetter(value);
-  }
-}
-
-class NeedsPropertySetterNoType {
-  propSetter;
-  constructor(@PropertySetter('title') propSetter) {
-    this.propSetter = propSetter;
-  }
-
-  setProp(value) {
-    this.propSetter(value);
-  }
-}
-
 class NeedsAttribute {
   typeAttribute;
   titleAttribute;
@@ -161,6 +125,20 @@ class NeedsElementRef {
   elementRef;
   constructor(ref:ElementRef) {
     this.elementRef = ref;
+  }
+}
+
+class NeedsViewContainer {
+  viewContainer;
+  constructor(vc:ViewContainerRef) {
+    this.viewContainer = vc;
+  }
+}
+
+class NeedsChangeDetectorRef {
+  changeDetectorRef;
+  constructor(cdr:ChangeDetectorRef) {
+    this.changeDetectorRef = cdr;
   }
 }
 
@@ -203,7 +181,7 @@ class TestNode extends TreeNode {
 }
 
 export function main() {
-  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
+  var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
 
   function humanize(tree, names:List) {
@@ -476,7 +454,7 @@ export function main() {
 
       it("should instantiate directives that depend on pre built objects", function () {
         var view = new DummyView();
-        var inj = injector([NeedsView], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([NeedsView], null, null, new PreBuiltObjects(null, view, null, null));
 
         expect(inj.get(NeedsView).view).toBe(view);
       });
@@ -602,34 +580,23 @@ export function main() {
     describe("pre built objects", function () {
       it("should return view", function () {
         var view = new DummyView();
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, view, null, null));
 
         expect(inj.get(AppView)).toEqual(view);
       });
 
       it("should return element", function () {
         var element = new NgElement(null, null);
-        var inj = injector([], null, null, new PreBuiltObjects(null, element, null));
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, element, null));
 
         expect(inj.get(NgElement)).toEqual(element);
       });
 
-      it('should return viewContainer', function () {
-        var viewContainer = new ViewContainer(null, null, null);
-        var view = new DummyView();
-        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
-          return viewContainer;
-        });
-        var inj = injector([], null, null, new PreBuiltObjects(view, null, null));
+      it("should return default ProtoView", function () {
+        var protoView = new AppProtoView(null, null);
+        var inj = injector([], null, null, new PreBuiltObjects(null, null, null, protoView));
 
-        expect(inj.get(ViewContainer)).toEqual(viewContainer);
-      });
-
-      it('should return changeDetectorRef', function () {
-        var cd = new DynamicChangeDetector(null, null, null, [], []);
-        var inj = injector([], null, null, new PreBuiltObjects(null, null, cd));
-
-        expect(inj.get(ChangeDetectorRef)).toBe(cd.ref);
+        expect(inj.get(AppProtoView)).toEqual(protoView);
       });
     });
 
@@ -708,45 +675,6 @@ export function main() {
       });
     });
 
-    describe('property setter', () => {
-      var renderer, view;
-
-      beforeEach( () => {
-        renderer = new FakeRenderer();
-        var protoView = new AppProtoView(null, null);
-        view = new AppView(renderer, null, protoView, MapWrapper.create());
-        view.render = new ViewRef();
-      });
-
-      it('should be injectable and callable', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null);
-        var inj = injector([NeedsPropertySetter], null, null, preBuildObject);
-        var component = inj.get(NeedsPropertySetter);
-        component.setProp('foobar');
-        component.setRole('button');
-        component.setClass(true);
-        component.classWithDashSetter(true);
-        component.setStyle('40px');
-        component.setStyleWithUnit(50);
-
-        expect(renderer.log[0]).toEqual([view.render, 0, 'title', 'foobar']);
-        expect(renderer.log[1]).toEqual([view.render, 0, 'attr.role', 'button']);
-        expect(renderer.log[2]).toEqual([view.render, 0, 'class.active', true]);
-        expect(renderer.log[3]).toEqual([view.render, 0, 'class.foo-bar', true]);
-        expect(renderer.log[4]).toEqual([view.render, 0, 'style.width', '40px']);
-        expect(renderer.log[5]).toEqual([view.render, 0, 'style.height.px', 50]);
-      });
-
-      it('should be injectable and callable without specifying param type annotation', () => {
-        var preBuildObject = new PreBuiltObjects(view, null, null);
-        var inj = injector([NeedsPropertySetterNoType], null, null, preBuildObject);
-        var component = inj.get(NeedsPropertySetterNoType);
-        component.setProp('foobar');
-
-        expect(renderer.log[0]).toEqual([view.render, 0, 'title', 'foobar']);
-      });
-    });
-
     describe('static attributes', () => {
       it('should be injectable', () => {
         var attributes = MapWrapper.create();
@@ -778,14 +706,20 @@ export function main() {
         expect(inj.get(NeedsElementRef).elementRef).toBeAnInstanceOf(ElementRef);
       });
 
-      it('should return the viewContainer from the view', () => {
-        var viewContainer = new ViewContainer(null, null, null);
+      it('should inject ChangeDetectorRef', function () {
+        var cd = new DynamicChangeDetector(null, null, null, [], []);
         var view = new DummyView();
-        view.spy('getOrCreateViewContainer').andCallFake( (index) => {
-          return viewContainer;
-        });
-        var inj = injector([NeedsElementRef], null, null, new PreBuiltObjects(view, null, null));
-        expect(inj.get(NeedsElementRef).elementRef.viewContainer).toBe(viewContainer);
+        var childView = new DummyView();
+        childView.changeDetector = cd;
+        view.componentChildViews = [childView];
+        var inj = injector([NeedsChangeDetectorRef], null, null, new PreBuiltObjects(null, view, null, null));
+
+        expect(inj.get(NeedsChangeDetectorRef).changeDetectorRef).toBe(cd.ref);
+      });
+
+      it('should inject ViewContainerRef', () => {
+        var inj = injector([NeedsViewContainer]);
+        expect(inj.get(NeedsViewContainer).viewContainer).toBeAnInstanceOf(ViewContainerRef);
       });
     });
 

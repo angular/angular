@@ -50,6 +50,7 @@ module.exports = function(config) {
       '/packages/core': 'http://localhost:9877/base/modules/core',
       '/packages/change_detection': 'http://localhost:9877/base/modules/change_detection',
       '/packages/reflection': 'http://localhost:9877/base/modules/reflection',
+      '/packages/router': 'http://localhost:9877/base/modules/router',
       '/packages/di': 'http://localhost:9877/base/modules/di',
       '/packages/directives': 'http://localhost:9877/base/modules/directives',
       '/packages/facade': 'http://localhost:9877/base/modules/facade',

@@ -1,5 +1,6 @@
 'use strict';
 
+var destCopy = require('../broccoli-dest-copy');
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var path = require('path');
@@ -7,22 +8,27 @@ var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var TraceurCompiler = require('../traceur');
+var traceurCompiler = require('../traceur');
 var TypescriptCompiler = require('../typescript');
 
-var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
+var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
 
-module.exports = function makeNodeTree() {
+module.exports = function makeNodeTree(destinationPath) {
   // list of npm packages that this build will create
   var outputPackages = ['angular2', 'benchpress', 'rtts_assert'];
 
   var modulesTree = new Funnel('modules', {
     include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
-    exclude: ['angular2/src/core/zone/vm_turn_zone.es6']
+    exclude: [
+      // the following code and tests are not compatible with CJS/node environment
+      'angular2/src/core/zone/vm_turn_zone.es6',
+      'angular2/test/core/zone/**',
+      'angular2/test/forms/integration_spec.js'
+    ]
   });
 
-  var nodeTree = new TraceurCompiler(modulesTree, '.js', '.map', {
+  var nodeTree = traceurCompiler(modulesTree, '.js', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
@@ -105,5 +111,10 @@ module.exports = function makeNodeTree() {
   nodeTree = mergeTrees([nodeTree, typescriptTree], { overwrite: true });
   nodeTree = mergeTrees([nodeTree, docs, packageJsons]);
 
-  return stew.mv(nodeTree, 'js/cjs');
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  nodeTree = stew.mv(nodeTree, '');
+
+  return destCopy(nodeTree, destinationPath);
 };

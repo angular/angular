@@ -28,7 +28,7 @@ export class ProtoChangeDetector  {
  *
  * # Example
  * ```javascript
- * bootstrap(MyApp, [bind(ChangeDetection).toValue(dynamicChangeDetection)]);
+ * bootstrap(MyApp, [bind(ChangeDetection).toClass(DynamicChangeDetection)]);
  * ```
  * @exportedAs angular2/change_detection
  */

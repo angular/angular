@@ -1,5 +1,6 @@
-import {View, Component, Decorator, Ancestor, onChange, PropertySetter} from 'angular2/angular2';
+import {View, Component, Decorator, Ancestor, onChange, ElementRef} from 'angular2/angular2';
 import {Optional} from 'angular2/di';
+import {Renderer} from 'angular2/src/render/api';
 import {isBlank, isPresent, isString, CONST} from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup, Control} from './model';
@@ -27,19 +28,21 @@ import {Validators} from './validators';
   hostListeners: {
     'change' : 'onChange($event.target.value)',
     'input' : 'onChange($event.target.value)'
+  },
+  hostProperties: {
+    'value' : 'value'
   }
 })
 export class DefaultValueAccessor {
-  _setValueProperty:Function;
+  value;
   onChange:Function;
 
-  constructor(@PropertySetter('value') setValueProperty:Function) {
-    this._setValueProperty = setValueProperty;
+  constructor() {
     this.onChange = (_) => {};
   }
 
   writeValue(value) {
-    this._setValueProperty(value);
+    this.value = value
   }
 }
 
@@ -58,20 +61,28 @@ export class DefaultValueAccessor {
   selector: 'input[type=checkbox][control]',
   hostListeners: {
     'change' : 'onChange($event.target.checked)'
+  },
+  hostProperties: {
+    'checked' : 'checked'
   }
 })
 export class CheckboxControlValueAccessor {
-  _setCheckedProperty:Function;
+  _elementRef:ElementRef;
+  _renderer:Renderer;
+
+  checked:boolean;
   onChange:Function;
 
-  constructor(cd:ControlDirective, @PropertySetter('checked') setCheckedProperty:Function) {
-    this._setCheckedProperty = setCheckedProperty;
+  constructor(cd:ControlDirective, elementRef:ElementRef, renderer:Renderer) {
     this.onChange = (_) => {};
+    this._elementRef = elementRef;
+    this._renderer = renderer;
     cd.valueAccessor = this; //ControlDirective should inject CheckboxControlDirective
   }
 
   writeValue(value) {
-    this._setCheckedProperty(value);
+    this._renderer.setElementProperty(this._elementRef.hostView.render, this._elementRef.boundElementIndex,
+      'checked', value)
   }
 }
 

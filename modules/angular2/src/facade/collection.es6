@@ -184,7 +184,7 @@ export class ListWrapper {
     return list.length == 0;
   }
   static fill(list:List, value, start:int = 0, end:int = null) {
-    list.fill(value, start, end === null ? undefined: end);
+    list.fill(value, start, end === null ? undefined : end);
   }
   static equals(a:List, b:List):boolean {
     if(a.length != b.length) return false;
@@ -193,8 +193,8 @@ export class ListWrapper {
     }
     return true;
   }
-  static slice(l:List, from:int, to:int):List {
-    return l.slice(from, to);
+  static slice(l:List, from:int = 0, to:int = null):List {
+    return l.slice(from, to === null ? undefined : to);
   }
   static splice(l:List, from:int, length:int):List {
     return l.splice(from, length);

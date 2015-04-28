@@ -23,6 +23,7 @@ export function main() {
         someDecorator,
         someDecoratorIgnoringChildren,
         someDecoratorWithProps,
+        someDecoratorWithHostProperties,
         someDecoratorWithEvents,
         someDecoratorWithGlobalEvents
       ];
@@ -112,12 +113,14 @@ export function main() {
       expect(simpleProp.source).toEqual('someValue');
     });
 
-    it('should store working property setters', () => {
-      var element = el('<input some-decor-props>');
+    it('should bind host directive properties', () => {
+      var element = el('<input some-decor-with-host-props>');
       var results = process(element);
-      var setter = MapWrapper.get(results[0].propertySetters, 'value');
-      setter(element, 'abc');
-      expect(element.value).toEqual('abc');
+
+      var directiveBinding = results[0].directives[0];
+
+      var ast = MapWrapper.get(directiveBinding.hostPropertyBindings, 'hostProperty');
+      expect(ast.source).toEqual('dirProp');
     });
 
     it('should read attribute values', () => {
@@ -256,8 +259,14 @@ var someDecoratorWithProps = new DirectiveMetadata({
     'dirProp': 'elProp',
     'doubleProp': 'elProp | double'
   }),
-  setters: ['value'],
   readAttributes: ['some-attr']
+});
+
+var someDecoratorWithHostProperties = new DirectiveMetadata({
+  selector: '[some-decor-with-host-props]',
+  hostProperties: MapWrapper.createFromStringMap({
+    'dirProp': 'hostProperty'
+  })
 });
 
 var someDecoratorWithEvents = new DirectiveMetadata({

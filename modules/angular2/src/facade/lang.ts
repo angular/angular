@@ -7,6 +7,8 @@ export {_global as global};
 export var __esModule = true;
 
 export var Type = Function;
+export type Type = typeof Function;
+
 export var Math = _global.Math;
 export var Date = _global.Date;
 
@@ -44,6 +46,10 @@ export function isString(obj): boolean {
 
 export function isFunction(obj): boolean {
   return typeof obj === "function";
+}
+
+export function isType(obj): boolean {
+  return isFunction(obj);
 }
 
 export function stringify(token): string {

@@ -8,7 +8,7 @@ import 'index.ng_deps.dart' as ngStaticInit0;
 import 'bar.dart';
 import 'bar.ng_deps.dart' as i1;
 
-bool _visited = false;
+var _visited = false;
 void initReflector(reflector) {
   if (_visited) return;
   _visited = true;

@@ -28,6 +28,7 @@ import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {BindingRecord} from './binding_record';
+import {DirectiveIndex} from './directive_record';
 
 import {coalesce} from './coalesce';
 
@@ -153,7 +154,7 @@ class _ConvertAstIntoProtoRecords {
   }
 
   visitImplicitReceiver(ast:ImplicitReceiver) {
-    return 0;
+    return this.bindingRecord.implicitReceiver;
   }
 
   visitInterpolation(ast:Interpolation) {
@@ -247,9 +248,15 @@ class _ConvertAstIntoProtoRecords {
 
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
     var selfIndex = ++ this.contextIndex;
-    ListWrapper.push(this.protoRecords,
-      new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, selfIndex,
-        this.bindingRecord, this.expressionAsString, false, false));
+    if (context instanceof DirectiveIndex) {
+      ListWrapper.push(this.protoRecords,
+        new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1, context, selfIndex,
+          this.bindingRecord, this.expressionAsString, false, false));
+    } else {
+      ListWrapper.push(this.protoRecords,
+        new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, null, selfIndex,
+          this.bindingRecord, this.expressionAsString, false, false));
+    }
     return selfIndex;
   }
 }

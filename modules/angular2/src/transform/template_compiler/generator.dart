@@ -62,7 +62,8 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
       '${code.substring(codeInjectIdx)}';
 }
 
-Iterable<String> _generateGetters(String typeName, List<String> getterNames) {
+Iterable<String> _generateGetters(
+    String typeName, Iterable<String> getterNames) {
   // TODO(kegluneq): Include `typeName` where possible.
   return getterNames.map((getterName) {
     if (!prop.isValid(getterName)) {
@@ -74,7 +75,8 @@ Iterable<String> _generateGetters(String typeName, List<String> getterNames) {
   });
 }
 
-Iterable<String> _generateSetters(String typeName, List<String> setterName) {
+Iterable<String> _generateSetters(
+    String typeName, Iterable<String> setterName) {
   return setterName.map((setterName) {
     if (!prop.isValid(setterName)) {
       // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
@@ -86,7 +88,8 @@ Iterable<String> _generateSetters(String typeName, List<String> setterName) {
   });
 }
 
-Iterable<String> _generateMethods(String typeName, List<String> methodNames) {
+Iterable<String> _generateMethods(
+    String typeName, Iterable<String> methodNames) {
   return methodNames.map((methodName) {
     if (!prop.isValid(methodName)) {
       // TODO(kegluenq): Eagerly throw here once #1295 is addressed.

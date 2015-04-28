@@ -10,6 +10,9 @@ class TestObj {
   someFunc():number {
     return -1;
   }
+  someComplexFunc(a) {
+    return a;
+  }
 }
 
 @proxy
@@ -78,6 +81,18 @@ export function main() {
 
         expect(spyObj.someFunc(1,2)).toEqual(3);
         expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1,2);
+      });
+
+      it("should match multiple function calls", () => {
+        spyObj.someFunc(1,2);
+        spyObj.someFunc(3,4);
+        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1,2);
+        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(3,4);
+      });
+
+      it("should match using deep equality", () => {
+        spyObj.someComplexFunc([1]);
+        expect(spyObj.spy("someComplexFunc")).toHaveBeenCalledWith([1]);
       });
 
       it("should support stubs", () => {

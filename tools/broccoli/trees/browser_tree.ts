@@ -1,5 +1,6 @@
 'use strict';
 
+var destCopy = require('../broccoli-dest-copy');
 var Funnel = require('broccoli-funnel');
 var flatten = require('broccoli-flatten');
 var htmlReplace = require('../html-replace');
@@ -8,18 +9,19 @@ var path = require('path');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var TraceurCompiler = require('../traceur');
-
-var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..'));
+var traceurCompiler = require('../traceur');
 
 
-module.exports = function makeBrowserTree(options) {
+var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
+
+
+module.exports = function makeBrowserTree(options, destinationPath) {
   var modulesTree = new Funnel(
       'modules',
       {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
 
   // Use Traceur to transpile original sources to ES6
-  var es6Tree = new TraceurCompiler(modulesTree, '.es6', '.map', {
+  var es6Tree = traceurCompiler(modulesTree, '.es6', '.map', {
     sourceMaps: true,
     annotations: true,      // parse annotations
     types: true,            // parse types
@@ -34,7 +36,7 @@ module.exports = function makeBrowserTree(options) {
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree =
-      new TraceurCompiler(es6Tree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
+      traceurCompiler(es6Tree, '.js', '.js.map', {modules: 'instantiate', sourceMaps: true});
 
   // Now we add a few more files to the es6 tree that Traceur should not see
   ['angular2', 'rtts_assert'].forEach(function(destDir) {
@@ -53,7 +55,7 @@ module.exports = function makeBrowserTree(options) {
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.all.js',
       'tools/build/snippets/runtime_paths.js',
-      path.relative(projectRootDir, TraceurCompiler.RUNTIME_PATH)
+      path.relative(projectRootDir, traceurCompiler.RUNTIME_PATH)
     ]
   }));
   var vendorScripts_benchmark =
@@ -113,8 +115,12 @@ module.exports = function makeBrowserTree(options) {
 
   es5Tree = mergeTrees([es5Tree, htmlTree]);
 
-  return mergeTrees([
-    stew.mv(es6Tree, 'js/' + options.name + '/es6'),
-    stew.mv(es5Tree, 'js/' + options.name + '/es5')
-  ]);
+  var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
+
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  mergedTree = stew.mv(mergedTree, '');
+
+  return destCopy(mergedTree, destinationPath);
 };

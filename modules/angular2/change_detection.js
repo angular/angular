@@ -18,7 +18,7 @@ export {ProtoChangeDetector, ChangeDispatcher, ChangeDetector, ChangeDetection} 
 export {CHECK_ONCE, CHECK_ALWAYS, DETACHED, CHECKED, ON_PUSH, DEFAULT} from './src/change_detection/constants';
 export {DynamicProtoChangeDetector, JitProtoChangeDetector} from './src/change_detection/proto_change_detector';
 export {BindingRecord} from './src/change_detection/binding_record';
-export {DirectiveRecord} from './src/change_detection/directive_record';
+export {DirectiveIndex, DirectiveRecord} from './src/change_detection/directive_record';
 export {DynamicChangeDetector} from './src/change_detection/dynamic_change_detector';
 export {ChangeDetectorRef} from './src/change_detection/change_detector_ref';
 export {PipeRegistry} from './src/change_detection/pipes/pipe_registry';

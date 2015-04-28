@@ -7,7 +7,7 @@ import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
 
-import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord,
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord, DirectiveIndex,
   PipeRegistry, Pipe, NO_CHANGE, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT} from 'angular2/change_detection';
 
 import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/change_detection/proto_change_detector';
@@ -22,8 +22,9 @@ export function main() {
 
         if (name == "JIT" && IS_DARTIUM) return;
 
+        var parser = new Parser(new Lexer());
+
         function ast(exp:string, location:string = 'location') {
-          var parser = new Parser(new Lexer());
           return parser.parseBinding(exp, location);
         }
 
@@ -204,7 +205,6 @@ export function main() {
           });
 
           it("should support interpolation", () => {
-            var parser = new Parser(new Lexer());
             var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
 
@@ -246,9 +246,9 @@ export function main() {
             });
 
             describe("updating directives", () => {
-              var dirRecord1 = new DirectiveRecord(0, 0, true, true, DEFAULT);
-              var dirRecord2 = new DirectiveRecord(0, 1, true, true, DEFAULT);
-              var dirRecordNoCallbacks = new DirectiveRecord(0, 0, false, false, DEFAULT);
+              var dirRecord1 = new DirectiveRecord(new DirectiveIndex(0, 0), true, true, DEFAULT);
+              var dirRecord2 = new DirectiveRecord(new DirectiveIndex(0, 1), true, true, DEFAULT);
+              var dirRecordNoCallbacks = new DirectiveRecord(new DirectiveIndex(0, 0), false, false, DEFAULT);
 
               function updateA(exp:string, dirRecord) {
                 return BindingRecord.createForDirective(ast(exp), "a", (o,v) => o.a = v, dirRecord);
@@ -378,6 +378,24 @@ export function main() {
                   parent.detectChanges();
                 });
               });
+            });
+          });
+
+          describe("reading directives", () => {
+            var index = new DirectiveIndex(0, 0);
+            var dirRecord = new DirectiveRecord(index, false, false, DEFAULT);
+
+            it("should read directive properties", () => {
+              var directive = new TestDirective();
+              directive.a = "aaa";
+
+              var pcd = createProtoChangeDetector();
+              var cd = instantiate(pcd, dispatcher, [BindingRecord.createForHostProperty(index, ast("a"), "prop")], [dirRecord]);
+              cd.hydrate(null, null, dirs([directive]));
+
+              cd.detectChanges();
+
+              expect(dispatcher.loggedValues).toEqual(['aaa']);
             });
           });
 
@@ -567,7 +585,7 @@ export function main() {
               checkedDetector.mode = CHECKED;
 
               // this directive is a component with ON_PUSH change detection
-              dirRecordWithOnPush = new DirectiveRecord(0, 0, false, false, ON_PUSH);
+              dirRecordWithOnPush = new DirectiveRecord(new DirectiveIndex(0, 0), false, false, ON_PUSH);
 
               // a record updating a component
               updateDirWithOnPushRecord =
@@ -898,12 +916,12 @@ class FakeDirectives {
     this.detectors = detectors;
   }
 
-  getDirectiveFor(directiveRecord:DirectiveRecord) {
-    return this.directives[directiveRecord.directiveIndex];
+  getDirectiveFor(di:DirectiveIndex) {
+    return this.directives[di.directiveIndex];
   }
 
-  getDetectorFor(directiveRecord:DirectiveRecord) {
-    return this.detectors[directiveRecord.directiveIndex];
+  getDetectorFor(di:DirectiveIndex) {
+    return this.detectors[di.directiveIndex];
   }
 }
 

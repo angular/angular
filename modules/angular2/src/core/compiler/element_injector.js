@@ -5,9 +5,10 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
   AbstractBindingError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {PropertySetter, Attribute, Query} from 'angular2/src/core/annotations/di';
+import {Attribute, Query} from 'angular2/src/core/annotations/di';
 import * as viewModule from 'angular2/src/core/compiler/view';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import * as avmModule from './view_manager';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {NgElement} from 'angular2/src/core/compiler/ng_element';
 import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
@@ -30,31 +31,33 @@ export class ElementRef {
   boundElementIndex:number;
   injector:Injector;
   elementInjector:ElementInjector;
+  viewContainer:ViewContainerRef;
 
-  constructor(elementInjector, hostView, boundElementIndex, injector){
+  constructor(elementInjector, hostView, boundElementIndex, injector, viewManager, defaultProtoView){
     this.elementInjector = elementInjector;
     this.hostView = hostView;
     this.boundElementIndex = boundElementIndex;
     this.injector = injector;
-  }
-
-  get viewContainer() {
-    return this.hostView.getOrCreateViewContainer(this.boundElementIndex);
+    this.viewContainer = new ViewContainerRef(viewManager, this, defaultProtoView);
   }
 }
 
 class StaticKeys {
+  viewManagerId:number;
   viewId:number;
   ngElementId:number;
+  defaultProtoViewId:number;
   viewContainerId:number;
   changeDetectorRefId:number;
   elementRefId:number;
 
   constructor() {
     //TODO: vsavkin Key.annotate(Key.get(AppView), 'static')
+    this.viewManagerId = Key.get(avmModule.AppViewManager).id;
+    this.defaultProtoViewId = Key.get(viewModule.AppProtoView).id;
     this.viewId = Key.get(viewModule.AppView).id;
     this.ngElementId = Key.get(NgElement).id;
-    this.viewContainerId = Key.get(ViewContainer).id;
+    this.viewContainerId = Key.get(ViewContainerRef).id;
     this.changeDetectorRefId = Key.get(ChangeDetectorRef).id;
     this.elementRefId = Key.get(ElementRef).id;
   }
@@ -195,15 +198,13 @@ export class TreeNode {
 
 export class DirectiveDependency extends Dependency {
   depth:int;
-  propSetterName:string;
   attributeName:string;
   queryDirective;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean, properties:List,
-              depth:int, propSetterName: string, attributeName:string, queryDirective) {
+              depth:int, attributeName:string, queryDirective) {
     super(key, asPromise, lazy, optional, properties);
     this.depth = depth;
-    this.propSetterName = propSetterName;
     this.attributeName = attributeName;
     this.queryDirective = queryDirective;
     this._verify();
@@ -211,17 +212,15 @@ export class DirectiveDependency extends Dependency {
 
   _verify():void {
     var count = 0;
-    if (isPresent(this.propSetterName)) count++;
     if (isPresent(this.queryDirective)) count++;
     if (isPresent(this.attributeName)) count++;
     if (count > 1) throw new BaseException(
-      'A directive injectable can contain only one of the following @PropertySetter, @Attribute or @Query.');
+      'A directive injectable can contain only one of the following @Attribute or @Query.');
   }
 
   static createFrom(d:Dependency):Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
       d.properties, DirectiveDependency._depth(d.properties),
-      DirectiveDependency._propSetterName(d.properties),
       DirectiveDependency._attributeName(d.properties),
       DirectiveDependency._query(d.properties)
     );
@@ -232,11 +231,6 @@ export class DirectiveDependency extends Dependency {
     if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
     if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
     return 0;
-  }
-
-  static _propSetterName(properties):string {
-    var p = ListWrapper.find(properties, (p) => p instanceof PropertySetter);
-    return isPresent(p) ? p.propName : null;
   }
 
   static _attributeName(properties):string {
@@ -268,6 +262,10 @@ export class DirectiveBinding extends ResolvedBinding {
     }
   }
 
+  get displayName() {
+    return this.key.displayName;
+  }
+
   get eventEmitters():List<string> {
     return isPresent(this.annotation) && isPresent(this.annotation.events) ? this.annotation.events : [];
   }
@@ -295,13 +293,15 @@ export class DirectiveBinding extends ResolvedBinding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
+  viewManager:avmModule.AppViewManager;
+  defaultProtoView:viewModule.AppProtoView;
   view:viewModule.AppView;
   element:NgElement;
-  changeDetector:ChangeDetector;
-  constructor(view, element:NgElement, changeDetector:ChangeDetector) {
+  constructor(viewManager:avmModule.AppViewManager, view:viewModule.AppView, element:NgElement, defaultProtoView:viewModule.AppProtoView) {
+    this.viewManager = viewManager;
     this.view = view;
+    this.defaultProtoView = defaultProtoView;
     this.element = element;
-    this.changeDetector = changeDetector;
   }
 }
 
@@ -654,10 +654,6 @@ export class ElementInjector extends TreeNode {
     return this._preBuiltObjects.element;
   }
 
-  getChangeDetector() {
-    return this._preBuiltObjects.changeDetector;
-  }
-
   getComponent() {
     if (this._proto._binding0IsComponent) {
       return this._obj0;
@@ -667,7 +663,8 @@ export class ElementInjector extends TreeNode {
   }
 
   getElementRef() {
-    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector);
+    return new ElementRef(this, this._preBuiltObjects.view, this._proto.index, this._lightDomAppInjector,
+        this._preBuiltObjects.viewManager, this._preBuiltObjects.defaultProtoView);
   }
 
   getDynamicallyLoadedComponent() {
@@ -735,22 +732,19 @@ export class ElementInjector extends TreeNode {
   }
 
   _getByDependency(dep:DirectiveDependency, requestor:Key) {
-    if (isPresent(dep.propSetterName)) return this._buildPropSetter(dep);
     if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
     if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
+    if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
+      var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
+      return componentView.changeDetector.ref;
+    }
     if (dep.key.id === StaticKeys.instance().elementRefId) {
       return this.getElementRef();
     }
+    if (dep.key.id === StaticKeys.instance().viewContainerId) {
+      return this.getElementRef().viewContainer;
+    }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
-  }
-
-  _buildPropSetter(dep) {
-    var view = this._getPreBuiltObjectByKeyId(StaticKeys.instance().viewId);
-    var renderer = view.renderer;
-    var index = this._proto.index;
-    return function(v) {
-      renderer.setElementProperty(view.render, index, dep.propSetterName, v);
-    };
   }
 
   _buildAttribute(dep): string {
@@ -876,18 +870,6 @@ export class ElementInjector extends TreeNode {
     if (this._query2 == query) this._query2 = null;
   }
 
-  /*
-   * It is fairly easy to annotate keys with metadata.
-   * For example, key.metadata = 'directive'.
-   *
-   * This would allows to do the lookup more efficiently.
-   *
-   * for example
-   * we would lookup pre built objects only when metadata = 'preBuilt'
-   * we would lookup directives only when metadata = 'directive'
-   *
-   * Write benchmarks before doing this optimization.
-   */
   _getByKey(key:Key, depth:number, optional:boolean, requestor:Key) {
     var ei = this;
     if (! this._shouldIncludeSelf(depth)) {
@@ -933,10 +915,10 @@ export class ElementInjector extends TreeNode {
   _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
     // TODO: AppView should not be injectable. Remove it.
+    if (keyId === staticKeys.viewManagerId) return this._preBuiltObjects.viewManagerId;
     if (keyId === staticKeys.viewId) return this._preBuiltObjects.view;
     if (keyId === staticKeys.ngElementId) return this._preBuiltObjects.element;
-    if (keyId === staticKeys.viewContainerId) return this._preBuiltObjects.view.getOrCreateViewContainer(this._proto.index);
-    if (keyId === staticKeys.changeDetectorRefId) return this._preBuiltObjects.changeDetector.ref;
+    if (keyId === staticKeys.defaultProtoViewId) return this._preBuiltObjects.defaultProtoView;
 
     //TODO add other objects as needed
     return _undefined;
@@ -993,6 +975,10 @@ export class ElementInjector extends TreeNode {
 
   getLightDomAppInjector() {
     return this._lightDomAppInjector;
+  }
+
+  getShadowDomAppInjector() {
+    return this._shadowDomAppInjector;
   }
 
   getHost() {

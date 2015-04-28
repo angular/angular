@@ -8,13 +8,8 @@ import {List} from 'angular2/src/facade/collection';
 import {View} from 'angular2/src/core/annotations/view';
 
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {AppView} from 'angular2/src/core/compiler/view';
-import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
-import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
-
-import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DynamicComponentLoader, ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 
 import {queryView, viewRootNodes, el} from './utils';
 import {instantiateType, getTypeOf} from './lang_utils';
@@ -92,18 +87,9 @@ export class TestBed {
     }
 
     var rootEl = el('<div></div>');
-    var metadataReader = this._injector.get(DirectiveMetadataReader);
-    var componentBinding = DirectiveBinding.createFromBinding(
-      bind(component).toValue(context),
-      metadataReader.read(component).annotation
-    );
-    return this._injector.get(Compiler).compileInHost(componentBinding).then((pv) => {
-      var viewFactory = this._injector.get(ViewFactory);
-      var viewHydrator = this._injector.get(AppViewHydrator);
-      var hostView = viewFactory.getView(pv);
-      viewHydrator.hydrateInPlaceHostView(null, rootEl, hostView, this._injector);
-
-      return new ViewProxy(this._injector, hostView.componentChildViews[0]);
+    var componentBinding = bind(component).toValue(context);
+    return this._injector.get(DynamicComponentLoader).loadIntoNewLocation(componentBinding, null, rootEl, this._injector).then((hostComponentRef) => {
+      return new ViewProxy(hostComponentRef);
     });
   }
 }
@@ -112,12 +98,12 @@ export class TestBed {
  * Proxy to `AppView` return by `createView` in {@link TestBed} which offers a high level API for tests.
  */
 export class ViewProxy {
+  _componentRef: ComponentRef;
   _view: AppView;
-  _injector: Injector;
 
-  constructor(injector: Injector, view: AppView) {
-    this._view = view;
-    this._injector = injector;
+  constructor(componentRef: ComponentRef) {
+    this._componentRef = componentRef;
+    this._view = componentRef.hostView.componentChildViews[0];
   }
 
   get context(): any {
@@ -137,8 +123,7 @@ export class ViewProxy {
   }
 
   destroy() {
-    var viewHydrator = this._injector.get(AppViewHydrator);
-    viewHydrator.dehydrateInPlaceHostView(null, this._view);
+    this._componentRef.dispose();
   }
 
   /**

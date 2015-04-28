@@ -1,12 +1,9 @@
-import {Key, Injector, Injectable, ResolvedBinding} from 'angular2/di'
+import {Key, Injector, Injectable, ResolvedBinding, Binding, bind} from 'angular2/di'
 import {Compiler} from './compiler';
-import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {Type, BaseException, stringify, isPresent} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {ViewFactory} from 'angular2/src/core/compiler/view_factory';
-import {AppViewHydrator} from 'angular2/src/core/compiler/view_hydrator';
-import {ElementRef, DirectiveBinding} from './element_injector';
+import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
+import {ElementRef} from './element_injector';
 import {AppView} from './view';
 
 /**
@@ -47,31 +44,23 @@ export class ComponentRef {
 @Injectable()
 export class DynamicComponentLoader {
   _compiler:Compiler;
-  _viewFactory:ViewFactory;
-  _viewHydrator:AppViewHydrator;
-  _directiveMetadataReader:DirectiveMetadataReader;
+  _viewManager:AppViewManager;
 
-  constructor(compiler:Compiler, directiveMetadataReader:DirectiveMetadataReader,
-              viewFactory:ViewFactory, viewHydrator:AppViewHydrator) {
+  constructor(compiler:Compiler,
+              viewManager: AppViewManager) {
     this._compiler = compiler;
-    this._directiveMetadataReader = directiveMetadataReader;
-    this._viewFactory = viewFactory;
-    this._viewHydrator = viewHydrator;
+    this._viewManager = viewManager;
   }
 
   /**
    * Loads a component into the location given by the provided ElementRef. The loaded component
    * receives injection as if it in the place of the provided ElementRef.
    */
-  loadIntoExistingLocation(type:Type, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
-    this._assertTypeIsComponent(type);
-    var annotation = this._directiveMetadataReader.read(type).annotation;
-    var componentBinding = DirectiveBinding.createFromType(type, annotation);
-
-    return this._compiler.compile(type).then(componentProtoView => {
-      var componentView = this._viewFactory.getView(componentProtoView);
-      this._viewHydrator.hydrateDynamicComponentView(
-        location, componentView, componentBinding, injector);
+  loadIntoExistingLocation(typeOrBinding, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
+    var binding = this._getBinding(typeOrBinding);
+    return this._compiler.compile(binding.token).then(componentProtoView => {
+      var componentView = this._viewManager.createDynamicComponentView(
+        location, componentProtoView, binding, injector);
 
       var dispose = () => {throw new BaseException("Not implemented");};
       return new ComponentRef(location, location.elementInjector.getDynamicallyLoadedComponent(), componentView, dispose);
@@ -82,21 +71,16 @@ export class DynamicComponentLoader {
    * Loads a component in the element specified by elementOrSelector. The loaded component receives
    * injection normally as a hosted view.
    */
-  loadIntoNewLocation(type:Type, parentComponentLocation:ElementRef, elementOrSelector:any,
+  loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef, elementOrSelector:any,
                       injector:Injector = null):Promise<ComponentRef> {
-    this._assertTypeIsComponent(type);
-
-    return  this._compiler.compileInHost(type).then(hostProtoView => {
-      var hostView = this._viewFactory.getView(hostProtoView);
-      this._viewHydrator.hydrateInPlaceHostView(
-        parentComponentLocation, elementOrSelector, hostView, injector
-      );
+    return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoView => {
+      var hostView = this._viewManager.createInPlaceHostView(
+        parentComponentLocation, elementOrSelector, hostProtoView, injector);
 
       var newLocation = hostView.elementInjectors[0].getElementRef();
       var component = hostView.elementInjectors[0].getComponent();
       var dispose = () => {
-        this._viewHydrator.dehydrateInPlaceHostView(parentComponentLocation, hostView);
-        this._viewFactory.returnView(hostView);
+        this._viewManager.destroyInPlaceHostView(parentComponentLocation, hostView);
       };
       return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
     });
@@ -106,10 +90,9 @@ export class DynamicComponentLoader {
    * Loads a component next to the provided ElementRef. The loaded component receives
    * injection normally as a hosted view.
    */
-  loadNextToExistingLocation(type:Type, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
-    this._assertTypeIsComponent(type);
-
-    return this._compiler.compileInHost(type).then(hostProtoView => {
+  loadNextToExistingLocation(typeOrBinding, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
+    var binding = this._getBinding(typeOrBinding);
+    return this._compiler.compileInHost(binding).then(hostProtoView => {
       var hostView = location.viewContainer.create(-1, hostProtoView, injector);
 
       var newLocation = hostView.elementInjectors[0].getElementRef();
@@ -122,11 +105,14 @@ export class DynamicComponentLoader {
     });
   }
 
-  /** Asserts that the type being dynamically instantiated is a Component. */
-  _assertTypeIsComponent(type:Type):void {
-    var annotation = this._directiveMetadataReader.read(type).annotation;
-    if (!(annotation instanceof Component)) {
-      throw new BaseException(`Could not load '${stringify(type)}' because it is not a component.`);
+  _getBinding(typeOrBinding) {
+    var binding;
+    if (typeOrBinding instanceof Binding) {
+      binding = typeOrBinding;
+    } else {
+      binding = bind(typeOrBinding).toClass(typeOrBinding);
     }
+    return binding;
   }
+
 }

@@ -1,5 +1,5 @@
 import {Viewport} from 'angular2/src/core/annotations/annotations';
-import {ViewContainer} from 'angular2/src/core/compiler/view_container';
+import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -43,8 +43,8 @@ import {ListWrapper} from 'angular2/src/facade/collection';
   }
 })
 export class For  {
-  viewContainer: ViewContainer;
-  constructor(viewContainer:ViewContainer) {
+  viewContainer: ViewContainerRef;
+  constructor(viewContainer:ViewContainerRef) {
     this.viewContainer = viewContainer;
   }
 
