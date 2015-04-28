@@ -1,5 +1,5 @@
 import {Decorator} from 'angular2/annotations';
-import {NgElement} from 'angular2/core';
+import {ElementRef} from 'angular2/core';
 
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -41,8 +41,8 @@ export class RouterLink {
   _router:Router;
   //TODO: handle click events
 
-  constructor(ngEl:NgElement, router:Router) {
-    this._domEl = ngEl.domElement;
+  constructor(elementRef:ElementRef, router:Router) {
+    this._domEl = elementRef.domElement;
     this._router = router;
   }
 

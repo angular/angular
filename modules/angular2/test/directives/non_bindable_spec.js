@@ -15,7 +15,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';
 
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {NonBindable} from 'angular2/src/directives/non_bindable';
 
@@ -67,7 +67,7 @@ class TestComponent {
   selector: '[test-dec]'
 })
 class TestDecorator {
-  constructor(el: NgElement) {
+  constructor(el: ElementRef) {
     DOM.addClass(el.domElement, 'compiled');
   }
 }

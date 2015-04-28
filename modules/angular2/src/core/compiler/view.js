@@ -25,7 +25,7 @@ export class AppViewContainer {
 // TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
 // @IMPLEMENTS(renderApi.EventDispatcher)
 export class AppView {
-  render:renderApi.ViewRef;
+  render:renderApi.RenderViewRef;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector
   rootElementInjectors:List<ElementInjector>;
   elementInjectors:List<ElementInjector>;
@@ -171,10 +171,10 @@ export class AppProtoView {
 
   _directiveRecordsMap:Map;
   _directiveRecords:List;
-  render:renderApi.ProtoViewRef;
+  render:renderApi.RenderProtoViewRef;
 
   constructor(
-      render:renderApi.ProtoViewRef,
+      render:renderApi.RenderProtoViewRef,
       protoChangeDetector:ProtoChangeDetector) {
     this.render = render;
     this.elementBinders = [];

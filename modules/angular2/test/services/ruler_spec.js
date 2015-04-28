@@ -1,22 +1,14 @@
-import {AsyncTestCompleter, inject, ddescribe, describe, it, iit, xit, expect, SpyObject} from 'angular2/test_lib';
+import {
+  AsyncTestCompleter, inject, ddescribe, describe, it, iit, xit, expect, SpyObject,
+  proxy
+} from 'angular2/test_lib';
 
 import {DOM, DomAdapter} from 'angular2/src/dom/dom_adapter';
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 import {Ruler, Rectangle} from 'angular2/src/services/ruler';
 import {createRectangle} from './rectangle_mock';
-
-class DomAdapterMock extends DomAdapter {
-  rect;
-  constructor(rect) {
-    super();
-    this.rect = rect;
-  }
-
-  getBoundingClientRect(elm) {
-    return this.rect;
-  }
-}
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 function assertDimensions(rect: Rectangle, left, right, top, bottom, width, height) {
   expect(rect.left).toEqual(left);
@@ -31,11 +23,14 @@ export function main() {
 
   describe('ruler service', () => {
 
-    it('should allow measuring NgElements',
+    it('should allow measuring ElementRefs',
       inject([AsyncTestCompleter], (async) => {
-        var ruler = new Ruler(new DomAdapterMock(createRectangle(10, 20, 200, 100)));
+        var ruler = new Ruler(SpyObject.stub(new SpyDomAdapter(), {
+          'getBoundingClientRect': createRectangle(10, 20, 200, 100)
+        }));
 
-        ruler.measure(new FakeNgElement(null)).then((rect) => {
+        var elRef = new SpyElementRef();
+        ruler.measure(elRef).then((rect) => {
           assertDimensions(rect, 10, 210, 20, 120, 200, 100);
           async.done();
         });
@@ -45,8 +40,9 @@ export function main() {
     it('should return 0 for all rectangle values while measuring elements in a document fragment',
       inject([AsyncTestCompleter], (async) => {
         var ruler = new Ruler(DOM);
-
-        ruler.measure(new FakeNgElement(DOM.createElement('div'))).then((rect) => {
+        var elRef = new SpyElementRef();
+        elRef.domElement = DOM.createElement('div');
+        ruler.measure(elRef).then((rect) => {
           //here we are using an element created in a doc fragment so all the measures will come back as 0
           assertDimensions(rect, 0, 0, 0, 0, 0, 0);
           async.done();
@@ -56,15 +52,17 @@ export function main() {
   });
 }
 
-class FakeNgElement extends NgElement {
-  _domElement;
+@proxy
+@IMPLEMENTS(ElementRef)
+class SpyElementRef extends SpyObject {
+  domElement;
+  constructor(){super(ElementRef);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
 
-  constructor(domElement) {
-    super(null, null);
-    this._domElement = domElement;
-  }
-
-  get domElement() {
-    return this._domElement;
-  }
+@proxy
+@IMPLEMENTS(DomAdapter)
+class SpyDomAdapter extends SpyObject {
+  constructor(){super(DomAdapter);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
 }

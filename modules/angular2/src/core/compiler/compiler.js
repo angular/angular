@@ -6,6 +6,7 @@ import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection
 import {DirectiveMetadataReader} from './directive_metadata_reader';
 import {Component, Viewport, DynamicComponent, Decorator} from '../annotations/annotations';
 import {AppProtoView} from './view';
+import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {TemplateResolver} from './template_resolver';
 import {View} from '../annotations/view';
@@ -87,21 +88,26 @@ export class Compiler {
 
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
-  compileInHost(componentTypeOrBinding:any):Promise<AppProtoView> {
+  compileInHost(componentTypeOrBinding:any):Promise<ProtoViewRef> {
     var componentBinding = this._bindDirective(componentTypeOrBinding);
     this._assertTypeIsComponent(componentBinding);
-    
+
     var directiveMetadata = Compiler.buildRenderDirective(componentBinding);
     return this._renderer.createHostProtoView(directiveMetadata).then( (hostRenderPv) => {
       return this._compileNestedProtoViews(null, hostRenderPv, [componentBinding], true);
+    }).then( (appProtoView) => {
+      return new ProtoViewRef(appProtoView);
     });
   }
 
-  compile(component: Type):Promise<AppProtoView> {
+  compile(component: Type):Promise<ProtoViewRef> {
     var componentBinding = this._bindDirective(component);
     this._assertTypeIsComponent(componentBinding);
     var protoView = this._compile(componentBinding);
-    return PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
+    var pvPromise = PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
+    return pvPromise.then( (appProtoView) => {
+      return new ProtoViewRef(appProtoView);
+    });
   }
 
   // TODO(vicb): union type return AppProtoView or Promise<AppProtoView>

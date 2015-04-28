@@ -1,7 +1,7 @@
 import {Decorator} from 'angular2/src/core/annotations/annotations';
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 @Decorator({
   selector: '[class]',
@@ -11,7 +11,7 @@ import {NgElement} from 'angular2/src/core/compiler/ng_element';
 })
 export class CSSClass {
   _domEl;
-  constructor(ngEl: NgElement) {
+  constructor(ngEl: ElementRef) {
     this._domEl = ngEl.domElement;
   }
 

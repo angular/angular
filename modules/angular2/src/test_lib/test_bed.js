@@ -9,6 +9,7 @@ import {View} from 'angular2/src/core/annotations/view';
 
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
+import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {DynamicComponentLoader, ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 
 import {queryView, viewRootNodes, el} from './utils';
@@ -103,7 +104,7 @@ export class ViewProxy {
 
   constructor(componentRef: ComponentRef) {
     this._componentRef = componentRef;
-    this._view = componentRef.hostView.componentChildViews[0];
+    this._view = internalView(componentRef.hostView).componentChildViews[0];
   }
 
   get context(): any {

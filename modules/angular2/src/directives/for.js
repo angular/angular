@@ -1,6 +1,6 @@
 import {Viewport} from 'angular2/src/core/annotations/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {AppView} from 'angular2/src/core/compiler/view';
+import {ViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -114,7 +114,7 @@ export class For  {
 }
 
 class RecordViewTuple {
-  view: AppView;
+  view: ViewRef;
   record: any;
   constructor(record, view) {
     this.record = record;

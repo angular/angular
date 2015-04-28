@@ -1,6 +1,6 @@
 import {Decorator, onChange} from 'angular2/src/core/annotations/annotations';
 import {Ancestor} from 'angular2/src/core/annotations/visibility';
-import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Optional} from 'angular2/di';
 import {Renderer} from 'angular2/src/render/api';
 import {isPresent, isString} from 'angular2/src/facade/lang';
@@ -83,7 +83,7 @@ export class CheckboxControlValueAccessor {
   }
 
   writeValue(value) {
-    this._renderer.setElementProperty(this._elementRef.hostView.render, this._elementRef.boundElementIndex,
+    this._renderer.setElementProperty(this._elementRef.parentView.render, this._elementRef.boundElementIndex,
       'checked', value)
   }
 }

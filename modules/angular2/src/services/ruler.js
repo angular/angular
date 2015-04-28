@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {DomAdapter} from 'angular2/src/dom/dom_adapter';
-import {NgElement} from 'angular2/src/core/compiler/ng_element';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
 export class Rectangle {
   left;
@@ -25,7 +25,7 @@ export class Ruler {
     this.domAdapter = domAdapter;
   }
 
-  measure(el:NgElement): Promise<Rectangle> {
+  measure(el:ElementRef): Promise<Rectangle> {
     var clntRect = this.domAdapter.getBoundingClientRect(el.domElement);
 
     //even if getBoundingClientRect is synchronous we use async API in preparation for further changes

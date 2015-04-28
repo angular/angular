@@ -19,7 +19,7 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
 import {View} from 'angular2/src/core/annotations/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {If} from 'angular2/src/directives/if';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -207,7 +207,7 @@ class ImperativeViewComponentUsingNgComponent {
 
   constructor(self:ElementRef, dynamicComponentLoader:DynamicComponentLoader, renderer:DirectDomRenderer) {
     var div = el('<div></div>');
-    renderer.setImperativeComponentRootNodes(self.hostView.render, self.boundElementIndex, [div]);
+    renderer.setImperativeComponentRootNodes(self.parentView.render, self.boundElementIndex, [div]);
     this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, div, null);
   }
 }

@@ -45,7 +45,7 @@ function _collectComponentChildViewRefs(view, target = null) {
 
 
 // public so that the compiler can use it.
-export class DirectDomProtoViewRef extends api.ProtoViewRef {
+export class DirectDomProtoViewRef extends api.RenderProtoViewRef {
   delegate:RenderProtoView;
 
   constructor(delegate:RenderProtoView) {
@@ -54,7 +54,7 @@ export class DirectDomProtoViewRef extends api.ProtoViewRef {
   }
 }
 
-export class DirectDomViewRef extends api.ViewRef {
+export class DirectDomViewRef extends api.RenderViewRef {
   delegate:RenderView;
 
   constructor(delegate:RenderView) {
@@ -95,13 +95,13 @@ export class DirectDomRenderer extends api.Renderer {
     return this._compiler.compile(view);
   }
 
-  mergeChildComponentProtoViews(protoViewRef:api.ProtoViewRef, protoViewRefs:List<api.ProtoViewRef>) {
+  mergeChildComponentProtoViews(protoViewRef:api.RenderProtoViewRef, protoViewRefs:List<api.RenderProtoViewRef>) {
     _resolveProtoView(protoViewRef).mergeChildComponentProtoViews(
       ListWrapper.map(protoViewRefs, _resolveProtoView)
     );
   }
 
-  createViewInContainer(vcRef:api.RenderViewContainerRef, atIndex:number, protoViewRef:api.ProtoViewRef):List<api.ViewRef> {
+  createViewInContainer(vcRef:api.RenderViewContainerRef, atIndex:number, protoViewRef:api.RenderProtoViewRef):List<api.RenderViewRef> {
     var view = this._viewFactory.getView(_resolveProtoView(protoViewRef));
     var vc = _resolveViewContainer(vcRef);
     this._viewHydrator.hydrateViewInViewContainer(vc, view);
@@ -116,7 +116,7 @@ export class DirectDomRenderer extends api.Renderer {
     this._viewFactory.returnView(view);
   }
 
-  insertViewIntoContainer(vcRef:api.RenderViewContainerRef, atIndex=-1, viewRef:api.ViewRef):void {
+  insertViewIntoContainer(vcRef:api.RenderViewContainerRef, atIndex=-1, viewRef:api.RenderViewRef):void {
     _resolveViewContainer(vcRef).insert(_resolveView(viewRef), atIndex);
   }
 
@@ -124,14 +124,14 @@ export class DirectDomRenderer extends api.Renderer {
     _resolveViewContainer(vcRef).detach(atIndex);
   }
 
-  createDynamicComponentView(hostViewRef:api.ViewRef, elementIndex:number, componentViewRef:api.ProtoViewRef):List<api.ViewRef> {
+  createDynamicComponentView(hostViewRef:api.RenderViewRef, elementIndex:number, componentViewRef:api.RenderProtoViewRef):List<api.RenderViewRef> {
     var hostView = _resolveView(hostViewRef);
     var componentView = this._viewFactory.getView(_resolveProtoView(componentViewRef));
     this._viewHydrator.hydrateDynamicComponentView(hostView, elementIndex, componentView);
     return _collectComponentChildViewRefs(componentView);
   }
 
-  destroyDynamicComponentView(hostViewRef:api.ViewRef, elementIndex:number):void {
+  destroyDynamicComponentView(hostViewRef:api.RenderViewRef, elementIndex:number):void {
     throw new BaseException('Not supported yet');
     // Something along these lines:
     // var hostView = _resolveView(hostViewRef);
@@ -139,7 +139,7 @@ export class DirectDomRenderer extends api.Renderer {
     // this._viewHydrator.dehydrateDynamicComponentView(hostView, componentView);
   }
 
-  createInPlaceHostView(parentViewRef:api.ViewRef, hostElementSelector, hostProtoViewRef:api.ProtoViewRef):List<api.ViewRef> {
+  createInPlaceHostView(parentViewRef:api.RenderViewRef, hostElementSelector, hostProtoViewRef:api.RenderProtoViewRef):List<api.RenderViewRef> {
     var parentView = _resolveView(parentViewRef);
     var hostView = this._viewFactory.createInPlaceHostView(hostElementSelector, _resolveProtoView(hostProtoViewRef));
     this._viewHydrator.hydrateInPlaceHostView(parentView, hostView);
@@ -149,13 +149,13 @@ export class DirectDomRenderer extends api.Renderer {
   /**
    * Destroys the given host view in the given parent view.
    */
-  destroyInPlaceHostView(parentViewRef:api.ViewRef, hostViewRef:api.ViewRef):void {
+  destroyInPlaceHostView(parentViewRef:api.RenderViewRef, hostViewRef:api.RenderViewRef):void {
     var parentView = _resolveView(parentViewRef);
     var hostView = _resolveView(hostViewRef);
     this._viewHydrator.dehydrateInPlaceHostView(parentView, hostView);
   }
 
-  setImperativeComponentRootNodes(parentViewRef:api.ViewRef, elementIndex:number, nodes:List):void {
+  setImperativeComponentRootNodes(parentViewRef:api.RenderViewRef, elementIndex:number, nodes:List):void {
     var parentView = _resolveView(parentViewRef);
     var hostElement = parentView.boundElements[elementIndex];
     var componentView = parentView.componentChildViews[elementIndex];
@@ -170,15 +170,15 @@ export class DirectDomRenderer extends api.Renderer {
     this._shadowDomStrategy.attachTemplate(hostElement, componentView);
   }
 
-  setElementProperty(viewRef:api.ViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {
+  setElementProperty(viewRef:api.RenderViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {
     _resolveView(viewRef).setElementProperty(elementIndex, propertyName, propertyValue);
   }
 
-  setText(viewRef:api.ViewRef, textNodeIndex:number, text:string):void {
+  setText(viewRef:api.RenderViewRef, textNodeIndex:number, text:string):void {
     _resolveView(viewRef).setText(textNodeIndex, text);
   }
 
-  setEventDispatcher(viewRef:api.ViewRef, dispatcher:any/*api.EventDispatcher*/):void {
+  setEventDispatcher(viewRef:api.RenderViewRef, dispatcher:any/*api.EventDispatcher*/):void {
     _resolveView(viewRef).setEventDispatcher(dispatcher);
   }
 }

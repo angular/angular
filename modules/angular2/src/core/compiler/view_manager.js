@@ -1,9 +1,11 @@
 import {Injector, Injectable, Binding} from 'angular2/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
-import * as eli from './element_injector';
 import * as viewModule from './view';
-import {Renderer, ViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
+import {ElementRef} from './element_ref';
+import {ProtoViewRef, ViewRef, internalView, internalProtoView} from './view_ref';
+import {ViewContainerRef} from './view_container_ref';
+import {Renderer, RenderViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 
@@ -24,9 +26,21 @@ export class AppViewManager {
     this._utils = utils;
   }
 
-  createDynamicComponentView(hostLocation:eli.ElementRef,
-      componentProtoView:viewModule.AppProtoView, componentBinding:Binding, injector:Injector):viewModule.AppView {
-    var hostView = hostLocation.hostView;
+  getViewContainer(location:ElementRef):ViewContainerRef {
+    var hostView = internalView(location.parentView);
+    return hostView.elementInjectors[location.boundElementIndex].getViewContainerRef();
+  }
+
+  getComponent(hostLocation:ElementRef):any {
+    var hostView = internalView(hostLocation.parentView);
+    var boundElementIndex = hostLocation.boundElementIndex;
+    return this._utils.getComponentInstance(hostView, boundElementIndex);
+  }
+
+  createDynamicComponentView(hostLocation:ElementRef,
+      componentProtoViewRef:ProtoViewRef, componentBinding:Binding, injector:Injector):ViewRef {
+    var componentProtoView = internalProtoView(componentProtoViewRef);
+    var hostView = internalView(hostLocation.parentView);
     var boundElementIndex = hostLocation.boundElementIndex;
     var binder = hostView.proto.elementBinders[boundElementIndex];
     if (!binder.hasDynamicComponent()) {
@@ -39,34 +53,36 @@ export class AppViewManager {
     this._utils.attachComponentView(hostView, boundElementIndex, componentView);
     this._utils.hydrateDynamicComponentInElementInjector(hostView, boundElementIndex, componentBinding, injector);
     this._utils.hydrateComponentView(hostView, boundElementIndex);
-
     this._viewHydrateRecurse(componentView, renderViewRefs, 1);
-    return componentView;
+
+    return new ViewRef(componentView);
   }
 
-  createInPlaceHostView(parentComponentLocation:eli.ElementRef,
-      hostElementSelector, hostProtoView:viewModule.AppProtoView, injector:Injector):viewModule.AppView {
+  createInPlaceHostView(parentComponentLocation:ElementRef,
+      hostElementSelector, hostProtoViewRef:ProtoViewRef, injector:Injector):ViewRef {
+    var hostProtoView = internalProtoView(hostProtoViewRef);
     var parentComponentHostView = null;
     var parentComponentBoundElementIndex = null;
     var parentRenderViewRef = null;
     if (isPresent(parentComponentLocation)) {
-      parentComponentHostView = parentComponentLocation.hostView;
+      parentComponentHostView = internalView(parentComponentLocation.parentView);
       parentComponentBoundElementIndex = parentComponentLocation.boundElementIndex;
       parentRenderViewRef = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex].render;
     }
     var hostView = this._createViewRecurse(hostProtoView);
-    var renderViewRefs = this._renderer.createInPlaceHostView(parentRenderViewRef, hostElementSelector, hostView.proto.render);
+    var renderViewRefs = this._renderer.createInPlaceHostView(parentRenderViewRef, hostElementSelector, hostProtoView.render);
     hostView.render = renderViewRefs[0];
     this._utils.attachAndHydrateInPlaceHostView(parentComponentHostView, parentComponentBoundElementIndex, hostView, injector);
     this._viewHydrateRecurse(hostView, renderViewRefs, 1);
-    return hostView;
+    return new ViewRef(hostView);
   }
 
-  destroyInPlaceHostView(parentComponentLocation:eli.ElementRef, hostView:viewModule.AppView) {
+  destroyInPlaceHostView(parentComponentLocation:ElementRef, hostViewRef:ViewRef) {
+    var hostView = internalView(hostViewRef);
     var parentView = null;
     var parentRenderViewRef = null;
     if (isPresent(parentComponentLocation)) {
-      parentView = parentComponentLocation.hostView.componentChildViews[parentComponentLocation.boundElementIndex];
+      parentView = internalView(parentComponentLocation.parentView).componentChildViews[parentComponentLocation.boundElementIndex];
       parentRenderViewRef = parentView.render;
     }
     var hostViewRenderRef = hostView.render;
@@ -76,10 +92,12 @@ export class AppViewManager {
     this._destroyView(hostView);
   }
 
-  createViewInContainer(viewContainerLocation:eli.ElementRef,
-      atIndex:number, protoView:viewModule.AppProtoView, injector:Injector = null):viewModule.AppView {
-    var parentView = viewContainerLocation.hostView;
-    var boundElementIndex:number = viewContainerLocation.boundElementIndex;
+  createViewInContainer(viewContainerLocation:ElementRef,
+      atIndex:number, protoViewRef:ProtoViewRef, injector:Injector = null):ViewRef {
+    var protoView = internalProtoView(protoViewRef);
+    var parentView = internalView(viewContainerLocation.parentView);
+    var boundElementIndex = viewContainerLocation.boundElementIndex;
+
     var view = this._createViewRecurse(protoView);
     var renderViewRefs = this._renderer.createViewInContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex, view.proto.render);
     view.render = renderViewRefs[0];
@@ -87,12 +105,12 @@ export class AppViewManager {
     this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, atIndex, injector);
     this._viewHydrateRecurse(view, renderViewRefs, 1);
-    return view;
+    return new ViewRef(view);
   }
 
-  destroyViewInContainer(viewContainerLocation:eli.ElementRef, atIndex:number) {
-    var parentView = viewContainerLocation.hostView;
-    var boundElementIndex:number = viewContainerLocation.boundElementIndex;
+  destroyViewInContainer(viewContainerLocation:ElementRef, atIndex:number) {
+    var parentView = internalView(viewContainerLocation.parentView);
+    var boundElementIndex = viewContainerLocation.boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     this._viewDehydrateRecurse(view);
@@ -101,22 +119,23 @@ export class AppViewManager {
     this._destroyView(view);
   }
 
-  attachViewInContainer(viewContainerLocation:eli.ElementRef, atIndex:number, view:viewModule.AppView):viewModule.AppView {
-    var parentView = viewContainerLocation.hostView;
-    var boundElementIndex:number = viewContainerLocation.boundElementIndex;
+  attachViewInContainer(viewContainerLocation:ElementRef, atIndex:number, viewRef:ViewRef):ViewRef {
+    var view = internalView(viewRef);
+    var parentView = internalView(viewContainerLocation.parentView);
+    var boundElementIndex = viewContainerLocation.boundElementIndex;
     this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
     this._renderer.insertViewIntoContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex, view.render);
-    return view;
+    return viewRef;
   }
 
-  detachViewInContainer(viewContainerLocation:eli.ElementRef, atIndex:number):viewModule.AppView {
-    var parentView = viewContainerLocation.hostView;
-    var boundElementIndex:number = viewContainerLocation.boundElementIndex;
+  detachViewInContainer(viewContainerLocation:ElementRef, atIndex:number):ViewRef {
+    var parentView = internalView(viewContainerLocation.parentView);
+    var boundElementIndex = viewContainerLocation.boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
     this._renderer.detachViewFromContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex);
-    return view;
+    return new ViewRef(view);
   }
 
   _getRenderViewContainerRef(parentView:viewModule.AppView, boundElementIndex:number) {
@@ -145,7 +164,7 @@ export class AppViewManager {
 
   _viewHydrateRecurse(
       view:viewModule.AppView,
-      renderComponentViewRefs:List<ViewRef>,
+      renderComponentViewRefs:List<RenderViewRef>,
       renderComponentIndex:number):number {
     this._renderer.setEventDispatcher(view.render, view);
 

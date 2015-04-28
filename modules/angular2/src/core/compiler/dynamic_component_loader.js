@@ -2,9 +2,8 @@ import {Key, Injector, Injectable, ResolvedBinding, Binding, bind} from 'angular
 import {Compiler} from './compiler';
 import {Type, BaseException, stringify, isPresent} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {ElementRef} from './element_injector';
-import {AppView} from './view';
+import {AppViewManager, ComponentCreateResult} from 'angular2/src/core/compiler/view_manager';
+import {ElementRef} from './element_ref';
 
 /**
  * @exportedAs angular2/view
@@ -12,22 +11,16 @@ import {AppView} from './view';
 export class ComponentRef {
   location:ElementRef;
   instance:any;
-  componentView:AppView;
   _dispose:Function;
 
-  constructor(location:ElementRef, instance:any, componentView:AppView, dispose:Function){
+  constructor(location:ElementRef, instance:any, dispose:Function) {
     this.location = location;
     this.instance = instance;
-    this.componentView = componentView;
     this._dispose = dispose;
   }
 
-  get injector() {
-    return this.location.injector;
-  }
-
   get hostView() {
-    return this.location.hostView;
+    return this.location.parentView;
   }
 
   dispose() {
@@ -58,12 +51,12 @@ export class DynamicComponentLoader {
    */
   loadIntoExistingLocation(typeOrBinding, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
     var binding = this._getBinding(typeOrBinding);
-    return this._compiler.compile(binding.token).then(componentProtoView => {
-      var componentView = this._viewManager.createDynamicComponentView(
-        location, componentProtoView, binding, injector);
-
+    return this._compiler.compile(binding.token).then(componentProtoViewRef => {
+      this._viewManager.createDynamicComponentView(
+        location, componentProtoViewRef, binding, injector);
+      var component = this._viewManager.getComponent(location);
       var dispose = () => {throw new BaseException("Not implemented");};
-      return new ComponentRef(location, location.elementInjector.getDynamicallyLoadedComponent(), componentView, dispose);
+      return new ComponentRef(location, component, dispose);
     });
   }
 
@@ -73,16 +66,16 @@ export class DynamicComponentLoader {
    */
   loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef, elementOrSelector:any,
                       injector:Injector = null):Promise<ComponentRef> {
-    return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoView => {
-      var hostView = this._viewManager.createInPlaceHostView(
-        parentComponentLocation, elementOrSelector, hostProtoView, injector);
+    return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoViewRef => {
+      var hostViewRef = this._viewManager.createInPlaceHostView(
+        parentComponentLocation, elementOrSelector, hostProtoViewRef, injector);
+      var newLocation = new ElementRef(hostViewRef, 0);
+      var component = this._viewManager.getComponent(newLocation);
 
-      var newLocation = hostView.elementInjectors[0].getElementRef();
-      var component = hostView.elementInjectors[0].getComponent();
       var dispose = () => {
-        this._viewManager.destroyInPlaceHostView(parentComponentLocation, hostView);
+        this._viewManager.destroyInPlaceHostView(parentComponentLocation, hostViewRef);
       };
-      return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
+      return new ComponentRef(newLocation, component, dispose);
     });
   }
 
@@ -92,16 +85,17 @@ export class DynamicComponentLoader {
    */
   loadNextToExistingLocation(typeOrBinding, location:ElementRef, injector:Injector = null):Promise<ComponentRef> {
     var binding = this._getBinding(typeOrBinding);
-    return this._compiler.compileInHost(binding).then(hostProtoView => {
-      var hostView = location.viewContainer.create(-1, hostProtoView, injector);
+    return this._compiler.compileInHost(binding).then(hostProtoViewRef => {
+      var viewContainer = this._viewManager.getViewContainer(location);
+      var hostViewRef = viewContainer.create(-1, hostProtoViewRef, injector);
+      var newLocation = new ElementRef(hostViewRef, 0);
+      var component = this._viewManager.getComponent(newLocation);
 
-      var newLocation = hostView.elementInjectors[0].getElementRef();
-      var component = hostView.elementInjectors[0].getComponent();
       var dispose = () => {
-        var index = location.viewContainer.indexOf(hostView);
-        location.viewContainer.remove(index);
+        var index = viewContainer.indexOf(hostViewRef);
+        viewContainer.remove(index);
       };
-      return new ComponentRef(newLocation, component, hostView.componentChildViews[0], dispose);
+      return new ComponentRef(newLocation, component, dispose);
     });
   }
 
