@@ -163,7 +163,7 @@ export class InvalidBindingError extends Error {
   message:string;
   constructor(binding) {
     super();
-    this.message = `Invalid binding ${binding}`;
+    this.message = `Invalid binding - only instances of Binding and Type are allowed, got: ${binding}`;
   }
 
   toString():string {

@@ -205,8 +205,11 @@ export function main() {
     });
 
     it('should throw when given invalid bindings', function () {
-      expect(() => Injector.resolveAndCreate(["blah"])).toThrowError('Invalid binding blah');
-      expect(() => Injector.resolveAndCreate([bind("blah")])).toThrowError('Invalid binding blah');
+      expect(() => Injector.resolveAndCreate(["blah"]))
+        .toThrowError('Invalid binding - only instances of Binding and Type are allowed, got: blah');
+      expect(() => Injector.resolveAndCreate([bind("blah")]))
+        .toThrowError('Invalid binding - only instances of Binding and Type are allowed, ' +
+        'got: BindingBuilder with blah token');
     });
 
     it('should provide itself', function () {
