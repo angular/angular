@@ -469,6 +469,18 @@ export function main() {
               expect(executeWatch('name', 'name', new Person("Jim"), locals))
                 .toEqual(['name=Jim']);
             });
+
+            it('should correctly handle nested properties', () => {
+              var address = new Address('Grenoble');
+              var person = new Person('Victor', address);
+              var locals = new Locals(null,
+                  MapWrapper.createFromPairs([['city', 'MTV']]));
+              expect(executeWatch('address.city', 'address.city', person, locals))
+                .toEqual(['address.city=Grenoble']);
+              expect(executeWatch('city', 'city', person, locals))
+                .toEqual(['city=MTV']);
+            });
+
           });
 
           describe("handle children", () => {

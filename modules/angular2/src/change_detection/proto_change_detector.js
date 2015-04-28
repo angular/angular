@@ -169,7 +169,9 @@ class _ConvertAstIntoProtoRecords {
 
   visitAccessMember(ast:AccessMember) {
     var receiver = ast.receiver.visit(this);
-    if (isPresent(this.variableBindings) && ListWrapper.contains(this.variableBindings, ast.name)) {
+    if (isPresent(this.variableBindings) && 
+        ListWrapper.contains(this.variableBindings, ast.name) && 
+        ast.receiver instanceof ImplicitReceiver) {
       return this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
     } else {
       return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
