@@ -171,7 +171,7 @@ class _ConvertAstIntoProtoRecords {
     var receiver = ast.receiver.visit(this);
     if (isPresent(this.variableBindings) && 
         ListWrapper.contains(this.variableBindings, ast.name) && 
-        (this.bindingRecord.propertyName === null || this.bindingRecord.propertyName.indexOf('.') === -1)) {
+        ast.receiver instanceof ImplicitReceiver) {
       return this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
     } else {
       return this._addRecord(RECORD_TYPE_PROPERTY, ast.name, ast.getter, [], null, receiver);
