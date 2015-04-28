@@ -1,0 +1,16 @@
+{% include "lib/paramList.html" -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+.l-main-section
+  h2(class="function export") {$ doc.name $}
+
+  p <code>{$ paramList(doc.parameters) $}</code>
+
+  p.location-badge.
+    exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+
+  :markdown
+{$ doc.description | indent(4, true) $}
+
+{% endblock %}
