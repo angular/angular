@@ -23,7 +23,7 @@ export class VmTurnZone {
   /**
    * Associates with this
    *
-   * - an "outer" zone, which is the one that created this.
+   * - an "outer" zone, which is a child of the one that created this.
    * - an "inner" zone, which is a child of the outer zone.
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
@@ -40,10 +40,7 @@ export class VmTurnZone {
       afterTurn: () => {this._afterTurn()}
     });
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
-    // little hack
     Zone.inner = this._innerZone;
-    // TODO(vicb) remove the following line (only needed to help debug)
-    Zone.debug = true;
   }
 
   /**
@@ -51,10 +48,9 @@ export class VmTurnZone {
    *
    * @param {Function} onTurnStart called before code executes in the inner zone for each VM turn
    * @param {Function} onTurnDone called at the end of a VM turn if code has executed in the inner zone
-   * @param {Function} onScheduleMicrotask
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  initCallbacks({onTurnStart, onTurnDone, onScheduleMicrotask, onErrorHandler} = {}) {
+  initCallbacks({onTurnStart, onTurnDone, onErrorHandler} = {}) {
     this._onTurnStart = normalizeBlank(onTurnStart);
     this._onTurnDone = normalizeBlank(onTurnDone);
     this._onErrorHandler = normalizeBlank(onErrorHandler);
@@ -116,7 +112,7 @@ export class VmTurnZone {
       };
     }
 
-    return zone.fork(errorHandling).fork(Zone.vmTurnAware).fork({_name: 'inner'});
+    return zone.fork(errorHandling).fork(Zone.VMTurnAware).fork({_name: 'inner'});
   }
 
   _beforeTurn(){

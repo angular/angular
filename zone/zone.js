@@ -105,8 +105,8 @@ Zone.prototype = {
         throw e;
       }
     } finally {
-      Zone.nestedRun--;
       this.afterTask();
+      Zone.nestedRun--;
       // Check if there are microtasks to execute unless:
       // - we are already executing them (drainingMicrotasks is true),
       // - we are in a recursive call to run (nesetdRun > 0)
@@ -127,10 +127,10 @@ Zone.prototype = {
       }
       // Execute the afterTurn hook if inner code has been executed in this turn
       if (Zone.hasExecutedInnerCode) {
-        // HACK Zone.inner
         Zone.inner.run(function() { this.afterTurn(); }, Zone.inner);
         Zone.hasExecutedInnerCode = false;
       }
+      // Check the queue length again as afterTurn might have enqueued more microtasks
     } while (Zone.microtaskQueue.length > 0)
     Zone.drainingMicrotasks = false;
   },
@@ -200,6 +200,8 @@ Zone.microtaskQueue = [];
 Zone.drainingMicrotasks = false;
 // Whether some code has been executed in the inner zone during the current turn
 Zone.hasExecutedInnerCode = false
+// Should be initialized with a reference to the inner when it exists
+Zone.inner = null;
 // Recursive calls to run
 Zone.nestedRun = 0;
 

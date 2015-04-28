@@ -2,7 +2,7 @@
 
 (function (exports) {
 
-Zone.vmTurnAware = {
+Zone.VMTurnAware = {
   '$run': function (parentRun) {
     return function() {
       var result;

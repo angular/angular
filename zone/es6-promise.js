@@ -3,7 +3,7 @@
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   2.1.0
+ * @version   2.1.1
  */
 
 (function() {
@@ -225,7 +225,7 @@
         if (child) {
           lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail, zone);
         } else {
-          zone.run(callback, null, [detail]);
+          zone.run(callback, void 0, [detail]);
         }
       }
 
@@ -242,7 +242,7 @@
     // For this to work, the zone error handler should rethrow excpetions
     function lib$es6$promise$$internal$$tryCatch(callback, detail, zone) {
       try {
-        return zone.run(callback, null, [detail]);
+        return zone.run(callback, void 0, [detail]);
       } catch(e) {
         lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
         return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
