@@ -19,6 +19,5 @@ interface Window {
   JSON: typeof JSON;
   Math: typeof Math;
   assert: typeof assert;
-  NaN: typeof NaN;
   gc(): void;
 }

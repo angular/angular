@@ -72,9 +72,6 @@
     "selenium-webdriver/selenium-webdriver.d.ts": {
       "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"
     },
-    "touch-events/touch-events.d.ts": {
-      "commit": "055b3172e8eb374a75826710c4d08677872620d3"
-    },
     "zone/zone.d.ts": {
       "commit": "055b3172e8eb374a75826710c4d08677872620d3"
     }
