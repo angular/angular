@@ -27,7 +27,7 @@ export function main() {
   var commandLog;
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
-  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null) {
+  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null, forceGc = null) {
     commandLog = [];
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures = new PerfLogFeatures({render: true, gc: true});
@@ -45,34 +45,48 @@ export function main() {
       }),
       bind(WebDriverExtension).toValue(new MockDriverExtension(perfLogs, commandLog, perfLogFeatures))
     ];
+    if (isPresent(forceGc)) {
+      ListWrapper.push(bindings, bind(Options.FORCE_GC).toValue(forceGc));
+    }
     return Injector.resolveAndCreate(bindings).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {
 
-    it('should describe itself based on the perfLogFeatrues', () => {
-      expect(createMetric([[]], null, new PerfLogFeatures()).describe()).toEqual({
-        'scriptTime': 'script execution time in ms, including gc and render',
-        'pureScriptTime': 'script execution time in ms, without gc nor render'
+    function sortedKeys(stringMap) {
+      var res = [];
+      StringMapWrapper.forEach(stringMap, (_, key) => {
+        ListWrapper.push(res, key);
       });
+      res.sort();
+      return res;
+    }
 
-      expect(createMetric([[]], null, new PerfLogFeatures({
+    it('should describe itself based on the perfLogFeatrues', () => {
+      expect(sortedKeys(createMetric([[]], null, new PerfLogFeatures()).describe())).toEqual([
+        'pureScriptTime', 'scriptTime'
+      ]);
+
+      expect(sortedKeys(createMetric([[]], null, new PerfLogFeatures({
         render: true,
         gc: false
-      })).describe()).toEqual({
-        'scriptTime': 'script execution time in ms, including gc and render',
-        'pureScriptTime': 'script execution time in ms, without gc nor render',
-        'renderTime': 'render time in and ouside of script in ms',
-      });
+      })).describe())).toEqual([
+        'pureScriptTime', 'renderTime', 'scriptTime'
+      ]);
 
-      expect(createMetric([[]]).describe()).toEqual({
-        'scriptTime': 'script execution time in ms, including gc and render',
-        'pureScriptTime': 'script execution time in ms, without gc nor render',
-        'renderTime': 'render time in and ouside of script in ms',
-        'gcTime': 'gc time in and ouside of script in ms',
-        'gcAmount': 'gc amount in kbytes',
-        'majorGcTime': 'time of major gcs in ms'
-      });
+      expect(sortedKeys(createMetric([[]]).describe())).toEqual([
+        'gcAmount', 'gcTime', 'majorGcTime',
+        'pureScriptTime', 'renderTime', 'scriptTime'
+      ]);
+
+      expect(sortedKeys(createMetric([[]], null, new PerfLogFeatures({
+        render: true,
+        gc: true
+      }), true).describe())).toEqual([
+        'forcedGcAmount', 'forcedGcTime',
+        'gcAmount', 'gcTime', 'majorGcTime',
+        'pureScriptTime', 'renderTime', 'scriptTime'
+      ]);
     });
 
     it('should describe itself based on micro metrics', () => {
@@ -84,10 +98,19 @@ export function main() {
 
     describe('beginMeasure', () => {
 
-      it('should mark the timeline', inject([AsyncTestCompleter], (async) => {
+      it('should not force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
         var metric = createMetric([[]]);
         metric.beginMeasure().then((_) => {
           expect(commandLog).toEqual([['timeBegin', 'benchpress0']]);
+
+          async.done();
+        });
+      }));
+
+      it('should force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
+        var metric = createMetric([[]], null, null, true);
+        metric.beginMeasure().then((_) => {
+          expect(commandLog).toEqual([['gc'], ['timeBegin', 'benchpress0']]);
 
           async.done();
         });
@@ -199,6 +222,57 @@ export function main() {
             async.done();
         });
       }));
+
+      describe('with forced gc', () => {
+        var events;
+        beforeEach( () => {
+          events = [
+            [
+              eventFactory.markStart('benchpress0', 0),
+              eventFactory.start('script', 4),
+              eventFactory.end('script', 6),
+              eventFactory.markEnd('benchpress0', 10),
+              eventFactory.markStart('benchpress1', 11),
+              eventFactory.start('gc', 12, {'usedHeapSize': 2500}),
+              eventFactory.end('gc', 15, {'usedHeapSize': 1000}),
+              eventFactory.markEnd('benchpress1', 20)
+            ]
+          ];
+        });
+
+        it('should measure forced gc', inject([AsyncTestCompleter], (async) => {
+          var metric = createMetric(events, null, null, true);
+          metric.beginMeasure()
+            .then( (_) => metric.endMeasure(false) )
+            .then( (data) => {
+              expect(commandLog).toEqual([
+                ['gc'],
+                ['timeBegin', 'benchpress0'],
+                ['timeEnd', 'benchpress0', 'benchpress1'],
+                'readPerfLog',
+                ['gc'],
+                ['timeEnd', 'benchpress1', null],
+                'readPerfLog'
+              ]);
+              expect(data['forcedGcTime']).toBe(3);
+              expect(data['forcedGcAmount']).toBe(1.5);
+
+              async.done();
+          });
+        }));
+
+        it('should restart after the forced gc if needed', inject([AsyncTestCompleter], (async) => {
+          var metric = createMetric(events, null, null, true);
+          metric.beginMeasure()
+            .then( (_) => metric.endMeasure(true) )
+            .then( (data) => {
+              expect(commandLog[5]).toEqual(['timeEnd', 'benchpress1', 'benchpress2']);
+
+              async.done();
+          });
+        }));
+
+      });
 
     });
 
@@ -402,5 +476,10 @@ class MockDriverExtension extends WebDriverExtension {
     } else {
       return PromiseWrapper.resolve([]);
     }
+  }
+
+  gc():Promise {
+    ListWrapper.push(this._commandLog, ['gc']);
+    return PromiseWrapper.resolve(null);
   }
 }
