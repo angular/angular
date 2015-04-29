@@ -45,12 +45,12 @@ export function main() {
     }
 
     function createEmptyElBinder() {
-      return new ElementBinder(0, null, 0, null, null, null);
+      return new ElementBinder(0, null, 0, null, null);
     }
 
     function createComponentElBinder(nestedProtoView = null) {
       var binding = createDirectiveBinding(SomeComponent);
-      var binder = new ElementBinder(0, null, 0, null, binding, null);
+      var binder = new ElementBinder(0, null, 0, null, binding);
       binder.nestedProtoView = nestedProtoView;
       return binder;
     }

@@ -8,8 +8,7 @@ import {DEFAULT} from 'angular2/change_detection';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * Directive is an abstract concept, instead use concrete directives: {@link Component}, {@link DynamicComponent}, {@link Decorator}
- * or {@link Viewport}.
+ * Directive is an abstract concept, instead use concrete directives: {@link Component}, {@link DynamicComponent}, {@link Decorator}.
  *
  * A directive consists of a single directive annotation and a controller class. When the directive's `selector` matches
  * elements in the DOM, the following steps occur:
@@ -55,7 +54,7 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: ElementRef` to obtain a reference to logical element in the view.
- * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Viewport} directives only
+ * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Decorator} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -188,8 +187,8 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * A directive can also query for other child directives. Since parent directives are instantiated before child
  * directives, a directive can't simply inject the list of child directives. Instead, the directive
- * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved by any
- * {@link Viewport} directive such as a `for`, an `if`, or a `switch`.
+ * injects a {@link QueryList}, which updates its contents as children are added, removed, or moved by a directive
+ * that uses a {@link ViewContainerRef} such as a `for`, an `if`, or a `switch`.
  *
  * ```
  * @Decorator({ selector: '[my-directive]' })
@@ -783,6 +782,98 @@ export class DynamicComponent extends Directive {
  * <div tooltip="some text here"></div>
  * ```
  *
+ * Decorators can also control the instantiation, destruction, and positioning of inline template elements:
+ *
+ * A directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
+ * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
+ * where these actions are performed.
+ *
+ * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
+ * directive in a child view cannot inject the directive that created it.
+ *
+ * Since directives that create views via ViewContainers are common in Angular, and using the full `<template>` element syntax is wordy, Angular
+ * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are equivalent.
+ *
+ * Thus,
+ *
+ * ```
+ * <ul>
+ *   <li *foo="bar" title="text"></li>
+ * </ul>
+ * ```
+ *
+ * Expands in use to:
+ *
+ * ```
+ * <ul>
+ *   <template [foo]="bar">
+ *     <li title="text"></li>
+ *   </template>
+ * </ul>
+ * ```
+ *
+ * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for the directive
+ * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
+ *
+ *
+ * ## Example
+ *
+ * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
+ *
+ * Here is a simple directive that triggers on an `unless` selector:
+ *
+ * ```
+ * @Directive({
+ *   selector: '[unless]',
+ *   properties: {
+ *     'unless': 'unless'
+ *   }
+ * })
+ * export class Unless {
+ *   viewContainer: ViewContainerRef;
+ *   protoViewRef: ProtoViewRef;
+ *   prevCondition: boolean;
+ *
+ *   constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
+ *     this.viewContainer = viewContainer;
+ *     this.protoViewRef = protoViewRef;
+ *     this.prevCondition = null;
+ *   }
+ *
+ *   set unless(newCondition) {
+ *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
+ *       this.prevCondition = true;
+ *       this.viewContainer.clear();
+ *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
+ *       this.prevCondition = false;
+ *       this.viewContainer.create(this.protoViewRef);
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * We can then use this `unless` selector in a template:
+ * ```
+ * <ul>
+ *   <li *unless="expr"></li>
+ * </ul>
+ * ```
+ *
+ * Once the directive instantiates the child view, the shorthand notation for the template expands and the result is:
+ *
+ * ```
+ * <ul>
+ *   <template [unless]="exp">
+ *     <li></li>
+ *   </template>
+ *   <li></li>
+ * </ul>
+ * ```
+ *
+ * Note also that although the `<li></li>` template still exists inside the `<template></template>`, the instantiated
+ * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ *
+ *
  * @exportedAs angular2/annotations
  */
 export class Decorator extends Directive {
@@ -824,127 +915,6 @@ export class Decorator extends Directive {
   }
 }
 
-/**
- * Directive that controls the instantiation, destruction, and positioning of inline template elements.
- *
- * A viewport directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
- * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
- * where these actions are performed.
- *
- * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
- * directive in a child view cannot inject the viewport directive that created it.
- *
- * Since viewport directives are common in Angular, and using the full `<template>` element syntax is wordy, Angular
- * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are equivalent.
- *
- * Thus,
- *
- * ```
- * <ul>
- *   <li *foo="bar" title="text"></li>
- * </ul>
- * ```
- *
- * Expands in use to:
- *
- * ```
- * <ul>
- *   <template [foo]="bar">
- *     <li title="text"></li>
- *   </template>
- * </ul>
- * ```
- *
- * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for the `Viewport`
- * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
- *
- *
- * ## Example
- *
- * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
- *
- * Here is a simple viewport directive that triggers on an `unless` selector:
- *
- * ```
- * @Viewport({
- *   selector: '[unless]',
- *   properties: {
- *     'unless': 'unless'
- *   }
- * })
- * export class Unless {
- *   viewContainer: ViewContainerRef;
- *   prevCondition: boolean;
- *
- *   constructor(viewContainer: ViewContainerRef) {
- *     this.viewContainer = viewContainer;
- *     this.prevCondition = null;
- *   }
- *
- *   set unless(newCondition) {
- *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
- *       this.prevCondition = true;
- *       this.viewContainer.clear();
- *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
- *       this.prevCondition = false;
- *       this.viewContainer.create();
- *     }
- *   }
- * }
- * ```
- *
- * We can then use this `unless` selector in a template:
- * ```
- * <ul>
- *   <li *unless="expr"></li>
- * </ul>
- * ```
- *
- * Once the viewport instantiates the child view, the shorthand notation for the template expands and the result is:
- *
- * ```
- * <ul>
- *   <template [unless]="exp">
- *     <li></li>
- *   </template>
- *   <li></li>
- * </ul>
- * ```
- *
- * Note also that although the `<li></li>` template still exists inside the `<template></template>`, the instantiated
- * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
- *
- *
- * @exportedAs angular2/annotations
- */
-export class Viewport extends Directive {
-  @CONST()
-  constructor({
-      selector,
-      properties,
-      events,
-      hostListeners,
-      hostProperties,
-      lifecycle
-    }:{
-    selector:string,
-    properties:any,
-    hostListeners:any,
-    hostProperties:any,
-    events:List,
-    lifecycle:List
-    }={})
-  {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      hostListeners: hostListeners,
-      hostProperties: hostProperties,
-      lifecycle: lifecycle
-    });
-  }
-}
 
 //TODO(misko): turn into LifecycleEvent class once we switch to TypeScript;
 

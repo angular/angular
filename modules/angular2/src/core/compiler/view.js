@@ -235,9 +235,9 @@ export class AppProtoView {
   }
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,
-      componentDirective:DirectiveBinding = null, viewportDirective:DirectiveBinding = null):ElementBinder {
+      componentDirective:DirectiveBinding = null):ElementBinder {
     var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
-        protoElementInjector, componentDirective, viewportDirective);
+        protoElementInjector, componentDirective);
     ListWrapper.push(this.elementBinders, elBinder);
     return elBinder;
   }

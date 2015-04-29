@@ -56,8 +56,8 @@ export class AppViewManagerUtils {
 
       // preBuiltObjects
       if (isPresent(elementInjector)) {
-        var defaultProtoView = isPresent(binder.viewportDirective) ? binder.nestedProtoView : null;
-        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(viewManager, view, defaultProtoView);
+        var embeddedProtoView = binder.hasEmbeddedProtoView() ? binder.nestedProtoView : null;
+        preBuiltObjects[binderIdx] = new eli.PreBuiltObjects(viewManager, view, embeddedProtoView);
       }
     }
 

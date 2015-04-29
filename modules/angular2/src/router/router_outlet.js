@@ -32,7 +32,7 @@ export class RouterOutlet {
       ]);
 
       this._viewContainer.clear();
-      this._viewContainer.create(0, pv, outletInjector);
+      this._viewContainer.create(pv, 0, outletInjector);
     });
   }
 

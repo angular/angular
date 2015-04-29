@@ -5,7 +5,7 @@ projected to DOM as well as which DOM events should invoke which methods on the 
 syntax which is core to Angular and allows for data-binding, event-binding, template-instantiation.
 
 The design of the template syntax has these properties:
- 
+
 
 * All data-binding expressions are easily identifiable. (i.e. there is never an ambiguity whether the value should be
   interpreted as string literal or as an expression.)
@@ -372,8 +372,8 @@ Where:
   inserted. The template can be defined implicitly with `template` attribute, which turns the current element into
   a template, or explicitly with `<template>` element. Explicit declaration is longer, but it allows for having
   templates which have more than one root DOM node.
-* `viewport` is required for templates. The Viewport directive is responsible for deciding when
-  and in which order should child views be inserted into this location. An Viewport directive usually has one or
+* `viewport` is required for templates. The directive is responsible for deciding when
+  and in which order should child views be inserted into this location. Such a directive usually has one or
   more bindings and can be represented as either `viewport-directive-bindings` or
   `viewport-directive-microsyntax` on `template` element or attribute. See template microsyntax for more details.
 
@@ -387,7 +387,7 @@ Hello {{user}}!
 </div>
 ```
 
-In the above example the `if` Viewport determines whether the child view (an instance of the child template) should be
+In the above example the `if` directive determines whether the child view (an instance of the child template) should be
 inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
 
 The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
@@ -401,8 +401,6 @@ Hello {{user}}!
   </div>
 </template>
 ```
-
-NOTE: Only Viewport directives can be placed on the template element. (Decorators and Components are not allowed.)
 
 
 ### Template Microsyntax
@@ -514,7 +512,7 @@ Where:
 * `some-element` Any element which can generate DOM events (or has an angular directive which generates the event).
 * `some-event` (escaped with `()` or `on-`) is the name of the event `some-event`. In this case the
   dash-case is converted into camel-case `someEvent`.
-* `statement` is a valid statement (as defined in section below). 
+* `statement` is a valid statement (as defined in section below).
 If the execution of the statement returns `false`, then `preventDefault`is applied on the DOM event.
 
 By default, angular only listens to the element on the event, and ignores events which bubble. To listen to bubbled

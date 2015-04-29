@@ -17,8 +17,6 @@ export function main() {
       annotatedDirectives = [
         someComponent,
         someComponent2,
-        someViewport,
-        someViewport2,
         someDecorator,
         someDecoratorIgnoringChildren,
         decoratorWithMultipleAttrs,
@@ -154,27 +152,6 @@ export function main() {
     });
 
     //TODO: assertions should be enabled when running tests: https://github.com/angular/angular/issues/1340
-    describe('viewport directives', () => {
-      it('should not allow multiple viewport directives on the same element', () => {
-        expect( () => {
-          process(
-            el('<template some-vp some-vp2></template>')
-          );
-        }).toThrowError('Only one viewport directive is allowed per element - check '
-          + (assertionsEnabled() ? '<template some-vp some-vp2>' : 'null'));
-      });
-
-      it('should not allow viewport directives on non <template> elements', () => {
-        expect( () => {
-          process(
-            el('<div some-vp></div>')
-          );
-        }).toThrowError('Viewport directives need to be placed on <template> elements or elements with template attribute - check ' 
-          + (assertionsEnabled() ? '<div some-vp>' : 'null'));
-      });
-    });
-
-    //TODO: assertions should be enabled when running tests: https://github.com/angular/angular/issues/1340
     describe('component directives', () => {
       it('should save the component id', () => {
         var results = process(
@@ -229,18 +206,6 @@ var someComponent2 = new DirectiveMetadata({
   selector: 'some-comp2',
   id: 'someComponent2',
   type: DirectiveMetadata.COMPONENT_TYPE
-});
-
-var someViewport = new DirectiveMetadata({
-  selector: '[some-vp]',
-  id: 'someViewport',
-  type: DirectiveMetadata.VIEWPORT_TYPE
-});
-
-var someViewport2 = new DirectiveMetadata({
-  selector: '[some-vp2]',
-  id: 'someViewport2',
-  type: DirectiveMetadata.VIEWPORT_TYPE
 });
 
 var someDecorator = new DirectiveMetadata({

@@ -21,7 +21,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, DynamicComponent, Viewport, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, DynamicComponent, Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
@@ -146,13 +146,6 @@ export function main() {
       it('should fill directive.type for dynamic components', inject([AsyncTestCompleter], (async) => {
         captureDirective(SomeDynamicComponentDirective).then( (renderDir) => {
           expect(renderDir.type).toEqual(renderApi.DirectiveMetadata.COMPONENT_TYPE);
-          async.done();
-        });
-      }));
-
-      it('should fill directive.type for viewport directives', inject([AsyncTestCompleter], (async) => {
-        captureDirective(SomeViewportDirective).then( (renderDir) => {
-          expect(renderDir.type).toEqual(renderApi.DirectiveMetadata.VIEWPORT_TYPE);
           async.done();
         });
       }));
@@ -297,7 +290,7 @@ export function main() {
       });
     }));
 
-    it('should load nested components in viewport', inject([AsyncTestCompleter], (async) => {
+    it('should load nested components in viewcontainers', inject([AsyncTestCompleter], (async) => {
       tplResolver.setView(MainComponent, new View({template: '<div></div>'}));
       tplResolver.setView(NestedComponent, new View({template: '<div></div>'}));
       var mainProtoView = createProtoView([
@@ -451,16 +444,14 @@ function createComponentElementBinder(reader, type) {
   var binding = createDirectiveBinding(reader, type);
   return new ElementBinder(
     0, null, 0,
-    null, binding,
-    null
+    null, binding
   );
 }
 
 function createViewportElementBinder(nestedProtoView) {
   var elBinder = new ElementBinder(
     0, null, 0,
-    null, null,
-    null
+    null, null
   );
   elBinder.nestedProtoView = nestedProtoView;
   return elBinder;
@@ -501,9 +492,6 @@ class RecursiveComponent {}
 
 @DynamicComponent()
 class SomeDynamicComponentDirective {}
-
-@Viewport()
-class SomeViewportDirective {}
 
 @Decorator()
 class SomeDecoratorDirective {}

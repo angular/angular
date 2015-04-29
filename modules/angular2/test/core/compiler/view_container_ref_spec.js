@@ -44,8 +44,8 @@ export function main() {
       return new AppView(null, createProtoView(), MapWrapper.create());
     }
 
-    function createViewContainer(defaultProtoView = null) {
-      return new ViewContainerRef(viewManager, location, defaultProtoView);
+    function createViewContainer() {
+      return new ViewContainerRef(viewManager, location);
     }
 
     beforeEach( () => {

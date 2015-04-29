@@ -56,11 +56,7 @@ export class DirectiveParser extends CompileStep {
       cssSelector.addAttribute(attrName, attrValue);
     });
 
-    var viewportDirective;
     var componentDirective;
-    // Note: We assume that the ViewSplitter already did its work, i.e. template directive should
-    // only be present on <template> elements!
-    var isTemplateElement = DOM.isTemplateElement(current.element);
 
     this._selectorMatcher.match(cssSelector, (selector, directiveIndex) => {
       var elementBinder = current.bindElement();
@@ -87,26 +83,12 @@ export class DirectiveParser extends CompileStep {
           elementBinder.readAttribute(attrName);
         });
       }
-      if (directive.type === DirectiveMetadata.VIEWPORT_TYPE) {
-        if (!isTemplateElement) {
-          throw new BaseException(`Viewport directives need to be placed on <template> elements or elements ` +
-            `with template attribute - check ${current.elementDescription}`);
+      if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
+        if (isPresent(componentDirective)) {
+          throw new BaseException(`Only one component directive is allowed per element - check ${current.elementDescription}`);
         }
-        if (isPresent(viewportDirective)) {
-          throw new BaseException(`Only one viewport directive is allowed per element - check ${current.elementDescription}`);
-        }
-        viewportDirective = directive;
-      } else {
-        if (isTemplateElement) {
-          throw new BaseException(`Only template directives are allowed on template elements - check ${current.elementDescription}`);
-        }
-        if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
-          if (isPresent(componentDirective)) {
-            throw new BaseException(`Only one component directive is allowed per element - check ${current.elementDescription}`);
-          }
-          componentDirective = directive;
-          elementBinder.setComponentId(directive.id);
-        }
+        componentDirective = directive;
+        elementBinder.setComponentId(directive.id);
       }
     });
   }

@@ -1,5 +1,6 @@
-import {Viewport} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
+import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isBlank} from 'angular2/src/facade/lang';
 
 /**
@@ -25,7 +26,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/directives
  */
-@Viewport({
+@Decorator({
   selector: '[if]',
   properties: {
     'condition': 'if'
@@ -33,17 +34,19 @@ import {isBlank} from 'angular2/src/facade/lang';
 })
 export class If {
   viewContainer: ViewContainerRef;
+  protoViewRef: ProtoViewRef;
   prevCondition: boolean;
 
-  constructor(viewContainer: ViewContainerRef) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef:ProtoViewRef) {
     this.viewContainer = viewContainer;
     this.prevCondition = null;
+    this.protoViewRef = protoViewRef;
   }
 
   set condition(newCondition /* boolean */) {
     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
       this.prevCondition = true;
-      this.viewContainer.create();
+      this.viewContainer.create(this.protoViewRef);
     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
       this.prevCondition = false;
       this.viewContainer.clear();

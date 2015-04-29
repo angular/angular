@@ -24,7 +24,7 @@ import {Injector, bind} from 'angular2/di';
 import {PipeRegistry, defaultPipeRegistry,
   ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
-import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator, Component, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
@@ -32,6 +32,7 @@ import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {If} from 'angular2/src/directives/if';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
+import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
@@ -522,7 +523,7 @@ export function main() {
         })
       }));
 
-      it('should create a component that injects an @Ancestor through viewport directive', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      it('should create a component that injects an @Ancestor through viewcontainer directive', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: `
             <some-directive>
@@ -865,7 +866,7 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
-      vc.create(0, hostPv, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
+      vc.create(hostPv, 0, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
     });
   }
 }
@@ -1037,13 +1038,13 @@ class ChildComp2 {
   }
 }
 
-@Viewport({
+@Decorator({
   selector: '[some-viewport]'
 })
 class SomeViewport {
-  constructor(container: ViewContainerRef) {
-    container.create().setLocal('some-tmpl', 'hello');
-    container.create().setLocal('some-tmpl', 'again');
+  constructor(container: ViewContainerRef, protoView:ProtoViewRef) {
+    container.create(protoView).setLocal('some-tmpl', 'hello');
+    container.create(protoView).setLocal('some-tmpl', 'again');
   }
 }
 

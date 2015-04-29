@@ -1,8 +1,27 @@
-import {Decorator, Viewport} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
+import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
 import {Parent} from 'angular2/src/core/annotations_impl/visibility';
+
+class SwitchView {
+  _viewContainerRef: ViewContainerRef;
+  _protoViewRef: ProtoViewRef;
+
+  constructor(viewContainerRef: ViewContainerRef, protoViewRef: ProtoViewRef) {
+    this._protoViewRef = protoViewRef;
+    this._viewContainerRef = viewContainerRef;
+  }
+
+  create() {
+    this._viewContainerRef.create(this._protoViewRef);
+  }
+
+  destroy() {
+    this._viewContainerRef.clear();
+  }
+}
 
 /**
  * The `Switch` directive is used to conditionally swap DOM structure on your template based on a
@@ -40,92 +59,93 @@ import {Parent} from 'angular2/src/core/annotations_impl/visibility';
 export class Switch {
   _switchValue: any;
   _useDefault: boolean;
-  _valueViewContainers: Map;
-  _activeViewContainers: List<ViewContainerRef>;
+  _valueViews: Map;
+  _activeViews: List<SwitchView>;
 
   constructor() {
-    this._valueViewContainers = MapWrapper.create();
-    this._activeViewContainers = ListWrapper.create();
+    this._valueViews = MapWrapper.create();
+    this._activeViews = ListWrapper.create();
     this._useDefault = false;
   }
 
   set value(value) {
     // Empty the currently active ViewContainers
-    this._emptyAllActiveViewContainers();
+    this._emptyAllActiveViews();
 
     // Add the ViewContainers matching the value (with a fallback to default)
     this._useDefault = false;
-    var containers = MapWrapper.get(this._valueViewContainers, value);
-    if (isBlank(containers)) {
+    var views = MapWrapper.get(this._valueViews, value);
+    if (isBlank(views)) {
       this._useDefault = true;
-      containers = normalizeBlank(MapWrapper.get(this._valueViewContainers, _whenDefault));
+      views = normalizeBlank(MapWrapper.get(this._valueViews, _whenDefault));
     }
-    this._activateViewContainers(containers);
+    this._activateViews(views);
 
     this._switchValue = value;
   }
 
-  _onWhenValueChanged(oldWhen, newWhen, viewContainer: ViewContainerRef):void {
-    this._deregisterViewContainer(oldWhen, viewContainer);
-    this._registerViewContainer(newWhen, viewContainer);
+  _onWhenValueChanged(oldWhen, newWhen, view: SwitchView):void {
+    this._deregisterView(oldWhen, view);
+    this._registerView(newWhen, view);
 
     if (oldWhen === this._switchValue) {
-      viewContainer.remove();
-      ListWrapper.remove(this._activeViewContainers, viewContainer);
+      view.destroy();
+      ListWrapper.remove(this._activeViews, view);
     } else if (newWhen === this._switchValue) {
       if (this._useDefault) {
         this._useDefault = false;
-        this._emptyAllActiveViewContainers();
+        this._emptyAllActiveViews();
       }
-      viewContainer.create();
-      ListWrapper.push(this._activeViewContainers, viewContainer);
+      view.create();
+      ListWrapper.push(this._activeViews, view);
     }
 
     // Switch to default when there is no more active ViewContainers
-    if (this._activeViewContainers.length === 0 && !this._useDefault) {
+    if (this._activeViews.length === 0 && !this._useDefault) {
       this._useDefault = true;
-      this._activateViewContainers(MapWrapper.get(this._valueViewContainers, _whenDefault));
+      this._activateViews(MapWrapper.get(this._valueViews, _whenDefault));
     }
   }
 
-  _emptyAllActiveViewContainers():void {
-    var activeContainers = this._activeViewContainers;
+  _emptyAllActiveViews():void {
+    var activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
-      activeContainers[i].remove();
+      activeContainers[i].destroy();
     }
-    this._activeViewContainers = ListWrapper.create();
+    this._activeViews = ListWrapper.create();
   }
 
-  _activateViewContainers(containers: List<ViewContainerRef>):void {
-    // TODO(vicb): assert(this._activeViewContainers.length === 0);
-    if (isPresent(containers)) {
-      for (var i = 0; i < containers.length; i++) {
-        containers[i].create();
+  _activateViews(views: List<SwitchView>):void {
+    // TODO(vicb): assert(this._activeViews.length === 0);
+    if (isPresent(views)) {
+      for (var i = 0; i < views.length; i++) {
+        views[i].create();
       }
-      this._activeViewContainers = containers;
+      this._activeViews = views;
     }
   }
 
-  _registerViewContainer(value, container: ViewContainerRef): void {
-    var containers = MapWrapper.get(this._valueViewContainers, value);
-    if (isBlank(containers)) {
-      containers = ListWrapper.create();
-      MapWrapper.set(this._valueViewContainers, value, containers);
+  _registerView(value, view: SwitchView): void {
+    var views = MapWrapper.get(this._valueViews, value);
+    if (isBlank(views)) {
+      views = ListWrapper.create();
+      MapWrapper.set(this._valueViews, value, views);
     }
-    ListWrapper.push(containers, container);
+    ListWrapper.push(views, view);
   }
 
-  _deregisterViewContainer(value, container: ViewContainerRef):void {
+  _deregisterView(value, view: SwitchView):void {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
-    var containers = MapWrapper.get(this._valueViewContainers, value);
-    if (containers.length == 1) {
-      MapWrapper.delete(this._valueViewContainers, value);
+    var views = MapWrapper.get(this._valueViews, value);
+    if (views.length == 1) {
+      MapWrapper.delete(this._valueViews, value);
     } else {
-      ListWrapper.remove(containers, container);
+      ListWrapper.remove(views, view);
     }
   }
 }
+
 
 /**
  * Defines a case statement as an expression.
@@ -144,7 +164,7 @@ export class Switch {
  *
  * @exportedAs angular2/directives
  */
-@Viewport({
+@Decorator({
   selector: '[switch-when]',
   properties: {
     'when' : 'switch-when'
@@ -153,17 +173,21 @@ export class Switch {
 export class SwitchWhen {
   _value: any;
   _switch: Switch;
-  _viewContainer: ViewContainerRef;
+  _view: SwitchView;
 
-  constructor(viewContainer: ViewContainerRef, @Parent() sswitch: Switch) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef, @Parent() sswitch: Switch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
-    this._viewContainer = viewContainer;
+    this._view = new SwitchView(viewContainer, protoViewRef);
+  }
+
+  onDestroy() {
+    this._switch
   }
 
   set when(value) {
-    this._switch._onWhenValueChanged(this._value, value, this._viewContainer);
+    this._switch._onWhenValueChanged(this._value, value, this._view);
     this._value = value;
   }
 }
@@ -182,12 +206,12 @@ export class SwitchWhen {
  *
  * @exportedAs angular2/directives
  */
-@Viewport({
+@Decorator({
   selector: '[switch-default]'
 })
 export class SwitchDefault {
-  constructor(viewContainer: ViewContainerRef, @Parent() sswitch: Switch) {
-    sswitch._registerViewContainer(_whenDefault, viewContainer);
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef, @Parent() sswitch: Switch) {
+    sswitch._registerView(_whenDefault, new SwitchView(viewContainer, protoViewRef));
   }
 }
 

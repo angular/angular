@@ -1,6 +1,6 @@
-import {Viewport} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ViewRef, ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -36,7 +36,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * @exportedAs angular2/directives
  */
-@Viewport({
+@Decorator({
   selector: '[for][of]',
   properties: {
     'iterableChanges': 'of | iterableDiff'
@@ -44,8 +44,10 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 })
 export class For  {
   viewContainer: ViewContainerRef;
-  constructor(viewContainer:ViewContainerRef) {
+  protoViewRef: ProtoViewRef;
+  constructor(viewContainer:ViewContainerRef, protoViewRef: ProtoViewRef) {
     this.viewContainer = viewContainer;
+    this.protoViewRef = protoViewRef;
   }
 
   set iterableChanges(changes) {
@@ -71,7 +73,7 @@ export class For  {
       (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
     );
 
-    For.bulkInsert(insertTuples, this.viewContainer);
+    For.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this.perViewChange(insertTuples[i].view, insertTuples[i].record);
@@ -99,14 +101,14 @@ export class For  {
     return movedTuples;
   }
 
-  static bulkInsert(tuples, viewContainer) {
+  static bulkInsert(tuples, viewContainer, protoViewRef) {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
     for (var i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
       if (isPresent(tuple.view)) {
         viewContainer.insert(tuple.view, tuple.record.currentIndex);
       } else {
-        tuple.view = viewContainer.create(tuple.record.currentIndex);
+        tuple.view = viewContainer.create(protoViewRef, tuple.record.currentIndex);
       }
     }
     return tuples;

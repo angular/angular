@@ -4,7 +4,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {ChangeDetection, DirectiveIndex} from 'angular2/change_detection';
-import {Component, Viewport, DynamicComponent} from '../annotations_impl/annotations';
+import {Component, DynamicComponent} from '../annotations_impl/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
 import {AppProtoView} from './view';
@@ -81,8 +81,7 @@ export class ProtoViewFactory {
           isPresent(sortedDirectives.componentDirective), parentPeiWithDistance.distance
       );
       protoElementInjector.attributes = renderElementBinder.readAttributes;
-      // Viewport directives are treated differently than other element with var- definitions.
-      if (hasVariables && !isPresent(sortedDirectives.viewportDirective)) {
+      if (hasVariables) {
         protoElementInjector.exportComponent = isPresent(sortedDirectives.componentDirective);
         protoElementInjector.exportElement = isBlank(sortedDirectives.componentDirective);
 
@@ -105,8 +104,7 @@ export class ProtoViewFactory {
       parent,
       renderElementBinder.distanceToParent,
       protoElementInjector,
-      sortedDirectives.componentDirective,
-      sortedDirectives.viewportDirective
+      sortedDirectives.componentDirective
     );
     // text nodes
     for (var i=0; i<renderElementBinder.textBindings.length; i++) {
@@ -155,14 +153,12 @@ export class ProtoViewFactory {
 
 class SortedDirectives {
   componentDirective: DirectiveBinding;
-  viewportDirective: DirectiveBinding;
   renderDirectives: List<renderApi.DirectiveBinder>;
   directives: List<DirectiveBinding>;
 
   constructor(renderDirectives, allDirectives) {
     this.renderDirectives = [];
     this.directives = [];
-    this.viewportDirective = null;
     this.componentDirective = null;
     ListWrapper.forEach(renderDirectives, (renderDirectiveBinder) => {
       var directiveBinding = allDirectives[renderDirectiveBinder.directiveIndex];
@@ -172,9 +168,6 @@ class SortedDirectives {
         ListWrapper.insert(this.renderDirectives, 0, renderDirectiveBinder);
         ListWrapper.insert(this.directives, 0, directiveBinding);
       } else {
-        if (directiveBinding.annotation instanceof Viewport) {
-          this.viewportDirective = directiveBinding;
-        }
         ListWrapper.push(this.renderDirectives, renderDirectiveBinder);
         ListWrapper.push(this.directives, directiveBinding);
       }

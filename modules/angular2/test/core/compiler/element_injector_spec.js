@@ -705,6 +705,12 @@ export function main() {
 
         expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
       });
+
+      it("should throw if there is no ProtoViewRef", function () {
+        expect(
+          () => injector([NeedsProtoViewRef])
+        ).toThrowError('No provider for ProtoViewRef! (NeedsProtoViewRef -> ProtoViewRef)');
+      });
     });
 
     describe('directive queries', () => {

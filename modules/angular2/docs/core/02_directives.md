@@ -10,7 +10,6 @@ There are three different kinds of directives (described in more detail in later
 
 1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
 2. *Components*: Components have an encapsulated view and can configure injectors.
-3. *Viewport*: is responsible for adding or removing child views in a parent view. (i.e. for, if)
 
 
 
@@ -163,21 +162,19 @@ Example of usage:
 
 
 
-## Viewport
+## Directives that use a ViewContainer
 
-Viewport is a directive which can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.)
+Directives that use a ViewContainer can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.)
 
-* Viewports can only be placed on `<template>` elements (or the short hand version which uses `<element template>` attribute.)
-* Only one viewport can be present per DOM template element.
-* The viewport is created over the `template` element. This is known as the `ViewContainerRef`.
-* Viewport can insert child views into the `ViewContainerRef`. The child views show up as siblings of the `Viewport` in the DOM.
+* Every `template` element creates a `ProtoView` which can be used to create Views via the ViewContainer.
+* The child views show up as siblings of the directive in the DOM.
 
 >> TODO(misko): Relationship with Injection
 >> TODO(misko): Instantiator can not be injected into child Views
 
 
 ```
-@Viewport({
+@Directive({
   selector: '[if]',
   properties: {
     'condition': 'if'
@@ -185,17 +182,19 @@ Viewport is a directive which can control instantiation of child views which are
 })
 export class If {
   viewContainer: ViewContainerRef;
+  protoViewRef: ProtoViewRef;
   view: View;
 
-  constructor(viewContainer: ViewContainerRef) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
     this.viewContainer = viewContainer;
+    this.protoViewRef = protoViewRef;
     this.view = null;
   }
 
   set condition(value) {
     if (value) {
       if (this.view === null) {
-        this.view = this.viewContainer.create();
+        this.view = this.viewContainer.create(protoViewRef);
       }
     } else {
       if (this.view !== null) {
@@ -342,7 +341,7 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 })
 class Kid {
   constructor(
-    @Parent() dad:Dad, 
+    @Parent() dad:Dad,
     @Optional() grandpa:Grandpa
   ) {
     this.name = 'Billy';
@@ -365,7 +364,7 @@ class Dad {
     this.dad = dad.name;
     console.log(dad)
   }
-} 
+}
 
 @Component({
   selector: '[grandpa]',
@@ -379,17 +378,17 @@ class Grandpa {
   constructor() {
     this.name = 'Joe';
   }
-}                                                   
+}
 ```
 
 Assume the following DOM structure for `grandpa.html`: The Dad has access to the Grandpa.
 ```
-Name: {{name}}: <br> Children: <div dad></div>                              
+Name: {{name}}: <br> Children: <div dad></div>
 ```
 
 Assume the following DOM structure for `dad.html`: Here the rendered Kid will also have access to Grandpa.
 ```
-Name: {{name}}: <br> Dad: {{dad}} <br> Children: <div kid></div> 
+Name: {{name}}: <br> Dad: {{dad}} <br> Children: <div kid></div>
 ```
 
 ## Further Reading

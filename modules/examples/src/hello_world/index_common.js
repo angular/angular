@@ -7,11 +7,10 @@ import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotatio
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 
-// Angular 2.0 supports 3 basic types of directives:
+// Angular 2.0 supports 2 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
 // - Decorator - add behavior to existing elements.
-// - Viewport - allow for stamping out of a html template (not in this demo).
 
 // @Component is AtScript syntax to annotate the HelloCmp class as an Angular
 // 2.0 component.
@@ -46,8 +45,8 @@ export class HelloCmp {
   }
 }
 
-// Decorators are light-weight. They don't allow for templates, or new
-// expression contexts (use @Component or @Viewport for those needs).
+// Decorators are light-weight. They don't allow new
+// expression contexts (use @Component for those needs).
 @Decorator({
   selector: '[red]'
 })

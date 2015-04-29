@@ -4,8 +4,8 @@
 
 This document explains the concept of a View.
 A View is a core primitive used by angular to render the DOM tree.
-A ViewPort is location in a View which can accept child Views.
-Every ViewPort has an associated ViewContainerRef than can contain any number of child Views.
+A ViewContainer is location in a View which can accept child Views.
+Every ViewContainer has an associated ViewContainerRef than can contain any number of child Views.
 Views form a tree structure which mimics the DOM tree.
 
 * View is a core rendering construct. A running application is just a collection of Views which are
@@ -15,7 +15,7 @@ Views form a tree structure which mimics the DOM tree.
 * Views represent a running instance of a DOM View. This implies that while elements in a View
   can change properties, they can not change structurally. (Structural changes such as, adding or
   removing elements requires adding or removing child Views into ViewContainers).
-* View can have zero or more ViewPorts. A ViewPort is a marker in the DOM which allows
+* View can have zero or more ViewContainers. A ViewContainer is a marker in the DOM which allows
   the insertion of child Views.
 * Views are created from a ProtoView. A ProtoView is a compiled DOM View which is efficient at
   creating Views.
@@ -88,7 +88,7 @@ Note:
 ## Composed View
 
 An important part of an application is to be able to change the DOM structure to render data for the
-user. In Angular this is done by inserting child views into the ViewPort.
+user. In Angular this is done by inserting child views into the ViewContainer.
 
 Let's start with a View such as:
 
@@ -108,7 +108,7 @@ and
 
 ```
 <ul>                    | protoViewA(someContext)
-  <template></template> | protoViewA(someContext): new ProtoViewPort(protoViewB)
+  <template></template> | protoViewA(someContext): protoViewB
 </ul>                   | protoViewA(someContext)
 ```
 
@@ -119,7 +119,7 @@ The next step is to compose these two ProtoViews into an actual view which is re
 
 ```
 <ul>                    | viewA(someContext)
-  <template></template> | viewA(someContext): new Foreach(new ViewPort(protoViewB))
+  <template></template> | viewA(someContext): new Foreach(new ViewContainer(protoViewB))
 </ul>                   | viewA(someContext)
 ```
 
@@ -128,11 +128,11 @@ has a reference to `protoViewA`).
 
 
 *Step3:* As the `Foreach` directive unrolls it asks the `ViewContainerRef` to instantiate `protoViewB` and insert
-it after the `ViewPort` anchor. This is repeated for each `person` in `people`. Notice that
+it after the `ViewContainer` anchor. This is repeated for each `person` in `people`. Notice that
 
 ```
 <ul>                    | viewA(someContext)
-  <template></template> | viewA(someContext): new Foreach(new ViewPort(protoViewB))
+  <template></template> | viewA(someContext): new Foreach(new ViewContainer(protoViewB))
   <li>{{person}}</li>   | viewB0(locals0(someContext))
   <li>{{person}}</li>   | viewB1(locals0(someContext))
 </ul>                   | viewA(someContext)
@@ -145,13 +145,13 @@ delegate any unknown references to the parent context.
 
 ```
 <ul>                    | viewA
-  <template></template> | viewA: new Foreach(new ViewPort(protoViewB))
+  <template></template> | viewA: new Foreach(new ViewContainer(protoViewB))
   <li>Alice</li>        | viewB0
   <li>Bob</li>          | viewB1
 </ul>                   | viewA
 ```
 
-Each View can have zero or more ViewPorts. By inserting and removing child Views to and from the
+Each View can have zero or more ViewContainers. By inserting and removing child Views to and from the
 ViewContainers, the application can mutate the DOM structure to any desirable state. A View may contain
 individual nodes or a complex DOM structure. The insertion points for the child Views, known as
 ViewContainers, contain a DOM element which acts as an anchor. The anchor is either a `template` or
@@ -161,7 +161,7 @@ inserted.
 ## Component Views
 
 A View can also contain Components. Components contain Shadow DOM for encapsulating their internal
-rendering state. Unlike ViewPorts which can contain zero or more Views, the Component always contains
+rendering state. Unlike ViewContainers which can contain zero or more Views, the Component always contains
 exactly one Shadow View.
 
 ```

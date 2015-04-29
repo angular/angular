@@ -638,7 +638,7 @@ export class ElementInjector extends TreeNode {
   }
 
   getViewContainerRef() {
-    return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef(), new ProtoViewRef(this._preBuiltObjects.protoView));
+    return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
   getDynamicallyLoadedComponent() {
@@ -719,6 +719,9 @@ export class ElementInjector extends TreeNode {
       return this.getViewContainerRef();
     }
     if (dep.key.id === StaticKeys.instance().protoViewId) {
+      if (isBlank(this._preBuiltObjects.protoView)) {
+        throw new NoBindingError(dep.key);
+      }
       return new ProtoViewRef(this._preBuiltObjects.protoView);
     }
     return this._getByKey(dep.key, dep.depth, dep.optional, requestor);

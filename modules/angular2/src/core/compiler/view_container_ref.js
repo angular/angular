@@ -10,14 +10,11 @@ import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 export class ViewContainerRef {
   _viewManager: avmModule.AppViewManager;
   _element: ElementRef;
-  _defaultProtoViewRef: ProtoViewRef;
 
   constructor(viewManager: avmModule.AppViewManager,
-              element: ElementRef,
-              defaultProtoViewRef: ProtoViewRef) {
+              element: ElementRef) {
     this._viewManager = viewManager;
     this._element = element;
-    this._defaultProtoViewRef = defaultProtoViewRef;
   }
 
   _getViews() {
@@ -41,11 +38,8 @@ export class ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(atIndex:number=-1, protoViewRef:ProtoViewRef = null, injector:Injector = null): ViewRef {
+  create(protoViewRef:ProtoViewRef = null, atIndex:number=-1, injector:Injector = null): ViewRef {
     if (atIndex == -1) atIndex = this.length;
-    if (isBlank(protoViewRef)) {
-      protoViewRef = this._defaultProtoViewRef;
-    }
     return this._viewManager.createViewInContainer(this._element, atIndex, protoViewRef, injector);
   }
 

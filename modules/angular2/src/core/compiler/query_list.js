@@ -7,7 +7,7 @@ import {BaseQueryList} from './base_query_list';
  * The directives are kept in depth-first pre-order traversal of the DOM.
  *
  * The `QueryList` is iterable, therefore it can be used in both javascript code with `for..of` loop as well as in
- * template with `*for="of"` viewport.
+ * template with `*for="of"` directive.
  *
  * NOTE: In the future this class will implement an `Observable` interface. For now it uses a plain list of observable
  * callbacks.

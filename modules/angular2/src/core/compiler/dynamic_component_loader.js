@@ -87,7 +87,7 @@ export class DynamicComponentLoader {
     var binding = this._getBinding(typeOrBinding);
     return this._compiler.compileInHost(binding).then(hostProtoViewRef => {
       var viewContainer = this._viewManager.getViewContainer(location);
-      var hostViewRef = viewContainer.create(-1, hostProtoViewRef, injector);
+      var hostViewRef = viewContainer.create(hostProtoViewRef, viewContainer.length, injector);
       var newLocation = new ElementRef(hostViewRef, 0);
       var component = this._viewManager.getComponent(newLocation);
 

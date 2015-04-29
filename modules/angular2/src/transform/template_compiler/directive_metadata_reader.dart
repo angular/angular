@@ -19,8 +19,6 @@ num _getDirectiveType(String annotationName) {
       return DirectiveMetadata.DECORATOR_TYPE;
     case 'Component':
       return DirectiveMetadata.COMPONENT_TYPE;
-    case 'Viewport':
-      return DirectiveMetadata.VIEWPORT_TYPE;
     default:
       return -1;
   }

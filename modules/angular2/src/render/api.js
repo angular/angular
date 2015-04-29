@@ -91,7 +91,7 @@ export class ProtoViewDto {
   // The view of the component
   // Can contain 0 to n views of type #EMBEDDED_VIEW_TYPE
   static get COMPONENT_VIEW_TYPE() { return 1; }
-  // A view that is included via a Viewport directive
+  // A view that is embedded into another View via a <template> element
   // inside of a component view
   static get EMBEDDED_VIEW_TYPE() { return 1; }
 
@@ -111,7 +111,6 @@ export class ProtoViewDto {
 export class DirectiveMetadata {
   static get DECORATOR_TYPE() { return 0; }
   static get COMPONENT_TYPE() { return 1; }
-  static get VIEWPORT_TYPE() { return 2; }
   id:any;
   selector:string;
   compileChildren:boolean;

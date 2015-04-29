@@ -9,7 +9,7 @@ import {
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {RootRouter, Viewport} from 'angular2/src/router/router';
+import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
 

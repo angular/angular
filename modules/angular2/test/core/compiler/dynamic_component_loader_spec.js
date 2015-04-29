@@ -16,7 +16,7 @@ import {
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator, Component, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -61,7 +61,7 @@ export function main() {
         });
       }));
 
-      it('should allow to destroy and create them via viewport directives',
+      it('should allow to destroy and create them via viewcontainer directives',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',

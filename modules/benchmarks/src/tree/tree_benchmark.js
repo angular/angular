@@ -1,4 +1,4 @@
-import {bootstrap, Component, Viewport, View, ViewContainerRef, Compiler, Decorator} from 'angular2/angular2';
+import {bootstrap, Component, View, ViewContainerRef, Compiler, Decorator} from 'angular2/angular2';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {reflector} from 'angular2/src/reflection/reflection';

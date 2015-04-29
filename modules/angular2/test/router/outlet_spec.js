@@ -16,7 +16,7 @@ import {
 import {TestBed} from 'angular2/test';
 
 import {Injector, bind} from 'angular2/di';
-import {Component, Viewport} from 'angular2/src/core/annotations_impl/annotations';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {RootRouter} from 'angular2/src/router/router';
