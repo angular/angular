@@ -238,6 +238,7 @@ export class ListWrapper {
       l.sort();
     }
   }
+  static toString<T>(l: List<T>): string { return l.toString(); }
 }
 
 export function isListLikeIterable(obj): boolean {

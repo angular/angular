@@ -107,5 +107,5 @@ export class EventEmitter extends Observable {
 
   throw(error) { this._subject.onError(error); }
 
-  return (value) { this._subject.onCompleted(); }
+  return (value?) { this._subject.onCompleted(); }
 }
