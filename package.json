@@ -105,7 +105,7 @@
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
-    "ts2dart": "^0.3.0",
+    "ts2dart": "^0.4.1",
     "tsd": "^0.5.7",
     "typescript": "alexeagle/TypeScript#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
     "vinyl": "^0.4.6",
