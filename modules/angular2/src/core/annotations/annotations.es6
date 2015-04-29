@@ -7,7 +7,5 @@ export {
   Component as ComponentAnnotation,
   Decorator as DecoratorAnnotation,
   Directive as DirectiveAnnotation,
-  DynamicComponent as DynamicComponentAnnotation,
-  Viewport as ViewportAnnotation,
   onDestroy, onChange, onAllChangesDone
 } from '../annotations_impl/annotations';

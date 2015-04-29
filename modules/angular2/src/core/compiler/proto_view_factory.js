@@ -4,7 +4,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {ChangeDetection, DirectiveIndex} from 'angular2/change_detection';
-import {Component, DynamicComponent} from '../annotations_impl/annotations';
+import {Component} from '../annotations_impl/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
 import {AppProtoView} from './view';
@@ -162,7 +162,7 @@ class SortedDirectives {
     this.componentDirective = null;
     ListWrapper.forEach(renderDirectives, (renderDirectiveBinder) => {
       var directiveBinding = allDirectives[renderDirectiveBinder.directiveIndex];
-      if ((directiveBinding.annotation instanceof Component) || (directiveBinding.annotation instanceof DynamicComponent)) {
+      if (directiveBinding.annotation instanceof Component) {
         // component directives need to be the first binding in ElementInjectors!
         this.componentDirective = directiveBinding;
         ListWrapper.insert(this.renderDirectives, 0, renderDirectiveBinder);

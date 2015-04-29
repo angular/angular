@@ -34,7 +34,7 @@ export class TemplateResolver {
         return annotation;
       }
     }
-
-    throw new BaseException(`No template found for ${stringify(component)}`);
+    // No annotation = dynamic component!
+    return null;
   }
 }

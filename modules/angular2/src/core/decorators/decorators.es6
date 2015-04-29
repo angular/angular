@@ -1,8 +1,7 @@
 import {
   ComponentAnnotation,
-  DecoratorAnnotation,
-  DynamicComponentAnnotation,
-  ViewportAnnotation} from '../annotations/annotations';
+  DecoratorAnnotation
+} from '../annotations/annotations';
 import {ViewAnnotation} from '../annotations/view';
 import {AncestorAnnotation, ParentAnnotation} from '../annotations/visibility';
 import {AttributeAnnotation, QueryAnnotation} from '../annotations/di';
@@ -25,8 +24,6 @@ function makeDecorator(annotationCls) {
 /* from annotations */
 export var Component = makeDecorator(ComponentAnnotation);
 export var Decorator = makeDecorator(DecoratorAnnotation);
-export var DynamicComponent = makeDecorator(DynamicComponentAnnotation);
-export var Viewport = makeDecorator(ViewportAnnotation);
 
 /* from di */
 export var Attribute = makeDecorator(AttributeAnnotation);

@@ -8,7 +8,7 @@ import {DEFAULT} from 'angular2/change_detection';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * Directive is an abstract concept, instead use concrete directives: {@link Component}, {@link DynamicComponent}, {@link Decorator}.
+ * Directive is an abstract concept, instead use concrete directives: {@link Component}, or {@link Decorator}.
  *
  * A directive consists of a single directive annotation and a controller class. When the directive's `selector` matches
  * elements in the DOM, the following steps occur:
@@ -542,6 +542,51 @@ export class Directive extends Injectable {
  * }
  * ```
  *
+ *
+ * Dynamically loading a component at runtime:
+ *
+ * Regular Angular components are statically resolved. Dynamic components allows to resolve a component at runtime
+ * instead by providing a placeholder into which a regular Angular component can be dynamically loaded. Once loaded,
+ * the dynamically-loaded component becomes permanent and cannot be changed.
+ * Dynamic components are declared just like components, but without a `@View` annotation.
+ *
+ *
+ * ## Example
+ *
+ * Here we have `DynamicComp` which acts as the placeholder for `HelloCmp`. At runtime, the dynamic component
+ * `DynamicComp` requests loading of the `HelloCmp` component.
+ *
+ * There is nothing special about `HelloCmp`, which is a regular Angular component. It can also be used in other static
+ * locations.
+ *
+ * ```
+ * @Component({
+ *   selector: 'dynamic-comp'
+ * })
+ * class DynamicComp {
+ *   helloCmp:HelloCmp;
+ *   constructor(loader:DynamicComponentLoader, location:ElementRef) {
+ *     loader.load(HelloCmp, location).then((helloCmp) => {
+ *       this.helloCmp = helloCmp;
+ *     });
+ *   }
+ * }
+ *
+ * @Component({
+ *   selector: 'hello-cmp'
+ * })
+ * @View({
+ *   template: "{{greeting}}"
+ * })
+ * class HelloCmp {
+ *   greeting:string;
+ *   constructor() {
+ *     this.greeting = "hello";
+ *   }
+ * }
+ * ```
+ *
+ *
  * @exportedAs angular2/annotations
  */
 export class Component extends Directive {
@@ -639,90 +684,6 @@ export class Component extends Directive {
   }
 }
 
-/**
- * Directive used for dynamically loading components.
- *
- * Regular Angular components are statically resolved. DynamicComponent allows to you resolve a component at runtime
- * instead by providing a placeholder into which a regular Angular component can be dynamically loaded. Once loaded,
- * the dynamically-loaded component becomes permanent and cannot be changed.
- *
- *
- * ## Example
- *
- * Here we have `DynamicComp` which acts as the placeholder for `HelloCmp`. At runtime, the dynamic component
- * `DynamicComp` requests loading of the `HelloCmp` component.
- *
- * There is nothing special about `HelloCmp`, which is a regular Angular component. It can also be used in other static
- * locations.
- *
- * ```
- * @DynamicComponent({
- *   selector: 'dynamic-comp'
- * })
- * class DynamicComp {
- *   helloCmp:HelloCmp;
- *   constructor(loader:DynamicComponentLoader, location:PrivateComponentLocation) {
- *     loader.load(HelloCmp, location).then((helloCmp) => {
- *       this.helloCmp = helloCmp;
- *     });
- *   }
- * }
- *
- * @Component({
- *   selector: 'hello-cmp'
- * })
- * @View({
- *   template: "{{greeting}}"
- * })
- * class HelloCmp {
- *   greeting:string;
- *   constructor() {
- *     this.greeting = "hello";
- *   }
- * }
- * ```
- *
- *
- *
- * @exportedAs angular2/annotations
- */
-export class DynamicComponent extends Directive {
-  /**
-   * Same as `injectables` in the {@link Component}.
-   */
-  // TODO(vsankin): Please extract into AbstractComponent
-  injectables:any; //List;
-
-  @CONST()
-  constructor({
-      selector,
-      properties,
-      events,
-      hostListeners,
-      hostProperties,
-      injectables,
-      lifecycle
-    }:{
-      selector:string,
-      properties:any,
-      events:List,
-      hostListeners:any,
-      hostProperties:any,
-      injectables:List,
-      lifecycle:List
-    }={}) {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      hostListeners: hostListeners,
-      hostProperties: hostProperties,
-      lifecycle: lifecycle
-    });
-
-    this.injectables = injectables;
-  }
-}
 
 /**
  * Directive that attaches behavior to DOM elements.

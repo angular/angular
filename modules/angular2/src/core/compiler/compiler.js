@@ -4,7 +4,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
-import {Component, DynamicComponent, Decorator} from '../annotations_impl/annotations';
+import {Component, Decorator} from '../annotations_impl/annotations';
 import {AppProtoView} from './view';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
@@ -128,8 +128,10 @@ export class Compiler {
       // It happens when a template references a component multiple times.
       return pvPromise;
     }
-
     var template = this._templateResolver.resolve(component);
+    if (isBlank(template)) {
+      return null;
+    }
     if (isPresent(template.renderer)) {
       var directives = [];
       pvPromise = this._renderer.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
@@ -174,9 +176,7 @@ export class Compiler {
       };
       var nestedCall = null;
       if (isPresent(nestedComponent)) {
-        if (!(nestedComponent.annotation instanceof DynamicComponent)) {
-          nestedCall = this._compile(nestedComponent);
-        }
+        nestedCall = this._compile(nestedComponent);
       } else if (isPresent(nestedRenderProtoView)) {
         nestedCall = this._compileNestedProtoViews(componentBinding, nestedRenderProtoView, directives, false);
       }
@@ -231,7 +231,7 @@ export class Compiler {
     var ann = directiveBinding.annotation;
     var renderType;
     var compileChildren = true;
-    if ((ann instanceof Component) || (ann instanceof DynamicComponent)) {
+    if (ann instanceof Component) {
       renderType = renderApi.DirectiveMetadata.COMPONENT_TYPE;
     } else if (ann instanceof Decorator) {
       renderType = renderApi.DirectiveMetadata.DECORATOR_TYPE;

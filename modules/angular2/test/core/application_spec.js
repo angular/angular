@@ -87,14 +87,6 @@ export function main() {
   });
 
   describe('bootstrap factory method', () => {
-    it('should throw if no View found', inject([AsyncTestCompleter], (async) => {
-      var refPromise = bootstrap(HelloRootMissingTemplate, testBindings, (e,t) => {throw e;});
-      PromiseWrapper.then(refPromise, null, (reason) => {
-        expect(reason.message).toContain('No template found for HelloRootMissingTemplate');
-        async.done();
-      });
-    }));
-
     it('should throw if bootstrapped Directive is not a Component', inject([AsyncTestCompleter], (async) => {
       var refPromise = bootstrap(HelloRootDirectiveIsNotCmp, testBindings, (e,t) => {throw e;});
       PromiseWrapper.then(refPromise, null, (reason) => {

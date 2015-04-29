@@ -16,7 +16,7 @@ import {
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {Decorator, Component, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -229,7 +229,7 @@ class ChildComp {
 class DynamicallyCreatedComponentService {
 }
 
-@DynamicComponent({
+@Component({
   selector: 'dynamic-comp'
 })
 class DynamicComp {

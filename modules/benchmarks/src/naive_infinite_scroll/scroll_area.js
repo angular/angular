@@ -3,7 +3,7 @@ import {Math} from 'angular2/src/facade/math';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
-import {Component, Decorator, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,

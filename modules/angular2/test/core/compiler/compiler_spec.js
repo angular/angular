@@ -21,7 +21,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, DynamicComponent, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
@@ -490,7 +490,7 @@ class NestedComponent {}
 
 class RecursiveComponent {}
 
-@DynamicComponent()
+@Component()
 class SomeDynamicComponentDirective {}
 
 @Decorator()
@@ -554,7 +554,8 @@ class FakeTemplateResolver extends TemplateResolver {
   resolve(component: Type): View {
     var template = MapWrapper.get(this._cmpTemplates, component);
     if (isBlank(template)) {
-      throw 'No template';
+      // dynamic component
+      return null;
     }
     return template;
   }

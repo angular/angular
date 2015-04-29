@@ -24,7 +24,7 @@ import {Injector, bind} from 'angular2/di';
 import {PipeRegistry, defaultPipeRegistry,
   ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
-import {Decorator, Component, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
