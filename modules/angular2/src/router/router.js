@@ -2,7 +2,7 @@ import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank} from 'angular2/src/facade/lang';
 
-import {RouteRegistry} from './route_registry';
+import {RouteRegistry, rootHostComponent} from './route_registry';
 import {Pipeline} from './pipeline';
 import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
@@ -18,7 +18,7 @@ import {Location} from './location';
  * @exportedAs angular2/router
  */
 export class Router {
-  name;
+  hostComponent:any;
   parent:Router;
   navigating:boolean;
   lastNavigationAttempt: string;
@@ -30,9 +30,9 @@ export class Router {
   _children:Map<any, Router>;
   _subject:EventEmitter;
   _location:Location;
-  
-  constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, parent:Router = null, name = '/') {
-    this.name = name;
+
+  constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, parent:Router, hostComponent) {
+    this.hostComponent = hostComponent;
     this.navigating = false;
     this.parent = parent;
     this.previousUrl = null;
@@ -42,8 +42,7 @@ export class Router {
     this._registry = registry;
     this._pipeline = pipeline;
     this._subject = new EventEmitter();
-    this._location.subscribe((url) => this.navigate(url));
-    this.navigate(location.path());
+    //this._location.subscribe((url) => this.navigate(url));
   }
 
 
@@ -73,11 +72,30 @@ export class Router {
    * # Usage
    *
    * ```
-   * router.config('/', SomeCmp);
+   * router.config({ 'path': '/', 'component': IndexCmp});
    * ```
+   *
+   * Or:
+   *
+   * ```
+   * router.config([
+   *   { 'path': '/', 'component': IndexComp },
+   *   { 'path': '/user/:id', 'component': UserComp },
+   * ]);
+   * ```
+   *
    */
-  config(path:string, component, alias:string=null) {
-    this._registry.config(this.name, path, component, alias);
+  config(config:any) {
+
+    //TODO: use correct check
+    if (config instanceof List) {
+      path.forEach((configObject) => {
+        // TODO: this is a hack
+        this._registry.config(this.hostComponent, configObject);
+      })
+    } else {
+      this._registry.config(this.hostComponent, config);
+    }
     return this.renavigate();
   }
 
@@ -184,13 +202,14 @@ export class Router {
 
 export class RootRouter extends Router {
   constructor(pipeline:Pipeline, location:Location) {
-    super(new RouteRegistry(), pipeline, location, null, '/');
+    super(new RouteRegistry(), pipeline, location, null, rootHostComponent);
+    this.navigate(location.path());
   }
 }
 
 class ChildRouter extends Router {
-  constructor(parent, name) {
-    super(parent._registry, parent._pipeline, parent._location, parent, name);
+  constructor(parent:Router, hostComponent) {
+    super(parent._registry, parent._pipeline, parent._location, parent, hostComponent);
     this.parent = parent;
   }
 }

@@ -1,9 +1,11 @@
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, noopInstruction} from './instruction';
 import {List, ListWrapper, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, isType, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, isType, StringWrapper, CONST} from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config';
 import {reflector} from 'angular2/src/reflection/reflection';
+
+export const rootHostComponent = 'ROOT_HOST';
 
 export class RouteRegistry {
   _rules:Map<any, RouteRecognizer>;
@@ -12,10 +14,7 @@ export class RouteRegistry {
     this._rules = MapWrapper.create();
   }
 
-  config(parentComponent, path:string, component:any, alias:string = null) {
-    if (parentComponent === 'app') {
-      parentComponent = '/';
-    }
+  config(parentComponent, config) {
 
     var recognizer:RouteRecognizer;
     if (MapWrapper.contains(this._rules, parentComponent)) {
@@ -25,16 +24,14 @@ export class RouteRegistry {
       MapWrapper.set(this._rules, parentComponent, recognizer);
     }
 
-    this._configFromComponent(component);
+    config = normalizeConfig(config);
 
-    //TODO: support sibling components
-    var components = StringMapWrapper.create();
-    StringMapWrapper.set(components, 'default', component);
+    var components = StringMapWrapper.get(config, 'components');
+    StringMapWrapper.forEach(components, (component, _) => {
+      this._configFromComponent(component);
+    });
 
-    var handler = StringMapWrapper.create();
-    StringMapWrapper.set(handler, 'components', components);
-
-    recognizer.addConfig(path, handler, alias);
+    recognizer.addConfig(config['path'], config, config['alias']);
   }
 
   _configFromComponent(component) {
@@ -53,7 +50,9 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          this.config(component, annotation.path, annotation.component);
+          ListWrapper.forEach(annotation.configs, (config) => {
+            this.config(component, config);
+          })
         }
       }
     }
@@ -62,7 +61,7 @@ export class RouteRegistry {
 
   // TODO: make recognized context a class
   // TODO: change parentComponent into parentContext
-  recognize(url:string, parentComponent = '/') {
+  recognize(url:string, parentComponent = rootHostComponent) {
     var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
     if (isBlank(componentRecognizer)) {
       return null;
@@ -106,7 +105,7 @@ export class RouteRegistry {
 
   generate(name:string, params:any) {
     //TODO: implement for hierarchical routes
-    var componentRecognizer = MapWrapper.get(this._rules, '/');
+    var componentRecognizer = MapWrapper.get(this._rules, rootHostComponent);
     if (isPresent(componentRecognizer)) {
       return componentRecognizer.generate(name, params);
     }
@@ -126,4 +125,30 @@ function handlerToLeafInstructions(context, parentComponent) {
     children: children,
     matchedUrl: context['matchedUrl']
   });
+}
+
+// given:
+// { component: Foo }
+// mutates the config to:
+// { components: { default: Foo } }
+function normalizeConfig(config:StringMap) {
+  if (StringMapWrapper.contains(config, 'component')) {
+    var component = StringMapWrapper.get(config, 'component');
+    var components = StringMapWrapper.create();
+    StringMapWrapper.set(components, 'default', component);
+
+    var newConfig = StringMapWrapper.create();
+    StringMapWrapper.set(newConfig, 'components', components);
+
+    StringMapWrapper.forEach(config, (value, key) => {
+      if (!StringWrapper.equals(key, 'component') && !StringWrapper.equals(key, 'components')) {
+        StringMapWrapper.set(newConfig, key, value);
+      }
+    });
+
+    return newConfig;
+  } else if (!StringMapWrapper.contains(config, 'components')) {
+    throw new Error('Config does not include a "component" or "components" key.');
+  }
+  return config;
 }

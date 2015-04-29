@@ -53,7 +53,7 @@ export function main() {
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async) => {
       compile()
-        .then((_) => router.config('/test', HelloCmp))
+        .then((_) => router.config({'path': '/test', 'component': HelloCmp}))
         .then((_) => router.navigate('/test'))
         .then((_) => {
           view.detectChanges();
@@ -65,7 +65,7 @@ export function main() {
 
     it('should navigate between components with different parameters', inject([AsyncTestCompleter], (async) => {
       compile()
-        .then((_) => router.config('/user/:name', UserCmp))
+        .then((_) => router.config({'path': '/user/:name', 'component': UserCmp}))
         .then((_) => router.navigate('/user/brian'))
         .then((_) => {
           view.detectChanges();
@@ -82,7 +82,7 @@ export function main() {
 
     it('should work with child routers', inject([AsyncTestCompleter], (async) => {
       compile('outer { <router-outlet></router-outlet> }')
-        .then((_) => router.config('/a', ParentCmp))
+        .then((_) => router.config({'path': '/a', 'component': ParentCmp}))
         .then((_) => router.navigate('/a/b'))
         .then((_) => {
           view.detectChanges();
@@ -95,7 +95,7 @@ export function main() {
     it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
-        .then((_) => router.config('/user/:name', UserCmp, 'user'))
+        .then((_) => router.config({'path': '/user/:name', 'component': UserCmp, 'alias': 'user'}))
         .then((_) => router.navigate('/a/b'))
         .then((_) => {
           view.detectChanges();
@@ -144,10 +144,10 @@ class UserCmp {
   template: "inner { <router-outlet></router-outlet> }",
   directives: [RouterOutlet]
 })
-@RouteConfig({
+@RouteConfig([{
   path: '/b',
   component: HelloCmp
-})
+}])
 class ParentCmp {
   constructor() {}
 }

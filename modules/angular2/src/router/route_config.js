@@ -1,18 +1,13 @@
 import {CONST} from 'angular2/src/facade/lang';
+import {List} from 'angular2/src/facade/collection';
 
 /**
  * You use the RouteConfig annotation to ...
  */
 export class RouteConfig {
-  path:string;
-  redirectTo:string;
-  component:any;
-  //TODO: "alias," or "as"
-
+  configs;
   @CONST()
-  constructor({path, component, redirectTo}:{path:string, component:any, redirectTo:string} = {}) {
-    this.path = path;
-    this.component = component;
-    this.redirectTo = redirectTo;
+  constructor(configs:List) {
+    this.configs = configs;
   }
 }

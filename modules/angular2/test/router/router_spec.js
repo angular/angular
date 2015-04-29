@@ -28,11 +28,11 @@ export function main() {
     it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
       var outlet = makeDummyRef();
 
-      router.config('/', {'component': 'Index' })
+      router.config({'path': '/', 'component': 'Index' })
         .then((_) => router.registerOutlet(outlet))
         .then((_) => {
           expect(outlet.spy('activate')).toHaveBeenCalled();
-          expect(location.urlChanges).toEqual(['/']);
+          expect(location.urlChanges).toEqual([]);
           async.done();
         });
     }));
@@ -43,7 +43,7 @@ export function main() {
 
       router.registerOutlet(outlet)
         .then((_) => {
-          return router.config('/a', {'component': 'A' });
+          return router.config({'path': '/a', 'component': 'A' });
         })
         .then((_) => router.navigate('/a'))
         .then((_) => {
@@ -60,7 +60,7 @@ export function main() {
         .then((_) => router.navigate('/a'))
         .then((_) => {
           expect(outlet.spy('activate')).not.toHaveBeenCalled();
-          return router.config('/a', {'component': 'A' });
+          return router.config({'path': '/a', 'component': 'A' });
         })
         .then((_) => {
           expect(outlet.spy('activate')).toHaveBeenCalled();

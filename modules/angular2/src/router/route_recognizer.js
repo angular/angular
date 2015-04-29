@@ -41,11 +41,16 @@ export class RouteRecognizer {
         var solution = StringMapWrapper.create();
         StringMapWrapper.set(solution, 'handler', pathRecognizer.handler);
         StringMapWrapper.set(solution, 'params', pathRecognizer.parseParams(url));
-        StringMapWrapper.set(solution, 'matchedUrl', match[0]);
 
-        var unmatchedUrl = StringWrapper.substring(url, match[0].length);
-        StringMapWrapper.set(solution, 'unmatchedUrl', unmatchedUrl);
-
+        //TODO(btford): determine a good generic way to deal with terminal matches
+        if (url === '/') {
+          StringMapWrapper.set(solution, 'matchedUrl', '/');
+          StringMapWrapper.set(solution, 'unmatchedUrl', '');
+        } else {
+          StringMapWrapper.set(solution, 'matchedUrl', match[0]);
+          var unmatchedUrl = StringWrapper.substring(url, match[0].length);
+          StringMapWrapper.set(solution, 'unmatchedUrl', unmatchedUrl);
+        }
         ListWrapper.push(solutions, solution);
       }
     });
