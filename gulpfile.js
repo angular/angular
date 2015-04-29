@@ -37,6 +37,7 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var buildRouter = require('./modules/angular1_router/build');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
 var tslint = require('gulp-tslint');
@@ -604,6 +605,34 @@ gulp.task('!test.unit.js/karma-run', function(done) {
   runKarma('karma-js.conf.js', done);
 });
 
+gulp.task('test.unit.router', function (done) {
+  runSequence(
+    '!test.unit.router/karma-server',
+    function() {
+      watch('modules/**', [
+        'buildRouter.dev',
+        '!test.unit.router/karma-run'
+      ]);
+    }
+  );
+});
+
+gulp.task('!test.unit.router/karma-server', function() {
+  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'});
+});
+
+
+gulp.task('!test.unit.router/karma-run', function(done) {
+  karma.runner.run({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'}, function(exitCode) {
+    // ignore exitCode, we don't want to fail the build in the interactive (non-ci) mode
+    // karma will print all test failures
+    done();
+  });
+});
+
+gulp.task('buildRouter.dev', function () {
+  buildRouter();
+});
 
 gulp.task('test.unit.dart', function (done) {
   runSequence(
@@ -640,6 +669,12 @@ gulp.task('!test.unit.dart/karma-server', function() {
   karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
 });
 
+
+gulp.task('test.unit.router/ci', function (done) {
+  var browserConf = getBrowsersFromCLI();
+  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+});
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
