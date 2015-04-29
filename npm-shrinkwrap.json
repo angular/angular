@@ -13384,9 +13384,9 @@
       }
     },
     "ts2dart": {
-      "version": "0.3.0",
-      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.3.0.tgz",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.3.0.tgz",
+      "version": "0.4.2",
+      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.4.2.tgz",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.4.2.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
@@ -14032,8 +14032,8 @@
     },
     "typescript": {
       "version": "1.5.0",
-      "from": "alexeagle/TypeScript#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
-      "resolved": "git://github.com/alexeagle/TypeScript.git#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823"
+      "from": "mhegazy/TypeScript#v1.5-beta",
+      "resolved": "mhegazy/TypeScript#v1.5-beta"
     },
     "vinyl": {
       "version": "0.4.6",
