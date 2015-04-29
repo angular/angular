@@ -20,7 +20,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update && bower install && gulp pubget.dart && tsd update --config modules/angular2/tsd.json && tsd update --config tools/tsd.json",
+    "postinstall": "webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --config modules/angular2/tsd.json && tsd reinstall --config tools/tsd.json",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
