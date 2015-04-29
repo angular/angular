@@ -15,8 +15,8 @@ import {
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {View} from 'angular2/src/core/annotations/view';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 

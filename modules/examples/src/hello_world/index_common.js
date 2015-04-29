@@ -1,5 +1,11 @@
-import {Component, Decorator, View, ElementRef} from 'angular2/angular2';
+import {ElementRef} from 'angular2/angular2';
 import {Injectable} from 'angular2/di';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+
 
 // Angular 2.0 supports 3 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by

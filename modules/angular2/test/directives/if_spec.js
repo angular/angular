@@ -16,8 +16,8 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {If} from 'angular2/src/directives/if';
 

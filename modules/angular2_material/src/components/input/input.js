@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/angular2';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 
 @Decorator({
   selector: 'md-input-container input'

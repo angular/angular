@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/src/core/annotations/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 
 /**
  * The `NonBindable` directive tells Angular not to compile or bind the contents of the current

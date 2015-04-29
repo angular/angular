@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
-import {Decorator} from 'angular2/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {Compiler, ViewContainerRef} from 'angular2/core';
 import {Injector, bind} from 'angular2/di';
 

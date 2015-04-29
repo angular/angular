@@ -1,7 +1,9 @@
-import {Component, View, Parent, Ancestor, Attribute} from 'angular2/angular2';
+import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {Optional} from 'angular2/src/di/annotations';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
-import {onChange} from 'angular2/src/core/annotations/annotations';
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';

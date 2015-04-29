@@ -16,8 +16,8 @@ import {
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Decorator, Component, Viewport, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {If} from 'angular2/src/directives/if';

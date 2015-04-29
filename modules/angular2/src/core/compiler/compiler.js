@@ -4,12 +4,12 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
-import {Component, Viewport, DynamicComponent, Decorator} from '../annotations/annotations';
+import {Component, Viewport, DynamicComponent, Decorator} from '../annotations_impl/annotations';
 import {AppProtoView} from './view';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
 import {TemplateResolver} from './template_resolver';
-import {View} from '../annotations/view';
+import {View} from '../annotations_impl/view';
 import {ComponentUrlMapper} from './component_url_mapper';
 import {ProtoViewFactory} from './proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';

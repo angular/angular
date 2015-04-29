@@ -4,7 +4,7 @@ import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 import {ChangeDetection, DirectiveIndex} from 'angular2/change_detection';
-import {Component, Viewport, DynamicComponent} from '../annotations/annotations';
+import {Component, Viewport, DynamicComponent} from '../annotations_impl/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
 import {AppProtoView} from './view';

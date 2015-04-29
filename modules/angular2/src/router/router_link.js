@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {ElementRef} from 'angular2/core';
 
 import {isPresent} from 'angular2/src/facade/lang';

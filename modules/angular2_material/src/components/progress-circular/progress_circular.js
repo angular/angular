@@ -1,4 +1,5 @@
-import {Component, View} from 'angular2/angular2';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({
   selector: 'md-progress-circular'

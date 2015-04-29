@@ -1,8 +1,13 @@
-import {bootstrap, Component, View, MapWrapper, ListWrapper, For} from 'angular2/angular2';
+import {bootstrap, MapWrapper, ListWrapper, For} from 'angular2/angular2';
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button'
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({
   selector: 'demo-app'

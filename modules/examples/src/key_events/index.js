@@ -1,5 +1,10 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap} from 'angular2/angular2';
 import {KeyEventsPlugin} from 'angular2/src/render/dom/events/key_events';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 // 2 imports for the Dart version:
 import {reflector} from 'angular2/src/reflection/reflection';

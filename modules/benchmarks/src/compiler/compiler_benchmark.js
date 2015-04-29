@@ -9,9 +9,9 @@ import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {Decorator} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {UrlResolver} from 'angular2/src/services/url_resolver';

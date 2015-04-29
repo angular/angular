@@ -1,7 +1,7 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent, BaseException, stringify, isBlank} from 'angular2/src/facade/lang';
 
-import {View} from 'angular2/src/core/annotations/view';
+import {View} from 'angular2/src/core/annotations_impl/view';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 
 export class MockTemplateResolver extends TemplateResolver {

@@ -1,6 +1,6 @@
 import {Type} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
-import {Directive} from 'angular2/src/core/annotations/annotations'
+import {Directive} from 'angular2/src/core/annotations_impl/annotations'
 import {ResolvedBinding} from 'angular2/di';
 
 /**

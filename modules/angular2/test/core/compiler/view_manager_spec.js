@@ -25,7 +25,7 @@ import {Renderer, RenderViewRef, RenderProtoViewRef, RenderViewContainerRef} fro
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component} from 'angular2/src/core/annotations/annotations';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewPool} from 'angular2/src/core/compiler/view_pool';

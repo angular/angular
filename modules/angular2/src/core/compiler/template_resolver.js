@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/di';
-import {View} from 'angular2/src/core/annotations/view';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';

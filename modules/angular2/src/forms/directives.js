@@ -1,5 +1,5 @@
-import {Decorator, onChange} from 'angular2/src/core/annotations/annotations';
-import {Ancestor} from 'angular2/src/core/annotations/visibility';
+import {Decorator, onChange} from 'angular2/src/core/annotations_impl/annotations';
+import {Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Optional} from 'angular2/di';
 import {Renderer} from 'angular2/src/render/api';

@@ -16,7 +16,8 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Inject} from 'angular2/di';
 
-import {Component, Decorator, View} from 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
@@ -25,7 +26,7 @@ import {ControlGroupDirective, ControlDirective, Control, ControlGroup, Required
 
 export function main() {
   describe("integration tests", () => {
-    
+
     it("should initialize DOM elements with the given form object",
       inject([TestBed, AsyncTestCompleter], (tb, async) => {
       var ctx = new MyComp(new ControlGroup({

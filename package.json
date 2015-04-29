@@ -30,6 +30,7 @@
     "gulp-modify": "0.0.4",
     "gulp-replace": "^0.5.3",
     "node-uuid": "1.4.x",
+    "reflect-metadata": "^0.1.0",
     "rx": "2.5.1",
     "selenium-webdriver": "2.45.1",
     "systemjs": "^0.9.1",

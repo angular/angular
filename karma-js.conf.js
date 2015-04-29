@@ -19,6 +19,7 @@ module.exports = function(config) {
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.all.js',
+      'node_modules/reflect-metadata/Reflect.js',
       'node_modules/zone.js/zone.js',
       'node_modules/zone.js/long-stack-trace-zone.js',
 

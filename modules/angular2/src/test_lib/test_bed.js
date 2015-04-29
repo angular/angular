@@ -5,7 +5,7 @@ import {Promise} from 'angular2/src/facade/async';
 import {isBlank} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 
-import {View} from 'angular2/src/core/annotations/view';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';

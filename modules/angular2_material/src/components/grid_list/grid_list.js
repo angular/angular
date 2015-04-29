@@ -1,5 +1,6 @@
-import {Component, View, onAllChangesDone, Parent} from 'angular2/angular2';
-import {onDestroy, onChange} from 'angular2/src/core/annotations/annotations';
+import {Component, onDestroy, onChange, onAllChangesDone} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+import {Parent} from 'angular2/src/core/annotations_impl/visibility';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isString, NumberWrapper, stringify} from 'angular2/src/facade/lang';
 

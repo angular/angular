@@ -1,4 +1,4 @@
-import {Type, isPresent} from 'angular2/src/facade/lang';
+import {Type, isPresent, global} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
@@ -46,12 +46,30 @@ export class ReflectionCapabilities {
   }
 
   parameters(typeOfFunc): List<List<any>> {
-    return isPresent(typeOfFunc.parameters) ? typeOfFunc.parameters :
-                                              ListWrapper.createFixedSize(typeOfFunc.length);
+    // Prefer the direct API.
+    if (isPresent(typeOfFunc.parameters)) {
+      return typeOfFunc.parameters;
+    }
+    if (isPresent(global.Reflect) && isPresent(global.Reflect.getMetadata)) {
+      var paramtypes = global.Reflect.getMetadata('design:paramtypes', typeOfFunc);
+      if (isPresent(paramtypes)) {
+        // TODO(rado): add parameter annotations here.
+        return paramtypes.map((p) => [p]);
+      }
+    }
+    return ListWrapper.createFixedSize(typeOfFunc.length);
   }
 
   annotations(typeOfFunc): List<any> {
-    return isPresent(typeOfFunc.annotations) ? typeOfFunc.annotations : [];
+    // Prefer the direct API.
+    if (isPresent(typeOfFunc.annotations)) {
+      return typeOfFunc.annotations;
+    }
+    if (isPresent(global.Reflect) && isPresent(global.Reflect.getMetadata)) {
+      var annotations = global.Reflect.getMetadata('annotations', typeOfFunc);
+      if (isPresent(annotations)) return annotations;
+    }
+    return [];
   }
 
   getter(name: string): GetterFn { return new Function('o', 'return o.' + name + ';'); }

@@ -15,8 +15,8 @@ import {
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {For} from 'angular2/src/directives/for';
 

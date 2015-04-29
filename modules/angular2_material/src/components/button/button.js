@@ -1,5 +1,5 @@
-import {Component, View} from 'angular2/angular2';
-import {onChange} from 'angular2/src/core/annotations/annotations';
+import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 import {isPresent} from 'angular2/src/facade/lang';
 
 

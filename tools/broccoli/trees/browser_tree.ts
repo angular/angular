@@ -54,6 +54,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       'node_modules/systemjs/lib/extension-register.js',
       'node_modules/systemjs/lib/extension-cjs.js',
       'node_modules/rx/dist/rx.all.js',
+      'node_modules/reflect-metadata/Reflect.js',
       'tools/build/snippets/runtime_paths.js',
       path.relative(projectRootDir, traceurCompiler.RUNTIME_PATH)
     ]

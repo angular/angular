@@ -12,8 +12,8 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Decorator, Component} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 

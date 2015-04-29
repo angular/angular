@@ -2,7 +2,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Decorator, Component, Viewport} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Component, Viewport} from 'angular2/src/core/annotations_impl/annotations';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {Injectable, Injector} from 'angular2/di';
 

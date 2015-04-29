@@ -1,4 +1,4 @@
-import {Viewport} from 'angular2/src/core/annotations/annotations';
+import {Viewport} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {isBlank} from 'angular2/src/facade/lang';
 

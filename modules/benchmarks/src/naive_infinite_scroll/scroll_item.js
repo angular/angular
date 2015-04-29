@@ -1,8 +1,12 @@
-import {Component, View} from 'angular2/angular2';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {CompanyNameComponent, OpportunityNameComponent,
     OfferingNameComponent, StageButtonsComponent, AccountCellComponent,
     FormattedCellComponent} from './cells';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator, DynamicComponent} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {Offering, ITEM_HEIGHT, COMPANY_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH,
     OFFERING_NAME_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH,

@@ -10,8 +10,8 @@ import {
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 
-import {Component} from 'angular2/src/core/annotations/annotations';
-import {View} from 'angular2/src/core/annotations/view';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {isBlank} from 'angular2/src/facade/lang';
 

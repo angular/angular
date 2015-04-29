@@ -1,8 +1,8 @@
-import {Decorator, Viewport} from 'angular2/src/core/annotations/annotations';
+import {Decorator, Viewport} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
-import {Parent} from 'angular2/src/core/annotations/visibility';
+import {Parent} from 'angular2/src/core/annotations_impl/visibility';
 
 /**
  * The `Switch` directive is used to conditionally swap DOM structure on your template based on a

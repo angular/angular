@@ -1,5 +1,10 @@
-import {bootstrap, Component, Decorator, View, If, For, EventEmitter} from 'angular2/angular2';
+import {bootstrap, If, For, EventEmitter} from 'angular2/angular2';
 import {FormBuilder, Validators, FormDirectives, ControlGroup} from 'angular2/forms';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 // HeaderFields renders the bound header control group. It can used as follows:
 //

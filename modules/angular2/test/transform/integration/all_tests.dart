@@ -38,8 +38,8 @@ void allTests() {
    * every test.
    */
   var commonInputs = {
-    'angular2|lib/src/core/annotations/annotations.dart':
-        '../../../lib/src/core/annotations/annotations.dart',
+    'angular2|lib/src/core/annotations_impl/annotations.dart':
+        '../../../lib/src/core/annotations_impl/annotations.dart',
     'angular2|lib/src/core/application.dart': '../common/application.dart',
     'angular2|lib/src/reflection/reflection_capabilities.dart':
         '../common/reflection_capabilities.dart',
@@ -96,8 +96,8 @@ void allTests() {
         inputs: {
       'a|web/index.dart': 'two_annotations_files/index.dart',
       'a|web/bar.dart': 'two_annotations_files/bar.dart',
-      'angular2|lib/src/core/annotations/view.dart':
-          '../../../lib/src/core/annotations/view.dart'
+      'angular2|lib/src/core/annotations_impl/view.dart':
+          '../../../lib/src/core/annotations_impl/view.dart'
     },
         outputs: {
       'a|web/bar.ng_deps.dart':

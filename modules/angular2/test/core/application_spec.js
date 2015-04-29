@@ -12,12 +12,12 @@ import {
 } from 'angular2/test_lib';
 import {bootstrap} from 'angular2/src/core/application';
 import {appDocumentToken, appElementToken} from 'angular2/src/core/application_tokens';
-import {Component, Decorator} from 'angular2/src/core/annotations/annotations';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {bind, Inject} from 'angular2/di';
-import {View} from 'angular2/src/core/annotations/view';
+import {View} from 'angular2/src/core/annotations_impl/view';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 

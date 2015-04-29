@@ -3,15 +3,14 @@ import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from 'angular2/src/facade/collection';
 import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode}
   from 'angular2/src/core/compiler/element_injector';
-import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {Attribute, Query} from 'angular2/src/core/annotations/di';
-import {onDestroy} from 'angular2/src/core/annotations/annotations';
+import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
+import {Directive, onDestroy} from 'angular2/src/core/annotations_impl/annotations';
 import {Optional, Injector, Inject, bind} from 'angular2/di';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {Directive} from 'angular2/src/core/annotations/annotations';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/change_detection';
 import {ViewRef, Renderer} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';

@@ -4,14 +4,14 @@ import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
   AbstractBindingError, CyclicDependencyError} from 'angular2/di';
-import {Parent, Ancestor} from 'angular2/src/core/annotations/visibility';
-import {Attribute, Query} from 'angular2/src/core/annotations/di';
+import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef} from './view_ref';
-import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations/annotations';
+import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angular2/src/core/annotations_impl/annotations';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';

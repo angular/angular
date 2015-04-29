@@ -21,4 +21,5 @@ interface Window {
   assert: typeof assert;
   NaN: typeof NaN;
   gc(): void;
+  Reflect: any;
 }

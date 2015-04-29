@@ -33,13 +33,30 @@ export class ReflectionCapabilities {
   }
 
   parameters(typeOfFunc):List<List> {
-    return isPresent(typeOfFunc.parameters) ?
-      typeOfFunc.parameters :
-      ListWrapper.createFixedSize(typeOfFunc.length);
+    // Prefer the direct API.
+    if (isPresent(typeOfFunc.parameters)) {
+      return typeOfFunc.parameters;
+    }
+    if (isPresent(window.Reflect) && isPresent(window.Reflect.getMetadata)) {
+      var paramtypes = window.Reflect.getMetadata('design:paramtypes', typeOfFunc);
+      if (isPresent(paramtypes)) {
+        // TODO(rado): add parameter annotations here.
+        return paramtypes.map((p) => [p]);
+      }
+    }
+    return ListWrapper.createFixedSize(typeOfFunc.length);
   }
 
   annotations(typeOfFunc):List {
-    return isPresent(typeOfFunc.annotations) ? typeOfFunc.annotations : [];
+    // Prefer the direct API.
+    if (isPresent(typeOfFunc.annotations)) {
+      return typeOfFunc.annotations;
+    }
+    if (isPresent(window.Reflect) && isPresent(window.Reflect.getMetadata)) {
+      var annotations = window.Reflect.getMetadata('annotations', typeOfFunc);
+      if (isPresent(annotations)) return annotations;
+    }
+    return [];
   }
 
   getter(name:string):GetterFn {

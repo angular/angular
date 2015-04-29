@@ -1,4 +1,6 @@
-import {Component, View, Attribute, onChange} from 'angular2/angular2';
+import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 

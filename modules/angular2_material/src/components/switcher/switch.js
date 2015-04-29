@@ -1,4 +1,6 @@
-import {Component, View, Attribute} from 'angular2/angular2';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
+import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {isPresent} from 'angular2/src/facade/lang';
 import {KEY_SPACE} from 'angular2_material/src/core/constants'
 import {KeyboardEvent} from 'angular2/src/facade/browser';

@@ -15,9 +15,12 @@ import {
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
-import {Query} from 'angular2/src/core/annotations/di';
+import {Query} from 'angular2/src/core/annotations_impl/di';
 
-import {Decorator, Component, View, If, For} from 'angular2/angular2';
+import {If, For} from 'angular2/angular2';
+
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 

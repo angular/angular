@@ -1,10 +1,10 @@
 library bar.ng_deps.dart;
 
 import 'bar.dart';
-import 'package:angular2/src/core/annotations/annotations.dart';
-import 'package:angular2/src/core/annotations/annotations.ng_deps.dart' as i0;
-import 'package:angular2/src/core/annotations/view.dart';
-import 'package:angular2/src/core/annotations/view.ng_deps.dart' as i1;
+import 'package:angular2/src/core/annotations_impl/annotations.dart';
+import 'package:angular2/src/core/annotations_impl/annotations.ng_deps.dart' as i0;
+import 'package:angular2/src/core/annotations_impl/view.dart';
+import 'package:angular2/src/core/annotations_impl/view.ng_deps.dart' as i1;
 
 var _visited = false;
 void initReflector(reflector) {

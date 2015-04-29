@@ -1,5 +1,5 @@
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Directive, onChange} from 'angular2/src/core/annotations/annotations';
+import {Directive, onChange} from 'angular2/src/core/annotations_impl/annotations';
 
 class DummyDirective extends Directive {
   constructor({lifecycle} = {}) { super({lifecycle: lifecycle}); }

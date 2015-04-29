@@ -1,6 +1,11 @@
-import {bootstrap, Component, View} from 'angular2/angular2';
+import {bootstrap} from 'angular2/angular2';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({selector: 'gestures-app'})
 @View({templateUrl: 'template.html'})

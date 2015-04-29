@@ -1,7 +1,12 @@
-import {bootstrap, Component, View, For} from 'angular2/angular2';
+import {bootstrap, For} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({
   selector: 'todo-app',
