@@ -846,6 +846,16 @@ gulp.task('!build/change_detect.dart', function(done) {
 });
 
 // ------------
+// additional tasks for building examples
+gulp.task('build.http.example', function() {
+  //Copy over people.json used in http example
+  return gulp.src('modules/examples/src/http/people.json')
+      .pipe(gulp.dest(CONFIG.dest.js.prod.es5 + '/examples/src/http/'))
+      .pipe(gulp.dest(CONFIG.dest.js.dev.es5 + '/examples/src/http/'))
+      .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/src/http/'));
+});
+
+// ------------
 // angular material testing rules
 gulp.task('build.css.material', function() {
   return gulp.src('modules/*/src/**/*.scss')
