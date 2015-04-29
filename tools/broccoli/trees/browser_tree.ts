@@ -20,7 +20,7 @@ var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..')
 module.exports = function makeBrowserTree(options, destinationPath) {
   var modulesTree = new Funnel(
       'modules',
-      {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**'], destDir: '/'});
+      {include: ['**/**'], exclude: ['**/*.cjs', 'benchmarks/e2e_test/**', 'angular1_router/**'], destDir: '/'});
 
   // Use Traceur to transpile *.js sources to ES6
   var traceurTree = transpileWithTraceur(modulesTree, {

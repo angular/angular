@@ -1,0 +1,202 @@
+function isPresent (x) {
+  return !!x;
+}
+
+function isBlank (x) {
+  return !x;
+}
+
+function isType (x) {
+  return typeof x === 'function';
+}
+
+var StringMapWrapper = {
+  create: function() {
+    return {};
+  }
+};
+
+var PromiseWrapper = {
+  resolve: function (reason) {
+    return $q.when(reason);
+  },
+
+  reject: function (reason) {
+    return $q.reject(reason);
+  },
+
+  catchError: function (promise, fn) {
+    return promise.then(null, fn);
+  },
+  all: function (promises) {
+    return $q.all(promises);
+  }
+};
+
+var RegExpWrapper = {
+  create: function(regExpStr, flags) {
+    flags = flags ? flags.replace(/g/g, '') : '';
+    return new RegExp(regExpStr, flags + 'g');
+  },
+  firstMatch: function(regExp, input) {
+    regExp.lastIndex = 0;
+    return regExp.exec(input);
+  },
+  matcher: function (regExp, input) {
+    regExp.lastIndex = 0;
+    return { re: regExp, input: input };
+  }
+};
+
+var reflector = {
+  annotations: function (fn) {
+    //TODO: implement me
+    return fn.annotations;
+  }
+};
+
+var MapWrapper = {
+  create: function() {
+    return new Map();
+  },
+
+  get: function(m, k) {
+    return m.get(k);
+  },
+
+  set: function(m, k, v) {
+    return m.set(k, v);
+  },
+
+  contains: function (m, k) {
+    return m.has(k);
+  },
+
+  forEach: function (m, fn) {
+    return m.forEach(fn);
+  }
+};
+
+var StringMapWrapper = {
+  create: function () {
+    return {};
+  },
+
+  set: function (m, k, v) {
+    return m[k] = v;
+  },
+
+  get: function (m, k) {
+    return m[k];
+  },
+
+  contains: function (m, k) {
+    return !!m[k];
+  },
+
+  forEach: function (m, fn) {
+    for (prop in m) {
+      if (m.hasOwnProperty(prop)) {
+        fn(m[prop], prop);
+      }
+    }
+  },
+
+  equals: function (m1, m2) {
+    var k1 = Object.keys(m1);
+    var k2 = Object.keys(m2);
+    if (k1.length != k2.length) {
+      return false;
+    }
+    var key;
+    for (var i = 0; i < k1.length; i++) {
+      key = k1[i];
+      if (m1[key] !== m2[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+var List = Array;
+var ListWrapper = {
+  create: function () {
+    return [];
+  },
+
+  push: function (l, v) {
+    return l.push(v);
+  },
+
+  forEach: function (l, fn) {
+    return l.forEach(fn);
+  },
+
+  map: function (l, fn) {
+    return l.map(fn);
+  },
+
+  join: function (l, str) {
+    return l.join(str);
+  }
+};
+
+var StringWrapper = {
+  equals: function (s1, s2) {
+    return s1 === s2;
+  },
+
+  split: function(s, re) {
+    return s.split(re);
+  },
+
+  substring: function(s, start, end) {
+    return s.substr(start, end);
+  },
+
+  replaceAll: function(s, from, replace) {
+    return s.replace(from, replace);
+  },
+
+   startsWith: function(s, start) {
+    return s.startsWith(start);
+  },
+
+  replaceAllMapped: function(s, from, cb) {
+    return s.replace(from, function(matches) {
+      // Remove offset & string from the result array
+      matches.splice(-2, 2);
+      // The callback receives match, p1, ..., pn
+      return cb.apply(null, matches);
+    });
+  }
+};
+
+//TODO: implement?
+// I think it's too heavy to ask 1.x users to bring in Rx for the router...
+function EventEmitter() {
+
+}
+
+var BaseException = Error;
+
+var ObservableWrapper = {
+  callNext: function(){}
+};
+
+// TODO: https://github.com/angular/angular.js/blob/master/src/ng/browser.js#L227-L265
+var $__router_47_location__ = {
+  Location: Location
+};
+
+function Location(){}
+Location.prototype.subscribe = function () {
+  //TODO: implement
+};
+Location.prototype.path = function () {
+  return $location.path();
+};
+Location.prototype.go = function (url) {
+  return $location.path(url);
+};
