@@ -51,6 +51,7 @@
     "broccoli-stew": "^0.2.1",
     "broccoli-writer": "^0.1.1",
     "canonical-path": "0.0.2",
+    "conventional-changelog": "^0.0.17",
     "css": "mlaval/css#issue65",
     "del": "~1",
     "dgeni": "^0.4.1",
