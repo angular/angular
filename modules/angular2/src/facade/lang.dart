@@ -217,3 +217,6 @@ class DateWrapper {
     return date.toUtc().toIso8601String();
   }
 }
+
+// needed to match the exports from lang.js
+var global = null;

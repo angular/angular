@@ -45,16 +45,34 @@ export class ReflectionCapabilities {
     throw new Error("Factory cannot take more than 10 arguments");
   }
 
+  _zipTypesAndAnnotaions(paramTypes, paramAnnotations): List<List<any>> {
+    var result = ListWrapper.createFixedSize(paramTypes.length);
+    for (var i = 0; i < result.length; i++) {
+      // TS outputs Object for parameters without types, while Traceur omits
+      // the annotations. For now we preserve the Traceur behavior to aid
+      // migration, but this can be revisited.
+      if (paramTypes[i] != Object) {
+        result[i] = [paramTypes[i]];
+      } else {
+        result[i] = [];
+      }
+      if (isPresent(paramAnnotations[i])) {
+        result[i] = result[i].concat(paramAnnotations[i]);
+      }
+    }
+    return result;
+  }
+
   parameters(typeOfFunc): List<List<any>> {
     // Prefer the direct API.
     if (isPresent(typeOfFunc.parameters)) {
       return typeOfFunc.parameters;
     }
     if (isPresent(global.Reflect) && isPresent(global.Reflect.getMetadata)) {
-      var paramtypes = global.Reflect.getMetadata('design:paramtypes', typeOfFunc);
-      if (isPresent(paramtypes)) {
-        // TODO(rado): add parameter annotations here.
-        return paramtypes.map((p) => [p]);
+      var paramAnnotations = global.Reflect.getMetadata('parameters', typeOfFunc);
+      var paramTypes = global.Reflect.getMetadata('design:paramtypes', typeOfFunc);
+      if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
+        return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
     }
     return ListWrapper.createFixedSize(typeOfFunc.length);

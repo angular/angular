@@ -38,14 +38,34 @@ export class ReflectionCapabilities {
       return typeOfFunc.parameters;
     }
     if (isPresent(window.Reflect) && isPresent(window.Reflect.getMetadata)) {
-      var paramtypes = window.Reflect.getMetadata('design:paramtypes', typeOfFunc);
-      if (isPresent(paramtypes)) {
-        // TODO(rado): add parameter annotations here.
-        return paramtypes.map((p) => [p]);
+      var paramAnnotations = window.Reflect.getMetadata('parameters', typeOfFunc);
+      var paramTypes = window.Reflect.getMetadata('design:paramtypes', typeOfFunc);
+      if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
+        return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
     }
     return ListWrapper.createFixedSize(typeOfFunc.length);
   }
+
+
+  _zipTypesAndAnnotaions(paramTypes, paramAnnotations) {
+    var result = ListWrapper.createFixedSize(paramTypes.length);
+    for (var i = 0; i < result.length; i++) {
+      // TS outputs Object for parameters without types, while Traceur omits
+      // the annotations. For now we preserve the Traceur behavior to aid
+      // migration, but this can be revisited.
+      if (paramTypes[i] != Object) {
+        result[i] = [paramTypes[i]];
+      } else {
+        result[i] = [];
+      }
+      if (isPresent(paramAnnotations[i])) {
+        result[i] = result[i].concat(paramAnnotations[i]);
+      }
+    }
+    return result;
+  }
+
 
   annotations(typeOfFunc):List {
     // Prefer the direct API.
