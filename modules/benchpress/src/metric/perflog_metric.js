@@ -24,13 +24,14 @@ export class PerflogMetric extends Metric {
   _setTimeout:Function;
   _microMetrics:StringMap<string, string>;
   _perfLogFeatures:PerfLogFeatures;
+  _forceGc:boolean;
 
   /**
    * @param driverExtension
    * @param setTimeout
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
    **/
-  constructor(driverExtension:WebDriverExtension, setTimeout:Function, microMetrics:StringMap<string, string>) {
+  constructor(driverExtension:WebDriverExtension, setTimeout:Function, microMetrics:StringMap<string, string>, forceGc) {
     super();
     this._driverExtension = driverExtension;
     this._remainingEvents = [];
@@ -38,6 +39,7 @@ export class PerflogMetric extends Metric {
     this._setTimeout = setTimeout;
     this._microMetrics = microMetrics;
     this._perfLogFeatures = driverExtension.perfLogFeatures();
+    this._forceGc = forceGc;
   }
 
   describe():StringMap {
@@ -46,12 +48,16 @@ export class PerflogMetric extends Metric {
       'pureScriptTime': 'script execution time in ms, without gc nor render'
     };
     if (this._perfLogFeatures.render) {
-      res['renderTime'] = 'render time in and ouside of script in ms';
+      res['renderTime'] = 'render time in ms';
     }
     if (this._perfLogFeatures.gc) {
-      res['gcTime'] = 'gc time in and ouside of script in ms';
+      res['gcTime'] = 'gc time in ms';
       res['gcAmount'] = 'gc amount in kbytes';
       res['majorGcTime'] = 'time of major gcs in ms';
+      if (this._forceGc) {
+        res['forcedGcTime'] = 'forced gc time in ms';
+        res['forcedGcAmount'] = 'forced gc amount in kbytes';
+      }
     }
     StringMapWrapper.forEach(this._microMetrics, (desc, name) => {
       StringMapWrapper.set(res, name, desc);
@@ -60,10 +66,38 @@ export class PerflogMetric extends Metric {
   }
 
   beginMeasure():Promise {
+    var resultPromise = PromiseWrapper.resolve(null);
+    if (this._forceGc) {
+      resultPromise = resultPromise.then( (_) => this._driverExtension.gc() );
+    }
+    return resultPromise.then( (_) => this._beginMeasure() );
+  }
+
+  endMeasure(restart:boolean):Promise<StringMap> {
+    if (this._forceGc) {
+      return this._endPlainMeasureAndMeasureForceGc(restart);
+    } else {
+      return this._endMeasure(restart);
+    }
+  }
+
+  _endPlainMeasureAndMeasureForceGc(restartMeasure:boolean) {
+    return this._endMeasure(true).then( (measurValues) => {
+        return this._driverExtension.gc()
+          .then( (_) => this._endMeasure(restartMeasure) )
+          .then( (forceGcMeasureValues) => {
+            StringMapWrapper.set(measurValues, 'forcedGcTime', forceGcMeasureValues['gcTime']);
+            StringMapWrapper.set(measurValues, 'forcedGcAmount', forceGcMeasureValues['gcAmount']);
+            return measurValues;
+          });
+      });
+  }
+
+  _beginMeasure():Promise {
     return this._driverExtension.timeBegin(this._markName(this._measureCount++));
   }
 
-  endMeasure(restart:boolean):Promise<Object> {
+  _endMeasure(restart:boolean):Promise<StringMap> {
     var markName = this._markName(this._measureCount-1);
     var nextMarkName = restart ? this._markName(this._measureCount++) : null;
     return this._driverExtension.timeEnd(markName, nextMarkName)
@@ -210,9 +244,9 @@ var _MARK_NAME_PREFIX = 'benchpress';
 var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 var _BINDINGS = [
   bind(PerflogMetric).toFactory(
-    (driverExtension, setTimeout, microMetrics) =>
-      new PerflogMetric(driverExtension, setTimeout, microMetrics),
-    [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS]
+    (driverExtension, setTimeout, microMetrics, forceGc) =>
+      new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc),
+    [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC]
   ),
   bind(_SET_TIMEOUT).toValue( (fn, millis) => PromiseWrapper.setTimeout(fn, millis) )
 ];

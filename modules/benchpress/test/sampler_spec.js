@@ -16,7 +16,7 @@ import { ListWrapper, List } from 'angular2/src/facade/collection';
 import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
 
 import {
-  Sampler, WebDriverAdapter, WebDriverExtension,
+  Sampler, WebDriverAdapter,
   Validator, Metric, Reporter, Browser,
   bind, Injector, Options, MeasureValues
 } from 'benchpress/common';
@@ -29,11 +29,9 @@ export function main() {
 
     function createSampler({
       driver,
-      driverExtension,
       metric,
       reporter,
       validator,
-      forceGc,
       prepare,
       execute
     } = {}) {
@@ -47,25 +45,18 @@ export function main() {
       if (isBlank(driver)) {
         driver = new MockDriverAdapter([]);
       }
-      if (isBlank(driverExtension)) {
-        driverExtension = new MockDriverExtension([]);
-      }
       var bindings = [
         Options.DEFAULT_BINDINGS,
         Sampler.BINDINGS,
         bind(Metric).toValue(metric),
         bind(Reporter).toValue(reporter),
         bind(WebDriverAdapter).toValue(driver),
-        bind(WebDriverExtension).toValue(driverExtension),
         bind(Options.EXECUTE).toValue(execute),
         bind(Validator).toValue(validator),
         bind(Options.NOW).toValue( () => DateWrapper.fromMillis(time++) )
       ];
       if (isPresent(prepare)) {
         ListWrapper.push(bindings, bind(Options.PREPARE).toValue(prepare));
-      }
-      if (isPresent(forceGc)) {
-        ListWrapper.push(bindings, bind(Options.FORCE_GC).toValue(forceGc));
       }
 
       sampler = Injector.resolveAndCreate(bindings).get(Sampler);
@@ -97,13 +88,11 @@ export function main() {
 
     }));
 
-    it('should call prepare, gc, beginMeasure, execute, gc, endMeasure for every iteration', inject([AsyncTestCompleter], (async) => {
+    it('should call prepare, beginMeasure, execute, endMeasure for every iteration', inject([AsyncTestCompleter], (async) => {
       var workCount = 0;
       var log = [];
       createSampler({
-        forceGc: true,
         metric: createCountingMetric(log),
-        driverExtension: new MockDriverExtension(log),
         validator: createCountingValidator(2),
         prepare: () => {
           ListWrapper.push(log, `p${workCount++}`);
@@ -114,31 +103,24 @@ export function main() {
       });
       sampler.sample().then( (_) => {
         expect(log).toEqual([
-          ['gc'],
           'p0',
-          ['gc'],
           ['beginMeasure'],
           'w1',
-          ['gc'],
           ['endMeasure', false, {'script': 0}],
           'p2',
-          ['gc'],
           ['beginMeasure'],
           'w3',
-          ['gc'],
           ['endMeasure', false, {'script': 1}],
         ]);
         async.done();
       });
     }));
 
-    it('should call execute, gc, endMeasure for every iteration if there is no prepare callback', inject([AsyncTestCompleter], (async) => {
+    it('should call execute, endMeasure for every iteration if there is no prepare callback', inject([AsyncTestCompleter], (async) => {
       var log = [];
       var workCount = 0;
       createSampler({
-        forceGc: true,
         metric: createCountingMetric(log),
-        driverExtension: new MockDriverExtension(log),
         validator: createCountingValidator(2),
         execute: () => {
           ListWrapper.push(log, `w${workCount++}`);
@@ -147,30 +129,12 @@ export function main() {
       });
       sampler.sample().then( (_) => {
         expect(log).toEqual([
-          ['gc'],
           ['beginMeasure'],
           'w0',
-          ['gc'],
           ['endMeasure', true, {'script': 0}],
           'w1',
-          ['gc'],
           ['endMeasure', true, {'script': 1}],
         ]);
-        async.done();
-      });
-    }));
-
-    it('should not gc if the flag is not set', inject([AsyncTestCompleter], (async) => {
-      var log = [];
-      createSampler({
-        metric: createCountingMetric(),
-        driverExtension: new MockDriverExtension(log),
-        validator: createCountingValidator(2),
-        prepare: EMPTY_EXECUTE,
-        execute: EMPTY_EXECUTE
-      });
-      sampler.sample().then( (_) => {
-        expect(log).toEqual([]);
         async.done();
       });
     }));
@@ -306,21 +270,6 @@ class MockDriverAdapter extends WebDriverAdapter {
   }
 }
 
-
-class MockDriverExtension extends WebDriverExtension {
-  _log:List;
-  constructor(log = null) {
-    super();
-    if (isBlank(log)) {
-      log = [];
-    }
-    this._log = log;
-  }
-  gc():Promise {
-    ListWrapper.push(this._log, ['gc']);
-    return PromiseWrapper.resolve(null);
-  }
-}
 
 class MockValidator extends Validator {
   _validate:Function;

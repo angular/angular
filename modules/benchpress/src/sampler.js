@@ -6,7 +6,6 @@ import { bind, OpaqueToken } from 'angular2/di';
 import { Metric } from './metric';
 import { Validator } from './validator';
 import { Reporter } from './reporter';
-import { WebDriverExtension } from './web_driver_extension';
 import { WebDriverAdapter } from './web_driver_adapter';
 
 import { Options } from './common_options';
@@ -25,28 +24,24 @@ export class Sampler {
   static get BINDINGS() { return _BINDINGS; }
 
   _driver:WebDriverAdapter;
-  _driverExtension:WebDriverExtension;
   _metric:Metric;
   _reporter:Reporter;
   _validator:Validator;
-  _forceGc:boolean;
   _prepare:Function;
   _execute:Function;
   _now:Function;
 
   constructor({
-    driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, now
+    driver, metric, reporter, validator, prepare, execute, now
   }:{
     driver: WebDriverAdapter,
-    driverExtension: WebDriverExtension, metric: Metric, reporter: Reporter,
+    metric: Metric, reporter: Reporter,
     validator: Validator, prepare: Function, execute: Function, now: Function
   }={}) {
     this._driver = driver;
-    this._driverExtension = driverExtension;
     this._metric = metric;
     this._reporter = reporter;
     this._validator = validator;
-    this._forceGc = forceGc;
     this._prepare = prepare;
     this._execute = execute;
     this._now = now;
@@ -64,22 +59,13 @@ export class Sampler {
           }
         });
     }
-    return this._gcIfNeeded().then( (_) => loop(new SampleState([], null)) );
-  }
-
-  _gcIfNeeded() {
-    if (this._forceGc) {
-      return this._driverExtension.gc();
-    } else {
-      return PromiseWrapper.resolve(null);
-    }
+    return loop(new SampleState([], null));
   }
 
   _iterate(lastState) {
     var resultPromise;
     if (isPresent(this._prepare)) {
-      resultPromise = this._driver.waitFor(this._prepare)
-        .then( (_) => this._gcIfNeeded() );
+      resultPromise = this._driver.waitFor(this._prepare);
     } else {
       resultPromise = PromiseWrapper.resolve(null);
     }
@@ -88,7 +74,6 @@ export class Sampler {
     }
     return resultPromise
       .then( (_) => this._driver.waitFor(this._execute) )
-      .then( (_) => this._gcIfNeeded() )
       .then( (_) => this._metric.endMeasure(isBlank(this._prepare)) )
       .then( (measureValues) => this._report(lastState, measureValues) );
   }
@@ -118,13 +103,11 @@ export class SampleState {
 
 var _BINDINGS = [
   bind(Sampler).toFactory(
-    (driver, driverExtension, metric, reporter, validator, forceGc, prepare, execute, now) => new Sampler({
+    (driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
       driver: driver,
-      driverExtension: driverExtension,
       reporter: reporter,
       validator: validator,
       metric: metric,
-      forceGc: forceGc,
       // TODO(tbosch): DI right now does not support null/undefined objects
       // Mostly because the cache would have to be initialized with a
       // special null object, which is expensive.
@@ -133,8 +116,8 @@ var _BINDINGS = [
       now: now
     }),
     [
-      WebDriverAdapter, WebDriverExtension, Metric, Reporter, Validator,
-      Options.FORCE_GC, Options.PREPARE, Options.EXECUTE, Options.NOW
+      WebDriverAdapter, Metric, Reporter, Validator,
+      Options.PREPARE, Options.EXECUTE, Options.NOW
     ]
   )
 ];
