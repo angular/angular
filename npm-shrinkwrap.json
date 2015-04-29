@@ -13443,8 +13443,8 @@
     },
     "typescript": {
       "version": "1.5.0",
-      "from": "git://github.com/mhegazy/TypeScript.git#v1.5-beta",
-      "resolved": "git://github.com/mhegazy/TypeScript.git#v1.5-beta"
+      "from": "git://github.com/alexeagle/TypeScript.git#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823",
+      "resolved": "git://github.com/alexeagle/TypeScript.git#93dbbe2a2d0b42cefd02ac949e4bc8ab6b5b5823"
     },
     "vinyl": {
       "version": "0.4.6",
