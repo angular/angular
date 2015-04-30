@@ -6,6 +6,9 @@ describe('sourcemaps', function () {
 
   it('should map sources', function() {
     browser.get(URL);
+
+    $('error-app .errorButton').click();
+
     // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
     // so that the browser logs can be read out!
     browser.executeScript('1+1');
@@ -13,7 +16,7 @@ describe('sourcemaps', function () {
       var errorLine = null;
       var errorColumn = null;
       logs.forEach(function(log) {
-        var match = /Test\.run\s+\(.+:(\d+):(\d+)/m.exec(log.message);
+        var match = /\.createError\s+\(.+:(\d+):(\d+)/m.exec(log.message);
         if (match) {
           errorLine = parseInt(match[1]);
           errorColumn = parseInt(match[2]);

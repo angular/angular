@@ -16,6 +16,10 @@ function _abstract() {
 @ABSTRACT()
 export class DomAdapter {
 
+  logError(error) {
+    throw _abstract();
+  }
+
   /**
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.

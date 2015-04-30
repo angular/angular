@@ -57,6 +57,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
+  logError(error) {
+    window.console.error(error);
+  }
+
   get attrToPropMap() {
     return _attrToPropMap;
   }

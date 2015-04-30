@@ -28,6 +28,10 @@ export class Parse5DomAdapter extends DomAdapter {
     setRootDomAdapter(new Parse5DomAdapter());
   }
 
+  logError(error) {
+    console.error(error);
+  }
+
   get attrToPropMap() {
     return _attrToPropMap;
   }

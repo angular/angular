@@ -134,7 +134,7 @@ function _injectorBindings(appComponentType): List<Binding> {
 function _createVmZone(givenReporter:Function): VmTurnZone {
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
-    print(`${exception}\n\n${longStackTrace}`);
+    DOM.logError(`${exception}\n\n${longStackTrace}`);
     throw exception;
   };
 

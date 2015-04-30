@@ -100,6 +100,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
+  logError(error) {
+    window.console.error(error);
+  }
+
   @override
   Map<String, String> get attrToPropMap => const <String, String>{
     'innerHtml': 'innerHtml',

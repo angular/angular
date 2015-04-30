@@ -3,10 +3,15 @@ library angular2.dom.htmlAdapter;
 import 'dom_adapter.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
+import 'dart:io';
 
 class Html5LibDomAdapter implements DomAdapter {
   static void makeCurrent() {
     setRootDomAdapter(new Html5LibDomAdapter());
+  }
+
+  logError(error) {
+    stderr.writeln('${error}');
   }
 
   @override
