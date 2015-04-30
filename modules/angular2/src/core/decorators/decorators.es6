@@ -1,6 +1,6 @@
 import {
   ComponentAnnotation,
-  DecoratorAnnotation
+  DirectiveAnnotation
 } from '../annotations/annotations';
 import {ViewAnnotation} from '../annotations/view';
 import {AncestorAnnotation, ParentAnnotation} from '../annotations/visibility';
@@ -23,7 +23,7 @@ function makeDecorator(annotationCls) {
 
 /* from annotations */
 export var Component = makeDecorator(ComponentAnnotation);
-export var Decorator = makeDecorator(DecoratorAnnotation);
+export var Decorator = makeDecorator(DirectiveAnnotation);
 
 /* from di */
 export var Attribute = makeDecorator(AttributeAnnotation);

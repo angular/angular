@@ -2,15 +2,15 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {DirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {Injectable, Injector} from 'angular2/di';
 
 @Injectable()
 class SomeInjectable {}
 
-@Decorator({selector: 'someDecorator'})
-class SomeDecorator {}
+@Directive({selector: 'someDirective'})
+class SomeDirective {}
 
 @Component({selector: 'someComponent', injectables: [SomeInjectable]})
 class SomeComponent {}
@@ -26,10 +26,10 @@ export function main() {
       reader = new DirectiveMetadataReader();
     });
 
-    it('should read out the Decorator annotation', () => {
-      var directiveMetadata = reader.read(SomeDecorator);
+    it('should read out the Directive annotation', () => {
+      var directiveMetadata = reader.read(SomeDirective);
       expect(directiveMetadata).toEqual(
-        new DirectiveMetadata(SomeDecorator, new Decorator({selector: 'someDecorator'}), null));
+        new DirectiveMetadata(SomeDirective, new Directive({selector: 'someDirective'}), null));
     });
 
     it('should read out the Component annotation', () => {

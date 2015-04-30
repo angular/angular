@@ -12,7 +12,7 @@ void initReflector(reflector) {
       'factory': () => new ToolTip(),
       'parameters': const [],
       'annotations': const [
-        const Decorator(
+        const Directive(
             selector: '[tool-tip]', properties: const {'text': 'tool-tip'})
       ]
     })

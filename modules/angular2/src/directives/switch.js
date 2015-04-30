@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
@@ -50,7 +50,7 @@ class SwitchView {
  *
  * @exportedAs angular2/directives
  */
-@Decorator({
+@Directive({
   selector: '[switch]',
   properties: {
     'value': 'switch'
@@ -164,7 +164,7 @@ export class Switch {
  *
  * @exportedAs angular2/directives
  */
-@Decorator({
+@Directive({
   selector: '[switch-when]',
   properties: {
     'when' : 'switch-when'
@@ -206,7 +206,7 @@ export class SwitchWhen {
  *
  * @exportedAs angular2/directives
  */
-@Decorator({
+@Directive({
   selector: '[switch-default]'
 })
 export class SwitchDefault {

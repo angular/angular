@@ -5,7 +5,6 @@
 
 export {
   Component as ComponentAnnotation,
-  Decorator as DecoratorAnnotation,
   Directive as DirectiveAnnotation,
   onDestroy, onChange, onAllChangesDone
 } from '../annotations_impl/annotations';

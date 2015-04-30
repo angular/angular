@@ -12,7 +12,7 @@ import {If, For} from 'angular2/directives';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 var testList = null;
@@ -39,8 +39,8 @@ export function main() {
     });
 
     // Components with decorators
-    bindAction('#createComponentsWithDecorators', function() {
-      app.createComponentsWithDecorators();
+    bindAction('#createComponentsWithDirectives', function() {
+      app.createComponentsWithDirectives();
       lifeCycle.tick();
     });
 
@@ -54,13 +54,13 @@ export function main() {
 
 @Component({selector: 'app'})
 @View({
-  directives: [If, For, DummyComponent, DummyDecorator, DynamicDummy],
+  directives: [If, For, DummyComponent, DummyDirective, DynamicDummy],
   template: `
     <div *if="testingPlainComponents">
       <dummy *for="#i of list"></dummy>
     </div>
 
-    <div *if="testingWithDecorators">
+    <div *if="testingWithDirectives">
       <dummy dummy-decorator *for="#i of list"></dummy>
     </div>
 
@@ -72,7 +72,7 @@ export function main() {
 class AppComponent {
   list:List;
   testingPlainComponents:boolean;
-  testingWithDecorators:boolean;
+  testingWithDirectives:boolean;
   testingDynamicComponents:boolean;
 
   constructor() {
@@ -82,7 +82,7 @@ class AppComponent {
   reset():void {
     this.list = [];
     this.testingPlainComponents = false;
-    this.testingWithDecorators = false;
+    this.testingWithDirectives = false;
     this.testingDynamicComponents = false;
   }
 
@@ -91,9 +91,9 @@ class AppComponent {
     this.testingPlainComponents = true;
   }
 
-  createComponentsWithDecorators():void {
+  createComponentsWithDirectives():void {
     this.list = testList;
-    this.testingWithDecorators = true;
+    this.testingWithDirectives = true;
   }
 
   createDynamicComponents():void {
@@ -106,8 +106,8 @@ class AppComponent {
 @View({template: `<div></div>`})
 class DummyComponent {}
 
-@Decorator({selector: '[dummy-decorator]'})
-class DummyDecorator {}
+@Directive({selector: '[dummy-decorator]'})
+class DummyDirective {}
 
 @Component({selector: 'dynamic-dummy'})
 class DynamicDummy {

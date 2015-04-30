@@ -9,7 +9,7 @@ import {document} from 'angular2/src/facade/browser';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({selector: 'scroll-app'})

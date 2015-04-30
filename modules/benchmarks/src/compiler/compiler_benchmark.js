@@ -10,7 +10,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
@@ -110,7 +110,7 @@ function createTemplateHtml(templateId, repeatCount) {
   return result;
 }
 
-@Decorator({
+@Directive({
   selector: '[dir0]',
   properties: {
     'prop': 'attr0'
@@ -118,7 +118,7 @@ function createTemplateHtml(templateId, repeatCount) {
 })
 class Dir0 {}
 
-@Decorator({
+@Directive({
   selector: '[dir1]',
   properties: {
     'prop': 'attr1'
@@ -128,7 +128,7 @@ class Dir1 {
   constructor(dir0:Dir0) {}
 }
 
-@Decorator({
+@Directive({
   selector: '[dir2]',
   properties: {
     'prop': 'attr2'
@@ -138,7 +138,7 @@ class Dir2 {
   constructor(dir1:Dir1) {}
 }
 
-@Decorator({
+@Directive({
   selector: '[dir3]',
   properties: {
     'prop': 'attr3'
@@ -148,7 +148,7 @@ class Dir3 {
   constructor(dir2:Dir2) {}
 }
 
-@Decorator({
+@Directive({
   selector: '[dir4]',
   properties: {
     'prop': 'attr4'

@@ -1,6 +1,6 @@
-import {Decorator} from 'angular2/angular2';
+import {Directive} from 'angular2/angular2';
 
-@Decorator({
+@Directive({
   selector: '[md-theme]'
 })
 export class MdTheme {

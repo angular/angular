@@ -17,10 +17,10 @@ import {DependencyAnnotation} from 'angular2/di';
  * A decorator can inject string literal `text` like so:
  *
  * ```javascript
- * @Decorator({
+ * @Directive({
  *   selector: `input'
  * })
- * class InputDecorator {
+ * class InputDirective {
  *   constructor(@Attribute('type') type) {
  *     // type would be `text` in this example
  *   }

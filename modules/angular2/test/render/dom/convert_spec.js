@@ -43,7 +43,7 @@ export function main() {
         ['properties', MapWrapper.createFromPairs([['propKey', 'propVal']])],
         ['readAttributes', ['readTest1', 'readTest2']],
         ['selector', 'testSelector'],
-        ['type', DirectiveMetadata.DECORATOR_TYPE]
+        ['type', DirectiveMetadata.DIRECTIVE_TYPE]
       ]);
       var meta = directiveMetadataFromMap(map);
       expect(meta.compileChildren).toEqual(false);
@@ -56,7 +56,7 @@ export function main() {
           MapWrapper.createFromPairs([['propKey', 'propVal']]));
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
       expect(meta.selector).toEqual('testSelector');
-      expect(meta.type).toEqual(DirectiveMetadata.DECORATOR_TYPE);
+      expect(meta.type).toEqual(DirectiveMetadata.DIRECTIVE_TYPE);
     });
   });
 }

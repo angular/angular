@@ -1,4 +1,4 @@
-import {ABSTRACT, CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
+import {CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
 import {Injectable} from 'angular2/di';
 import {DEFAULT} from 'angular2/change_detection';
@@ -8,7 +8,7 @@ import {DEFAULT} from 'angular2/change_detection';
 /**
  * Directives allow you to attach behavior to elements in the DOM.
  *
- * Directive is an abstract concept, instead use concrete directives: {@link Component}, or {@link Decorator}.
+ * {@link Directive}s with an embedded view are called {@link Component}s.
  *
  * A directive consists of a single directive annotation and a controller class. When the directive's `selector` matches
  * elements in the DOM, the following steps occur:
@@ -54,7 +54,7 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: ElementRef` to obtain a reference to logical element in the view.
- * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Decorator} directives only
+ * - `viewContainer: ViewContainerRef` to control child template instantiation, for {@link Directive} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
  * ## Example
@@ -84,7 +84,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * class SomeService {
  * }
  *
- * @Decorator({
+ * @Directive({
  *   selector: '[dependency]',
  *   properties: {
  *     'id':'dependency'
@@ -103,7 +103,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * Here the constructor is declared with no arguments, therefore nothing is injected into `MyDirective`.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor() {
  *   }
@@ -120,7 +120,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type from the parent
  * component's injector.
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(someService: SomeService) {
  *   }
@@ -135,7 +135,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * Directives can inject other directives declared on the current element.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(dependency: Dependency) {
  *     expect(dependency.id).toEqual(3);
@@ -152,7 +152,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * the dependency.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(@Parent() dependency: Dependency) {
  *     expect(dependency.id).toEqual(2);
@@ -169,7 +169,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * resolve dependencies for the current element, even if this would satisfy the dependency.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(@Ancestor() dependency: Dependency) {
  *     expect(dependency.id).toEqual(2);
@@ -191,7 +191,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * that uses a {@link ViewContainerRef} such as a `for`, an `if`, or a `switch`.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(@Query(Marker) dependencies:QueryList<Maker>) {
  *   }
@@ -208,7 +208,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * Similar to `@Children` above, but also includes the children of the child elements.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(@QueryDescendents(Marker) dependencies:QueryList<Maker>) {
  *   }
@@ -224,7 +224,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * This explicitly permits the author of a template to treat some of the surrounding directives as optional.
  *
  * ```
- * @Decorator({ selector: '[my-directive]' })
+ * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
  *   constructor(@Optional() dependency:Dependency) {
  *   }
@@ -234,9 +234,141 @@ import {DEFAULT} from 'angular2/change_detection';
  * This directive would be instantiated with a `Dependency` directive found on the current element. If none can be
  * found, the injector supplies `null` instead of throwing an error.
  *
+ * ## Example
+ *
+ * Here we use a decorator directive to simply define basic tool-tip behavior.
+ *
+ * ```
+ * @Directive({
+ *   selector: '[tooltip]',
+ *   properties: {
+ *     'text': 'tooltip'
+ *   },
+ *   hostListeners: {
+ *     'onmouseenter': 'onMouseEnter()',
+ *     'onmouseleave': 'onMouseLeave()'
+ *   }
+ * })
+ * class Tooltip{
+ *   text:string;
+ *   overlay:Overlay; // NOT YET IMPLEMENTED
+ *   overlayManager:OverlayManager; // NOT YET IMPLEMENTED
+ *
+ *   constructor(overlayManager:OverlayManager) {
+ *     this.overlay = overlay;
+ *   }
+ *
+ *   onMouseEnter() {
+ *     // exact signature to be determined
+ *     this.overlay = this.overlayManager.open(text, ...);
+ *   }
+ *
+ *   onMouseLeave() {
+ *     this.overlay.close();
+ *     this.overlay = null;
+ *   }
+ * }
+ * ```
+ * In our HTML template, we can then add this behavior to a `<div>` or any other element with the `tooltip` selector,
+ * like so:
+ *
+ * ```
+ * <div tooltip="some text here"></div>
+ * ```
+ *
+ * Directives can also control the instantiation, destruction, and positioning of inline template elements:
+ *
+ * A directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
+ * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
+ * where these actions are performed.
+ *
+ * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
+ * directive in a child view cannot inject the directive that created it.
+ *
+ * Since directives that create views via ViewContainers are common in Angular, and using the full `<template>` element syntax is wordy, Angular
+ * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are equivalent.
+ *
+ * Thus,
+ *
+ * ```
+ * <ul>
+ *   <li *foo="bar" title="text"></li>
+ * </ul>
+ * ```
+ *
+ * Expands in use to:
+ *
+ * ```
+ * <ul>
+ *   <template [foo]="bar">
+ *     <li title="text"></li>
+ *   </template>
+ * </ul>
+ * ```
+ *
+ * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for the directive
+ * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
+ *
+ *
+ * ## Example
+ *
+ * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
+ *
+ * Here is a simple directive that triggers on an `unless` selector:
+ *
+ * ```
+ * @Directive({
+ *   selector: '[unless]',
+ *   properties: {
+ *     'unless': 'unless'
+ *   }
+ * })
+ * export class Unless {
+ *   viewContainer: ViewContainerRef;
+ *   protoViewRef: ProtoViewRef;
+ *   prevCondition: boolean;
+ *
+ *   constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
+ *     this.viewContainer = viewContainer;
+ *     this.protoViewRef = protoViewRef;
+ *     this.prevCondition = null;
+ *   }
+ *
+ *   set unless(newCondition) {
+ *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
+ *       this.prevCondition = true;
+ *       this.viewContainer.clear();
+ *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
+ *       this.prevCondition = false;
+ *       this.viewContainer.create(this.protoViewRef);
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * We can then use this `unless` selector in a template:
+ * ```
+ * <ul>
+ *   <li *unless="expr"></li>
+ * </ul>
+ * ```
+ *
+ * Once the directive instantiates the child view, the shorthand notation for the template expands and the result is:
+ *
+ * ```
+ * <ul>
+ *   <template [unless]="exp">
+ *     <li></li>
+ *   </template>
+ *   <li></li>
+ * </ul>
+ * ```
+ *
+ * Note also that although the `<li></li>` template still exists inside the `<template></template>`, the instantiated
+ * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ *
  * @exportedAs angular2/annotations
  */
-@ABSTRACT()
 export class Directive extends Injectable {
   /**
    * The CSS selector that triggers the instantiation of a directive.
@@ -303,7 +435,7 @@ export class Directive extends Injectable {
    * with standard Angular syntax. For example:
    *
    * ```
-   * @Decorator({
+   * @Directive({
    *   selector: '[tooltip]',
    *   properties: {
    *     'text': 'tooltip'
@@ -339,7 +471,7 @@ export class Directive extends Injectable {
    * See {@link Pipe} and {@link keyValDiff} documentation for more details.
    *
    * ```
-   * @Decorator({
+   * @Directive({
    *   selector: '[class-set]',
    *   properties: {
    *     'classChanges': 'classSet | keyValDiff'
@@ -423,14 +555,14 @@ export class Directive extends Injectable {
    * You would define the event binding as follows:
    *
    * ```
-   * @Decorator({
+   * @Directive({
    *   selector: 'input',
    *   hostListeners: {
    *     'change': 'onChange($event)',
    *     'window:resize': 'onResize($event)'
    *   }
    * })
-   * class InputDecorator {
+   * class InputDirective {
    *   onChange(event:Event) {
    *   }
    *   onResize(event:Event) {
@@ -438,7 +570,7 @@ export class Directive extends Injectable {
    * }
    * ```
    *
-   * Here the `onChange` method of `InputDecorator` is invoked whenever the DOM element fires the 'change' event.
+   * Here the `onChange` method of `InputDirective` is invoked whenever the DOM element fires the 'change' event.
    *
    */
   hostListeners:any; //  StringMap
@@ -450,13 +582,13 @@ export class Directive extends Injectable {
    * ## Syntax
    *
    * ```
-   * @Decorator({
+   * @Directive({
    *   selector: 'input',
    *   hostProperties: {
    *     'value': 'value'
    *   }
    * })
-   * class InputDecorator {
+   * class InputDirective {
    *   value:string;
    * }
    *
@@ -473,6 +605,12 @@ export class Directive extends Injectable {
    */
   lifecycle:List; //List<LifecycleEvent>
 
+  /**
+   * If set to true the compiler does not compile the children of this directive.
+   */
+  //TODO(vsavkin): This would better fall under the Macro directive concept.
+  compileChildren: boolean;
+
   @CONST()
   constructor({
       selector,
@@ -480,14 +618,16 @@ export class Directive extends Injectable {
       events,
       hostListeners,
       hostProperties,
-      lifecycle
+      lifecycle,
+      compileChildren = true,
     }:{
       selector:string,
       properties:any,
       events:List,
       hostListeners: any,
       hostProperties: any,
-      lifecycle:List
+      lifecycle:List,
+      compileChildren:boolean
     }={})
   {
     super();
@@ -497,6 +637,7 @@ export class Directive extends Injectable {
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.lifecycle = lifecycle;
+    this.compileChildren = compileChildren;
   }
 
   /**
@@ -658,7 +799,8 @@ export class Component extends Directive {
       hostProperties,
       injectables,
       lifecycle,
-      changeDetection = DEFAULT
+      changeDetection = DEFAULT,
+      compileChildren = true,
     }:{
       selector:string,
       properties:Object,
@@ -667,200 +809,7 @@ export class Component extends Directive {
       hostProperties:any,
       injectables:List,
       lifecycle:List,
-      changeDetection:string
-    }={})
-  {
-    super({
-      selector: selector,
-      properties: properties,
-      events: events,
-      hostListeners: hostListeners,
-      hostProperties: hostProperties,
-      lifecycle: lifecycle
-    });
-
-    this.changeDetection = changeDetection;
-    this.injectables = injectables;
-  }
-}
-
-
-/**
- * Directive that attaches behavior to DOM elements.
- *
- * A decorator directive attaches behavior to a DOM element in a composable manner.
- * (see: http://en.wikipedia.org/wiki/Composition_over_inheritance)
- *
- * Decorators:
- * - are simplest form of {@link Directive}s.
- * - are best used as a composition pattern ()
- *
- * Decorators differ from {@link Component}s in that they:
- * - can have multiple decorators per element
- * - do not create their own evaluation context
- * - do not have a template (and therefor do not create Shadow DOM)
- *
- *
- * ## Example
- *
- * Here we use a decorator directive to simply define basic tool-tip behavior.
- *
- * ```
- * @Decorator({
- *   selector: '[tooltip]',
- *   properties: {
- *     'text': 'tooltip'
- *   },
- *   hostListeners: {
- *     'onmouseenter': 'onMouseEnter()',
- *     'onmouseleave': 'onMouseLeave()'
- *   }
- * })
- * class Tooltip{
- *   text:string;
- *   overlay:Overlay; // NOT YET IMPLEMENTED
- *   overlayManager:OverlayManager; // NOT YET IMPLEMENTED
- *
- *   constructor(overlayManager:OverlayManager) {
- *     this.overlay = overlay;
- *   }
- *
- *   onMouseEnter() {
- *     // exact signature to be determined
- *     this.overlay = this.overlayManager.open(text, ...);
- *   }
- *
- *   onMouseLeave() {
- *     this.overlay.close();
- *     this.overlay = null;
- *   }
- * }
- * ```
- * In our HTML template, we can then add this behavior to a `<div>` or any other element with the `tooltip` selector,
- * like so:
- *
- * ```
- * <div tooltip="some text here"></div>
- * ```
- *
- * Decorators can also control the instantiation, destruction, and positioning of inline template elements:
- *
- * A directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at runtime.
- * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a location in the current view
- * where these actions are performed.
- *
- * Views are always created as children of the current {@link View}, and as siblings of the `<template>` element. Thus a
- * directive in a child view cannot inject the directive that created it.
- *
- * Since directives that create views via ViewContainers are common in Angular, and using the full `<template>` element syntax is wordy, Angular
- * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are equivalent.
- *
- * Thus,
- *
- * ```
- * <ul>
- *   <li *foo="bar" title="text"></li>
- * </ul>
- * ```
- *
- * Expands in use to:
- *
- * ```
- * <ul>
- *   <template [foo]="bar">
- *     <li title="text"></li>
- *   </template>
- * </ul>
- * ```
- *
- * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding for the directive
- * controller is correctly instantiated on the `<template>` element rather than the `<li>` element.
- *
- *
- * ## Example
- *
- * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
- *
- * Here is a simple directive that triggers on an `unless` selector:
- *
- * ```
- * @Directive({
- *   selector: '[unless]',
- *   properties: {
- *     'unless': 'unless'
- *   }
- * })
- * export class Unless {
- *   viewContainer: ViewContainerRef;
- *   protoViewRef: ProtoViewRef;
- *   prevCondition: boolean;
- *
- *   constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
- *     this.viewContainer = viewContainer;
- *     this.protoViewRef = protoViewRef;
- *     this.prevCondition = null;
- *   }
- *
- *   set unless(newCondition) {
- *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
- *       this.prevCondition = true;
- *       this.viewContainer.clear();
- *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
- *       this.prevCondition = false;
- *       this.viewContainer.create(this.protoViewRef);
- *     }
- *   }
- * }
- * ```
- *
- * We can then use this `unless` selector in a template:
- * ```
- * <ul>
- *   <li *unless="expr"></li>
- * </ul>
- * ```
- *
- * Once the directive instantiates the child view, the shorthand notation for the template expands and the result is:
- *
- * ```
- * <ul>
- *   <template [unless]="exp">
- *     <li></li>
- *   </template>
- *   <li></li>
- * </ul>
- * ```
- *
- * Note also that although the `<li></li>` template still exists inside the `<template></template>`, the instantiated
- * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
- *
- *
- * @exportedAs angular2/annotations
- */
-export class Decorator extends Directive {
-
-  /**
-   * If set to true the compiler does not compile the children of this directive.
-   */
-  //TODO(vsavkin): This would better fall under the Macro directive concept.
-  compileChildren: boolean;
-
-  @CONST()
-  constructor({
-      selector,
-      properties,
-      events,
-      hostListeners,
-      hostProperties,
-      lifecycle,
-      compileChildren = true,
-    }:{
-      selector:string,
-      properties:any,
-      events:List,
-      hostListeners:any,
-      hostProperties:any,
-      lifecycle:List,
+      changeDetection:string,
       compileChildren:boolean
     }={})
   {
@@ -870,9 +819,12 @@ export class Decorator extends Directive {
       events: events,
       hostListeners: hostListeners,
       hostProperties: hostProperties,
-      lifecycle: lifecycle
+      lifecycle: lifecycle,
+      compileChildren: compileChildren
     });
-    this.compileChildren = compileChildren;
+
+    this.changeDetection = changeDetection;
+    this.injectables = injectables;
   }
 }
 
@@ -885,7 +837,7 @@ export class Decorator extends Directive {
  * ## Example
  *
  * ```
- * @Decorator({
+ * @Directive({
  *   ...,
  *   lifecycle: [onDestroy]
  * })
@@ -911,7 +863,7 @@ export const onDestroy = "onDestroy";
  * ## Example:
  *
  * ```
- * @Decorator({
+ * @Directive({
  *   selector: '[class-set]',
  *   properties: {
  *     'propA': 'propA'
@@ -943,7 +895,7 @@ export const onChange = "onChange";
  * ## Example:
  *
  * ```
- * @Decorator({
+ * @Directive({
  *   selector: '[class-set]',
  *   lifecycle: [onAllChangesDone]
  * })

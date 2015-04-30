@@ -4,7 +4,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 
 import {DirectiveMetadataReader} from './directive_metadata_reader';
-import {Component, Decorator} from '../annotations_impl/annotations';
+import {Component, Directive} from '../annotations_impl/annotations';
 import {AppProtoView} from './view';
 import {ProtoViewRef} from './view_ref';
 import {DirectiveBinding} from './element_injector';
@@ -230,12 +230,11 @@ export class Compiler {
   static buildRenderDirective(directiveBinding):renderApi.DirectiveMetadata {
     var ann = directiveBinding.annotation;
     var renderType;
-    var compileChildren = true;
+    var compileChildren = ann.compileChildren;
     if (ann instanceof Component) {
       renderType = renderApi.DirectiveMetadata.COMPONENT_TYPE;
-    } else if (ann instanceof Decorator) {
-      renderType = renderApi.DirectiveMetadata.DECORATOR_TYPE;
-      compileChildren = ann.compileChildren;
+    } else {
+      renderType = renderApi.DirectiveMetadata.DIRECTIVE_TYPE;
     }
     var readAttributes = [];
     ListWrapper.forEach(directiveBinding.dependencies, (dep) => {

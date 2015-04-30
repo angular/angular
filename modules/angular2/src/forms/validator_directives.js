@@ -1,9 +1,9 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 
 import {Validators} from './validators';
 import {ControlDirective} from './directives';
 
-@Decorator({
+@Directive({
   selector: '[required]'
 })
 export class RequiredValidatorDirective {

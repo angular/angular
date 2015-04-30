@@ -2,7 +2,7 @@ library examples.src.hello_world.index_common_dart;
 
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
-    show bootstrap, Component, Decorator, View, NgElement;
+    show bootstrap, Component, Directive, View, NgElement;
 
 var _visited = false;
 void initReflector(reflector) {

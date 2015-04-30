@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
@@ -55,7 +55,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NonBindable, TestDecorator]})
+@View({directives: [NonBindable, TestDirective]})
 class TestComponent {
   text: string;
   constructor() {
@@ -63,10 +63,10 @@ class TestComponent {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[test-dec]'
 })
-class TestDecorator {
+class TestDirective {
   constructor(el: ElementRef) {
     DOM.addClass(el.domElement, 'compiled');
   }

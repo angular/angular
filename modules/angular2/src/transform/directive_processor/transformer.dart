@@ -16,7 +16,7 @@ import 'rewriter.dart';
 /// reflector.
 ///
 /// This will also create .ng_deps.dart files for classes annotated
-/// with @Component, @View, @Decorator, etc.
+/// with @Component, @View, @Directive, etc.
 ///
 /// This transformer is the first phase in a two-phase transform. It should
 /// be followed by {@link DirectiveLinker}.

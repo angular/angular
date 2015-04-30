@@ -3,14 +3,14 @@ import {Injectable} from 'angular2/di';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 
 // Angular 2.0 supports 2 basic types of directives:
 // - Component - the basic building blocks of Angular 2.0 apps. Backed by
 //   ShadowDom.(http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/)
-// - Decorator - add behavior to existing elements.
+// - Directive - add behavior to existing elements.
 
 // @Component is AtScript syntax to annotate the HelloCmp class as an Angular
 // 2.0 component.
@@ -45,9 +45,9 @@ export class HelloCmp {
   }
 }
 
-// Decorators are light-weight. They don't allow new
+// Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
-@Decorator({
+@Directive({
   selector: '[red]'
 })
 class RedDec {

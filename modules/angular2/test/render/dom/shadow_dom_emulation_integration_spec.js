@@ -405,7 +405,7 @@ var multipleContentTagsComponent = new DirectiveMetadata({
 var manualViewportDirective = new DirectiveMetadata({
   selector: '[manual]',
   id: 'manual',
-  type: DirectiveMetadata.DECORATOR_TYPE
+  type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 
 var outerWithIndirectNestedComponent = new DirectiveMetadata({
@@ -441,7 +441,7 @@ var conditionalContentComponent = new DirectiveMetadata({
 var autoViewportDirective = new DirectiveMetadata({
   selector: '[auto]',
   id: '[auto]',
-  type: DirectiveMetadata.DECORATOR_TYPE
+  type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 
 var tabGroupComponent = new DirectiveMetadata({

@@ -21,7 +21,7 @@ import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {AppProtoView} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {internalProtoView} from 'angular2/src/core/compiler/view_ref';
@@ -151,8 +151,8 @@ export function main() {
       }));
 
       it('should fill directive.type for decorator directives', inject([AsyncTestCompleter], (async) => {
-        captureDirective(SomeDecoratorDirective).then( (renderDir) => {
-          expect(renderDir.type).toEqual(renderApi.DirectiveMetadata.DECORATOR_TYPE);
+        captureDirective(SomeDirective).then( (renderDir) => {
+          expect(renderDir.type).toEqual(renderApi.DirectiveMetadata.DIRECTIVE_TYPE);
           async.done();
         });
       }));
@@ -165,14 +165,14 @@ export function main() {
       }));
 
       it('should set directive.compileChildren to true for decorator directives', inject([AsyncTestCompleter], (async) => {
-        captureDirective(SomeDecoratorDirective).then( (renderDir) => {
+        captureDirective(SomeDirective).then( (renderDir) => {
           expect(renderDir.compileChildren).toEqual(true);
           async.done();
         });
       }));
 
       it('should set directive.compileChildren to false for decorator directives', inject([AsyncTestCompleter], (async) => {
-        captureDirective(IgnoreChildrenDecoratorDirective).then( (renderDir) => {
+        captureDirective(IgnoreChildrenDirective).then( (renderDir) => {
           expect(renderDir.compileChildren).toEqual(false);
           async.done();
         });
@@ -241,14 +241,14 @@ export function main() {
         tplResolver.setView(MainComponent,
           new View({
             template: '<div></div>',
-            directives: [SomeDecoratorDirective]
+            directives: [SomeDirective]
           })
         );
         var compiler = createCompiler([createRenderProtoView()], [createProtoView()]);
         compiler.compile(MainComponent).then( (_) => {
           var request = protoViewFactory.requests[0];
           var binding = request[2][0];
-          expect(binding.key.token).toBe(SomeDecoratorDirective);
+          expect(binding.key.token).toBe(SomeDirective);
           async.done();
         });
       }));
@@ -420,8 +420,8 @@ export function main() {
     it('should throw for non component types', () => {
       var compiler = createCompiler([], []);
       expect(
-        () => compiler.compile(SomeDecoratorDirective)
-      ).toThrowError(`Could not load '${stringify(SomeDecoratorDirective)}' because it is not a component.`);
+        () => compiler.compile(SomeDirective)
+      ).toThrowError(`Could not load '${stringify(SomeDirective)}' because it is not a component.`);
     });
   });
 }
@@ -493,30 +493,30 @@ class RecursiveComponent {}
 @Component()
 class SomeDynamicComponentDirective {}
 
-@Decorator()
-class SomeDecoratorDirective {}
+@Directive()
+class SomeDirective {}
 
-@Decorator({
+@Directive({
   compileChildren: false
 })
-class IgnoreChildrenDecoratorDirective {}
+class IgnoreChildrenDirective {}
 
-@Decorator({
+@Directive({
   hostListeners: {'someEvent': 'someAction'}
 })
 class DirectiveWithEvents {}
 
-@Decorator({
+@Directive({
   hostProperties: {'someField': 'someProp'}
 })
 class DirectiveWithProperties {}
 
-@Decorator({
+@Directive({
   properties: {'a': 'b'}
 })
 class DirectiveWithBind {}
 
-@Decorator()
+@Directive()
 class DirectiveWithAttributes {
   constructor(@Attribute('someAttr') someAttr:string) {}
 }

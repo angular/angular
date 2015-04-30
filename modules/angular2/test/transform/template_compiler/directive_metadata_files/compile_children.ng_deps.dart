@@ -11,6 +11,6 @@ void initReflector(reflector) {
     ..registerType(HelloCmp, {
       'factory': () => new HelloCmp(),
       'parameters': const [const []],
-      'annotations': const [const Decorator(compileChildren: true)]
+      'annotations': const [const Directive(compileChildren: true)]
     });
 }

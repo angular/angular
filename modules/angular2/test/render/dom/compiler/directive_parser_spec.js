@@ -17,13 +17,13 @@ export function main() {
       annotatedDirectives = [
         someComponent,
         someComponent2,
-        someDecorator,
-        someDecoratorIgnoringChildren,
+        someDirective,
+        someDirectiveIgnoringChildren,
         decoratorWithMultipleAttrs,
-        someDecoratorWithProps,
-        someDecoratorWithHostProperties,
-        someDecoratorWithEvents,
-        someDecoratorWithGlobalEvents
+        someDirectiveWithProps,
+        someDirectiveWithHostProperties,
+        someDirectiveWithEvents,
+        someDirectiveWithGlobalEvents
       ];
       parser = new Parser(new Lexer());
     });
@@ -56,7 +56,7 @@ export function main() {
     it('should detect directives in attributes', () => {
       var results = process(el('<div some-decor></div>'));
       expect(results[0].directives[0].directiveIndex).toBe(
-        annotatedDirectives.indexOf(someDecorator)
+        annotatedDirectives.indexOf(someDirective)
       );
     });
 
@@ -208,25 +208,25 @@ var someComponent2 = new DirectiveMetadata({
   type: DirectiveMetadata.COMPONENT_TYPE
 });
 
-var someDecorator = new DirectiveMetadata({
+var someDirective = new DirectiveMetadata({
   selector: '[some-decor]',
-  type: DirectiveMetadata.DECORATOR_TYPE
+  type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 
-var someDecoratorIgnoringChildren = new DirectiveMetadata({
+var someDirectiveIgnoringChildren = new DirectiveMetadata({
   selector: '[some-decor-ignoring-children]',
   compileChildren: false,
-  type: DirectiveMetadata.DECORATOR_TYPE
+  type: DirectiveMetadata.DIRECTIVE_TYPE
 
 });
 
 var decoratorWithMultipleAttrs = new DirectiveMetadata({
   selector: 'input[type=text][control]',
   id: 'decoratorWithMultipleAttrs',
-  type: DirectiveMetadata.DECORATOR_TYPE
+  type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 
-var someDecoratorWithProps = new DirectiveMetadata({
+var someDirectiveWithProps = new DirectiveMetadata({
   selector: '[some-decor-props]',
   properties: MapWrapper.createFromStringMap({
     'dirProp': 'elProp',
@@ -235,21 +235,21 @@ var someDecoratorWithProps = new DirectiveMetadata({
   readAttributes: ['some-attr']
 });
 
-var someDecoratorWithHostProperties = new DirectiveMetadata({
+var someDirectiveWithHostProperties = new DirectiveMetadata({
   selector: '[some-decor-with-host-props]',
   hostProperties: MapWrapper.createFromStringMap({
     'dirProp': 'hostProperty'
   })
 });
 
-var someDecoratorWithEvents = new DirectiveMetadata({
+var someDirectiveWithEvents = new DirectiveMetadata({
   selector: '[some-decor-events]',
   hostListeners: MapWrapper.createFromStringMap({
     'click': 'doIt()'
   })
 });
 
-var someDecoratorWithGlobalEvents = new DirectiveMetadata({
+var someDirectiveWithGlobalEvents = new DirectiveMetadata({
   selector: '[some-decor-globalevents]',
   hostListeners: MapWrapper.createFromStringMap({
     'window:resize': 'doItGlobal()'

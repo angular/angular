@@ -19,7 +19,7 @@ import {Query} from 'angular2/src/core/annotations_impl/di';
 
 import {If, For} from 'angular2/angular2';
 
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
@@ -100,7 +100,7 @@ class NeedsQuery {
 
 var _constructiontext = 0;
 
-@Decorator({
+@Directive({
   selector: '[text]',
   properties: {
     'text': 'text'

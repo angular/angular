@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {ElementRef} from 'angular2/core';
 
 import {isPresent} from 'angular2/src/facade/lang';
@@ -27,7 +27,7 @@ import {Router} from './router';
  *
  * @exportedAs angular2/router
  */
-@Decorator({
+@Directive({
   selector: '[router-link]',
   properties: {
     'route': 'routerLink',

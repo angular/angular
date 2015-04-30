@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ViewRef, ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
@@ -36,7 +36,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * @exportedAs angular2/directives
  */
-@Decorator({
+@Directive({
   selector: '[for][of]',
   properties: {
     'iterableChanges': 'of | iterableDiff'

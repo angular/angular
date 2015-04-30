@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {bootstrap} from 'angular2/src/core/application';
 import {appDocumentToken, appElementToken} from 'angular2/src/core/application_tokens';
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -68,7 +68,7 @@ class HelloRootCmp4 {
 @Component({selector: 'hello-app'})
 class HelloRootMissingTemplate { }
 
-@Decorator({selector: 'hello-app'})
+@Directive({selector: 'hello-app'})
 class HelloRootDirectiveIsNotCmp { }
 
 export function main() {

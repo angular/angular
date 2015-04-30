@@ -6,11 +6,7 @@ Directives are the cornerstone of an Angular application. We use Directives to b
 
 Angular applications do not have a main method. Instead they have a root Component. Dependency Injection then assembles the directives into a working Angular application.
 
-There are three different kinds of directives (described in more detail in later sections).
-
-1. *Decorators*: can be placed on any DOM element and can be combined with other directives.
-2. *Components*: Components have an encapsulated view and can configure injectors.
-
+Directives with an encapsulated view and an optional injector are called *Components*.
 
 
 ## CSS Selectors
@@ -53,18 +49,18 @@ CSS Selectors can be combined:
 
 
 
-## Decorators
+## Directives
 
 The simplest kind of directive is a decorator. Directives are usefull for encapsulating behavior.
 
 * Multiple decorators can be placed on a single element.
-* Decorators do not introduce new evaluation context.
-* Decorators are registered through the `@Decorator` meta-data annotation.
+* Directives do not introduce new evaluation context.
+* Directives are registered through the `@Directive` meta-data annotation.
 
 Here is a trivial example of a tooltip decorator. The directive will log a tooltip into the console on every time mouse enters a region:
 
 ```
-@Decorator({
+@Directive({
   selector: '[tooltip]', // CSS Selector which triggers the decorator
   properties: {          // List which properties need to be bound
     text: 'tooltip'      //  - DOM element tooltip property should be
@@ -75,7 +71,7 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
 })
 class Form {             // Directive controller class, instantiated
                          // when CSS matches.
-  text:string;           // text property on the Decorator Controller.
+  text:string;           // text property on the Directive Controller.
 
   show(event) {          // Show method which implements the show action.
     console.log(this.text);
@@ -238,7 +234,7 @@ class MyService {}                   | Assume a service which needs to be inject
 })                                   |
 class MyApp {}                       |
                                      |
-@Decorator({                         | This is the directive into which we would like
+@Directive({                         | This is the directive into which we would like
   selector: '[house]'                | to inject the MyService.
 })                                   |
 class House {                        |
@@ -285,7 +281,7 @@ Here is an example of the kinds of injections which can be achieved:
 })                                   |
 class MyApp {}                       |
                                      |
-@Decorator({ selector: 'form' })     |
+@Directive({ selector: 'form' })     |
 class Form {                         |
   constructor(                       |
     @descendant sets:Query<FieldSet> |
@@ -293,14 +289,14 @@ class Form {                         |
   }                                  |
 }                                    |
                                      |
-@Decorator({ selector: 'fieldset' }) |
+@Directive({ selector: 'fieldset' }) |
 class FieldSet {                     |
   constructor(                       |
     @child sets:Query<Field>         |
   ) { ... }                          |
 }                                    |
                                      |
-@Decorator({ selector: 'field' })    |
+@Directive({ selector: 'field' })    |
 class Field {                        |
   constructor(                       |
     @ancestor field:Form,            |
@@ -308,7 +304,7 @@ class Field {                        |
   ) { ... }                          |
 }                                    |
                                      |
-@Decorator({ selector: '[primary]'}) |
+@Directive({ selector: '[primary]'}) |
 class Primary {                      |
   constructor(field:Field ) { ... }  |
 }                                    |

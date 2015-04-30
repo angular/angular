@@ -1,6 +1,6 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 
-@Decorator({
+@Directive({
   selector: 'md-input-container input'
 })
 export class MdInput {
@@ -10,7 +10,7 @@ export class MdInput {
 }
 
 
-@Decorator({
+@Directive({
   selector: 'md-input-container'
 })
 export class MdInputContainer {

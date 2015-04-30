@@ -109,7 +109,7 @@ export class ProtoViewDto {
 }
 
 export class DirectiveMetadata {
-  static get DECORATOR_TYPE() { return 0; }
+  static get DIRECTIVE_TYPE() { return 0; }
   static get COMPONENT_TYPE() { return 1; }
   id:any;
   selector:string;

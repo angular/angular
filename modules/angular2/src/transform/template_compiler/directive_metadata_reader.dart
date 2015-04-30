@@ -15,8 +15,8 @@ DirectiveMetadata readDirectiveMetadata(RegisteredType t) {
 num _getDirectiveType(String annotationName) {
   // TODO(kegluneq): Detect subtypes & implementations of `Directive`s.
   switch (annotationName) {
-    case 'Decorator':
-      return DirectiveMetadata.DECORATOR_TYPE;
+    case 'Directive':
+      return DirectiveMetadata.DIRECTIVE_TYPE;
     case 'Component':
       return DirectiveMetadata.COMPONENT_TYPE;
     default:
@@ -101,7 +101,7 @@ class _DirectiveMetadataVisitor extends Object
     if (compileChildrenValue is! BooleanLiteral) {
       logger.error(
           'Angular 2 currently only supports boolean literal values for '
-          'Decorator#compileChildren.'
+          'Directive#compileChildren.'
           ' Source: ${compileChildrenValue}');
       return;
     }

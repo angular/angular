@@ -24,7 +24,7 @@ import {Injector, bind} from 'angular2/di';
 import {PipeRegistry, defaultPipeRegistry,
   ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
-import {Decorator, Component} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
@@ -548,15 +548,15 @@ export function main() {
       it('should support events via EventEmitter', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div emitter listener></div>',
-          directives: [DecoratorEmitingEvent, DecoratorListeningEvent]
+          directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
 
           var injector = view.rawView.elementInjectors[0];
 
-          var emitter = injector.get(DecoratorEmitingEvent);
-          var listener = injector.get(DecoratorListeningEvent);
+          var emitter = injector.get(DirectiveEmitingEvent);
+          var listener = injector.get(DirectiveListeningEvent);
 
           expect(listener.msg).toEqual('');
 
@@ -572,14 +572,14 @@ export function main() {
       it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div listener></div>',
-          directives: [DecoratorListeningDomEvent]
+          directives: [DirectiveListeningDomEvent]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
 
           var injector = view.rawView.elementInjectors[0];
 
-          var listener = injector.get(DecoratorListeningDomEvent);
+          var listener = injector.get(DirectiveListeningDomEvent);
 
           dispatchEvent(view.rootNodes[0], 'domEvent');
 
@@ -592,22 +592,22 @@ export function main() {
       it('should support render global events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div listener></div>',
-          directives: [DecoratorListeningDomEvent]
+          directives: [DirectiveListeningDomEvent]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
           var injector = view.rawView.elementInjectors[0];
 
-          var listener = injector.get(DecoratorListeningDomEvent);
+          var listener = injector.get(DirectiveListeningDomEvent);
           dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
           expect(listener.eventType).toEqual('window_domEvent');
 
-          listener = injector.get(DecoratorListeningDomEvent);
+          listener = injector.get(DirectiveListeningDomEvent);
           dispatchEvent(DOM.getGlobalEventTarget("document"), 'domEvent');
           expect(listener.eventType).toEqual('document_domEvent');
 
           view.destroy();
-          listener = injector.get(DecoratorListeningDomEvent);
+          listener = injector.get(DirectiveListeningDomEvent);
           dispatchEvent(DOM.getGlobalEventTarget("body"), 'domEvent');
           expect(listener.eventType).toEqual('');
 
@@ -618,12 +618,12 @@ export function main() {
       it('should support updating host element via hostProperties', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div update-host-properties></div>',
-          directives: [DecoratorUpdatingHostProperties]
+          directives: [DirectiveUpdatingHostProperties]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
           var injector = view.rawView.elementInjectors[0];
-          var updateHost = injector.get(DecoratorUpdatingHostProperties);
+          var updateHost = injector.get(DirectiveUpdatingHostProperties);
 
           updateHost.id = "newId";
 
@@ -639,7 +639,7 @@ export function main() {
         it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
             template: '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
-            directives: [DecoratorListeningDomEventPrevent, DecoratorListeningDomEventNoPrevent]
+            directives: [DirectiveListeningDomEventPrevent, DirectiveListeningDomEventNoPrevent]
           }));
 
           tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -657,7 +657,7 @@ export function main() {
       it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div *if="ctxBoolProp" listener listenerother></div>',
-          directives: [If, DecoratorListeningDomEvent, DecoratorListeningDomEventOther]
+          directives: [If, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -667,8 +667,8 @@ export function main() {
 
           var subview = view.rawView.viewContainers[0].views[0];
           var injector = subview.elementInjectors[0];
-          var listener = injector.get(DecoratorListeningDomEvent);
-          var listenerother = injector.get(DecoratorListeningDomEventOther);
+          var listener = injector.get(DirectiveListeningDomEvent);
+          var listenerother = injector.get(DirectiveListeningDomEventOther);
           dispatchEvent(DOM.getGlobalEventTarget("window"), 'domEvent');
           expect(listener.eventType).toEqual('window_domEvent');
           expect(listenerother.eventType).toEqual('other_domEvent');
@@ -857,7 +857,7 @@ class SimpleImperativeViewComponent {
 }
 
 
-@Decorator({
+@Directive({
   selector: 'dynamic-vp'
 })
 class DynamicViewport {
@@ -871,7 +871,7 @@ class DynamicViewport {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[my-dir]',
   properties: {'dirProp':'elprop'}
 })
@@ -992,7 +992,7 @@ class ChildCompUsingService {
   }
 }
 
-@Decorator({
+@Directive({
   selector: 'some-directive'
 })
 class SomeDirective { }
@@ -1038,7 +1038,7 @@ class ChildComp2 {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[some-viewport]'
 })
 class SomeViewport {
@@ -1075,11 +1075,11 @@ class DoublePipeFactory {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[emitter]',
   events: ['event']
 })
-class DecoratorEmitingEvent {
+class DirectiveEmitingEvent {
   msg: string;
   event:EventEmitter;
 
@@ -1093,13 +1093,13 @@ class DecoratorEmitingEvent {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[update-host-properties]',
   hostProperties: {
     'id' : 'id'
   }
 })
-class DecoratorUpdatingHostProperties {
+class DirectiveUpdatingHostProperties {
   id:string;
 
   constructor() {
@@ -1107,11 +1107,11 @@ class DecoratorUpdatingHostProperties {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[listener]',
   hostListeners: {'event': 'onEvent($event)'}
 })
-class DecoratorListeningEvent {
+class DirectiveListeningEvent {
   msg: string;
 
   constructor() {
@@ -1123,7 +1123,7 @@ class DecoratorListeningEvent {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[listener]',
   hostListeners: {
     'domEvent': 'onEvent($event.type)',
@@ -1132,7 +1132,7 @@ class DecoratorListeningEvent {
     'body:domEvent': 'onBodyEvent($event.type)'
   }
 })
-class DecoratorListeningDomEvent {
+class DirectiveListeningDomEvent {
   eventType: string;
   constructor() {
     this.eventType = '';
@@ -1152,13 +1152,13 @@ class DecoratorListeningDomEvent {
 }
 
 var globalCounter = 0;
-@Decorator({
+@Directive({
   selector: '[listenerother]',
   hostListeners: {
     'window:domEvent': 'onEvent($event.type)'
   }
 })
-class DecoratorListeningDomEventOther {
+class DirectiveListeningDomEventOther {
   eventType: string;
   counter: int;
   constructor() {
@@ -1170,31 +1170,31 @@ class DecoratorListeningDomEventOther {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[listenerprevent]',
   hostListeners: {
     'click': 'onEvent($event)'
   }
 })
-class DecoratorListeningDomEventPrevent {
+class DirectiveListeningDomEventPrevent {
   onEvent(event) {
     return false;
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[listenernoprevent]',
   hostListeners: {
     'click': 'onEvent($event)'
   }
 })
-class DecoratorListeningDomEventNoPrevent {
+class DirectiveListeningDomEventNoPrevent {
   onEvent(event) {
     return true;
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[id]',
   properties: {'id': 'id'}
 })
@@ -1202,7 +1202,7 @@ class IdDir {
   id: string;
 }
 
-@Decorator({
+@Directive({
   selector: '[static]'
 })
 class NeedsAttribute {
@@ -1216,19 +1216,19 @@ class NeedsAttribute {
   }
 }
 
-@Decorator({
+@Directive({
   selector: '[public-api]'
 })
 class PublicApi {
 }
 
-@Decorator({
+@Directive({
   selector: '[private-impl]'
 })
 class PrivateImpl extends PublicApi {
 }
 
-@Decorator({
+@Directive({
   selector: '[needs-public-api]'
 })
 class NeedsPublicApi {

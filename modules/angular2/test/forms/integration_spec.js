@@ -16,7 +16,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Inject} from 'angular2/di';
 
-import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
@@ -387,7 +387,7 @@ class MyComp {
   }
 }
 
-@Decorator({
+@Directive({
   selector:'[wrapped-value]',
   hostListeners: {
     'change' : 'handleOnChange($event.target.value)'

@@ -1,4 +1,4 @@
-import {Decorator, onChange} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, onChange} from 'angular2/src/core/annotations_impl/annotations';
 import {Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Optional} from 'angular2/di';
@@ -25,7 +25,7 @@ import {Validators} from './validators';
  *
  * @exportedAs angular2/forms
  */
-@Decorator({
+@Directive({
   selector: '[control]',
   hostListeners: {
     'change' : 'onChange($event.target.value)',
@@ -59,7 +59,7 @@ export class DefaultValueAccessor {
  *
  * @exportedAs angular2/forms
  */
-@Decorator({
+@Directive({
   selector: 'input[type=checkbox][control]',
   hostListeners: {
     'change' : 'onChange($event.target.checked)'
@@ -118,7 +118,7 @@ export class CheckboxControlValueAccessor {
  *
  * @exportedAs angular2/forms
  */
-@Decorator({
+@Directive({
   lifecycle: [onChange],
   selector: '[control]',
   properties: {
@@ -215,7 +215,7 @@ export class ControlDirective {
  *
  * @exportedAs angular2/forms
  */
-@Decorator({
+@Directive({
   selector: '[control-group]',
   properties: {
     'controlGroup' : 'control-group'

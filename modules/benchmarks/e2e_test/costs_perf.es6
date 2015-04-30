@@ -23,7 +23,7 @@ describe('ng2 cost benchmark', function () {
   it('should log stats for components with decorators', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
-      buttons: ['#reset', '#createComponentsWithDecorators'],
+      buttons: ['#reset', '#createComponentsWithDirectives'],
       id: 'ng2.costs.decorators',
       params: [{
         name: 'size', value: benchmarkSize, scale: 'linear'

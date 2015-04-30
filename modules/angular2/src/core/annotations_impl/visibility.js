@@ -9,7 +9,7 @@ import {DependencyAnnotation} from 'angular2/di';
  * Here is a simple directive that retrieves a dependency from its parent element.
  *
  * ```
- * @Decorator({
+ * @Directive({
  *   selector: '[dependency]',
  *   properties: {
  *     'id':'dependency'
@@ -20,7 +20,7 @@ import {DependencyAnnotation} from 'angular2/di';
  * }
  *
  *
- * @Decorator({
+ * @Directive({
  *   selector: '[my-directive]'
  * })
  * class Dependency {
@@ -60,7 +60,7 @@ export class Parent extends DependencyAnnotation {
  * Here is a simple directive that retrieves a dependency from an ancestor element.
  *
  * ```
- * @Decorator({
+ * @Directive({
  *   selector: '[dependency]',
  *   properties: {
  *     'id':'dependency'
@@ -71,7 +71,7 @@ export class Parent extends DependencyAnnotation {
  * }
  *
  *
- * @Decorator({
+ * @Directive({
  *   selector: '[my-directive]'
  * })
  * class Dependency {

@@ -1,4 +1,4 @@
-import {Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {isBlank} from 'angular2/src/facade/lang';
@@ -26,7 +26,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/directives
  */
-@Decorator({
+@Directive({
   selector: '[if]',
   properties: {
     'condition': 'if'
