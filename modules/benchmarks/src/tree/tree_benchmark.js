@@ -1,4 +1,9 @@
-import {bootstrap, Component, View, ViewContainerRef, Compiler, Decorator} from 'angular2/angular2';
+import {bootstrap, ViewContainerRef, Compiler} from 'angular2/angular2';
+
+// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
+// add those imports back into 'angular2/angular2';
+import {Component, Decorator} from 'angular2/src/core/annotations_impl/annotations';
+import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {reflector} from 'angular2/src/reflection/reflection';

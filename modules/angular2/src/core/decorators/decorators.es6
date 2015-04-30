@@ -8,7 +8,7 @@ import {AttributeAnnotation, QueryAnnotation} from '../annotations/di';
 
 function makeDecorator(annotationCls) {
   return function(...args) {
-    if (!(window.Reflect && !window.Reflect.getMetadata)) throw 'reflect-metadata shim is required';
+    if (!(window.Reflect && window.Reflect.getMetadata)) throw 'reflect-metadata shim is required';
     var annotationInstance = new annotationCls(...args);
     var Reflect = window.Reflect;
     return function(cls) {
