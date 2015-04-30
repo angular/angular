@@ -137,6 +137,17 @@ export class RenderProtoViewRef {}
 // An opaque reference to a RenderView
 export class RenderViewRef {}
 
+// TODO(tbosch): Use this everywhere instead of RenderViewContainerRef!
+export class RenderElementRef {
+  parentView:RenderViewRef;
+  boundElementIndex:number;
+
+  constructor(parentView:RenderViewRef, boundElementIndex:number) {
+    this.parentView = parentView;
+    this.boundElementIndex = boundElementIndex;
+  }
+}
+
 export class RenderViewContainerRef {
   view:RenderViewRef;
   elementIndex:number;

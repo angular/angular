@@ -31,6 +31,7 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
 
 export function main() {
+  // Attention: keep these tests in sync with the tests for RenderViewManager!
   // TODO(tbosch): add missing tests
 
   describe('AppViewManager', () => {

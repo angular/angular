@@ -14,6 +14,7 @@ import {AppViewPool} from './view_pool';
  * This manager contains all recursion and delegates to helper methods
  * in AppViewManagerUtils and the Renderer, so unit tests get simpler.
  */
+// Attention: Keep this class in sync with the RenderViewManager!
 @Injectable()
 export class AppViewManager {
   _viewPool:AppViewPool;
