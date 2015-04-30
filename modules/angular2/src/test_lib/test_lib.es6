@@ -1,5 +1,6 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {global} from 'angular2/src/facade/lang';
 
 import {bind} from 'angular2/di';
 
@@ -136,14 +137,11 @@ function _it(jsmFn, name, fn) {
       fn = inject([], fn);
     }
 
-    // Use setTimeout() to run tests in a macrotasks.
-    // Without this, tests would be executed in the context of a microtasks (a promise .then).
-    setTimeout(() => {
-      inIt = true;
-      fn.execute(injector);
-      inIt = false;
-      if (!async) done();
-    }, 0);
+    inIt = true;
+    fn.execute(injector);
+    inIt = false;
+
+    if (!async) done();
   });
 }
 
@@ -357,5 +355,5 @@ function elementText(n) {
 }
 
 function getCurrentZoneName(): string {
-  return zone._name;
+  return global.zone._name;
 }

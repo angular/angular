@@ -55,28 +55,13 @@ class VmTurnZone {
     // is exhausted and code has been executed in the _innerZone.
     if (enableLongStackTrace) {
       _outerZone = Chain.capture(
-        () {
-          return Zone.current.fork(
-              specification: new ZoneSpecification(
-                  scheduleMicrotask: _scheduleMicrotask,
-                  run: _outerRun,
-                  runUnary: _outerRunUnary,
-                  runBinary: _outerRunBinary
-              ),
-              zoneValues: {'_name': 'outer'}
-          );
-        }, onError: _onErrorWithLongStackTrace);
-  } else {
-      _outerZone = Zone.current.fork(
-        specification: new ZoneSpecification(
-          scheduleMicrotask: _scheduleMicrotask,
-          run: _outerRun,
-          runUnary: _outerRunUnary,
-          runBinary: _outerRunBinary,
+          () => _createOuterZone(Zone.current),
+          onError: _onErrorWithLongStackTrace);
+    } else {
+      _outerZone = _createOuterZone(
+          Zone.current,
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, error, StackTrace trace) =>
               _onErrorWithoutLongStackTrace(error, trace)
-        ),
-        zoneValues: {'_name': 'outer'}
       );
     }
 
@@ -239,5 +224,18 @@ class VmTurnZone {
     } else {
       throw error;
     }
+  }
+
+  Zone _createOuterZone(Zone zone, {handleUncaughtError}) {
+    return zone.fork(
+      specification: new ZoneSpecification(
+        scheduleMicrotask: _scheduleMicrotask,
+        run: _outerRun,
+        runUnary: _outerRunUnary,
+        runBinary: _outerRunBinary,
+        handleUncaughtError: handleUncaughtError
+      ),
+      zoneValues: {'_name': 'outer'}
+    );
   }
 }

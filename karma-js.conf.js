@@ -12,10 +12,7 @@ module.exports = function(config) {
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
-      // Promise monkey patch & zone should be included first
-      'zone/es6-promise.js',
-      'zone/zone.js',
-      'zone/inner-zone.js',
+      'zone/zone-microtask.js',
       'zone/long-stack-trace-zone.js',
 
       'node_modules/traceur/bin/traceur-runtime.js',

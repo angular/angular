@@ -13,12 +13,27 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
  * @exportedAs angular2/core
  */
 export class VmTurnZone {
+  // Code executed in _outerZone does not trigger the onTurnDone.
   _outerZone;
+  // _innerZone is the child of _outerZone. Any code executed in this zone will trigger the
+  // onTurnDone hook at the end of the current VM turn.
   _innerZone;
 
   _onTurnStart:Function;
   _onTurnDone:Function;
   _onErrorHandler:Function;
+
+  // Number of microtasks pending from _outerZone (& descendants)
+  _pendingMicrotask: number;
+  // Whether some code has been executed in the _innerZone (& descendants) in the current turn
+  _hasExecutedCodeInInnerZone: boolean;
+  // Whether the onTurnStart hook is executing
+  _inTurnStart: boolean;
+  // run() call depth in _outerZone. 0 at the end of a macrotask
+  // zone.run(() => {         // top-level call
+  //   zone.run(() => {});    // nested call -> in-turn
+  // });
+  _nestedRun: number;
 
   /**
    * Associates with this
@@ -33,17 +48,14 @@ export class VmTurnZone {
     this._onTurnStart = null;
     this._onTurnDone = null;
     this._onErrorHandler = null;
-    Zone._hasExecutedInnerCode = false;
 
-    this._outerZone = global.zone.fork({
-      _name: 'outer',
-      beforeTurn: () => { this._beforeTurn(); },
-      afterTurn: () => { this._afterTurn(); }
-    });
+    this._pendingMicrotasks = 0;
+    this._hasExecutedCodeInInnerZone = false;
+    this._inTurnStart = false;
+    this._nestedRun = 0;
+
+    this._outerZone = this._createOuterZone(global.zone);
     this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace);
-
-    // TODO('remove');
-    Zone.debug = true;
   }
 
   /**
@@ -97,6 +109,50 @@ export class VmTurnZone {
     return this._outerZone.run(fn);
   }
 
+  _createOuterZone(zone) {
+    var vmTurnZone = this;
+
+    return zone.fork({
+      _name: 'outer',
+      '$run': function(parentRun) {
+        return function() {
+          try {
+            vmTurnZone._nestedRun++;
+            return parentRun.apply(this, arguments);
+          } finally {
+            vmTurnZone._nestedRun--;
+            // If there are no more pending microtasks, we are at the end of a VM turn (or in onTurnStart)
+            // _nestedRun will be 0 at the end of a macrotasks (it could be > 0 when there are nested calls
+            // to run()).
+            if (vmTurnZone._pendingMicrotasks == 0 && vmTurnZone._nestedRun == 0) {
+              if (vmTurnZone._onTurnDone && !vmTurnZone._inTurnStart && vmTurnZone._hasExecutedCodeInInnerZone) {
+                try {
+                  parentRun.call(vmTurnZone._innerZone, vmTurnZone._onTurnDone);
+                } finally {
+                  vmTurnZone._hasExecutedCodeInInnerZone = false;
+                }
+              }
+            }
+            vmTurnZone._inTurnStart = false;
+          }
+        }
+      },
+      '$scheduleMicrotask': function(parentScheduleMicrotask) {
+        return function(fn) {
+          vmTurnZone._pendingMicrotasks++;
+          var microtask = function() {
+            try {
+              fn();
+            } finally {
+              vmTurnZone._pendingMicrotasks--;
+            }
+          };
+          parentScheduleMicrotask.call(this, microtask);
+        }
+      }
+    });
+  }
+
   _createInnerZone(zone, enableLongStackTrace) {
     var vmTurnZone = this;
     var errorHandling;
@@ -118,40 +174,29 @@ export class VmTurnZone {
     return zone
         .fork(errorHandling)
         .fork({
+          // Executes code in the _innerZone & trigger the onTurnStart hook when code is executed for the
+          // first time in a turn.
           '$run': function (parentRun) {
             return function () {
-              if (!Zone._hasExecutedInnerCode) {
-                // Execute the beforeTurn hook when code is first executed in the inner zone in the turn
-                Zone._hasExecutedInnerCode = true;
-                var oldZone = global.zone;
-                global.zone = this;
-                this.beforeTurn();
-                global.zone = oldZone;
-              }
-
-              return parentRun.apply(this, arguments);
+              vmTurnZone._maybeStartVmTurn()
+              return parentRun.apply(this, arguments)
             }
           },
           _name: 'inner'
         });
   }
 
-  _beforeTurn() {
-    this._onTurnStart && this._onTurnStart();
-  }
-
-  _afterTurn() {
-    if (this._onTurnDone) {
-      if (Zone._hasExecutedInnerCode) {
-        // Execute the onTurnDone hook in the inner zone so that microtasks are enqueued there
-        // The hook gets executed when code has runned in the inner zone during the current turn
-        this._innerZone.run(this._onTurnDone, this);
-        Zone._hasExecutedInnerCode = false;
+  _maybeStartVmTurn(): void {
+    if (!this._hasExecutedCodeInInnerZone) {
+      this._hasExecutedCodeInInnerZone = true;
+      if (this._onTurnStart) {
+        this._inTurnStart = true;
+        this._outerZone.run.call(this._innerZone, this._onTurnStart);
       }
     }
   }
 
-  _onError(zone, e) {
+  _onError(zone, e): void {
     if (isPresent(this._onErrorHandler)) {
       var trace = [normalizeBlank(e.stack)];
 
@@ -161,6 +206,8 @@ export class VmTurnZone {
       }
       this._onErrorHandler(e, trace);
     } else {
+      console.log('## _onError ##');
+      console.log(e.stack);
       throw e;
     }
   }
