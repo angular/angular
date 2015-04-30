@@ -12,7 +12,8 @@ import {
   beforeEachBindings,
   it,
   xit,
-  SpyObject, proxy
+  SpyObject, proxy,
+  Log
 } from 'angular2/test_lib';
 
 import {Injector, bind} from 'angular2/di';
@@ -110,6 +111,29 @@ export function main() {
         expect(
           () => utils.hydrateDynamicComponentInElementInjector(hostView, 0, componentBinding, null)
         ).toThrowError('There already is a dynamic component loaded at element 0');
+      });
+
+    });
+
+    describe("hydrateComponentView", () => {
+
+      it("should hydrate the change detector after hydrating element injectors", () => {
+        var log = new Log();
+
+        var componentView = createView(createProtoView([createEmptyElBinder()]));
+        var hostView = createView(createProtoView([createComponentElBinder(createProtoView())]));
+        hostView.componentChildViews = [componentView];
+
+        // (() => () nonsense is required until our transpiler supports type casting
+        var spyEi = (() => componentView.elementInjectors[0])();
+        spyEi.spy('instantiateDirectives').andCallFake(log.fn('instantiateDirectives'));
+
+        var spyCd = (() => componentView.changeDetector)();
+        spyCd.spy('hydrate').andCallFake(log.fn('hydrateCD'));
+
+        utils.hydrateComponentView(hostView, 0)
+
+        expect(log.result()).toEqual('instantiateDirectives; hydrateCD');
       });
 
     });

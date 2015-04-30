@@ -185,7 +185,6 @@ export class AppViewManagerUtils {
     }
     view.context = context;
     view.locals.parent = parentLocals;
-    view.changeDetector.hydrate(view.context, view.locals, view);
 
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; ++i) {
@@ -212,7 +211,7 @@ export class AppViewManagerUtils {
         }
       }
     }
-
+    view.changeDetector.hydrate(view.context, view.locals, view);
   }
 
   _setUpEventEmitters(view:viewModule.AppView, elementInjector:eli.ElementInjector, boundElementIndex:number) {

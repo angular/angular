@@ -14,7 +14,7 @@ export class Log {
   }
 
   fn(value) {
-    return () => {
+    return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => {
       ListWrapper.push(this._result, value);
     }
   }
