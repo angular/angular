@@ -45,17 +45,19 @@ export function main() {
       xhr.flush();
     }));
 
-    it('should cache template loaded through XHR', inject([AsyncTestCompleter], (async) => {
+    it('should cache template loaded through XHR but clone it as the compiler might change it', inject([AsyncTestCompleter], (async) => {
       var firstEl;
+      // we have only one xhr.expect, so there can only be one xhr call!
       xhr.expect('base/foo', 'xhr template');
       var template = new ViewDefinition({absUrl: 'base/foo'});
       loader.load(template)
         .then((el) => {
+          expect(DOM.content(el)).toHaveText('xhr template');
           firstEl = el;
           return loader.load(template);
         })
         .then((el) =>{
-          expect(el).toBe(firstEl);
+          expect(el).not.toBe(firstEl);
           expect(DOM.content(el)).toHaveText('xhr template');
           async.done();
         });

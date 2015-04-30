@@ -39,7 +39,9 @@ export class TemplateLoader {
         StringMapWrapper.set(this._htmlCache, url, promise);
       }
 
-      return promise;
+      // We need to clone the result as others might change it
+      // (e.g. the compiler).
+      return promise.then( (tplElement) => DOM.clone(tplElement) );
     }
 
     throw new BaseException('View should have either the url or template property set');
