@@ -97,6 +97,7 @@
     "protractor": "2.0.0",
     "q": "^1.0.1",
     "qq": "^0.3.5",
+    "react": "^0.13.2",
     "run-sequence": "^0.3.6",
     "sorted-object": "^1.0.0",
     "source-map": "^0.3.0",
