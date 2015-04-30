@@ -28,7 +28,7 @@ import {DynamicChangeDetector} from './dynamic_change_detector';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {BindingRecord} from './binding_record';
-import {DirectiveIndex} from './directive_record';
+import {DirectiveRecord, DirectiveIndex} from './directive_record';
 
 import {coalesce} from './coalesce';
 
@@ -50,25 +50,31 @@ import {
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _pipeRegistry:PipeRegistry;
   _records:List<ProtoRecord>;
+  _bindingRecords:List<BindingRecord>;
+  _variableBindings:List<string>;
+  _directiveRecords:List<DirectiveRecord>;
   _changeControlStrategy:string;
 
-  constructor(pipeRegistry:PipeRegistry, changeControlStrategy:string) {
+  constructor(pipeRegistry:PipeRegistry, bindingRecords:List, variableBindings:List, directiveRecords:List, changeControlStrategy:string) {
     super();
     this._pipeRegistry = pipeRegistry;
+    this._bindingRecords = bindingRecords;
+    this._variableBindings = variableBindings;
+    this._directiveRecords = directiveRecords;
     this._changeControlStrategy = changeControlStrategy;
   }
 
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveRecords:List) {
-    this._createRecordsIfNecessary(bindingRecords, variableBindings);
+  instantiate(dispatcher:any) {
+    this._createRecordsIfNecessary();
     return new DynamicChangeDetector(this._changeControlStrategy, dispatcher,
-      this._pipeRegistry, this._records, directiveRecords);
+      this._pipeRegistry, this._records, this._directiveRecords);
   }
 
-  _createRecordsIfNecessary(bindingRecords:List, variableBindings:List) {
+  _createRecordsIfNecessary() {
     if (isBlank(this._records)) {
       var recordBuilder = new ProtoRecordBuilder();
-      ListWrapper.forEach(bindingRecords, (b) => {
-        recordBuilder.addAst(b, variableBindings);
+      ListWrapper.forEach(this._bindingRecords, (b) => {
+        recordBuilder.addAst(b, this._variableBindings);
       });
       this._records = coalesce(recordBuilder.records);
     }
@@ -79,31 +85,37 @@ var _jitProtoChangeDetectorClassCounter:number = 0;
 export class JitProtoChangeDetector extends ProtoChangeDetector {
   _factory:Function;
   _pipeRegistry;
+  _bindingRecords:List<BindingRecord>;
+  _variableBindings:List<string>;
+  _directiveRecords:List<DirectiveRecord>;
   _changeControlStrategy:string;
 
-  constructor(pipeRegistry, changeControlStrategy:string) {
+  constructor(pipeRegistry, bindingRecords:List, variableBindings:List, directiveRecords:List, changeControlStrategy:string) {
     super();
     this._pipeRegistry = pipeRegistry;
     this._factory = null;
+    this._bindingRecords = bindingRecords;
+    this._variableBindings = variableBindings;
+    this._directiveRecords = directiveRecords;
     this._changeControlStrategy = changeControlStrategy;
   }
 
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveRecords:List) {
-    this._createFactoryIfNecessary(bindingRecords, variableBindings, directiveRecords);
+  instantiate(dispatcher:any) {
+    this._createFactoryIfNecessary();
     return this._factory(dispatcher, this._pipeRegistry);
   }
 
-  _createFactoryIfNecessary(bindingRecords:List, variableBindings:List, directiveRecords:List) {
+  _createFactoryIfNecessary() {
     if (isBlank(this._factory)) {
       var recordBuilder = new ProtoRecordBuilder();
-      ListWrapper.forEach(bindingRecords, (b) => {
-        recordBuilder.addAst(b, variableBindings);
+      ListWrapper.forEach(this._bindingRecords, (b) => {
+        recordBuilder.addAst(b, this._variableBindings);
       });
       var c = _jitProtoChangeDetectorClassCounter++;
       var records = coalesce(recordBuilder.records);
       var typeName = `ChangeDetector${c}`;
       this._factory = new ChangeDetectorJITGenerator(typeName, this._changeControlStrategy, records,
-        directiveRecords).generate();
+        this._directiveRecords).generate();
     }
   }
 }

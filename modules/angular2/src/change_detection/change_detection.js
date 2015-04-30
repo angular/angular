@@ -4,9 +4,13 @@ import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {AsyncPipeFactory} from './pipes/async_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
+import {BindingRecord} from './binding_record';
+import {DirectiveRecord} from './directive_record';
 import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector} from './interfaces';
 import {Injectable} from 'angular2/di';
+import {List} from 'angular2/src/facade/collection';
+
 
 /**
  * Structural diffing for `Object`s and `Map`s.
@@ -61,8 +65,9 @@ export class DynamicChangeDetection extends ChangeDetection {
     this.registry = registry;
   }
 
-  createProtoChangeDetector(name:string, changeControlStrategy:string = DEFAULT):ProtoChangeDetector{
-    return new DynamicProtoChangeDetector(this.registry, changeControlStrategy);
+  createProtoChangeDetector(name:string, bindingRecords:List<BindingRecord>, variableBindings:List<string>,
+                            directiveRecords:List<DirectiveRecord>, changeControlStrategy:string = DEFAULT):ProtoChangeDetector{
+    return new DynamicProtoChangeDetector(this.registry, bindingRecords, variableBindings, directiveRecords, changeControlStrategy);
   }
 }
 
@@ -82,8 +87,9 @@ export class JitChangeDetection extends ChangeDetection {
     this.registry = registry;
   }
 
-  createProtoChangeDetector(name:string, changeControlStrategy:string = DEFAULT):ProtoChangeDetector{
-    return new JitProtoChangeDetector(this.registry, changeControlStrategy);
+  createProtoChangeDetector(name:string, bindingRecords:List<BindingRecord>, variableBindings:List<string>,
+                            directiveRecords:List<DirectiveRecord>, changeControlStrategy:string = DEFAULT):ProtoChangeDetector{
+    return new JitProtoChangeDetector(this.registry, bindingRecords, variableBindings, directiveRecords, changeControlStrategy);
   }
 }
 

@@ -453,7 +453,7 @@ export function main() {
       });
 
       it("should instantiate directives that depend on pre built objects", function () {
-        var protoView = new AppProtoView(null, null);
+        var protoView = new AppProtoView(null, null, null, null, null);
         var inj = injector([NeedsProtoViewRef], null, null, new PreBuiltObjects(null, null, protoView));
 
         expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
@@ -700,7 +700,7 @@ export function main() {
       });
 
       it("should inject ProtoViewRef", function () {
-        var protoView = new AppProtoView(null, null);
+        var protoView = new AppProtoView(null, null, null, null, null);
         var inj = injector([NeedsProtoViewRef], null, null, new PreBuiltObjects(null, null, protoView));
 
         expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));

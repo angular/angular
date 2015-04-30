@@ -16,8 +16,22 @@ import {JitProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/src/c
 export function main() {
   describe("change detection", () => {
     StringMapWrapper.forEach(
-      { "dynamic": (registry = null, strategy = null) => new DynamicProtoChangeDetector(registry, strategy),
-        "JIT": (registry = null, strategy = null) => new JitProtoChangeDetector(registry, strategy)
+      { "dynamic": (bindingRecords, variableBindings = null, directiveRecords = null, registry = null, strategy = null) =>
+                      new DynamicProtoChangeDetector(
+                        registry,
+                        isBlank(bindingRecords) ? [] : bindingRecords,
+                        isBlank(variableBindings) ? [] : variableBindings,
+                        isBlank(directiveRecords) ? [] : directiveRecords,
+                        strategy),
+
+        "JIT": (bindingRecords, variableBindings = null, directiveRecords = null, registry = null, strategy = null) =>
+                      new JitProtoChangeDetector(
+                        registry,
+                        isBlank(bindingRecords) ? [] : bindingRecords,
+                        isBlank(variableBindings) ? [] : variableBindings,
+                        isBlank(directiveRecords) ? [] : directiveRecords,
+                        strategy)
+
       }, (createProtoChangeDetector, name) => {
 
         if (name == "JIT" && IS_DARTIUM) return;
@@ -43,13 +57,13 @@ export function main() {
         }
 
         function createChangeDetector(propName:string, exp:string, context = null, locals = null, registry = null) {
-          var pcd = createProtoChangeDetector(registry);
           var dispatcher = new TestDispatcher();
 
           var variableBindings = convertLocalsToVariableBindings(locals);
 
           var records = [BindingRecord.createForElement(ast(exp), 0, propName)];
-          var cd = pcd.instantiate(dispatcher, records, variableBindings, []);
+          var pcd = createProtoChangeDetector(records, variableBindings, [], registry);
+          var cd = pcd.instantiate(dispatcher);
           cd.hydrate(context, locals, null);
 
           return {"changeDetector" : cd, "dispatcher" : dispatcher};
@@ -59,11 +73,6 @@ export function main() {
           var res = createChangeDetector(memo, exp, context, locals);
           res["changeDetector"].detectChanges();
           return res["dispatcher"].log;
-        }
-
-        function instantiate(protoChangeDetector, dispatcher, bindings, directiveRecords = null) {
-          if (isBlank(directiveRecords)) directiveRecords = [];
-          return protoChangeDetector.instantiate(dispatcher, bindings, null, directiveRecords);
         }
 
         describe(`${name} change detection`, () => {
@@ -205,10 +214,10 @@ export function main() {
           });
 
           it("should support interpolation", () => {
-            var pcd = createProtoChangeDetector();
             var ast = parser.parseInterpolation("B{{a}}A", "location");
+            var pcd = createProtoChangeDetector([BindingRecord.createForElement(ast, 0, "memo")]);
 
-            var cd = instantiate(pcd, dispatcher, [BindingRecord.createForElement(ast, 0, "memo")]);
+            var cd = pcd.instantiate(dispatcher);
             cd.hydrate(new TestData("value"), null, null);
 
             cd.detectChanges();
@@ -267,10 +276,9 @@ export function main() {
               });
 
               it("should happen directly, without invoking the dispatcher", () => {
-                var pcd = createProtoChangeDetector();
+                var pcd = createProtoChangeDetector([updateA("42", dirRecord1)], [], [dirRecord1]);
 
-                var cd = instantiate(pcd, dispatcher, [updateA("42", dirRecord1)],
-                  [dirRecord1]);
+                var cd = pcd.instantiate(dispatcher);
 
                 cd.hydrate(null, null, dirs([directive1]));
 
@@ -282,13 +290,13 @@ export function main() {
 
               describe("onChange", () => {
                 it("should notify the directive when a group of records changes", () => {
-                  var pcd = createProtoChangeDetector();
-
-                  var cd = instantiate(pcd, dispatcher, [
+                  var pcd = createProtoChangeDetector([
                     updateA("1", dirRecord1),
                     updateB("2", dirRecord1),
                     updateA("3", dirRecord2)
-                  ], [dirRecord1, dirRecord2]);
+                  ], [], [dirRecord1, dirRecord2]);
+
+                  var cd = pcd.instantiate(dispatcher);
 
                   cd.hydrate(null, null, dirs([directive1, directive2]));
 
@@ -299,11 +307,11 @@ export function main() {
                 });
 
                 it("should not call onChange when callOnChange is false", () => {
-                  var pcd = createProtoChangeDetector();
-
-                  var cd = instantiate(pcd, dispatcher, [
+                  var pcd = createProtoChangeDetector([
                     updateA("1", dirRecordNoCallbacks)
-                  ], [dirRecordNoCallbacks]);
+                  ], [], [dirRecordNoCallbacks]);
+
+                  var cd = pcd.instantiate(dispatcher);
 
                   cd.hydrate(null, null, dirs([directive1]));
 
@@ -315,9 +323,9 @@ export function main() {
 
               describe("onAllChangesDone", () => {
                 it("should be called after processing all the children", () => {
-                  var pcd = createProtoChangeDetector();
+                  var pcd = createProtoChangeDetector([], [], [dirRecord1, dirRecord2]);
 
-                  var cd = instantiate(pcd, dispatcher, [], [dirRecord1, dirRecord2]);
+                  var cd = pcd.instantiate(dispatcher);
                   cd.hydrate(null, null, dirs([directive1, directive2]));
 
                   cd.detectChanges();
@@ -328,11 +336,11 @@ export function main() {
 
 
                 it("should not be called when onAllChangesDone is false", () => {
-                  var pcd = createProtoChangeDetector();
-
-                  var cd = instantiate(pcd, dispatcher, [
+                  var pcd = createProtoChangeDetector([
                     updateA("1", dirRecordNoCallbacks)
-                  ], [dirRecordNoCallbacks]);
+                  ], [], [dirRecordNoCallbacks]);
+
+                  var cd = pcd.instantiate(dispatcher);
 
                   cd.hydrate(null, null, dirs([directive1]));
 
@@ -342,8 +350,8 @@ export function main() {
                 });
 
                 it("should be called in reverse order so the child is always notified before the parent", () => {
-                  var pcd = createProtoChangeDetector();
-                  var cd = instantiate(pcd, dispatcher, [], [dirRecord1, dirRecord2]);
+                  var pcd = createProtoChangeDetector([], [], [dirRecord1, dirRecord2]);
+                  var cd = pcd.instantiate(dispatcher);
 
                   var onChangesDoneCalls = [];
                   var td1;
@@ -358,13 +366,12 @@ export function main() {
                 });
 
                 it("should be called before processing shadow dom children", () => {
-                  var pcd = createProtoChangeDetector();
-                  var shadowDomChildPCD = createProtoChangeDetector();
+                  var pcd = createProtoChangeDetector([], null, [dirRecord1]);
+                  var shadowDomChildPCD = createProtoChangeDetector([updateA("1", dirRecord1)], null, [dirRecord1]);
 
-                  var parent = pcd.instantiate(dispatcher, [], null, [dirRecord1]);
+                  var parent = pcd.instantiate(dispatcher);
 
-                  var child = shadowDomChildPCD.instantiate(dispatcher,
-                    [updateA("1", dirRecord1)], null, [dirRecord1]);
+                  var child = shadowDomChildPCD.instantiate(dispatcher);
                   parent.addShadowDomChild(child);
 
                   var directiveInShadowDom = new TestDirective();
@@ -389,8 +396,8 @@ export function main() {
               var directive = new TestDirective();
               directive.a = "aaa";
 
-              var pcd = createProtoChangeDetector();
-              var cd = instantiate(pcd, dispatcher, [BindingRecord.createForHostProperty(index, ast("a"), "prop")], [dirRecord]);
+              var pcd = createProtoChangeDetector([BindingRecord.createForHostProperty(index, ast("a"), "prop")], null, [dirRecord]);
+              var cd = pcd.instantiate(dispatcher);
               cd.hydrate(null, null, dirs([directive]));
 
               cd.detectChanges();
@@ -401,12 +408,12 @@ export function main() {
 
           describe("enforce no new changes", () => {
             it("should throw when a record gets changed after it has been checked", () => {
-              var pcd = createProtoChangeDetector();
-
-              var dispatcher = new TestDispatcher();
-              var cd = instantiate(pcd, dispatcher, [
+              var pcd = createProtoChangeDetector([
                 BindingRecord.createForElement(ast("a"), 0, "a")
               ]);
+
+              var dispatcher = new TestDispatcher();
+              var cd = pcd.instantiate(dispatcher);
               cd.hydrate(new TestData('value'), null, null);
 
               expect(() => {
@@ -487,11 +494,8 @@ export function main() {
             var parent, child;
 
             beforeEach(() => {
-              var protoParent = createProtoChangeDetector();
-              parent = instantiate(protoParent, null, []);
-
-              var protoChild = createProtoChangeDetector();
-              child = instantiate(protoChild, null, []);
+              parent = createProtoChangeDetector([]).instantiate(null);
+              child = createProtoChangeDetector([]).instantiate(null);
             });
 
             it("should add light dom children", () => {
@@ -526,8 +530,8 @@ export function main() {
 
         describe("mode", () => {
           it("should set the mode to CHECK_ALWAYS when the default change detection is used", () => {
-            var proto = createProtoChangeDetector(null, DEFAULT);
-            var cd = proto.instantiate(null, [], [], []);
+            var proto = createProtoChangeDetector([], [], [], null, DEFAULT);
+            var cd = proto.instantiate(null);
 
             expect(cd.mode).toEqual(null);
 
@@ -537,8 +541,8 @@ export function main() {
           });
 
           it("should set the mode to CHECK_ONCE when the push change detection is used", () => {
-            var proto = createProtoChangeDetector(null, ON_PUSH);
-            var cd = proto.instantiate(null, [], [], []);
+            var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
+            var cd = proto.instantiate(null);
             cd.hydrate(null, null, null);
 
             expect(cd.mode).toEqual(CHECK_ONCE);
@@ -567,7 +571,7 @@ export function main() {
           });
 
           it("should change CHECK_ONCE to CHECKED", () => {
-            var cd = instantiate(createProtoChangeDetector(), null, []);
+            var cd = createProtoChangeDetector([]).instantiate(null);
             cd.mode = CHECK_ONCE;
 
             cd.detectChanges();
@@ -576,7 +580,7 @@ export function main() {
           });
 
           it("should not change the CHECK_ALWAYS", () => {
-            var cd = instantiate(createProtoChangeDetector(), null, []);
+            var cd = createProtoChangeDetector([]).instantiate(null);
             cd.mode = CHECK_ALWAYS;
 
             cd.detectChanges();
@@ -591,8 +595,8 @@ export function main() {
             var directives;
 
             beforeEach(() => {
-              var proto = createProtoChangeDetector(null, ON_PUSH);
-              checkedDetector = instantiate(proto, null, [], []);
+              var proto = createProtoChangeDetector([], [], [], null, ON_PUSH);
+              checkedDetector = proto.instantiate(null);
               checkedDetector.hydrate(null, null, null);
               checkedDetector.mode = CHECKED;
 
@@ -608,9 +612,9 @@ export function main() {
             });
 
             it("should set the mode to CHECK_ONCE when a binding is updated", () => {
-              var proto = createProtoChangeDetector(null);
+              var proto = createProtoChangeDetector([updateDirWithOnPushRecord], [], [dirRecordWithOnPush]);
 
-              var cd = instantiate(proto, null, [updateDirWithOnPushRecord], [dirRecordWithOnPush]);
+              var cd = proto.instantiate(null);
               cd.hydrate(null, null, directives);
 
               expect(checkedDetector.mode).toEqual(CHECKED);
@@ -625,7 +629,7 @@ export function main() {
 
         describe("markPathToRootAsCheckOnce", () => {
           function changeDetector(mode, parent) {
-            var cd = instantiate(createProtoChangeDetector(), null, []);
+            var cd = createProtoChangeDetector([]).instantiate(null);
             cd.mode = mode;
             if (isPresent(parent)) parent.addChild(cd);
             return cd;

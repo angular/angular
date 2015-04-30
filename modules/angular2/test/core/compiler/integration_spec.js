@@ -14,6 +14,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
+
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -45,6 +46,7 @@ export function main() {
     beforeEach( () => {
       ctx = new MyComp();
     });
+
 
     describe('react to record changes', function() {
       it('should consume text node changes', inject([TestBed, AsyncTestCompleter], (tb, async) => {

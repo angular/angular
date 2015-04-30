@@ -4,7 +4,6 @@ import {AST, Locals, ChangeDispatcher, ProtoChangeDetector, ChangeDetector,
 
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding} from './element_injector';
 import {ElementBinder} from './element_binder';
-import {SetterFn} from 'angular2/src/reflection/types';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 
@@ -164,74 +163,22 @@ export class AppProtoView {
   protoChangeDetector:ProtoChangeDetector;
   variableBindings: Map;
   protoLocals:Map;
-  textNodesWithBindingCount:int;
   bindings:List;
-  parentProtoView:AppProtoView;
-  _variableBindings:List;
-
-  _directiveRecordsMap:Map;
-  _directiveRecords:List;
+  variableNames:List;
   render:renderApi.RenderProtoViewRef;
 
   constructor(
       render:renderApi.RenderProtoViewRef,
-      protoChangeDetector:ProtoChangeDetector) {
+      protoChangeDetector:ProtoChangeDetector,
+      variableBindings:Map,
+      protoLocals:Map,
+      variableNames:List) {
     this.render = render;
     this.elementBinders = [];
-    this.variableBindings = MapWrapper.create();
-    this.protoLocals = MapWrapper.create();
+    this.variableBindings = variableBindings;
+    this.protoLocals = protoLocals;
+    this.variableNames = variableNames;
     this.protoChangeDetector = protoChangeDetector;
-    this.parentProtoView = null;
-    this.textNodesWithBindingCount = 0;
-    this.bindings = [];
-    this._directiveRecordsMap = MapWrapper.create();
-    this._variableBindings = null;
-    this._directiveRecords = null;
-  }
-
-  //TODO: Tobias or Victor. Moving it into the constructor.
-  // this work should be done the constructor of AppProtoView once we separate
-  // AppProtoView and ProtoViewBuilder
-  getVariableBindings(): List {
-    if (isPresent(this._variableBindings)) {
-      return this._variableBindings;
-    }
-
-    this._variableBindings = isPresent(this.parentProtoView) ?
-      ListWrapper.clone(this.parentProtoView.getVariableBindings()) : [];
-
-    MapWrapper.forEach(this.protoLocals, (v, local) => {
-      ListWrapper.push(this._variableBindings, local);
-    });
-
-    return this._variableBindings;
-  }
-
-  //TODO: Tobias or Victor. Moving it into the constructor.
-  // this work should be done the constructor of ProtoView once we separate
-  // AppProtoView and ProtoViewBuilder
-  getdirectiveRecords(): List {
-    if (isPresent(this._directiveRecords)) {
-      return this._directiveRecords;
-    }
-
-    this._directiveRecords = [];
-
-    for (var injectorIndex = 0; injectorIndex < this.elementBinders.length; ++injectorIndex) {
-      var pei = this.elementBinders[injectorIndex].protoElementInjector;
-      if (isPresent(pei)) {
-        for (var directiveIndex = 0; directiveIndex < pei.numberOfDirectives; ++directiveIndex) {
-          ListWrapper.push(this._directiveRecords, this._getDirectiveRecord(injectorIndex, directiveIndex));
-        }
-      }
-    }
-
-    return this._directiveRecords;
-  }
-
-  bindVariable(contextName:string, templateName:string): void {
-    MapWrapper.set(this.variableBindings, contextName, templateName);
-    MapWrapper.set(this.protoLocals, templateName, null);
   }
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,
@@ -240,32 +187,6 @@ export class AppProtoView {
         protoElementInjector, componentDirective);
     ListWrapper.push(this.elementBinders, elBinder);
     return elBinder;
-  }
-
-  /**
-   * Adds a text node binding for the last created ElementBinder via bindElement
-   */
-  bindTextNode(expression:AST):void {
-    var textNodeIndex = this.textNodesWithBindingCount++;
-    var b = BindingRecord.createForTextNode(expression, textNodeIndex);
-    ListWrapper.push(this.bindings, b);
-  }
-
-  /**
-   * Adds an element property binding for the last created ElementBinder via bindElement
-   */
-  bindElementProperty(expression:AST, setterName:string):void {
-    var elementIndex = this.elementBinders.length-1;
-    var b = BindingRecord.createForElement(expression, elementIndex, setterName);
-    ListWrapper.push(this.bindings, b);
-  }
-
-  /**
-   * Adds an host property binding for the last created ElementBinder via bindElement
-   */
-  bindHostElementProperty(expression:AST, setterName:string, directiveIndex:DirectiveIndex):void {
-    var b = BindingRecord.createForHostProperty(directiveIndex, expression, setterName);
-    ListWrapper.push(this.bindings, b);
   }
 
   /**
@@ -281,8 +202,8 @@ export class AppProtoView {
    * @param {int} directiveIndex The directive index in the binder or -1 when the event is not bound
    *                             to a directive
    */
-  bindEvent(eventBindings: List<renderApi.EventBinding>, directiveIndex: int = -1): void {
-    var elBinder = this.elementBinders[this.elementBinders.length - 1];
+  bindEvent(eventBindings: List<renderApi.EventBinding>, boundElementIndex:number, directiveIndex: int = -1): void {
+    var elBinder = this.elementBinders[boundElementIndex];
     var events = elBinder.hostListeners;
     if (isBlank(events)) {
       events = StringMapWrapper.create();
@@ -298,36 +219,5 @@ export class AppProtoView {
       }
       MapWrapper.set(event, directiveIndex, eventBinding.source);
     }
-  }
-
-  /**
-   * Adds a directive property binding for the last created ElementBinder via bindElement
-   */
-  bindDirectiveProperty(
-    directiveIndex:number,
-    expression:AST,
-    setterName:string,
-    setter:SetterFn): void {
-
-    var elementIndex = this.elementBinders.length-1;
-    var directiveRecord = this._getDirectiveRecord(elementIndex, directiveIndex);
-    var b = BindingRecord.createForDirective(expression, setterName, setter, directiveRecord);
-    ListWrapper.push(this.bindings, b);
-  }
-
-  _getDirectiveRecord(elementInjectorIndex:number, directiveIndex:number): DirectiveRecord {
-    var id = elementInjectorIndex * 100 + directiveIndex;
-    var protoElementInjector = this.elementBinders[elementInjectorIndex].protoElementInjector;
-
-    if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
-      var binding = protoElementInjector.getDirectiveBindingAtIndex(directiveIndex);
-      var changeDetection = binding.changeDetection;
-
-      MapWrapper.set(this._directiveRecordsMap, id,
-        new DirectiveRecord(new DirectiveIndex(elementInjectorIndex, directiveIndex),
-          binding.callOnAllChangesDone, binding.callOnChange, changeDetection));
-    }
-
-    return MapWrapper.get(this._directiveRecordsMap, id);
   }
 }

@@ -94,7 +94,7 @@ export class Compiler {
 
     var directiveMetadata = Compiler.buildRenderDirective(componentBinding);
     return this._renderer.createHostProtoView(directiveMetadata).then( (hostRenderPv) => {
-      return this._compileNestedProtoViews(null, hostRenderPv, [componentBinding], true);
+      return this._compileNestedProtoViews(null, null, hostRenderPv, [componentBinding], true);
     }).then( (appProtoView) => {
       return new ProtoViewRef(appProtoView);
     });
@@ -135,7 +135,7 @@ export class Compiler {
     if (isPresent(template.renderer)) {
       var directives = [];
       pvPromise = this._renderer.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
-        return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
+        return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
       });
     } else {
       var directives = ListWrapper.map(
@@ -144,7 +144,7 @@ export class Compiler {
       );
       var renderTemplate = this._buildRenderTemplate(component, template, directives);
       pvPromise = this._renderer.compile(renderTemplate).then( (renderPv) => {
-        return this._compileNestedProtoViews(componentBinding, renderPv, directives, true);
+        return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
       });
     }
 
@@ -153,9 +153,9 @@ export class Compiler {
   }
 
   // TODO(tbosch): union type return AppProtoView or Promise<AppProtoView>
-  _compileNestedProtoViews(componentBinding, renderPv, directives, isComponentRootView) {
+  _compileNestedProtoViews(parentProtoView, componentBinding, renderPv, directives, isComponentRootView) {
     var nestedPVPromises = [];
-    var protoView = this._protoViewFactory.createProtoView(componentBinding, renderPv, directives);
+    var protoView = this._protoViewFactory.createProtoView(parentProtoView, componentBinding, renderPv, directives);
     if (isComponentRootView && isPresent(componentBinding)) {
       // Populate the cache before compiling the nested components,
       // so that components can reference themselves in their template.
@@ -170,15 +170,12 @@ export class Compiler {
       var nestedRenderProtoView = renderPv.elementBinders[binderIndex].nestedProtoView;
       var elementBinderDone = (nestedPv) => {
         elementBinder.nestedProtoView = nestedPv;
-        // Can't set the parentProtoView for components,
-        // as their AppProtoView might be used in multiple other components.
-        nestedPv.parentProtoView = isPresent(nestedComponent) ? null : protoView;
       };
       var nestedCall = null;
       if (isPresent(nestedComponent)) {
         nestedCall = this._compile(nestedComponent);
       } else if (isPresent(nestedRenderProtoView)) {
-        nestedCall = this._compileNestedProtoViews(componentBinding, nestedRenderProtoView, directives, false);
+        nestedCall = this._compileNestedProtoViews(protoView, componentBinding, nestedRenderProtoView, directives, false);
       }
       if (PromiseWrapper.isPromise(nestedCall)) {
         ListWrapper.push(nestedPVPromises, nestedCall.then(elementBinderDone));

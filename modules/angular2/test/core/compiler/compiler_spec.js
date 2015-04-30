@@ -283,9 +283,6 @@ export function main() {
       compiler.compile(MainComponent).then( (protoViewRef) => {
         expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
-        // parentProtoView of nested components has to be null as components can
-        // be used by multiple other components.
-        expect(nestedProtoView.parentProtoView).toBe(null);
         async.done();
       });
     }));
@@ -316,11 +313,7 @@ export function main() {
       compiler.compile(MainComponent).then( (protoViewRef) => {
         expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
         expect(mainProtoView.elementBinders[0].nestedProtoView).toBe(viewportProtoView);
-        expect(viewportProtoView.parentProtoView).toBe(mainProtoView);
         expect(viewportProtoView.elementBinders[0].nestedProtoView).toBe(nestedProtoView);
-        // parentProtoView of nested components has to be null as components can
-        // be used by multiple other components.
-        expect(nestedProtoView.parentProtoView).toBe(null);
 
         async.done();
       });
@@ -432,7 +425,7 @@ function createDirectiveBinding(reader, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new AppProtoView(null, null);
+  var pv = new AppProtoView(null, null, null, null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
@@ -575,7 +568,7 @@ class FakeProtoViewFactory extends ProtoViewFactory {
     this._results = results;
   }
 
-  createProtoView(componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
+  createProtoView(parentProtoView, componentBinding:DirectiveBinding, renderProtoView: renderApi.ProtoViewDto,
                   directives:List<DirectiveBinding>):AppProtoView {
     ListWrapper.push(this.requests, [componentBinding, renderProtoView, directives]);
     return ListWrapper.removeAt(this._results, 0);

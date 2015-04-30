@@ -4,7 +4,7 @@ import {DEFAULT} from './constants';
 import {BindingRecord} from './binding_record';
 
 export class ProtoChangeDetector  {
-  instantiate(dispatcher:any, bindingRecords:List, variableBindings:List, directiveRecords:List):ChangeDetector{
+  instantiate(dispatcher:any):ChangeDetector{
     return null;
   }
 }
@@ -33,7 +33,8 @@ export class ProtoChangeDetector  {
  * @exportedAs angular2/change_detection
  */
 export class ChangeDetection {
-  createProtoChangeDetector(name:string, changeControlStrategy:string=DEFAULT):ProtoChangeDetector{
+  createProtoChangeDetector(name:string, bindingRecords:List, variableBindings:List, directiveRecords:List,
+                            changeControlStrategy:string=DEFAULT):ProtoChangeDetector{
     return null;
   }
 }

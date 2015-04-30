@@ -187,10 +187,8 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = changeDetection.createProtoChangeDetector('parent');
-  var parentCd = parentProto.instantiate(dispatcher, [], [], []);
-
-  var proto = changeDetection.createProtoChangeDetector("proto");
+  var parentProto = changeDetection.createProtoChangeDetector('parent', [], [], []);
+  var parentCd = parentProto.instantiate(dispatcher);
 
   var directiveRecord = new DirectiveRecord(new DirectiveIndex(0, 0), false, false, DEFAULT);
   var bindings = [
@@ -206,9 +204,11 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
     BindingRecord.createForDirective(parser.parseBinding('field9', null), "field9", reflector.setter("field9"), directiveRecord)
   ];
 
+  var proto = changeDetection.createProtoChangeDetector("proto", bindings, [], [directiveRecord]);
+
   var targetObj = new Obj();
   for (var i = 0; i < iterations; ++i) {
-    var cd = proto.instantiate(dispatcher, bindings, [], [directiveRecord]);
+    var cd = proto.instantiate(dispatcher);
     cd.hydrate(object, null, new FakeDirectives(targetObj));
     parentCd.addChild(cd);
   }

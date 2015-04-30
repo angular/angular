@@ -80,7 +80,7 @@ export function main() {
           staticChildComponentCount++;
         }
       }
-      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null);
+      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null, null, null, null);
       res.elementBinders = binders;
       return res;
     }

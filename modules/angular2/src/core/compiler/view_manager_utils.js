@@ -28,8 +28,7 @@ export class AppViewManagerUtils {
 
   createView(protoView:viewModule.AppProtoView, viewManager:avmModule.AppViewManager, renderer:Renderer): viewModule.AppView {
     var view = new viewModule.AppView(renderer, protoView, protoView.protoLocals);
-    var changeDetector = protoView.protoChangeDetector.instantiate(view, protoView.bindings,
-      protoView.getVariableBindings(), protoView.getdirectiveRecords());
+    var changeDetector = protoView.protoChangeDetector.instantiate(view);
 
     var binders = protoView.elementBinders;
     var elementInjectors = ListWrapper.createFixedSize(binders.length);
