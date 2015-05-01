@@ -572,7 +572,7 @@ var bundleConfig = {
   },
   meta: {
     // auto-detection fails to detect properly here - https://github.com/systemjs/builder/issues/123
-    'rx/dist/rx.all': {
+    'rx': {
         format: 'cjs'
       }
     }
