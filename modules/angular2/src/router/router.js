@@ -8,7 +8,7 @@ import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
 
 /**
- * # Router
+ * ## Router
  * The router is responsible for mapping URLs to components.
  *
  * You can see the state of the router by inspecting the read-only field `router.navigating`.
@@ -65,7 +65,7 @@ export class Router {
   /**
    * Update the routing configuration and trigger a navigation.
    *
-   * # Usage
+   * ### Usage
    *
    * ```
    * router.config('/', SomeCmp);
