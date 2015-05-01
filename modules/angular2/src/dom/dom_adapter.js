@@ -199,6 +199,9 @@ export class DomAdapter {
   attributeMap(element) {
     throw _abstract();
   }
+  hasAttribute(element, attribute:string):boolean {
+    throw _abstract();
+  }
   getAttribute(element, attribute:string):string {
     throw _abstract();
   }

@@ -384,6 +384,9 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return res;
   }
+  hasAttribute(element, attribute:string) {
+    return element.attribs && element.attribs.hasOwnProperty(attribute);
+  }
   getAttribute(element, attribute:string) {
     return element.attribs && element.attribs.hasOwnProperty(attribute)? element.attribs[attribute]: null;
   }

@@ -116,15 +116,17 @@ export class DirectiveMetadata {
   compileChildren:boolean;
   hostListeners:Map<string, string>;
   hostProperties:Map<string, string>;
+  hostAttributes:Map<string, string>;
   properties:Map<string, string>;
   readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, hostListeners, hostProperties, properties, readAttributes, type}) {
+  constructor({id, selector, compileChildren, hostListeners, hostProperties, hostAttributes, properties, readAttributes, type}) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
+    this.hostAttributes = hostAttributes;
     this.properties = properties;
     this.readAttributes = readAttributes;
     this.type = type;

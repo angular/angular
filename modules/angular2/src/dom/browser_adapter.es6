@@ -263,6 +263,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return res;
   }
+  hasAttribute(element, attribute:string) {
+    return element.hasAttribute(attribute);
+  }
   getAttribute(element, attribute:string) {
     return element.getAttribute(attribute);
   }

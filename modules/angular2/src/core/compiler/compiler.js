@@ -247,6 +247,7 @@ export class Compiler {
       compileChildren: compileChildren,
       hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
       hostProperties: isPresent(ann.hostProperties) ? MapWrapper.createFromStringMap(ann.hostProperties) : null,
+      hostAttributes: isPresent(ann.hostAttributes) ? MapWrapper.createFromStringMap(ann.hostAttributes) : null,
       properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
       readAttributes: readAttributes
     });

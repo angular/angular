@@ -599,6 +599,28 @@ export class Directive extends Injectable {
   hostProperties:any; // String map
 
   /**
+   * Specifies static attributes that should be propagated to a host element. Attributes specified in `hostAttributes`
+   * are propagated only if a given attribute is not present on a host element.
+   *
+   * ## Syntax
+   *
+   * ```
+   * @Directive({
+   *   selector: '[my-button]',
+   *   hostAttributes: {
+   *     'role': 'button'
+   *   }
+   * })
+   * class MyButton {
+   * }
+   *
+   * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element (here: `<div>` )
+   * will ensure that this element will get the "button" role.
+   * ```
+   */
+  hostAttributes:any; // String map
+
+  /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
    * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
@@ -618,6 +640,7 @@ export class Directive extends Injectable {
       events,
       hostListeners,
       hostProperties,
+      hostAttributes,
       lifecycle,
       compileChildren = true,
     }:{
@@ -626,6 +649,7 @@ export class Directive extends Injectable {
       events:List,
       hostListeners: any,
       hostProperties: any,
+      hostAttributes: any,
       lifecycle:List,
       compileChildren:boolean
     }={})
@@ -636,6 +660,7 @@ export class Directive extends Injectable {
     this.events = events;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
+    this.hostAttributes = hostAttributes;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
   }
@@ -797,6 +822,7 @@ export class Component extends Directive {
       events,
       hostListeners,
       hostProperties,
+      hostAttributes,
       injectables,
       lifecycle,
       changeDetection = DEFAULT,
@@ -807,6 +833,7 @@ export class Component extends Directive {
       events:List,
       hostListeners:any,
       hostProperties:any,
+      hostAttributes:any,
       injectables:List,
       lifecycle:List,
       changeDetection:string,
@@ -819,6 +846,7 @@ export class Component extends Directive {
       events: events,
       hostListeners: hostListeners,
       hostProperties: hostProperties,
+      hostAttributes: hostAttributes,
       lifecycle: lifecycle,
       compileChildren: compileChildren
     });

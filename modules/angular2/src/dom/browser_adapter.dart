@@ -248,6 +248,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return new Map.from(element.attributes);
   }
 
+  bool hasAttribute(Element element, String attribute) =>
+      element.attributes.containsKey(attribute);
+
   String getAttribute(Element element, String attribute) =>
       element.getAttribute(attribute);
 

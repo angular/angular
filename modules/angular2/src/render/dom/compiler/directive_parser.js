@@ -78,6 +78,13 @@ export class DirectiveParser extends CompileStep {
           this._bindHostProperty(hostPropertyName, directivePropertyName, current, directiveBinderBuilder);
         });
       }
+      if (isPresent(directive.hostAttributes)) {
+        MapWrapper.forEach(directive.hostAttributes, (hostAttrValue, hostAttrName) => {
+          if (!DOM.hasAttribute(current.element, hostAttrName)) {
+            DOM.setAttribute(current.element, hostAttrName, hostAttrValue);
+          }
+        });
+      }
       if (isPresent(directive.readAttributes)) {
         ListWrapper.forEach(directive.readAttributes, (attrName) => {
           elementBinder.readAttribute(attrName);

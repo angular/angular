@@ -13,6 +13,7 @@ export function directiveMetadataToMap(meta: DirectiveMetadata): Map {
     ['compileChildren', meta.compileChildren],
     ['hostListeners', _cloneIfPresent(meta.hostListeners)],
     ['hostProperties', _cloneIfPresent(meta.hostProperties)],
+    ['hostAttributes', _cloneIfPresent(meta.hostAttributes)],
     ['properties', _cloneIfPresent(meta.properties)],
     ['readAttributes', _cloneIfPresent(meta.readAttributes)],
     ['type', meta.type],
@@ -32,6 +33,7 @@ export function directiveMetadataFromMap(map: Map): DirectiveMetadata {
     compileChildren: MapWrapper.get(map, 'compileChildren'),
     hostListeners: _cloneIfPresent(MapWrapper.get(map, 'hostListeners')),
     hostProperties: _cloneIfPresent(MapWrapper.get(map, 'hostProperties')),
+    hostAttributes: _cloneIfPresent(MapWrapper.get(map, 'hostAttributes')),
     properties: _cloneIfPresent(MapWrapper.get(map, 'properties')),
     readAttributes: _cloneIfPresent(MapWrapper.get(map, 'readAttributes')),
     type: MapWrapper.get(map, 'type')

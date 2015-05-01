@@ -617,6 +617,21 @@ export function main() {
         });
       }));
 
+      it('should support updating host element via hostAttributes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div update-host-attributes></div>',
+          directives: [DirectiveUpdatingHostAttributes]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          view.detectChanges();
+
+          expect(DOM.getAttribute(view.rootNodes[0], "role")).toEqual("button");
+
+          async.done();
+        });
+      }));
+
       it('should support updating host element via hostProperties', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
           template: '<div update-host-properties></div>',
@@ -1093,6 +1108,15 @@ class DirectiveEmitingEvent {
   fireEvent(msg: string) {
     ObservableWrapper.callNext(this.event, msg);
   }
+}
+
+@Directive({
+  selector: '[update-host-attributes]',
+  hostAttributes: {
+    'role' : 'button'
+  }
+})
+class DirectiveUpdatingHostAttributes {
 }
 
 @Directive({

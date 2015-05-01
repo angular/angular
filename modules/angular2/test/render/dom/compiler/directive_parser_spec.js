@@ -1,6 +1,7 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {isPresent, isBlank, assertionsEnabled} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
@@ -22,6 +23,7 @@ export function main() {
         decoratorWithMultipleAttrs,
         someDirectiveWithProps,
         someDirectiveWithHostProperties,
+        someDirectiveWithHostAttributes,
         someDirectiveWithEvents,
         someDirectiveWithGlobalEvents
       ];
@@ -121,6 +123,24 @@ export function main() {
 
       var ast = MapWrapper.get(directiveBinding.hostPropertyBindings, 'hostProperty');
       expect(ast.source).toEqual('dirProp');
+    });
+
+    it('should set host element attributes', () => {
+      var element = el('<input some-decor-with-host-attrs>');
+      var results = process(element);
+
+      expect(DOM.getAttribute(results[0].element, 'attr_name')).toEqual('attr_val');
+    });
+
+    it('should not set host element attribute if an attribute already exists', () => {
+      var element = el('<input attr_name="initial" some-decor-with-host-attrs>');
+      var results = process(element);
+
+      expect(DOM.getAttribute(results[0].element, 'attr_name')).toEqual('initial');
+
+      DOM.removeAttribute(element, 'attr_name');
+      results = process(element);
+      expect(DOM.getAttribute(results[0].element, 'attr_name')).toEqual('attr_val');
     });
 
     it('should read attribute values', () => {
@@ -239,6 +259,13 @@ var someDirectiveWithHostProperties = new DirectiveMetadata({
   selector: '[some-decor-with-host-props]',
   hostProperties: MapWrapper.createFromStringMap({
     'dirProp': 'hostProperty'
+  })
+});
+
+var someDirectiveWithHostAttributes = new DirectiveMetadata({
+  selector: '[some-decor-with-host-attrs]',
+  hostAttributes: MapWrapper.createFromStringMap({
+    'attr_name': 'attr_val'
   })
 });
 

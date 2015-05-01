@@ -211,6 +211,9 @@ class Html5LibDomAdapter implements DomAdapter {
     });
     return map;
   }
+  hasAttribute(element, String attribute) {
+    throw 'not implemented';
+  }
   getAttribute(element, String attribute) {
     throw 'not implemented';
   }
