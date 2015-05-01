@@ -18,7 +18,13 @@ import {
   RECORD_TYPE_PIPE,
   RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE
-  } from './proto_record';
+} from './proto_record';
+
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
 
 /**
  * The code generator takes a list of proto records and creates a function/class
@@ -43,8 +49,8 @@ var MODE_ACCESSOR = "this.mode";
 var TEMP_LOCAL = "temp";
 var CURRENT_PROTO = "currentProto";
 
-function typeTemplate(type:string, cons:string, detectChanges:string,
-                      notifyOnAllChangesDone:string, setContext:string):string {
+function typeTemplate(type: string, cons: string, detectChanges: string,
+                      notifyOnAllChangesDone: string, setContext: string): string {
   return `
 ${cons}
 ${detectChanges}
@@ -57,7 +63,7 @@ return function(dispatcher, pipeRegistry) {
 `;
 }
 
-function constructorTemplate(type:string, fieldsDefinitions:string):string {
+function constructorTemplate(type: string, fieldsDefinitions: string): string {
   return `
 var ${type} = function ${type}(dispatcher, pipeRegistry, protos, directiveRecords) {
 ${ABSTRACT_CHANGE_DETECTOR}.call(this);
@@ -73,20 +79,23 @@ ${type}.prototype = Object.create(${ABSTRACT_CHANGE_DETECTOR}.prototype);
 `;
 }
 
-function pipeOnDestroyTemplate(pipeNames:List) {
+function pipeOnDestroyTemplate(pipeNames: List<any>) {
   return pipeNames.map((p) => `${p}.onDestroy()`).join("\n");
 }
 
-function hydrateTemplate(type:string, mode:string, fieldDefinitions:string, pipeOnDestroy:string,
-                         directiveFieldNames:List<String>, detectorFieldNames:List<String>):string {
+function hydrateTemplate(type: string, mode: string, fieldDefinitions: string,
+                         pipeOnDestroy: string, directiveFieldNames: List<String>,
+                         detectorFieldNames: List<String>): string {
   var directiveInit = "";
-  for(var i = 0; i < directiveFieldNames.length; ++i) {
-    directiveInit += `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}].directiveIndex);\n`;
+  for (var i = 0; i < directiveFieldNames.length; ++i) {
+    directiveInit +=
+        `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}].directiveIndex);\n`;
   }
 
   var detectorInit = "";
-  for(var i = 0; i < detectorFieldNames.length; ++i) {
-    detectorInit += `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}].directiveIndex);\n`;
+  for (var i = 0; i < detectorFieldNames.length; ++i) {
+    detectorInit +=
+        `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}].directiveIndex);\n`;
   }
 
   return `
@@ -108,7 +117,7 @@ ${type}.prototype.hydrated = function() {
 `;
 }
 
-function detectChangesTemplate(type:string, body:string):string {
+function detectChangesTemplate(type: string, body: string): string {
   return `
 ${type}.prototype.detectChangesInRecords = function(throwOnChange) {
   ${body}
@@ -116,7 +125,7 @@ ${type}.prototype.detectChangesInRecords = function(throwOnChange) {
 `;
 }
 
-function callOnAllChangesDoneTemplate(type:string, body:string):string {
+function callOnAllChangesDoneTemplate(type: string, body: string): string {
   return `
 ${type}.prototype.callOnAllChangesDone = function() {
   ${body}
@@ -124,12 +133,13 @@ ${type}.prototype.callOnAllChangesDone = function() {
 `;
 }
 
-function onAllChangesDoneTemplate(directive:string):string {
+function onAllChangesDoneTemplate(directive: string): string {
   return `${directive}.onAllChangesDone();`;
 }
 
 
-function detectChangesBodyTemplate(localDefinitions:string, changeDefinitions:string, records:string):string {
+function detectChangesBodyTemplate(localDefinitions: string, changeDefinitions: string,
+                                   records: string): string {
   return `
 ${localDefinitions}
 ${changeDefinitions}
@@ -143,9 +153,10 @@ ${records}
 `;
 }
 
-function pipeCheckTemplate(protoIndex:number, context:string, bindingPropagationConfig:string, pipe:string, pipeType:string,
-                           oldValue:string, newValue:string, change:string, update:string,
-                           addToChanges, lastInDirective:string):string{
+function pipeCheckTemplate(protoIndex: number, context: string, bindingPropagationConfig: string,
+                           pipe: string, pipeType: string, oldValue: string, newValue: string,
+                           change: string, update: string, addToChanges,
+                           lastInDirective: string): string {
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 if (${pipe} === ${UTIL}.unitialized()) {
@@ -167,8 +178,9 @@ ${lastInDirective}
 `;
 }
 
-function referenceCheckTemplate(protoIndex:number, assignment:string, oldValue:string, newValue:string, change:string,
-                                update:string, addToChanges:string, lastInDirective:string):string {
+function referenceCheckTemplate(protoIndex: number, assignment: string, oldValue: string,
+                                newValue: string, change: string, update: string,
+                                addToChanges: string, lastInDirective: string): string {
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 ${assignment}
@@ -182,23 +194,23 @@ ${lastInDirective}
 `;
 }
 
-function assignmentTemplate(field:string, value:string) {
+function assignmentTemplate(field: string, value: string) {
   return `${field} = ${value};`;
 }
 
-function localDefinitionsTemplate(names:List):string {
+function localDefinitionsTemplate(names: List<any>): string {
   return names.map((n) => `var ${n};`).join("\n");
 }
 
-function changeDefinitionsTemplate(names:List):string {
+function changeDefinitionsTemplate(names: List<any>): string {
   return names.map((n) => `var ${n} = false;`).join("\n");
 }
 
-function fieldDefinitionsTemplate(names:List):string {
+function fieldDefinitionsTemplate(names: List<any>): string {
   return names.map((n) => `${n} = ${UTIL}.unitialized();`).join("\n");
 }
 
-function ifChangedGuardTemplate(changeNames:List, body:string):string {
+function ifChangedGuardTemplate(changeNames: List<any>, body: string): string {
   var cond = changeNames.join(" || ");
   return `
 if (${cond}) {
@@ -207,11 +219,12 @@ if (${cond}) {
 `;
 }
 
-function addToChangesTemplate(oldValue:string, newValue:string):string {
+function addToChangesTemplate(oldValue: string, newValue: string): string {
   return `${CHANGES_LOCAL} = ${UTIL}.addChange(${CHANGES_LOCAL}, ${CURRENT_PROTO}.bindingRecord.propertyName, ${UTIL}.simpleChange(${oldValue}, ${newValue}));`;
 }
 
-function updateDirectiveTemplate(oldValue:string, newValue:string, directiveProperty:string):string {
+function updateDirectiveTemplate(oldValue: string, newValue: string,
+                                 directiveProperty: string): string {
   return `
 if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
 ${directiveProperty} = ${newValue};
@@ -219,15 +232,15 @@ ${IS_CHANGED_LOCAL} = true;
   `;
 }
 
-function updateElementTemplate(oldValue:string, newValue:string):string {
+function updateElementTemplate(oldValue: string, newValue: string): string {
   return `
 if(throwOnChange) ${UTIL}.throwOnChange(${CURRENT_PROTO}, ${UTIL}.simpleChange(${oldValue}, ${newValue}));
 ${DISPATCHER_ACCESSOR}.notifyOnBinding(${CURRENT_PROTO}.bindingRecord, ${newValue});
   `;
 }
 
-function notifyOnChangesTemplate(directive:string):string{
-  return  `
+function notifyOnChangesTemplate(directive: string): string {
+  return `
 if(${CHANGES_LOCAL}) {
   ${directive}.onChange(${CHANGES_LOCAL});
   ${CHANGES_LOCAL} = null;
@@ -235,16 +248,16 @@ if(${CHANGES_LOCAL}) {
 `;
 }
 
-function notifyOnPushDetectorsTemplate(detector:string):string{
-  return  `
+function notifyOnPushDetectorsTemplate(detector: string): string {
+  return `
 if(${IS_CHANGED_LOCAL}) {
   ${detector}.markAsCheckOnce();
 }
 `;
 }
 
-function lastInDirectiveTemplate(notifyOnChanges:string, notifyOnPush:string):string{
-  return  `
+function lastInDirectiveTemplate(notifyOnChanges: string, notifyOnPush: string): string {
+  return `
 ${notifyOnChanges}
 ${notifyOnPush}
 ${IS_CHANGED_LOCAL} = false;
@@ -253,28 +266,20 @@ ${IS_CHANGED_LOCAL} = false;
 
 
 export class ChangeDetectorJITGenerator {
-  typeName:string;
-  records:List<ProtoRecord>;
-  directiveRecords:List;
-  localNames:List<string>;
-  changeNames:List<string>;
-  fieldNames:List<string>;
-  pipeNames:List<string>;
-  changeDetectionStrategy:stirng;
+  localNames: List<string>;
+  changeNames: List<string>;
+  fieldNames: List<string>;
+  pipeNames: List<string>;
 
-  constructor(typeName:string, changeDetectionStrategy:string, records:List<ProtoRecord>, directiveRecords:List) {
-    this.typeName = typeName;
-    this.changeDetectionStrategy = changeDetectionStrategy;
-    this.records = records;
-    this.directiveRecords = directiveRecords;
-
+  constructor(public typeName: string, public changeDetectionStrategy: string,
+              public records: List<ProtoRecord>, public directiveRecords: List<any>) {
     this.localNames = this.getLocalNames(records);
     this.changeNames = this.getChangeNames(this.localNames);
     this.fieldNames = this.getFieldNames(this.localNames);
     this.pipeNames = this.getPipeNames(this.localNames);
   }
 
-  getLocalNames(records:List<ProtoRecord>):List<string> {
+  getLocalNames(records: List<ProtoRecord>): List<string> {
     var index = 0;
     var names = records.map((r) => {
       var sanitizedName = r.name.replace(new RegExp("\\W", "g"), '');
@@ -283,51 +288,49 @@ export class ChangeDetectorJITGenerator {
     return ["context"].concat(names);
   }
 
-  getChangeNames(localNames:List<string>):List<string> {
+  getChangeNames(localNames: List<string>): List<string> {
     return localNames.map((n) => `change_${n}`);
   }
 
-  getFieldNames(localNames:List<string>):List<string> {
+  getFieldNames(localNames: List<string>): List<string> {
     return localNames.map((n) => `this.${n}`);
   }
 
-  getPipeNames(localNames:List<string>):List<string> {
+  getPipeNames(localNames: List<string>): List<string> {
     return localNames.map((n) => `this.${n}_pipe`);
   }
 
-  generate():Function {
+  generate(): Function {
     var text = typeTemplate(this.typeName, this.genConstructor(), this.genDetectChanges(),
-      this.genCallOnAllChangesDone(), this.genHydrate());
-    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos', 'directiveRecords', text)
-      (AbstractChangeDetector, ChangeDetectionUtil, this.records, this.directiveRecords);
+                            this.genCallOnAllChangesDone(), this.genHydrate());
+    return new Function('AbstractChangeDetector', 'ChangeDetectionUtil', 'protos',
+                        'directiveRecords', text)(AbstractChangeDetector, ChangeDetectionUtil,
+                                                  this.records, this.directiveRecords);
   }
 
-  genConstructor():string {
+  genConstructor(): string {
     return constructorTemplate(this.typeName, this.genFieldDefinitions());
   }
 
-  genHydrate():string {
+  genHydrate(): string {
     var mode = ChangeDetectionUtil.changeDetectionMode(this.changeDetectionStrategy);
     return hydrateTemplate(this.typeName, mode, this.genFieldDefinitions(),
-      pipeOnDestroyTemplate(this.getNonNullPipeNames()),
-      this.getDirectiveFieldNames(), this.getDetectorFieldNames());
+                           pipeOnDestroyTemplate(this.getNonNullPipeNames()),
+                           this.getDirectiveFieldNames(), this.getDetectorFieldNames());
   }
 
-  getDirectiveFieldNames():List<string> {
+  getDirectiveFieldNames(): List<string> {
     return this.directiveRecords.map((d) => this.getDirective(d.directiveIndex));
   }
 
-  getDetectorFieldNames():List<string> {
-    return this.directiveRecords.filter(r => r.isOnPushChangeDetection()).map((d) => this.getDetector(d.directiveIndex));
+  getDetectorFieldNames(): List<string> {
+    return this.directiveRecords.filter(r => r.isOnPushChangeDetection())
+        .map((d) => this.getDetector(d.directiveIndex));
   }
 
-  getDirective(d:DirectiveIndex) {
-    return `this.directive_${d.name}`;
-  }
+  getDirective(d: DirectiveIndex) { return `this.directive_${d.name}`; }
 
-  getDetector(d:DirectiveIndex) {
-    return `this.detector_${d.name}`;
-  }
+  getDetector(d: DirectiveIndex) { return `this.detector_${d.name}`; }
 
   genFieldDefinitions() {
     var fields = [];
@@ -338,7 +341,7 @@ export class ChangeDetectorJITGenerator {
     return fieldDefinitionsTemplate(fields);
   }
 
-  getNonNullPipeNames():List<string> {
+  getNonNullPipeNames(): List<string> {
     var pipes = [];
     this.records.forEach((r) => {
       if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
@@ -348,12 +351,12 @@ export class ChangeDetectorJITGenerator {
     return pipes;
   }
 
-  genDetectChanges():string {
+  genDetectChanges(): string {
     var body = this.genDetectChangesBody();
     return detectChangesTemplate(this.typeName, body);
   }
 
-  genCallOnAllChangesDone():string {
+  genCallOnAllChangesDone(): string {
     var notifications = [];
     var dirs = this.directiveRecords;
 
@@ -368,28 +371,24 @@ export class ChangeDetectorJITGenerator {
     return callOnAllChangesDoneTemplate(this.typeName, notifications.join(";\n"));
   }
 
-  genDetectChangesBody():string {
+  genDetectChangesBody(): string {
     var rec = this.records.map((r) => this.genRecord(r)).join("\n");
     return detectChangesBodyTemplate(this.genLocalDefinitions(), this.genChangeDefinitions(), rec);
   }
 
-  genLocalDefinitions():string {
-    return localDefinitionsTemplate(this.localNames);
-  }
+  genLocalDefinitions(): string { return localDefinitionsTemplate(this.localNames); }
 
-  genChangeDefinitions():string {
-    return changeDefinitionsTemplate(this.changeNames);
-  }
+  genChangeDefinitions(): string { return changeDefinitionsTemplate(this.changeNames); }
 
-  genRecord(r:ProtoRecord):string {
+  genRecord(r: ProtoRecord): string {
     if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
-      return this.genPipeCheck (r);
+      return this.genPipeCheck(r);
     } else {
       return this.genReferenceCheck(r);
     }
   }
 
-  genPipeCheck(r:ProtoRecord):string {
+  genPipeCheck(r: ProtoRecord): string {
     var context = this.localNames[r.contextIndex];
     var oldValue = this.fieldNames[r.selfIndex];
     var newValue = this.localNames[r.selfIndex];
@@ -402,11 +401,11 @@ export class ChangeDetectorJITGenerator {
     var addToChanges = this.genAddToChanges(r);
     var lastInDirective = this.genLastInDirective(r);
 
-    return pipeCheckTemplate(r.selfIndex - 1, context, cdRef, pipe, r.name, oldValue, newValue, change,
-      update, addToChanges, lastInDirective);
+    return pipeCheckTemplate(r.selfIndex - 1, context, cdRef, pipe, r.name, oldValue, newValue,
+                             change, update, addToChanges, lastInDirective);
   }
 
-  genReferenceCheck(r:ProtoRecord):string {
+  genReferenceCheck(r: ProtoRecord): string {
     var oldValue = this.fieldNames[r.selfIndex];
     var newValue = this.localNames[r.selfIndex];
     var change = this.changeNames[r.selfIndex];
@@ -417,7 +416,7 @@ export class ChangeDetectorJITGenerator {
     var lastInDirective = this.genLastInDirective(r);
 
     var check = referenceCheckTemplate(r.selfIndex - 1, assignment, oldValue, newValue, change,
-      update, addToChanges, lastInDirective);
+                                       update, addToChanges, lastInDirective);
     if (r.isPureFunction()) {
       return this.ifChangedGuard(r, check);
     } else {
@@ -425,7 +424,7 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  genUpdateCurrentValue(r:ProtoRecord):string {
+  genUpdateCurrentValue(r: ProtoRecord): string {
     var context = this.getContext(r);
     var newValue = this.localNames[r.selfIndex];
     var args = this.genArgs(r);
@@ -464,7 +463,7 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  getContext(r:ProtoRecord):string {
+  getContext(r: ProtoRecord): string {
     if (r.contextIndex == -1) {
       return this.getDirective(r.directiveIndex);
     } else {
@@ -472,11 +471,11 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  ifChangedGuard(r:ProtoRecord, body:string):string {
+  ifChangedGuard(r: ProtoRecord, body: string): string {
     return ifChangedGuardTemplate(r.args.map((a) => this.changeNames[a]), body);
   }
 
-  genInterpolation(r:ProtoRecord):string{
+  genInterpolation(r: ProtoRecord): string {
     var res = "";
     for (var i = 0; i < r.args.length; ++i) {
       res += this.genLiteral(r.fixedArgs[i]);
@@ -488,38 +487,37 @@ export class ChangeDetectorJITGenerator {
     return res;
   }
 
-  genLiteral(value):string {
-    return JSON.stringify(value);
-  }
+  genLiteral(value): string { return JSON.stringify(value); }
 
-  genUpdateDirectiveOrElement(r:ProtoRecord):string {
-    if (! r.lastInBinding) return "";
+  genUpdateDirectiveOrElement(r: ProtoRecord): string {
+    if (!r.lastInBinding) return "";
 
     var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
 
     var br = r.bindingRecord;
     if (br.isDirective()) {
-      var directiveProperty = `${this.getDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
+      var directiveProperty =
+          `${this.getDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}`;
       return updateDirectiveTemplate(oldValue, newValue, directiveProperty);
     } else {
       return updateElementTemplate(oldValue, newValue);
     }
   }
 
-  genAddToChanges(r:ProtoRecord):string {
+  genAddToChanges(r: ProtoRecord): string {
     var newValue = this.localNames[r.selfIndex];
     var oldValue = this.fieldNames[r.selfIndex];
     return r.bindingRecord.callOnChange() ? addToChangesTemplate(oldValue, newValue) : "";
   }
 
-  genLastInDirective(r:ProtoRecord):string{
+  genLastInDirective(r: ProtoRecord): string {
     var onChanges = this.genNotifyOnChanges(r);
     var onPush = this.genNotifyOnPushDetectors(r);
     return lastInDirectiveTemplate(onChanges, onPush);
   }
 
-  genNotifyOnChanges(r:ProtoRecord):string{
+  genNotifyOnChanges(r: ProtoRecord): string {
     var br = r.bindingRecord;
     if (r.lastInDirective && br.callOnChange()) {
       return notifyOnChangesTemplate(this.getDirective(br.directiveRecord.directiveIndex));
@@ -528,7 +526,7 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  genNotifyOnPushDetectors(r:ProtoRecord):string{
+  genNotifyOnPushDetectors(r: ProtoRecord): string {
     var br = r.bindingRecord;
     if (r.lastInDirective && br.isOnPushChangeDetection()) {
       return notifyOnPushDetectorsTemplate(this.getDetector(br.directiveRecord.directiveIndex));
@@ -537,11 +535,5 @@ export class ChangeDetectorJITGenerator {
     }
   }
 
-  genArgs(r:ProtoRecord):string {
-    return r.args.map((arg) => this.localNames[arg]).join(", ");
-  }
+  genArgs(r: ProtoRecord): string { return r.args.map((arg) => this.localNames[arg]).join(", "); }
 }
-
-
-
-

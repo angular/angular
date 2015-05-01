@@ -4,12 +4,17 @@ import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
 export class AbstractChangeDetector extends ChangeDetector {
-  lightDomChildren:List;
-  shadowDomChildren:List;
-  parent:ChangeDetector;
-  mode:string;
-  ref:ChangeDetectorRef;
+  lightDomChildren: List<any>;
+  shadowDomChildren: List<any>;
+  parent: ChangeDetector;
+  mode: string;
+  ref: ChangeDetectorRef;
 
   constructor() {
     super();
@@ -19,37 +24,27 @@ export class AbstractChangeDetector extends ChangeDetector {
     this.mode = null;
   }
 
-  addChild(cd:ChangeDetector) {
+  addChild(cd: ChangeDetector) {
     ListWrapper.push(this.lightDomChildren, cd);
     cd.parent = this;
   }
 
-  removeChild(cd:ChangeDetector) {
-    ListWrapper.remove(this.lightDomChildren, cd);
-  }
+  removeChild(cd: ChangeDetector) { ListWrapper.remove(this.lightDomChildren, cd); }
 
-  addShadowDomChild(cd:ChangeDetector) {
+  addShadowDomChild(cd: ChangeDetector) {
     ListWrapper.push(this.shadowDomChildren, cd);
     cd.parent = this;
   }
 
-  removeShadowDomChild(cd:ChangeDetector) {
-    ListWrapper.remove(this.shadowDomChildren, cd);
-  }
+  removeShadowDomChild(cd: ChangeDetector) { ListWrapper.remove(this.shadowDomChildren, cd); }
 
-  remove() {
-    this.parent.removeChild(this);
-  }
+  remove() { this.parent.removeChild(this); }
 
-  detectChanges() {
-    this._detectChanges(false);
-  }
+  detectChanges() { this._detectChanges(false); }
 
-  checkNoChanges() {
-    this._detectChanges(true);
-  }
+  checkNoChanges() { this._detectChanges(true); }
 
-  _detectChanges(throwOnChange:boolean) {
+  _detectChanges(throwOnChange: boolean) {
     if (this.mode === DETACHED || this.mode === CHECKED) return;
 
     this.detectChangesInRecords(throwOnChange);
@@ -63,30 +58,28 @@ export class AbstractChangeDetector extends ChangeDetector {
     if (this.mode === CHECK_ONCE) this.mode = CHECKED;
   }
 
-  detectChangesInRecords(throwOnChange:boolean){}
-  callOnAllChangesDone(){}
+  detectChangesInRecords(throwOnChange: boolean) {}
+  callOnAllChangesDone() {}
 
-  _detectChangesInLightDomChildren(throwOnChange:boolean) {
+  _detectChangesInLightDomChildren(throwOnChange: boolean) {
     var c = this.lightDomChildren;
-    for(var i = 0; i < c.length; ++i) {
+    for (var i = 0; i < c.length; ++i) {
       c[i]._detectChanges(throwOnChange);
     }
   }
 
-  _detectChangesInShadowDomChildren(throwOnChange:boolean) {
+  _detectChangesInShadowDomChildren(throwOnChange: boolean) {
     var c = this.shadowDomChildren;
-    for(var i = 0; i < c.length; ++i) {
+    for (var i = 0; i < c.length; ++i) {
       c[i]._detectChanges(throwOnChange);
     }
   }
 
-  markAsCheckOnce() {
-    this.mode = CHECK_ONCE;
-  }
+  markAsCheckOnce() { this.mode = CHECK_ONCE; }
 
   markPathToRootAsCheckOnce() {
-    var c = this;
-    while(isPresent(c) && c.mode != DETACHED) {
+    var c: ChangeDetector = this;
+    while (isPresent(c) && c.mode != DETACHED) {
       if (c.mode === CHECKED) c.mode = CHECK_ONCE;
       c = c.parent;
     }

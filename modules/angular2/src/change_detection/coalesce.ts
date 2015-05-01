@@ -2,6 +2,11 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {RECORD_TYPE_SELF, ProtoRecord} from './proto_record';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
 /**
  * Removes "duplicate" records. It assuming that record evaluation does not
  * have side-effects.
@@ -12,7 +17,7 @@ import {RECORD_TYPE_SELF, ProtoRecord} from './proto_record';
  * Records that are last in bindings CANNOT be removed, and instead are
  * replaced with very cheap SELF records.
  */
-export function coalesce(records:List<ProtoRecord>):List<ProtoRecord> {
+export function coalesce(records: List<ProtoRecord>): List<ProtoRecord> {
   var res = ListWrapper.create();
   var indexMap = MapWrapper.create();
 
@@ -37,52 +42,27 @@ export function coalesce(records:List<ProtoRecord>):List<ProtoRecord> {
   return res;
 }
 
-function _selfRecord(r:ProtoRecord, contextIndex:number, selfIndex:number):ProtoRecord {
-  return new ProtoRecord(
-    RECORD_TYPE_SELF,
-    "self",
-    null,
-    [],
-    r.fixedArgs,
-    contextIndex,
-    r.directiveIndex,
-    selfIndex,
-    r.bindingRecord,
-    r.expressionAsString,
-    r.lastInBinding,
-    r.lastInDirective
-  );
+function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): ProtoRecord {
+  return new ProtoRecord(RECORD_TYPE_SELF, "self", null, [], r.fixedArgs, contextIndex,
+                         r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
+                         r.lastInBinding, r.lastInDirective);
 }
 
-function _findMatching(r:ProtoRecord, rs:List<ProtoRecord>){
-  return ListWrapper.find(rs, (rr) =>
-    rr.mode === r.mode &&
-    rr.funcOrValue === r.funcOrValue &&
-    rr.contextIndex === r.contextIndex &&
-    ListWrapper.equals(rr.args, r.args)
-  );
+function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
+  return ListWrapper.find(rs, (rr) => rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
+                                      rr.contextIndex === r.contextIndex &&
+                                      ListWrapper.equals(rr.args, r.args));
 }
 
-function _replaceIndices(r:ProtoRecord, selfIndex:number, indexMap:Map) {
+function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, any>) {
   var args = ListWrapper.map(r.args, (a) => _map(indexMap, a));
   var contextIndex = _map(indexMap, r.contextIndex);
-  return new ProtoRecord(
-    r.mode,
-    r.name,
-    r.funcOrValue,
-    args,
-    r.fixedArgs,
-    contextIndex,
-    r.directiveIndex,
-    selfIndex,
-    r.bindingRecord,
-    r.expressionAsString,
-    r.lastInBinding,
-    r.lastInDirective
-  );
+  return new ProtoRecord(r.mode, r.name, r.funcOrValue, args, r.fixedArgs, contextIndex,
+                         r.directiveIndex, selfIndex, r.bindingRecord, r.expressionAsString,
+                         r.lastInBinding, r.lastInDirective);
 }
 
-function _map(indexMap:Map, value:number) {
-  var r = MapWrapper.get(indexMap, value)
+function _map(indexMap: Map<any, any>, value: number) {
+  var r = MapWrapper.get(indexMap, value);
   return isPresent(r) ? r : value;
 }

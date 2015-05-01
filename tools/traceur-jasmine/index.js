@@ -5,6 +5,7 @@ var minijasminenode2 = require('minijasminenode2');
 var path = require('path');
 // Require traceur to exposes $traceurRuntime on global context so that CJS files can run
 require('traceur/bin/traceur-runtime.js');
+require('reflect-metadata/Reflect');
 
 glob(process.argv[2], function (error, specFiles) {
   minijasminenode2.executeSpecs({

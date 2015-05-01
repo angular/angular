@@ -1,8 +1,28 @@
-import {Injectable} from 'angular2/src/di/annotations_impl';
-import {int, isBlank, isPresent,  BaseException, StringWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
+import {Injectable} from 'angular2/src/di/decorators';
+import {
+  int,
+  isBlank,
+  isPresent,
+  BaseException,
+  StringWrapper,
+  RegExpWrapper
+} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {Lexer, EOF, Token, $PERIOD, $COLON, $SEMICOLON, $LBRACKET, $RBRACKET,
-  $COMMA, $LBRACE, $RBRACE, $LPAREN, $RPAREN} from './lexer';
+import {
+  Lexer,
+  EOF,
+  Token,
+  $PERIOD,
+  $COLON,
+  $SEMICOLON,
+  $LBRACKET,
+  $RBRACKET,
+  $COMMA,
+  $LBRACE,
+  $RBRACE,
+  $LPAREN,
+  $RPAREN
+} from './lexer';
 import {reflector, Reflector} from 'angular2/src/reflection/reflection';
 import {
   AST,
@@ -10,7 +30,6 @@ import {
   ImplicitReceiver,
   AccessMember,
   LiteralPrimitive,
-  Expression,
   Binary,
   PrefixNot,
   Conditional,
@@ -23,10 +42,15 @@ import {
   Interpolation,
   MethodCall,
   FunctionCall,
-  TemplateBindings,
   TemplateBinding,
   ASTWithSource
-  } from './ast';
+} from './ast';
+
+
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
 
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
@@ -34,40 +58,40 @@ var INTERPOLATION_REGEXP = RegExpWrapper.create('\\{\\{(.*?)\\}\\}');
 
 @Injectable()
 export class Parser {
-  _lexer:Lexer;
-  _reflector:Reflector;
-  constructor(lexer:Lexer, providedReflector:Reflector = null){
+  _lexer: Lexer;
+  _reflector: Reflector;
+  constructor(lexer: Lexer, providedReflector: Reflector = null) {
     this._lexer = lexer;
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
-  parseAction(input:string, location:any):ASTWithSource {
+  parseAction(input: string, location: any): ASTWithSource {
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, true).parseChain();
     return new ASTWithSource(ast, input, location);
   }
 
-  parseBinding(input:string, location:any):ASTWithSource {
+  parseBinding(input: string, location: any): ASTWithSource {
     var tokens = this._lexer.tokenize(input);
     var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
     return new ASTWithSource(ast, input, location);
   }
 
-  addPipes(bindingAst:ASTWithSource, pipes:List<String>):ASTWithSource {
+  addPipes(bindingAst: ASTWithSource, pipes: List<string>): ASTWithSource {
     if (ListWrapper.isEmpty(pipes)) return bindingAst;
 
-    var res = ListWrapper.reduce(pipes,
-      (result, currentPipeName) => new Pipe(result, currentPipeName, [], false),
-      bindingAst.ast);
+    var res: AST = ListWrapper.reduce(
+        pipes, (result, currentPipeName) => new Pipe(result, currentPipeName, [], false),
+        bindingAst.ast);
     return new ASTWithSource(res, bindingAst.source, bindingAst.location);
   }
 
-  parseTemplateBindings(input:string, location:any):List<TemplateBinding> {
+  parseTemplateBindings(input: string, location: any): List<TemplateBinding> {
     var tokens = this._lexer.tokenize(input);
     return new _ParseAST(input, location, tokens, this._reflector, false).parseTemplateBindings();
   }
 
-  parseInterpolation(input:string, location:any):ASTWithSource {
+  parseInterpolation(input: string, location: any): ASTWithSource {
     var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
     if (parts.length <= 1) {
       return null;
@@ -75,9 +99,9 @@ export class Parser {
     var strings = [];
     var expressions = [];
 
-    for (var i=0; i<parts.length; i++) {
+    for (var i = 0; i < parts.length; i++) {
       var part = parts[i];
-      if (i%2 === 0) {
+      if (i % 2 === 0) {
         // fixed string
         ListWrapper.push(strings, part);
       } else {
@@ -89,46 +113,32 @@ export class Parser {
     return new ASTWithSource(new Interpolation(strings, expressions), input, location);
   }
 
-  wrapLiteralPrimitive(input:string, location:any):ASTWithSource {
+  wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
     return new ASTWithSource(new LiteralPrimitive(input), input, location);
   }
-
 }
 
 class _ParseAST {
-  input:string;
-  location:any;
-  tokens:List<Token>;
-  reflector:Reflector;
-  parseAction:boolean;
-  index:int;
-  constructor(input:string, location:any, tokens:List, reflector:Reflector, parseAction:boolean) {
-    this.input = input;
-    this.location = location;
-    this.tokens = tokens;
+  index: int;
+  constructor(public input: string, public location: any, public tokens: List<any>,
+              public reflector: Reflector, public parseAction: boolean) {
     this.index = 0;
-    this.reflector = reflector;
-    this.parseAction = parseAction;
   }
 
-  peek(offset:int):Token {
+  peek(offset: int): Token {
     var i = this.index + offset;
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
-  get next():Token {
-    return this.peek(0);
-  }
+  get next(): Token { return this.peek(0); }
 
-  get inputIndex():int {
+  get inputIndex(): int {
     return (this.index < this.tokens.length) ? this.next.index : this.input.length;
   }
 
-  advance() {
-    this.index ++;
-  }
+  advance() { this.index++; }
 
-  optionalCharacter(code:int):boolean {
+  optionalCharacter(code: int): boolean {
     if (this.next.isCharacter(code)) {
       this.advance();
       return true;
@@ -137,7 +147,7 @@ class _ParseAST {
     }
   }
 
-  optionalKeywordVar():boolean {
+  optionalKeywordVar(): boolean {
     if (this.peekKeywordVar()) {
       this.advance();
       return true;
@@ -146,17 +156,15 @@ class _ParseAST {
     }
   }
 
-  peekKeywordVar():boolean {
-    return this.next.isKeywordVar() || this.next.isOperator('#');
-  }
+  peekKeywordVar(): boolean { return this.next.isKeywordVar() || this.next.isOperator('#'); }
 
-  expectCharacter(code:int) {
+  expectCharacter(code: int) {
     if (this.optionalCharacter(code)) return;
     this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
   }
 
 
-  optionalOperator(op:string):boolean {
+  optionalOperator(op: string): boolean {
     if (this.next.isOperator(op)) {
       this.advance();
       return true;
@@ -165,12 +173,12 @@ class _ParseAST {
     }
   }
 
-  expectOperator(operator:string) {
+  expectOperator(operator: string) {
     if (this.optionalOperator(operator)) return;
     this.error(`Missing expected operator ${operator}`);
   }
 
-  expectIdentifierOrKeyword():string {
+  expectIdentifierOrKeyword(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`)
@@ -179,7 +187,7 @@ class _ParseAST {
     return n.toString();
   }
 
-  expectIdentifierOrKeywordOrString():string {
+  expectIdentifierOrKeywordOrString(): string {
     var n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       this.error(`Unexpected token ${n}, expected identifier, keyword, or string`)
@@ -188,17 +196,18 @@ class _ParseAST {
     return n.toString();
   }
 
-  parseChain():AST {
+  parseChain(): AST {
     var exprs = [];
     while (this.index < this.tokens.length) {
       var expr = this.parsePipe();
       ListWrapper.push(exprs, expr);
 
       if (this.optionalCharacter($SEMICOLON)) {
-        if (! this.parseAction) {
+        if (!this.parseAction) {
           this.error("Binding expression cannot contain chained expression");
         }
-        while (this.optionalCharacter($SEMICOLON)){} //read all semicolons
+        while (this.optionalCharacter($SEMICOLON)) {
+        }  // read all semicolons
       } else if (this.index < this.tokens.length) {
         this.error(`Unexpected token '${this.next}'`);
       }
@@ -353,7 +362,7 @@ class _ParseAST {
     }
   }
 
-  parseCallChain():AST {
+  parseCallChain(): AST {
     var result = this.parsePrimary();
     while (true) {
       if (this.optionalCharacter($PERIOD)) {
@@ -410,9 +419,9 @@ class _ParseAST {
       return new LiteralPrimitive(value);
 
     } else if (this.next.isString()) {
-      var value = this.next.toString();
+      var literalValue = this.next.toString();
       this.advance();
-      return new LiteralPrimitive(value);
+      return new LiteralPrimitive(literalValue);
 
     } else if (this.index >= this.tokens.length) {
       this.error(`Unexpected end of expression: ${this.input}`);
@@ -422,7 +431,7 @@ class _ParseAST {
     }
   }
 
-  parseExpressionList(terminator:int):List {
+  parseExpressionList(terminator: int): List<any> {
     var result = [];
     if (!this.next.isCharacter(terminator)) {
       do {
@@ -448,7 +457,7 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseAccessMemberOrMethodCall(receiver):AST {
+  parseAccessMemberOrMethodCall(receiver): AST {
     var id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {
@@ -471,7 +480,7 @@ class _ParseAST {
   }
 
   parseInlinedPipe(result) {
-    do  {
+    do {
       if (this.parseAction) {
         this.error("Cannot have a pipe in an action expression");
       }
@@ -481,7 +490,7 @@ class _ParseAST {
         ListWrapper.push(args, this.parseExpression());
       }
       result = new Pipe(result, name, args, true);
-    } while(this.optionalOperator("|"));
+    } while (this.optionalOperator("|"));
 
     return result;
   }
@@ -515,7 +524,7 @@ class _ParseAST {
   parseTemplateBindings() {
     var bindings = [];
     while (this.index < this.tokens.length) {
-      var keyIsVar:boolean = this.optionalKeywordVar();
+      var keyIsVar: boolean = this.optionalKeywordVar();
       var key = this.expectTemplateBindingKey();
       this.optionalCharacter($COLON);
       var name = null;
@@ -542,13 +551,13 @@ class _ParseAST {
     return bindings;
   }
 
-  error(message:string, index:int = null) {
+  error(message: string, index: int = null) {
     if (isBlank(index)) index = this.index;
 
-    var location = (index < this.tokens.length)
-      ? `at column ${this.tokens[index].index + 1} in`
-      : `at the end of the expression`;
+    var location = (index < this.tokens.length) ? `at column ${this.tokens[index].index + 1} in` :
+                                                  `at the end of the expression`;
 
-    throw new BaseException(`Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);
+    throw new BaseException(
+        `Parser Error: ${message} ${location} [${this.input}] in ${this.location}`);
   }
 }

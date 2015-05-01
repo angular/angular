@@ -1,20 +1,22 @@
 import {ABSTRACT, BaseException, CONST} from 'angular2/src/facade/lang';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
 /**
- * Indicates that the result of a {@link Pipe} transformation has changed even though the reference has not changed.
+ * Indicates that the result of a {@link Pipe} transformation has changed even though the reference
+ *has not changed.
  *
  * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
  *
  * @exportedAs angular2/pipes
  */
 export class WrappedValue {
-  wrapped:any;
+  constructor(public wrapped: any) {}
 
-  constructor(wrapped:any) {
-    this.wrapped = wrapped;
-  }
-
-  static wrap(value:any):WrappedValue {
+  static wrap(value: any): WrappedValue {
     var w = _wrappedValues[_wrappedIndex++ % 5];
     w.wrapped = value;
     return w;
@@ -53,26 +55,25 @@ var _wrappedIndex = 0;
  * @exportedAs angular2/pipes
  */
 export class Pipe {
-  supports(obj):boolean {return false;}
+  supports(obj): boolean { return false; }
   onDestroy() {}
-  transform(value:any):any {return null;}
+  transform(value: any): any { return null; }
 }
 
-@ABSTRACT()
+// TODO: vsavkin: make it an interface
+@CONST()
 export class PipeFactory {
-  @CONST()
-  constructor() {
+  supports(obs): boolean {
+    _abstract();
+    return false;
   }
 
-  supports(obs):boolean {
-    return _abstract();
-  }
-
-  create(cdRef):Pipe {
-    return _abstract();
+  create(cdRef): Pipe {
+    _abstract();
+    return null;
   }
 }
 
 function _abstract() {
-  return new BaseException('This method is abstract');
+  throw new BaseException('This method is abstract');
 }

@@ -1,16 +1,15 @@
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
 export class Locals {
-  parent:Locals;
-  current:Map;
+  constructor(public parent: Locals, public current: Map<any, any>) {}
 
-  constructor(parent:Locals, current:Map) {
-    this.parent = parent;
-    this.current = current;
-  }
-
-  contains(name:string):boolean {
+  contains(name: string): boolean {
     if (MapWrapper.contains(this.current, name)) {
       return true;
     }
@@ -22,7 +21,7 @@ export class Locals {
     return false;
   }
 
-  get(name:string) {
+  get(name: string) {
     if (MapWrapper.contains(this.current, name)) {
       return MapWrapper.get(this.current, name);
     }
@@ -34,7 +33,7 @@ export class Locals {
     throw new BaseException(`Cannot find '${name}'`);
   }
 
-  set(name:string, value):void {
+  set(name: string, value): void {
     // TODO(rado): consider removing this check if we can guarantee this is not
     // exposed to the public API.
     // TODO: vsavkin maybe it should check only the local map
@@ -45,7 +44,5 @@ export class Locals {
     }
   }
 
-  clearValues():void {
-    MapWrapper.clearValues(this.current);
-  }
+  clearValues(): void { MapWrapper.clearValues(this.current); }
 }

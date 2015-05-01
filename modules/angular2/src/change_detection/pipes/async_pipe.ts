@@ -3,13 +3,21 @@ import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
 import {Pipe, WrappedValue, PipeFactory} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
+
 /**
  * Implements async bindings to Observable.
  *
  * # Example
  *
- * In this example we bind the description observable to the DOM. The async pipe will convert an observable to the
- * latest value it emitted. It will also request a change detection check when a new value is emitted.
+ * In this example we bind the description observable to the DOM. The async pipe will convert an
+ *observable to the
+ * latest value it emitted. It will also request a change detection check when a new value is
+ *emitted.
  *
  *  ```
  * @Component({
@@ -28,15 +36,15 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * @exportedAs angular2/pipes
  */
 export class AsyncPipe extends Pipe {
-  _ref:ChangeDetectorRef;
+  _ref: ChangeDetectorRef;
 
-  _latestValue:Object;
-  _latestReturnedValue:Object;
+  _latestValue: Object;
+  _latestReturnedValue: Object;
 
-  _subscription:Object;
-  _observable:Observable;
+  _subscription: Object;
+  _observable: Observable;
 
-  constructor(ref:ChangeDetectorRef) {
+  constructor(ref: ChangeDetectorRef) {
     super();
     this._ref = ref;
     this._latestValue = null;
@@ -45,17 +53,15 @@ export class AsyncPipe extends Pipe {
     this._observable = null;
   }
 
-  supports(obs):boolean {
-    return ObservableWrapper.isObservable(obs);
-  }
+  supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
-  onDestroy():void {
+  onDestroy(): void {
     if (isPresent(this._subscription)) {
       this._dispose();
     }
   }
 
-  transform(obs:Observable):any {
+  transform(obs: Observable): any {
     if (isBlank(this._subscription)) {
       this._subscribe(obs);
       return null;
@@ -74,15 +80,13 @@ export class AsyncPipe extends Pipe {
     }
   }
 
-  _subscribe(obs:Observable):void {
+  _subscribe(obs: Observable): void {
     this._observable = obs;
-    this._subscription = ObservableWrapper.subscribe(obs,
-        value => this._updateLatestValue(value),
-        e => {throw e;}
-    );
+    this._subscription = ObservableWrapper.subscribe(obs, value => {this._updateLatestValue(value)},
+                                                     e => { throw e; });
   }
 
-  _dispose():void {
+  _dispose(): void {
     ObservableWrapper.dispose(this._subscription);
     this._latestValue = null;
     this._latestReturnedValue = null;
@@ -90,7 +94,7 @@ export class AsyncPipe extends Pipe {
     this._observable = null;
   }
 
-  _updateLatestValue(value:Object) {
+  _updateLatestValue(value: Object) {
     this._latestValue = value;
     this._ref.requestCheck();
   }
@@ -101,17 +105,11 @@ export class AsyncPipe extends Pipe {
  *
  * @exportedAs angular2/pipes
  */
+@CONST()
 export class AsyncPipeFactory extends PipeFactory {
-  @CONST()
-  constructor() {
-    super();
-  }
+  constructor() { super(); }
 
-  supports(obs):boolean {
-    return ObservableWrapper.isObservable(obs);
-  }
+  supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
-  create(cdRef):Pipe {
-    return new AsyncPipe(cdRef);
-  }
+  create(cdRef): Pipe { return new AsyncPipe(cdRef); }
 }

@@ -52,7 +52,7 @@ export class PromiseWrapper {
 
 
 export class ObservableWrapper {
-  static subscribe(emitter: EventEmitter, onNext, onThrow = null, onReturn = null) {
+  static subscribe(emitter: Observable, onNext, onThrow = null, onReturn = null): Object {
     return emitter.observer({next: onNext, throw: onThrow, return: onReturn});
   }
 
@@ -69,7 +69,7 @@ export class ObservableWrapper {
 
 // TODO: vsavkin change to interface
 export class Observable {
-  observer(generator: any) {}
+  observer(generator: any): Object { return null; }
 }
 
 /**

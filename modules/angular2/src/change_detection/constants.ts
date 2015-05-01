@@ -1,28 +1,33 @@
-//TODO:vsavkin Use enums after switching to TypeScript
+// TODO:vsavkin Use enums after switching to TypeScript
+
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
 
 /**
  * CHECK_ONCE means that after calling detectChanges the mode of the change detector
  * will become CHECKED.
  */
-export const CHECK_ONCE="CHECK_ONCE";
+export const CHECK_ONCE = "CHECK_ONCE";
 
 /**
  * CHECKED means that the change detector should be skipped until its mode changes to
  * CHECK_ONCE or CHECK_ALWAYS.
  */
-export const CHECKED="CHECKED";
+export const CHECKED = "CHECKED";
 
 /**
  * CHECK_ALWAYS means that after calling detectChanges the mode of the change detector
  * will remain CHECK_ALWAYS.
  */
-export const CHECK_ALWAYS="ALWAYS_CHECK";
+export const CHECK_ALWAYS = "ALWAYS_CHECK";
 
 /**
  * DETACHED means that the change detector sub tree is not a part of the main tree and
  * should be skipped.
  */
-export const DETACHED="DETACHED";
+export const DETACHED = "DETACHED";
 
 /**
  * ON_PUSH means that the change detector's mode will be set to CHECK_ONCE during hydration.

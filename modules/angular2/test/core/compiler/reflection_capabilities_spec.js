@@ -8,17 +8,6 @@ export function main() {
     rc = new ReflectionCapabilities();
   });
 
-  function mockReflect(mockData, cls) {
-    // This only makes sense for JS, but Dart passes trivially too.
-    if (!IS_DARTIUM) {
-      global.Reflect = {
-        'getMetadata': (key, targetCls) => {
-          return (targetCls == cls) ? mockData[key] : null;
-        }
-      }
-    }
-  }
-
   function assertTestClassAnnotations(annotations) {
     expect(annotations[0]).toBeAnInstanceOf(ClassDec1);
     expect(annotations[1]).toBeAnInstanceOf(ClassDec2);
@@ -54,23 +43,34 @@ export function main() {
       expect(rc.parameters(TestClassTypesOnly)).toEqual([[P1], [P2]]);
     });
 
-
     if (!IS_DARTIUM) {
       // Mocking in the tests below is needed because the test runs through Traceur.
       // After the switch to TS the setup will have to change, where the direct key
       // access will be mocked, and the tests below will be direct.
       it('can read out class annotations though Reflect APIs', () => {
-        mockReflect(mockDataForTestClassDec, TestClassDec);
+        var rc = new ReflectionCapabilities({
+          'getMetadata': (key, targetCls) => {
+            return (targetCls == TestClassDec) ? mockDataForTestClassDec[key] : null;
+          }
+        });
         assertTestClassAnnotations(rc.annotations(TestClassDec));
       });
 
       it('can read out parameter annotations though Reflect APIs', () => {
-        mockReflect(mockDataForTestClassDec, TestClassDec);
+        var rc = new ReflectionCapabilities({
+          'getMetadata': (key, targetCls) => {
+            return (targetCls == TestClassDec) ? mockDataForTestClassDec[key] : null;
+          }
+        });
         assertTestClassParameters(rc.parameters(TestClassDec));
       });
 
       it('can read out parameter annotations though Reflect APIs for types only class', () => {
-        mockReflect(mockDataForTestClassTypesOnly, TestClassTypesOnlyDec);
+        var rc = new ReflectionCapabilities({
+          'getMetadata': (key, targetCls) => {
+            return (targetCls == TestClassTypesOnlyDec) ? mockDataForTestClassTypesOnly[key] : null;
+          }
+        });
         expect(rc.parameters(TestClassTypesOnlyDec)).toEqual([[P1], [P2]]);
       });
     }

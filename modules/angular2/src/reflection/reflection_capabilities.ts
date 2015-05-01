@@ -8,37 +8,39 @@ import {GetterFn, SetterFn, MethodFn} from './types';
 export var __esModule = true;
 
 export class ReflectionCapabilities {
-  factory(type: Type): Function {
-    switch (type.length) {
+  private _reflect: any;
+
+  constructor(reflect?: any) { this._reflect = isPresent(reflect) ? reflect : global.Reflect; }
+
+  factory(t: Type): Function {
+    switch (t.length) {
       case 0:
-        return function() { return new type(); };
+        return function() { return new t(); };
       case 1:
-        return function(a1) { return new type(a1); };
+        return function(a1) { return new t(a1); };
       case 2:
-        return function(a1, a2) { return new type(a1, a2); };
+        return function(a1, a2) { return new t(a1, a2); };
       case 3:
-        return function(a1, a2, a3) { return new type(a1, a2, a3); };
+        return function(a1, a2, a3) { return new t(a1, a2, a3); };
       case 4:
-        return function(a1, a2, a3, a4) { return new type(a1, a2, a3, a4); };
+        return function(a1, a2, a3, a4) { return new t(a1, a2, a3, a4); };
       case 5:
-        return function(a1, a2, a3, a4, a5) { return new type(a1, a2, a3, a4, a5); };
+        return function(a1, a2, a3, a4, a5) { return new t(a1, a2, a3, a4, a5); };
       case 6:
-        return function(a1, a2, a3, a4, a5, a6) { return new type(a1, a2, a3, a4, a5, a6); };
+        return function(a1, a2, a3, a4, a5, a6) { return new t(a1, a2, a3, a4, a5, a6); };
       case 7:
-        return function(a1, a2, a3, a4, a5, a6, a7) {
-          return new type(a1, a2, a3, a4, a5, a6, a7);
-        };
+        return function(a1, a2, a3, a4, a5, a6, a7) { return new t(a1, a2, a3, a4, a5, a6, a7); };
       case 8:
         return function(a1, a2, a3, a4, a5, a6, a7, a8) {
-          return new type(a1, a2, a3, a4, a5, a6, a7, a8);
+          return new t(a1, a2, a3, a4, a5, a6, a7, a8);
         };
       case 9:
         return function(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
-          return new type(a1, a2, a3, a4, a5, a6, a7, a8, a9);
+          return new t(a1, a2, a3, a4, a5, a6, a7, a8, a9);
         };
       case 10:
         return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {
-          return new type(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+          return new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
         };
     };
 
@@ -68,9 +70,9 @@ export class ReflectionCapabilities {
     if (isPresent(typeOfFunc.parameters)) {
       return typeOfFunc.parameters;
     }
-    if (isPresent(global.Reflect) && isPresent(global.Reflect.getMetadata)) {
-      var paramAnnotations = global.Reflect.getMetadata('parameters', typeOfFunc);
-      var paramTypes = global.Reflect.getMetadata('design:paramtypes', typeOfFunc);
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      var paramAnnotations = this._reflect.getMetadata('parameters', typeOfFunc);
+      var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOfFunc);
       if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
         return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
@@ -83,8 +85,8 @@ export class ReflectionCapabilities {
     if (isPresent(typeOfFunc.annotations)) {
       return typeOfFunc.annotations;
     }
-    if (isPresent(global.Reflect) && isPresent(global.Reflect.getMetadata)) {
-      var annotations = global.Reflect.getMetadata('annotations', typeOfFunc);
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      var annotations = this._reflect.getMetadata('annotations', typeOfFunc);
       if (isPresent(annotations)) return annotations;
     }
     return [];

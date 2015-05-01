@@ -3,10 +3,13 @@ import {Locals} from './parser/locals';
 import {DEFAULT} from './constants';
 import {BindingRecord} from './binding_record';
 
-export class ProtoChangeDetector  {
-  instantiate(dispatcher:any):ChangeDetector{
-    return null;
-  }
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
+export class ProtoChangeDetector {
+  instantiate(dispatcher: any): ChangeDetector { return null; }
 }
 
 /**
@@ -17,10 +20,12 @@ export class ProtoChangeDetector  {
  * - {@link DynamicChangeDetection}: slower, but does not require `eval()`.
  * - {@link JitChangeDetection}: faster, but requires `eval()`.
  *
- * In JavaScript, you should always use `JitChangeDetection`, unless you are in an environment that has
+ * In JavaScript, you should always use `JitChangeDetection`, unless you are in an environment that
+ *has
  * [CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP), such as a Chrome Extension.
  *
- * In Dart, use `DynamicChangeDetection` during development. The Angular transformer generates an analog to the
+ * In Dart, use `DynamicChangeDetection` during development. The Angular transformer generates an
+ *analog to the
  * `JitChangeDetection` strategy at compile time.
  *
  *
@@ -33,26 +38,27 @@ export class ProtoChangeDetector  {
  * @exportedAs angular2/change_detection
  */
 export class ChangeDetection {
-  createProtoChangeDetector(name:string, bindingRecords:List, variableBindings:List, directiveRecords:List,
-                            changeControlStrategy:string=DEFAULT):ProtoChangeDetector{
+  createProtoChangeDetector(name: string, bindingRecords: List<any>, variableBindings: List<any>,
+                            directiveRecords: List<any>,
+                            changeControlStrategy: string = DEFAULT): ProtoChangeDetector {
     return null;
   }
 }
 
 export class ChangeDispatcher {
-  notifyOnBinding(bindingRecord:BindingRecord, value:any) {}
+  notifyOnBinding(bindingRecord: BindingRecord, value: any) {}
 }
 
 export class ChangeDetector {
-  parent:ChangeDetector;
-  mode:string;
+  parent: ChangeDetector;
+  mode: string;
 
-  addChild(cd:ChangeDetector) {}
-  addShadowDomChild(cd:ChangeDetector) {}
-  removeChild(cd:ChangeDetector) {}
-  removeShadowDomChild(cd:ChangeDetector) {}
+  addChild(cd: ChangeDetector) {}
+  addShadowDomChild(cd: ChangeDetector) {}
+  removeChild(cd: ChangeDetector) {}
+  removeShadowDomChild(cd: ChangeDetector) {}
   remove() {}
-  hydrate(context:any, locals:Locals, directives:any) {}
+  hydrate(context: any, locals: Locals, directives: any) {}
   dehydrate() {}
   markPathToRootAsCheckOnce() {}
 

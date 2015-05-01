@@ -17,38 +17,37 @@ import {
 
 import {WrappedValue, Pipe, PipeFactory} from './pipe';
 
+// HACK: workaround for Traceur behavior.
+// It expects all transpiled modules to contain this marker.
+// TODO: remove this when we no longer use traceur
+export var __esModule = true;
+
+@CONST()
 export class IterableChangesFactory extends PipeFactory {
-  @CONST()
-  constructor() {
-    super();
-  }
+  constructor() { super(); }
 
-  supports(obj):boolean {
-    return IterableChanges.supportsObj(obj);
-  }
+  supports(obj): boolean { return IterableChanges.supportsObj(obj); }
 
-  create(cdRef):Pipe {
-    return new IterableChanges();
-  }
+  create(cdRef): Pipe { return new IterableChanges(); }
 }
 
 /**
  * @exportedAs angular2/pipes
  */
 export class IterableChanges extends Pipe {
-  _collection;
-  _length:int;
-  _linkedRecords:_DuplicateMap;
-  _unlinkedRecords:_DuplicateMap;
-  _previousItHead:CollectionChangeRecord;
-  _itHead:CollectionChangeRecord;
-  _itTail:CollectionChangeRecord;
-  _additionsHead:CollectionChangeRecord;
-  _additionsTail:CollectionChangeRecord;
-  _movesHead:CollectionChangeRecord;
-  _movesTail:CollectionChangeRecord;
-  _removalsHead:CollectionChangeRecord;
-  _removalsTail:CollectionChangeRecord;
+  private _collection;
+  private _length: int;
+  private _linkedRecords: _DuplicateMap;
+  private _unlinkedRecords: _DuplicateMap;
+  private _previousItHead: CollectionChangeRecord;
+  private _itHead: CollectionChangeRecord;
+  private _itTail: CollectionChangeRecord;
+  private _additionsHead: CollectionChangeRecord;
+  private _additionsTail: CollectionChangeRecord;
+  private _movesHead: CollectionChangeRecord;
+  private _movesTail: CollectionChangeRecord;
+  private _removalsHead: CollectionChangeRecord;
+  private _removalsTail: CollectionChangeRecord;
 
   constructor() {
     super();
@@ -70,58 +69,50 @@ export class IterableChanges extends Pipe {
     this._removalsTail = null;
   }
 
-  static supportsObj(obj):boolean {
-    return isListLikeIterable(obj);
-  }
+  static supportsObj(obj): boolean { return isListLikeIterable(obj); }
 
-  supports(obj):boolean {
-    return IterableChanges.supportsObj(obj);
-  }
+  supports(obj): boolean { return IterableChanges.supportsObj(obj); }
 
-  get collection() {
-    return this._collection;
-  }
+  get collection() { return this._collection; }
 
-  get length():int {
-    return this._length;
-  }
+  get length(): int { return this._length; }
 
-  forEachItem(fn:Function) {
-    var record:CollectionChangeRecord;
+  forEachItem(fn: Function) {
+    var record: CollectionChangeRecord;
     for (record = this._itHead; record !== null; record = record._next) {
       fn(record);
     }
   }
 
-  forEachPreviousItem(fn:Function) {
-    var record:CollectionChangeRecord;
+  forEachPreviousItem(fn: Function) {
+    var record: CollectionChangeRecord;
     for (record = this._previousItHead; record !== null; record = record._nextPrevious) {
       fn(record);
     }
   }
 
-  forEachAddedItem(fn:Function){
-    var record:CollectionChangeRecord;
+  forEachAddedItem(fn: Function) {
+    var record: CollectionChangeRecord;
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
       fn(record);
     }
   }
 
-  forEachMovedItem(fn:Function) {
-    var record:CollectionChangeRecord;
+  forEachMovedItem(fn: Function) {
+    var record: CollectionChangeRecord;
     for (record = this._movesHead; record !== null; record = record._nextMoved) {
       fn(record);
     }
   }
 
-  forEachRemovedItem(fn:Function){
-    var record:CollectionChangeRecord;
+  forEachRemovedItem(fn: Function) {
+    var record: CollectionChangeRecord;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
     }
   }
 
-  transform(collection){
+  transform(collection): any {
     if (this.check(collection)) {
       return WrappedValue.wrap(this);
     } else {
@@ -130,12 +121,12 @@ export class IterableChanges extends Pipe {
   }
 
   // todo(vicb): optim for UnmodifiableListView (frozen arrays)
-  check(collection):boolean {
+  check(collection): boolean {
     this._reset();
 
-    var record:CollectionChangeRecord = this._itHead;
-    var mayBeDirty:boolean = false;
-    var index:int;
+    var record: CollectionChangeRecord = this._itHead;
+    var mayBeDirty: boolean = false;
+    var index: int;
     var item;
 
     if (ListWrapper.isList(collection)) {
@@ -175,10 +166,8 @@ export class IterableChanges extends Pipe {
   }
 
   // CollectionChanges is considered dirty if it has any additions, moves or removals.
-  get isDirty():boolean {
-    return this._additionsHead !== null ||
-           this._movesHead !== null ||
-           this._removalsHead !== null;
+  get isDirty(): boolean {
+    return this._additionsHead !== null || this._movesHead !== null || this._removalsHead !== null;
   }
 
   /**
@@ -189,8 +178,8 @@ export class IterableChanges extends Pipe {
    */
   _reset() {
     if (this.isDirty) {
-      var record:CollectionChangeRecord;
-      var nextRecord:CollectionChangeRecord;
+      var record: CollectionChangeRecord;
+      var nextRecord: CollectionChangeRecord;
 
       for (record = this._previousItHead = this._itHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
@@ -221,9 +210,9 @@ export class IterableChanges extends Pipe {
    * - `item` is the current item in the collection
    * - `index` is the position of the item in the collection
    */
-  _mismatch(record:CollectionChangeRecord, item, index:int):CollectionChangeRecord {
+  _mismatch(record: CollectionChangeRecord, item, index: int): CollectionChangeRecord {
     // The previous record after which we will append the current one.
-    var previousRecord:CollectionChangeRecord;
+    var previousRecord: CollectionChangeRecord;
 
     if (record === null) {
       previousRecord = this._itTail;
@@ -277,9 +266,9 @@ export class IterableChanges extends Pipe {
    * better way to think of it is as insert of 'b' rather then switch 'a' with 'b' and then add 'a'
    * at the end.
    */
-  _verifyReinsertion(record:CollectionChangeRecord, item, index:int):CollectionChangeRecord {
-    var reinsertRecord:CollectionChangeRecord = this._unlinkedRecords === null ?
-      null : this._unlinkedRecords.get(item);
+  _verifyReinsertion(record: CollectionChangeRecord, item, index: int): CollectionChangeRecord {
+    var reinsertRecord: CollectionChangeRecord =
+        this._unlinkedRecords === null ? null : this._unlinkedRecords.get(item);
     if (reinsertRecord !== null) {
       record = this._reinsertAfter(reinsertRecord, record._prev, index);
     } else if (record.currentIndex != index) {
@@ -294,10 +283,10 @@ export class IterableChanges extends Pipe {
    *
    * - `record` The first excess {@link CollectionChangeRecord}.
    */
-  _truncate(record:CollectionChangeRecord) {
+  _truncate(record: CollectionChangeRecord) {
     // Anything after that needs to be removed;
     while (record !== null) {
-      var nextRecord:CollectionChangeRecord = record._next;
+      var nextRecord: CollectionChangeRecord = record._next;
       this._addToRemovals(this._unlink(record));
       record = nextRecord;
     }
@@ -319,8 +308,8 @@ export class IterableChanges extends Pipe {
     }
   }
 
-  _reinsertAfter(record:CollectionChangeRecord, prevRecord:CollectionChangeRecord,
-                 index:int):CollectionChangeRecord {
+  _reinsertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
+                 index: int): CollectionChangeRecord {
     if (this._unlinkedRecords !== null) {
       this._unlinkedRecords.remove(record);
     }
@@ -343,42 +332,42 @@ export class IterableChanges extends Pipe {
     return record;
   }
 
-  _moveAfter(record:CollectionChangeRecord, prevRecord:CollectionChangeRecord,
-             index:int):CollectionChangeRecord {
+  _moveAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
+             index: int): CollectionChangeRecord {
     this._unlink(record);
     this._insertAfter(record, prevRecord, index);
     this._addToMoves(record, index);
     return record;
   }
 
-  _addAfter(record:CollectionChangeRecord, prevRecord:CollectionChangeRecord,
-            index:int):CollectionChangeRecord {
+  _addAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
+            index: int): CollectionChangeRecord {
     this._insertAfter(record, prevRecord, index);
 
     if (this._additionsTail === null) {
       // todo(vicb)
-      //assert(this._additionsHead === null);
+      // assert(this._additionsHead === null);
       this._additionsTail = this._additionsHead = record;
     } else {
       // todo(vicb)
-      //assert(_additionsTail._nextAdded === null);
-      //assert(record._nextAdded === null);
+      // assert(_additionsTail._nextAdded === null);
+      // assert(record._nextAdded === null);
       this._additionsTail = this._additionsTail._nextAdded = record;
     }
     return record;
   }
 
-  _insertAfter(record:CollectionChangeRecord, prevRecord:CollectionChangeRecord,
-              index:int):CollectionChangeRecord {
+  _insertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
+               index: int): CollectionChangeRecord {
     // todo(vicb)
-    //assert(record != prevRecord);
-    //assert(record._next === null);
-    //assert(record._prev === null);
+    // assert(record != prevRecord);
+    // assert(record._next === null);
+    // assert(record._prev === null);
 
-    var next:CollectionChangeRecord = prevRecord === null ? this._itHead :prevRecord._next;
+    var next: CollectionChangeRecord = prevRecord === null ? this._itHead : prevRecord._next;
     // todo(vicb)
-    //assert(next != record);
-    //assert(prevRecord != record);
+    // assert(next != record);
+    // assert(prevRecord != record);
     record._next = next;
     record._prev = prevRecord;
     if (next === null) {
@@ -401,11 +390,11 @@ export class IterableChanges extends Pipe {
     return record;
   }
 
-  _remove(record:CollectionChangeRecord):CollectionChangeRecord {
+  _remove(record: CollectionChangeRecord): CollectionChangeRecord {
     return this._addToRemovals(this._unlink(record));
   }
 
-  _unlink(record:CollectionChangeRecord):CollectionChangeRecord {
+  _unlink(record: CollectionChangeRecord): CollectionChangeRecord {
     if (this._linkedRecords !== null) {
       this._linkedRecords.remove(record);
     }
@@ -414,8 +403,8 @@ export class IterableChanges extends Pipe {
     var next = record._next;
 
     // todo(vicb)
-    //assert((record._prev = null) === null);
-    //assert((record._next = null) === null);
+    // assert((record._prev = null) === null);
+    // assert((record._next = null) === null);
 
     if (prev === null) {
       this._itHead = next;
@@ -431,9 +420,9 @@ export class IterableChanges extends Pipe {
     return record;
   }
 
-  _addToMoves(record:CollectionChangeRecord, toIndex:int):CollectionChangeRecord {
+  _addToMoves(record: CollectionChangeRecord, toIndex: int): CollectionChangeRecord {
     // todo(vicb)
-    //assert(record._nextMoved === null);
+    // assert(record._nextMoved === null);
 
     if (record.previousIndex === toIndex) {
       return record;
@@ -441,18 +430,18 @@ export class IterableChanges extends Pipe {
 
     if (this._movesTail === null) {
       // todo(vicb)
-      //assert(_movesHead === null);
+      // assert(_movesHead === null);
       this._movesTail = this._movesHead = record;
     } else {
       // todo(vicb)
-      //assert(_movesTail._nextMoved === null);
+      // assert(_movesTail._nextMoved === null);
       this._movesTail = this._movesTail._nextMoved = record;
     }
 
     return record;
   }
 
-  _addToRemovals(record:CollectionChangeRecord):CollectionChangeRecord {
+  _addToRemovals(record: CollectionChangeRecord): CollectionChangeRecord {
     if (this._unlinkedRecords === null) {
       this._unlinkedRecords = new _DuplicateMap();
     }
@@ -462,21 +451,21 @@ export class IterableChanges extends Pipe {
 
     if (this._removalsTail === null) {
       // todo(vicb)
-      //assert(_removalsHead === null);
+      // assert(_removalsHead === null);
       this._removalsTail = this._removalsHead = record;
       record._prevRemoved = null;
     } else {
       // todo(vicb)
-      //assert(_removalsTail._nextRemoved === null);
-      //assert(record._nextRemoved === null);
+      // assert(_removalsTail._nextRemoved === null);
+      // assert(record._nextRemoved === null);
       record._prevRemoved = this._removalsTail;
       this._removalsTail = this._removalsTail._nextRemoved = record;
     }
     return record;
   }
 
-  toString():string {
-    var record:CollectionChangeRecord;
+  toString(): string {
+    var record: CollectionChangeRecord;
 
     var list = [];
     for (record = this._itHead; record !== null; record = record._next) {
@@ -502,10 +491,8 @@ export class IterableChanges extends Pipe {
       ListWrapper.push(removals, record);
     }
 
-    return "collection: " + list.join(', ') + "\n" +
-           "previous: " + previous.join(', ') + "\n" +
-           "additions: " + additions.join(', ') + "\n" +
-           "moves: " + moves.join(', ') + "\n" +
+    return "collection: " + list.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
+           "additions: " + additions.join(', ') + "\n" + "moves: " + moves.join(', ') + "\n" +
            "removals: " + removals.join(', ') + "\n";
   }
 }
@@ -513,17 +500,20 @@ export class IterableChanges extends Pipe {
 /**
  * @exportedAs angular2/pipes
  */
-export class CollectionChangeRecord  {
-  currentIndex:int;
-  previousIndex:int;
+export class CollectionChangeRecord {
+  currentIndex: int;
+  previousIndex: int;
   item;
 
-  _nextPrevious:CollectionChangeRecord;
-  _prev:CollectionChangeRecord; _next:CollectionChangeRecord;
-  _prevDup:CollectionChangeRecord; _nextDup:CollectionChangeRecord;
-  _prevRemoved:CollectionChangeRecord; _nextRemoved:CollectionChangeRecord;
-  _nextAdded:CollectionChangeRecord;
-  _nextMoved:CollectionChangeRecord;
+  _nextPrevious: CollectionChangeRecord;
+  _prev: CollectionChangeRecord;
+  _next: CollectionChangeRecord;
+  _prevDup: CollectionChangeRecord;
+  _nextDup: CollectionChangeRecord;
+  _prevRemoved: CollectionChangeRecord;
+  _nextRemoved: CollectionChangeRecord;
+  _nextAdded: CollectionChangeRecord;
+  _nextMoved: CollectionChangeRecord;
 
   constructor(item) {
     this.currentIndex = null;
@@ -541,18 +531,18 @@ export class CollectionChangeRecord  {
     this._nextMoved = null;
   }
 
-  toString():string {
+  toString(): string {
     return this.previousIndex === this.currentIndex ?
-      stringify(this.item) :
-      stringify(this.item) + '[' + stringify(this.previousIndex) + '->' +
-        stringify(this.currentIndex) + ']';
+               stringify(this.item) :
+               stringify(this.item) + '[' + stringify(this.previousIndex) + '->' +
+                   stringify(this.currentIndex) + ']';
   }
 }
 
 // A linked list of CollectionChangeRecords with the same CollectionChangeRecord.item
 class _DuplicateItemRecordList {
-  _head:CollectionChangeRecord;
-  _tail:CollectionChangeRecord;
+  _head: CollectionChangeRecord;
+  _tail: CollectionChangeRecord;
 
   constructor() {
     this._head = null;
@@ -564,14 +554,14 @@ class _DuplicateItemRecordList {
    *
    * Note: by design all records in the list of duplicates hold the same value in record.item.
    */
-  add(record:CollectionChangeRecord) {
+  add(record: CollectionChangeRecord) {
     if (this._head === null) {
       this._head = this._tail = record;
       record._nextDup = null;
       record._prevDup = null;
     } else {
       // todo(vicb)
-      //assert(record.item ==  _head.item ||
+      // assert(record.item ==  _head.item ||
       //       record.item is num && record.item.isNaN && _head.item is num && _head.item.isNaN);
       this._tail._nextDup = record;
       record._prevDup = this._tail;
@@ -582,14 +572,14 @@ class _DuplicateItemRecordList {
 
   // Returns a CollectionChangeRecord having CollectionChangeRecord.item == item and
   // CollectionChangeRecord.currentIndex >= afterIndex
-  get(item, afterIndex:int):CollectionChangeRecord {
-    var record:CollectionChangeRecord;
+  get(item, afterIndex: int): CollectionChangeRecord {
+    var record: CollectionChangeRecord;
     for (record = this._head; record !== null; record = record._nextDup) {
       if ((afterIndex === null || afterIndex < record.currentIndex) &&
-           looseIdentical(record.item, item)) {
-          return record;
-        }
+          looseIdentical(record.item, item)) {
+        return record;
       }
+    }
     return null;
   }
 
@@ -598,9 +588,9 @@ class _DuplicateItemRecordList {
    *
    * Returns whether the list of duplicates is empty.
    */
-  remove(record:CollectionChangeRecord):boolean {
+  remove(record: CollectionChangeRecord): boolean {
     // todo(vicb)
-    //assert(() {
+    // assert(() {
     //  // verify that the record being removed is in the list.
     //  for (CollectionChangeRecord cursor = _head; cursor != null; cursor = cursor._nextDup) {
     //    if (identical(cursor, record)) return true;
@@ -608,8 +598,8 @@ class _DuplicateItemRecordList {
     //  return false;
     //});
 
-    var prev:CollectionChangeRecord = record._prevDup;
-    var next:CollectionChangeRecord = record._nextDup;
+    var prev: CollectionChangeRecord = record._prevDup;
+    var next: CollectionChangeRecord = record._nextDup;
     if (prev === null) {
       this._head = next;
     } else {
@@ -625,12 +615,10 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map:Map;
-  constructor() {
-    this.map = MapWrapper.create();
-  }
+  map: Map<any, any>;
+  constructor() { this.map = MapWrapper.create(); }
 
-  put(record:CollectionChangeRecord) {
+  put(record: CollectionChangeRecord) {
     // todo(vicb) handle corner cases
     var key = getMapKey(record.item);
 
@@ -649,7 +637,7 @@ class _DuplicateMap {
    * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
    * have any more `a`s needs to return the last `a` not the first or second.
    */
-  get(value, afterIndex = null):CollectionChangeRecord {
+  get(value, afterIndex = null): CollectionChangeRecord {
     var key = getMapKey(value);
 
     var recordList = MapWrapper.get(this.map, key);
@@ -661,11 +649,11 @@ class _DuplicateMap {
    *
    * The list of duplicates also is removed from the map if it gets empty.
    */
-  remove(record:CollectionChangeRecord):CollectionChangeRecord {
+  remove(record: CollectionChangeRecord): CollectionChangeRecord {
     var key = getMapKey(record.item);
     // todo(vicb)
-    //assert(this.map.containsKey(key));
-    var recordList:_DuplicateItemRecordList = MapWrapper.get(this.map, key);
+    // assert(this.map.containsKey(key));
+    var recordList: _DuplicateItemRecordList = MapWrapper.get(this.map, key);
     // Remove the list of duplicates when it gets empty
     if (recordList.remove(record)) {
       MapWrapper.delete(this.map, key);
@@ -673,15 +661,9 @@ class _DuplicateMap {
     return record;
   }
 
-  get isEmpty():boolean {
-    return MapWrapper.size(this.map) === 0;
-  }
+  get isEmpty(): boolean { return MapWrapper.size(this.map) === 0; }
 
-  clear() {
-    MapWrapper.clear(this.map);
-  }
+  clear() { MapWrapper.clear(this.map); }
 
-  toString():string {
-    return '_DuplicateMap(' + stringify(this.map) + ')';
-  }
+  toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
 }

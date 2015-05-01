@@ -117,9 +117,9 @@ export class ListWrapper {
   static indexOf(array: List<any>, value, startIndex = -1) {
     return array.indexOf(value, startIndex);
   }
-  static reduce<T>(list: List<T>,
-                   fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
-                   init: T) {
+  static reduce<T, E>(list: List<T>,
+                      fn: (accumValue: E, currentValue: T, currentIndex: number, array: T[]) => E,
+                      init: E) {
     return list.reduce(fn, init);
   }
   static filter(array, pred: Function) { return array.filter(pred); }

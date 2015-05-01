@@ -66,12 +66,12 @@ function _isWaiting(obj): boolean {
  * @exportedAs angular2/di
  */
 export class Injector {
-  _bindings: List<any>;
-  _instances: List<any>;
-  _parent: Injector;
-  _defaultBindings: boolean;
-  _asyncStrategy: _AsyncInjectorStrategy;
-  _syncStrategy: _SyncInjectorStrategy;
+  private _bindings: List<any>;
+  private _instances: List<any>;
+  private _parent: Injector;
+  private _defaultBindings: boolean;
+  private _asyncStrategy: _AsyncInjectorStrategy;
+  private _syncStrategy: _SyncInjectorStrategy;
 
   /**
    * Turns a list of binding definitions into an internal resolved list of resolved bindings.
