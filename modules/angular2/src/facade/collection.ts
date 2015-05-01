@@ -10,6 +10,27 @@ export var Map = global.Map;
 export var Set = global.Set;
 export var StringMap = global.Object;
 
+// Safari and Internet Explorer do not support the iterable parameter to the
+// Map constructor.  We work around that by manually adding the items.
+var createMapFromPairs: {(pairs: List<any>): Map<any, any>} = (function() {
+  try {
+    if (new Map([1, 2]).size === 2) {
+      return function createMapFromPairs(pairs: List<any>): Map<any, any> {
+        return new Map(pairs);
+      };
+    }
+  } catch (e) {
+  }
+  return function createMapAndPopulateFromPairs(pairs: List<any>): Map<any, any> {
+    var map = new Map();
+    for (var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i];
+      map.set(pair[0], pair[1]);
+    }
+    return map;
+  }
+})();
+
 export class MapWrapper {
   static create(): Map<any, any> { return new Map(); }
   static clone<K, V>(m: Map<K, V>): Map<K, V> { return new Map(m); }
@@ -20,7 +41,7 @@ export class MapWrapper {
     }
     return result;
   }
-  static createFromPairs(pairs: List<any>): Map<any, any> { return new Map(pairs); }
+  static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
   static get(m, k) { return m.get(k); }
   static set(m, k, v) { m.set(k, v); }
   static contains(m, k) { return m.has(k); }
