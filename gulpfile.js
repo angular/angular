@@ -616,6 +616,21 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
       { sourceMaps: true });
 });
 
+// TODO: remove redundancies with router and angular bundles
+// development router build
+gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
+  var devBundleConfig = merge(true, bundleConfig);
+  devBundleConfig.paths =
+    merge(true, devBundleConfig.paths, {
+      "*": "dist/js/dev/es6/*.es6"
+    });
+  return bundler.bundle(
+    devBundleConfig,
+    'angular2/router',
+    './dist/build/router.dev.js',
+    { sourceMaps: true });
+});
+
 // self-executing development build
 // This bundle executes its main module - angular2_sfx, when loaded, without
 // a corresponding System.import call. It is aimed at ES5 developers that do not
