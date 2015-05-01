@@ -4,7 +4,7 @@ Angular [![Build Status](https://travis-ci.org/angular/angular.svg?branch=master
 Angular is a development platform for building mobile and desktop web applications. This is the
 repository for [Angular 2][ng2], both the JavaScript (JS) and [Dart][dart] versions.
 
-Angular 2 is currently in **Alpha Preview**. We recommend using Angular 1.X for production
+Angular 2 is currently in **Developer Preview**. We recommend using Angular 1.X for production
 applications:
 
 * [AngularJS][ngJS]: [angular/angular.js](http://github.com/angular/angular.js).
