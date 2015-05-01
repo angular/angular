@@ -4,6 +4,7 @@ const SETUP_METHOD_NAME = 'initReflector';
 const REFLECTOR_VAR_NAME = 'reflector';
 const TRANSFORM_DYNAMIC_MODE = 'transform_dynamic';
 const DEPS_EXTENSION = '.ng_deps.dart';
+const META_EXTENSION = '.ng_meta.dart';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
 const REGISTER_TYPE_METHOD_NAME = 'registerType';
 const REGISTER_GETTERS_METHOD_NAME = 'registerGetters';

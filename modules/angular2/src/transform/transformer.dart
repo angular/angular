@@ -4,6 +4,7 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
 import 'directive_linker/transformer.dart';
+import 'directive_metadata_extractor/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
@@ -24,7 +25,7 @@ class AngularTransformerGroup extends TransformerGroup {
     var phases = [
       [new ReflectionRemover(options)],
       [new DirectiveProcessor(options)],
-      [new DirectiveLinker()],
+      [new DirectiveLinker(), new DirectiveMetadataExtractor()],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)]
     ];

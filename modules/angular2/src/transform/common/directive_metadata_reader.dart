@@ -1,9 +1,9 @@
-library angular2.transform.template_compiler.directive_metadata_reader;
+library angular2.transform.common.directive_metadata_reader;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/parser.dart';
+import 'logging.dart';
+import 'parser.dart';
 
 /// Reads [DirectiveMetadata] from the `attributes` of `t`.
 DirectiveMetadata readDirectiveMetadata(RegisteredType t) {

@@ -1,4 +1,4 @@
-library angular2.test.transform.debug_reflection_remover_files;
+library angular2.test.transform.reflection_remover.verbose_files.expected;
 
 // This file is intentionally formatted as a string to avoid having the
 // automatic transformer prettify it.

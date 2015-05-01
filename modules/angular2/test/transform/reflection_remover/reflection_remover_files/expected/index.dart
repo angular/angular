@@ -1,4 +1,4 @@
-library angular2.test.transform.reflection_remover_files;
+library angular2.test.transform.reflection_remover.reflection_remover_files;
 
 // This file is intentionally formatted as a string to avoid having the
 // automatic transformer prettify it.
