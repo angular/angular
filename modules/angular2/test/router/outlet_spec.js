@@ -25,7 +25,7 @@ import {Router, RouterOutlet, RouterLink, RouteConfig, RouteParams} from 'angula
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {DummyLocation} from 'angular2/src/mock/location_mock';
+import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
@@ -39,7 +39,7 @@ export function main() {
       Pipeline,
       RouteRegistry,
       DirectiveMetadataReader,
-      bind(Location).toClass(DummyLocation),
+      bind(Location).toClass(SpyLocation),
       bind(Router).toFactory((registry, pipeline, location) => {
         return new RootRouter(registry, pipeline, location, MyComp);
       }, [RouteRegistry, Pipeline, Location])

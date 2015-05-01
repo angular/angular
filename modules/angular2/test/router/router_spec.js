@@ -12,7 +12,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
-import {DummyLocation} from 'angular2/src/mock/location_mock'
+import {SpyLocation} from 'angular2/src/mock/location_mock'
 import {Location} from 'angular2/src/router/location';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
@@ -29,7 +29,7 @@ export function main() {
       Pipeline,
       RouteRegistry,
       DirectiveMetadataReader,
-      bind(Location).toClass(DummyLocation),
+      bind(Location).toClass(SpyLocation),
       bind(Router).toFactory((registry, pipeline, location) => {
         return new RootRouter(registry, pipeline, location, AppCmp);
       }, [RouteRegistry, Pipeline, Location])

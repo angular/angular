@@ -8,7 +8,7 @@ import {Location} from 'angular2/src/router/location';
 
 @proxy
 @IMPLEMENTS(Location)
-export class DummyLocation extends SpyObject {
+export class SpyLocation extends SpyObject {
   urlChanges:List<string>;
   _path:string;
   _subject:EventEmitter;
