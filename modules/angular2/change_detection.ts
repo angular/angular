@@ -47,6 +47,7 @@ export {ChangeDetectorRef} from './src/change_detection/change_detector_ref';
 export {PipeRegistry} from './src/change_detection/pipes/pipe_registry';
 export {uninitialized} from './src/change_detection/change_detection_util';
 export {WrappedValue, Pipe} from './src/change_detection/pipes/pipe';
+export {NullPipe, NullPipeFactory} from './src/change_detection/pipes/null_pipe';
 export {
   defaultPipes,
   DynamicChangeDetection,
