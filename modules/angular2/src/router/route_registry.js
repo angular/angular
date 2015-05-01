@@ -14,6 +14,15 @@ export class RouteRegistry {
 
   config(parentComponent, config) {
 
+    if (!StringMapWrapper.contains(config, 'path')) {
+      throw new BaseException('Route config does not contain "path"');
+    }
+
+    if (!StringMapWrapper.contains(config, 'component') &&
+        !StringMapWrapper.contains(config, 'components')) {
+      throw new BaseException('Route config does not contain "component" or "components"');
+    }
+
     var recognizer:RouteRecognizer;
     if (MapWrapper.contains(this._rules, parentComponent)) {
       recognizer = MapWrapper.get(this._rules, parentComponent);
