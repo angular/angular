@@ -6,12 +6,13 @@ import {
   inject, beforeEach,
   SpyObject} from 'angular2/test_lib';
 
-import {RouteRegistry, rootHostComponent} from 'angular2/src/router/route_registry';
+import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig} from 'angular2/src/router/route_config';
 
 export function main() {
   describe('RouteRegistry', () => {
-    var registry;
+    var registry,
+        rootHostComponent = new Object();
 
     beforeEach(() => {
       registry = new RouteRegistry();
@@ -21,7 +22,7 @@ export function main() {
       registry.config(rootHostComponent, {'path': '/', 'component': DummyCompA});
       registry.config(rootHostComponent, {'path': '/test', 'component': DummyCompB});
 
-      var instruction = registry.recognize('/test');
+      var instruction = registry.recognize('/test', rootHostComponent);
 
       expect(instruction.getChildInstruction('default').component).toBe(DummyCompB);
     });
@@ -29,7 +30,7 @@ export function main() {
     it('should match the full URL recursively', () => {
       registry.config(rootHostComponent, {'path': '/first', 'component': DummyParentComp});
 
-      var instruction = registry.recognize('/first/second');
+      var instruction = registry.recognize('/first/second', rootHostComponent);
 
       var parentInstruction = instruction.getChildInstruction('default');
       var childInstruction = parentInstruction.getChildInstruction('default');

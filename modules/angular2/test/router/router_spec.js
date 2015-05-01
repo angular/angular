@@ -4,25 +4,42 @@ import {
   proxy,
   it, iit,
   ddescribe, expect,
-  inject, beforeEach,
+  inject, beforeEach, beforeEachBindings,
   SpyObject} from 'angular2/test_lib';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {RootRouter} from 'angular2/src/router/router';
+import {Router, RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
 import {RouterOutlet} from 'angular2/src/router/router_outlet';
 import {DummyLocation} from 'angular2/src/mock/location_mock'
+import {Location} from 'angular2/src/router/location';
+
+import {RouteRegistry} from 'angular2/src/router/route_registry';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+
+import {bind} from 'angular2/di';
 
 export function main() {
   describe('Router', () => {
     var router,
         location;
 
-    beforeEach(() => {
-      location = new DummyLocation();
-      router = new RootRouter(new Pipeline(), location);
-    });
+    beforeEachBindings(() => [
+      Pipeline,
+      RouteRegistry,
+      DirectiveMetadataReader,
+      bind(Location).toClass(DummyLocation),
+      bind(Router).toFactory((registry, pipeline, location) => {
+        return new RootRouter(registry, pipeline, location, AppCmp);
+      }, [RouteRegistry, Pipeline, Location])
+    ]);
+
+
+    beforeEach(inject([Router, Location], (rtr, loc) => {
+      router = rtr;
+      location = loc;
+    }));
 
 
     it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
@@ -82,3 +99,5 @@ function makeDummyRef() {
   ref.spy('deactivate').andCallFake((_) => PromiseWrapper.resolve(true));
   return ref;
 }
+
+class AppCmp {}

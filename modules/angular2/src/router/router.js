@@ -1,8 +1,8 @@
 import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank, Type} from 'angular2/src/facade/lang';
 
-import {RouteRegistry, rootHostComponent} from './route_registry';
+import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
 import {Instruction} from './instruction';
 import {RouterOutlet} from './router_outlet';
@@ -42,7 +42,6 @@ export class Router {
     this._registry = registry;
     this._pipeline = pipeline;
     this._subject = new EventEmitter();
-    //this._location.subscribe((url) => this.navigate(url));
   }
 
 
@@ -86,10 +85,8 @@ export class Router {
    *
    */
   config(config:any) {
-
-    //TODO: use correct check
     if (config instanceof List) {
-      path.forEach((configObject) => {
+      config.forEach((configObject) => {
         // TODO: this is a hack
         this._registry.config(this.hostComponent, configObject);
       })
@@ -172,7 +169,7 @@ export class Router {
    * Given a URL, returns an instruction representing the component graph
    */
   recognize(url:string) {
-    return this._registry.recognize(url);
+    return this._registry.recognize(url, this.hostComponent);
   }
 
 
@@ -192,17 +189,15 @@ export class Router {
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the app's base href.
    */
   generate(name:string, params:any) {
-    return this._registry.generate(name, params);
-  }
-
-  static getRoot():Router {
-    return new RootRouter(new Pipeline(), new Location());
+    return this._registry.generate(name, params, this.hostComponent);
   }
 }
 
 export class RootRouter extends Router {
-  constructor(pipeline:Pipeline, location:Location) {
-    super(new RouteRegistry(), pipeline, location, null, rootHostComponent);
+  constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, hostComponent:Type) {
+    super(registry, pipeline, location, null, hostComponent);
+    this._location.subscribe((url) => this.navigate(url));
+    this._registry.configFromComponent(hostComponent);
     this.navigate(location.path());
   }
 }

@@ -26,23 +26,30 @@ import {Router, RouterOutlet, RouterLink, RouteConfig, RouteParams} from 'angula
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {DummyLocation} from 'angular2/src/mock/location_mock';
+import {Location} from 'angular2/src/router/location';
+import {RouteRegistry} from 'angular2/src/router/route_registry';
+import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
 export function main() {
   describe('Outlet Directive', () => {
 
-    var ctx, tb, view, router;
+    var ctx, tb, view, rtr;
 
-    beforeEach(inject([TestBed], (testBed) => {
+    beforeEachBindings(() => [
+      Pipeline,
+      RouteRegistry,
+      DirectiveMetadataReader,
+      bind(Location).toClass(DummyLocation),
+      bind(Router).toFactory((registry, pipeline, location) => {
+        return new RootRouter(registry, pipeline, location, MyComp);
+      }, [RouteRegistry, Pipeline, Location])
+    ]);
+
+    beforeEach(inject([TestBed, Router], (testBed, router) => {
       tb = testBed;
       ctx = new MyComp();
+      rtr = router;
     }));
-
-    beforeEachBindings(() => {
-      router = new RootRouter(new Pipeline(), new DummyLocation());
-      return [
-        bind(Router).toValue(router)
-      ];
-    });
 
     function compile(template:string = "<router-outlet></router-outlet>") {
       tb.overrideView(MyComp, new View({template: ('<div>' + template + '</div>'), directives: [RouterOutlet, RouterLink]}));
@@ -53,8 +60,8 @@ export function main() {
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async) => {
       compile()
-        .then((_) => router.config({'path': '/test', 'component': HelloCmp}))
-        .then((_) => router.navigate('/test'))
+        .then((_) => rtr.config({'path': '/test', 'component': HelloCmp}))
+        .then((_) => rtr.navigate('/test'))
         .then((_) => {
           view.detectChanges();
           expect(view.rootNodes).toHaveText('hello');
@@ -65,13 +72,13 @@ export function main() {
 
     it('should navigate between components with different parameters', inject([AsyncTestCompleter], (async) => {
       compile()
-        .then((_) => router.config({'path': '/user/:name', 'component': UserCmp}))
-        .then((_) => router.navigate('/user/brian'))
+        .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp}))
+        .then((_) => rtr.navigate('/user/brian'))
         .then((_) => {
           view.detectChanges();
           expect(view.rootNodes).toHaveText('hello brian');
         })
-        .then((_) => router.navigate('/user/igor'))
+        .then((_) => rtr.navigate('/user/igor'))
         .then((_) => {
           view.detectChanges();
           expect(view.rootNodes).toHaveText('hello igor');
@@ -82,8 +89,8 @@ export function main() {
 
     it('should work with child routers', inject([AsyncTestCompleter], (async) => {
       compile('outer { <router-outlet></router-outlet> }')
-        .then((_) => router.config({'path': '/a', 'component': ParentCmp}))
-        .then((_) => router.navigate('/a/b'))
+        .then((_) => rtr.config({'path': '/a', 'component': ParentCmp}))
+        .then((_) => rtr.navigate('/a/b'))
         .then((_) => {
           view.detectChanges();
           expect(view.rootNodes).toHaveText('outer { inner { hello } }');
@@ -95,8 +102,8 @@ export function main() {
     it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
-        .then((_) => router.config({'path': '/user/:name', 'component': UserCmp, 'alias': 'user'}))
-        .then((_) => router.navigate('/a/b'))
+        .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'alias': 'user'}))
+        .then((_) => rtr.navigate('/a/b'))
         .then((_) => {
           view.detectChanges();
           expect(view.rootNodes).toHaveText('brian');

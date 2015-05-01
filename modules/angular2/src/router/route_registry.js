@@ -1,11 +1,9 @@
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, noopInstruction} from './instruction';
 import {List, ListWrapper, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
-import {isPresent, isBlank, isType, StringWrapper, CONST} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, isType, StringWrapper, BaseException} from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config';
 import {reflector} from 'angular2/src/reflection/reflection';
-
-export const rootHostComponent = 'ROOT_HOST';
 
 export class RouteRegistry {
   _rules:Map<any, RouteRecognizer>;
@@ -28,13 +26,13 @@ export class RouteRegistry {
 
     var components = StringMapWrapper.get(config, 'components');
     StringMapWrapper.forEach(components, (component, _) => {
-      this._configFromComponent(component);
+      this.configFromComponent(component);
     });
 
     recognizer.addConfig(config['path'], config, config['alias']);
   }
 
-  _configFromComponent(component) {
+  configFromComponent(component) {
     if (!isType(component)) {
       return;
     }
@@ -59,9 +57,7 @@ export class RouteRegistry {
   }
 
 
-  // TODO: make recognized context a class
-  // TODO: change parentComponent into parentContext
-  recognize(url:string, parentComponent = rootHostComponent) {
+  recognize(url:string, parentComponent) {
     var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
     if (isBlank(componentRecognizer)) {
       return null;
@@ -103,9 +99,9 @@ export class RouteRegistry {
     return null;
   }
 
-  generate(name:string, params:any) {
+  generate(name:string, params:any, hostComponent) {
     //TODO: implement for hierarchical routes
-    var componentRecognizer = MapWrapper.get(this._rules, rootHostComponent);
+    var componentRecognizer = MapWrapper.get(this._rules, hostComponent);
     if (isPresent(componentRecognizer)) {
       return componentRecognizer.generate(name, params);
     }
@@ -148,7 +144,7 @@ function normalizeConfig(config:StringMap) {
 
     return newConfig;
   } else if (!StringMapWrapper.contains(config, 'components')) {
-    throw new Error('Config does not include a "component" or "components" key.');
+    throw new BaseException('Config does not include a "component" or "components" key.');
   }
   return config;
 }
