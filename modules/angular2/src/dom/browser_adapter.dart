@@ -296,7 +296,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   String getEventKey(KeyboardEvent event) {
     int keyCode = event.keyCode;
-    return _keyCodeToKeyMap.containsKey(keyCode) ? _keyCodeToKeyMap[keyCode] : 'Unidentified';
+    return _keyCodeToKeyMap.containsKey(keyCode)
+        ? _keyCodeToKeyMap[keyCode]
+        : 'Unidentified';
   }
   getGlobalEventTarget(String target) {
     if (target == "window") {

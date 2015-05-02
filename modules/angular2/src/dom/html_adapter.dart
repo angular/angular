@@ -168,9 +168,8 @@ class Html5LibDomAdapter implements DomAdapter {
   getHost(el) {
     throw 'not implemented';
   }
-  clone(node) {
-    throw 'not implemented';
-  }
+  clone(node) => node.clone(true);
+
   hasProperty(element, String name) {
     throw 'not implemented';
   }
