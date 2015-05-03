@@ -401,7 +401,7 @@ export class BindingBuilder {
    * ```javascript
    * var injector = Injector.resolveAndCreate([
    *   bind(Number).toFactory(() => { return 1+2; }}),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [String] })
+   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number] })
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
@@ -422,7 +422,7 @@ export class BindingBuilder {
    *   bind(Number).toAsyncFactory(() => {
    *     return new Promise((resolve) => resolve(1 + 2));
    *   }),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [String])
+   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
    * ]);
    *
    * injector.asyncGet(Number).then((v) => expect(v).toBe(3));
