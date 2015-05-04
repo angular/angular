@@ -13,14 +13,14 @@ export class RouteRegistry {
   }
 
   config(parentComponent, config) {
-
     if (!StringMapWrapper.contains(config, 'path')) {
       throw new BaseException('Route config does not contain "path"');
     }
 
     if (!StringMapWrapper.contains(config, 'component') &&
-        !StringMapWrapper.contains(config, 'components')) {
-      throw new BaseException('Route config does not contain "component" or "components"');
+        !StringMapWrapper.contains(config, 'components') &&
+        !StringMapWrapper.contains(config, 'redirectTo')) {
+      throw new BaseException('Route config does not contain "component," "components," or "redirectTo"');
     }
 
     var recognizer:RouteRecognizer;
@@ -32,6 +32,11 @@ export class RouteRegistry {
     }
 
     config = normalizeConfig(config);
+
+    if (StringMapWrapper.contains(config, 'redirectTo')) {
+      recognizer.addRedirect(StringMapWrapper.get(config, 'path'), StringMapWrapper.get(config, 'redirectTo'));
+      return;
+    }
 
     var components = StringMapWrapper.get(config, 'components');
     StringMapWrapper.forEach(components, (component, _) => {
@@ -152,8 +157,6 @@ function normalizeConfig(config:StringMap) {
     });
 
     return newConfig;
-  } else if (!StringMapWrapper.contains(config, 'components')) {
-    throw new BaseException('Config does not include a "component" or "components" key.');
   }
   return config;
 }

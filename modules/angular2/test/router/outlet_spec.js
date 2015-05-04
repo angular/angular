@@ -117,6 +117,20 @@ export function main() {
     }));
 
 
+    it('should work with redirects', inject([AsyncTestCompleter, Location], (async, location) => {
+      compile()
+        .then((_) => rtr.config({'path': '/original', 'redirectTo': '/redirected' }))
+        .then((_) => rtr.config({'path': '/redirected', 'component': A }))
+        .then((_) => rtr.navigate('/original'))
+        .then((_) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText('A');
+          expect(location.urlChanges).toEqual(['/redirected']);
+          async.done();
+        });
+    }));
+
+
     it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
