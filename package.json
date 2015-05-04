@@ -29,7 +29,7 @@
     "fs-extra": "^0.18.0",
     "googleapis": "1.0.x",
     "gulp-insert": "^0.4.0",
-    "gulp-modify": "0.0.4",
+    "gulp-modify": "0.1.1",
     "gulp-replace": "^0.5.3",
     "node-uuid": "1.4.x",
     "rx": "2.5.1",
