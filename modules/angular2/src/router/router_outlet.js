@@ -1,6 +1,8 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {isBlank} from 'angular2/src/facade/lang';
 
 import {Directive} from 'angular2/src/core/annotations_impl/annotations';
+import {Attribute} from 'angular2/src/core/annotations_impl/di';
 import {Compiler, ViewContainerRef} from 'angular2/core';
 import {Injector, bind} from 'angular2/di';
 
@@ -16,12 +18,15 @@ export class RouterOutlet {
   _router:routerMod.Router;
   _viewContainer:ViewContainerRef;
 
-  constructor(viewContainer:ViewContainerRef, compiler:Compiler, router:routerMod.Router, injector:Injector) {
+  constructor(viewContainer:ViewContainerRef, compiler:Compiler, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr) {
+    if (isBlank(nameAttr)) {
+      nameAttr = 'default';
+    }
     this._router = router;
     this._viewContainer = viewContainer;
     this._compiler = compiler;
     this._injector = injector;
-    this._router.registerOutlet(this);
+    this._router.registerOutlet(this, nameAttr);
   }
 
   activate(instruction:Instruction) {

@@ -99,6 +99,24 @@ export function main() {
     }));
 
 
+    it('should work with sibling routers', inject([AsyncTestCompleter], (async) => {
+      compile('left { <router-outlet name="left"></router-outlet> } | right { <router-outlet name="right"></router-outlet> }')
+        .then((_) => rtr.config({'path': '/ab', 'components': {'left': A, 'right': B} }))
+        .then((_) => rtr.config({'path': '/ba', 'components': {'left': B, 'right': A} }))
+        .then((_) => rtr.navigate('/ab'))
+        .then((_) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText('left { A } | right { B }');
+        })
+        .then((_) => rtr.navigate('/ba'))
+        .then((_) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText('left { B } | right { A }');
+          async.done();
+        });
+    }));
+
+
     it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
@@ -128,6 +146,24 @@ class HelloCmp {
     this.greeting = "hello";
   }
 }
+
+
+@Component({
+  selector: 'a-cmp'
+})
+@View({
+  template: "A"
+})
+class A {}
+
+
+@Component({
+  selector: 'b-cmp'
+})
+@View({
+  template: "B"
+})
+class B {}
 
 
 @Component({
