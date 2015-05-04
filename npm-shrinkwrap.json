@@ -9320,9 +9320,9 @@
       }
     },
     "gulp-typescript": {
-      "version": "2.5.0",
-      "from": "gulp-typescript@git://github.com/ivogabe/gulp-typescript.git#3422fbff06532ccc57368f3b4c8801de8f72ef27",
-      "resolved": "git://github.com/ivogabe/gulp-typescript.git#3422fbff06532ccc57368f3b4c8801de8f72ef27",
+      "version": "2.6.0",
+      "from": "https://registry.npmjs.org/gulp-typescript/-/gulp-typescript-2.6.0.tgz",
+      "resolved": "https://registry.npmjs.org/gulp-typescript/-/gulp-typescript-2.6.0.tgz",
       "dependencies": {
         "gulp-util": {
           "version": "3.0.4",
@@ -14694,8 +14694,8 @@
     },
     "typescript": {
       "version": "1.5.0",
-      "from": "git://github.com/mhegazy/TypeScript#v1.5-beta",
-      "resolved": "git://github.com/mhegazy/TypeScript#deafa1186e7ff1c6b4542b3cdc7dd7ae83de700c"
+      "from": "git://github.com/alexeagle/TypeScript#error_is_class",
+      "resolved": "git://github.com/alexeagle/TypeScript#5d006dcd185eec3fa919c8670fbaa451d7912f66"
     },
     "vinyl": {
       "version": "0.4.6",
