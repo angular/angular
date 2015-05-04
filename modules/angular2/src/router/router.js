@@ -196,7 +196,7 @@ export class Router {
 export class RootRouter extends Router {
   constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, hostComponent:Type) {
     super(registry, pipeline, location, null, hostComponent);
-    this._location.subscribe((url) => this.navigate(url));
+    this._location.subscribe((change) => this.navigate(change['url']));
     this._registry.configFromComponent(hostComponent);
     this.navigate(location.path());
   }
