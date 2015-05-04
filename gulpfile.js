@@ -146,7 +146,10 @@ gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
 
 function doCheckFormat() {
   return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
-                   '!tools/broccoli/tree-differ.ts']) // See https://github.com/angular/clang-format/issues/4
+                   // skipped  due to https://github.com/angular/clang-format/issues/4
+                   '!tools/broccoli/tree-differ.ts',
+                   // skipped  due to https://github.com/angular/gulp-clang-format/issues/3
+                   '!tools/broccoli/broccoli-typescript.ts' ])
     .pipe(format.checkFormat('file'));
 }
 

@@ -8,8 +8,8 @@ var path = require('path');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var TypescriptCompiler = require('../typescript');
 
+import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
 import {default as transpileWithTraceur, TRACEUR_RUNTIME_PATH} from '../traceur/index';
 
@@ -42,19 +42,25 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   // Use TypeScript to transpile the *.ts files to ES6
   // We don't care about errors: we let the TypeScript compilation to ES5
   // in node_tree.ts do the type-checking.
-  var typescriptTree = new TypescriptCompiler(modulesTree, {
-    target: 'ES6',
-    sourceMap: true,
-    mapRoot: '', /* force sourcemaps to use relative path */
+  var typescriptTree = compileWithTypescript(modulesTree, {
     allowNonTsExtensions: false,
-    typescript: require('typescript'),
-    noEmitOnError: false,
+    declaration: true,
     emitDecoratorMetadata: true,
-    outDir: 'angular2'
+    mapRoot: '',           // force sourcemaps to use relative path
+    noEmitOnError: false,  // temporarily ignore errors, we type-check only via cjs build
+    rootDir: '.',
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES6'
   });
   typescriptTree = stew.rename(typescriptTree, '.js', '.es6');
 
   var es6Tree = mergeTrees([traceurTree, typescriptTree]);
+
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  es6Tree = stew.mv(es6Tree, '');
 
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree = transpileWithTraceur(es6Tree, {

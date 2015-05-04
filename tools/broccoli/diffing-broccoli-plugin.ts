@@ -62,19 +62,24 @@ class DiffingPluginWrapper implements BroccoliTree {
 
 
   rebuild() {
-    let firstRun = !this.initialized;
-    this.init();
+    try {
+      let firstRun = !this.initialized;
+      this.init();
 
-    let diffResult = this.treeDiffer.diffTree();
-    diffResult.log(!firstRun);
+      let diffResult = this.treeDiffer.diffTree();
+      diffResult.log(!firstRun);
 
-    var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
+      var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
 
-    if (rebuildPromise) {
-      return (<Promise<any>>rebuildPromise).then(this.relinkOutputAndCachePaths.bind(this));
+      if (rebuildPromise) {
+        return (<Promise<any>>rebuildPromise).then(this.relinkOutputAndCachePaths.bind(this));
+      }
+
+      this.relinkOutputAndCachePaths();
+    } catch (e) {
+      e.message = `[${this.description}]: ${e.message}`;
+      throw e;
     }
-
-    this.relinkOutputAndCachePaths();
   }
 
 

@@ -9,7 +9,7 @@ var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
 import transpileWithTraceur from '../traceur/index';
-var TypescriptCompiler = require('../typescript');
+import compileWithTypescript from '../broccoli-typescript';
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
@@ -98,16 +98,19 @@ module.exports = function makeNodeTree(destinationPath) {
       packageJsons, {files: ["**/**"], context: {'packageJson': COMMON_PACKAGE_JSON}});
 
 
-  var typescriptTree = new TypescriptCompiler(modulesTree, {
-    target: 'ES5',
-    sourceMap: true,
+  var typescriptTree = compileWithTypescript(modulesTree, {
+    allowNonTsExtensions: false,
+    declaration: true,
     mapRoot: '', /* force sourcemaps to use relative path */
     module: 'commonjs',
-    allowNonTsExtensions: false,
-    typescript: require('typescript'),
     noEmitOnError: true,
-    outDir: 'angular2'
+    rootDir: '.',
+    rootFilePaths: ['angular2/traceur-runtime.d.ts'],
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES5'
   });
+
 
   nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
 
