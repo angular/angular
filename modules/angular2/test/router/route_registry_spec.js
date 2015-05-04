@@ -7,7 +7,7 @@ import {
   SpyObject} from 'angular2/test_lib';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig} from 'angular2/src/router/route_config';
+import {RouteConfig} from 'angular2/src/router/route_config_impl';
 
 export function main() {
   describe('RouteRegistry', () => {

@@ -21,7 +21,8 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Pipeline} from 'angular2/src/router/pipeline';
-import {Router, RouterOutlet, RouterLink, RouteConfig, RouteParams} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
+import {RouteConfig} from 'angular2/src/router/route_config_impl';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
