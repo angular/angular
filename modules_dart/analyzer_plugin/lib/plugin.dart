@@ -1,12 +1,14 @@
 library angular2.src.analysis.analyzer_plugin;
 
 import 'package:analyzer/plugin/plugin.dart';
+import 'package:analyzer/plugin/task.dart';
+import 'src/tasks.dart';
 
 /// Contribute a plugin to the dart analyzer for analysis of
 /// Angular 2 dart code.
 class AngularAnalyzerPlugin implements Plugin {
 
-  /// the unique indetifier for this plugin
+  /// The unique identifier for this plugin.
   static const String UNIQUE_IDENTIFIER = 'angular2.analysis';
 
   @override
@@ -17,6 +19,7 @@ class AngularAnalyzerPlugin implements Plugin {
 
   @override
   void registerExtensions(RegisterExtension registerExtension) {
-    // TODO(keerti): register extension for analysis
+    String taskId = TASK_EXTENSION_POINT_ID;
+    registerExtension(taskId, BuildUnitDirectivesTask.DESCRIPTOR);
   }
 }
