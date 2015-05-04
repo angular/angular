@@ -24,9 +24,9 @@ import {DEFAULT} from 'angular2/change_detection';
  *   - The terminal {@link Injector} cannot resolve dependencies. It either throws an error or, if the dependency was
  *     specified as `@Optional`, returns `null`.
  *   - The platform injector resolves browser singleton resources, such as: cookies, title, location, and others.
- * - *Component Injectors*: Each `@Component` has its own {@link Injector}, and they follow the same parent-child hierarchy
- *     as the components in the DOM.
- * - *Element Injectors*: Each component has a Shadow DOM. Within the Shadow DOM each element has an `ElementInjector`
+ * - *Component Injectors*: Each component instance has its own {@link Injector}, and they follow the same parent-child hierarchy
+ *     as the component instances in the DOM.
+ * - *Element Injectors*: Each component instance has a Shadow DOM. Within the Shadow DOM each element has an `ElementInjector`
  *     which follow the same parent-child hierarchy as the DOM elements themselves.
  *
  * When a template is instantiated, it also must instantiate the corresponding directives in a depth-first order. The
