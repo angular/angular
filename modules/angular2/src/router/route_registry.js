@@ -2,7 +2,7 @@ import {RouteRecognizer} from './route_recognizer';
 import {Instruction, noopInstruction} from './instruction';
 import {List, ListWrapper, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, isType, StringWrapper, BaseException} from 'angular2/src/facade/lang';
-import {RouteConfig} from './route_config';
+import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 export class RouteRegistry {

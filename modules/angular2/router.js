@@ -10,7 +10,7 @@ export {Router} from './src/router/router';
 export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
 export {RouteParams} from './src/router/instruction';
-export {RouteConfig} from './src/router/route_config';
+export {RouteConfig} from './src/router/route_config_annotation';
 
 import {Router, RootRouter} from './src/router/router';
 import {RouteRegistry} from './src/router/route_registry';
