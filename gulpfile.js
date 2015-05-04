@@ -321,31 +321,39 @@ function getBrowsersFromCLI() {
   return [args.browsers?args.browsers:'DartiumWithWebPlatform']
 }
 
-gulp.task('test.unit.js', ['build/clean.js'], function (neverDone) {
+gulp.task('test.unit.js', ['build/clean.js', 'broccoli.js.dev'], function (neverDone) {
 
   function buildAndTest() {
     runSequence(
       'broccoli.js.dev',
-      'test.unit.dev/karma-run'
+      'test.unit.js/karma-run'
     );
   }
 
   karma.server.start({configFile: __dirname + '/karma-js.conf.js'});
-  buildAndTest();
 
-  gulp.watch('modules/**', function() {
-    console.log('args', arguments);
-    buildAndTest();
-  });
+  gulp.watch('modules/**', buildAndTest);
 });
 
-gulp.task('test.unit.dev/karma-run', function(done) {
+gulp.task('test.unit.js/karma-run', function (done) {
   karma.runner.run({configFile: __dirname + '/karma-js.conf.js'}, done);
 });
 
+gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
+  function buildAndTest() {
+    runSequence(
+      'build/tree.dart',
+      'test.unit.dart/karma-run'
+    );
+  }
 
-gulp.task('test.unit.dart', function (done) {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js'}, done);
+  karma.server.start({configFile: __dirname + '/karma-dart.conf.js'});
+
+  gulp.watch('modules/angular2/**', buildAndTest);
+});
+
+gulp.task('test.unit.dart/karma-run', function (done) {
+  karma.runner.run({configFile: __dirname + '/karma-dart.conf.js'}, done);
 });
 
 gulp.task('test.unit.js/ci', function (done) {
@@ -355,7 +363,7 @@ gulp.task('test.unit.js/ci', function (done) {
 
 gulp.task('test.unit.dart/ci', function (done) {
   karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
+    singleRun: true, reporters: ['dots'], browsers: getBrowsersFromCLI()}, done);
 });
 
 

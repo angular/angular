@@ -144,5 +144,10 @@ module.exports = function makeDartTree(destinationPath) {
 
   var dartTree = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
 
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  dartTree = stew.mv(dartTree, '');
+
   return destCopy(dartTree, destinationPath);
 };
