@@ -1,3 +1,5 @@
+import {ABSTRACT, BaseException, CONST} from 'angular2/src/facade/lang';
+
 /**
  * Indicates that the result of a {@link Pipe} transformation has changed even though the reference has not changed.
  *
@@ -54,4 +56,23 @@ export class Pipe {
   supports(obj):boolean {return false;}
   onDestroy() {}
   transform(value:any):any {return null;}
+}
+
+@ABSTRACT()
+export class PipeFactory {
+  @CONST()
+  constructor() {
+  }
+
+  supports(obs):boolean {
+    return _abstract();
+  }
+
+  create(cdRef):Pipe {
+    return _abstract();
+  }
+}
+
+function _abstract() {
+  return new BaseException('This method is abstract');
 }

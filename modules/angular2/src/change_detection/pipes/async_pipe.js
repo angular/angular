@@ -1,6 +1,6 @@
 import {Observable, ObservableWrapper} from 'angular2/src/facade/async';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {Pipe, WrappedValue} from './pipe';
+import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {Pipe, WrappedValue, PipeFactory} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -52,7 +52,7 @@ export class AsyncPipe extends Pipe {
   onDestroy():void {
     if (isPresent(this._subscription)) {
       this._dispose();
-    };
+    }
   }
 
   transform(obs:Observable):any {
@@ -101,7 +101,12 @@ export class AsyncPipe extends Pipe {
  *
  * @exportedAs angular2/pipes
  */
-export class AsyncPipeFactory {
+export class AsyncPipeFactory extends PipeFactory {
+  @CONST()
+  constructor() {
+    super();
+  }
+
   supports(obs):boolean {
     return ObservableWrapper.isObservable(obs);
   }

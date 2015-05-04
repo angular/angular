@@ -1,3 +1,4 @@
+import {CONST} from 'angular2/src/facade/lang';
 import {
   isListLikeIterable,
   iterateListLike,
@@ -14,9 +15,14 @@ import {
   looseIdentical,
 } from 'angular2/src/facade/lang';
 
-import {WrappedValue, Pipe} from './pipe';
+import {WrappedValue, Pipe, PipeFactory} from './pipe';
 
-export class IterableChangesFactory {
+export class IterableChangesFactory extends PipeFactory {
+  @CONST()
+  constructor() {
+    super();
+  }
+
   supports(obj):boolean {
     return IterableChanges.supportsObj(obj);
   }

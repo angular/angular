@@ -1,12 +1,17 @@
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {stringify, looseIdentical, isJsObject} from 'angular2/src/facade/lang';
+import {stringify, looseIdentical, isJsObject, CONST} from 'angular2/src/facade/lang';
 
-import {WrappedValue, Pipe} from './pipe';
+import {WrappedValue, Pipe, PipeFactory} from './pipe';
 
 /**
  * @exportedAs angular2/pipes
  */
-export class KeyValueChangesFactory {
+export class KeyValueChangesFactory extends PipeFactory {
+  @CONST()
+  constructor() {
+    super();
+  }
+
   supports(obj):boolean {
     return KeyValueChanges.supportsObj(obj);
   }

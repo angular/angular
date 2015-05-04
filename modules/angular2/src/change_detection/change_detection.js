@@ -1,4 +1,5 @@
 import {DynamicProtoChangeDetector, JitProtoChangeDetector} from './proto_change_detector';
+import {PipeFactory} from './pipes/pipe';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
@@ -16,7 +17,7 @@ import {List} from 'angular2/src/facade/collection';
  *
  * @exportedAs angular2/pipes
  */
-export var keyValDiff = [
+export var keyValDiff:List<PipeFactory> = [
   new KeyValueChangesFactory(),
   new NullPipeFactory()
 ];
@@ -26,7 +27,7 @@ export var keyValDiff = [
  *
  * @exportedAs angular2/pipes
  */
-export var iterableDiff = [
+export var iterableDiff:List<PipeFactory> = [
   new IterableChangesFactory(),
   new NullPipeFactory()
 ];
@@ -36,12 +37,12 @@ export var iterableDiff = [
  *
  * @exportedAs angular2/pipes
  */
-export var async = [
+export var async:List<PipeFactory> = [
   new AsyncPipeFactory(),
   new NullPipeFactory()
 ];
 
-export var defaultPipes = {
+export var defaultPipes:Map<String, List<PipeFactory>> = {
   "iterableDiff" : iterableDiff,
   "keyValDiff" : keyValDiff,
   "async" : async
