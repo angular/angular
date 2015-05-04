@@ -1,6 +1,6 @@
 import {CONST, normalizeBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {DEFAULT} from 'angular2/change_detection';
 
 // type StringMap = {[idx: string]: string};

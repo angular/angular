@@ -6,7 +6,8 @@ import {ProtoElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode}
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import {Directive, onDestroy} from 'angular2/src/core/annotations_impl/annotations';
-import {Optional, Injector, Inject, bind} from 'angular2/di';
+import {bind, Injector} from 'angular2/di';
+import {Optional, Inject} from 'angular2/src/di/annotations_impl';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';

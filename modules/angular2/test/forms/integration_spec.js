@@ -14,7 +14,7 @@ import {
 } from 'angular2/test_lib';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {Inject} from 'angular2/di';
+import {Inject} from 'angular2/src/di/annotations_impl';
 
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {Type, stringify, isBlank, BaseException} from 'angular2/src/facade/lang';

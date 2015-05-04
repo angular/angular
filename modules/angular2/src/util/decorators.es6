@@ -1,13 +1,6 @@
-import {
-  ComponentAnnotation,
-  DirectiveAnnotation
-} from '../annotations/annotations';
-import {ViewAnnotation} from '../annotations/view';
-import {AncestorAnnotation, ParentAnnotation} from '../annotations/visibility';
-import {AttributeAnnotation, QueryAnnotation} from '../annotations/di';
 import {global} from 'angular2/src/facade/lang';
 
-function makeDecorator(annotationCls) {
+export function makeDecorator(annotationCls) {
   return function(...args) {
     var Reflect = global.Reflect;
     if (!(Reflect && Reflect.getMetadata)) {
@@ -24,7 +17,7 @@ function makeDecorator(annotationCls) {
   }
 }
 
-function makeParamDecorator(annotationCls) {
+export function makeParamDecorator(annotationCls) {
   return function(...args) {
     var Reflect = global.Reflect;
     if (!(Reflect && Reflect.getMetadata)) {
@@ -45,18 +38,3 @@ function makeParamDecorator(annotationCls) {
     }
   }
 }
-
-/* from annotations */
-export var Component = makeDecorator(ComponentAnnotation);
-export var Decorator = makeDecorator(DirectiveAnnotation);
-
-/* from view */
-export var View = makeDecorator(ViewAnnotation);
-
-/* from visibility */
-export var Ancestor = makeParamDecorator(AncestorAnnotation);
-export var Parent = makeParamDecorator(ParentAnnotation);
-
-/* from di */
-export var Attribute = makeParamDecorator(AttributeAnnotation);
-export var Query = makeParamDecorator(QueryAnnotation);

@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {BaseException} from 'angular2/src/facade/lang';

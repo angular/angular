@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {XHR} from './xhr';
 

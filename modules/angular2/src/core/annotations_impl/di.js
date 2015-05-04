@@ -1,5 +1,5 @@
 import {CONST} from 'angular2/src/facade/lang';
-import {DependencyAnnotation} from 'angular2/di';
+import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 
 /**
  * Specifies that a constant attribute value should be injected.

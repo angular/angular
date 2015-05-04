@@ -1,4 +1,5 @@
-import {Injectable, Injector} from 'angular2/di';
+import {Injector} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {Directive, Component} from '../annotations_impl/annotations';
 import {DirectiveMetadata} from './directive_metadata';

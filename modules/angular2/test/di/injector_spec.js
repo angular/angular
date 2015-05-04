@@ -1,6 +1,8 @@
 import {isBlank, BaseException} from 'angular2/src/facade/lang';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Injector, Inject, InjectLazy, Optional, bind, ResolvedBinding} from 'angular2/di';
+import {Injector, bind, ResolvedBinding} from 'angular2/di';
+import {Optional, Inject, InjectLazy} from 'angular2/src/di/annotations_impl';
+
 
 class Engine {
 }

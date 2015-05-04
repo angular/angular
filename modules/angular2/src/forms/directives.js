@@ -1,7 +1,7 @@
 import {Directive, onChange} from 'angular2/src/core/annotations_impl/annotations';
 import {Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {Optional} from 'angular2/di';
+import {Optional} from 'angular2/src/di/annotations_impl';
 import {Renderer} from 'angular2/src/render/api';
 import {isPresent, isString} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';

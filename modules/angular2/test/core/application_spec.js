@@ -16,7 +16,8 @@ import {Component, Directive} from 'angular2/src/core/annotations_impl/annotatio
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, Inject} from 'angular2/di';
+import {bind} from 'angular2/di';
+import {Inject} from 'angular2/src/di/annotations_impl';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';

@@ -1,4 +1,4 @@
-import {OpaqueToken, Inject, Injectable} from 'angular2/di';
+import {Inject, Injectable} from 'angular2/src/di/annotations_impl';
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 

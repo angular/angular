@@ -9,7 +9,8 @@ import {
   it,
   xit,
 } from 'angular2/test_lib';
-import {Injector, Inject, InjectPromise, bind, Key} from 'angular2/di';
+import {Injector, bind, Key} from 'angular2/di';
+import {Inject, InjectPromise} from 'angular2/src/di/annotations_impl';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 class UserList {

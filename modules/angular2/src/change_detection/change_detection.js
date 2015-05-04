@@ -8,9 +8,8 @@ import {BindingRecord} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector} from './interfaces';
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {List} from 'angular2/src/facade/collection';
-
 
 /**
  * Structural diffing for `Object`s and `Map`s.

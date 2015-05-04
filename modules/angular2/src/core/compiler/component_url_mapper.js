@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {Type, isPresent} from 'angular2/src/facade/lang';
 import {Map, MapWrapper} from 'angular2/src/facade/collection';
 

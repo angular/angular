@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {List, ListWrapper, SetWrapper} from "angular2/src/facade/collection";
 import {int, NumberWrapper, StringJoiner, StringWrapper} from "angular2/src/facade/lang";
 

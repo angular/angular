@@ -1,4 +1,4 @@
-import {Injector, bind, OpaqueToken, Optional} from 'angular2/di';
+import {Injector, bind, OpaqueToken} from 'angular2/di';
 import {NumberWrapper, Type, isBlank, isPresent, BaseException,
     assertionsEnabled, print, stringify} from 'angular2/src/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';

@@ -9,4 +9,4 @@
  *
  */
 export * from './src/core/annotations/annotations';
-export * from './src/core/decorators/decorators';
+export * from './src/core/annotations/decorators';

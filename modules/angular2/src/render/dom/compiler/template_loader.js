@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {isBlank, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, StringMapWrapper, StringMap} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';

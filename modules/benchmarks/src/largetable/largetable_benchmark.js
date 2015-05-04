@@ -18,7 +18,8 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {Inject, bind} from 'angular2/di';
+import {bind} from 'angular2/di';
+import {Inject} from 'angular2/src/di/annotations_impl';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';

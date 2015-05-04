@@ -1,4 +1,5 @@
-import {Injectable, Injector, Binding} from 'angular2/di';
+import {Injector, Binding} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';

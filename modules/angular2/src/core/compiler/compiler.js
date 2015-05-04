@@ -1,4 +1,5 @@
-import {Injectable, Binding} from 'angular2/di';
+import {Binding} from 'angular2/di';
+import {Injectable} from 'angular2/src/di/annotations_impl';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
