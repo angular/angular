@@ -83,9 +83,7 @@ var CONFIG = {
 // clean
 
 gulp.task('build/clean.tools', function() {
-  if (rebuildTools && 'AngularBuilder' in global) {
-    del(path.join('dist', 'tools'));
-  };
+  del(path.join('dist', 'tools'));
 });
 
 gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
@@ -397,12 +395,10 @@ gulp.task('test.unit.tools/ci', function(done) {
 });
 
 
-gulp.task('test.unit.tools', function(done) {
-  rebuildTools = true;
-
+gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
   function buildAndTest() {
     runSequence(
-      'build.tools',
+      '!build.tools',
       'test.unit.tools/ci'
     );
   }
@@ -509,14 +505,15 @@ gulp.task('build.dart', function(done) {
 });
 
 
-var rebuildTools = false;
+// public task to build tools
+gulp.task('build.tools', ['build/clean.tools'], function(done) {
+  runSequence('!build.tools', done);
+});
 
-gulp.task('build.tools', ['build/clean.tools'], function() {
-  if (!rebuildTools && angularBuilder.rebuildNodeTree !== throwToolsBuildMissingError) {
-    return;
-  }
 
-  var tsResult = gulp.src('tools/**/*.ts')
+// private task to build tools
+gulp.task('!build.tools', function() {
+  var tsResult = gulp.src(['tools/**/*.ts'])
                      .pipe(sourcemaps.init())
                      .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter()}))
                      .on('error', function(error) {
