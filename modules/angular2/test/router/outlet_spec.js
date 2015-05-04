@@ -134,7 +134,7 @@ export function main() {
     it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
-        .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'alias': 'user'}))
+        .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'as': 'user'}))
         .then((_) => rtr.navigate('/a/b'))
         .then((_) => {
           view.detectChanges();

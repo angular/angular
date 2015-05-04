@@ -43,7 +43,7 @@ export class RouteRegistry {
       this.configFromComponent(component);
     });
 
-    recognizer.addConfig(config['path'], config, config['alias']);
+    recognizer.addConfig(config['path'], config, config['as']);
   }
 
   configFromComponent(component) {
