@@ -1,8 +1,10 @@
-<style>@import "angular2_material/src/components/grid_list/grid-list.css";</style>
-
 <style>
   md-grid-tile {
     background-color: lightblue;
+  }
+
+  md-grid-list {
+    min-height: 400px;
   }
 </style>
 
@@ -10,19 +12,29 @@
 
   <h2>grid-list demo</h2>
 
-  <md-grid-list cols="5" gutter-size="2em">
+  <md-grid-list cols="4" row-height="50px" gutter-size="2em">
 
-    <md-grid-tile cols="5">
-      Tile #1
-    </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="2"> Tile #1 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #2 </md-grid-tile>
+    <md-grid-tile rowspan="3" colspan="1"> Tile #3 </md-grid-tile>
+    <md-grid-tile rowspan="2" colspan="2"> Tile #4 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="3"> Tile #5 </md-grid-tile>
 
-    <md-grid-tile rowspan="2" colspan="2">
-      Tile #2
-    </md-grid-tile>
+  </md-grid-list>
 
-    <md-grid-tile [rowspan]="tile3RowSpan" [colspan]="tile3RowSpan">
-      Tile #3
-    </md-grid-tile>
+  <hr>
+
+
+
+  <md-grid-list cols="4" row-height="50px" gutter-size="2em">
+
+    <md-grid-tile rowspan="1" colspan="1"> Tile #1 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #2 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #3 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #4 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #5 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #6 </md-grid-tile>
+    <md-grid-tile rowspan="1" colspan="1"> Tile #7 </md-grid-tile>
 
   </md-grid-list>
 
