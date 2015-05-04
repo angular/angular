@@ -2,7 +2,7 @@
 'use strict';
 
 import {MultiCopy} from './../multi_copy';
-var destCopy = require('../broccoli-dest-copy');
+import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
 var glob = require('glob');
 var mergeTrees = require('broccoli-merge-trees');

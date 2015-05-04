@@ -4,9 +4,7 @@ import fs = require('fs');
 import path = require('path');
 
 
-export = TreeDiffer;
-
-class TreeDiffer {
+export class TreeDiffer {
   private fingerprints: {[key: string]: string} = Object.create(null);
   private nextFingerprints: {[key: string]: string} = Object.create(null);
   private rootDirName: string;
@@ -15,7 +13,7 @@ class TreeDiffer {
 
 
   public diffTree(): DiffResult {
-    let result = new DiffResult(this.rootDirName);
+    let result = new DirtyCheckingDiffResult(this.rootDirName);
     this.dirtyCheckPath(this.rootPath, result);
     this.detectDeletionsAndUpdateFingerprints(result);
     result.endTime = Date.now();
@@ -23,7 +21,7 @@ class TreeDiffer {
   }
 
 
-  private dirtyCheckPath(rootDir: string, result: DiffResult) {
+  private dirtyCheckPath(rootDir: string, result: DirtyCheckingDiffResult) {
     fs.readdirSync(rootDir).forEach((segment) => {
       let absolutePath = path.join(rootDir, segment);
       let pathStat = fs.statSync(absolutePath);
@@ -76,7 +74,15 @@ class TreeDiffer {
 }
 
 
-class DiffResult {
+export interface DiffResult {
+  changedPaths: string[];
+  removedPaths: string[];
+  log(verbose: boolean): void;
+  toString(): string;
+}
+
+
+class DirtyCheckingDiffResult {
   public filesChecked: number = 0;
   public directoriesChecked: number = 0;
   public changedPaths: string[] = [];

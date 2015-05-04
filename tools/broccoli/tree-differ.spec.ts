@@ -3,7 +3,7 @@
 
 let mockfs = require('mock-fs');
 import fs = require('fs');
-import TreeDiffer = require('./tree-differ');
+import {TreeDiffer} from './tree-differ';
 
 
 describe('TreeDiffer', () => {
