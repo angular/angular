@@ -374,10 +374,10 @@ gulp.task('test.unit.cjs/ci', function(done) {
 });
 
 
-gulp.task('test.unit.cjs', ['build/clean.js'], function (done) {
+gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (done) {
   function buildAndTest() {
     runSequence(
-      'build.js.cjs',
+      '!build.js.cjs',
       'test.unit.cjs/ci'
     );
   }
@@ -554,9 +554,20 @@ gulp.task('build.js.prod', ['build.tools'], function() {
 });
 
 
+/**
+ * public task
+ */
+gulp.task('build.js.cjs', ['build.tools'], function(done) {
+  runSequence('!build.js.cjs', done);
+});
+
+
 var firstBuildJsCjs = true;
 
-gulp.task('build.js.cjs', ['build.tools'], function() {
+/**
+ * private task
+ */
+gulp.task('!build.js.cjs', function() {
   return angularBuilder.rebuildNodeTree().then(function() {
     if (firstBuildJsCjs) {
       firstBuildJsCjs = false;
