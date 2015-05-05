@@ -7,9 +7,9 @@ authors:
 description: Angular 2 for Dart - a web framework for modern web apps
 homepage: <%= packageJson.homepage %>
 environment:
-  sdk: '>=1.9.0-dev.8.0'
+  sdk: '>=1.10.0 <2.0.0'
 dependencies:
-  analyzer: '^0.24.4'
+  analyzer: '>=0.24.4 <0.26.0'
   barback: '^0.15.2+2'
   code_transformers: '^0.2.8'
   dart_style: '^0.1.3'

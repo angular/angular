@@ -1,19 +1,19 @@
 name: examples
 environment:
-  sdk: '>=1.4.0'
+  sdk: '>=1.10.0 <2.0.0'
 dependencies:
   angular2: '^<%= packageJson.version %>'
   angular2_material: '^<%= packageJson.version %>'
-  browser: '>=0.10.0 <0.11.0'
+  browser: '^0.10.0'
+dev_dependencies:
+  guinness: '^0.1.17'
+  benchpress:
+    path: ../benchpress
 dependency_overrides:
   angular2:
     path: ../angular2
   angular2_material:
     path: ../angular2_material
-dev_dependencies:
-  guinness: ">=0.1.17 <0.2.0"
-  benchpress:
-    path: ../benchpress
 transformers:
 - angular2:
     entry_points:
