@@ -52,7 +52,7 @@ export class DomAdapter {
   createMouseEvent(eventType) {
     throw _abstract();
   }
-  createEvent(eventType) {
+  createEvent(eventType:string) {
     throw _abstract();
   }
   getInnerHTML(el) {

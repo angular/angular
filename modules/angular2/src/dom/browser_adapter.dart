@@ -134,7 +134,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
-  Event createEvent(eventType) => new Event(eventType, canBubble: true);
+  Event createEvent(String eventType) => new Event(eventType, canBubble: true);
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {

@@ -146,7 +146,7 @@ class Html5LibDomAdapter implements DomAdapter {
   setChecked(el, bool value) {
     throw 'not implemented';
   }
-  createTemplate(html) => createElement('template')..innerHtml = html;
+  createTemplate(String html) => createElement('template')..innerHtml = html;
   createElement(tagName, [doc]) {
     return new Element.tag(tagName);
   }

@@ -272,6 +272,6 @@ export class ControlGroupDirective {
  * @exportedAs angular2/forms
  */
 // todo(misko): rename to lover case as it is not a Type but a var.
-export var FormDirectives = [
+export var FormDirectives:List = [
   ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor
 ];

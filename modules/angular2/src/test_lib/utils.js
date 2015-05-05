@@ -9,7 +9,7 @@ export class Log {
     this._result = [];
   }
 
-  add(value) {
+  add(value):void {
     ListWrapper.push(this._result, value);
   }
 
@@ -19,16 +19,16 @@ export class Log {
     }
   }
 
-  result() {
+  result():string {
     return ListWrapper.join(this._result, "; ");
   }
 }
 
-export function viewRootNodes(view) {
+export function viewRootNodes(view):List {
   return view.render.delegate.rootNodes;
 }
 
-export function queryView(view, selector) {
+export function queryView(view, selector:string) {
   var rootNodes = viewRootNodes(view);
   for (var i = 0; i < rootNodes.length; ++i) {
     var res = DOM.querySelector(rootNodes[i], selector);
@@ -43,6 +43,6 @@ export function dispatchEvent(element, eventType) {
   DOM.dispatchEvent(element, DOM.createEvent(eventType));
 }
 
-export function el(html) {
+export function el(html:string) {
   return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
 }

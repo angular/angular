@@ -93,4 +93,4 @@ export class JitChangeDetection extends ChangeDetection {
   }
 }
 
-export var defaultPipeRegistry = new PipeRegistry(defaultPipes);
+export var defaultPipeRegistry:PipeRegistry = new PipeRegistry(defaultPipes);

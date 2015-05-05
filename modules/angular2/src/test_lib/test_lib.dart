@@ -26,20 +26,16 @@ bool _isCurrentTestAsync;
 bool _inIt = false;
 
 class AsyncTestCompleter {
-  Completer _completer;
+  final _completer = new Completer();
 
-  AsyncTestCompleter() {
-    _completer = new Completer();
-  }
-
-  done() {
+  void done() {
     _completer.complete();
   }
 
-  get future => _completer.future;
+  Future get future => _completer.future;
 }
 
-testSetup() {
+void testSetup() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   // beforeEach configuration:
   // - Priority 3: clear the bindings before each test,
@@ -125,7 +121,7 @@ class NotExpect extends gns.NotExpect {
   Function get _expect => gns.guinness.matchers.expect;
 }
 
-beforeEach(fn) {
+void beforeEach(fn) {
   if (fn is! FunctionWithParamTokens) fn = new FunctionWithParamTokens([], fn);
   gns.beforeEach(() {
     fn.execute(_injector);
@@ -144,7 +140,7 @@ beforeEach(fn) {
  *     bind(SomeToken).toValue(myValue),
  *   ]);
  */
-beforeEachBindings(fn) {
+void beforeEachBindings(Function fn) {
   gns.beforeEach(
       () {
         var bindings = fn();
@@ -154,7 +150,7 @@ beforeEachBindings(fn) {
   );
 }
 
-_it(gnsFn, name, fn) {
+void _it(gnsFn, name, fn) {
   if (fn is! FunctionWithParamTokens) fn = new FunctionWithParamTokens([], fn);
   gnsFn(name, () {
     _inIt = true;
@@ -165,20 +161,20 @@ _it(gnsFn, name, fn) {
 }
 
 
-it(name, fn) {
+void it(name, fn) {
   _it(gns.it, name, fn);
 }
 
-iit(name, fn) {
+void iit(name, fn) {
   _it(gns.iit, name, fn);
 }
 
-xit(name, fn) {
+void xit(name, fn) {
   _it(gns.xit, name, fn);
 }
 
 class SpyFunction extends gns.SpyFunction {
-  SpyFunction(name): super(name);
+  SpyFunction(String name): super(name);
 
   // TODO: vsavkin move to guinness
   andReturn(value) {
