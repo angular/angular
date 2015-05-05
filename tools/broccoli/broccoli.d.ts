@@ -51,6 +51,13 @@ interface BroccoliTree {
   inputTree?: BroccoliTree;
   inputTrees?: BroccoliTree[];
 
+  /**
+   * Description or name of the plugin used for reporting.
+   *
+   * If missing `tree.constructor.name` is usually used instead.
+   */
+  description?: string;
+
   rebuild(): (Promise<any>| void);
   cleanup(): void;
 }

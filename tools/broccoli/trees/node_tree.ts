@@ -1,6 +1,6 @@
 'use strict';
 
-var destCopy = require('../broccoli-dest-copy');
+import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var path = require('path');
@@ -8,7 +8,7 @@ var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 var ts2dart = require('../broccoli-ts2dart');
-var traceurCompiler = require('../traceur');
+import transpileWithTraceur from '../traceur/index';
 var TypescriptCompiler = require('../typescript');
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
@@ -27,16 +27,20 @@ module.exports = function makeNodeTree(destinationPath) {
     ]
   });
 
-  var nodeTree = traceurCompiler(modulesTree, '.js', '.map', {
-    sourceMaps: true,
-    annotations: true,      // parse annotations
-    types: true,            // parse types
-    script: false,          // parse as a module
-    memberVariables: true,  // parse class fields
-    typeAssertionModule: 'rtts_assert/rtts_assert',
-    // Don't use type assertions since this is partly transpiled by typescript
-    typeAssertions: false,
-    modules: 'commonjs'
+  var nodeTree = transpileWithTraceur(modulesTree, {
+    destExtension: '.js',
+    destSourceMapExtension: '.map',
+    traceurOptions: {
+      sourceMaps: true,
+      annotations: true,      // parse annotations
+      types: true,            // parse types
+      script: false,          // parse as a module
+      memberVariables: true,  // parse class fields
+      typeAssertionModule: 'rtts_assert/rtts_assert',
+      // Don't use type assertions since this is partly transpiled by typescript
+      typeAssertions: false,
+      modules: 'commonjs'
+    }
   });
 
   // Transform all tests to make them runnable in node
