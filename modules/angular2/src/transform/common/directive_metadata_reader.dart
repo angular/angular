@@ -9,6 +9,9 @@ import 'parser.dart';
 DirectiveMetadata readDirectiveMetadata(RegisteredType t) {
   var visitor = new _DirectiveMetadataVisitor();
   t.annotations.accept(visitor);
+  if (visitor.meta != null) {
+    visitor.meta.id = '${t.typeName}';
+  }
   return visitor.meta;
 }
 

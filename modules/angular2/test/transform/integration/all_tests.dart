@@ -57,6 +57,8 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'simple_annotation_files/expected/bar.ng_deps.dart',
+      'a|web/bar.ng_meta.json':
+          'simple_annotation_files/expected/bar.ng_meta.json',
       'a|web/index.ng_deps.dart':
           'simple_annotation_files/expected/index.ng_deps.dart'
     }),

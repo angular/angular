@@ -1,0 +1,14 @@
+{
+  "HelloCmp":
+  {
+    "id":"HelloCmp",
+    "selector":"hello-app",
+    "compileChildren":true,
+    "hostListeners":{},
+    "hostProperties":{},
+    "properties":{},
+    "readAttributes":[],
+    "type":1,
+    "version":1
+  }
+}

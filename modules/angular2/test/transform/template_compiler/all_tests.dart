@@ -58,6 +58,32 @@ void allTests() {
     var output = await processTemplates(reader, new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
+
+  it('should parse `View` directives with a single dependency.', () async {
+    var inputPath = 'template_compiler/one_directive_files/hello.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/one_directive_files/expected/hello.ng_deps.dart');
+
+    var output = await processTemplates(reader, new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it('should parse `View` directives with a single prefixed dependency.',
+      () async {
+    var inputPath = 'template_compiler/with_prefix_files/hello.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/with_prefix_files/expected/hello.ng_deps.dart');
+
+    var output = await processTemplates(reader, new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+
+    inputPath = 'template_compiler/with_prefix_files/goodbye.ng_deps.dart';
+    expected = readFile(
+        'template_compiler/with_prefix_files/expected/goodbye.ng_deps.dart');
+
+    output = await processTemplates(reader, new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
 }
 
 void _formatThenExpectEquals(String actual, String expected) {

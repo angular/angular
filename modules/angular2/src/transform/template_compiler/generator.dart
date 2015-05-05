@@ -2,24 +2,22 @@ library angular2.transform.template_compiler.generator;
 
 import 'dart:async';
 
-import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
 import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/render/dom/compiler/compile_pipeline.dart';
+import 'package:angular2/src/render/dom/compiler/compiler.dart';
 import 'package:angular2/src/render/dom/compiler/template_loader.dart';
 import "package:angular2/src/services/xhr.dart" show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/parser.dart';
 import 'package:angular2/src/transform/common/property_utils.dart' as prop;
 import 'package:barback/barback.dart';
 
 import 'compile_step_factory.dart';
 import 'recording_reflection_capabilities.dart';
+import 'view_definition_creator.dart';
 import 'xhr_impl.dart';
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
@@ -28,42 +26,40 @@ import 'xhr_impl.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
-  var parser = new Parser(reader);
-  NgDeps ngDeps = await parser.parse(entryPoint);
+  var viewDefResults = await createViewDefinitions(reader, entryPoint);
   var extractor = new _TemplateExtractor(new XhrImpl(reader, entryPoint));
 
   var registrations = new StringBuffer();
-  for (var rType in ngDeps.registeredTypes) {
-    var values = await extractor.extractTemplates(rType);
+  for (var viewDef in viewDefResults.viewDefinitions.values) {
+    var values = await extractor.extractTemplates(viewDef);
     if (values == null) continue;
-    var calls = _generateGetters('${rType.typeName}', values.getterNames);
+    var calls = _generateGetters(values.getterNames);
     if (calls.isNotEmpty) {
       registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'
           '({${calls.join(', ')}})');
     }
-    calls = _generateSetters('${rType.typeName}', values.setterNames);
+    calls = _generateSetters(values.setterNames);
     if (calls.isNotEmpty) {
       registrations.write('..${REGISTER_SETTERS_METHOD_NAME}'
           '({${calls.join(', ')}})');
     }
-    calls = _generateMethods('${rType.typeName}', values.methodNames);
+    calls = _generateMethods(values.methodNames);
     if (calls.isNotEmpty) {
       registrations.write('..${REGISTER_METHODS_METHOD_NAME}'
           '({${calls.join(', ')}})');
     }
   }
 
-  var code = ngDeps.code;
+  var code = viewDefResults.ngDeps.code;
   if (registrations.length == 0) return code;
-  var codeInjectIdx = ngDeps.registeredTypes.last.registerMethod.end;
+  var codeInjectIdx =
+      viewDefResults.ngDeps.registeredTypes.last.registerMethod.end;
   return '${code.substring(0, codeInjectIdx)}'
       '${registrations}'
       '${code.substring(codeInjectIdx)}';
 }
 
-Iterable<String> _generateGetters(
-    String typeName, Iterable<String> getterNames) {
-  // TODO(kegluneq): Include `typeName` where possible.
+Iterable<String> _generateGetters(Iterable<String> getterNames) {
   return getterNames.map((getterName) {
     if (!prop.isValid(getterName)) {
       // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
@@ -74,8 +70,7 @@ Iterable<String> _generateGetters(
   });
 }
 
-Iterable<String> _generateSetters(
-    String typeName, Iterable<String> setterName) {
+Iterable<String> _generateSetters(Iterable<String> setterName) {
   return setterName.map((setterName) {
     if (!prop.isValid(setterName)) {
       // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
@@ -87,8 +82,7 @@ Iterable<String> _generateSetters(
   });
 }
 
-Iterable<String> _generateMethods(
-    String typeName, Iterable<String> methodNames) {
+Iterable<String> _generateMethods(Iterable<String> methodNames) {
   return methodNames.map((methodName) {
     if (!prop.isValid(methodName)) {
       // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
@@ -104,85 +98,25 @@ Iterable<String> _generateMethods(
 /// template code if necessary, and determines what values will be
 /// reflectively accessed from that template.
 class _TemplateExtractor {
-  final CompileStepFactory _factory;
-  final _TemplateExtractVisitor _visitor = new _TemplateExtractVisitor();
-  final TemplateLoader _loader;
+  final RenderCompiler _compiler;
 
-  _TemplateExtractor(XHR xhr)
-      : _loader = new TemplateLoader(xhr, new UrlResolver()),
-        _factory = new CompileStepFactory(new ng.Parser(new ng.Lexer()));
+  _TemplateExtractor(XHR xhr) : _compiler = new DomCompiler(
+          new CompileStepFactory(new ng.Parser(new ng.Lexer())),
+          new TemplateLoader(xhr, new UrlResolver()));
 
-  Future<RecordingReflectionCapabilities> extractTemplates(RegisteredType t) {
-    return _processTemplate(_processRegisteredType(t));
-  }
-
-  Future<RecordingReflectionCapabilities> _processTemplate(
+  Future<RecordingReflectionCapabilities> extractTemplates(
       ViewDefinition viewDef) async {
     // Check for "imperative views".
     if (viewDef.template == null && viewDef.absUrl == null) return null;
 
-    var recordingCapabilities = new RecordingReflectionCapabilities();
     var savedReflectionCapabilities = reflector.reflectionCapabilities;
+    var recordingCapabilities = new RecordingReflectionCapabilities();
     reflector.reflectionCapabilities = recordingCapabilities;
 
     // TODO(kegluneq): Rewrite url to inline `template` where possible.
-    // See [https://github.com/angular/angular/issues/1035].
-    var domNode = await _loader.load(viewDef);
-
-    new CompilePipeline(_factory.createSteps(viewDef, [])).process(
-        domNode, '$domNode');
+    await _compiler.compile(viewDef);
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
     return recordingCapabilities;
-  }
-
-  ViewDefinition _processRegisteredType(RegisteredType t) {
-    _visitor.reset();
-    t.annotations.accept(_visitor);
-    return _visitor.viewDef;
-  }
-}
-
-/// Visitor responsible for processing the `annotations` property of a
-/// {@link RegisterType} object and pulling out template information.
-class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
-  ViewDefinition viewDef = new ViewDefinition();
-
-  void reset() {
-    viewDef = new ViewDefinition();
-  }
-
-  @override
-  Object visitNamedExpression(NamedExpression node) {
-    // TODO(kegluneq): Remove this limitation.
-    if (node.name is! Label || node.name.label is! SimpleIdentifier) {
-      logger.error(
-          'Angular 2 currently only supports simple identifiers in directives.'
-          ' Source: ${node}');
-      return null;
-    }
-    var keyString = '${node.name.label}';
-    if (keyString == 'template' || keyString == 'templateUrl') {
-      if (node.expression is! SimpleStringLiteral) {
-        logger.error(
-            'Angular 2 currently only supports string literals in directives.'
-            ' Source: ${node}');
-        return null;
-      }
-      var valueString = stringLiteralToString(node.expression);
-      if (keyString == 'templateUrl') {
-        if (viewDef.absUrl != null) {
-          logger.error(
-              'Found multiple values for "templateUrl". Source: ${node}');
-        }
-        viewDef.absUrl = valueString;
-      } else {
-        if (viewDef.template != null) {
-          logger.error('Found multiple values for "template". Source: ${node}');
-        }
-        viewDef.template = valueString;
-      }
-    }
-    return null;
   }
 }
