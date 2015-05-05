@@ -19,7 +19,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     'tabindex': 'tabindex',
     'role': 'attr.role',
     'checked': 'attr.aria-checked',
-    'disabled_': 'attr.aria-disabled'
+    'disabled': 'attr.aria-disabled'
   }
 })
 @View({
@@ -31,7 +31,7 @@ export class MdCheckbox {
   checked: boolean;
 
   /** Whether this checkbox is disabled. */
-  disabled_: boolean;
+  _disabled: boolean;
 
   /** Setter for `role` attribute. */
   role: string;
@@ -43,14 +43,15 @@ export class MdCheckbox {
     this.role = 'checkbox';
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
+    this._disabled = false;
   }
 
   get disabled() {
-    return this.disabled_;
+    return this._disabled;
   }
 
   set disabled(value) {
-    this.disabled_ = isPresent(value) && value !== false;
+    this._disabled = isPresent(value) && value !== false;
   }
 
   onKeydown(event: KeyboardEvent) {

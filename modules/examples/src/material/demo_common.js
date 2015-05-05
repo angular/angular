@@ -48,10 +48,17 @@ export class DemoUrlResolver extends UrlResolver {
             return `${baseUrl}/${url}`;
         }
 
-        if (this.isInPubServe) {
-            return `/packages/${url}`;
+        // Whether the `examples/` dir is being directly served (as the server root).
+        // For cases when this is not true AND we're in pub-serve, `examples/` needs to be
+        // prepended to the URL.
+        var isDirectlyServingExamplesDir = !StringWrapper.contains(baseUrl, 'examples/');
+
+        if (this.isInPubServe && isDirectlyServingExamplesDir) {
+          return `/packages/${url}`;
+        } else if (this.isInPubServe) {
+          return `/examples/packages/${url}`;
         } else {
-            return `/${url}`;
+          return `/${url}`;
         }
     }
 }

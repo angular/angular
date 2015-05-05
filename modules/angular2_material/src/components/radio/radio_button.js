@@ -77,8 +77,8 @@ export class MdRadioButton {
 
   constructor(
       @Optional() @Parent() radioGroup: MdRadioGroup,
-      @Attribute('id') id: string,
-      @Attribute('tabindex') tabindex: string,
+      @Attribute('id') id: String,
+      @Attribute('tabindex') tabindex: String,
       radioDispatcher: MdRadioDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
@@ -213,8 +213,8 @@ export class MdRadioGroup {
   role: string;
 
   constructor(
-      @Attribute('tabindex') tabindex: string,
-      @Attribute('disabled') disabled: string,
+      @Attribute('tabindex') tabindex: String,
+      @Attribute('disabled') disabled: String,
       radioDispatcher: MdRadioDispatcher) {
     this.name_ = `md-radio-group-${_uniqueIdCounter++}`;
     this.radios_ = [];
