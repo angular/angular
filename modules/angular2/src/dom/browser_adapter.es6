@@ -372,4 +372,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return document.body;
     }
   }
+  getHistory() {
+    return window.history;
+  }
+  getLocation() {
+    return window.location;
+  }
 }

@@ -1,4 +1,4 @@
-import {global} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 export class Location {
@@ -7,9 +7,9 @@ export class Location {
   _history;
   constructor() {
     this._subject = new EventEmitter();
-    this._location = global.location;
-    this._history = global.history;
-    global.addEventListener('popstate', (_) => this._onPopState(_), false);
+    this._location = DOM.getLocation();
+    this._history = DOM.getHistory();
+    DOM.getGlobalEventTarget('window').addEventListener('popstate', (_) => this._onPopState(_), false);
   }
 
   _onPopState(_) {

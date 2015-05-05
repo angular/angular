@@ -283,4 +283,10 @@ export class DomAdapter {
   getGlobalEventTarget(target:string) {
     throw _abstract();
   }
+  getHistory() {
+    throw _abstract();
+  }
+  getLocation() {
+    throw _abstract();
+  }
 }

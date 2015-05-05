@@ -523,6 +523,12 @@ export class Parse5DomAdapter extends DomAdapter {
       return this.defaultDoc().body;
     }
   }
+  getHistory() {
+    throw 'not implemented';
+  }
+  getLocation() {
+    throw 'not implemented';
+  }
 }
 
 //TODO: build a proper list, this one is all the keys of a HTMLInputElement

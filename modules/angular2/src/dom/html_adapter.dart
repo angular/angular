@@ -281,4 +281,10 @@ class Html5LibDomAdapter implements DomAdapter {
   bool supportsNativeShadowDOM() {
     throw 'not implemented';
   }
+  getHistory() {
+    throw 'not implemented';
+  }
+  getLocation() {
+    throw 'not implemented';
+  }
 }
