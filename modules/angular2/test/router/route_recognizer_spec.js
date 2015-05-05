@@ -30,6 +30,17 @@ export function main() {
       });
     });
 
+    it('should work with leading slash', () => {
+      recognizer.addConfig('/', handler);
+
+      expect(recognizer.recognize('/')[0]).toEqual({
+        'handler': { 'components': { 'a': 'b' } },
+        'params': {},
+        'matchedUrl': '/',
+        'unmatchedUrl': ''
+      });
+    });
+
     it('should work with a dynamic segment', () => {
       recognizer.addConfig('/user/:name', handler);
       expect(recognizer.recognize('/user/brian')[0]).toEqual({

@@ -43,7 +43,7 @@ export class RouteRecognizer {
         StringMapWrapper.set(solution, 'params', pathRecognizer.parseParams(url));
 
         //TODO(btford): determine a good generic way to deal with terminal matches
-        if (url === '/') {
+        if (url == '/') {
           StringMapWrapper.set(solution, 'matchedUrl', '/');
           StringMapWrapper.set(solution, 'unmatchedUrl', '');
         } else {
