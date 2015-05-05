@@ -616,8 +616,6 @@ gulp.task('bundle.js.dev', ['build.js.dev'], function() {
       { sourceMaps: true });
 });
 
-// TODO: remove redundancies with router and angular bundles
-// development router build
 gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths =
@@ -626,8 +624,8 @@ gulp.task('router.bundle.js.dev', ['build.js.dev'], function() {
     });
   return bundler.bundle(
     devBundleConfig,
-    'angular2/router',
-    './dist/build/router.dev.js',
+    'angular2/router - angular2/angular2',
+    './dist/bundle/router.dev.js',
     { sourceMaps: true });
 });
 
@@ -647,7 +645,7 @@ gulp.task('bundle.js.sfx.dev', ['build.js.dev'], function() {
       'angular2/angular2_sfx',
       './dist/build/angular2.sfx.dev.js',
       { sourceMaps: true },
-      /* self-exectuting */ true);
+      /* self-executing */ true);
 });
 
 gulp.task('bundle.js.prod.deps', ['bundle.js.prod'], function() {
@@ -669,14 +667,12 @@ var JS_DEV_DEPS = ['node_modules/zone.js/zone.js',
 gulp.task('bundle.js.dev.deps', ['bundle.js.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.dev.js']), 'angular2.dev.js')
       .pipe(insert.append('\nSystem.config({"paths":{"*":"*.js","angular2/*":"angular2/*"}});\n'))
-      .pipe(insert.append('\nzone = zone.fork(Zone.longStackTraceZone);\n'))
       .pipe(gulp.dest('dist/bundle'));
 });
 
 gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
                         'angular2.sfx.dev.js')
-      .pipe(insert.append('\nzone = zone.fork(Zone.longStackTraceZone);\n'))
       .pipe(gulp.dest('dist/bundle'));
 });
 
