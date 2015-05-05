@@ -20,7 +20,7 @@ import {Location} from './src/router/location';
 import {appComponentAnnotatedTypeToken} from './src/core/application_tokens';
 import {bind} from './di';
 
-export var routerInjectables = [
+export var routerInjectables:List = [
   RouteRegistry,
   Pipeline,
   Location,

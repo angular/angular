@@ -118,7 +118,7 @@ function _getAppBindings() {
   ];
 }
 
-export function createTestInjector(bindings: List) {
+export function createTestInjector(bindings: List):Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootBindings());
   return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
@@ -153,7 +153,7 @@ export function createTestInjector(bindings: List) {
  * @return {FunctionWithParamTokens}
  * @exportedAs angular2/test
  */
-export function inject(tokens: List, fn: Function) {
+export function inject(tokens: List, fn: Function):FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn);
 }
 
@@ -166,7 +166,7 @@ export class FunctionWithParamTokens {
     this._fn = fn;
   }
 
-  execute(injector: Injector) {
+  execute(injector: Injector):void {
     var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
     FunctionWrapper.apply(this._fn, params);
   }
