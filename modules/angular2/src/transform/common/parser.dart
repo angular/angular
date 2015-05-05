@@ -68,13 +68,20 @@ class NgDeps {
   final List<ImportDirective> imports = [];
   final List<ExportDirective> exports = [];
   final List<RegisteredType> registeredTypes = [];
-  FunctionDeclaration setupMethod;
+  LibraryDirective lib = null;
+  FunctionDeclaration setupMethod = null;
 
   NgDeps(this.code);
 }
 
 class _ParseNgDepsVisitor extends Object with RecursiveAstVisitor<Object> {
   NgDeps ngDeps = null;
+
+  @override
+  Object visitLibraryDirective(LibraryDirective node) {
+    ngDeps.lib = node;
+    return null;
+  }
 
   @override
   Object visitImportDirective(ImportDirective node) {

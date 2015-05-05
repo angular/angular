@@ -83,7 +83,16 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   String nodeName(node) {
-    throw 'not implemented';
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        return (node as Element).localName;
+      case Node.TEXT_NODE:
+        return '#text';
+      default:
+        throw 'not implemented for type ${node.nodeType}. '
+            'See http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1950641247'
+            ' for node types definitions.';
+    }
   }
   String nodeValue(node) => node.data;
   String type(node) {
@@ -179,9 +188,8 @@ class Html5LibDomAdapter implements DomAdapter {
   getElementsByTagName(element, String name) {
     throw 'not implemented';
   }
-  List classList(element) {
-    throw 'not implemented';
-  }
+  List classList(element) => element.classes.toList();
+
   addClass(element, String classname) {
     element.classes.add(classname);
   }
