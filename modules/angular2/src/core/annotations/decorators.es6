@@ -9,7 +9,7 @@ import {makeDecorator, makeParamDecorator} from '../../util/decorators';
 
 /* from annotations */
 export var Component = makeDecorator(ComponentAnnotation);
-export var Decorator = makeDecorator(DirectiveAnnotation);
+export var Directive = makeDecorator(DirectiveAnnotation);
 
 /* from view */
 export var View = makeDecorator(ViewAnnotation);
