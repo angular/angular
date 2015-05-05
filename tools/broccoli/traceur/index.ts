@@ -44,9 +44,12 @@ class DiffingTraceurCompiler implements DiffingBroccoliPlugin {
     });
 
     treeDiff.removedPaths.forEach((removedFilePath) => {
-      var destFilepath = removedFilePath.replace(/\.\w+$/, this.options.destExtension);
-      var absoluteOuputFilePath = path.join(this.cachePath, destFilepath);
-      fs.unlinkSync(absoluteOuputFilePath);
+      var extension = path.extname(removedFilePath).toLowerCase();
+      if (extension === '.js' || extension === '.es6' || extension === '.cjs') {
+        var destFilepath = removedFilePath.replace(/\.\w+$/, this.options.destExtension);
+        var absoluteOuputFilePath = path.join(this.cachePath, destFilepath);
+        fs.unlinkSync(absoluteOuputFilePath);
+      }
     });
   }
 }
