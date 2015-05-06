@@ -56,7 +56,7 @@ export class ReflectionCapabilities {
       } else {
         result[i] = [];
       }
-      if (isPresent(paramAnnotations[i])) {
+      if (isPresent(paramAnnotations) && isPresent(paramAnnotations[i])) {
         result[i] = result[i].concat(paramAnnotations[i]);
       }
     }
