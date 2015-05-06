@@ -11,9 +11,11 @@ var encoder = new Encoder('entity');
 
 /**
  * @dgService renderMarkdown
+ *
  * @description
  * Render the markdown in the given string as HTML.
  */
+
 module.exports = function renderMarkdown(trimIndentation) {
 
   var renderer = new marked.Renderer();
@@ -30,9 +32,7 @@ module.exports = function renderMarkdown(trimIndentation) {
       cssClasses.push(this.options.langPrefix + escape(lang, true));
     }
 
-    return 'pre(class="' + cssClasses.join(' ') + '")\n'
-            + indentString('code.\n', ' ', 2)
-            + trimmedCode;
+    return 'pre(class="' + cssClasses.join(' ') + '")\n' + indentString('code.\n', ' ', 2) + trimmedCode;
   };
 
   renderer.heading = function (text, level, raw) {
