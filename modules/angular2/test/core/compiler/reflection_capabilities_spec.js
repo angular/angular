@@ -25,6 +25,8 @@ export function main() {
   }
 
   function assertTestClassParameters(parameters) {
+    expect(parameters.length).toBe(4);
+
     expect(parameters[0].length).toBe(2);
     expect(parameters[0][0]).toEqual(P1);
     expect(parameters[0][1]).toBeAnInstanceOf(ParamDec);
@@ -48,20 +50,30 @@ export function main() {
       assertTestClassParameters(rc.parameters(TestClass));
     });
 
-    // Mocking in the tests below is needed because the test runs through Traceur.
-    // After the switch to TS the setup will have to change, where the direct key
-    // access will be mocked, and the tests below will be direct.
-    it('can read out class annotations though Reflect APIs', () => {
-      if (IS_DARTIUM) return;
-      mockReflect(mockDataForTestClassDec, TestClassDec);
-      assertTestClassAnnotations(rc.annotations(TestClassDec));
+    it('can read out parameter annotations through parameters key for types only class', () => {
+      expect(rc.parameters(TestClassTypesOnly)).toEqual([[P1], [P2]]);
     });
 
-    it('can read out parameter annotations though Reflect APIs', () => {
-      if (IS_DARTIUM) return;
-      mockReflect(mockDataForTestClassDec, TestClassDec);
-      assertTestClassParameters(rc.parameters(TestClassDec));
-    });
+
+    if (!IS_DARTIUM) {
+      // Mocking in the tests below is needed because the test runs through Traceur.
+      // After the switch to TS the setup will have to change, where the direct key
+      // access will be mocked, and the tests below will be direct.
+      it('can read out class annotations though Reflect APIs', () => {
+        mockReflect(mockDataForTestClassDec, TestClassDec);
+        assertTestClassAnnotations(rc.annotations(TestClassDec));
+      });
+
+      it('can read out parameter annotations though Reflect APIs', () => {
+        mockReflect(mockDataForTestClassDec, TestClassDec);
+        assertTestClassParameters(rc.parameters(TestClassDec));
+      });
+
+      it('can read out parameter annotations though Reflect APIs for types only class', () => {
+        mockReflect(mockDataForTestClassTypesOnly, TestClassTypesOnlyDec);
+        expect(rc.parameters(TestClassTypesOnlyDec)).toEqual([[P1], [P2]]);
+      });
+    }
   });
 }
 
@@ -97,3 +109,16 @@ var mockDataForTestClassDec = {
   'design:paramtypes': [P1, P2, Object, Object]
 };
 class TestClassDec {}
+
+
+class TestClassTypesOnly {
+  constructor(a: P1, b: P2) {}
+}
+
+// Mocking the data stored in global.Reflect as if TS was compiling TestClass above.
+var mockDataForTestClassTypesOnly = {
+  'annotations': null,
+  'parameters': null,
+  'design:paramtypes': [P1, P2]
+};
+class TestClassTypesOnlyDec {}
