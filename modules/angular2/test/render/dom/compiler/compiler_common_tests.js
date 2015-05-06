@@ -16,7 +16,7 @@ import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src
 import {Type, isBlank, stringify, isPresent} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
-import {Compiler, CompilerCache} from 'angular2/src/render/dom/compiler/compiler';
+import {DomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {ProtoViewDto, ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step'
@@ -27,7 +27,7 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
 export function runCompilerCommonTests() {
-  describe('compiler', function() {
+  describe('DomCompiler', function() {
     var mockStepFactory;
 
     function createCompiler(processClosure, urlData = null) {
@@ -36,7 +36,7 @@ export function runCompilerCommonTests() {
       }
       var tplLoader =  new FakeTemplateLoader(urlData);
       mockStepFactory = new MockStepFactory([new MockStep(processClosure)]);
-      return new Compiler(mockStepFactory, tplLoader);
+      return new DomCompiler(mockStepFactory, tplLoader);
     }
 
     it('should run the steps and build the AppProtoView of the root element', inject([AsyncTestCompleter], (async) => {

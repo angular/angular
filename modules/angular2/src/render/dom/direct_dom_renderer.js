@@ -1,6 +1,5 @@
 import {Injectable} from 'angular2/src/di/annotations_impl';
 
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 
@@ -9,9 +8,7 @@ import {RenderView} from './view/view';
 import {RenderProtoView} from './view/proto_view';
 import {ViewFactory} from './view/view_factory';
 import {RenderViewHydrator} from './view/view_hydrator';
-import {Compiler} from './compiler/compiler';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
-import {ProtoViewBuilder} from './view/proto_view_builder';
 import {ViewContainer} from './view/view_container';
 
 function _resolveViewContainer(vc:api.RenderViewContainerRef) {
@@ -66,40 +63,16 @@ export class DirectDomViewRef extends api.RenderViewRef {
 
 @Injectable()
 export class DirectDomRenderer extends api.Renderer {
-  _compiler: Compiler;
   _viewFactory: ViewFactory;
   _viewHydrator: RenderViewHydrator;
   _shadowDomStrategy: ShadowDomStrategy;
 
   constructor(
-      compiler: Compiler, viewFactory: ViewFactory, viewHydrator: RenderViewHydrator, shadowDomStrategy: ShadowDomStrategy) {
+      viewFactory: ViewFactory, viewHydrator: RenderViewHydrator, shadowDomStrategy: ShadowDomStrategy) {
     super();
-    this._compiler = compiler;
     this._viewFactory = viewFactory;
     this._viewHydrator = viewHydrator;
     this._shadowDomStrategy = shadowDomStrategy;
-  }
-
-  createHostProtoView(directiveMetadata:api.DirectiveMetadata):Promise<api.ProtoViewDto> {
-    return this._compiler.compileHost(directiveMetadata);
-  }
-
-  createImperativeComponentProtoView(rendererId):Promise<api.ProtoViewDto> {
-    var protoViewBuilder = new ProtoViewBuilder(null);
-    protoViewBuilder.setImperativeRendererId(rendererId);
-    return PromiseWrapper.resolve(protoViewBuilder.build());
-  }
-
-  compile(view:api.ViewDefinition):Promise<api.ProtoViewDto> {
-    // Note: compiler already uses a DirectDomProtoViewRef, so we don't
-    // need to do anything here
-    return this._compiler.compile(view);
-  }
-
-  mergeChildComponentProtoViews(protoViewRef:api.RenderProtoViewRef, protoViewRefs:List<api.RenderProtoViewRef>) {
-    _resolveProtoView(protoViewRef).mergeChildComponentProtoViews(
-      ListWrapper.map(protoViewRefs, _resolveProtoView)
-    );
   }
 
   createViewInContainer(vcRef:api.RenderViewContainerRef, atIndex:number, protoViewRef:api.RenderProtoViewRef):List<api.RenderViewRef> {

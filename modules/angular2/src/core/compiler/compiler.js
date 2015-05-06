@@ -54,7 +54,7 @@ export class Compiler {
   _componentUrlMapper: ComponentUrlMapper;
   _urlResolver: UrlResolver;
   _appUrl: string;
-  _renderer: renderApi.Renderer;
+  _render: renderApi.RenderCompiler;
   _protoViewFactory:ProtoViewFactory;
 
   constructor(reader: DirectiveMetadataReader,
@@ -62,7 +62,7 @@ export class Compiler {
               templateResolver: TemplateResolver,
               componentUrlMapper: ComponentUrlMapper,
               urlResolver: UrlResolver,
-              renderer: renderApi.Renderer,
+              render: renderApi.RenderCompiler,
               protoViewFactory: ProtoViewFactory) {
     this._reader = reader;
     this._compilerCache = cache;
@@ -71,7 +71,7 @@ export class Compiler {
     this._componentUrlMapper = componentUrlMapper;
     this._urlResolver = urlResolver;
     this._appUrl = urlResolver.resolve(null, './');
-    this._renderer = renderer;
+    this._render = render;
     this._protoViewFactory = protoViewFactory;
   }
 
@@ -94,7 +94,7 @@ export class Compiler {
     this._assertTypeIsComponent(componentBinding);
 
     var directiveMetadata = Compiler.buildRenderDirective(componentBinding);
-    return this._renderer.createHostProtoView(directiveMetadata).then( (hostRenderPv) => {
+    return this._render.compileHost(directiveMetadata).then( (hostRenderPv) => {
       return this._compileNestedProtoViews(null, null, hostRenderPv, [componentBinding], true);
     }).then( (appProtoView) => {
       return new ProtoViewRef(appProtoView);
@@ -135,7 +135,7 @@ export class Compiler {
     }
     if (isPresent(template.renderer)) {
       var directives = [];
-      pvPromise = this._renderer.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
+      pvPromise = this._render.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
         return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
       });
     } else {
@@ -144,7 +144,7 @@ export class Compiler {
         (directive) => this._bindDirective(directive)
       );
       var renderTemplate = this._buildRenderTemplate(component, template, directives);
-      pvPromise = this._renderer.compile(renderTemplate).then( (renderPv) => {
+      pvPromise = this._render.compile(renderTemplate).then( (renderPv) => {
         return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
       });
     }
@@ -194,7 +194,7 @@ export class Compiler {
           ListWrapper.push(childComponentRenderPvRefs, isPresent(componentPv) ? componentPv.render : null);
         }
       });
-      this._renderer.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
+      this._render.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
       return protoView;
     };
     if (nestedPVPromises.length > 0) {
@@ -213,7 +213,7 @@ export class Compiler {
       templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
     } else if (isPresent(view.template)) {
       // Note: If we have an inline template, we also need to send
-      // the url for the component to the renderer so that it
+      // the url for the component to the render so that it
       // is able to resolve urls in stylesheets.
       templateAbsUrl = componentUrl;
     }

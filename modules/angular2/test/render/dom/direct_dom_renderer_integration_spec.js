@@ -21,7 +21,7 @@ import {IntegrationTestbed, LoggingEventDispatcher, FakeEvent} from './integrati
 
 export function main() {
   describe('DirectDomRenderer integration', () => {
-    var testbed, renderer, eventPlugin, compileRoot, rootEl;
+    var testbed, renderer, renderCompiler, eventPlugin, compileRoot, rootEl;
 
     beforeEach(() => {
       rootEl = el('<div></div>');
@@ -35,13 +35,14 @@ export function main() {
         templates: templates
       });
       renderer = testbed.renderer;
+      renderCompiler = testbed.renderCompiler;
       eventPlugin = testbed.eventPlugin;
       compileRoot = (componentId) => testbed.compileRoot(componentId);
     }
 
     it('should create host views while using the given elements in place', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
+      renderCompiler.compileHost(someComponent).then( (rootProtoView) => {
         expect(rootProtoView.elementBinders[0].directives[0].directiveIndex).toBe(0);
         var viewRefs = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render);
         expect(viewRefs.length).toBe(1);
@@ -52,7 +53,7 @@ export function main() {
 
     it('should create imperative proto views', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createImperativeComponentProtoView('someRenderId').then( (rootProtoView) => {
+      renderCompiler.createImperativeComponentProtoView('someRenderId').then( (rootProtoView) => {
         expect(rootProtoView.elementBinders).toEqual([]);
 
         expect(rootProtoView.render.delegate.imperativeRendererId).toBe('someRenderId');
@@ -62,14 +63,14 @@ export function main() {
 
     it('should add a static component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
+      renderCompiler.compileHost(someComponent).then( (rootProtoView) => {
         var template = new ViewDefinition({
           componentId: 'someComponent',
           template: 'hello',
           directives: []
         });
-        renderer.compile(template).then( (pv) => {
-          renderer.mergeChildComponentProtoViews(rootProtoView.render, [pv.render]);
+        renderCompiler.compile(template).then( (pv) => {
+          renderCompiler.mergeChildComponentProtoViews(rootProtoView.render, [pv.render]);
           renderer.createInPlaceHostView(null, rootEl, rootProtoView.render);
           expect(rootEl).toHaveText('hello');
           async.done();
@@ -79,13 +80,13 @@ export function main() {
 
     it('should add a a dynamic component', inject([AsyncTestCompleter], (async) => {
       createRenderer();
-      renderer.createHostProtoView(someComponent).then( (rootProtoView) => {
+      renderCompiler.compileHost(someComponent).then( (rootProtoView) => {
         var template = new ViewDefinition({
           componentId: 'someComponent',
           template: 'hello',
           directives: []
         });
-        renderer.compile(template).then( (pv) => {
+        renderCompiler.compile(template).then( (pv) => {
           var rootViewRef = renderer.createInPlaceHostView(null, rootEl, rootProtoView.render)[0];
           renderer.createDynamicComponentView(rootViewRef, 0, pv.render)[0];
           expect(rootEl).toHaveText('hello');

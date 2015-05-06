@@ -33,23 +33,23 @@ import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import * as renderApi from 'angular2/src/render/api';
 // TODO(tbosch): Spys don't support named modules...
-import {Renderer} from 'angular2/src/render/api';
+import {RenderCompiler} from 'angular2/src/render/api';
 
 export function main() {
   describe('compiler', function() {
-    var reader, tplResolver, renderer, protoViewFactory, cmpUrlMapper, renderCompileRequests;
+    var reader, tplResolver, renderCompiler, protoViewFactory, cmpUrlMapper, renderCompileRequests;
 
     beforeEach(() => {
       reader = new DirectiveMetadataReader();
       tplResolver = new FakeTemplateResolver();
       cmpUrlMapper = new RuntimeComponentUrlMapper();
-      renderer = new SpyRenderer();
+      renderCompiler = new SpyRenderCompiler();
     });
 
     function createCompiler(renderCompileResults:List, protoViewFactoryResults:List<AppProtoView>) {
       var urlResolver = new FakeUrlResolver();
       renderCompileRequests = [];
-      renderer.spy('compile').andCallFake( (template) => {
+      renderCompiler.spy('compile').andCallFake( (template) => {
         ListWrapper.push(renderCompileRequests, template);
         return PromiseWrapper.resolve(ListWrapper.removeAt(renderCompileResults, 0));
       });
@@ -61,7 +61,7 @@ export function main() {
         tplResolver,
         cmpUrlMapper,
         urlResolver,
-        renderer,
+        renderCompiler,
         protoViewFactory
       );
     }
@@ -368,7 +368,7 @@ export function main() {
     }));
 
     it('should create host proto views', inject([AsyncTestCompleter], (async) => {
-      renderer.spy('createHostProtoView').andCallFake( (componentId) => {
+      renderCompiler.spy('compileHost').andCallFake( (componentId) => {
         return PromiseWrapper.resolve(
           createRenderProtoView([createRenderComponentElementBinder(0)])
         );
@@ -392,7 +392,7 @@ export function main() {
     }));
 
     it('should create imperative proto views', inject([AsyncTestCompleter], (async) => {
-      renderer.spy('createImperativeComponentProtoView').andCallFake( (rendererId) => {
+      renderCompiler.spy('createImperativeComponentProtoView').andCallFake( (rendererId) => {
         return PromiseWrapper.resolve(
           createRenderProtoView([])
         );
@@ -405,7 +405,7 @@ export function main() {
       );
       compiler.compile(MainComponent).then( (protoViewRef) => {
         expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
-        expect(renderer.spy('createImperativeComponentProtoView')).toHaveBeenCalledWith('some-renderer');
+        expect(renderCompiler.spy('createImperativeComponentProtoView')).toHaveBeenCalledWith('some-renderer');
         async.done();
       });
     }));
@@ -515,9 +515,9 @@ class DirectiveWithAttributes {
 }
 
 @proxy
-@IMPLEMENTS(Renderer)
-class SpyRenderer extends SpyObject {
-  constructor(){super(Renderer);}
+@IMPLEMENTS(RenderCompiler)
+class SpyRenderCompiler extends SpyObject {
+  constructor(){super(RenderCompiler);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
 

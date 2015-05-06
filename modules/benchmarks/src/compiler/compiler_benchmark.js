@@ -23,7 +23,6 @@ import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabil
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 
 function setupReflector() {
@@ -64,13 +63,8 @@ export function main() {
   var urlResolver = new UrlResolver();
   var styleUrlResolver = new StyleUrlResolver(urlResolver);
   var shadowDomStrategy = new NativeShadowDomStrategy(styleUrlResolver);
-  var renderer = new DirectDomRenderer(
-    new rc.DefaultCompiler(
-      new Parser(new Lexer()), shadowDomStrategy, new TemplateLoader(null, urlResolver)
-    ),
-    null,
-    null,
-    shadowDomStrategy
+  var renderCompiler = new rc.DefaultDomCompiler(
+    new Parser(new Lexer()), shadowDomStrategy, new TemplateLoader(null, urlResolver)
   );
   var compiler = new Compiler(
     reader,
@@ -78,7 +72,7 @@ export function main() {
     templateResolver,
     new ComponentUrlMapper(),
     urlResolver,
-    renderer,
+    renderCompiler,
     new ProtoViewFactory(new DynamicChangeDetection(null))
   );
   var templateNoBindings = createTemplateHtml('templateNoBindings', count);
