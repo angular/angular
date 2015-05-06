@@ -8,8 +8,18 @@ void initReflector(reflector) {
   if (_visited) return;
   _visited = true;
   reflector
-    ..registerType(HelloCmp, {
-      'factory': () => new HelloCmp(),
+    ..registerType(UnsetComp, {
+      'factory': () => new UnsetComp(),
+      'parameters': const [const []],
+      'annotations': const [const Directive()]
+    })
+    ..registerType(FalseComp, {
+      'factory': () => new FalseComp(),
+      'parameters': const [const []],
+      'annotations': const [const Directive(compileChildren: false)]
+    })
+    ..registerType(TrueComp, {
+      'factory': () => new TrueComp(),
       'parameters': const [const []],
       'annotations': const [const Directive(compileChildren: true)]
     });

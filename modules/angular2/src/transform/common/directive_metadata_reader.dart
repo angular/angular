@@ -40,7 +40,7 @@ class _DirectiveMetadataVisitor extends Object
       }
       meta = new DirectiveMetadata(
           type: directiveType,
-          compileChildren: false,
+          compileChildren: true,
           properties: {},
           hostListeners: {},
           hostProperties: {},

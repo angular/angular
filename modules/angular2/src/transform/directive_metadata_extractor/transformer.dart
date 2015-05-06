@@ -36,7 +36,7 @@ class DirectiveMetadataExtractor extends Transformer {
           jsonMap[k] = directiveMetadataToMap(v);
         });
         transform.addOutput(new Asset.fromString(
-            _outputAssetId(fromAssetId), '// ${JSON.encode(jsonMap)}'));
+            _outputAssetId(fromAssetId), JSON.encode(jsonMap)));
       }
     } catch (ex, stackTrace) {
       log.logger.error('Extracting ng metadata failed.\n'
@@ -49,8 +49,5 @@ class DirectiveMetadataExtractor extends Transformer {
 
 AssetId _outputAssetId(AssetId inputAssetId) {
   assert(inputAssetId.path.endsWith(DEPS_EXTENSION));
-  var pathIn = inputAssetId.path;
-  return new AssetId(inputAssetId.package,
-      '${pathIn.substring(0, pathIn.length - DEPS_EXTENSION.length)}'
-      '${META_EXTENSION}');
+  return new AssetId(inputAssetId.package, toMetaExtension(inputAssetId.path));
 }
