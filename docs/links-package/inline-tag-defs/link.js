@@ -1,5 +1,16 @@
 var INLINE_LINK = /(\S+)(?:\s+([\s\S]+))?/;
 
+/**
+ * @dgService linkInlineTagDef
+ * @description
+ * Process inline link tags (of the form {@link some/uri Some Title}), replacing them with HTML anchors
+ * @kind function
+ * @param  {Object} url   The url to match
+ * @param  {Function} docs error message
+ * @return {String}  The html link information
+ *
+ * @property {boolean} relativeLinks Whether we expect the links to be relative to the originating doc
+ */
 module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage) {
   return {
     name: 'link',
