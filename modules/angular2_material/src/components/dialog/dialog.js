@@ -22,6 +22,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 // TODO(jelbourn): Pre-built `alert` and `confirm` dialogs.
 // TODO(jelbourn): Animate dialog out of / into opening element.
 
+var _nextDialogId = 0;
 
 /**
  * Service for opening modal dialogs.
@@ -49,7 +50,7 @@ export class MdDialog {
     // TODO(jelbourn): Don't use direct DOM access. Need abstraction to create an element
     // directly on the document body (also needed for web workers stuff).
     // Create a DOM node to serve as a physical host element for the dialog.
-    var dialogElement = DOM.createElement('div');
+    var dialogElement = this._createHostElement();
     DOM.appendChild(DOM.query('body'), dialogElement);
 
     // TODO(jelbourn): Use hostProperties binding to set these once #1539 is fixed.
@@ -75,7 +76,7 @@ export class MdDialog {
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
     return this.componentLoader.loadIntoNewLocation(
-        MdDialogContainer, elementRef, dialogElement).then(containerRef => {
+        MdDialogContainer, elementRef, `:document#${dialogElement.id}`).then(containerRef => {
       dialogRef.containerRef = containerRef;
 
       // Now load the given component into the MdDialogContainer.
@@ -101,12 +102,18 @@ export class MdDialog {
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
   _openBackdrop(elementRef:ElementRef, injector: Injector): Promise<ComponentRef> {
-    var backdropElement = DOM.createElement('div');
+    var backdropElement = this._createHostElement();
     DOM.addClass(backdropElement, 'md-backdrop');
     DOM.appendChild(DOM.query('body'), backdropElement);
 
     return this.componentLoader.loadIntoNewLocation(
-        MdBackdrop, elementRef, backdropElement, injector);
+        MdBackdrop, elementRef, `:document#${backdropElement.id}`, injector);
+  }
+
+  _createHostElement() {
+    var hostElement = DOM.createElement('div');
+    hostElement.id = `mdDialog${_nextDialogId++}`;
+    return hostElement;
   }
 
   alert(message: string, okMessage: string): Promise {

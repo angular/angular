@@ -28,12 +28,20 @@ export class LightDom {
   nodes:List;
   roots:List<_Root>;
 
-  constructor(lightDomView:viewModule.DomView, shadowDomView:viewModule.DomView, element) {
+  constructor(lightDomView:viewModule.DomView, element) {
     this.lightDomView = lightDomView;
-    this.shadowDomView = shadowDomView;
     this.nodes = DOM.childNodesAsList(element);
 
     this.roots = null;
+    this.shadowDomView = null;
+  }
+
+  attachShadowDomView(shadowDomView:viewModule.DomView) {
+    this.shadowDomView = shadowDomView;
+  }
+
+  detachShadowDomView() {
+    this.shadowDomView = null;
   }
 
   redistribute() {
@@ -41,7 +49,11 @@ export class LightDom {
   }
 
   contentTags(): List<Content> {
-    return this._collectAllContentTags(this.shadowDomView, []);
+    if (isPresent(this.shadowDomView)) {
+      return this._collectAllContentTags(this.shadowDomView, []);
+    } else {
+      return [];
+    }
   }
 
   // Collects the Content directives from the view and all its child views

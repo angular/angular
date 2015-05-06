@@ -62,14 +62,14 @@ export class DynamicComponentLoader {
   }
 
   /**
-   * Loads a component in the element specified by elementOrSelector. The loaded component receives
+   * Loads a component in the element specified by elementSelector. The loaded component receives
    * injection normally as a hosted view.
    */
-  loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef, elementOrSelector:any,
+  loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef, elementSelector:string,
                       injector:Injector = null):Promise<ComponentRef> {
     return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoViewRef => {
       var hostViewRef = this._viewManager.createInPlaceHostView(
-        parentComponentLocation, elementOrSelector, hostProtoViewRef, injector);
+        parentComponentLocation, elementSelector, hostProtoViewRef, injector);
       var newLocation = new ElementRef(hostViewRef, 0);
       var component = this._viewManager.getComponent(newLocation);
 

@@ -9,9 +9,14 @@ export class ShadowDomStrategy {
     return true;
   }
 
-  attachTemplate(el, view:viewModule.DomView) {}
+  /**
+   * Prepares and returns the shadow root for the given element.
+   */
+  prepareShadowRoot(el):any {
+    return null;
+  }
 
-  constructLightDom(lightDomView:viewModule.DomView, shadowDomView:viewModule.DomView, el): LightDom {
+  constructLightDom(lightDomView:viewModule.DomView, el): LightDom {
     return null;
   }
 

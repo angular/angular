@@ -17,9 +17,7 @@ import {
 } from 'angular2/src/render/dom/shadow_dom/native_shadow_dom_strategy';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
-import {DomView} from 'angular2/src/render/dom/view/view';
 
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
@@ -32,15 +30,9 @@ export function main() {
       strategy = new NativeShadowDomStrategy(styleUrlResolver);
     });
 
-    it('should attach the view nodes to the shadow root', () => {
+    it('should use the native shadow root', () => {
       var host = el('<div><span>original content</span></div>');
-      var nodes = el('<div>view</div>');
-      var view = new DomView(null, [nodes], [], [], []);
-
-      strategy.attachTemplate(host, view);
-      var shadowRoot = DOM.getShadowRoot(host);
-      expect(isPresent(shadowRoot)).toBeTruthy();
-      expect(shadowRoot).toHaveText('view');
+      expect(strategy.prepareShadowRoot(host)).toBe(DOM.getShadowRoot(host));
     });
 
     it('should rewrite style urls', () => {

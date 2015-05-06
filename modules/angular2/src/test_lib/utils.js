@@ -1,6 +1,7 @@
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
+import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 
 export class Log {
   _result:List;
@@ -25,7 +26,7 @@ export class Log {
 }
 
 export function viewRootNodes(view):List {
-  return view.render.delegate.rootNodes;
+  return resolveInternalDomView(view.render).rootNodes;
 }
 
 export function queryView(view, selector:string) {

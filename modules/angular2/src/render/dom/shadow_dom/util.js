@@ -5,12 +5,6 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {ShadowCss} from './shadow_css';
 
-export function moveViewNodesIntoParent(parent, view) {
-  for (var i = 0; i < view.rootNodes.length; ++i) {
-    DOM.appendChild(parent, view.rootNodes[i]);
-  }
-}
-
 var _componentUIDs: Map<string, int> = MapWrapper.create();
 var _nextComponentUID: int = 0;
 var _sharedStyleTexts: Map<string, boolean> = MapWrapper.create();

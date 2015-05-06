@@ -134,18 +134,11 @@ export class DirectiveMetadata {
 }
 
 // An opaque reference to a DomProtoView
-export class RenderProtoViewRef {}
+export class RenderProtoViewRef {
+}
 
 // An opaque reference to a DomView
-export class RenderViewRef {}
-
-export class RenderViewContainerRef {
-  view:RenderViewRef;
-  elementIndex:number;
-  constructor(view:RenderViewRef, elementIndex: number) {
-    this.view = view;
-    this.elementIndex = elementIndex;
-  }
+export class RenderViewRef {
 }
 
 export class ViewDefinition {
@@ -169,112 +162,100 @@ export class RenderCompiler {
   compileHost(componentId):Promise<ProtoViewDto> { return null; }
 
   /**
-   * Creats a ProtoViewDto for a component that will use an imperative View using the given
-   * renderer.
-   * Note: Rigth now, the renderer argument is ignored, but will be used in the future to define
-   * a custom handler.
-   */
-  createImperativeComponentProtoView(rendererId):Promise<ProtoViewDto> { return null; }
-
-  /**
    * Compiles a single DomProtoView. Non recursive so that
    * we don't need to serialize all possible components over the wire,
    * but only the needed ones based on previous calls.
    */
   compile(template:ViewDefinition):Promise<ProtoViewDto> { return null; }
-
-  /**
-   * Sets the preset nested components,
-   * which will be instantiated when this protoView is instantiated.
-   * Note: We can't create new ProtoViewRefs here as we need to support cycles / recursive components.
-   * @param {List<RenderProtoViewRef>} protoViewRefs
-   *    DomProtoView for every element with a component in this protoView or in a view container's protoView
-   */
-  mergeChildComponentProtoViews(protoViewRef:RenderProtoViewRef, componentProtoViewRefs:List<RenderProtoViewRef>) { return null; }
 }
 
 export class Renderer {
   /**
-   * Creates a view and inserts it into a ViewContainer.
-   * @param {RenderViewContainerRef} viewContainerRef
-   * @param {RenderProtoViewRef} protoViewRef A RenderProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE or ProtoViewDto.EMBEDDED_VIEW_TYPE
-   * @param {number} atIndex
-   * @return {List<RenderViewRef>} the view and all of its nested child component views
-   */
-  createViewInContainer(vcRef:RenderViewContainerRef, atIndex:number, protoViewRef:RenderProtoViewRef):List<RenderViewRef> { return null; }
-
-  /**
-   * Destroys the view in the given ViewContainer
-   */
-  destroyViewInContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
-
-  /**
-   * Inserts a detached view into a viewContainer.
-   */
-  insertViewIntoContainer(vcRef:RenderViewContainerRef, atIndex:number, view:RenderViewRef):void {}
-
-  /**
-   * Detaches a view from a container so that it can be inserted later on
-   */
-  detachViewFromContainer(vcRef:RenderViewContainerRef, atIndex:number):void {}
-
-  /**
-   * Creates a view and
-   * installs it as a shadow view for an element.
-   *
-   * Note: only allowed if there is a dynamic component directive at this place.
-   * @param {RenderViewRef} hostView
-   * @param {number} elementIndex
-   * @param {RenderProtoViewRef} componentProtoViewRef A RenderProtoViewRef of type ProtoViewDto.COMPONENT_VIEW_TYPE
-   * @return {List<RenderViewRef>} the view and all of its nested child component views
-   */
-  createDynamicComponentView(hostViewRef:RenderViewRef, elementIndex:number, componentProtoViewRef:RenderProtoViewRef):List<RenderViewRef> { return null; }
-
-  /**
-   * Destroys the component view at the given index
-   *
-   * Note: only allowed if there is a dynamic component directive at this place.
-   */
-  destroyDynamicComponentView(hostViewRef:RenderViewRef, elementIndex:number):void {}
-
-  /**
    * Creates a host view that includes the given element.
-   * @param {RenderViewRef} parentViewRef (might be null)
-   * @param {any} hostElementSelector element or css selector for the host element
-   * @param {RenderProtoViewRef} hostProtoView a RenderProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE
-   * @return {List<RenderViewRef>} the view and all of its nested child component views
+   * @param {RenderViewRef} parentHostViewRef (might be null)
+   * @param {any} hostElementSelector css selector for the host element
+   * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE
+   * @return {RenderViewRef} the created view
    */
-  createInPlaceHostView(parentViewRef:RenderViewRef, hostElementSelector, hostProtoViewRef:RenderProtoViewRef):List<RenderViewRef> { return null; }
+  createInPlaceHostView(parentHostViewRef:RenderViewRef, hostElementSelector:string, hostProtoViewRef:RenderProtoViewRef):RenderViewRef {
+    return null;
+  }
 
   /**
    * Destroys the given host view in the given parent view.
    */
-  destroyInPlaceHostView(parentViewRef:RenderViewRef, hostViewRef:RenderViewRef):void {}
+  destroyInPlaceHostView(parentHostViewRef:RenderViewRef, hostViewRef:RenderViewRef) {
+  }
 
   /**
-   * Sets a property on an element.
+   * Creates a regular view out of the given ProtoView
+   */
+  createView(protoViewRef:RenderProtoViewRef):RenderViewRef {
+    return null;
+  }
+
+  /**
+   * Destroys the given view after it has been dehydrated and detached
+   */
+  destroyView(viewRef:RenderViewRef) {
+  }
+
+  /**
+   * Attaches a componentView into the given hostView at the given element
+   */
+  attachComponentView(hostViewRef:RenderViewRef, elementIndex:number, componentViewRef:RenderViewRef) {
+  }
+
+  /**
+   * Detaches a componentView into the given hostView at the given element
+   */
+  detachComponentView(hostViewRef:RenderViewRef, boundElementIndex:number, componentViewRef:RenderViewRef) {
+  }
+
+  /**
+   * Attaches a view into a ViewContainer (in the given parentView at the given element) at the given index.
+   */
+  attachViewInContainer(parentViewRef:RenderViewRef, boundElementIndex:number, atIndex:number, viewRef:RenderViewRef) {
+  }
+
+  /**
+   * Detaches a view into a ViewContainer (in the given parentView at the given element) at the given index.
+   */
+  // TODO(tbosch): this should return a promise as it can be animated!
+  detachViewInContainer(parentViewRef:RenderViewRef, boundElementIndex:number, atIndex:number, viewRef:RenderViewRef) {
+  }
+
+  /**
+   * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views inside of the view pool.
+   */
+  hydrateView(hviewRef:RenderViewRef) {
+  }
+
+  /**
+   * Dehydrates a view after it has been attached. Hydration/dehydration is used for reusing views inside of the view pool.
+   */
+  dehydrateView(viewRef:RenderViewRef) {
+  }
+
+  /**
+   * Sets a porperty on an element.
    * Note: This will fail if the property was not mentioned previously as a host property
-   * in the View.
+   * in the ProtoView
    */
-  setElementProperty(view:RenderViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {}
+  setElementProperty(viewRef:RenderViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {
+  }
+
+  /*
+   * Sets the value of a text node.
+   */
+  setText(viewRef:RenderViewRef, textNodeIndex:number, text:string):void {
+  }
 
   /**
-   * This will set the value for a text node.
-   * Note: This needs to be separate from setElementProperty as we don't have ElementBinders
-   * for text nodes in the DomProtoView either.
+   * Sets the dispatcher for all events of the given view
    */
-  setText(view:RenderViewRef, textNodeIndex:number, text:string):void {}
-
-  /**
-   * Sets the dispatcher for all events that have been defined in the template or in directives
-   * in the given view.
-   */
-  setEventDispatcher(viewRef:RenderViewRef, dispatcher:any/*EventDispatcher*/):void {}
-
-  /**
-   * To be called at the end of the VmTurn so the API can buffer calls
-   */
-  flush():void {}
+  setEventDispatcher(viewRef:RenderViewRef, dispatcher:any/*api.EventDispatcher*/):void {
+  }
 }
 
 

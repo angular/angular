@@ -5,7 +5,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Content} from 'angular2/src/render/dom/shadow_dom/content_tag';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {DomView} from 'angular2/src/render/dom/view/view';
-import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
+import {DomViewContainer} from 'angular2/src/render/dom/view/view_container';
 
 @proxy
 @IMPLEMENTS(DomView)
@@ -44,7 +44,7 @@ class FakeView {
 }
 
 @proxy
-@IMPLEMENTS(ViewContainer)
+@IMPLEMENTS(DomViewContainer)
 class FakeViewContainer {
   _nodes;
   _contentTagContainers;
@@ -96,6 +96,11 @@ class FakeContentTag {
   }
 }
 
+function createLightDom(hostView, shadowView, el) {
+  var lightDom = new LightDom(hostView, el);
+  lightDom.attachShadowDomView(shadowView);
+  return lightDom;
+}
 
 export function main() {
   describe('LightDom', function() {
@@ -110,7 +115,7 @@ export function main() {
         var tag = new FakeContentTag(el('<script></script>'));
         var shadowDomView = new FakeView([tag]);
 
-        var lightDom = new LightDom(lightDomView, shadowDomView,
+        var lightDom = createLightDom(lightDomView, shadowDomView,
             el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
@@ -122,7 +127,7 @@ export function main() {
           new FakeView([tag])
         ]);
         var shadowDomView = new FakeView([vc]);
-        var lightDom = new LightDom(lightDomView, shadowDomView,
+        var lightDom = createLightDom(lightDomView, shadowDomView,
             el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
@@ -132,13 +137,13 @@ export function main() {
     describe("expandedDomNodes", () => {
       it("should contain root nodes", () => {
         var lightDomEl = el("<div><a></a></div>")
-        var lightDom = new LightDom(lightDomView, new FakeView(), lightDomEl);
+        var lightDom = createLightDom(lightDomView, new FakeView(), lightDomEl);
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
 
       it("should include view container nodes", () => {
         var lightDomEl = el("<div><template></template></div>");
-        var lightDom = new LightDom(
+        var lightDom = createLightDom(
           new FakeView([
             new FakeViewContainer(
               DOM.firstChild(lightDomEl),  // template element
@@ -153,7 +158,7 @@ export function main() {
 
       it("should include content nodes", () => {
         var lightDomEl = el("<div><content></content></div>");
-        var lightDom = new LightDom(
+        var lightDom = createLightDom(
           new FakeView([
             new FakeContentTag(
               DOM.firstChild(lightDomEl),  // content element
@@ -172,7 +177,7 @@ export function main() {
 
         var lightDomView = new FakeView();
 
-        var lightDom = new LightDom(
+        var lightDom = createLightDom(
           lightDomView,
           new FakeView(),
           lightDomEl);
@@ -188,7 +193,7 @@ export function main() {
 
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = new LightDom(lightDomView, new FakeView([
+        var lightDom = createLightDom(lightDomView, new FakeView([
           contentA,
           contentB
         ]), lightDomEl);
@@ -205,7 +210,7 @@ export function main() {
 
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = new LightDom(lightDomView, new FakeView([
+        var lightDom = createLightDom(lightDomView, new FakeView([
           wildcard,
           contentB
         ]), lightDomEl);
@@ -219,7 +224,7 @@ export function main() {
       it("should remove all nodes if there are no content tags", () => {
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = new LightDom(lightDomView, new FakeView([]), lightDomEl);
+        var lightDom = createLightDom(lightDomView, new FakeView([]), lightDomEl);
 
         lightDom.redistribute();
 
@@ -230,7 +235,7 @@ export function main() {
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>");
         var bNode = DOM.childNodes(lightDomEl)[1];
 
-        var lightDom = new LightDom(lightDomView, new FakeView([
+        var lightDom = createLightDom(lightDomView, new FakeView([
           new FakeContentTag(null, "a")
         ]), lightDomEl);
 

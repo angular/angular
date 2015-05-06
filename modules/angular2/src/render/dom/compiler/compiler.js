@@ -2,7 +2,6 @@ import {Injectable} from 'angular2/src/di/annotations_impl';
 
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {BaseException, isPresent} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {ViewDefinition, ProtoViewDto, DirectiveMetadata, RenderCompiler, RenderProtoViewRef} from '../../api';
@@ -11,13 +10,6 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {CompileStepFactory, DefaultStepFactory} from './compile_step_factory';
 import {Parser} from 'angular2/change_detection';
 import {ShadowDomStrategy} from '../shadow_dom/shadow_dom_strategy';
-import {ProtoViewBuilder} from '../view/proto_view_builder';
-
-import {DirectDomProtoViewRef} from '../direct_dom_renderer';
-
-function _resolveProtoView(protoViewRef:DirectDomProtoViewRef) {
-  return isPresent(protoViewRef) ? protoViewRef.delegate : null;
-}
 
 /**
  * The compiler loads and translates the html templates of components into
@@ -51,18 +43,6 @@ export class DomCompiler extends RenderCompiler {
     });
     var element = DOM.createElement(directiveMetadata.selector);
     return this._compileTemplate(hostViewDef, element);
-  }
-
-  createImperativeComponentProtoView(rendererId):Promise<ProtoViewDto> {
-    var protoViewBuilder = new ProtoViewBuilder(null);
-    protoViewBuilder.setImperativeRendererId(rendererId);
-    return PromiseWrapper.resolve(protoViewBuilder.build());
-  }
-
-  mergeChildComponentProtoViews(protoViewRef:RenderProtoViewRef, protoViewRefs:List<RenderProtoViewRef>) {
-    _resolveProtoView(protoViewRef).mergeChildComponentProtoViews(
-      ListWrapper.map(protoViewRefs, _resolveProtoView)
-    );
   }
 
   _compileTemplate(viewDef: ViewDefinition, tplElement):Promise<ProtoViewDto> {

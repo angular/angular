@@ -6,12 +6,11 @@ import {
   ASTWithSource, AST, AstTransformer, AccessMember, LiteralArray, ImplicitReceiver
 } from 'angular2/change_detection';
 
-import {DomProtoView} from './proto_view';
+import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
 import {ElementBinder, Event} from './element_binder';
 import {setterFactory} from './property_setter_factory';
 
 import * as api from '../../api';
-import * as directDomRenderer from '../direct_dom_renderer';
 
 import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
 
@@ -19,18 +18,11 @@ export class ProtoViewBuilder {
   rootElement;
   variableBindings: Map<string, string>;
   elements:List<ElementBinderBuilder>;
-  imperativeRendererId:string;
 
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.elements = [];
     this.variableBindings = MapWrapper.create();
-    this.imperativeRendererId = null;
-  }
-
-  setImperativeRendererId(id:string):ProtoViewBuilder {
-    this.imperativeRendererId = id;
-    return this;
   }
 
   bindElement(element, description = null):ElementBinderBuilder {
@@ -93,7 +85,7 @@ export class ProtoViewBuilder {
         contentTagSelector: ebb.contentTagSelector,
         parentIndex: parentIndex,
         distanceToParent: ebb.distanceToParent,
-        nestedProtoView: isPresent(nestedProtoView) ? nestedProtoView.render.delegate : null,
+        nestedProtoView: isPresent(nestedProtoView) ? resolveInternalDomProtoView(nestedProtoView.render) : null,
         componentId: ebb.componentId,
         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
         localEvents: ebb.eventBuilder.buildLocalEvents(),
@@ -102,10 +94,9 @@ export class ProtoViewBuilder {
       }));
     });
     return new api.ProtoViewDto({
-      render: new directDomRenderer.DirectDomProtoViewRef(new DomProtoView({
+      render: new DomProtoViewRef(new DomProtoView({
         element: this.rootElement,
-        elementBinders: renderElementBinders,
-        imperativeRendererId: this.imperativeRendererId
+        elementBinders: renderElementBinders
       })),
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings

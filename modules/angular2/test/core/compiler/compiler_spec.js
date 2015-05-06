@@ -391,25 +391,6 @@ export function main() {
       });
     }));
 
-    it('should create imperative proto views', inject([AsyncTestCompleter], (async) => {
-      renderCompiler.spy('createImperativeComponentProtoView').andCallFake( (rendererId) => {
-        return PromiseWrapper.resolve(
-          createRenderProtoView([])
-        );
-      });
-      tplResolver.setView(MainComponent, new View({renderer: 'some-renderer'}));
-      var mainProtoView = createProtoView();
-      var compiler = createCompiler(
-        [],
-        [mainProtoView]
-      );
-      compiler.compile(MainComponent).then( (protoViewRef) => {
-        expect(internalProtoView(protoViewRef)).toBe(mainProtoView);
-        expect(renderCompiler.spy('createImperativeComponentProtoView')).toHaveBeenCalledWith('some-renderer');
-        async.done();
-      });
-    }));
-
     it('should throw for non component types', () => {
       var compiler = createCompiler([], []);
       expect(

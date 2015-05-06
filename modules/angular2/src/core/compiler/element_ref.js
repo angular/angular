@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {normalizeBlank} from 'angular2/src/facade/lang';
 import {ViewRef} from './view_ref';
-import {DirectDomViewRef} from 'angular2/src/render/dom/direct_dom_renderer';
+import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 
 /**
  * @exportedAs angular2/view
@@ -23,8 +23,7 @@ export class ElementRef {
   // We need a more general way to read/write to the DOM element
   // via a proper abstraction in the render layer
   get domElement() {
-    var renderViewRef:DirectDomViewRef = this.parentView.render;
-    return renderViewRef.delegate.boundElements[this.boundElementIndex];
+    return resolveInternalDomView(this.parentView.render).boundElements[this.boundElementIndex];
   }
 
   /**

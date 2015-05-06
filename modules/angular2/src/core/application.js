@@ -33,17 +33,14 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Renderer, RenderCompiler} from 'angular2/src/render/api';
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
-import * as rc from 'angular2/src/render/dom/compiler/compiler';
-import * as rvf from 'angular2/src/render/dom/view/view_factory';
-import * as rvh from 'angular2/src/render/dom/view/view_hydrator';
+import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
+import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {
   appComponentRefToken,
-  appElementToken,
-  appComponentAnnotatedTypeToken,
-  appDocumentToken,
+  appComponentAnnotatedTypeToken
 } from './application_tokens';
 
 var _rootInjector: Injector;
@@ -56,28 +53,25 @@ var _rootBindings = [
 
 function _injectorBindings(appComponentType): List<Binding> {
   return [
-      bind(appDocumentToken).toValue(DOM.defaultDoc()),
+      bind(DOCUMENT_TOKEN).toValue(DOM.defaultDoc()),
       bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
         // TODO(rado): investigate whether to support bindings on root component.
         return reader.read(appComponentType);
       }, [DirectiveMetadataReader]),
 
-      bind(appElementToken).toFactory((appComponentAnnotatedType, appDocument) => {
-        var selector = appComponentAnnotatedType.annotation.selector;
-        var element = DOM.querySelector(appDocument, selector);
-        if (isBlank(element)) {
-          throw new BaseException(`The app selector "${selector}" did not match any elements`);
-        }
-        return element;
-      }, [appComponentAnnotatedTypeToken, appDocumentToken]),
-      bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector, appElement,
+      bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector,
         appComponentAnnotatedType, testability, registry) => {
 
-        // We need to do this here to ensure that we create Testability and
-        // it's ready on the window for users.
-        registry.registerApplication(appElement, testability);
-        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, appElement, injector);
-      }, [DynamicComponentLoader, Injector, appElementToken, appComponentAnnotatedTypeToken,
+        var selector = appComponentAnnotatedType.annotation.selector;
+        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, selector, injector).then( (componentRef) => {
+          var domView = resolveInternalDomView(componentRef.hostView.render);
+          // We need to do this here to ensure that we create Testability and
+          // it's ready on the window for users.
+          registry.registerApplication(domView.boundElements[0], testability);
+
+          return componentRef;
+        });
+      }, [DynamicComponentLoader, Injector, appComponentAnnotatedTypeToken,
         Testability, TestabilityRegistry]),
 
       bind(appComponentType).toFactory((ref) => ref.instance,
@@ -89,18 +83,16 @@ function _injectorBindings(appComponentType): List<Binding> {
       }, [VmTurnZone]),
       bind(ShadowDomStrategy).toFactory(
           (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
-          [StyleUrlResolver, appDocumentToken]),
-      DirectDomRenderer,
-      bind(Renderer).toClass(DirectDomRenderer),
-      bind(RenderCompiler).toClass(rc.DefaultDomCompiler),
+          [StyleUrlResolver, DOCUMENT_TOKEN]),
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...
-      bind(rvf.ViewFactory).toFactory(
-        (capacity, eventManager, shadowDomStrategy) => new rvf.ViewFactory(capacity, eventManager, shadowDomStrategy),
-        [rvf.VIEW_POOL_CAPACITY, EventManager, ShadowDomStrategy]
+      bind(DomRenderer).toFactory(
+          (eventManager, shadowDomStrategy, doc) => new DomRenderer(eventManager, shadowDomStrategy, doc),
+          [EventManager, ShadowDomStrategy, DOCUMENT_TOKEN]
       ),
-      bind(rvf.VIEW_POOL_CAPACITY).toValue(10000),
-      rvh.RenderViewHydrator,
+      DefaultDomCompiler,
+      bind(Renderer).toAlias(DomRenderer),
+      bind(RenderCompiler).toAlias(DefaultDomCompiler),
       ProtoViewFactory,
       // TODO(tbosch): We need an explicit factory here, as
       // we are getting errors in dart2js with mirrors...

@@ -26,6 +26,8 @@ import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 
+import {resolveInternalDomProtoView} from 'angular2/src/render/dom/view/proto_view';
+
 export function runCompilerCommonTests() {
   describe('DomCompiler', function() {
     var mockStepFactory;
@@ -61,7 +63,7 @@ export function runCompilerCommonTests() {
 
       var dirMetadata = new DirectiveMetadata({id: 'id', selector: 'CUSTOM', type: DirectiveMetadata.COMPONENT_TYPE});
       compiler.compileHost(dirMetadata).then( (protoView) => {
-        expect(DOM.tagName(protoView.render.delegate.element)).toEqual('CUSTOM')
+        expect(DOM.tagName(resolveInternalDomProtoView(protoView.render).element)).toEqual('CUSTOM')
         expect(mockStepFactory.viewDef.directives).toEqual([dirMetadata]);
         expect(protoView.variableBindings).toEqual(MapWrapper.createFromStringMap({
           'a': 'b'
@@ -76,7 +78,7 @@ export function runCompilerCommonTests() {
         componentId: 'someId',
         template: 'inline component'
       })).then( (protoView) => {
-        expect(DOM.getInnerHTML(protoView.render.delegate.element)).toEqual('inline component');
+        expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).element)).toEqual('inline component');
         async.done();
       });
     }));
@@ -90,7 +92,7 @@ export function runCompilerCommonTests() {
         componentId: 'someId',
         absUrl: 'someUrl'
       })).then( (protoView) => {
-        expect(DOM.getInnerHTML(protoView.render.delegate.element)).toEqual('url component');
+        expect(DOM.getInnerHTML(resolveInternalDomProtoView(protoView.render).element)).toEqual('url component');
         async.done();
       });
     }));

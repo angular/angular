@@ -7,7 +7,6 @@ import * as viewModule from '../view/view';
 import {LightDom} from './light_dom';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
 import {StyleUrlResolver} from './style_url_resolver';
-import {moveViewNodesIntoParent} from './util';
 import {insertSharedStyleText} from './util';
 
 /**
@@ -33,12 +32,12 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     return false;
   }
 
-  attachTemplate(el, view:viewModule.DomView) {
-    moveViewNodesIntoParent(el, view);
+  prepareShadowRoot(el) {
+    return el;
   }
 
-  constructLightDom(lightDomView:viewModule.DomView, shadowDomView:viewModule.DomView, el): LightDom {
-    return new LightDom(lightDomView, shadowDomView, el);
+  constructLightDom(lightDomView:viewModule.DomView, el): LightDom {
+    return new LightDom(lightDomView, el);
   }
 
   processStyleElement(hostComponentId:string, templateUrl:string, styleEl):Promise {

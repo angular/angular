@@ -1,4 +1,3 @@
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {AST} from 'angular2/change_detection';
 import {SetterFn} from 'angular2/src/reflection/types';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
@@ -38,14 +37,6 @@ export class ElementBinder {
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
     this.propertySetters = propertySetters;
-  }
-
-  hasStaticComponent() {
-    return isPresent(this.componentId) && isPresent(this.nestedProtoView);
-  }
-
-  hasDynamicComponent() {
-    return isPresent(this.componentId) && isBlank(this.nestedProtoView);
   }
 }
 

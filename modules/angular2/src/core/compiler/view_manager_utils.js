@@ -8,6 +8,7 @@ import * as avmModule from './view_manager';
 import {Renderer} from 'angular2/src/render/api';
 import {BindingPropagationConfig, Locals} from 'angular2/change_detection';
 import {DirectiveMetadataReader} from './directive_metadata_reader';
+import {RenderViewRef} from 'angular2/src/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {
@@ -27,8 +28,11 @@ export class AppViewManagerUtils {
     }
   }
 
-  createView(protoView:viewModule.AppProtoView, viewManager:avmModule.AppViewManager, renderer:Renderer): viewModule.AppView {
+  createView(protoView:viewModule.AppProtoView, renderView:RenderViewRef, viewManager:avmModule.AppViewManager, renderer:Renderer): viewModule.AppView {
     var view = new viewModule.AppView(renderer, protoView, protoView.protoLocals);
+    // TODO(tbosch): pass RenderViewRef as argument to AppView!
+    view.render = renderView;
+
     var changeDetector = protoView.protoChangeDetector.instantiate(view);
 
     var binders = protoView.elementBinders;
@@ -96,7 +100,7 @@ export class AppViewManagerUtils {
       hostElementInjector = parentComponentHostView.elementInjectors[parentComponentBoundElementIndex];
       var parentView = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex];
       parentView.changeDetector.addChild(hostView.changeDetector);
-      ListWrapper.push(parentView.imperativeHostViews, hostView);
+      ListWrapper.push(parentView.inPlaceHostViews, hostView);
     }
     this._hydrateView(hostView, injector, hostElementInjector, new Object(), null);
   }
@@ -105,7 +109,7 @@ export class AppViewManagerUtils {
       hostView:viewModule.AppView) {
     if (isPresent(parentView)) {
       parentView.changeDetector.removeChild(hostView.changeDetector);
-      ListWrapper.remove(parentView.imperativeHostViews, hostView);
+      ListWrapper.remove(parentView.inPlaceHostViews, hostView);
     }
   }
 

@@ -133,21 +133,14 @@ export class Compiler {
     if (isBlank(template)) {
       return null;
     }
-    if (isPresent(template.renderer)) {
-      var directives = [];
-      pvPromise = this._render.createImperativeComponentProtoView(template.renderer).then( (renderPv) => {
-        return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
-      });
-    } else {
-      var directives = ListWrapper.map(
-        this._flattenDirectives(template),
-        (directive) => this._bindDirective(directive)
-      );
-      var renderTemplate = this._buildRenderTemplate(component, template, directives);
-      pvPromise = this._render.compile(renderTemplate).then( (renderPv) => {
-        return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
-      });
-    }
+    var directives = ListWrapper.map(
+      this._flattenDirectives(template),
+      (directive) => this._bindDirective(directive)
+    );
+    var renderTemplate = this._buildRenderTemplate(component, template, directives);
+    pvPromise = this._render.compile(renderTemplate).then( (renderPv) => {
+      return this._compileNestedProtoViews(null, componentBinding, renderPv, directives, true);
+    });
 
     MapWrapper.set(this._compiling, component, pvPromise);
     return pvPromise;
@@ -187,14 +180,6 @@ export class Compiler {
     });
 
     var protoViewDone = (_) => {
-      var childComponentRenderPvRefs = [];
-      ListWrapper.forEach(protoView.elementBinders, (eb) => {
-        if (isPresent(eb.componentDirective)) {
-          var componentPv = eb.nestedProtoView;
-          ListWrapper.push(childComponentRenderPvRefs, isPresent(componentPv) ? componentPv.render : null);
-        }
-      });
-      this._render.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
       return protoView;
     };
     if (nestedPVPromises.length > 0) {

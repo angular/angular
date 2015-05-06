@@ -20,8 +20,6 @@ import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {appDocumentToken} from 'angular2/src/core/application_tokens';
-
 import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
@@ -40,10 +38,8 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/render/api';
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
-import * as rc from 'angular2/src/render/dom/compiler/compiler';
-import * as rvf from 'angular2/src/render/dom/view/view_factory';
-import * as rvh from 'angular2/src/render/dom/view/view_hydrator';
+import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 
 /**
  * Returns the root injector bindings.
@@ -76,16 +72,14 @@ function _getAppBindings() {
   }
 
   return [
-    bind(appDocumentToken).toValue(appDoc),
+    bind(DOCUMENT_TOKEN).toValue(appDoc),
     bind(ShadowDomStrategy).toFactory(
         (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
-        [StyleUrlResolver, appDocumentToken]),
-    bind(DirectDomRenderer).toClass(DirectDomRenderer),
-    bind(Renderer).toClass(DirectDomRenderer),
-    bind(RenderCompiler).toClass(rc.DefaultDomCompiler),
-    rvf.ViewFactory,
-    rvh.RenderViewHydrator,
-    bind(rvf.VIEW_POOL_CAPACITY).toValue(500),
+        [StyleUrlResolver, DOCUMENT_TOKEN]),
+    DomRenderer,
+    DefaultDomCompiler,
+    bind(Renderer).toAlias(DomRenderer),
+    bind(RenderCompiler).toAlias(DefaultDomCompiler),
     ProtoViewFactory,
     AppViewPool,
     AppViewManager,

@@ -74,14 +74,10 @@ export class Content {
     this._strategy = null;
   }
 
-  hydrate(destinationLightDom:ldModule.LightDom) {
+  init(destinationLightDom:ldModule.LightDom) {
     this._strategy = isPresent(destinationLightDom) ?
       new IntermediateContent(destinationLightDom) :
       new RenderedContent(this.contentStartElement);
-  }
-
-  dehydrate() {
-    this._strategy = null;
   }
 
   nodes():List {

@@ -894,7 +894,7 @@ export class ElementInjector extends TreeNode {
 
   _getPreBuiltObjectByKeyId(keyId:int) {
     var staticKeys = StaticKeys.instance();
-    if (keyId === staticKeys.viewManagerId) return this._preBuiltObjects.viewManagerId;
+    if (keyId === staticKeys.viewManagerId) return this._preBuiltObjects.viewManager;
 
     //TODO add other objects as needed
     return _undefined;

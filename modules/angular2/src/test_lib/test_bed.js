@@ -15,6 +15,9 @@ import {DynamicComponentLoader, ComponentRef} from 'angular2/src/core/compiler/d
 import {queryView, viewRootNodes, el} from './utils';
 import {instantiateType, getTypeOf} from './lang_utils';
 
+import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
+import {DOM} from 'angular2/src/dom/dom_adapter';
+
 /**
  * @exportedAs angular2/test
  */
@@ -87,9 +90,12 @@ export class TestBed {
       this.setInlineTemplate(component, html);
     }
 
-    var rootEl = el('<div></div>');
+    var doc = this._injector.get(DOCUMENT_TOKEN);
+    var rootEl = el('<div id="root"></div>');
+    DOM.appendChild(doc.body, rootEl);
+
     var componentBinding = bind(component).toValue(context);
-    return this._injector.get(DynamicComponentLoader).loadIntoNewLocation(componentBinding, null, rootEl, this._injector).then((hostComponentRef) => {
+    return this._injector.get(DynamicComponentLoader).loadIntoNewLocation(componentBinding, null, '#root', this._injector).then((hostComponentRef) => {
       return new ViewProxy(hostComponentRef);
     });
   }

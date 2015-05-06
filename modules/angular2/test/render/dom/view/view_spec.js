@@ -20,7 +20,6 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
 import {DomView} from 'angular2/src/render/dom/view/view';
-import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -80,21 +79,6 @@ export function main() {
         expect(view.getDirectParentLightDom(2)).toBe(null);
       });
 
-    });
-
-    describe('getOrCreateViewContainer', () => {
-      it('should create a new container', () => {
-        var pv = createProtoView([new ElementBinder()]);
-        var view = createView(pv, 1);
-        expect(view.getOrCreateViewContainer(0) instanceof ViewContainer).toBe(true);
-      });
-
-      it('should return an existing container', () => {
-        var pv = createProtoView([new ElementBinder()]);
-        var view = createView(pv, 1);
-        var vc = view.getOrCreateViewContainer(0);
-        expect(view.getOrCreateViewContainer(0)).toBe(vc);
-      });
     });
 
   });

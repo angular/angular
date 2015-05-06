@@ -21,9 +21,9 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {If} from 'angular2/src/directives/if';
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-
+import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 
 export function main() {
   describe('DynamicComponentLoader', function () {
@@ -200,15 +200,17 @@ export function main() {
   selector: 'imp-ng-cmp'
 })
 @View({
-  renderer: 'imp-ng-cmp-renderer'
+  renderer: 'imp-ng-cmp-renderer',
+  template: ''
 })
 class ImperativeViewComponentUsingNgComponent {
   done;
 
-  constructor(self:ElementRef, dynamicComponentLoader:DynamicComponentLoader, renderer:DirectDomRenderer) {
-    var div = el('<div></div>');
-    renderer.setImperativeComponentRootNodes(self.parentView.render, self.boundElementIndex, [div]);
-    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, div, null);
+  constructor(self:ElementRef, dynamicComponentLoader:DynamicComponentLoader, viewManager:AppViewManager, renderer:DomRenderer) {
+    var div = el('<div id="impHost"></div>');
+    var shadowViewRef = viewManager.getComponentView(self);
+    renderer.setComponentViewRootNodes(shadowViewRef.render, [div]);
+    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, '#impHost', null);
   }
 }
 

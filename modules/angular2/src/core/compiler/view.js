@@ -32,7 +32,7 @@ export class AppView {
   componentChildViews: List<AppView>;
   /// Host views that were added by an imperative view.
   /// This is a dynamically growing / shrinking array.
-  imperativeHostViews: List<AppView>;
+  inPlaceHostViews: List<AppView>;
   viewContainers: List<AppViewContainer>;
   preBuiltObjects: List<PreBuiltObjects>;
   proto: AppProtoView;
@@ -64,7 +64,7 @@ export class AppView {
     this.context = null;
     this.locals = new Locals(null, MapWrapper.clone(protoLocals)); //TODO optimize this
     this.renderer = renderer;
-    this.imperativeHostViews = [];
+    this.inPlaceHostViews = [];
   }
 
   init(changeDetector:ChangeDetector, elementInjectors:List, rootElementInjectors:List,

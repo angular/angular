@@ -1,12 +1,11 @@
 import {Injector, Binding} from 'angular2/di';
 import {Injectable} from 'angular2/src/di/annotations_impl';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as viewModule from './view';
 import {ElementRef} from './element_ref';
 import {ProtoViewRef, ViewRef, internalView, internalProtoView} from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
-import {Renderer, RenderViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
+import {Renderer, RenderViewRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 
@@ -25,6 +24,12 @@ export class AppViewManager {
     this._renderer = renderer;
     this._viewPool = viewPool;
     this._utils = utils;
+  }
+
+  getComponentView(hostLocation:ElementRef):ViewRef {
+    var hostView = internalView(hostLocation.parentView);
+    var boundElementIndex = hostLocation.boundElementIndex;
+    return new ViewRef(hostView.componentChildViews[boundElementIndex]);
   }
 
   getViewContainer(location:ElementRef):ViewContainerRef {
@@ -47,20 +52,18 @@ export class AppViewManager {
     if (!binder.hasDynamicComponent()) {
       throw new BaseException(`There is no dynamic component directive at element ${boundElementIndex}`)
     }
-
-    var componentView = this._createViewRecurse(componentProtoView);
-    var renderViewRefs = this._renderer.createDynamicComponentView(hostView.render, boundElementIndex, componentProtoView.render);
-    componentView.render = renderViewRefs[0];
+    var componentView = this._createPooledView(componentProtoView);
+    this._renderer.attachComponentView(hostView.render, boundElementIndex, componentView.render);
     this._utils.attachComponentView(hostView, boundElementIndex, componentView);
     this._utils.hydrateDynamicComponentInElementInjector(hostView, boundElementIndex, componentBinding, injector);
     this._utils.hydrateComponentView(hostView, boundElementIndex);
-    this._viewHydrateRecurse(componentView, renderViewRefs, 1);
+    this._viewHydrateRecurse(componentView);
 
     return new ViewRef(componentView);
   }
 
   createInPlaceHostView(parentComponentLocation:ElementRef,
-      hostElementSelector, hostProtoViewRef:ProtoViewRef, injector:Injector):ViewRef {
+      hostElementSelector:string, hostProtoViewRef:ProtoViewRef, injector:Injector):ViewRef {
     var hostProtoView = internalProtoView(hostProtoViewRef);
     var parentComponentHostView = null;
     var parentComponentBoundElementIndex = null;
@@ -70,27 +73,22 @@ export class AppViewManager {
       parentComponentBoundElementIndex = parentComponentLocation.boundElementIndex;
       parentRenderViewRef = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex].render;
     }
-    var hostView = this._createViewRecurse(hostProtoView);
-    var renderViewRefs = this._renderer.createInPlaceHostView(parentRenderViewRef, hostElementSelector, hostProtoView.render);
-    hostView.render = renderViewRefs[0];
+    var hostRenderView = this._renderer.createInPlaceHostView(parentRenderViewRef, hostElementSelector, hostProtoView.render);
+    var hostView = this._utils.createView(hostProtoView, hostRenderView, this, this._renderer);
+    this._renderer.setEventDispatcher(hostView.render, hostView);
+    this._createViewRecurse(hostView)
     this._utils.attachAndHydrateInPlaceHostView(parentComponentHostView, parentComponentBoundElementIndex, hostView, injector);
-    this._viewHydrateRecurse(hostView, renderViewRefs, 1);
+    this._viewHydrateRecurse(hostView);
     return new ViewRef(hostView);
   }
 
   destroyInPlaceHostView(parentComponentLocation:ElementRef, hostViewRef:ViewRef) {
     var hostView = internalView(hostViewRef);
     var parentView = null;
-    var parentRenderViewRef = null;
     if (isPresent(parentComponentLocation)) {
       parentView = internalView(parentComponentLocation.parentView).componentChildViews[parentComponentLocation.boundElementIndex];
-      parentRenderViewRef = parentView.render;
     }
-    var hostViewRenderRef = hostView.render;
-    this._viewDehydrateRecurse(hostView);
-    this._utils.detachInPlaceHostView(parentView, hostView);
-    this._renderer.destroyInPlaceHostView(parentRenderViewRef, hostViewRenderRef);
-    this._destroyView(hostView);
+    this._destroyInPlaceHostView(parentView, hostView);
   }
 
   createViewInContainer(viewContainerLocation:ElementRef,
@@ -99,25 +97,19 @@ export class AppViewManager {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
 
-    var view = this._createViewRecurse(protoView);
-    var renderViewRefs = this._renderer.createViewInContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex, view.proto.render);
-    view.render = renderViewRefs[0];
+    var view = this._createPooledView(protoView);
 
+    this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
     this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
     this._utils.hydrateViewInContainer(parentView, boundElementIndex, atIndex, injector);
-    this._viewHydrateRecurse(view, renderViewRefs, 1);
+    this._viewHydrateRecurse(view);
     return new ViewRef(view);
   }
 
   destroyViewInContainer(viewContainerLocation:ElementRef, atIndex:number) {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
-    var viewContainer = parentView.viewContainers[boundElementIndex];
-    var view = viewContainer.views[atIndex];
-    this._viewDehydrateRecurse(view);
-    this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.destroyViewInContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex);
-    this._destroyView(view);
+    this._destroyViewInContainer(parentView, boundElementIndex, atIndex);
   }
 
   attachViewInContainer(viewContainerLocation:ElementRef, atIndex:number, viewRef:ViewRef):ViewRef {
@@ -125,7 +117,7 @@ export class AppViewManager {
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
     this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
-    this._renderer.insertViewIntoContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex, view.render);
+    this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
     return viewRef;
   }
 
@@ -135,86 +127,105 @@ export class AppViewManager {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
     this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
-    this._renderer.detachViewFromContainer(this._getRenderViewContainerRef(parentView, boundElementIndex), atIndex);
+    this._renderer.detachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
     return new ViewRef(view);
   }
 
-  _getRenderViewContainerRef(parentView:viewModule.AppView, boundElementIndex:number) {
-    return new RenderViewContainerRef(parentView.render, boundElementIndex);
-  }
-
-  _createViewRecurse(protoView:viewModule.AppProtoView) {
+  _createPooledView(protoView:viewModule.AppProtoView):viewModule.AppView {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
-      view = this._utils.createView(protoView, this, this._renderer);
-      var binders = protoView.elementBinders;
-      for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-        var binder = binders[binderIdx];
-        if (binder.hasStaticComponent()) {
-          var childView = this._createViewRecurse(binder.nestedProtoView);
-          this._utils.attachComponentView(view, binderIdx, childView);
-        }
-      }
+      view = this._utils.createView(protoView, this._renderer.createView(protoView.render), this, this._renderer);
+      this._renderer.setEventDispatcher(view.render, view);
+      this._createViewRecurse(view);
     }
     return view;
   }
 
-  _destroyView(view:viewModule.AppView) {
+  _createViewRecurse(view:viewModule.AppView) {
+    var binders = view.proto.elementBinders;
+    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
+      var binder = binders[binderIdx];
+      if (binder.hasStaticComponent()) {
+        var childView = this._createPooledView(binder.nestedProtoView);
+        this._renderer.attachComponentView(view.render, binderIdx, childView.render);
+        this._utils.attachComponentView(view, binderIdx, childView);
+      }
+    }
+  }
+
+  _destroyPooledView(view:viewModule.AppView) {
+    // TODO: if the pool is full, call renderer.destroyView as well!
     this._viewPool.returnView(view);
   }
 
+  _destroyViewInContainer(parentView, boundElementIndex, atIndex:number) {
+    var viewContainer = parentView.viewContainers[boundElementIndex];
+    var view = viewContainer.views[atIndex];
+    this._viewDehydrateRecurse(view, false);
+    this._utils.detachViewInContainer(parentView, boundElementIndex, atIndex);
+    this._renderer.detachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
+    this._destroyPooledView(view);
+  }
+
+  _destroyComponentView(hostView, boundElementIndex, componentView) {
+    this._viewDehydrateRecurse(componentView, false);
+    this._renderer.detachComponentView(hostView.render, boundElementIndex, componentView.render);
+    this._utils.detachComponentView(hostView, boundElementIndex);
+    this._destroyPooledView(componentView);
+  }
+
+  _destroyInPlaceHostView(parentView, hostView) {
+    var parentRenderViewRef = null;
+    if (isPresent(parentView)) {
+      parentRenderViewRef = parentView.render;
+    }
+    this._viewDehydrateRecurse(hostView, true);
+    this._utils.detachInPlaceHostView(parentView, hostView);
+    this._renderer.destroyInPlaceHostView(parentRenderViewRef, hostView.render);
+    // Note: Don't put the inplace host view into the view pool
+    // as it is depending on the element for which it was created.
+  }
+
   _viewHydrateRecurse(
-      view:viewModule.AppView,
-      renderComponentViewRefs:List<RenderViewRef>,
-      renderComponentIndex:number):number {
-    this._renderer.setEventDispatcher(view.render, view);
+      view:viewModule.AppView) {
+    this._renderer.hydrateView(view.render);
 
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; ++i) {
       if (binders[i].hasStaticComponent()) {
-        var childView = view.componentChildViews[i];
-        childView.render = renderComponentViewRefs[renderComponentIndex++];
         this._utils.hydrateComponentView(view, i);
-        renderComponentIndex = this._viewHydrateRecurse(
-          view.componentChildViews[i],
-          renderComponentViewRefs,
-          renderComponentIndex
+        this._viewHydrateRecurse(
+          view.componentChildViews[i]
         );
       }
     }
-    return renderComponentIndex;
   }
 
-  _viewDehydrateRecurse(view:viewModule.AppView) {
+  _viewDehydrateRecurse(view:viewModule.AppView, forceDestroyComponents) {
     this._utils.dehydrateView(view);
+    this._renderer.dehydrateView(view.render);
     var binders = view.proto.elementBinders;
     for (var i = 0; i < binders.length; i++) {
       var componentView = view.componentChildViews[i];
       if (isPresent(componentView)) {
-        this._viewDehydrateRecurse(componentView);
-        if (binders[i].hasDynamicComponent()) {
-          this._utils.detachComponentView(view, i);
-          this._destroyView(componentView);
+        if (binders[i].hasDynamicComponent() || forceDestroyComponents) {
+          this._destroyComponentView(view, i, componentView);
+        } else {
+          this._viewDehydrateRecurse(componentView, false);
         }
       }
       var vc = view.viewContainers[i];
       if (isPresent(vc)) {
         for (var j = vc.views.length - 1; j >= 0; j--) {
-          var childView = vc.views[j];
-          this._viewDehydrateRecurse(childView);
-          this._utils.detachViewInContainer(view, i, j);
-          this._destroyView(childView);
+          this._destroyViewInContainer(view, i, j);
         }
       }
     }
 
-    // imperativeHostViews
-    for (var i = 0; i < view.imperativeHostViews.length; i++) {
-      var hostView = view.imperativeHostViews[i];
-      this._viewDehydrateRecurse(hostView);
-      this._utils.detachInPlaceHostView(view, hostView);
-      this._destroyView(hostView);
+    // inPlaceHostViews
+    for (var i = view.inPlaceHostViews.length-1; i>=0; i--) {
+      var hostView = view.inPlaceHostViews[i];
+      this._destroyInPlaceHostView(view, hostView);
     }
-    view.render = null;
   }
 }

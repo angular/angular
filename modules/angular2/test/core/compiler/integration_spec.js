@@ -37,7 +37,8 @@ import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {Compiler} from 'angular2/src/core/compiler/compiler';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
+import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
+import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 
 export function main() {
   describe('integration tests', function() {
@@ -863,13 +864,15 @@ export function main() {
   selector: 'simple-imp-cmp'
 })
 @View({
-  renderer: 'simple-imp-cmp-renderer'
+  renderer: 'simple-imp-cmp-renderer',
+  template: ''
 })
 class SimpleImperativeViewComponent {
   done;
 
-  constructor(self:ElementRef, renderer:DirectDomRenderer) {
-    renderer.setImperativeComponentRootNodes(self.parentView.render, self.boundElementIndex, [el('hello imp view')]);
+  constructor(self:ElementRef, viewManager:AppViewManager, renderer:DomRenderer) {
+    var shadowViewRef = viewManager.getComponentView(self);
+    renderer.setComponentViewRootNodes(shadowViewRef.render, [el('hello imp view')]);
   }
 }
 

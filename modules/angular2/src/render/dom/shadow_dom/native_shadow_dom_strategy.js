@@ -2,11 +2,8 @@ import {Promise} from 'angular2/src/facade/async';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import * as viewModule from '../view/view';
-
 import {StyleUrlResolver} from './style_url_resolver';
 import {ShadowDomStrategy} from './shadow_dom_strategy';
-import {moveViewNodesIntoParent} from './util';
 
 /**
  * This strategies uses the native Shadow DOM support.
@@ -22,8 +19,8 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     this.styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el, view:viewModule.DomView){
-    moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
+  prepareShadowRoot(el) {
+    return DOM.createShadowRoot(el);
   }
 
   processStyleElement(hostComponentId:string, templateUrl:string, styleEl):Promise {

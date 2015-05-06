@@ -28,7 +28,6 @@ import {
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {DomView} from 'angular2/src/render/dom/view/view';
 
 export function main() {
   describe('EmulatedScopedShadowDomStrategy', () => {
@@ -44,15 +43,9 @@ export function main() {
       resetShadowDomCache();
     });
 
-    it('should attach the view nodes as child of the host element', () => {
+    it('should use the host element as shadow root', () => {
       var host = el('<div><span>original content</span></div>');
-      var originalChild = DOM.childNodes(host)[0];
-      var nodes = el('<div>view</div>');
-      var view = new DomView(null, [nodes], [], [], []);
-
-      strategy.attachTemplate(host, view);
-      expect(DOM.childNodes(host)[0]).toBe(originalChild);
-      expect(DOM.childNodes(host)[1]).toBe(nodes);
+      expect(strategy.prepareShadowRoot(host)).toBe(host);
     });
 
     it('should rewrite style urls', () => {

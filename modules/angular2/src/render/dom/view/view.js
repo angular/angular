@@ -2,12 +2,29 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
-import {ViewContainer} from './view_container';
+import {DomViewContainer} from './view_container';
 import {DomProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
 import {Content} from '../shadow_dom/content_tag';
 
+import {RenderViewRef} from '../../api';
+
+// TODO(tbosch): enable this again!
 // import {EventDispatcher} from '../../api';
+
+export function resolveInternalDomView(viewRef:RenderViewRef) {
+  var domViewRef:DomViewRef = viewRef;
+  return domViewRef._view;
+}
+
+export class DomViewRef extends RenderViewRef {
+  _view:DomView;
+  constructor(view:DomView) {
+    super();
+    this._view = view;
+  }
+}
+
 
 const NG_BINDING_CLASS = 'ng-binding';
 
@@ -22,18 +39,15 @@ export class DomView {
   rootNodes:List;
   // TODO(tbosch): move componentChildViews, viewContainers, contentTags, lightDoms into
   // a single array with records inside
-  componentChildViews: List<DomView>;
-  viewContainers: List<ViewContainer>;
+  viewContainers: List<DomViewContainer>;
   contentTags: List<Content>;
   lightDoms: List<LightDom>;
   hostLightDom: LightDom;
+  shadowRoot;
   proto: DomProtoView;
   hydrated: boolean;
-  _eventDispatcher: any/*EventDispatcher*/;
+  eventDispatcher: any/*EventDispatcher*/;
   eventHandlerRemovers: List<Function>;
-  /// Host views that were added by an imperative view.
-  /// This is a dynamically growing / shrinking array.
-  imperativeHostViews: List<DomView>;
 
   constructor(
       proto:DomProtoView, rootNodes:List,
@@ -45,12 +59,11 @@ export class DomView {
     this.viewContainers = ListWrapper.createFixedSize(boundElements.length);
     this.contentTags = contentTags;
     this.lightDoms = ListWrapper.createFixedSize(boundElements.length);
-    ListWrapper.fill(this.lightDoms, null);
-    this.componentChildViews = ListWrapper.createFixedSize(boundElements.length);
     this.hostLightDom = null;
     this.hydrated = false;
     this.eventHandlerRemovers = [];
-    this.imperativeHostViews = [];
+    this.eventDispatcher = null;
+    this.shadowRoot = null;
   }
 
   getDirectParentLightDom(boundElementIndex:number) {
@@ -62,15 +75,6 @@ export class DomView {
     return destLightDom;
   }
 
-  getOrCreateViewContainer(binderIndex) {
-    var vc = this.viewContainers[binderIndex];
-    if (isBlank(vc)) {
-      vc = new ViewContainer(this, binderIndex);
-      this.viewContainers[binderIndex] = vc;
-    }
-    return vc;
-  }
-
   setElementProperty(elementIndex:number, propertyName:string, value:any) {
     var setter = MapWrapper.get(this.proto.elementBinders[elementIndex].propertySetters, propertyName);
     setter(this.boundElements[elementIndex], value);
@@ -80,24 +84,16 @@ export class DomView {
     DOM.setText(this.boundTextNodes[textIndex], value);
   }
 
-  getViewContainer(index:number):ViewContainer {
-    return this.viewContainers[index];
-  }
-
-  setEventDispatcher(dispatcher:any/*EventDispatcher*/) {
-    this._eventDispatcher = dispatcher;
-  }
-
   dispatchEvent(elementIndex, eventName, event): boolean {
     var allowDefaultBehavior = true;
-    if (isPresent(this._eventDispatcher)) {
+    if (isPresent(this.eventDispatcher)) {
       var evalLocals = MapWrapper.create();
       MapWrapper.set(evalLocals, '$event', event);
       // TODO(tbosch): reenable this when we are parsing element properties
       // out of action expressions
       // var localValues = this.proto.elementBinders[elementIndex].eventLocals.eval(null, new Locals(null, evalLocals));
-      // this._eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
-      allowDefaultBehavior = this._eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
+      // this.eventDispatcher.dispatchEvent(elementIndex, eventName, localValues);
+      allowDefaultBehavior = this.eventDispatcher.dispatchEvent(elementIndex, eventName, evalLocals);
       if (!allowDefaultBehavior) {
         event.preventDefault();
       }

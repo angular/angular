@@ -23,7 +23,7 @@ export function main() {
 
     it("should insert the nodes", () => {
       var c = new Content(content, '');
-      c.hydrate(null);
+      c.init(null);
       c.insert([el("<a></a>"), el("<b></b>")])
 
       expect(DOM.getInnerHTML(parent)).toEqual(`${_scriptStart}<a></a><b></b>${_scriptEnd}`);
@@ -31,7 +31,7 @@ export function main() {
 
     it("should remove the nodes from the previous insertion", () => {
       var c = new Content(content, '');
-      c.hydrate(null);
+      c.init(null);
       c.insert([el("<a></a>")]);
       c.insert([el("<b></b>")]);
 
@@ -40,7 +40,7 @@ export function main() {
 
     it("should insert empty list", () => {
       var c = new Content(content, '');
-      c.hydrate(null);
+      c.init(null);
       c.insert([el("<a></a>")]);
       c.insert([]);
 

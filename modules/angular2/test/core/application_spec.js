@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {bootstrap} from 'angular2/src/core/application';
-import {appDocumentToken, appElementToken} from 'angular2/src/core/application_tokens';
+import {appComponentAnnotatedTypeToken} from 'angular2/src/core/application_tokens';
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -21,6 +21,7 @@ import {Inject} from 'angular2/src/di/annotations_impl';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
+import {DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -84,7 +85,7 @@ export function main() {
     DOM.appendChild(fakeDoc.body, el2);
     DOM.appendChild(el, lightDom);
     DOM.setText(lightDom, 'loading');
-    testBindings = [bind(appDocumentToken).toValue(fakeDoc)];
+    testBindings = [bind(DOCUMENT_TOKEN).toValue(fakeDoc)];
   });
 
   describe('bootstrap factory method', () => {
@@ -100,7 +101,7 @@ export function main() {
       var refPromise = bootstrap(HelloRootCmp, [], (e,t) => {throw e;});
       PromiseWrapper.then(refPromise, null, (reason) => {
         expect(reason.message).toContain(
-            'The app selector "hello-app" did not match any elements');
+            'The selector "hello-app" did not match any elements');
         async.done();
       });
     }));
@@ -113,7 +114,7 @@ export function main() {
     it('should resolve an injector promise and contain bindings', inject([AsyncTestCompleter], (async) => {
       var refPromise = bootstrap(HelloRootCmp, testBindings);
       refPromise.then((ref) => {
-        expect(ref.injector.get(appElementToken)).toBe(el);
+        expect(ref.injector.get(appComponentAnnotatedTypeToken).type).toBe(HelloRootCmp);
         async.done();
       });
     }));
@@ -129,7 +130,7 @@ export function main() {
     it('should display hello world', inject([AsyncTestCompleter], (async) => {
       var refPromise = bootstrap(HelloRootCmp, testBindings);
       refPromise.then((ref) => {
-        expect(ref.injector.get(appElementToken)).toHaveText('hello world!');
+        expect(el).toHaveText('hello world!');
         async.done();
       });
     }));
@@ -138,8 +139,8 @@ export function main() {
       var refPromise1 = bootstrap(HelloRootCmp, testBindings);
       var refPromise2 = bootstrap(HelloRootCmp2, testBindings);
       PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
-        expect(refs[0].injector.get(appElementToken)).toHaveText('hello world!');
-        expect(refs[1].injector.get(appElementToken)).toHaveText('hello world, again!');
+        expect(el).toHaveText('hello world!');
+        expect(el2).toHaveText('hello world, again!');
         async.done();
       });
     }));
@@ -168,7 +169,7 @@ export function main() {
     it("should support shadow dom content tag", inject([AsyncTestCompleter], (async) => {
       var refPromise = bootstrap(HelloRootCmpContent, testBindings);
       refPromise.then((ref) => {
-        expect(ref.injector.get(appElementToken)).toHaveText('before: loading after: done');
+        expect(el).toHaveText('before: loading after: done');
         async.done();
       });
     }));
