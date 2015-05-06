@@ -155,7 +155,7 @@ You can selectively run either the JS or Dart versions as follows:
 
 You can run just the unit tests as follows:
 
-* `$(npm bin)/gulp test.unit.js`: JS tests in a browser; runs in **watch mode** (i.e. karma
+* `$(npm bin)/gulp test.unit.js`: JS tests in a browser; runs in **watch mode** (i.e.
    watches the test files for changes and re-runs tests when files are updated).
 * `$(npm bin)/gulp test.unit.cjs`: JS tests in NodeJS; runs in **watch mode**.
 * `$(npm bin)/gulp test.unit.dart`: Dart tests in Dartium; runs in **watch mode**.
@@ -166,14 +166,13 @@ If you prefer running tests in "single-run" mode rather than watch mode use:
 * `$(npm bin)/gulp test.unit.cjs/ci`
 * `$(npm bin)/gulp test.unit.dart/ci`
 
+The task updates the dist folder with transpiled code whenever a source or test file changes, and
+Karma is run against the new output.
+
 **Note**: If you want to only run a single test you can alter the test you wish to run by changing
 `it` to `iit` or `describe` to `ddescribe`. This will only run that individual test and make it
 much easier to debug. `xit` and `xdescribe` can also be useful to exclude a test and a group of
 tests respectively.
-
-**Note for transpiler tests**: The karma preprocessor is setup in a way so that after every test
-run the transpiler is reloaded. With that it is possible to make changes to the preprocessor and
-run the tests without exiting karma (just touch a test file that you would like to run).
 
 ### E2e tests
 
