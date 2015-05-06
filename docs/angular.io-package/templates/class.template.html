@@ -38,7 +38,7 @@ p.location-badge.
         {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
     {% endif %}
     :markdown
-}
+
 {$ member.description | indent(6, true) | replace('## Example', '') | replace('# Example', '')  $}
 
 

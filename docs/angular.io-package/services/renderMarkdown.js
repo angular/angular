@@ -30,9 +30,7 @@ module.exports = function renderMarkdown(trimIndentation) {
       cssClasses.push(this.options.langPrefix + escape(lang, true));
     }
 
-    return 'pre(class="' + cssClasses.join(' ') + '")\n'
-            + indentString('code.\n', ' ', 2)
-            + trimmedCode;
+    return 'pre(class="' + cssClasses.join(' ') + '")\n' + indentString('code.\n', ' ', 2) + trimmedCode;
   };
 
   renderer.heading = function (text, level, raw) {
