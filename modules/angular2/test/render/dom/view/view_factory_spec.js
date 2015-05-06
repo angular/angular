@@ -17,8 +17,8 @@ import {
 import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ViewFactory} from 'angular2/src/render/dom/view/view_factory';
-import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
-import {RenderView} from 'angular2/src/render/dom/view/view';
+import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {DomView} from 'angular2/src/render/dom/view/view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom'
@@ -40,7 +40,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      return new RenderProtoView({
+      return new DomProtoView({
         element: rootEl,
         elementBinders: binders
       });
@@ -66,7 +66,7 @@ export function main() {
       var vf = createViewFactory({
         capacity: 0
       });
-      expect(vf.getView(pv) instanceof RenderView).toBe(true);
+      expect(vf.getView(pv) instanceof DomView).toBe(true);
     });
 
     describe('caching', () => {

@@ -3,7 +3,7 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
 import {ViewContainer} from './view_container';
-import {RenderProtoView} from './proto_view';
+import {DomProtoView} from './proto_view';
 import {LightDom} from '../shadow_dom/light_dom';
 import {Content} from '../shadow_dom/content_tag';
 
@@ -14,7 +14,7 @@ const NG_BINDING_CLASS = 'ng-binding';
 /**
  * Const of making objects: http://jsperf.com/instantiate-size-of-object
  */
-export class RenderView {
+export class DomView {
   boundElements:List;
   boundTextNodes:List;
   /// When the view is part of render tree, the DocumentFragment is empty, which is why we need
@@ -22,21 +22,21 @@ export class RenderView {
   rootNodes:List;
   // TODO(tbosch): move componentChildViews, viewContainers, contentTags, lightDoms into
   // a single array with records inside
-  componentChildViews: List<RenderView>;
+  componentChildViews: List<DomView>;
   viewContainers: List<ViewContainer>;
   contentTags: List<Content>;
   lightDoms: List<LightDom>;
   hostLightDom: LightDom;
-  proto: RenderProtoView;
+  proto: DomProtoView;
   hydrated: boolean;
   _eventDispatcher: any/*EventDispatcher*/;
   eventHandlerRemovers: List<Function>;
   /// Host views that were added by an imperative view.
   /// This is a dynamically growing / shrinking array.
-  imperativeHostViews: List<RenderView>;
+  imperativeHostViews: List<DomView>;
 
   constructor(
-      proto:RenderProtoView, rootNodes:List,
+      proto:DomProtoView, rootNodes:List,
       boundTextNodes: List, boundElements:List, contentTags:List) {
     this.proto = proto;
     this.rootNodes = rootNodes;

@@ -16,9 +16,9 @@ import {
 } from 'angular2/test_lib';
 import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 
-import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
-import {RenderView} from 'angular2/src/render/dom/view/view';
+import {DomView} from 'angular2/src/render/dom/view/view';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {EventManager} from 'angular2/src/render/dom/events/event_manager';
@@ -41,7 +41,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      return new RenderProtoView({
+      return new DomProtoView({
         element: rootEl,
         elementBinders: binders
       });
@@ -69,12 +69,12 @@ export function main() {
 
     function createEmptyView() {
       var root = el('<div><div></div></div>');
-      return new RenderView(createProtoView(), [DOM.childNodes(root)[0]],
+      return new DomView(createProtoView(), [DOM.childNodes(root)[0]],
         [], [], []);
     }
 
     function createHostView(pv, shadowDomView) {
-      var view = new RenderView(pv, [el('<div></div>')],
+      var view = new DomView(pv, [el('<div></div>')],
         [], [el('<div></div>')], [null]);
       ViewFactory.setComponentView(shadowDomStrategy, view, 0, shadowDomView);
       return view;

@@ -4,8 +4,8 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 
 import * as api from '../api';
-import {RenderView} from './view/view';
-import {RenderProtoView} from './view/proto_view';
+import {DomView} from './view/view';
+import {DomProtoView} from './view/proto_view';
 import {ViewFactory} from './view/view_factory';
 import {RenderViewHydrator} from './view/view_hydrator';
 import {ShadowDomStrategy} from './shadow_dom/shadow_dom_strategy';
@@ -23,7 +23,7 @@ function _resolveProtoView(protoViewRef:DirectDomProtoViewRef) {
   return isPresent(protoViewRef) ? protoViewRef.delegate : null;
 }
 
-function _wrapView(view:RenderView) {
+function _wrapView(view:DomView) {
   return new DirectDomViewRef(view);
 }
 
@@ -44,18 +44,18 @@ function _collectComponentChildViewRefs(view, target = null) {
 
 // public so that the compiler can use it.
 export class DirectDomProtoViewRef extends api.RenderProtoViewRef {
-  delegate:RenderProtoView;
+  delegate:DomProtoView;
 
-  constructor(delegate:RenderProtoView) {
+  constructor(delegate:DomProtoView) {
     super();
     this.delegate = delegate;
   }
 }
 
 export class DirectDomViewRef extends api.RenderViewRef {
-  delegate:RenderView;
+  delegate:DomView;
 
-  constructor(delegate:RenderView) {
+  constructor(delegate:DomView) {
     super();
     this.delegate = delegate;
   }

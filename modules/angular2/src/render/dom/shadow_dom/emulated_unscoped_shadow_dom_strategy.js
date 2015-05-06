@@ -33,11 +33,11 @@ export class EmulatedUnscopedShadowDomStrategy extends ShadowDomStrategy {
     return false;
   }
 
-  attachTemplate(el, view:viewModule.RenderView) {
+  attachTemplate(el, view:viewModule.DomView) {
     moveViewNodesIntoParent(el, view);
   }
 
-  constructLightDom(lightDomView:viewModule.RenderView, shadowDomView:viewModule.RenderView, el): LightDom {
+  constructLightDom(lightDomView:viewModule.DomView, shadowDomView:viewModule.DomView, el): LightDom {
     return new LightDom(lightDomView, shadowDomView, el);
   }
 

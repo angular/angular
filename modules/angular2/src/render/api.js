@@ -131,10 +131,10 @@ export class DirectiveMetadata {
   }
 }
 
-// An opaque reference to a RenderProtoView
+// An opaque reference to a DomProtoView
 export class RenderProtoViewRef {}
 
-// An opaque reference to a RenderView
+// An opaque reference to a DomView
 export class RenderViewRef {}
 
 export class RenderViewContainerRef {
@@ -175,7 +175,7 @@ export class RenderCompiler {
   createImperativeComponentProtoView(rendererId):Promise<ProtoViewDto> { return null; }
 
   /**
-   * Compiles a single RenderProtoView. Non recursive so that
+   * Compiles a single DomProtoView. Non recursive so that
    * we don't need to serialize all possible components over the wire,
    * but only the needed ones based on previous calls.
    */
@@ -186,7 +186,7 @@ export class RenderCompiler {
    * which will be instantiated when this protoView is instantiated.
    * Note: We can't create new ProtoViewRefs here as we need to support cycles / recursive components.
    * @param {List<RenderProtoViewRef>} protoViewRefs
-   *    RenderProtoView for every element with a component in this protoView or in a view container's protoView
+   *    DomProtoView for every element with a component in this protoView or in a view container's protoView
    */
   mergeChildComponentProtoViews(protoViewRef:RenderProtoViewRef, componentProtoViewRefs:List<RenderProtoViewRef>) { return null; }
 }
@@ -259,7 +259,7 @@ export class Renderer {
   /**
    * This will set the value for a text node.
    * Note: This needs to be separate from setElementProperty as we don't have ElementBinders
-   * for text nodes in the RenderProtoView either.
+   * for text nodes in the DomProtoView either.
    */
   setText(view:RenderViewRef, textNodeIndex:number, text:string):void {}
 

@@ -32,7 +32,7 @@ export class RenderViewHydrator {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  hydrateDynamicComponentView(hostView:viewModule.RenderView, boundElementIndex:number, componentView:viewModule.RenderView) {
+  hydrateDynamicComponentView(hostView:viewModule.DomView, boundElementIndex:number, componentView:viewModule.DomView) {
     ViewFactory.setComponentView(this._shadowDomStrategy, hostView, boundElementIndex, componentView);
     var lightDom = hostView.lightDoms[boundElementIndex];
     this._viewHydrateRecurse(componentView, lightDom);
@@ -41,7 +41,7 @@ export class RenderViewHydrator {
     }
   }
 
-  dehydrateDynamicComponentView(parentView:viewModule.RenderView, boundElementIndex:number) {
+  dehydrateDynamicComponentView(parentView:viewModule.DomView, boundElementIndex:number) {
     throw new BaseException('Not supported yet');
     // Something along these lines:
     // var componentView = parentView.componentChildViews[boundElementIndex];
@@ -51,14 +51,14 @@ export class RenderViewHydrator {
     // this._viewDehydrateRecurse(componentView);
   }
 
-  hydrateInPlaceHostView(parentView:viewModule.RenderView, hostView:viewModule.RenderView) {
+  hydrateInPlaceHostView(parentView:viewModule.DomView, hostView:viewModule.DomView) {
     if (isPresent(parentView)) {
       ListWrapper.push(parentView.imperativeHostViews, hostView);
     }
     this._viewHydrateRecurse(hostView, null);
   }
 
-  dehydrateInPlaceHostView(parentView:viewModule.RenderView, hostView:viewModule.RenderView) {
+  dehydrateInPlaceHostView(parentView:viewModule.DomView, hostView:viewModule.DomView) {
     if (isPresent(parentView)) {
       ListWrapper.remove(parentView.imperativeHostViews, hostView);
     }
@@ -67,11 +67,11 @@ export class RenderViewHydrator {
     this._viewDehydrateRecurse(hostView);
   }
 
-  hydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.RenderView) {
+  hydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.DomView) {
     this._viewHydrateRecurse(view, viewContainer.parentView.hostLightDom);
   }
 
-  dehydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.RenderView) {
+  dehydrateViewInViewContainer(viewContainer:vcModule.ViewContainer, view:viewModule.DomView) {
     this._viewDehydrateRecurse(view);
   }
 

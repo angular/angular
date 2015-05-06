@@ -17,22 +17,22 @@ import {
 import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {RenderProtoView} from 'angular2/src/render/dom/view/proto_view';
+import {DomProtoView} from 'angular2/src/render/dom/view/proto_view';
 import {ElementBinder} from 'angular2/src/render/dom/view/element_binder';
-import {RenderView} from 'angular2/src/render/dom/view/view';
+import {DomView} from 'angular2/src/render/dom/view/view';
 import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
 
-  describe('RenderView', () => {
+  describe('DomView', () => {
     function createProtoView(binders = null) {
       if (isBlank(binders)) {
         binders = [];
       }
       var rootEl = el('<div></div>');
-      return new RenderProtoView({
+      return new DomProtoView({
         element: rootEl,
         elementBinders: binders
       });
@@ -47,7 +47,7 @@ export function main() {
       for (var i=0; i<boundElementCount; i++) {
         ListWrapper.push(boundElements, el('<span></span'));
       }
-      return new RenderView(pv, [DOM.childNodes(root)[0]],
+      return new DomView(pv, [DOM.childNodes(root)[0]],
         [], boundElements, []);
     }
 

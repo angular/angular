@@ -5,18 +5,18 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import * as viewModule from './view';
 
 export class ViewContainer {
-  parentView: viewModule.RenderView;
+  parentView: viewModule.DomView;
   boundElementIndex: number;
-  views: List<viewModule.RenderView>;
+  views: List<viewModule.DomView>;
 
-  constructor(parentView: viewModule.RenderView, boundElementIndex: number) {
+  constructor(parentView: viewModule.DomView, boundElementIndex: number) {
     this.parentView = parentView;
     this.boundElementIndex = boundElementIndex;
     // The order in this list matches the DOM order.
     this.views = [];
   }
 
-  get(index: number): viewModule.RenderView {
+  get(index: number): viewModule.DomView {
     return this.views[index];
   }
 
@@ -48,7 +48,7 @@ export class ViewContainer {
     }
   }
 
-  insert(view, atIndex=-1): viewModule.RenderView {
+  insert(view, atIndex=-1): viewModule.DomView {
     this._checkHydrated();
     if (atIndex == -1) atIndex = this.views.length;
     ListWrapper.insert(this.views, atIndex, view);
