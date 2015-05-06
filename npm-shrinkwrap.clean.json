@@ -8716,7 +8716,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.4.2",
+      "version": "0.4.8",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
@@ -9508,8 +9508,8 @@
       }
     },
     "typescript": {
-      "version": "1.5.0",
-      "resolved": "git://github.com/alexeagle/TypeScript#5d006dcd185eec3fa919c8670fbaa451d7912f66"
+      "version": "1.5.0-beta",
+      "resolved": "git://github.com/alexeagle/TypeScript#cddc1867c44b6bed9095dc30f0b0f552cbc003a9"
     },
     "vinyl": {
       "version": "0.4.6",
