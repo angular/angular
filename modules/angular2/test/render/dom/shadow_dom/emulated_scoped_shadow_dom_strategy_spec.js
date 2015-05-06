@@ -28,7 +28,7 @@ import {
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {RenderView} from 'angular2/src/render/dom/view/view';
+import {DomView} from 'angular2/src/render/dom/view/view';
 
 export function main() {
   describe('EmulatedScopedShadowDomStrategy', () => {
@@ -48,7 +48,7 @@ export function main() {
       var host = el('<div><span>original content</span></div>');
       var originalChild = DOM.childNodes(host)[0];
       var nodes = el('<div>view</div>');
-      var view = new RenderView(null, [nodes], [], [], []);
+      var view = new DomView(null, [nodes], [], [], []);
 
       strategy.attachTemplate(host, view);
       expect(DOM.childNodes(host)[0]).toBe(originalChild);

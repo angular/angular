@@ -22,7 +22,7 @@ export class NativeShadowDomStrategy extends ShadowDomStrategy {
     this.styleUrlResolver = styleUrlResolver;
   }
 
-  attachTemplate(el, view:viewModule.RenderView){
+  attachTemplate(el, view:viewModule.DomView){
     moveViewNodesIntoParent(DOM.createShadowRoot(el), view);
   }
 

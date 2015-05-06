@@ -4,11 +4,11 @@ import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Content} from 'angular2/src/render/dom/shadow_dom/content_tag';
 import {LightDom} from 'angular2/src/render/dom/shadow_dom/light_dom';
-import {RenderView} from 'angular2/src/render/dom/view/view';
+import {DomView} from 'angular2/src/render/dom/view/view';
 import {ViewContainer} from 'angular2/src/render/dom/view/view_container';
 
 @proxy
-@IMPLEMENTS(RenderView)
+@IMPLEMENTS(DomView)
 class FakeView {
   boundElements;
   contentTags;

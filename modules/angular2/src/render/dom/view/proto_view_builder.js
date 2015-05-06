@@ -6,7 +6,7 @@ import {
   ASTWithSource, AST, AstTransformer, AccessMember, LiteralArray, ImplicitReceiver
 } from 'angular2/change_detection';
 
-import {RenderProtoView} from './proto_view';
+import {DomProtoView} from './proto_view';
 import {ElementBinder, Event} from './element_binder';
 import {setterFactory} from './property_setter_factory';
 
@@ -43,7 +43,7 @@ export class ProtoViewBuilder {
 
   bindVariable(name, value) {
     // Store the variable map from value to variable, reflecting how it will be used later by
-    // RenderView. When a local is set to the view, a lookup for the variable name will take place keyed
+    // DomView. When a local is set to the view, a lookup for the variable name will take place keyed
     // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
     // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
     // it.
@@ -102,7 +102,7 @@ export class ProtoViewBuilder {
       }));
     });
     return new api.ProtoViewDto({
-      render: new directDomRenderer.DirectDomProtoViewRef(new RenderProtoView({
+      render: new directDomRenderer.DirectDomProtoViewRef(new DomProtoView({
         element: this.rootElement,
         elementBinders: renderElementBinders,
         imperativeRendererId: this.imperativeRendererId
@@ -192,7 +192,7 @@ export class ElementBinderBuilder {
       this.nestedProtoView.bindVariable(name, value);
     } else {
       // Store the variable map from value to variable, reflecting how it will be used later by
-      // RenderView. When a local is set to the view, a lookup for the variable name will take place keyed
+      // DomView. When a local is set to the view, a lookup for the variable name will take place keyed
       // by the "value", or exported identifier. For example, ng-repeat sets a view local of "index".
       // When this occurs, a lookup keyed by "index" must occur to find if there is a var referencing
       // it.

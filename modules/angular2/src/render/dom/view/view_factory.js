@@ -18,7 +18,7 @@ export const VIEW_POOL_CAPACITY = 'render.ViewFactory.viewPoolCapacity';
 @Injectable()
 export class ViewFactory {
   _poolCapacityPerProtoView:number;
-  _pooledViewsPerProtoView:Map<pvModule.RenderProtoView, List<viewModule.RenderView>>;
+  _pooledViewsPerProtoView:Map<pvModule.DomProtoView, List<viewModule.DomView>>;
   _eventManager:EventManager;
   _shadowDomStrategy:ShadowDomStrategy;
 
@@ -30,11 +30,11 @@ export class ViewFactory {
     this._shadowDomStrategy = shadowDomStrategy;
   }
 
-  createInPlaceHostView(hostElementSelector, hostProtoView:pvModule.RenderProtoView):viewModule.RenderView {
+  createInPlaceHostView(hostElementSelector, hostProtoView:pvModule.DomProtoView):viewModule.DomView {
     return this._createView(hostProtoView, hostElementSelector);
   }
 
-  getView(protoView:pvModule.RenderProtoView):viewModule.RenderView {
+  getView(protoView:pvModule.DomProtoView):viewModule.DomView {
     var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
     if (isPresent(pooledViews) && pooledViews.length > 0) {
       return ListWrapper.removeLast(pooledViews);
@@ -42,7 +42,7 @@ export class ViewFactory {
     return this._createView(protoView, null);
   }
 
-  returnView(view:viewModule.RenderView) {
+  returnView(view:viewModule.DomView) {
     if (view.hydrated) {
       throw new BaseException('View is still hydrated');
     }
@@ -57,9 +57,9 @@ export class ViewFactory {
     }
   }
 
-  _createView(protoView:pvModule.RenderProtoView, inplaceElement): viewModule.RenderView {
+  _createView(protoView:pvModule.DomProtoView, inplaceElement): viewModule.DomView {
     if (isPresent(protoView.imperativeRendererId)) {
-      return new viewModule.RenderView(
+      return new viewModule.DomView(
         protoView, [], [], [], []
       );
     }
@@ -80,7 +80,7 @@ export class ViewFactory {
     var viewRootNodes;
     if (protoView.isTemplateElement) {
       var childNode = DOM.firstChild(DOM.content(rootElementClone));
-      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in pvModule.RenderProtoView
+      viewRootNodes = []; // TODO(perf): Should be fixed size, since we could pre-compute in in pvModule.DomProtoView
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
       while(childNode != null) {
         ListWrapper.push(viewRootNodes, childNode);
@@ -119,7 +119,7 @@ export class ViewFactory {
       contentTags[binderIdx] = contentTag;
     }
 
-    var view = new viewModule.RenderView(
+    var view = new viewModule.DomView(
       protoView, viewRootNodes,
       boundTextNodes, boundElements, contentTags
     );
@@ -154,7 +154,7 @@ export class ViewFactory {
   // This method is used by the ViewFactory and the ViewHydrator
   // TODO(tbosch): change shadow dom emulation so that LightDom
   // instances don't need to be recreated by instead hydrated/dehydrated
-  static setComponentView(shadowDomStrategy:ShadowDomStrategy, hostView:viewModule.RenderView, elementIndex:number, componentView:viewModule.RenderView) {
+  static setComponentView(shadowDomStrategy:ShadowDomStrategy, hostView:viewModule.DomView, elementIndex:number, componentView:viewModule.DomView) {
     var element = hostView.boundElements[elementIndex];
     var lightDom = shadowDomStrategy.constructLightDom(hostView, componentView, element);
     shadowDomStrategy.attachTemplate(element, componentView);

@@ -21,14 +21,14 @@ class _Root {
 // once interfaces are supported
 export class LightDom {
   // The light DOM of the element is enclosed inside the lightDomView
-  lightDomView:viewModule.RenderView;
+  lightDomView:viewModule.DomView;
   // The shadow DOM
-  shadowDomView:viewModule.RenderView;
+  shadowDomView:viewModule.DomView;
   // The nodes of the light DOM
   nodes:List;
   roots:List<_Root>;
 
-  constructor(lightDomView:viewModule.RenderView, shadowDomView:viewModule.RenderView, element) {
+  constructor(lightDomView:viewModule.DomView, shadowDomView:viewModule.DomView, element) {
     this.lightDomView = lightDomView;
     this.shadowDomView = shadowDomView;
     this.nodes = DOM.childNodesAsList(element);
@@ -45,7 +45,7 @@ export class LightDom {
   }
 
   // Collects the Content directives from the view and all its child views
-  _collectAllContentTags(view: viewModule.RenderView, acc:List<Content>):List<Content> {
+  _collectAllContentTags(view: viewModule.DomView, acc:List<Content>):List<Content> {
     var contentTags = view.contentTags;
     var vcs = view.viewContainers;
     for (var i=0; i<vcs.length; i++) {
