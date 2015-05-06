@@ -102,6 +102,95 @@ describe('TreeDiffer', () => {
       diffResult = differ.diffTree();
       expect(diffResult.changedPaths).toEqual(['file-1.txt']);
     });
+
+
+    it('should ignore files with extensions not listed in includeExtensions', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.js': mockfs.file({content: 'file-1.js content', mtime: new Date(1000)}),
+          'file-2.md': mockfs.file({content: 'file-2.md content', mtime: new Date(1000)}),
+          'file-3.coffee': mockfs.file({content: 'file-3.coffee content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.cc': mockfs.file({content: 'file-1.1.cc content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('dir1', ['.js', '.coffee']);
+
+      let diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+
+      // change two files
+      testDir['dir1']['file-1.js'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['file-3.coffee'] =
+          mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['subdir-1']['file-1.1.cc'] =
+          mockfs.file({content: 'file-1.1.cc content', mtime: new Date(9999)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['file-1.js', 'file-3.coffee']);
+
+      expect(diffResult.removedPaths).toEqual([]);
+
+      // change one file
+      testDir['dir1']['file-1.js'] = mockfs.file({content: 'super new', mtime: new Date(1000)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['file-1.js']);
+    });
+
+
+    it('should ignore files with extensions listed in excludeExtensions', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.ts': mockfs.file({content: 'file-1.ts content', mtime: new Date(1000)}),
+          'file-1.cs': mockfs.file({content: 'file-1.cs content', mtime: new Date(1000)}),
+          'file-1.d.cs': mockfs.file({content: 'file-1.d.cs content', mtime: new Date(1000)}),
+          'file-2.md': mockfs.file({content: 'file-2.md content', mtime: new Date(1000)}),
+          'file-3.ts': mockfs.file({content: 'file-3.ts content', mtime: new Date(1000)}),
+          'file-4.d.ts': mockfs.file({content: 'file-4.d.ts content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.cc': mockfs.file({content: 'file-1.1.cc content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
+
+      let diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['file-1.cs', 'file-1.ts', 'file-3.ts']);
+
+      // change two files
+      testDir['dir1']['file-1.ts'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['file-1.cs'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['file-1.d.cs'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['file-3.ts'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['file-4.d.ts'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['dir1']['subdir-1']['file-1.1.cc'] =
+          mockfs.file({content: 'file-1.1.cc content', mtime: new Date(9999)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['file-1.cs', 'file-1.ts', 'file-3.ts']);
+
+      expect(diffResult.removedPaths).toEqual([]);
+
+      // change one file
+      testDir['dir1']['file-4.d.ts'] = mockfs.file({content: 'super new', mtime: new Date(1000)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual([]);
+    });
   });
 
   describe('diff of new files', () => {

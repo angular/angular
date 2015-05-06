@@ -30,6 +30,8 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private tsServiceHost: ts.LanguageServiceHost;
   private tsService: ts.LanguageService;
 
+  static includeExtensions = ['.ts'];
+  static excludeExtensions = ['.d.ts'];
 
   constructor(public inputPath: string, public cachePath: string, public options) {
     this.tsOpts = Object.create(options);
@@ -46,8 +48,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     let pathsToEmit = [];
     let pathsWithErrors = [];
 
-    treeDiff.changedPaths.filter((changedPath) =>
-                                     changedPath.match(/\.ts/) && !changedPath.match(/\.d\.ts/))
+    treeDiff.changedPaths
         .forEach((tsFilePath) => {
           if (!this.fileRegistry[tsFilePath]) {
             this.fileRegistry[tsFilePath] = {version: 0};
@@ -59,8 +60,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
           pathsToEmit.push(tsFilePath);
         });
 
-    treeDiff.removedPaths.filter((changedPath) =>
-                                     changedPath.match(/\.ts/) && !changedPath.match(/\.d\.ts/))
+    treeDiff.removedPaths
         .forEach((tsFilePath) => {
           console.log('removing outputs for', tsFilePath);
 
