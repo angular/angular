@@ -160,11 +160,11 @@ export class ViewDefinition {
   }
 }
 
-export class Renderer {
+export class RenderCompiler {
   /**
    * Creats a ProtoViewDto that contains a single nested component with the given componentId.
    */
-  createHostProtoView(componentId):Promise<ProtoViewDto> { return null; }
+  compileHost(componentId):Promise<ProtoViewDto> { return null; }
 
   /**
    * Creats a ProtoViewDto for a component that will use an imperative View using the given
@@ -189,7 +189,9 @@ export class Renderer {
    *    RenderProtoView for every element with a component in this protoView or in a view container's protoView
    */
   mergeChildComponentProtoViews(protoViewRef:RenderProtoViewRef, componentProtoViewRefs:List<RenderProtoViewRef>) { return null; }
+}
 
+export class Renderer {
   /**
    * Creates a view and inserts it into a ViewContainer.
    * @param {RenderViewContainerRef} viewContainerRef

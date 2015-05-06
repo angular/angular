@@ -5,9 +5,8 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Parser, Lexer} from 'angular2/change_detection';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
-import {Compiler} from 'angular2/src/render/dom/compiler/compiler';
+import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {RenderProtoViewRef, ProtoViewDto, ViewDefinition, RenderViewContainerRef, EventDispatcher, DirectiveMetadata} from 'angular2/src/render/api';
-import {DefaultStepFactory} from 'angular2/src/render/dom/compiler/compile_step_factory';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
@@ -19,6 +18,7 @@ import {RenderViewHydrator} from 'angular2/src/render/dom/view/view_hydrator';
 
 export class IntegrationTestbed {
   renderer;
+  renderCompiler;
   parser;
   eventPlugin;
   _templates:Map<string, ViewDefinition>;
@@ -35,7 +35,7 @@ export class IntegrationTestbed {
     if (isBlank(shadowDomStrategy)) {
       shadowDomStrategy = new EmulatedUnscopedShadowDomStrategy(new StyleUrlResolver(urlResolver), null);
     }
-    var compiler = new Compiler(new DefaultStepFactory(parser, shadowDomStrategy), new FakeTemplateLoader(urlResolver, urlData));
+    this.renderCompiler = new DefaultDomCompiler(parser, shadowDomStrategy, new FakeTemplateLoader(urlResolver, urlData));
 
     if (isBlank(viewCacheCapacity)) {
       viewCacheCapacity = 0;
@@ -47,11 +47,11 @@ export class IntegrationTestbed {
     var eventManager = new EventManager([this.eventPlugin], new FakeVmTurnZone());
     var viewFactory = new ViewFactory(viewCacheCapacity, eventManager, shadowDomStrategy);
     var viewHydrator = new RenderViewHydrator(eventManager, viewFactory, shadowDomStrategy);
-    this.renderer = new DirectDomRenderer(compiler, viewFactory, viewHydrator, shadowDomStrategy);
+    this.renderer = new DirectDomRenderer(viewFactory, viewHydrator, shadowDomStrategy);
   }
 
   compileRoot(componentMetadata):Promise<ProtoViewDto> {
-    return this.renderer.createHostProtoView(componentMetadata).then( (rootProtoView) => {
+    return this.renderCompiler.compileHost(componentMetadata).then( (rootProtoView) => {
       return this._compileNestedProtoViews(rootProtoView, [componentMetadata]);
     });
   }
@@ -61,7 +61,7 @@ export class IntegrationTestbed {
     if (isBlank(childTemplate)) {
       throw new BaseException(`No template for component ${componentId}`);
     }
-    return this.renderer.compile(childTemplate).then( (protoView) => {
+    return this.renderCompiler.compile(childTemplate).then( (protoView) => {
       return this._compileNestedProtoViews(protoView, childTemplate.directives);
     });
   }
@@ -103,7 +103,7 @@ export class IntegrationTestbed {
     });
     if (nestedPVPromises.length > 0) {
       return PromiseWrapper.all(nestedPVPromises).then((_) => {
-        this.renderer.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
+        this.renderCompiler.mergeChildComponentProtoViews(protoView.render, childComponentRenderPvRefs);
         return protoView;
       });
     } else {

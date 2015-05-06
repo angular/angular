@@ -39,7 +39,7 @@ import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/vi
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {Renderer} from 'angular2/src/render/api';
+import {RenderCompiler, Renderer} from 'angular2/src/render/api';
 import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
@@ -82,7 +82,7 @@ function _getAppBindings() {
         [StyleUrlResolver, appDocumentToken]),
     bind(DirectDomRenderer).toClass(DirectDomRenderer),
     bind(Renderer).toClass(DirectDomRenderer),
-    bind(rc.Compiler).toClass(rc.DefaultCompiler),
+    bind(RenderCompiler).toClass(rc.DefaultDomCompiler),
     rvf.ViewFactory,
     rvh.RenderViewHydrator,
     bind(rvf.VIEW_POOL_CAPACITY).toValue(500),
