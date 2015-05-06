@@ -102,9 +102,15 @@ gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
 // ------------
 // transpile
 
-gulp.task('build/tree.dart', ['build.tools'], function() {
+gulp.task('build/tree.dart', ['build/clean.dart', 'build.tools'], function(done) {
+  runSequence('!build/tree.dart', done);
+});
+
+
+gulp.task('!build/tree.dart', function() {
   return angularBuilder.rebuildDartTree();
 });
+
 
 // ------------
 // pubspec
@@ -322,40 +328,67 @@ function getBrowsersFromCLI() {
   return [args.browsers?args.browsers:'DartiumWithWebPlatform']
 }
 
-gulp.task('test.unit.js', ['build/clean.js', 'broccoli.js.dev'], function (neverDone) {
 
-  function buildAndTest() {
+gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
+
+  runSequence(
+    '!test.unit.js/karma-server',
+    '!test.unit.js/karma-run',
+    'check-format'
+  );
+
+  gulp.watch('modules/**', function() {
     runSequence(
-      'broccoli.js.dev',
-      'test.unit.js/karma-run'
+      '!broccoli.js.dev',
+      '!test.unit.js/karma-run',
+      'check-format'
     );
-  }
+  });
+});
 
+
+gulp.task('!test.unit.js/karma-server', function() {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js'});
-
-  gulp.watch('modules/**', buildAndTest);
 });
 
-gulp.task('test.unit.js/karma-run', function (done) {
-  karma.runner.run({configFile: __dirname + '/karma-js.conf.js'}, done);
+
+gulp.task('!test.unit.js/karma-run', function(done) {
+  karma.runner.run({configFile: __dirname + '/karma-js.conf.js'}, function(exitCode) {
+    // ignore exitCode, we don't want to fail the build in the interactive (non-ci) mode
+    // karma will print all test failures
+    done();
+  });
 });
+
 
 gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
-  function buildAndTest() {
+
+  runSequence(
+    '!test.unit.dart/karma-server',
+    '!test.unit.dart/karma-run'
+  );
+
+  gulp.watch('modules/angular2/**', function() {
     runSequence(
-      'build/tree.dart',
-      'test.unit.dart/karma-run'
+      '!build/tree.dart',
+      '!test.unit.dart/karma-run'
     );
-  }
+  });
+});
 
+gulp.task('!test.unit.dart/karma-run', function (done) {
+  karma.runner.run({configFile: __dirname + '/karma-dart.conf.js'}, function(exitCode) {
+    // ignore exitCode, we don't want to fail the build in the interactive (non-ci) mode
+    // karma will print all test failures
+    done();
+  });
+});
+
+
+gulp.task('!test.unit.dart/karma-server', function() {
   karma.server.start({configFile: __dirname + '/karma-dart.conf.js'});
-
-  gulp.watch('modules/angular2/**', buildAndTest);
 });
 
-gulp.task('test.unit.dart/karma-run', function (done) {
-  karma.runner.run({configFile: __dirname + '/karma-dart.conf.js'}, done);
-});
 
 gulp.task('test.unit.js/ci', function (done) {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js',
@@ -538,12 +571,16 @@ gulp.task('!build.tools', function() {
   return mergedStream;
 });
 
-gulp.task('broccoli.js.dev', ['build.tools'], function() {
+gulp.task('broccoli.js.dev', ['build.tools'], function(done) {
+  runSequence('!broccoli.js.dev', done);
+});
+
+gulp.task('!broccoli.js.dev', function() {
   return angularBuilder.rebuildBrowserDevTree();
 });
 
 
-gulp.task('build.js.dev', function(done) {
+gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
     'broccoli.js.dev',
     'build/checkCircularDependencies',
