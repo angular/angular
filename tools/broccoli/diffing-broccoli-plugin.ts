@@ -49,7 +49,6 @@ class DiffingPluginWrapper implements BroccoliTree {
   cachePath = null;
   outputPath = null;
 
-
   constructor(private pluginClass, private wrappedPluginArguments) {
     if (Array.isArray(wrappedPluginArguments[0])) {
       this.inputTrees = wrappedPluginArguments[0];
@@ -92,8 +91,10 @@ class DiffingPluginWrapper implements BroccoliTree {
 
   private init() {
     if (!this.initialized) {
+      let includeExtensions = this.pluginClass.includeExtensions || [];
+      let excludeExtensions = this.pluginClass.excludeExtensions || [];
       this.initialized = true;
-      this.treeDiffer = new TreeDiffer(this.inputPath);
+      this.treeDiffer = new TreeDiffer(this.inputPath, includeExtensions, excludeExtensions);
       this.wrappedPlugin =
           new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
     }

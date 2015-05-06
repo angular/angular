@@ -13,43 +13,37 @@ let xtend = require('xtend');
 class DiffingTraceurCompiler implements DiffingBroccoliPlugin {
   constructor(public inputPath: string, public cachePath: string, public options) {}
 
+  static includeExtensions = ['.js', '.es6', '.cjs'];
 
   rebuild(treeDiff: DiffResult) {
     treeDiff.changedPaths.forEach((changedFilePath) => {
-      var extension = path.extname(changedFilePath).toLowerCase();
-      if (extension === '.js' || extension === '.es6' || extension === '.cjs') {
-        var traceurOpts = xtend({filename: changedFilePath}, this.options.traceurOptions);
+      var traceurOpts = xtend({filename: changedFilePath}, this.options.traceurOptions);
 
-        var fsOpts = {encoding: 'utf-8'};
-        var absoluteInputFilePath = path.join(this.inputPath, changedFilePath);
-        var sourcecode = fs.readFileSync(absoluteInputFilePath, fsOpts);
+      var fsOpts = {encoding: 'utf-8'};
+      var absoluteInputFilePath = path.join(this.inputPath, changedFilePath);
+      var sourcecode = fs.readFileSync(absoluteInputFilePath, fsOpts);
 
-        var result = traceur.compile(traceurOpts, changedFilePath, sourcecode);
+      var result = traceur.compile(traceurOpts, changedFilePath, sourcecode);
 
-        // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
-        // (but we might switch to typescript first)
-        var mapFilepath =
-            changedFilePath.replace(/\.\w+$/, '') + this.options.destSourceMapExtension;
-        result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(mapFilepath);
+      // TODO: we should fix the sourceMappingURL written by Traceur instead of overriding
+      // (but we might switch to typescript first)
+      var mapFilepath = changedFilePath.replace(/\.\w+$/, '') + this.options.destSourceMapExtension;
+      result.js = result.js + '\n//# sourceMappingURL=./' + path.basename(mapFilepath);
 
-        var destFilepath = changedFilePath.replace(/\.\w+$/, this.options.destExtension);
-        var destFile = path.join(this.cachePath, destFilepath);
-        fse.mkdirsSync(path.dirname(destFile));
-        fs.writeFileSync(destFile, result.js, fsOpts);
+      var destFilepath = changedFilePath.replace(/\.\w+$/, this.options.destExtension);
+      var destFile = path.join(this.cachePath, destFilepath);
+      fse.mkdirsSync(path.dirname(destFile));
+      fs.writeFileSync(destFile, result.js, fsOpts);
 
-        var destMap = path.join(this.cachePath, mapFilepath);
-        result.sourceMap.file = destFilepath;
-        fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);
-      }
+      var destMap = path.join(this.cachePath, mapFilepath);
+      result.sourceMap.file = destFilepath;
+      fs.writeFileSync(destMap, JSON.stringify(result.sourceMap), fsOpts);
     });
 
     treeDiff.removedPaths.forEach((removedFilePath) => {
-      var extension = path.extname(removedFilePath).toLowerCase();
-      if (extension === '.js' || extension === '.es6' || extension === '.cjs') {
-        var destFilepath = removedFilePath.replace(/\.\w+$/, this.options.destExtension);
-        var absoluteOuputFilePath = path.join(this.cachePath, destFilepath);
-        fs.unlinkSync(absoluteOuputFilePath);
-      }
+      var destFilepath = removedFilePath.replace(/\.\w+$/, this.options.destExtension);
+      var absoluteOuputFilePath = path.join(this.cachePath, destFilepath);
+      fs.unlinkSync(absoluteOuputFilePath);
     });
   }
 }
