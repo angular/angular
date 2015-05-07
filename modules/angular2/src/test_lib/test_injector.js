@@ -44,6 +44,9 @@ import {DirectDomRenderer} from 'angular2/src/render/dom/direct_dom_renderer';
 import * as rc from 'angular2/src/render/dom/compiler/compiler';
 import * as rvf from 'angular2/src/render/dom/view/view_factory';
 import * as rvh from 'angular2/src/render/dom/view/view_hydrator';
+import {RenderViewPool, RENDER_VIEW_POOL_CAPACITY} from 'angular2/src/render/dom/view/view_pool';
+import {RenderViewManager} from 'angular2/src/render/dom/view/view_manager';
+import {RenderViewManagerUtils} from 'angular2/src/render/dom/view/view_manager_utils';
 
 /**
  * Returns the root injector bindings.
@@ -86,6 +89,10 @@ function _getAppBindings() {
     rvf.ViewFactory,
     rvh.RenderViewHydrator,
     bind(rvf.VIEW_POOL_CAPACITY).toValue(500),
+    RenderViewManager,
+    RenderViewManagerUtils,
+    RenderViewPool,
+    bind(RENDER_VIEW_POOL_CAPACITY).toValue(500),
     ProtoViewFactory,
     AppViewPool,
     AppViewManager,

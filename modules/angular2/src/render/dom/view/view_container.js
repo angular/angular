@@ -4,6 +4,14 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import * as viewModule from './view';
 
+export class RenderViewContainer {
+  views: List<viewModule.RenderView>;
+  constructor() {
+    this.views = [];
+  }
+}
+
+// TODO(tbosch): delete this class!
 export class ViewContainer {
   parentView: viewModule.DomView;
   boundElementIndex: number;
