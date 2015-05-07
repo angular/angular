@@ -61,6 +61,7 @@ module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
           // PUSH DATA TO EXTRA DOCS ARRAY
           extraDocs.push({
             id: doc.id + "-data",
+            aliases: [doc.id + "-data"],
             docType: 'jade-data',
             originalDoc: doc,
             data: allPageData
