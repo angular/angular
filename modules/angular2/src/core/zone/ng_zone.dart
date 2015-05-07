@@ -12,20 +12,20 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
  *
  * A VM turn consist of a single macrotask followed 0 to many microtasks.
  *
- * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
+ * The wrapper maintains an "inner" and "mount" `Zone`. The application code will executes
  * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton `VmTurnZone`. The outer `Zone` is a fork of the root
- * `Zone`. The default `onTurnDone` runs the Angular change detection.
+ * A typical application will create a singleton `NgZone`. The mount zone is the `Zone` where the singleton has been
+ * instantiated. The default `onTurnDone` runs the Angular change detection.
  */
-class VmTurnZone {
+class NgZone {
   Function _onTurnStart;
   Function _onTurnDone;
   Function _onErrorHandler;
 
-  // Code executed in _outerZone does not trigger the onTurnDone.
-  Zone _outerZone;
-  // _innerZone is the child of _outerZone. Any code executed in this zone will trigger the
+  // Code executed in _mountZone does not trigger the onTurnDone.
+  Zone _mountZone;
+  // _innerZone is the child of _mountZone. Any code executed in this zone will trigger the
   // onTurnDone hook at the end of the current VM turn.
   Zone _innerZone;
 
@@ -42,14 +42,14 @@ class VmTurnZone {
   /**
    * Associates with this
    *
-   * - an "outer" [Zone], which is a the one that created this.
-   * - an "inner" [Zone], which is a child of the outer [Zone].
+   * - a "mount" [Zone], which is a the one that instantiated this.
+   * - an "inner" [Zone], which is a child of the mount [Zone].
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
    */
-  VmTurnZone({bool enableLongStackTrace}) {
-    _outerZone = Zone.current;
+  NgZone({bool enableLongStackTrace}) {
+    _mountZone = Zone.current;
 
     if (enableLongStackTrace) {
       _innerZone = Chain.capture(
@@ -68,7 +68,7 @@ class VmTurnZone {
    * Initializes the zone hooks.
    *
    * The given error handler should re-throw the passed exception. Otherwise, exceptions will not
-   * propagate outside of the [VmTurnZone] and can alter the application execution flow.
+   * propagate outside of the [NgZone] and can alter the application execution flow.
    * Not re-throwing could be used to help testing the code or advanced use cases.
    *
    * @param {Function} onTurnStart called before code executes in the inner zone for each VM turn
@@ -88,7 +88,7 @@ class VmTurnZone {
    * Angular's auto digest mechanism.
    *
    * ```
-   * VmTurnZone zone = <ref to the application zone>;
+   * NgZone zone = <ref to the application zone>;
    *
    * void functionCalledFromJS() {
    *   zone.run(() {
@@ -105,13 +105,13 @@ class VmTurnZone {
   }
 
   /**
-   * Runs `fn` in the outer zone and returns whatever it returns.
+   * Runs `fn` in the mount zone and returns whatever it returns.
    *
    * In a typical app where the inner zone is the Angular zone, this allows one to escape Angular's
    * auto-digest mechanism.
    *
    * ```
-   * void myFunction(VmTurnZone zone, Element element) {
+   * void myFunction(NgZone zone, Element element) {
    *   element.onClick.listen(() {
    *     // auto-digest will run after element click.
    *   });
@@ -124,7 +124,7 @@ class VmTurnZone {
    * ```
    */
   dynamic runOutsideAngular(fn()) {
-    return _outerZone.run(fn);
+    return _mountZone.run(fn);
   }
 
   void _maybeStartVmTurn(ZoneDelegate parent) {

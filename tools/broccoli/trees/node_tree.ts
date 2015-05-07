@@ -22,7 +22,7 @@ module.exports = function makeNodeTree(destinationPath) {
     include: ['angular2/**', 'benchpress/**', 'rtts_assert/**', '**/e2e_test/**'],
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
-      'angular2/src/core/zone/vm_turn_zone.es6',
+      'angular2/src/core/zone/ng_zone.es6',
       'angular2/test/core/zone/**'
     ]
   });

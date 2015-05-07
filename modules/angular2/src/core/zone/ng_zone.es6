@@ -4,18 +4,18 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
 /**
  * A wrapper around zones that lets you schedule tasks after it has executed a task.
  *
- * The wrapper maintains an "inner" and "outer" `Zone`. The application code will executes
+ * The wrapper maintains an "inner" and an "mount" `Zone`. The application code will executes
  * in the "inner" zone unless `runOutsideAngular` is explicitely called.
  *
- * A typical application will create a singleton `VmTurnZone`. The outer `Zone` is a fork of the root
+ * A typical application will create a singleton `NgZone`. The outer `Zone` is a fork of the root
  * `Zone`. The default `onTurnDone` runs the Angular change detection.
  *
  * @exportedAs angular2/core
  */
-export class VmTurnZone {
-  // Code executed in _outerZone does not trigger the onTurnDone.
-  _outerZone;
-  // _innerZone is the child of _outerZone. Any code executed in this zone will trigger the
+export class NgZone {
+  // Code executed in _mountZone does not trigger the onTurnDone.
+  _mountZone;
+  // _innerZone is the child of _mountZone. Any code executed in this zone will trigger the
   // onTurnDone hook at the end of the current VM turn.
   _innerZone;
 
@@ -23,11 +23,11 @@ export class VmTurnZone {
   _onTurnDone:Function;
   _onErrorHandler:Function;
 
-  // Number of microtasks pending from _outerZone (& descendants)
+  // Number of microtasks pending from _innerZone (& descendants)
   _pendingMicrotask: number;
   // Whether some code has been executed in the _innerZone (& descendants) in the current turn
   _hasExecutedCodeInInnerZone: boolean;
-  // run() call depth in _outerZone. 0 at the end of a macrotask
+  // run() call depth in _mountZone. 0 at the end of a macrotask
   // zone.run(() => {         // top-level call
   //   zone.run(() => {});    // nested call -> in-turn
   // });
@@ -36,8 +36,8 @@ export class VmTurnZone {
   /**
    * Associates with this
    *
-   * - an "outer" zone, which is a child of the one that created this.
-   * - an "inner" zone, which is a child of the outer zone.
+   * - a "root" zone, which the one that instantiated this.
+   * - an "inner" zone, which is a child of the root zone.
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
@@ -51,8 +51,8 @@ export class VmTurnZone {
     this._hasExecutedCodeInInnerZone = false;
     this._nestedRun = 0;
 
-    this._outerZone = global.zone;
-    this._innerZone = this._createInnerZone(this._outerZone, enableLongStackTrace)
+    this._mountZone = global.zone;
+    this._innerZone = this._createInnerZone(this._mountZone, enableLongStackTrace)
   }
 
   /**
@@ -75,7 +75,7 @@ export class VmTurnZone {
    * Angular's auto digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = [ref to the application zone];
+   * var zone: NgZone = [ref to the application zone];
    *
    * zone.run(() => {
    *   // the change detection will run after this function and the microtasks it enqueues have executed.
@@ -93,7 +93,7 @@ export class VmTurnZone {
    * auto-digest mechanism.
    *
    * ```
-   * var zone: VmTurnZone = [ref to the application zone];
+   * var zone: NgZone = [ref to the application zone];
    *
    * zone.runOusideAngular(() => {
    *   element.onClick(() => {
@@ -103,23 +103,23 @@ export class VmTurnZone {
    * ```
    */
   runOutsideAngular(fn) {
-    return this._outerZone.run(fn);
+    return this._mountZone.run(fn);
   }
 
   _createInnerZone(zone, enableLongStackTrace) {
-    var vmTurnZone = this;
+    var ngZone = this;
     var errorHandling;
 
     if (enableLongStackTrace) {
       errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone, {
         onError: function (e) {
-          vmTurnZone._onError(this, e)
+          ngZone._onError(this, e)
         }
       });
     } else {
       errorHandling = {
         onError: function (e) {
-          vmTurnZone._onError(this, e)
+          ngZone._onError(this, e)
         }
       };
     }
@@ -130,25 +130,25 @@ export class VmTurnZone {
           '$run': function(parentRun) {
             return function() {
               try {
-                vmTurnZone._nestedRun++;
-                if (!vmTurnZone._hasExecutedCodeInInnerZone) {
-                  vmTurnZone._hasExecutedCodeInInnerZone = true;
-                  if (vmTurnZone._onTurnStart) {
-                    parentRun.call(vmTurnZone._innerZone, vmTurnZone._onTurnStart);
+                ngZone._nestedRun++;
+                if (!ngZone._hasExecutedCodeInInnerZone) {
+                  ngZone._hasExecutedCodeInInnerZone = true;
+                  if (ngZone._onTurnStart) {
+                    parentRun.call(ngZone._innerZone, ngZone._onTurnStart);
                   }
                 }
                 return parentRun.apply(this, arguments);
               } finally {
-                vmTurnZone._nestedRun--;
+                ngZone._nestedRun--;
                 // If there are no more pending microtasks, we are at the end of a VM turn (or in onTurnStart)
                 // _nestedRun will be 0 at the end of a macrotasks (it could be > 0 when there are nested calls
                 // to run()).
-                if (vmTurnZone._pendingMicrotasks == 0 && vmTurnZone._nestedRun == 0) {
-                  if (vmTurnZone._onTurnDone && vmTurnZone._hasExecutedCodeInInnerZone) {
+                if (ngZone._pendingMicrotasks == 0 && ngZone._nestedRun == 0) {
+                  if (ngZone._onTurnDone && ngZone._hasExecutedCodeInInnerZone) {
                     try {
-                      parentRun.call(vmTurnZone._innerZone, vmTurnZone._onTurnDone);
+                      parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
                     } finally {
-                      vmTurnZone._hasExecutedCodeInInnerZone = false;
+                      ngZone._hasExecutedCodeInInnerZone = false;
                     }
                   }
                 }
@@ -157,12 +157,12 @@ export class VmTurnZone {
           },
           '$scheduleMicrotask': function(parentScheduleMicrotask) {
             return function(fn) {
-              vmTurnZone._pendingMicrotasks++;
+              ngZone._pendingMicrotasks++;
               var microtask = function() {
                 try {
                   fn();
                 } finally {
-                  vmTurnZone._pendingMicrotasks--;
+                  ngZone._pendingMicrotasks--;
                 }
               };
               parentScheduleMicrotask.call(this, microtask);

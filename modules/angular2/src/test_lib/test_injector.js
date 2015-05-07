@@ -16,7 +16,7 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {StyleUrlResolver} from 'angular2/src/render/dom/shadow_dom/style_url_resolver';
 import {StyleInliner} from 'angular2/src/render/dom/shadow_dom/style_inliner';
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -24,7 +24,7 @@ import {EventManager, DomEventsPlugin} from 'angular2/src/render/dom/events/even
 
 import {MockTemplateResolver} from 'angular2/src/mock/template_resolver_mock';
 import {MockXHR} from 'angular2/src/mock/xhr_mock';
-import {MockVmTurnZone} from 'angular2/src/mock/vm_turn_zone_mock';
+import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestBed} from './test_bed';
 
@@ -102,13 +102,13 @@ function _getAppBindings() {
     StyleUrlResolver,
     StyleInliner,
     TestBed,
-    bind(VmTurnZone).toClass(MockVmTurnZone),
+    bind(NgZone).toClass(MockNgZone),
     bind(EventManager).toFactory((zone) => {
       var plugins = [
         new DomEventsPlugin(),
       ];
       return new EventManager(plugins, zone);
-    }, [VmTurnZone]),
+    }, [NgZone]),
   ];
 }
 

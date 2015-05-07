@@ -1,12 +1,12 @@
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-export class MockVmTurnZone extends VmTurnZone {
+export class MockNgZone extends NgZone {
   constructor() {
     super({enableLongStackTrace: false});
   }
 
   run(fn) {
-    fn();
+    return fn();
   }
 
   runOutsideAngular(fn) {

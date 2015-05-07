@@ -12,7 +12,7 @@ import {TemplateResolver} from './compiler/template_resolver';
 import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
@@ -77,10 +77,10 @@ function _injectorBindings(appComponentType): List<Binding> {
       bind(appComponentType).toFactory((ref) => ref.instance,
           [appComponentRefToken]),
       bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
-      bind(EventManager).toFactory((zone) => {
+      bind(EventManager).toFactory((ngZone) => {
         var plugins = [new HammerGesturesPlugin(), new KeyEventsPlugin(), new DomEventsPlugin()];
-        return new EventManager(plugins, zone);
-      }, [VmTurnZone]),
+        return new EventManager(plugins, ngZone);
+      }, [NgZone]),
       bind(ShadowDomStrategy).toFactory(
           (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
           [StyleUrlResolver, DOCUMENT_TOKEN]),
@@ -123,7 +123,7 @@ function _injectorBindings(appComponentType): List<Binding> {
   ];
 }
 
-function _createVmZone(givenReporter:Function): VmTurnZone {
+function _createNgZone(givenReporter:Function): NgZone {
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
     DOM.logError(`${exception}\n\n${longStackTrace}`);
@@ -132,7 +132,7 @@ function _createVmZone(givenReporter:Function): VmTurnZone {
 
   var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
 
-  var zone = new VmTurnZone({enableLongStackTrace: assertionsEnabled()});
+  var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
   zone.initCallbacks({onErrorHandler: reporter});
   return zone;
 }
@@ -247,7 +247,7 @@ export function bootstrap(appComponentType: Type,
   BrowserDomAdapter.makeCurrent();
   var bootstrapProcess = PromiseWrapper.completer();
 
-  var zone = _createVmZone(errorReporter);
+  var zone = _createNgZone(errorReporter);
   zone.run(() => {
     // TODO(rado): prepopulate template cache, so applications with only
     // index.html and main.js are possible.
@@ -295,11 +295,11 @@ export class ApplicationRef {
   }
 }
 
-function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zone: VmTurnZone): Injector {
+function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zone: NgZone): Injector {
   if (isBlank(_rootInjector)) _rootInjector = Injector.resolveAndCreate(_rootBindings);
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
       _injectorBindings(appComponentType);
-  ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
+  ListWrapper.push(mergedBindings, bind(NgZone).toValue(zone));
   return _rootInjector.resolveAndCreateChild(mergedBindings);
 }

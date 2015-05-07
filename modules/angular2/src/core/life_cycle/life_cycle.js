@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/di/annotations_impl';
 import {ChangeDetector} from 'angular2/change_detection';
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {isPresent} from 'angular2/src/facade/lang';
 
@@ -46,7 +46,7 @@ export class LifeCycle {
   /**
    * @private
    */
-  registerWith(zone:VmTurnZone, changeDetector:ChangeDetector = null) {
+  registerWith(zone:NgZone, changeDetector:ChangeDetector = null) {
     if (isPresent(changeDetector)) {
       this._changeDetector=changeDetector;
     }

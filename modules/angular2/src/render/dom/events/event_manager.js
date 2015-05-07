@@ -1,15 +1,15 @@
 import {isBlank, BaseException, isPresent, StringWrapper} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 var BUBBLE_SYMBOL = '^';
 
 export class EventManager {
   _plugins: List<EventManagerPlugin>;
-  _zone: VmTurnZone;
+  _zone: NgZone;
 
-  constructor(plugins: List<EventManagerPlugin>, zone: VmTurnZone) {
+  constructor(plugins: List<EventManagerPlugin>, zone: NgZone) {
     this._zone = zone;
     this._plugins = plugins;
     for (var i = 0; i < plugins.length; i++) {
@@ -29,7 +29,7 @@ export class EventManager {
     return plugin.addGlobalEventListener(target, withoutBubbleSymbol, handler, withoutBubbleSymbol != eventName);
   }
 
-  getZone(): VmTurnZone {
+  getZone(): NgZone {
     return this._zone;
   }
 
@@ -93,7 +93,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  _getOutsideHandler(shouldSupportBubble: boolean, element, handler: Function, zone: VmTurnZone) {
+  _getOutsideHandler(shouldSupportBubble: boolean, element, handler: Function, zone: NgZone) {
     return shouldSupportBubble ?
       DomEventsPlugin.bubbleCallback(element, handler, zone) :
       DomEventsPlugin.sameElementCallback(element, handler, zone);

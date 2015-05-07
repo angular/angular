@@ -1,6 +1,6 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
 import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -17,7 +17,7 @@ export function main() {
       var element = el('<div></div>');
       var handler = (e) => e;
       var plugin = new FakeEventManagerPlugin(['click']);
-      var manager = new EventManager([plugin, domEventPlugin], new FakeVmTurnZone());
+      var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
       expect(MapWrapper.get(plugin._nonBubbleEventHandlers, 'click')).toBe(handler);
     });
@@ -26,7 +26,7 @@ export function main() {
       var element = el('<div></div>');
       var handler = (e) => e;
       var plugin = new FakeEventManagerPlugin(['click']);
-      var manager = new EventManager([plugin, domEventPlugin], new FakeVmTurnZone());
+      var manager = new EventManager([plugin, domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, '^click', handler);
       expect(MapWrapper.get(plugin._bubbleEventHandlers, 'click')).toBe(handler);
     });
@@ -37,7 +37,7 @@ export function main() {
       var dblClickHandler = (e) => e;
       var plugin1= new FakeEventManagerPlugin(['dblclick']);
       var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
-      var manager = new EventManager([plugin1, plugin2], new FakeVmTurnZone());
+      var manager = new EventManager([plugin1, plugin2], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
       expect(MapWrapper.contains(plugin1._nonBubbleEventHandlers, 'click')).toBe(false);
@@ -49,7 +49,7 @@ export function main() {
     it('should throw when no plugin can handle the event', () => {
       var element = el('<div></div>');
       var plugin = new FakeEventManagerPlugin(['dblclick']);
-      var manager = new EventManager([plugin], new FakeVmTurnZone());
+      var manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null))
         .toThrowError('No event manager plugin found for event click');
     });
@@ -60,7 +60,7 @@ export function main() {
       var dispatchedEvent = DOM.createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeVmTurnZone());
+      var manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
       DOM.dispatchEvent(child, dispatchedEvent);
 
@@ -76,7 +76,7 @@ export function main() {
       var dispatchedEvent = DOM.createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeVmTurnZone());
+      var manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, '^click', handler);
       DOM.dispatchEvent(child, dispatchedEvent);
 
@@ -89,7 +89,7 @@ export function main() {
       var dispatchedEvent = DOM.createMouseEvent('click');
       var receivedEvent = null;
       var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeVmTurnZone());
+      var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
       var remover = manager.addGlobalEventListener("document", '^click', handler);
       DOM.dispatchEvent(element, dispatchedEvent);
@@ -130,7 +130,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   }
 }
 
-class FakeVmTurnZone extends VmTurnZone {
+class FakeNgZone extends NgZone {
   constructor() {
     super({enableLongStackTrace: false});
   }

@@ -17,7 +17,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 
-import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function): void {
@@ -40,10 +40,10 @@ function logError(error, stackTrace) {
 }
 
 export function main() {
-  describe("VmTurnZone", () => {
+  describe("NgZone", () => {
 
     function createZone(enableLongStackTrace) {
-      var zone = new VmTurnZone({enableLongStackTrace: enableLongStackTrace});
+      var zone = new NgZone({enableLongStackTrace: enableLongStackTrace});
       zone.initCallbacks({
           onTurnStart: _log.fn('onTurnStart'),
           onTurnDone: _log.fn('onTurnDone')

@@ -1,6 +1,6 @@
 // TODO(vicb): implement this class properly
 // The current stub implementation is only here to please cjs tests
-export class VmTurnZone {
+export class NgZone {
   constructor({enableLongStackTrace}) {
   }
 
