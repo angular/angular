@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/angular2';
-import {MdCheckbox} from 'angular2_material/src/components/checkbox/checkbox'
+import {MdInputContainer, MdInput, MdTextarea} from 'angular2_material/src/components/input/input'
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind} from 'angular2/di';
@@ -14,17 +14,11 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 })
 @View({
   templateUrl: './demo_app.html',
-  directives: [MdCheckbox]
+  directives: [MdInputContainer, MdInput, MdTextarea]
 })
 class DemoApp {
-  toggleCount: number;
-
   constructor() {
-    this.toggleCount = 0;
-  }
 
-  increment() {
-    this.toggleCount++;
   }
 }
 
