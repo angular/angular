@@ -24,7 +24,7 @@ To add a new dependency do the following:
 To update existing dependency do the following:
 
 1. update `package.json`
-2. run `npm install <packagename>`
+2. run `npm update <packagename>`
 3. relock the dependencies with `npm shrinkwrap --dev`
 4. clean up the shrinkwrap file for review with `./tools/npm/clean-shrinkwrap.js`
 5. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
@@ -35,7 +35,8 @@ If updating the `tsd` project a special steps need to be taken due to
 https://github.com/Bartvds/minitable/issues/2:
 
 Update `tsd` by following the steps above but before you run `npm shrinkwrap --dev`, you'll have to
-manually patch `node_modules/tsd/node_modules/minitable/package.json` and remove the `minichain` from
+manually patch `node_modules/ts2dart/node_modules/tsd/node_modules/minitable/package.json` and
+`node_modules/tsd/node_modules/minitable/package.json` and remove the `minichain` from
 the `peerDependencies` section.
 
 before:
