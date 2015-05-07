@@ -64,7 +64,7 @@ interface BroccoliTree {
 
 
 interface OldBroccoliTree {
-  read ? (readTree: (tree: BroccoliTree) => Promise<string>) : (Promise<string>| string);
+  read?(readTree: (tree: BroccoliTree) => Promise<string>): (Promise<string>| string);
 }
 
 

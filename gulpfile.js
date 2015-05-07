@@ -549,9 +549,15 @@ gulp.task('build.tools', ['build/clean.tools'], function(done) {
 
 // private task to build tools
 gulp.task('!build.tools', function() {
+  var TSC_OPTS = {
+    target: 'ES5',
+    module: 'commonjs',
+    typescript: require('typescript'),
+    reporter: tsc.reporter.nullReporter()
+  };
   var tsResult = gulp.src(['tools/**/*.ts'])
                      .pipe(sourcemaps.init())
-                     .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter()}))
+                     .pipe(tsc(TSC_OPTS))
                      .on('error', function(error) {
                         // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
                         // forwarding the error into the merged stream

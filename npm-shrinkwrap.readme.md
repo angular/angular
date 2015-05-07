@@ -35,7 +35,8 @@ If updating the `tsd` project a special steps need to be taken due to
 https://github.com/Bartvds/minitable/issues/2:
 
 Update `tsd` by following the steps above but before you run `npm shrinkwrap --dev`, you'll have to
-manually patch `node_modules/tsd/node_modules/minitable/package.json` and remove the `minichain` from
+manually patch `node_modules/ts2dart/node_modules/tsd/node_modules/minitable/package.json`
+and `node_modules/tsd/node_modules/minitable/package.json` and remove the `minichain` from
 the `peerDependencies` section.
 
 before:
