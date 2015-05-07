@@ -1,5 +1,6 @@
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive, onAllChangesDone} from 'angular2/src/core/annotations_impl/annotations';
 import {ElementRef} from 'angular2/core';
+import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -32,33 +33,40 @@ import {Router} from './router';
   properties: {
     'route': 'routerLink',
     'params': 'routerParams'
-  }
+  },
+  lifecycle: [onAllChangesDone]
 })
 export class RouterLink {
   _domEl;
   _route:string;
   _params:any;
   _router:Router;
-  //TODO: handle click events
+  _href:string;
 
   constructor(elementRef:ElementRef, router:Router) {
     this._domEl = elementRef.domElement;
     this._router = router;
+    this._params = StringMapWrapper.create();
+    DOM.on(this._domEl, 'click', (evt) => {
+      evt.preventDefault();
+      this._router.navigate(this._href);
+    });
   }
 
   set route(changes) {
     this._route = changes;
-    this.updateHref();
   }
 
   set params(changes) {
     this._params = changes;
-    this.updateHref();
   }
 
-  updateHref() {
+  onAllChangesDone() {
     if (isPresent(this._route) && isPresent(this._params)) {
       var newHref = this._router.generate(this._route, this._params);
+      this._href = newHref;
+      // Keeping the link on the element to support contextual menu `copy link`
+      // and other in-browser affordances.
       DOM.setAttribute(this._domEl, 'href', newHref);
     }
   }

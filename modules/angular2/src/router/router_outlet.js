@@ -18,7 +18,7 @@ export class RouterOutlet {
   _router:routerMod.Router;
   _viewContainer:ViewContainerRef;
 
-  constructor(viewContainer:ViewContainerRef, compiler:Compiler, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr) {
+  constructor(viewContainer:ViewContainerRef, compiler:Compiler, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr:String) {
     if (isBlank(nameAttr)) {
       nameAttr = 'default';
     }

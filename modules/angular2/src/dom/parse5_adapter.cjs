@@ -127,7 +127,12 @@ export class Parse5DomAdapter extends DomAdapter {
     return this.createEvent(eventType);
   }
   createEvent(eventType) {
-    return {type: eventType};
+    var evt =  {
+        type: eventType,
+        defaultPrevented: false,
+        preventDefault: () => {evt.defaultPrevented = true}
+      };
+    return evt;
   }
   getInnerHTML(el) {
     return serializer.serialize(this.templateAwareRoot(el));
