@@ -550,13 +550,16 @@ gulp.task('build.tools', ['build/clean.tools'], function(done) {
 // private task to build tools
 gulp.task('!build.tools', function() {
   var tsResult = gulp.src(['tools/**/*.ts'])
-                     .pipe(sourcemaps.init())
-                     .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter()}))
-                     .on('error', function(error) {
-                        // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
-                        // forwarding the error into the merged stream
-                        mergedStream.emit('error', error);
-                     });
+      .pipe(sourcemaps.init())
+      .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter(),
+                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
+                 // see https://github.com/ivogabe/gulp-typescript#typescript-version
+                 typescript: require('typescript')}))
+      .on('error', function(error) {
+        // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
+        // forwarding the error into the merged stream
+        mergedStream.emit('error', error);
+      });
 
   var destDir = gulp.dest('dist/tools/');
 
