@@ -13,6 +13,7 @@ export {RouteParams} from './src/router/instruction';
 export * from './src/router/route_config_annotation';
 export * from './src/router/route_config_decorator';
 
+import {BrowserLocation} from './src/router/browser_location';
 import {Router, RootRouter} from './src/router/router';
 import {RouteRegistry} from './src/router/route_registry';
 import {Pipeline} from './src/router/pipeline';
@@ -23,6 +24,7 @@ import {bind} from './di';
 export var routerInjectables:List = [
   RouteRegistry,
   Pipeline,
+  BrowserLocation,
   Location,
   bind(Router).toFactory((registry, pipeline, location, meta) => {
     return new RootRouter(registry, pipeline, location, meta.type);
