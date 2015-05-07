@@ -318,4 +318,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getLocation() {
     return window.location;
   }
+  getBaseHref() {
+    var uri = document.baseUri;
+    var baseUri = Uri.parse(uri);
+    return baseUri.path;
+  }
 }
