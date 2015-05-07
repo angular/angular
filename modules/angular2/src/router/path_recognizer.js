@@ -1,4 +1,4 @@
-import {RegExp, RegExpWrapper, RegExpMatcherWrapper, StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {RegExp, RegExpWrapper, RegExpMatcherWrapper, StringWrapper, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, StringMap, StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 
 import {escapeRegex} from './url';
@@ -27,6 +27,9 @@ class DynamicSegment {
   }
 
   generate(params:StringMap) {
+    if (!StringMapWrapper.contains(params, this.name)) {
+      throw new BaseException(`Route generator for '${this.name}' was not included in parameters passed.`)
+    }
     return StringMapWrapper.get(params, this.name);
   }
 }
@@ -118,6 +121,7 @@ export class PathRecognizer {
   }
 
   generate(params:StringMap):string {
-    return ListWrapper.join(ListWrapper.map(this.segments, (segment) => '/' + segment.generate(params)), '');
+    return ListWrapper.join(ListWrapper.map(this.segments, (segment) =>
+      '/' + segment.generate(params)), '');
   }
 }

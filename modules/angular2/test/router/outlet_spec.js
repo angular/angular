@@ -34,7 +34,7 @@ import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_meta
 export function main() {
   describe('Outlet Directive', () => {
 
-    var ctx, tb, view, rtr;
+    var ctx, tb, view, rtr, location;
 
     beforeEachBindings(() => [
       Pipeline,
@@ -46,10 +46,11 @@ export function main() {
       }, [RouteRegistry, Pipeline, Location])
     ]);
 
-    beforeEach(inject([TestBed, Router], (testBed, router) => {
+    beforeEach(inject([TestBed, Router, Location], (testBed, router, loc) => {
       tb = testBed;
       ctx = new MyComp();
       rtr = router;
+      location = loc;
     }));
 
     function compile(template:string = "<router-outlet></router-outlet>") {
@@ -131,8 +132,18 @@ export function main() {
         });
     }));
 
+    it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
+      compile('<a href="hello" router-link="user"></a>')
+        .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
+        .then((_) => rtr.navigate('/a/b'))
+        .then((_) => {
+          view.detectChanges();
+          expect(DOM.getAttribute(view.rootNodes[0].childNodes[0], 'href')).toEqual('/user');
+          async.done();
+        });
+    }));
 
-    it('should generate link hrefs', inject([AsyncTestCompleter], (async) => {
+    it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
       compile('<a href="hello" router-link="user" [router-params]="{name: name}">{{name}}</a>')
         .then((_) => rtr.config({'path': '/user/:name', 'component': UserCmp, 'as': 'user'}))
@@ -145,6 +156,27 @@ export function main() {
         });
     }));
 
+
+    it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
+      compile('<a href="hello" router-link="user"></a>')
+        .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
+        .then((_) => rtr.navigate('/a/b'))
+        .then((_) => {
+          view.detectChanges();
+          var anchorEl = view.rootNodes[0].childNodes[0];
+          expect(DOM.getAttribute(anchorEl, 'href')).toEqual('/user');
+
+          var dispatchedEvent = DOM.createMouseEvent('click');
+          DOM.dispatchEvent(anchorEl, dispatchedEvent);
+          expect(dispatchedEvent.defaultPrevented).toBe(true);
+
+          // router navigation is async.
+          rtr.subscribe((_) => {
+            expect(location.urlChanges).toEqual(['/user']);
+            async.done();
+          });
+        });
+    }));
   });
 }
 

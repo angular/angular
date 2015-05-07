@@ -68,5 +68,11 @@ export function main() {
       recognizer.addConfig('/app/user/:name', handler, 'user');
       expect(recognizer.generate('user', {'name' : 'misko'})).toEqual('/app/user/misko');
     });
+
+    it('should throw in the absence of required params URLs', () => {
+      recognizer.addConfig('/app/user/:name', handler, 'user');
+      expect(() => recognizer.generate('user', {})).toThrowError(
+        'Route generator for \'name\' was not included in parameters passed.');
+    });
   });
 }
