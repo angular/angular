@@ -354,6 +354,6 @@ function elementText(n) {
   return DOM.getText(n);
 }
 
-function getCurrentZoneName(): string {
-  return global.zone._name;
+export function isInInnerZone(): boolean {
+  return global.zone._innerZone === true;
 }

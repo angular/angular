@@ -9,7 +9,8 @@ import {
   it,
   xdescribe,
   xit,
-  Log
+  Log,
+  isInInnerZone
 } from 'angular2/test_lib';
 
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -19,10 +20,8 @@ import {BaseException} from 'angular2/src/facade/lang';
 import {VmTurnZone} from 'angular2/src/core/zone/vm_turn_zone';
 
 // Schedules a macrotask (using a timer)
-// The code is executed in the outer zone to properly detect VM turns - in Dart VM turns could not be properly detected
-// in the root zone because scheduleMicrotask() is not overriden.
 function macroTask(fn: Function): void {
-  _zone.runOutsideAngular(() => PromiseWrapper.setTimeout(fn, 0));
+  _zone.runOutsideAngular(() => PromiseWrapper.setTimeout(fn, 1));
 }
 
 // Schedules a microtasks (using a resolved promise .then())
@@ -145,7 +144,16 @@ export function main() {
 }
 
 function commonTests() {
-  describe("run", () => {
+  describe('isInInnerZone', () => {
+    it('should return whether the code executes in the inner zone', () => {
+      expect(isInInnerZone()).toEqual(false);
+      _zone.run(() => {
+        expect(isInInnerZone()).toEqual(true);
+      });
+    })
+  });
+
+  describe('run', () => {
     it('should return the body return value from run', inject([AsyncTestCompleter], (async) => {
       macroTask(() => {
         expect(_zone.run(() => {
@@ -175,7 +183,7 @@ function commonTests() {
       macroTask(() => {
         _zone.run(() => {
           _log.add('run start');
-          microTask(() => { _log.add('async'); });
+          microTask(_log.fn('async'));
           _log.add('run end');
         });
       });
@@ -194,7 +202,7 @@ function commonTests() {
           _log.add('start run');
           _zone.run(() => {
             _log.add('nested run');
-            microTask(() => _log.add('nested run microtask'));
+            microTask(_log.fn('nested run microtask'));
           });
           _log.add('end run');
         });
@@ -210,15 +218,14 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
       macroTask(() => {
         _zone.run(_log.fn('run1'));
+      });
+
+      macroTask(() => {
         _zone.run(_log.fn('run2'));
       });
 
       macroTask(() => {
-        _zone.run(_log.fn('run3'));
-      });
-
-      macroTask(() => {
-        expect(_log.result()).toEqual('onTurnStart; run1; run2; onTurnDone; onTurnStart; run3; onTurnDone');
+        expect(_log.result()).toEqual('onTurnStart; run1; onTurnDone; onTurnStart; run2; onTurnDone');
         async.done();
       });
     }));
@@ -229,22 +236,21 @@ function commonTests() {
       var b;
 
       macroTask(() => {
-        a = PromiseWrapper.completer();
-        b = PromiseWrapper.completer();
         _zone.run(() => {
+          a = PromiseWrapper.completer();
+          b = PromiseWrapper.completer();
+
           _log.add('run start');
-          a.promise.then((_) => {
-            return _log.add('a then');
-          });
-          b.promise.then((_) => {
-            return _log.add('b then');
-          });
+          a.promise.then(_log.fn('a then'));
+          b.promise.then(_log.fn('b then'));
         });
       });
 
       macroTask(() => {
-        a.resolve('a');
-        b.resolve('b');
+        _zone.run(() => {
+          a.resolve('a');
+          b.resolve('b');
+        });
       });
 
       macroTask(() => {
@@ -276,9 +282,7 @@ function commonTests() {
 
       macroTask(() => {
         _zone.run(() => {
-          completer.promise.then((_) => {
-            _log.add('executedMicrotask');
-          });
+          completer.promise.then(_log.fn('executedMicrotask'));
         });
       });
 
@@ -302,34 +306,6 @@ function commonTests() {
       });
     }));
 
-    it('should not call onTurnStart and onTurnDone when an outer microtask is scheduled from inside angular',
-          inject([AsyncTestCompleter], (async) => {
-      var completer;
-
-      macroTask(() => {
-        _zone.runOutsideAngular(() => {
-         completer = PromiseWrapper.completer();
-         completer.promise.then((_) => {
-           _log.add('executedMicrotask');
-         });
-        });
-      });
-
-      macroTask(() => {
-        _zone.run(() => {
-          _log.add('scheduling a microtask');
-          completer.resolve(null);
-        });
-      });
-
-      macroTask(() => {
-        expect(_log.result()).toEqual(
-            'onTurnStart; scheduling a microtask; executedMicrotask; onTurnDone'
-        );
-        async.done();
-      });
-    }));
-
     it('should call onTurnStart before executing a microtask scheduled in onTurnDone as well as ' +
         'onTurnDone after executing the task', inject([AsyncTestCompleter], (async) => {
       var ran = false;
@@ -347,9 +323,7 @@ function commonTests() {
         }});
 
       macroTask(() => {
-        _zone.run(() => {
-          _log.add('run');
-        });
+        _zone.run(_log.fn('run'));
       });
 
       macroTask(() => {
@@ -383,7 +357,7 @@ function commonTests() {
       macroTask(() => {
         _zone.run(() => {
           _log.add('scheduleMicrotask');
-          microTask(() => { _log.add('run(executeMicrotask)'); });
+          microTask(_log.fn('run(executeMicrotask)'));
         });
       });
 
@@ -409,7 +383,7 @@ function commonTests() {
           _log.add('onTurnStart(begin)');
           if (!startPromiseRan) {
             _log.add('onTurnStart(schedulePromise)');
-            microTask(() => { _log.add('onTurnStart(executePromise)'); });
+            microTask(_log.fn('onTurnStart(executePromise)'));
             startPromiseRan = true;
           }
           _log.add('onTurnStart(end)');
@@ -418,7 +392,7 @@ function commonTests() {
           _log.add('onTurnDone(begin)');
           if (!donePromiseRan) {
             _log.add('onTurnDone(schedulePromise)');
-            microTask(() => { _log.add('onTurnDone(executePromise)'); });
+            microTask(_log.fn('onTurnDone(executePromise)'));
             donePromiseRan = true;
           }
           _log.add('onTurnDone(end)');
@@ -430,12 +404,10 @@ function commonTests() {
           PromiseWrapper.resolve(null)
             .then((_) => {
               _log.add('promise then');
-              PromiseWrapper.resolve(null).then((_) => { _log.add('promise foo'); });
+              PromiseWrapper.resolve(null).then(_log.fn('promise foo'));
               return PromiseWrapper.resolve(null);
             })
-            .then((_) => {
-              _log.add('promise bar');
-            });
+            .then(_log.fn('promise bar'));
           _log.add('run end');
         });
       });
@@ -465,8 +437,8 @@ function commonTests() {
         _zone.run(() => {
           completerA = PromiseWrapper.completer();
           completerB = PromiseWrapper.completer();
-          completerA.promise.then((_) => _log.add('a then'));
-          completerB.promise.then((_) => _log.add('b then'));
+          completerA.promise.then(_log.fn('a then'));
+          completerB.promise.then(_log.fn('b then'));
           _log.add('run start');
         });
       });
@@ -503,9 +475,7 @@ function commonTests() {
           _log.add('run start');
           microTask(() => {
             _log.add('async1');
-            microTask(() => {
-              _log.add('async2');
-            });
+            microTask(_log.fn('async2'));
           });
           _log.add('run end');
         });
@@ -521,26 +491,19 @@ function commonTests() {
        inject([AsyncTestCompleter], (async) => {
       var promise;
 
-      _zone.initCallbacks({
-        onTurnStart: _log.fn('onTurnStart'),
-        onTurnDone: _log.fn('onTurnDone')
-      });
-
       macroTask(() => {
         _zone.runOutsideAngular(() => {
           promise = PromiseWrapper.resolve(4).then((x) => PromiseWrapper.resolve(x));
         });
 
         _zone.run(() => {
-          promise.then((_) => {
-            _log.add('promise then');
-          });
+          promise.then(_log.fn('promise then'));
           _log.add('zone run');
         });
       });
 
       macroTask(() => {
-        expect(_log.result()).toEqual('onTurnStart; zone run; promise then; onTurnDone');
+        expect(_log.result()).toEqual('onTurnStart; zone run; onTurnDone; onTurnStart; promise then; onTurnDone');
         async.done();
       });
     }));

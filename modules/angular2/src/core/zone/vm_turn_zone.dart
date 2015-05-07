@@ -29,12 +29,10 @@ class VmTurnZone {
   // onTurnDone hook at the end of the current VM turn.
   Zone _innerZone;
 
-  // Number of microtasks pending from _outerZone (& descendants)
+  // Number of microtasks pending from _innerZone (& descendants)
   int _pendingMicrotasks = 0;
   // Whether some code has been executed in the _innerZone (& descendants) in the current turn
   bool _hasExecutedCodeInInnerZone = false;
-  // Whether the onTurnStart hook is executing
-  bool _inTurnStart = false;
   // _outerRun() call depth. 0 at the end of a macrotask
   // zone.run(() => {         // top-level call
   //   zone.run(() => {});    // nested call -> in-turn
@@ -44,36 +42,26 @@ class VmTurnZone {
   /**
    * Associates with this
    *
-   * - an "outer" [Zone], which is a child of the one that created this.
+   * - an "outer" [Zone], which is a the one that created this.
    * - an "inner" [Zone], which is a child of the outer [Zone].
    *
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
    */
   VmTurnZone({bool enableLongStackTrace}) {
-    // The _outerZone captures microtask scheduling so that we can run onTurnDone when the queue
-    // is exhausted and code has been executed in the _innerZone.
+    _outerZone = Zone.current;
+
     if (enableLongStackTrace) {
-      _outerZone = Chain.capture(
-          () => _createOuterZone(Zone.current),
+      _innerZone = Chain.capture(
+          () => _createInnerZone(Zone.current),
           onError: _onErrorWithLongStackTrace);
     } else {
-      _outerZone = _createOuterZone(
+      _innerZone = _createInnerZone(
           Zone.current,
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, error, StackTrace trace) =>
               _onErrorWithoutLongStackTrace(error, trace)
       );
     }
-
-    // Instruments the inner [Zone] to detect when code is executed in this (or a descendant) zone.
-    // Also runs the onTurnStart hook the first time this zone executes some code in each turn.
-    _innerZone = _outerZone.fork(
-      specification: new ZoneSpecification(
-        run: _innerRun,
-        runUnary: _innerRunUnary,
-        runBinary: _innerRunBinary
-      ),
-      zoneValues: {'_name': 'inner'});
   }
 
   /**
@@ -136,47 +124,28 @@ class VmTurnZone {
    * ```
    */
   dynamic runOutsideAngular(fn()) {
-    return _outerZone.runGuarded(fn);
+    return _outerZone.run(fn);
   }
 
-  // Executes code in the [_innerZone] & trigger the onTurnStart hook when code is executed for the
-  // first time in a turn.
-  dynamic _innerRun(Zone self, ZoneDelegate parent, Zone zone, fn()) {
-    _maybeStartVmTurn(parent, zone);
-    return parent.run(zone, fn);
-  }
-
-  dynamic _innerRunUnary(Zone self, ZoneDelegate parent, Zone zone, fn(arg), arg) {
-    _maybeStartVmTurn(parent, zone);
-    return parent.runUnary(zone, fn, arg);
-  }
-
-  dynamic _innerRunBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2), arg1, arg2) {
-    _maybeStartVmTurn(parent, zone);
-    return parent.runBinary(zone, fn, arg1, arg2);
-  }
-
-  void _maybeStartVmTurn(ZoneDelegate parent, Zone zone) {
+  void _maybeStartVmTurn(ZoneDelegate parent) {
     if (!_hasExecutedCodeInInnerZone) {
       _hasExecutedCodeInInnerZone = true;
       if (_onTurnStart != null) {
-        _inTurnStart = true;
-        parent.run(zone, _onTurnStart);
+        parent.run(_innerZone, _onTurnStart);
       }
     }
   }
 
-  dynamic _outerRun(Zone self, ZoneDelegate parent, Zone zone, fn()) {
+  dynamic _run(Zone self, ZoneDelegate parent, Zone zone, fn()) {
     try {
       _nestedRun++;
+      _maybeStartVmTurn(parent);
       return parent.run(zone, fn);
     } finally {
       _nestedRun--;
-      // If there are no more pending microtasks, we are at the end of a VM turn (or in onTurnStart)
-      // _nestedRun will be 0 at the end of a macrotasks (it could be > 0 when there are nested calls
-      // to _outerRun()).
+      // If there are no more pending microtasks and we are not in a recursive call, this is the end of a turn
       if (_pendingMicrotasks == 0 && _nestedRun == 0) {
-        if (_onTurnDone != null && !_inTurnStart && _hasExecutedCodeInInnerZone) {
+        if (_onTurnDone != null && _hasExecutedCodeInInnerZone) {
           // Trigger onTurnDone at the end of a turn if _innerZone has executed some code
           try {
             parent.run(_innerZone, _onTurnDone);
@@ -185,15 +154,14 @@ class VmTurnZone {
           }
         }
       }
-      _inTurnStart = false;
     }
   }
 
-  dynamic _outerRunUnary(Zone self, ZoneDelegate parent, Zone zone, fn(arg), arg) =>
-    _outerRun(self, parent, zone, () => fn(arg));
+  dynamic _runUnary(Zone self, ZoneDelegate parent, Zone zone, fn(arg), arg) =>
+    _run(self, parent, zone, () => fn(arg));
 
-  dynamic _outerRunBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2), arg1, arg2) =>
-    _outerRun(self, parent, zone, () => fn(arg1, arg2));
+  dynamic _runBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2), arg1, arg2) =>
+    _run(self, parent, zone, () => fn(arg1, arg2));
 
   void _scheduleMicrotask(Zone self, ZoneDelegate parent, Zone zone, fn) {
     _pendingMicrotasks++;
@@ -226,16 +194,16 @@ class VmTurnZone {
     }
   }
 
-  Zone _createOuterZone(Zone zone, {handleUncaughtError}) {
+  Zone _createInnerZone(Zone zone, {handleUncaughtError}) {
     return zone.fork(
       specification: new ZoneSpecification(
         scheduleMicrotask: _scheduleMicrotask,
-        run: _outerRun,
-        runUnary: _outerRunUnary,
-        runBinary: _outerRunBinary,
+        run: _run,
+        runUnary: _runUnary,
+        runBinary: _runBinary,
         handleUncaughtError: handleUncaughtError
       ),
-      zoneValues: {'_name': 'outer'}
+      zoneValues: {'_innerZone': true}
     );
   }
 }
