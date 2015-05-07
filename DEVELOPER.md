@@ -8,6 +8,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Environment Variable Setup](#environment-variable-setup)
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
 * [Running Tests Locally](#running-tests-locally)
+* [Formatting](#formatting)
 * [Project Information](#project-information)
 * [CI using Travis](#ci-using-travis)
 * [Transforming Dart code](#transforming-dart-code)
@@ -194,6 +195,36 @@ Angular specific command line options when running protractor:
 Angular specific command line options when running protractor (e.g. force gc, ...):
 `$(npm bin)/protractor protractor-{js|dart2js}-conf.js --ng-help`
 
+## Formatting
+
+We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code style for our TypeScript code. This allows us to focus our code reviews more on the content, and less on style nit-picking. It also lets us encode our style guide in the `.clang-format` file in the repository, allowing many tools and editors to share our settings.
+
+To check the formatting of your code, run
+
+    gulp check-format
+
+Note that the continuous build on Travis runs `gulp enforce-format`. Unlike the `check-format` task, this will actually fail the build if files aren't formatted according to the style guide.
+
+Your life will be easier if you include the formatter in your standard workflow. Otherwise, you'll likely forget to check the formatting, and waste time waiting for a build on Travis that fails due to some whitespace difference.
+
+* **git pre-commit hook** is available at [llvm.org](https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/git-clang-format). This will automatically format your delta regions when you commit a change. To install, first patch this file to add `.ts` to the `default_extensions` section. Then copy the file somewhere in your path, for example, `/usr/local/git/current/bin/git-clang-format`. Make sure it is executable. Then, in the angular repo, run
+
+    $ echo -e '#!/bin/sh\nexec git clang-format' > .git/hooks/pre-commit
+    $ chmod u+x !$
+
+* **WebStorm** can run clang-format on the current file.
+  1. Under Preferences, open Tools > External Tools.
+  1. Plus icon to Create Tool
+  1. Fill in the form:
+    - Name: clang-format
+    - Description: Format
+    - Synchronize files after execution: checked
+    - Open console: not checked
+    - Show in: Editor menu
+    - Program: [path to clang-format, try `$ echo $(npm config get prefix)/bin/clang-format`]
+    - Parameters: `-i -style=file $FilePath$`
+    - Working directory: `$ProjectFileDir$`
+    
 ## Project Information
 
 ### Folder structure
