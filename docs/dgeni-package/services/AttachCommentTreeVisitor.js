@@ -34,7 +34,7 @@ module.exports = function AttachCommentTreeVisitor(ParseTreeVisitor, log) {
 
           // Only store the comment if it is JSDOC style (e.g. /** some comment */)
           if (/^\/\*\*([\w\W]*)\*\/$/.test(commentText)) {
-            log.info('comment: ' + this.currentComment.range.start.line + ' - ' +
+            log.silly('comment: ' + this.currentComment.range.start.line + ' - ' +
                                    this.currentComment.range.end.line + ' : ' +
                                    commentText);
 
