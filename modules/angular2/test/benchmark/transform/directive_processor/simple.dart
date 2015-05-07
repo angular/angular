@@ -16,11 +16,8 @@ allTests() {
 Future runBenchmark() async {
   var options = new TransformerOptions(['this_is_ignored.dart']);
   var files = {new AssetId('a', 'a.dart'): aContents,};
-  var benchmark =
-      new TransformerBenchmark([[new DirectiveProcessor(options)]], files);
-  print('\nRunning directive_processor benchmark...');
-  var result = await benchmark.measure();
-  print('Done, took ${result.round()}μs on average.');
+  return new TransformerBenchmark([[new DirectiveProcessor(options)]], files)
+      .measure();
 }
 
 const aContents = '''

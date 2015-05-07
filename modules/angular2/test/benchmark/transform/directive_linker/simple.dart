@@ -13,16 +13,13 @@ allTests() {
   test('Directive Linker Benchmark Runs', runBenchmark);
 }
 
-Future runBenchmark() async {
+Future<double> runBenchmark() async {
   var files = {
     new AssetId('a', 'a.ng_deps.dart'): aContents,
     new AssetId('a', 'b.ng_deps.dart'): bContents,
     new AssetId('a', 'c.ng_deps.dart'): cContents,
   };
-  var benchmark = new TransformerBenchmark([[new DirectiveLinker()]], files);
-  print('\nRunning directive_linker benchmark...');
-  var result = await benchmark.measure();
-  print('Done, took ${result.round()}μs on average.');
+  return new TransformerBenchmark([[new DirectiveLinker()]], files).measure();
 }
 
 const aContents = '''

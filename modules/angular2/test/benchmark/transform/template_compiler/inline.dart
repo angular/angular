@@ -16,11 +16,8 @@ allTests() {
 Future runBenchmark() async {
   var options = new TransformerOptions(['index.dart']);
   var files = {new AssetId('a', 'web/a.ng_deps.dart'): aContents,};
-  var benchmark =
-      new TransformerBenchmark([[new TemplateCompiler(options)]], files);
-  print('\nRunning template_compiler inline benchmark...');
-  var result = await benchmark.measure();
-  print('Done, took ${result.round()}μs on average.');
+  return new TransformerBenchmark([[new TemplateCompiler(options)]], files)
+      .measure();
 }
 
 const aContents = '''

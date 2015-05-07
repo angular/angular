@@ -13,14 +13,11 @@ allTests() {
   test('Bind Generator Benchmark Runs', runBenchmark);
 }
 
-Future runBenchmark() async {
+Future<double> runBenchmark() async {
   var options = new TransformerOptions(['this_is_ignored.dart']);
   var files = {new AssetId('a', 'a.ng_deps.dart'): aContents};
-  var benchmark =
-      new TransformerBenchmark([[new BindGenerator(options)]], files);
-  print('\nRunning bind_generator benchmark...');
-  var result = await benchmark.measure();
-  print('Done, took ${result.round()}μs on average.');
+  return new TransformerBenchmark([[new BindGenerator(options)]], files)
+      .measure();
 }
 
 const aContents = '''

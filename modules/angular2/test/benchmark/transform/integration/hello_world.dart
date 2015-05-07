@@ -19,11 +19,8 @@ Future runBenchmark() async {
     new AssetId('a', 'web/index.dart'): indexContents,
     new AssetId('a', 'web/index_common.dart'): indexCommonContents,
   };
-  var benchmark = new TransformerBenchmark(
-      new AngularTransformerGroup(options).phases, files);
-  print('\nRunning hello_world benchmark...');
-  var result = await benchmark.measure();
-  print('Done, took ${result.round()}μs on average.');
+  return new TransformerBenchmark(
+      new AngularTransformerGroup(options).phases, files).measure();
 }
 
 const indexContents = '''
