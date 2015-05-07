@@ -10,7 +10,7 @@ export function makeDecorator(annotationCls) {
       throw 'reflect-metadata shim is required when using class decorators';
     }
     var annotationInstance = Object.create(annotationCls);
-    annotationInstance.call(annotationInstance, args);
+    annotationCls.call(annotationInstance, args);
     return function(cls) {
       var annotations = Reflect.getMetadata('annotations', cls);
       annotations = annotations || [];
@@ -29,7 +29,7 @@ export function makeParamDecorator(annotationCls) {
       throw 'reflect-metadata shim is required when using parameter decorators';
     }
     var annotationInstance = Object.create(annotationCls);
-    annotationInstance.call(annotationInstance, args);
+    annotationCls.call(annotationInstance, args);
     return function(cls, unusedKey, index) {
       var parameters = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];
