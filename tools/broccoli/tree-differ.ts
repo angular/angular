@@ -22,7 +22,8 @@ export class TreeDiffer {
 
     function combine(prev, curr) {
       if (curr.charAt(0) !== ".") throw new TypeError("Extension must begin with '.'");
-      curr = '(' + curr + ')';
+      let kSpecialRegexpChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
+      curr = '(' + curr.replace(kSpecialRegexpChars, '\\$&') + ')';
       return prev ? (prev + '|' + curr) : curr;
     }
   }
