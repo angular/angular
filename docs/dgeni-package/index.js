@@ -49,7 +49,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
 
 // Configure the log service
 .config(function(log) {
-  log.level = 'warning';
+  log.level = 'warn';
 })
 
 
@@ -62,6 +62,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
     { include: 'modules/*/src/**/*.js', basePath: 'modules' },
     { include: 'modules/*/*.es6', basePath: 'modules' },
     { include: 'modules/*/src/**/*.es6', basePath: 'modules' },
+    { include: 'modules/*/*.ts', basePath: 'modules' },
+    { include: 'modules/*/src/**/*.ts', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];

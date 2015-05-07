@@ -10,9 +10,8 @@ var path = require('canonical-path');
 module.exports = function atScriptFileReader(log, atParser, modules) {
   var reader = {
     name: 'atScriptFileReader',
-    defaultPattern: /\.js|\.es6$/,
+    defaultPattern: /\.js|\.es6|\.ts$/,
     getDocs: function(fileInfo) {
-
       var moduleDoc = atParser.parseModule(fileInfo);
       moduleDoc.docType = 'module';
       moduleDoc.id = moduleDoc.moduleTree.moduleName;
