@@ -151,6 +151,7 @@ describe('TreeDiffer', () => {
         'dir1': {
           'file-1.ts': mockfs.file({content: 'file-1.ts content', mtime: new Date(1000)}),
           'file-1.cs': mockfs.file({content: 'file-1.cs content', mtime: new Date(1000)}),
+          'file-1d.cs': mockfs.file({content: 'file-1d.cs content', mtime: new Date(1000)}),
           'file-1.d.cs': mockfs.file({content: 'file-1.d.cs content', mtime: new Date(1000)}),
           'file-2.md': mockfs.file({content: 'file-2.md content', mtime: new Date(1000)}),
           'file-3.ts': mockfs.file({content: 'file-3.ts content', mtime: new Date(1000)}),
@@ -166,7 +167,8 @@ describe('TreeDiffer', () => {
 
       let diffResult = differ.diffTree();
 
-      expect(diffResult.changedPaths).toEqual(['file-1.cs', 'file-1.ts', 'file-3.ts']);
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.cs', 'file-1.ts', 'file-1d.cs', 'file-3.ts']);
 
       // change two files
       testDir['dir1']['file-1.ts'] = mockfs.file({content: 'new content', mtime: new Date(1000)});
