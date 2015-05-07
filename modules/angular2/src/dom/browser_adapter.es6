@@ -381,4 +381,17 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getLocation() {
     return window.location;
   }
+  getBaseHref() {
+    return relativePath(document.baseURI);
+  }
+}
+
+// based on urlUtils.js in AngularJS 1
+var urlParsingNode = null;
+function relativePath(url) {
+  if (isBlank(urlParsingNode)) {
+    urlParsingNode = document.createElement("a");
+  }
+  urlParsingNode.setAttribute('href', url);
+  return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname : '/' + urlParsingNode.pathname;
 }

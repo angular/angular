@@ -289,4 +289,7 @@ class Html5LibDomAdapter implements DomAdapter {
   getLocation() {
     throw 'not implemented';
   }
+  getBaseHref() {
+    throw 'not implemented';
+  }
 }

@@ -292,4 +292,7 @@ export class DomAdapter {
   getLocation() {
     throw _abstract();
   }
+  getBaseHref() {
+    throw _abstract();
+  }
 }
