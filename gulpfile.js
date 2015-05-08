@@ -16,7 +16,7 @@ var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
 var semver = require('semver');
-var watch = require('gulp-watch');
+var watch = require('./tools/build/watch');
 
 var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
@@ -222,9 +222,7 @@ gulp.task('build/checkCircularDependencies', function (done) {
 // ------------------
 // web servers
 gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
-  watch('modules/**', function() {
-    gulp.start('!broccoli.js.dev');
-  });
+  watch('modules/**', '!broccoli.js.dev');
 
   jsserve(gulp, gulpPlugins, {
     path: CONFIG.dest.js.dev.es5,
@@ -304,7 +302,7 @@ function createDocsTasks(publicBuild) {
 
   gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
   gulp.task(taskPrefix + '/watch', function() {
-    return watch('docs/app/**/*', [taskPrefix + '/app']);
+    return watch('docs/app/**/*', { ignoreInitial: false }, [taskPrefix + '/app']);
   });
 
   gulp.task(taskPrefix + '/test', function (done) {
@@ -372,20 +370,17 @@ gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
     'check-format'
   );
 
-  watch('modules/**', function() {
-    runSequence(
-      '!broccoli.js.dev',
-      '!test.unit.js/karma-run'
-    );
-  });
+  watch('modules/**', [
+    '!broccoli.js.dev',
+    '!test.unit.js/karma-run'
+  ]);
 });
 
 gulp.task('watch.js.dev', ['build.js.dev'], function (neverDone) {
-  watch('modules/**', function() {
-    runSequence(
-      '!broccoli.js.dev'
-    );
-  });
+  watch('modules/**', [
+    '!broccoli.js.dev',
+    '!test.unit.js/karma-run',
+  ]);
 });
 
 
@@ -404,19 +399,16 @@ gulp.task('!test.unit.js/karma-run', function(done) {
 
 
 gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
-
   runSequence(
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run'
   );
 
-  watch('modules/angular2/**', function() {
-    runSequence(
-      '!build/tree.dart',
-      'build/format.dart',
-      '!test.unit.dart/karma-run'
-    );
-  });
+  watch('modules/angular2/**', [
+    '!build/tree.dart',
+    'build/format.dart',
+    '!test.unit.dart/karma-run'
+  ]);
 });
 
 gulp.task('!test.unit.dart/karma-run', function (done) {
@@ -454,37 +446,29 @@ gulp.task('test.unit.cjs/ci', function(done) {
 
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (done) {
-  function buildAndTest() {
-    runSequence(
-      '!build.js.cjs',
-      'test.unit.cjs/ci'
-    );
-  }
+  var buildAndTest = [
+    '!build.js.cjs',
+    'test.unit.cjs/ci'
+  ];
 
-  buildAndTest();
-
-  watch('modules/**', buildAndTest);
+  watch('modules/**', { ignoreInitial: false }, buildAndTest);
 });
 
 
 gulp.task('test.unit.tools/ci', function(done) {
   fork('./tools/traceur-jasmine', ['dist/tools/**/*.spec.js'], {
     stdio: 'inherit'
-  }).on('close', done);
+  }).on('close', done.bind(null, null));
 });
 
 
 gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
-  function buildAndTest() {
-    runSequence(
-      '!build.tools',
-      'test.unit.tools/ci'
-    );
-  }
+  var buildAndTest = [
+    '!build.tools',
+    'test.unit.tools/ci'
+  ];
 
-  buildAndTest();
-
-  watch('tools/**', buildAndTest);
+  watch(['tools/**', '!tools/**/test-fixtures/**'], {ignoreInitial: false}, buildAndTest);
 });
 
 
