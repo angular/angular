@@ -10,7 +10,7 @@ var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
-var ts2dart = require('../broccoli-ts2dart');
+import ts2dart from '../broccoli-ts2dart';
 
 /**
  * A funnel starting at modules, including the given filters, and moving into the root.
@@ -44,7 +44,7 @@ function stripModulePrefix(relativePath: string): string {
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
   var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
-  var transpiled = ts2dart.transpile(tsInputTree);
+  var transpiled = ts2dart(tsInputTree, {generateLibraryName: true, generateSourceMap: false});
   // Native sources, dart only examples, etc.
   var dartSrcs = modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/css/**']);
   return mergeTrees([transpiled, dartSrcs]);
