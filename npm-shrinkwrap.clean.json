@@ -8382,6 +8382,9 @@
         }
       }
     },
+    "semver": {
+      "version": "4.3.4"
+    },
     "sorted-object": {
       "version": "1.0.0"
     },
