@@ -393,7 +393,7 @@ function _createListOfBindings(flattenedBindings): List<any> {
 
 function _flattenBindings(bindings: List<ResolvedBinding /* | List<any>*/>,
                           res: Map<number, ResolvedBinding>): Map<number, ResolvedBinding> {
-  ListWrapper.forEach(bindings, function(b) {
+  ListWrapper.forEach(bindings, (b) => {
     if (b instanceof ResolvedBinding) {
       MapWrapper.set(res, b.key.id, b);
     } else if (b instanceof List) {
