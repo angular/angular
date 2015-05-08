@@ -12951,6 +12951,11 @@
         }
       }
     },
+    "semver": {
+      "version": "4.3.4",
+      "from": "semver@*",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-4.3.4.tgz"
+    },
     "sorted-object": {
       "version": "1.0.0",
       "from": "https://registry.npmjs.org/sorted-object/-/sorted-object-1.0.0.tgz",
