@@ -108,8 +108,9 @@ class _ViewDefinitionCreator {
   /// ```
   ///
   /// This method will look for `component.ng_meta.json`to contain the
-  /// serialized [DirectiveMetadata] `MyComponent` and any other `Directive`s
-  /// declared in `component.dart`. We use this information to build a map:
+  /// serialized [DirectiveMetadata] for `MyComponent` and any other
+  /// `Directive`s declared in `component.dart`. We use this information to
+  /// build a map:
   ///
   /// ```
   /// {
