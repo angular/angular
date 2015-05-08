@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
@@ -58,9 +57,8 @@ Map<String, DirectiveMetadata> _metadataMapFromNgDeps(NgDeps ngDeps) {
   if (ngDeps == null || ngDeps.registeredTypes.isEmpty) return null;
   var retVal = <String, DirectiveMetadata>{};
   ngDeps.registeredTypes.forEach((rType) {
-    var meta = readDirectiveMetadata(rType);
-    if (meta != null) {
-      retVal['${rType.typeName}'] = meta;
+    if (rType.directiveMetadata != null) {
+      retVal['${rType.typeName}'] = rType.directiveMetadata;
     }
   });
   return retVal;

@@ -24,7 +24,7 @@ void allTests() {
 
   Future<DirectiveMetadata> readMetadata(inputPath) async {
     var ngDeps = await parser.parse(new AssetId('a', inputPath));
-    return readDirectiveMetadata(ngDeps.registeredTypes.first);
+    return ngDeps.registeredTypes.first.directiveMetadata;
   }
 
   describe('readMetadata', () {
@@ -44,17 +44,17 @@ void allTests() {
       // Unset value defaults to `true`.
       it.moveNext();
       expect('${it.current.typeName}').toEqual('UnsetComp');
-      var unsetComp = readDirectiveMetadata(it.current);
+      var unsetComp = it.current.directiveMetadata;
       expect(unsetComp.compileChildren).toBeTrue();
 
       it.moveNext();
       expect('${it.current.typeName}').toEqual('FalseComp');
-      var falseComp = readDirectiveMetadata(it.current);
+      var falseComp = it.current.directiveMetadata;
       expect(falseComp.compileChildren).toBeFalse();
 
       it.moveNext();
       expect('${it.current.typeName}').toEqual('TrueComp');
-      var trueComp = readDirectiveMetadata(it.current);
+      var trueComp = it.current.directiveMetadata;
       expect(trueComp.compileChildren).toBeTrue();
     });
 
@@ -85,8 +85,8 @@ void allTests() {
       var ngDeps = await parser.parse(new AssetId('a',
           'directive_metadata_extractor/'
           'directive_metadata_files/too_many_directives.ng_deps.dart'));
-      expect(() => readDirectiveMetadata(ngDeps.registeredTypes.first))
-          .toThrowWith(anInstanceOf: PrintLoggerError);
+      expect(() => ngDeps.registeredTypes.first.directiveMetadata).toThrowWith(
+          anInstanceOf: PrintLoggerError);
     });
   });
 

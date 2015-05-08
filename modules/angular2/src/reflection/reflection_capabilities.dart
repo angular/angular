@@ -5,8 +5,7 @@ import 'types.dart';
 import 'dart:mirrors';
 
 class ReflectionCapabilities {
-  ReflectionCapabilities([metadataReader]) {
-  }
+  ReflectionCapabilities([metadataReader]) {}
 
   Function factory(Type type) {
     ClassMirror classMirror = reflectType(type);
