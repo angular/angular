@@ -16,6 +16,8 @@ import 'extractor.dart';
 /// These files contain commented Json-formatted representations of all
 /// `Directive`s in the associated file.
 class DirectiveMetadataExtractor extends Transformer {
+  final _encoder = const JsonEncoder.withIndent('  ');
+
   DirectiveMetadataExtractor();
 
   @override
@@ -36,7 +38,7 @@ class DirectiveMetadataExtractor extends Transformer {
           jsonMap[k] = directiveMetadataToMap(v);
         });
         transform.addOutput(new Asset.fromString(
-            _outputAssetId(fromAssetId), JSON.encode(jsonMap)));
+            _outputAssetId(fromAssetId), _encoder.convert(jsonMap)));
       }
     } catch (ex, stackTrace) {
       log.logger.error('Extracting ng metadata failed.\n'
