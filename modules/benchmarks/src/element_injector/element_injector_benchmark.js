@@ -21,14 +21,14 @@ export function main() {
   function instantiate () {
     for (var i = 0; i < iterations; ++i) {
       var ei = proto.instantiate(null);
-      ei.instantiateDirectives(appInjector, null, null, null);
+      ei.instantiateDirectives(appInjector, null, null);
     }
   }
 
   function instantiateDirectives () {
     for (var i = 0; i < iterations; ++i) {
       elementInjector.clearDirectives();
-      elementInjector.instantiateDirectives(appInjector, null, null, null);
+      elementInjector.instantiateDirectives(appInjector, null, null);
     }
   }
 

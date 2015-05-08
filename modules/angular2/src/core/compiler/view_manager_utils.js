@@ -163,21 +163,7 @@ export class AppViewManagerUtils {
     }
     var annotation = this._metadataReader.read(componentBinding.token).annotation;
     var componentDirective = eli.DirectiveBinding.createFromBinding(componentBinding, annotation);
-    var shadowDomAppInjector = this._createShadowDomAppInjector(componentDirective, injector);
-    elementInjector.dynamicallyCreateComponent(componentDirective, shadowDomAppInjector);
-  }
-
-  _createShadowDomAppInjector(componentDirective, appInjector) {
-    var shadowDomAppInjector = null;
-
-    // shadowDomAppInjector
-    var injectables = componentDirective.resolvedInjectables;
-    if (isPresent(injectables)) {
-      shadowDomAppInjector = appInjector.createChildFromResolved(injectables);
-    } else {
-      shadowDomAppInjector = appInjector;
-    }
-    return shadowDomAppInjector;
+    elementInjector.dynamicallyCreateComponent(componentDirective, injector);
   }
 
   _hydrateView(view:viewModule.AppView, appInjector:Injector, hostElementInjector:eli.ElementInjector, context: Object, parentLocals:Locals) {
@@ -194,14 +180,7 @@ export class AppViewManagerUtils {
     for (var i = 0; i < binders.length; ++i) {
       var elementInjector = view.elementInjectors[i];
       if (isPresent(elementInjector)) {
-        var componentDirective = view.proto.elementBinders[i].componentDirective;
-        var shadowDomAppInjector = null;
-        if (isPresent(componentDirective)) {
-          shadowDomAppInjector = this._createShadowDomAppInjector(componentDirective, appInjector);
-        } else {
-          shadowDomAppInjector = null;
-        }
-        elementInjector.instantiateDirectives(appInjector, hostElementInjector, shadowDomAppInjector, view.preBuiltObjects[i]);
+        elementInjector.instantiateDirectives(appInjector, hostElementInjector, view.preBuiltObjects[i]);
         this._setUpEventEmitters(view, elementInjector, i);
 
         // The exporting of $implicit is a special case. Since multiple elements will all export

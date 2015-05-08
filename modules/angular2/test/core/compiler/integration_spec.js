@@ -26,6 +26,7 @@ import {PipeRegistry, defaultPipeRegistry,
   ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
 import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
+import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
@@ -857,6 +858,70 @@ export function main() {
       }
     });
 
+    describe('dependency injection', () => {
+
+      it('should publish parent component to shadow DOM via publishAs',
+          inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+        tb.overrideView(MyComp, new View({
+          template: `<parent></parent>`,
+          directives: [ParentComponent]
+        }));
+
+        tb.createView(MyComp).then((view) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText(
+              'Parent,Parent');
+          async.done();
+        });
+      }));
+
+      it('should override parent bindings via publishAs',
+          inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+        tb.overrideView(MyComp, new View({
+          template: `<recursive-parent></recursive-parent>`,
+          directives: [RecursiveParentComponent]
+        }));
+
+        tb.createView(MyComp).then((view) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText(
+              'ParentInterface,RecursiveParent,RecursiveParent');
+          async.done();
+        });
+      }));
+
+      // [DynamicComponentLoader] already supports providing a custom
+      // injector as an argument to `loadIntoExistingLocation`, which should
+      // be used instead of `publishAs`.
+      //
+      // Conceptually dynamically loaded components are loaded _instead_ of
+      // the dynamic component itself. The dynamic component does not own the
+      // shadow DOM. It's the loaded component that creates that shadow DOM.
+      it('should not publish into dynamically instantiated components via publishAs',
+          inject([TestBed, AsyncTestCompleter, Compiler], (tb, async, compiler) => {
+        tb.overrideView(MyComp, new View({
+          template: `<dynamic-parent #cmp></dynamic-parent>`,
+          directives: [DynamicParentComponent]
+        }));
+
+        tb.createView(MyComp).then((view) => {
+          view.detectChanges();
+          var comp = view.rawView.locals.get("cmp");
+          PromiseWrapper.then(comp.done,
+            (value) => {
+              throw new BaseException(`Expected to throw error, but got value ${value}`);
+            },
+            (err) => {
+              expect(err.message)
+                .toEqual('No provider for ParentInterface! (ChildComponent -> ParentInterface)');
+              async.done();
+            }
+          );
+        });
+      }));
+
+    });
+
   });
 }
 
@@ -1263,5 +1328,86 @@ class PrivateImpl extends PublicApi {
 class NeedsPublicApi {
   constructor(@Parent() api:PublicApi) {
     expect(api instanceof PrivateImpl).toBe(true);
+  }
+}
+
+class ParentInterface {
+  message:String;
+  constructor() {
+    this.message = 'ParentInterface';
+  }
+}
+
+@Component({
+  selector: 'parent',
+  publishAs: [ParentInterface]
+})
+@View({
+  template: `<child></child>`,
+  directives: [ChildComponent]
+})
+class ParentComponent extends ParentInterface {
+  message:String;
+  constructor() {
+    super();
+    this.message = 'Parent';
+  }
+}
+
+@Component({
+  injectables: [ParentInterface],
+  selector: 'recursive-parent',
+  publishAs: [ParentInterface]
+})
+@View({
+  template: `{{parentService.message}},<child></child>`,
+  directives: [ChildComponent]
+})
+class RecursiveParentComponent extends ParentInterface {
+  parentService:ParentInterface;
+  message:String;
+  constructor(parentService:ParentInterface) {
+    super();
+    this.message = 'RecursiveParent';
+    this.parentService = parentService;
+  }
+}
+
+@Component({
+  selector: 'dynamic-parent',
+  publishAs: [ParentInterface]
+})
+class DynamicParentComponent extends ParentInterface {
+  message:String;
+  done;
+  constructor(loader:DynamicComponentLoader, location:ElementRef) {
+    super();
+    this.message = 'DynamicParent';
+    this.done = loader.loadIntoExistingLocation(ChildComponent, location);
+  }
+}
+
+class AppDependency {
+  parent:ParentInterface;
+
+  constructor(p:ParentInterface) {
+    this.parent = p;
+  }
+}
+
+@Component({
+  selector: 'child',
+  injectables: [AppDependency]
+})
+@View({
+  template: `<div>{{parent.message}}</div>,<div>{{appDependency.parent.message}}</div>`
+})
+class ChildComponent {
+  parent:ParentInterface;
+  appDependency:AppDependency;
+
+  constructor(p:ParentInterface, a:AppDependency) {
+    this.parent = p;
+    this.appDependency = a;
   }
 }

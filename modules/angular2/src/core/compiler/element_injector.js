@@ -506,6 +506,7 @@ export class ElementInjector extends TreeNode {
   _query0: QueryRef;
   _query1: QueryRef;
   _query2: QueryRef;
+
   constructor(proto:ProtoElementInjector, parent:ElementInjector) {
     super(parent);
     this._proto = proto;
@@ -568,7 +569,14 @@ export class ElementInjector extends TreeNode {
     this._constructionCounter = 0;
   }
 
-  instantiateDirectives(lightDomAppInjector:Injector, host:ElementInjector, shadowDomAppInjector:Injector, preBuiltObjects:PreBuiltObjects) {
+  instantiateDirectives(
+      lightDomAppInjector:Injector,
+      host:ElementInjector,
+      preBuiltObjects:PreBuiltObjects) {
+    var shadowDomAppInjector = null;
+    if (this._proto._binding0IsComponent) {
+      shadowDomAppInjector = this._createShadowDomAppInjector(this._proto._binding0, lightDomAppInjector);
+    }
     this._host = host;
     this._checkShadowDomAppInjector(shadowDomAppInjector);
 
@@ -578,6 +586,21 @@ export class ElementInjector extends TreeNode {
 
     var p = this._proto;
     if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
+    if (isPresent(shadowDomAppInjector)) {
+      var componentAnnotation:Component = this._proto._binding0.annotation;
+      var publishAs = componentAnnotation.publishAs;
+      if (isPresent(publishAs) && publishAs.length > 0) {
+        // If there's a component directive on this element injector, then
+        // 0-th key must contain the directive itself.
+        // TODO(yjbanov): need to make injector creation faster:
+        //  - remove flattening of bindings array
+        //  - precalc token key
+        this._shadowDomAppInjector = shadowDomAppInjector.resolveAndCreateChild(
+          ListWrapper.map(publishAs, (token) => {
+            return bind(token).toValue(this.getComponent());
+          }));
+      }
+    }
     if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
     if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);
     if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);
@@ -589,9 +612,22 @@ export class ElementInjector extends TreeNode {
     if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
   }
 
-  dynamicallyCreateComponent(directiveBinding, injector:Injector) {
-    this._shadowDomAppInjector = injector;
-    this._dynamicallyCreatedComponentBinding = directiveBinding;
+  _createShadowDomAppInjector(componentDirective:DirectiveBinding, appInjector:Injector) {
+    var shadowDomAppInjector = null;
+
+    // shadowDomAppInjector
+    var injectables = componentDirective.resolvedInjectables;
+    if (isPresent(injectables)) {
+      shadowDomAppInjector = appInjector.createChildFromResolved(injectables);
+    } else {
+      shadowDomAppInjector = appInjector;
+    }
+    return shadowDomAppInjector;
+  }
+
+  dynamicallyCreateComponent(componentDirective:DirectiveBinding, parentInjector:Injector) {
+    this._shadowDomAppInjector = this._createShadowDomAppInjector(componentDirective, parentInjector);
+    this._dynamicallyCreatedComponentBinding = componentDirective;
     this._dynamicallyCreatedComponent = this._new(this._dynamicallyCreatedComponentBinding);
     return this._dynamicallyCreatedComponent;
   }
