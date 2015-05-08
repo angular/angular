@@ -2,6 +2,7 @@ library angular2.transform.directive_processor.rewriter;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:barback/barback.dart' show AssetId;
@@ -9,20 +10,20 @@ import 'package:path/path.dart' as path;
 
 import 'visitors.dart';
 
-/// Generates a file registering all Angular 2 `Directive`s found in [code] in
-/// ngDeps format [TODO(kegluneq): documentation reference needed]. [path] is
-/// the path to the file (or asset) containing [code].
+/// Generates a file registering all Angular 2 `Directive`s found in `code` in
+/// ngDeps format [TODO(kegluneq): documentation reference needed]. `assetId` is
+/// the id of the asset containing `code`.
 ///
-/// If no Angular 2 `Directive`s are found in [code], returns the empty
-/// string unless [forceGenerate] is true, in which case an empty ngDeps
+/// If no Angular 2 `Directive`s are found in `code`, returns the empty
+/// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
-String createNgDeps(String code, String path,
-    Map<AssetId, List<ClassDeclaration>> assetClasses) {
+String createNgDeps(
+    String code, AssetId assetId, AnnotationMatcher annotationMatcher) {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var writer = new PrintStringWriter();
-  var visitor = new CreateNgDepsVisitor(writer, path, assetClasses);
-  parseCompilationUnit(code, name: path).accept(visitor);
+  var visitor = new CreateNgDepsVisitor(writer, assetId, annotationMatcher);
+  parseCompilationUnit(code, name: assetId.toString()).accept(visitor);
   return '$writer';
 }
 
@@ -30,25 +31,23 @@ String createNgDeps(String code, String path,
 /// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final PrintWriter writer;
-  final _Tester _tester;
   bool _foundNgDirectives = false;
   bool _wroteImport = false;
   final ToSourceVisitor _copyVisitor;
   final FactoryTransformVisitor _factoryVisitor;
   final ParameterTransformVisitor _paramsVisitor;
   final AnnotationsTransformVisitor _metaVisitor;
+  final AnnotationMatcher _annotationMatcher;
 
-  /// The path to the file which we are parsing.
-  final String importPath;
+  /// The assetId for the file which we are parsing.
+  final AssetId assetId;
 
-  CreateNgDepsVisitor(PrintWriter writer, this.importPath,
-      Map<AssetId, List<ClassDeclaration>> assetClasses)
+  CreateNgDepsVisitor(PrintWriter writer, this.assetId, this._annotationMatcher)
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
-        _metaVisitor = new AnnotationsTransformVisitor(writer),
-        _tester = new _Tester(assetClasses);
+        _metaVisitor = new AnnotationsTransformVisitor(writer);
 
   void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
     if (list == null) return;
@@ -74,7 +73,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   void _maybeWriteImport() {
     if (_wroteImport) return;
     _wroteImport = true;
-    writer.print('''import '${path.basename(importPath)}';''');
+    writer.print('''import '${path.basename(assetId.path)}';''');
   }
 
   @override
@@ -140,34 +139,34 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    var shouldProcess = node.metadata.any(_tester._shouldKeepMeta);
-
-    if (shouldProcess) {
-      var ctor = _getCtor(node);
-
-      if (!_foundNgDirectives) {
-        // The receiver for cascaded calls.
-        writer.print(REFLECTOR_VAR_NAME);
-        _foundNgDirectives = true;
-      }
-      writer.print('..registerType(');
-      node.name.accept(this);
-      writer.print(''', {'factory': ''');
-      if (ctor == null) {
-        _generateEmptyFactory(node.name.toString());
-      } else {
-        ctor.accept(_factoryVisitor);
-      }
-      writer.print(''', 'parameters': ''');
-      if (ctor == null) {
-        _generateEmptyParams();
-      } else {
-        ctor.accept(_paramsVisitor);
-      }
-      writer.print(''', 'annotations': ''');
-      node.accept(_metaVisitor);
-      writer.print('})');
+    if (!node.metadata.any((a) => _annotationMatcher.hasMatch(a, assetId))) {
+      return null;
     }
+
+    var ctor = _getCtor(node);
+
+    if (!_foundNgDirectives) {
+      // The receiver for cascaded calls.
+      writer.print(REFLECTOR_VAR_NAME);
+      _foundNgDirectives = true;
+    }
+    writer.print('..registerType(');
+    node.name.accept(this);
+    writer.print(''', {'factory': ''');
+    if (ctor == null) {
+      _generateEmptyFactory(node.name.toString());
+    } else {
+      ctor.accept(_factoryVisitor);
+    }
+    writer.print(''', 'parameters': ''');
+    if (ctor == null) {
+      _generateEmptyParams();
+    } else {
+      ctor.accept(_paramsVisitor);
+    }
+    writer.print(''', 'annotations': ''');
+    node.accept(_metaVisitor);
+    writer.print('})');
     return null;
   }
 
@@ -189,7 +188,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   @override
   Object visitPartOfDirective(PartOfDirective node) {
     // TODO(kegluneq): Consider importing [node.libraryName].
-    logger.warning('[${importPath}]: '
+    logger.warning('[${assetId}]: '
         'Found `part of` directive while generating ${DEPS_EXTENSION} file, '
         'Transform may fail due to missing imports in generated file.');
     return null;
@@ -201,42 +200,4 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitSimpleIdentifier(SimpleIdentifier node) => _nodeToSource(node);
-}
-
-const annotationNamesToKeep = const ['Injectable', 'Template'];
-
-class _Tester {
-  final Map<String, ClassDeclaration> _classesByName;
-
-  _Tester(Map<AssetId, List<ClassDeclaration>> assetClasses)
-      : _classesByName = new Map.fromIterables(assetClasses.values
-              .expand((classes) => classes.map((c) => c.name.toString())),
-          assetClasses.values.expand((list) => list));
-
-  bool _shouldKeepMeta(Annotation meta) =>
-      _shouldKeepClass(_classesByName[meta.name.name]);
-
-  bool _shouldKeepClass(ClassDeclaration next) {
-    while (next != null) {
-      if (annotationNamesToKeep.contains(next.name.name)) return true;
-
-      // Check classes that this class implements.
-      if (next.implementsClause != null) {
-        for (var interface in next.implementsClause.interfaces) {
-          if (_shouldKeepClass(_classesByName[interface.name.name])) {
-            return true;
-          }
-        }
-      }
-
-      // Check the class that this class extends.
-      if (next.extendsClause != null && next.extendsClause.superclass != null) {
-        next = _classesByName[next.extendsClause.superclass.name.name];
-      } else {
-        break;
-      }
-    }
-
-    return false;
-  }
 }
