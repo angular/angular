@@ -16,7 +16,7 @@ import {
 } from 'angular2/test_lib';
 
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {AppView, AppProtoView, AppViewContainer} from 'angular2/src/core/compiler/view';
 import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';

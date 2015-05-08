@@ -1,6 +1,6 @@
 import {SpyObject, proxy} from 'angular2/test_lib';
 
-import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Location} from 'angular2/src/router/location';
