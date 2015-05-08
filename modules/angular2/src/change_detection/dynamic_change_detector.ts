@@ -90,9 +90,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       var bindingRecord = proto.bindingRecord;
       var directiveRecord = bindingRecord.directiveRecord;
 
-      var change = this._check(proto);
+      var change = this._check(proto, throwOnChange);
       if (isPresent(change)) {
-        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
         this._updateDirectiveOrElement(change, bindingRecord);
         isChanged = true;
         changes = this._addChange(bindingRecord, change, changes);
@@ -144,19 +143,19 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
 
-  _check(proto: ProtoRecord): SimpleChange {
+  _check(proto: ProtoRecord, throwOnChange: boolean): SimpleChange {
     try {
       if (proto.mode === RECORD_TYPE_PIPE || proto.mode === RECORD_TYPE_BINDING_PIPE) {
-        return this._pipeCheck(proto);
+        return this._pipeCheck(proto, throwOnChange);
       } else {
-        return this._referenceCheck(proto);
+        return this._referenceCheck(proto, throwOnChange);
       }
     } catch (e) {
       throw new ChangeDetectionError(proto, e);
     }
   }
 
-  _referenceCheck(proto: ProtoRecord) {
+  _referenceCheck(proto: ProtoRecord, throwOnChange: boolean) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
@@ -166,12 +165,18 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     var currValue = this._calculateCurrValue(proto);
 
     if (!isSame(prevValue, currValue)) {
-      this._writeSelf(proto, currValue);
-      this._setChanged(proto, true);
-
       if (proto.lastInBinding) {
-        return ChangeDetectionUtil.simpleChange(prevValue, currValue);
+        var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
+        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+
+        this._writeSelf(proto, currValue);
+        this._setChanged(proto, true);
+
+        return change;
+
       } else {
+        this._writeSelf(proto, currValue);
+        this._setChanged(proto, true);
         return null;
       }
     } else {
@@ -216,22 +221,28 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     }
   }
 
-  _pipeCheck(proto: ProtoRecord) {
+  _pipeCheck(proto: ProtoRecord, throwOnChange: boolean) {
     var context = this._readContext(proto);
     var pipe = this._pipeFor(proto, context);
     var prevValue = this._readSelf(proto);
 
-    var newValue = pipe.transform(context);
+    var currValue = pipe.transform(context);
 
-    if (!isSame(prevValue, newValue)) {
-      newValue = ChangeDetectionUtil.unwrapValue(newValue);
-
-      this._writeSelf(proto, newValue);
-      this._setChanged(proto, true);
+    if (!isSame(prevValue, currValue)) {
+      currValue = ChangeDetectionUtil.unwrapValue(currValue);
 
       if (proto.lastInBinding) {
-        return ChangeDetectionUtil.simpleChange(prevValue, newValue);
+        var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
+        if (throwOnChange) ChangeDetectionUtil.throwOnChange(proto, change);
+
+        this._writeSelf(proto, currValue);
+        this._setChanged(proto, true);
+
+        return change;
+
       } else {
+        this._writeSelf(proto, currValue);
+        this._setChanged(proto, true);
         return null;
       }
     } else {
