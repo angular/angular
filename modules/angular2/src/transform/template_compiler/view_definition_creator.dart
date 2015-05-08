@@ -29,6 +29,10 @@ class ViewDefinitionResults {
 String _getComponentId(AssetId assetId, String className) =>
     '$assetId:$className';
 
+// TODO(kegluenq): Improve this test.
+bool _isViewAnnotation(InstanceCreationExpression node) =>
+    '${node.constructorName.type}' == 'View';
+
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
 /// `entryPoint`.
 class _ViewDefinitionCreator {
@@ -108,8 +112,9 @@ class _ViewDefinitionCreator {
   /// ```
   ///
   /// This method will look for `component.ng_meta.json`to contain the
-  /// serialized [DirectiveMetadata] `MyComponent` and any other `Directive`s
-  /// declared in `component.dart`. We use this information to build a map:
+  /// serialized [DirectiveMetadata] for `MyComponent` and any other
+  /// `Directive`s declared in `component.dart`. We use this information to
+  /// build a map:
   ///
   /// ```
   /// {
@@ -146,7 +151,7 @@ class _ViewDefinitionCreator {
 }
 
 /// Visitor responsible for processing the `annotations` property of a
-/// {@link RegisterType} object and pulling out [ViewDefinition] information.
+/// [RegisterType] object and pulling out [ViewDefinition] information.
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   ViewDefinition viewDef = null;
   final Map<String, DirectiveMetadata> _metadataMap;
@@ -160,7 +165,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   /// These correspond to the annotations themselves.
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-    if ('${node.constructorName.type}' == 'View') {
+    if (_isViewAnnotation(node)) {
       viewDef = new ViewDefinition(directives: <DirectiveMetadata>[]);
       node.visitChildren(this);
     }
@@ -182,6 +187,10 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
       _readDirectives(node.expression);
     }
     if (keyString == 'template' || keyString == 'templateUrl') {
+      // This could happen in a non-View annotation with a `template` or
+      // `templateUrl` property.
+      if (viewDef == null) return null;
+
       if (node.expression is! SimpleStringLiteral) {
         logger.error(
             'Angular 2 currently only supports string literals in directives.'
@@ -207,6 +216,10 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   }
 
   void _readDirectives(Expression node) {
+    // This could happen in a non-View annotation with a `directives`
+    // parameter.
+    if (viewDef == null) return;
+
     if (node is! ListLiteral) {
       logger.error(
           'Angular 2 currently only supports list literals as values for'

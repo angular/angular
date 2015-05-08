@@ -47,6 +47,7 @@ class _DirectiveMetadataVisitor extends Object
           properties: {},
           hostListeners: {},
           hostProperties: {},
+          hostAttributes: {},
           readAttributes: []);
       super.visitInstanceCreationExpression(node);
     }
@@ -79,6 +80,9 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'hostProperties':
         _populateHostProperties(node.expression);
+        break;
+      case 'hostAttributes':
+        _populateHostAttributes(node.expression);
         break;
       case 'hostListeners':
         _populateHostListeners(node.expression);
@@ -153,6 +157,22 @@ class _DirectiveMetadataVisitor extends Object
       var sVal =
           _expressionToString(entry.value, 'Directive#hostProperties values');
       meta.hostProperties[sKey] = sVal;
+    }
+  }
+
+  void _populateHostAttributes(Expression hostAttributeValue) {
+    if (hostAttributeValue is! MapLiteral) {
+      logger.error('Angular 2 currently only supports map literal values for '
+          'Directive#hostAttributes.'
+          ' Source: ${hostAttributeValue}');
+      return;
+    }
+    for (MapLiteralEntry entry in (hostAttributeValue as MapLiteral).entries) {
+      var sKey =
+          _expressionToString(entry.key, 'Directive#hostAttributes keys');
+      var sVal =
+          _expressionToString(entry.value, 'Directive#hostAttributes values');
+      meta.hostAttributes[sKey] = sVal;
     }
   }
 }
