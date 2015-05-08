@@ -22,7 +22,7 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Dart](https://www.dartlang.org) (version ` >=1.9.0 <2.0.0`), specifically the Dart-SDK and
+* [Dart](https://www.dartlang.org) (version ` >=1.10.0-dev.1.10 <2.0.0`), specifically the Dart-SDK and
   Dartium (a version of [Chromium](http://www.chromium.org) with native support for Dart through
   the Dart VM). One of the **simplest** ways to get both is to install the **Dart Editor bundle**,
   which includes the editor, SDK and Dartium. See the [Dart tools](https://www.dartlang.org/tools)
