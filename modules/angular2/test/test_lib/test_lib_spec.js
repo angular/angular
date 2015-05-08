@@ -91,6 +91,11 @@ export function main() {
         expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(3,4);
       });
 
+      it("should match null arguments", () => {
+        spyObj.someFunc(null, "hello");
+        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(null,"hello");
+      });
+
       it("should match using deep equality", () => {
         spyObj.someComplexFunc([1]);
         expect(spyObj.spy("someComplexFunc")).toHaveBeenCalledWith([1]);
