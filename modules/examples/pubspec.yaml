@@ -27,5 +27,5 @@ transformers:
     commandLineOptions:
     - --dump-info
     - --show-package-warnings
-    #- --trust-type-annotations
-    #- --trust-primitives
+    - --trust-type-annotations
+    - --trust-primitives
