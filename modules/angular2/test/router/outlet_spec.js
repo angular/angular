@@ -31,6 +31,8 @@ import {Location} from 'angular2/src/router/location';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 
+var teamCmpCount;
+
 export function main() {
   describe('Outlet Directive', () => {
 
@@ -51,6 +53,7 @@ export function main() {
       ctx = new MyComp();
       rtr = router;
       location = loc;
+      teamCmpCount = 0;
     }));
 
     function compile(template:string = "<router-outlet></router-outlet>") {
@@ -132,6 +135,7 @@ export function main() {
         });
     }));
 
+
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
       compile('<a href="hello" router-link="user"></a>')
         .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
@@ -142,6 +146,26 @@ export function main() {
           async.done();
         });
     }));
+
+
+    it('should reuse common parent components', inject([AsyncTestCompleter, Location], (async, location) => {
+      compile()
+        .then((_) => rtr.config({'path': '/team/:id', 'component': TeamCmp }))
+        .then((_) => rtr.navigate('/team/angular/user/rado'))
+        .then((_) => {
+          view.detectChanges();
+          expect(teamCmpCount).toBe(1);
+          expect(view.rootNodes).toHaveText('team angular { hello rado }');
+        })
+        .then((_) => rtr.navigate('/team/angular/user/victor'))
+        .then((_) => {
+          view.detectChanges();
+          expect(teamCmpCount).toBe(1);
+          expect(view.rootNodes).toHaveText('team angular { hello victor }');
+          async.done();
+        });
+    }));
+
 
     it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
       ctx.name = 'brian';
@@ -241,6 +265,27 @@ class UserCmp {
 class ParentCmp {
   constructor() {}
 }
+
+
+@Component({
+  selector: 'team-cmp'
+})
+@View({
+  template: "team {{id}} { <router-outlet></router-outlet> }",
+  directives: [RouterOutlet]
+})
+@RouteConfig([{
+  path: '/user/:name',
+  component: UserCmp
+}])
+class TeamCmp {
+  id:string;
+  constructor(params:RouteParams) {
+    this.id = params.get('id');
+    teamCmpCount += 1;
+  }
+}
+
 
 @Component({
   selector: 'my-comp'
