@@ -13,6 +13,7 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
+var watch = require('gulp-watch');
 
 var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
@@ -269,7 +270,7 @@ function createDocsTasks(publicBuild) {
 
   gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
   gulp.task(taskPrefix + '/watch', function() {
-    return gulp.watch('docs/app/**/*', [taskPrefix + '/app']);
+    return watch('docs/app/**/*', [taskPrefix + '/app']);
   });
 
   gulp.task(taskPrefix + '/test', function (done) {
@@ -337,7 +338,7 @@ gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
     'check-format'
   );
 
-  gulp.watch('modules/**', function() {
+  watch('modules/**', function() {
     runSequence(
       '!broccoli.js.dev',
       '!test.unit.js/karma-run',
@@ -368,7 +369,7 @@ gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
     '!test.unit.dart/karma-run'
   );
 
-  gulp.watch('modules/angular2/**', function() {
+  watch('modules/angular2/**', function() {
     runSequence(
       '!build/tree.dart',
       '!test.unit.dart/karma-run'
@@ -420,7 +421,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (done) {
 
   buildAndTest();
 
-  gulp.watch('modules/**', buildAndTest);
+  watch('modules/**', buildAndTest);
 });
 
 
@@ -441,7 +442,7 @@ gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
 
   buildAndTest();
 
-  gulp.watch('tools/**', buildAndTest);
+  watch('tools/**', buildAndTest);
 });
 
 
