@@ -142,6 +142,11 @@ export class Injector {
   }
 
   /**
+   * Direct parent of this injector.
+   */
+  get parent(): Injector { return this._parent; }
+
+  /**
    * Retrieves an instance from the injector.
    *
    * @param `token`: usually the `Type` of an object. (Same as the token used while setting up a

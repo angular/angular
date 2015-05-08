@@ -348,6 +348,12 @@ export function main() {
 
         expect(childCar).toBe(parentCar);
       });
+
+      it("should give access to direct parent", () => {
+        var parent = Injector.resolveAndCreate([]);
+        var child = parent.resolveAndCreateChild([]);
+        expect(child.parent).toBe(parent);
+      });
     });
 
     describe("lazy", function () {
