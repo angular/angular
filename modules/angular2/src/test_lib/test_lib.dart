@@ -72,7 +72,7 @@ Expect expect(actual, [matcher]) {
   return expect;
 }
 
-const _u = null;
+const _u = const Object();
 
 class Expect extends gns.Expect {
   Expect(actual) : super(actual);
