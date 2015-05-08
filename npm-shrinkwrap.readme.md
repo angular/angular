@@ -23,12 +23,11 @@ To add a new dependency do the following:
 
 To update existing dependency do the following:
 
-1. update `package.json`
-2. run `npm update <packagename>`
-3. relock the dependencies with `npm shrinkwrap --dev`
-4. clean up the shrinkwrap file for review with `./tools/npm/clean-shrinkwrap.js`
-5. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`
-6. commit changes to these three files and you are done
+1. run `npm install -D <packagename>@<version|latest>` or `npm update <packagename>` to update to the latest version that matches version constraint in `package.json`
+2. relock the dependencies with `npm shrinkwrap --dev`
+3. clean up the shrinkwrap file for review with `./tools/npm/clean-shrinkwrap.js`
+4. these steps should change 2 files: `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`. Optionally if you used `npm install ...` in the first step, `package.json` might be modified as well
+5. commit changes to these three files and you are done
 
 
 If updating the `tsd` project a special steps need to be taken due to
