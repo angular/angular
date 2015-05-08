@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Map, MapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, Type} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Type} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from './route_registry';
 import {Pipeline} from './pipeline';
@@ -24,6 +24,8 @@ export class Router {
   lastNavigationAttempt: string;
   previousUrl:string;
 
+  _currentInstruction:Instruction;
+
   _pipeline:Pipeline;
   _registry:RouteRegistry;
   _outlets:Map<any, RouterOutlet>;
@@ -42,6 +44,7 @@ export class Router {
     this._registry = registry;
     this._pipeline = pipeline;
     this._subject = new EventEmitter();
+    this._currentInstruction = null;
   }
 
 
@@ -61,7 +64,11 @@ export class Router {
    */
   registerOutlet(outlet:RouterOutlet, name = 'default'):Promise {
     MapWrapper.set(this._outlets, name, outlet);
-    return this.renavigate();
+    if (isPresent(this._currentInstruction)) {
+      var childInstruction = this._currentInstruction.getChildInstruction(name);
+      return outlet.activate(childInstruction);
+    }
+    return PromiseWrapper.resolve(true);
   }
 
 
@@ -107,23 +114,26 @@ export class Router {
 
     this.lastNavigationAttempt = url;
 
-    var instruction = this.recognize(url);
+    var matchedInstruction = this.recognize(url);
 
-    if (isBlank(instruction)) {
+    if (isBlank(matchedInstruction)) {
       return PromiseWrapper.resolve(false);
     }
 
-    instruction.router = this;
+    if(isPresent(this._currentInstruction)) {
+      matchedInstruction.reuseComponentsFrom(this._currentInstruction);
+    }
+
+    matchedInstruction.router = this;
     this._startNavigating();
 
-    var result = this._pipeline.process(instruction)
+    var result = this._pipeline.process(matchedInstruction)
         .then((_) => {
-          this._location.go(instruction.matchedUrl);
-        })
-        .then((_) => {
-          ObservableWrapper.callNext(this._subject, instruction.matchedUrl);
-        })
-        .then((_) => this._finishNavigating());
+          this._location.go(matchedInstruction.matchedUrl);
+          ObservableWrapper.callNext(this._subject, matchedInstruction.matchedUrl);
+          this._finishNavigating();
+          this._currentInstruction = matchedInstruction;
+        });
 
     PromiseWrapper.catchError(result, (_) => this._finishNavigating());
 
@@ -148,7 +158,11 @@ export class Router {
 
   activateOutlets(instruction:Instruction):Promise {
     return this._queryOutlets((outlet, name) => {
-      return outlet.activate(instruction.getChildInstruction(name));
+      var childInstruction = instruction.getChildInstruction(name);
+      if (childInstruction.reuse) {
+        return PromiseWrapper.resolve(true);
+      }
+      return outlet.activate(childInstruction);
     })
     .then((_) => instruction.mapChildrenAsync((instruction, _) => {
       return instruction.router.activateOutlets(instruction);
