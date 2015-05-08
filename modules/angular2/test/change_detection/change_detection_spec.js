@@ -420,6 +420,23 @@ export function main() {
                 cd.checkNoChanges();
               }).toThrowError(new RegExp("Expression 'a in location' has changed after it was checked"));
             });
+
+            it("should not break the next run", () => {
+              var pcd = createProtoChangeDetector([
+                BindingRecord.createForElement(ast("a"), 0, "a")
+              ]);
+
+              var dispatcher = new TestDispatcher();
+              var cd = pcd.instantiate(dispatcher);
+              cd.hydrate(new TestData('value'), null, null);
+
+              expect(() => cd.checkNoChanges()).toThrowError(new RegExp(
+                "Expression 'a in location' has changed after it was checked."));
+
+              cd.detectChanges();
+
+              expect(dispatcher.loggedValues).toEqual(['value']);
+            });
           });
 
           //TODO vsavkin: implement it
