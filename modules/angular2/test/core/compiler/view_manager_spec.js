@@ -133,7 +133,7 @@ export function main() {
       utils.spy('attachComponentView').andCallFake( (hostView, elementIndex, childView) => {
         hostView.componentChildViews[elementIndex] = childView;
       });
-      utils.spy('attachViewInContainer').andCallFake( (parentView, elementIndex, atIndex, childView) => {
+      utils.spy('attachViewInContainer').andCallFake( (parentView, elementIndex, _a, _b, atIndex, childView) => {
         var viewContainer = parentView.viewContainers[elementIndex];
         if (isBlank(viewContainer)) {
           viewContainer = new AppViewContainer();
@@ -411,26 +411,30 @@ export function main() {
         });
 
         it('should attach the view', () => {
-          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null)
-          expect(utils.spy('attachViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0, createdViews[0]);
+          var contextView = createView();
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView),
+            elementRef(wrapView(contextView), 1), null);
+          expect(utils.spy('attachViewInContainer')).toHaveBeenCalledWith(parentView, 0, contextView, 1, 0, createdViews[0]);
           expect(renderer.spy('attachViewInContainer')).toHaveBeenCalledWith(parentView.render, 0, 0, createdViews[0].render);
         });
 
         it('should hydrate the view', () => {
           var injector = new Injector([], null, false);
-          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), injector);
-          expect(utils.spy('hydrateViewInContainer')).toHaveBeenCalledWith(parentView, 0, 0, injector);
+          var contextView = createView();
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView),
+            elementRef(wrapView(contextView), 1), injector);
+          expect(utils.spy('hydrateViewInContainer')).toHaveBeenCalledWith(parentView, 0, contextView, 1, 0, injector);
           expect(renderer.spy('hydrateView')).toHaveBeenCalledWith(createdViews[0].render);
         });
 
         it('should create and set the render view', () => {
-          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null, null);
           expect(renderer.spy('createView')).toHaveBeenCalledWith(childProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
         it('should set the event dispatcher', () => {
-          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null);
+          manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0, wrapPv(childProtoView), null, null);
           var childView = createdViews[0];
           expect(renderer.spy('setEventDispatcher')).toHaveBeenCalledWith(childView.render, childView);
         });

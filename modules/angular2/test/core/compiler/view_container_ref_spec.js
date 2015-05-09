@@ -55,16 +55,20 @@ export function main() {
       location = new ElementRef(wrapView(view), 0);
     });
 
-    it('should return a 0 length if there is no underlying ViewContainerRef', () => {
-      var vc = createViewContainer();
-      expect(vc.length).toBe(0);
-    });
+    describe('length', () => {
 
-    it('should return the size of the underlying ViewContainerRef', () => {
-      var vc = createViewContainer();
-      view.viewContainers = [new AppViewContainer()];
-      view.viewContainers[0].views = [createView()];
-      expect(vc.length).toBe(1);
+      it('should return a 0 length if there is no underlying ViewContainerRef', () => {
+        var vc = createViewContainer();
+        expect(vc.length).toBe(0);
+      });
+
+      it('should return the size of the underlying ViewContainerRef', () => {
+        var vc = createViewContainer();
+        view.viewContainers = [new AppViewContainer()];
+        view.viewContainers[0].views = [createView()];
+        expect(vc.length).toBe(1);
+      });
+
     });
 
     // TODO: add missing tests here!

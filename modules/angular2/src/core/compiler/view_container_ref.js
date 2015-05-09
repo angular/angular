@@ -40,9 +40,9 @@ export class ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  create(protoViewRef:ProtoViewRef = null, atIndex:number=-1, injector:Injector = null): ViewRef {
+  create(protoViewRef:ProtoViewRef = null, atIndex:number=-1, context:ElementRef, injector:Injector = null): ViewRef {
     if (atIndex == -1) atIndex = this.length;
-    return this._viewManager.createViewInContainer(this._element, atIndex, protoViewRef, injector);
+    return this._viewManager.createViewInContainer(this._element, atIndex, protoViewRef, context, injector);
   }
 
   insert(viewRef:ViewRef, atIndex:number=-1): ViewRef {

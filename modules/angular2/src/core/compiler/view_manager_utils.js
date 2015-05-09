@@ -114,7 +114,12 @@ export class AppViewManagerUtils {
   }
 
   attachViewInContainer(parentView:viewModule.AppView, boundElementIndex:number,
+      contextView:viewModule.AppView, contextBoundElementIndex:number,
       atIndex:number, view:viewModule.AppView) {
+    if (isBlank(contextView)) {
+      contextView = parentView;
+      contextBoundElementIndex = boundElementIndex;
+    }
     parentView.changeDetector.addChild(view.changeDetector);
     var viewContainer = parentView.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
@@ -128,7 +133,7 @@ export class AppViewManagerUtils {
     } else {
       sibling = ListWrapper.last(viewContainer.views[atIndex - 1].rootElementInjectors)
     }
-    var elementInjector = parentView.elementInjectors[boundElementIndex];
+    var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
     for (var i = view.rootElementInjectors.length - 1; i >= 0; i--) {
       view.rootElementInjectors[i].linkAfter(elementInjector, sibling);
     }
@@ -145,11 +150,16 @@ export class AppViewManagerUtils {
   }
 
   hydrateViewInContainer(parentView:viewModule.AppView, boundElementIndex:number,
+      contextView:viewModule.AppView, contextBoundElementIndex:number,
       atIndex:number, injector:Injector) {
+    if (isBlank(contextView)) {
+      contextView = parentView;
+      contextBoundElementIndex = boundElementIndex;
+    }
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[atIndex];
-    var elementInjector = parentView.elementInjectors[boundElementIndex];
-    this._hydrateView(view, injector, elementInjector, parentView.context, parentView.locals);
+    var elementInjector = contextView.elementInjectors[contextBoundElementIndex].getHost();
+    this._hydrateView(view, injector, elementInjector, contextView.context, contextView.locals);
   }
 
   hydrateDynamicComponentInElementInjector(hostView:viewModule.AppView, boundElementIndex:number,

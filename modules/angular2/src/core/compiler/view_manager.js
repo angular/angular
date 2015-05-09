@@ -92,16 +92,22 @@ export class AppViewManager {
   }
 
   createViewInContainer(viewContainerLocation:ElementRef,
-      atIndex:number, protoViewRef:ProtoViewRef, injector:Injector = null):ViewRef {
+      atIndex:number, protoViewRef:ProtoViewRef, context:ElementRef = null, injector:Injector = null):ViewRef {
     var protoView = internalProtoView(protoViewRef);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
+    var contextView = null;
+    var contextBoundElementIndex = null;
+    if (isPresent(context)) {
+      contextView = internalView(context.parentView);
+      contextBoundElementIndex = context.boundElementIndex;
+    }
 
     var view = this._createPooledView(protoView);
 
     this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
-    this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
-    this._utils.hydrateViewInContainer(parentView, boundElementIndex, atIndex, injector);
+    this._utils.attachViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, atIndex, view);
+    this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, atIndex, injector);
     this._viewHydrateRecurse(view);
     return new ViewRef(view);
   }
@@ -116,7 +122,13 @@ export class AppViewManager {
     var view = internalView(viewRef);
     var parentView = internalView(viewContainerLocation.parentView);
     var boundElementIndex = viewContainerLocation.boundElementIndex;
-    this._utils.attachViewInContainer(parentView, boundElementIndex, atIndex, view);
+    // TODO(tbosch): the public methods attachViewInContainer/detachViewInContainer
+    // are used for moving elements without the same container.
+    // We will change this into an atomic `move` operation, which should preserve the
+    // previous parent injector (see https://github.com/angular/angular/issues/1377).
+    // Right now we are destroying any special
+    // context view that might have been used.
+    this._utils.attachViewInContainer(parentView, boundElementIndex, null, null, atIndex, view);
     this._renderer.attachViewInContainer(parentView.render, boundElementIndex, atIndex, view.render);
     return viewRef;
   }

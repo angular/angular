@@ -27,11 +27,13 @@ import {PipeRegistry, defaultPipeRegistry,
 
 import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {QueryList} from 'angular2/src/core/compiler/query_list';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
-import {Attribute} from 'angular2/src/core/annotations_impl/di';
+import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
 import {If} from 'angular2/src/directives/if';
+import {For} from 'angular2/src/directives/for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -337,6 +339,21 @@ export function main() {
           expect(childNodesOfWrapper.length).toBe(3);
           expect(childNodesOfWrapper[1].childNodes[0].nodeValue).toEqual('hello');
           expect(childNodesOfWrapper[2].childNodes[0].nodeValue).toEqual('again');
+          async.done();
+        });
+      }));
+
+      it('should allow to transplant embedded ProtoViews into other ViewContainers', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-parent></cmp-with-parent></template></toolbar></some-directive>',
+          directives: [SomeDirective, CompWithParent, ToolbarComponent, ToolbarPart]
+        }));
+
+        ctx.ctxProp = 'From myComp';
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          view.detectChanges();
+          expect(view.rootNodes).toHaveText('TOOLBAR(From myComp,From toolbar,Component with an injected parent)');
+
           async.done();
         });
       }));
@@ -951,7 +968,7 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
     this.done = compiler.compileInHost(ChildCompUsingService).then( (hostPv) => {
-      vc.create(hostPv, 0, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
+      vc.create(hostPv, 0, null, inj.createChildFromResolved(Injector.resolve([bind(MyService).toValue(myService)])))
     });
   }
 }
@@ -1409,5 +1426,52 @@ class ChildComponent {
   constructor(p:ParentInterface, a:AppDependency) {
     this.parent = p;
     this.appDependency = a;
+  }
+}
+
+@Directive({
+  selector: '[toolbar-vc]',
+  properties: {
+    'toolbarVc': 'toolbarVc'
+  }
+})
+class ToolbarViewContainer {
+  vc:ViewContainerRef;
+  constructor(vc:ViewContainerRef) {
+    this.vc = vc;
+  }
+
+  set toolbarVc(part:ToolbarPart) {
+    var view = this.vc.create(part.protoViewRef, 0, part.elementRef);
+    view.setLocal('toolbarProp', 'From toolbar');
+  }
+}
+
+@Directive({
+  selector: '[toolbarpart]'
+})
+class ToolbarPart {
+  protoViewRef:ProtoViewRef;
+  elementRef:ElementRef;
+  constructor(protoViewRef:ProtoViewRef, elementRef:ElementRef) {
+    this.elementRef = elementRef;
+    this.protoViewRef = protoViewRef;
+  }
+}
+
+@Component({
+  selector: 'toolbar'
+})
+@View({
+  template: 'TOOLBAR(<div *for="var part of query" [toolbar-vc]="part"></div>)',
+  directives: [ToolbarViewContainer, For]
+})
+class ToolbarComponent {
+  query:QueryList;
+  ctxProp:string;
+
+  constructor(@Query(ToolbarPart) query: QueryList) {
+    this.ctxProp = 'hello world';
+    this.query = query;
   }
 }

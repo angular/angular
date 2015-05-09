@@ -37,7 +37,7 @@ export class RouterOutlet {
       ]);
 
       this._viewContainer.clear();
-      this._viewContainer.create(pv, 0, outletInjector);
+      this._viewContainer.create(pv, 0, null, outletInjector);
     });
   }
 

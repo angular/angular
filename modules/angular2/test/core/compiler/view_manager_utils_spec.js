@@ -23,7 +23,7 @@ import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/col
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ChangeDetector} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
-import {DirectiveBinding, ElementInjector, ElementRef} from 'angular2/src/core/compiler/element_injector';
+import {DirectiveBinding, ElementInjector, PreBuiltObjects} from 'angular2/src/core/compiler/element_injector';
 import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
@@ -66,12 +66,14 @@ export function main() {
     }
 
     function createElementInjector() {
+      var host = new SpyElementInjector();
       return SpyObject.stub(new SpyElementInjector(), {
         'isExportingComponent' : false,
         'isExportingElement' : false,
         'getEventEmitterAccessors' : [],
         'getComponent' : null,
-        'getDynamicallyLoadedComponent': null
+        'getDynamicallyLoadedComponent': null,
+        'getHost': host
       }, {});
     }
 
@@ -81,13 +83,15 @@ export function main() {
       }
       var view = new AppView(null, pv, MapWrapper.create());
       var elementInjectors = ListWrapper.createFixedSize(pv.elementBinders.length);
+      var preBuiltObjects = ListWrapper.createFixedSize(pv.elementBinders.length);
       for (var i=0; i<pv.elementBinders.length; i++) {
         elementInjectors[i] = createElementInjector();
+        preBuiltObjects[i] = new SpyPreBuiltObjects();
       }
       view.init(new SpyChangeDetector(),
         elementInjectors,
-        [],
-        ListWrapper.createFixedSize(pv.elementBinders.length),
+        elementInjectors,
+        preBuiltObjects,
         ListWrapper.createFixedSize(pv.elementBinders.length)
       );
       return view;
@@ -170,6 +174,66 @@ export function main() {
 
     });
 
+    describe('attachViewInContainer', () => {
+      var parentView, contextView, childView;
+
+      function createViews() {
+        var parentPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        parentView = createView(parentPv);
+
+        var contextPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        contextView = createView(contextPv);
+
+        var childPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        childView = createView(childPv);
+      }
+
+      it('should link the views rootElementInjectors after the elementInjector at the given context', () => {
+        createViews();
+        utils.attachViewInContainer(parentView, 0, contextView, 0, 0, childView);
+        expect(childView.rootElementInjectors[0].spy('linkAfter'))
+          .toHaveBeenCalledWith(contextView.elementInjectors[0], null);
+      });
+
+    });
+
+    describe('hydrateViewInContainer', () => {
+      var parentView, contextView, childView;
+
+      function createViews() {
+        var parentPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        parentView = createView(parentPv);
+
+        var contextPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        contextView = createView(contextPv);
+
+        var childPv = createProtoView([
+          createEmptyElBinder()
+        ]);
+        childView = createView(childPv);
+        utils.attachViewInContainer(parentView, 0, contextView, 0, 0, childView);
+      }
+
+      it("should instantiate the elementInjectors with the host of the context's elementInjector", () => {
+        createViews();
+
+        utils.hydrateViewInContainer(parentView, 0, contextView, 0, 0, null);
+        expect(childView.rootElementInjectors[0].spy('instantiateDirectives'))
+          .toHaveBeenCalledWith(null, contextView.elementInjectors[0].getHost(), childView.preBuiltObjects[0]);
+      });
+
+    });
+
   });
 
 }
@@ -188,5 +252,12 @@ class SpyElementInjector extends SpyObject {
 @IMPLEMENTS(ChangeDetector)
 class SpyChangeDetector extends SpyObject {
   constructor(){super(ChangeDetector);}
+  noSuchMethod(m){return super.noSuchMethod(m)}
+}
+
+@proxy
+@IMPLEMENTS(PreBuiltObjects)
+class SpyPreBuiltObjects extends SpyObject {
+  constructor(){super(PreBuiltObjects);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }
