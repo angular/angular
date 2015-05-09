@@ -70,7 +70,7 @@ class StringMapWrapper {
     map[key] = value;
   }
   static void delete(Map m, k) {
-      m.remove(k);
+    m.remove(k);
   }
   static void forEach(Map m, fn(v, k)) {
     m.forEach((k, v) => fn(v, k));
@@ -96,7 +96,8 @@ class ListWrapper {
   static bool contains(List m, k) => m.contains(k);
   static List map(list, fn(item)) => list.map(fn).toList();
   static List filter(List list, bool fn(item)) => list.where(fn).toList();
-  static int indexOf(List list, value, [int startIndex = 0]) => list.indexOf(value, startIndex);
+  static int indexOf(List list, value, [int startIndex = 0]) =>
+      list.indexOf(value, startIndex);
   static int lastIndexOf(List list, value, [int startIndex = null]) =>
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
   static find(List list, bool fn(item)) =>
@@ -115,7 +116,9 @@ class ListWrapper {
     l.add(e);
   }
   static List concat(List a, List b) {
-    return []..addAll(a)..addAll(b);
+    return []
+      ..addAll(a)
+      ..addAll(b);
   }
   static bool isList(l) => l is List;
   static void insert(List l, int index, value) {
@@ -154,7 +157,7 @@ class ListWrapper {
     l.removeRange(from, to);
     return sub;
   }
-  static void sort(List l, compareFn(a,b)) {
+  static void sort(List l, compareFn(a, b)) {
     l.sort(compareFn);
   }
 

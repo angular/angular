@@ -6,15 +6,16 @@ library angular2.src.facade.browser;
 
 import 'dart:js' show context;
 
-export 'dart:html' show
-  document,
-  location,
-  window,
-  Element,
-  Node,
-  MouseEvent,
-  KeyboardEvent,
-  Event;
+export 'dart:html'
+    show
+        document,
+        location,
+        window,
+        Element,
+        Node,
+        MouseEvent,
+        KeyboardEvent,
+        Event;
 
 final _gc = context['gc'];
 

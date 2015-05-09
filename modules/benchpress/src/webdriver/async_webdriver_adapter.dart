@@ -13,7 +13,7 @@ class AsyncWebDriverAdapter extends WebDriverAdapter {
   }
 
   Future executeScript(String script) {
-    return _driver.execute(script, const[]);
+    return _driver.execute(script, const []);
   }
 
   Future<Map> capabilities() {
@@ -21,12 +21,11 @@ class AsyncWebDriverAdapter extends WebDriverAdapter {
   }
 
   Future<List<Map>> logs(String type) {
-    return _driver.logs.get(type)
-      .map((LogEntry entry) => {
-        'message': entry.message
-      })
-      .fold(<Map>[], (log, Map entry) {
-        return log..add(entry);
-      });
+    return _driver.logs
+        .get(type)
+        .map((LogEntry entry) => {'message': entry.message})
+        .fold(<Map>[], (log, Map entry) {
+      return log..add(entry);
+    });
   }
 }

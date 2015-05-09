@@ -15,7 +15,10 @@ class BaseQueryList extends Object with IterableMixin<Directive> {
   List _callbacks;
   bool _dirty;
 
-  BaseQueryList(): _results = [], _callbacks = [], _dirty = false;
+  BaseQueryList()
+      : _results = [],
+        _callbacks = [],
+        _dirty = false;
 
   Iterator<Directive> get iterator => _results.iterator;
 

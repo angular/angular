@@ -7,7 +7,6 @@ import 'dart:html';
 import 'package:angular2/src/test_lib/benchmark_util.dart';
 
 main() {
-
   var count = getIntParameter('elements');
 
   var m = new Module()
@@ -36,13 +35,12 @@ main() {
 
   bindAction('#compileWithBindings', compileWithBindings);
   bindAction('#compileNoBindings', compileNoBindings);
-
 }
 
 loadTemplate(templateId, repeatCount) {
   String result = '';
   var content = document.querySelector("#${templateId}").innerHtml;
-  for (var i=0; i<repeatCount; i++) {
+  for (var i = 0; i < repeatCount; i++) {
     result += content;
   }
   return createTemplate(result.replaceAll(new RegExp(r'[\[\]]'), ''));
@@ -54,68 +52,39 @@ class IdentitySanitizer implements NodeTreeSanitizer {
 
 createTemplate(String html) {
   var div = document.createElement('div');
-  div.setInnerHtml(html, treeSanitizer:new IdentitySanitizer());
+  div.setInnerHtml(html, treeSanitizer: new IdentitySanitizer());
   return div;
 }
 
-@Directive(
-    selector: '[dir0]',
-    map: const {
-        'attr0': '=>prop'
-    }
-)
+@Directive(selector: '[dir0]', map: const {'attr0': '=>prop'})
 class Dir0 {
   Object prop;
 }
 
-@Directive(
-    selector: '[dir1]',
-    map: const {
-        'attr1': '=>prop'
-    }
-)
+@Directive(selector: '[dir1]', map: const {'attr1': '=>prop'})
 class Dir1 {
   Object prop;
 
-  constructor(Dir0 dir0) {
-  }
+  constructor(Dir0 dir0) {}
 }
 
-@Directive(
-    selector: '[dir2]',
-    map: const {
-        'attr2': '=>prop'
-    }
-)
+@Directive(selector: '[dir2]', map: const {'attr2': '=>prop'})
 class Dir2 {
   Object prop;
 
-  constructor(Dir1 dir1) {
-  }
+  constructor(Dir1 dir1) {}
 }
 
-@Directive(
-    selector: '[dir3]',
-    map: const {
-        'attr3': '=>prop'
-    }
-)
+@Directive(selector: '[dir3]', map: const {'attr3': '=>prop'})
 class Dir3 {
   Object prop;
 
-  constructor(Dir2 dir2) {
-  }
+  constructor(Dir2 dir2) {}
 }
 
-@Directive(
-    selector: '[dir4]',
-    map: const {
-        'attr4': '=>prop'
-    }
-)
+@Directive(selector: '[dir4]', map: const {'attr4': '=>prop'})
 class Dir4 {
   Object prop;
 
-  constructor(Dir3 dir3) {
-  }
+  constructor(Dir3 dir3) {}
 }

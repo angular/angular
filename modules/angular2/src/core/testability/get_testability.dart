@@ -10,15 +10,13 @@ import 'dart:js' as js;
 // Proxies a Dart function that accepts up to 10 parameters.
 js.JsFunction _jsFunction(Function fn) {
   const Object X = __varargSentinel;
-  return new js.JsFunction.withThis(
-      (thisArg, [o1=X, o2=X, o3=X, o4=X, o5=X, o6=X, o7=X, o8=X, o9=X, o10=X]) {
-        return __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10);
-      });
+  return new js.JsFunction.withThis((thisArg, [o1 = X, o2 = X, o3 = X, o4 = X,
+      o5 = X, o6 = X, o7 = X, o8 = X, o9 = X, o10 = X]) {
+    return __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10);
+  });
 }
 
-
 const Object __varargSentinel = const Object();
-
 
 __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) {
   var args = [o1, o2, o3, o4, o5, o6, o7, o8, o9, o10];
@@ -27,7 +25,6 @@ __invokeFn(fn, o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) {
   }
   return _jsify(Function.apply(fn, args));
 }
-
 
 // Helper function to JSify a Dart object.  While this is *required* to JSify
 // the result of a scope.eval(), other uses are not required and are used to
@@ -44,8 +41,9 @@ _jsify(var obj) {
     return _jsFunction(obj);
   }
   if ((obj is Map) || (obj is Iterable)) {
-    var mappedObj = (obj is Map) ? 
-        new Map.fromIterables(obj.keys, obj.values.map(_jsify)) : obj.map(_jsify);
+    var mappedObj = (obj is Map)
+        ? new Map.fromIterables(obj.keys, obj.values.map(_jsify))
+        : obj.map(_jsify);
     if (obj is List) {
       return new js.JsArray.from(mappedObj);
     } else {
@@ -75,10 +73,9 @@ class PublicTestability implements _JsObjectProxyable {
 
   js.JsObject _toJsObject() {
     return _jsify({
-        'findBindings': (bindingString, [exactMatch, allowNonElementNodes]) =>
-            findBindings(bindingString, exactMatch, allowNonElementNodes),
-        'whenStable': (callback) =>
-            whenStable(() => callback.apply([])),
+      'findBindings': (bindingString, [exactMatch, allowNonElementNodes]) =>
+          findBindings(bindingString, exactMatch, allowNonElementNodes),
+      'whenStable': (callback) => whenStable(() => callback.apply([])),
     })..['_dart_'] = this;
   }
 }
@@ -86,8 +83,8 @@ class PublicTestability implements _JsObjectProxyable {
 class GetTestability {
   static addToWindow(TestabilityRegistry registry) {
     js.context['getAngularTestability'] = _jsify((Element elem) {
-        Testability testability = registry.findTestabilityInTree(elem);
-        return _jsify(new PublicTestability(testability));
-      });
+      Testability testability = registry.findTestabilityInTree(elem);
+      return _jsify(new PublicTestability(testability));
+    });
   }
 }

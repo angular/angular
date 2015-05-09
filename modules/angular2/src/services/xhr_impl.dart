@@ -1,4 +1,4 @@
-library angular2.src.services.xhr_impl; 
+library angular2.src.services.xhr_impl;
 
 import 'dart:async';
 import 'dart:html';
@@ -9,8 +9,7 @@ import './xhr.dart' show XHR;
 class XHRImpl extends XHR {
   Future<String> get(String url) {
     return HttpRequest.request(url).then(
-      (HttpRequest request) => request.responseText,
-      onError: (Error e) => throw 'Failed to load $url'
-    );
+        (HttpRequest request) => request.responseText,
+        onError: (Error e) => throw 'Failed to load $url');
   }
 }

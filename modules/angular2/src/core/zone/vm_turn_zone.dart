@@ -52,7 +52,8 @@ class VmTurnZone {
    * @param {Function} onScheduleMicrotask
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  initCallbacks({Function onTurnStart, Function onTurnDone, Function onScheduleMicrotask, Function onErrorHandler}) {
+  initCallbacks({Function onTurnStart, Function onTurnDone,
+      Function onScheduleMicrotask, Function onErrorHandler}) {
     this._onTurnStart = onTurnStart;
     this._onTurnDone = onTurnDone;
     this._onScheduleMicrotask = onScheduleMicrotask;
@@ -111,17 +112,19 @@ class VmTurnZone {
   }
 
   async.Zone _createInnerZone(async.Zone zone) {
-    return zone.fork(specification: new async.ZoneSpecification(
-        run: _onRun,
-        runUnary: _onRunUnary,
-        scheduleMicrotask: _onMicrotask
-    ));
+    return zone.fork(
+        specification: new async.ZoneSpecification(
+            run: _onRun,
+            runUnary: _onRunUnary,
+            scheduleMicrotask: _onMicrotask));
   }
 
-  dynamic _onRunBase(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn()) {
+  dynamic _onRunBase(
+      async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn()) {
     _nestedRunCounter++;
     try {
-      if (_nestedRunCounter == 1 && _onTurnStart != null) delegate.run(zone, _onTurnStart);
+      if (_nestedRunCounter == 1 && _onTurnStart != null) delegate.run(
+          zone, _onTurnStart);
       return fn();
     } catch (e, s) {
       if (_onErrorHandler != null && _nestedRunCounter == 1) {
@@ -131,21 +134,24 @@ class VmTurnZone {
       }
     } finally {
       _nestedRunCounter--;
-      if (_nestedRunCounter == 0 && _onTurnDone != null) _finishTurn(zone, delegate);
+      if (_nestedRunCounter == 0 && _onTurnDone != null) _finishTurn(
+          zone, delegate);
     }
   }
 
-  dynamic _onRun(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn()) =>
-      _onRunBase(self, delegate, zone, () => delegate.run(zone, fn));
+  dynamic _onRun(async.Zone self, async.ZoneDelegate delegate, async.Zone zone,
+      fn()) => _onRunBase(self, delegate, zone, () => delegate.run(zone, fn));
 
-  dynamic _onRunUnary(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn(args), args) =>
+  dynamic _onRunUnary(async.Zone self, async.ZoneDelegate delegate,
+          async.Zone zone, fn(args), args) =>
       _onRunBase(self, delegate, zone, () => delegate.runUnary(zone, fn, args));
 
   void _finishTurn(zone, delegate) {
     delegate.run(zone, _onTurnDone);
   }
 
-  _onMicrotask(async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn) {
+  _onMicrotask(
+      async.Zone self, async.ZoneDelegate delegate, async.Zone zone, fn) {
     if (this._onScheduleMicrotask != null) {
       _onScheduleMicrotask(fn);
     } else {

@@ -33,8 +33,10 @@ class PromiseWrapper {
 }
 
 class ObservableWrapper {
-  static StreamSubscription subscribe(Stream s, Function onNext, [onError, onComplete]) {
-    return s.listen(onNext, onError: onError, onDone: onComplete, cancelOnError: true);
+  static StreamSubscription subscribe(Stream s, Function onNext,
+      [onError, onComplete]) {
+    return s.listen(onNext,
+        onError: onError, onDone: onComplete, cancelOnError: true);
   }
 
   static bool isObservable(obs) {
@@ -65,14 +67,10 @@ class EventEmitter extends Stream {
     _controller = new StreamController.broadcast();
   }
 
-  StreamSubscription listen(void onData(String line), {
-                              void onError(Error error),
-                              void onDone(),
-                              bool cancelOnError }) {
+  StreamSubscription listen(void onData(String line),
+      {void onError(Error error), void onDone(), bool cancelOnError}) {
     return _controller.stream.listen(onData,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError);
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   void add(value) {
@@ -87,7 +85,6 @@ class EventEmitter extends Stream {
     _controller.close();
   }
 }
-
 
 class _Completer {
   final Completer c;

@@ -9,7 +9,8 @@ import 'cells.dart';
 
 class MyAppModule extends Module {
   MyAppModule() {
-    bind(ResourceResolverConfig, toValue: new ResourceResolverConfig.resolveRelativeUrls(false));
+    bind(ResourceResolverConfig,
+        toValue: new ResourceResolverConfig.resolveRelativeUrls(false));
     bind(App);
     bind(ScrollAreaComponent);
     bind(ScrollItemComponent);
@@ -23,7 +24,5 @@ class MyAppModule extends Module {
 }
 
 void main() {
-  applicationFactory()
-      .addModule(new MyAppModule())
-      .run();
+  applicationFactory().addModule(new MyAppModule()).run();
 }

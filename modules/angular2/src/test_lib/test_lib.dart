@@ -1,7 +1,8 @@
 library test_lib.test_lib;
 
 import 'package:guinness/guinness.dart' as gns;
-export 'package:guinness/guinness.dart' hide Expect, expect, NotExpect, beforeEach, it, iit, xit;
+export 'package:guinness/guinness.dart'
+    hide Expect, expect, NotExpect, beforeEach, it, iit, xit;
 import 'package:unittest/unittest.dart' hide expect;
 
 import 'dart:async';
@@ -42,12 +43,9 @@ void testSetup() {
   // - Priority 2: collect the bindings before each test, see beforeEachBindings(),
   // - Priority 1: create the test injector to be used in beforeEach() and it()
 
-  gns.beforeEach(
-      () {
-        _testBindings.clear();
-      },
-      priority: 3
-  );
+  gns.beforeEach(() {
+    _testBindings.clear();
+  }, priority: 3);
 
   var completerBinding = bind(AsyncTestCompleter).toFactory(() {
     // Mark the test as async when an AsyncTestCompleter is injected in an it(),
@@ -56,14 +54,11 @@ void testSetup() {
     return new AsyncTestCompleter();
   });
 
-  gns.beforeEach(
-      () {
-        _isCurrentTestAsync = false;
-        _testBindings.add(completerBinding);
-        _injector = createTestInjector(_testBindings);
-      },
-      priority: 1
-  );
+  gns.beforeEach(() {
+    _isCurrentTestAsync = false;
+    _testBindings.add(completerBinding);
+    _injector = createTestInjector(_testBindings);
+  }, priority: 1);
 }
 
 Expect expect(actual, [matcher]) {
@@ -80,13 +75,14 @@ class Expect extends gns.Expect {
   NotExpect get not => new NotExpect(actual);
 
   void toEqual(expected) => toHaveSameProps(expected);
-  void toThrowError([message=""]) => toThrowWith(message: message);
+  void toThrowError([message = ""]) => toThrowWith(message: message);
   void toBePromise() => _expect(actual is Future, equals(true));
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() => _expect(double.NAN.compareTo(actual) == 0, equals(true));
   void toHaveText(expected) => _expect(elementText(actual), expected);
   void toHaveBeenCalledWith([a = _u, b = _u, c = _u, d = _u, e = _u, f = _u]) =>
-      _expect(_argsMatch(actual, a, b, c, d, e, f), true, reason: 'method invoked with correct arguments');
+      _expect(_argsMatch(actual, a, b, c, d, e, f), true,
+          reason: 'method invoked with correct arguments');
   Function get _expect => gns.guinness.matchers.expect;
 
   // TODO(tbosch): move this hack into Guinness
@@ -97,7 +93,7 @@ class Expect extends gns.Expect {
       return false;
     } else {
       gns.SamePropsMatcher matcher = new gns.SamePropsMatcher(toMatch);
-      for (var i=0; i<calls.length; i++) {
+      for (var i = 0; i < calls.length; i++) {
         var call = calls[i];
         // TODO: create a better error message, not just 'Expected: <true> Actual: <false>'.
         // For hacking this is good:
@@ -141,13 +137,10 @@ void beforeEach(fn) {
  *   ]);
  */
 void beforeEachBindings(Function fn) {
-  gns.beforeEach(
-      () {
-        var bindings = fn();
-        if (bindings != null) _testBindings.addAll(bindings);
-      },
-      priority: 2
-  );
+  gns.beforeEach(() {
+    var bindings = fn();
+    if (bindings != null) _testBindings.addAll(bindings);
+  }, priority: 2);
 }
 
 void _it(gnsFn, name, fn) {
@@ -159,7 +152,6 @@ void _it(gnsFn, name, fn) {
     if (_isCurrentTestAsync) return _injector.get(AsyncTestCompleter).future;
   });
 }
-
 
 void it(name, fn) {
   _it(gns.it, name, fn);
@@ -174,7 +166,7 @@ void xit(name, fn) {
 }
 
 class SpyFunction extends gns.SpyFunction {
-  SpyFunction(String name): super(name);
+  SpyFunction(String name) : super(name);
 
   // TODO: vsavkin move to guinness
   andReturn(value) {
@@ -185,10 +177,10 @@ class SpyFunction extends gns.SpyFunction {
 class SpyObject extends gns.SpyObject {
   final Map<String, SpyFunction> _spyFuncs = {};
 
-  SpyObject([arg]){}
+  SpyObject([arg]) {}
 
   SpyFunction spy(String funcName) =>
-    _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));
+      _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));
 
   static stub([object = null, config = null, overrides = null]) {
     if (object is! SpyObject) {
@@ -198,14 +190,12 @@ class SpyObject extends gns.SpyObject {
     }
 
     var m = StringMapWrapper.merge(config, overrides);
-    StringMapWrapper.forEach(m, (value, key){
+    StringMapWrapper.forEach(m, (value, key) {
       object.spy(key).andReturn(value);
     });
     return object;
   }
 }
-
-
 
 String elementText(n) {
   hasNodes(n) {

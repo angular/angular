@@ -123,7 +123,8 @@ class RegExpWrapper {
   static RegExp create(regExpStr, [String flags = '']) {
     bool multiLine = flags.contains('m');
     bool caseSensitive = !flags.contains('i');
-    return new RegExp(regExpStr, multiLine: multiLine, caseSensitive: caseSensitive);
+    return new RegExp(regExpStr,
+        multiLine: multiLine, caseSensitive: caseSensitive);
   }
   static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);
@@ -147,7 +148,7 @@ class _JSLikeMatch {
 
   _JSLikeMatch(this._m);
 
-  String operator[](index) => _m[index];
+  String operator [](index) => _m[index];
   int get index => _m.start;
   int get length => _m.groupCount + 1;
 }
