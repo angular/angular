@@ -27,14 +27,14 @@ export function main() {
 
     it('should normalize urls on navigate', () => {
       location.go('/my/app/user/btford');
-      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, null, '/user/btford');
+      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/user/btford');
     });
 
     it('should remove index.html from base href', () => {
       browserLocation.baseHref = '/my/app/index.html';
       location = new Location(browserLocation);
       location.go('/my/app/user/btford');
-      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, null, '/user/btford');
+      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/user/btford');
     });
 
     it('should normalize urls on popstate', inject([AsyncTestCompleter], (async) => {
