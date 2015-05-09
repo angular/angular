@@ -8,12 +8,14 @@ module.exports = function(gulp) {
     if (process.platform === 'win32') {
       DART_SDK = {
         PUB: 'pub.bat',
-        ANALYZER: 'dartanalyzer.bat'
+        ANALYZER: 'dartanalyzer.bat',
+        DARTFMT: 'dartfmt.bat'
       };
     } else {
       DART_SDK = {
         PUB: 'pub',
-        ANALYZER: 'dartanalyzer'
+        ANALYZER: 'dartanalyzer',
+        DARTFMT: 'dartfmt'
       };
     }
   } catch (e) {

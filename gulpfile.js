@@ -9,6 +9,7 @@ var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
 var sass = require('gulp-sass');
 var shell = require('gulp-shell');
+var spawn = require('child_process').spawn;
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
@@ -25,7 +26,6 @@ var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
-var rundartpackage = require('./tools/build/rundartpackage');
 var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma');
 var minimist = require('minimist');
@@ -104,10 +104,6 @@ var CONFIG = {
     },
     dart: 'dist/dart',
     docs: 'dist/docs'
-  },
-  formatDart: {
-    packageName: 'dart_style',
-    args: ['dart_style:format', '-w', 'dist/dart']
   }
 };
 
@@ -176,11 +172,11 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 // ------------
 // formatting
 
-gulp.task('build/format.dart', rundartpackage(gulp, gulpPlugins, {
-  pub: DART_SDK.PUB,
-  packageName: CONFIG.formatDart.packageName,
-  args: CONFIG.formatDart.args
-}));
+gulp.task('build/format.dart', function() {
+  return util.processToPromise(spawn(DART_SDK.DARTFMT, ['-w', CONFIG.dest.dart], {
+    stdio: 'inherit'
+  }));
+});
 
 function doCheckFormat() {
   return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
