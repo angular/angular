@@ -7,18 +7,18 @@ import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compiler.dart';
 import 'package:angular2/src/render/dom/compiler/template_loader.dart';
-import "package:angular2/src/services/xhr.dart" show XHR;
+import 'package:angular2/src/services/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/property_utils.dart' as prop;
+import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:barback/barback.dart';
 
 import 'compile_step_factory.dart';
 import 'recording_reflection_capabilities.dart';
 import 'view_definition_creator.dart';
-import 'xhr_impl.dart';
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
 /// Angular 2 `View` annotations it declares to generate `getter`s,

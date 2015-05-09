@@ -1,10 +1,15 @@
 library angular2.transform.directive_processor.rewriter;
 
+import 'dart:async';
+
 import 'package:analyzer/analyzer.dart';
-import 'package:analyzer/src/generated/java_core.dart';
+import 'package:angular2/src/services/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
+import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:path/path.dart' as path;
 
@@ -17,20 +22,22 @@ import 'visitors.dart';
 /// If no Angular 2 `Directive`s are found in `code`, returns the empty
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
-String createNgDeps(
-    String code, AssetId assetId, AnnotationMatcher annotationMatcher) {
+Future<String> createNgDeps(AssetReader reader, AssetId assetId,
+    AnnotationMatcher annotationMatcher) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
-  var writer = new PrintStringWriter();
-  var visitor = new CreateNgDepsVisitor(writer, assetId, annotationMatcher);
-  parseCompilationUnit(code, name: assetId.toString()).accept(visitor);
-  return '$writer';
+  var writer = new AsyncStringWriter();
+  var visitor = new CreateNgDepsVisitor(
+      writer, assetId, new XhrImpl(reader, assetId), annotationMatcher);
+  var code = await reader.readAsString(assetId);
+  parseCompilationUnit(code, name: assetId.path).accept(visitor);
+  return await writer.asyncToString();
 }
 
 /// Visitor responsible for processing [CompilationUnit] and creating an
 /// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
-  final PrintWriter writer;
+  final AsyncStringWriter writer;
   bool _foundNgDirectives = false;
   bool _wroteImport = false;
   final ToSourceVisitor _copyVisitor;
@@ -42,12 +49,13 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// The assetId for the file which we are parsing.
   final AssetId assetId;
 
-  CreateNgDepsVisitor(PrintWriter writer, this.assetId, this._annotationMatcher)
+  CreateNgDepsVisitor(
+      AsyncStringWriter writer, this.assetId, XHR xhr, this._annotationMatcher)
       : writer = writer,
         _copyVisitor = new ToSourceVisitor(writer),
         _factoryVisitor = new FactoryTransformVisitor(writer),
         _paramsVisitor = new ParameterTransformVisitor(writer),
-        _metaVisitor = new AnnotationsTransformVisitor(writer);
+        _metaVisitor = new AnnotationsTransformVisitor(writer, xhr);
 
   void _visitNodeListWithSeparator(NodeList<AstNode> list, String separator) {
     if (list == null) return;
