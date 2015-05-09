@@ -36,7 +36,7 @@ export class Location {
 
   go(url:string) {
     url = this._stripBaseHref(url);
-    this._browserLocation.pushState(null, null, url);
+    this._browserLocation.pushState(null, '', url);
   }
 
   forward() {
