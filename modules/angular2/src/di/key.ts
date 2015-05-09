@@ -1,5 +1,8 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {stringify} from 'angular2/src/facade/lang';
+import {stringify, CONST, Type} from 'angular2/src/facade/lang';
+import {TypeLiteral} from './type_literal';
+
+export {TypeLiteral} from './type_literal';
 
 // TODO: uncoment `int` once https://github.com/angular/angular/issues/1414 is fixed
 
@@ -18,6 +21,10 @@ import {stringify} from 'angular2/src/facade/lang';
 export class Key {
   token: Object;
   id: number;
+
+  /**
+   * @private
+   */
   constructor(token: Object, id: number) {
     this.token = token;
     this.id = id;
@@ -45,6 +52,13 @@ export class KeyRegistry {
 
   get(token: Object): Key {
     if (token instanceof Key) return token;
+
+    // TODO: workaround for https://github.com/Microsoft/TypeScript/issues/3123
+    var theToken = token;
+    if (token instanceof TypeLiteral) {
+      theToken = token.type;
+    }
+    token = theToken;
 
     if (MapWrapper.contains(this._allKeys, token)) {
       return MapWrapper.get(this._allKeys, token);

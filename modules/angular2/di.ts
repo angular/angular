@@ -9,7 +9,7 @@ export * from './src/di/annotations';
 export * from './src/di/decorators';
 export {Injector} from './src/di/injector';
 export {Binding, ResolvedBinding, Dependency, bind} from './src/di/binding';
-export {Key, KeyRegistry} from './src/di/key';
+export {Key, KeyRegistry, TypeLiteral} from './src/di/key';
 export {
   NoBindingError,
   AbstractBindingError,
