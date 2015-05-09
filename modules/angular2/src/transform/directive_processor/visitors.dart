@@ -2,6 +2,8 @@ library angular2.transform.directive_processor.visitors;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
+import 'package:angular2/src/services/xhr.dart' show XHR;
+import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
 /// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
@@ -200,11 +202,17 @@ class FactoryTransformVisitor extends _CtorTransformVisitor {
   }
 }
 
+// TODO(kegluenq): Use pull #1772 to detect when available.
+bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
+
 /// ToSourceVisitor designed to print a `ClassDeclaration` node as a
 /// 'annotations' value for Angular2's `registerType` calls.
 class AnnotationsTransformVisitor extends ToSourceVisitor {
-  final PrintWriter writer;
-  AnnotationsTransformVisitor(PrintWriter writer)
+  final AsyncStringWriter writer;
+  final XHR _xhr;
+  bool _processingView = false;
+
+  AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr)
       : this.writer = writer,
         super(writer);
 
@@ -226,6 +234,7 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
   Object visitAnnotation(Annotation node) {
     writer.print('const ');
     if (node.name != null) {
+      _processingView = _isViewAnnotation(node);
       node.name.accept(this);
     }
     if (node.constructorName != null) {
@@ -236,5 +245,26 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       node.arguments.accept(this);
     }
     return null;
+  }
+
+  /// These correspond to the annotation parameters.
+  @override
+  Object visitNamedExpression(NamedExpression node) {
+    // TODO(kegluneq): Remove this limitation.
+    if (!_processingView ||
+        node.name is! Label ||
+        node.name.label is! SimpleIdentifier) {
+      return super.visitNamedExpression(node);
+    }
+    var keyString = '${node.name.label}';
+    if (keyString == 'templateUrl' && node.expression is SimpleStringLiteral) {
+      var url = stringLiteralToString(node.expression);
+      writer.print("template: r'''");
+      writer.asyncPrint(_xhr.get(url));
+      writer.print("'''");
+      return null;
+    } else {
+      return super.visitNamedExpression(node);
+    }
   }
 }

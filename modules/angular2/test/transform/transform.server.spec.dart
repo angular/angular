@@ -4,6 +4,7 @@ import 'package:guinness/guinness.dart';
 import 'package:unittest/unittest.dart' hide expect;
 import 'package:unittest/vm_config.dart';
 
+import 'common/async_string_writer_tests.dart' as asyncStringWriter;
 import 'bind_generator/all_tests.dart' as bindGenerator;
 import 'directive_linker/all_tests.dart' as directiveLinker;
 import 'directive_metadata_extractor/all_tests.dart' as directiveMeta;
@@ -14,6 +15,7 @@ import 'template_compiler/all_tests.dart' as templateCompiler;
 
 main() {
   useVMConfiguration();
+  describe('AsyncStringWriter', asyncStringWriter.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
   describe('Directive Metadata Extractor', directiveMeta.allTests);
