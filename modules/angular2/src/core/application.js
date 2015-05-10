@@ -300,6 +300,6 @@ function _createAppInjector(appComponentType: Type, bindings: List<Binding>, zon
   var mergedBindings = isPresent(bindings) ?
       ListWrapper.concat(_injectorBindings(appComponentType), bindings) :
       _injectorBindings(appComponentType);
-  ListWrapper.push(mergedBindings, bind(VmTurnZone).toValue(zone));
+  ListWrapper.insert(mergedBindings, 0, bind(VmTurnZone).toValue(zone));
   return _rootInjector.resolveAndCreateChild(mergedBindings);
 }
