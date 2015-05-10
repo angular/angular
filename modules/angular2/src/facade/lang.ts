@@ -40,6 +40,11 @@ if (assertionsEnabled_) {
 }
 export {int};
 
+// This function is needed only to properly support Dart's const expressions
+// see https://github.com/angular/ts2dart/pull/151 for more info
+export function CONST_EXPR<T>(expr: T): T {
+  return expr;
+};
 export function CONST() {
   return (target) => target;
 };

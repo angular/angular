@@ -1,7 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {isPresent, RegExpWrapper, RegExpMatcherWrapper} from 'angular2/src/facade/lang';
+import {isPresent, RegExpWrapper, RegExpMatcherWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('RegExp', () => {
@@ -21,4 +21,12 @@ export function main() {
       expect(indexes).toEqual([1, 4, 8, 9]);
     })
  });
+
+  describe('const', () => {
+    it('should support const expressions both in TS and Dart', () => {
+      const numbers = CONST_EXPR([1, 2, 3]);
+      expect(numbers).toEqual([1, 2, 3]);
+    })
+ });
+
 }
