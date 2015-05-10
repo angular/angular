@@ -1629,9 +1629,6 @@
           "dependencies": {
             "github-url-from-username-repo": {
               "version": "1.0.2"
-            },
-            "semver": {
-              "version": "4.3.4"
             }
           }
         }
@@ -3262,9 +3259,6 @@
         },
         "pretty-hrtime": {
           "version": "0.2.2"
-        },
-        "semver": {
-          "version": "4.3.4"
         },
         "tildify": {
           "version": "1.0.0",
@@ -5247,9 +5241,6 @@
                   }
                 }
               }
-            },
-            "semver": {
-              "version": "4.3.4"
             },
             "shelljs": {
               "version": "0.3.0"
@@ -7406,9 +7397,6 @@
                 }
               }
             },
-            "semver": {
-              "version": "4.3.4"
-            },
             "underscore": {
               "version": "1.8.2"
             }
@@ -8069,9 +8057,6 @@
       "dependencies": {
         "rewire": {
           "version": "2.0.1"
-        },
-        "semver": {
-          "version": "4.3.4"
         }
       }
     },
@@ -8676,7 +8661,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.5.0",
+      "version": "0.5.2",
       "dependencies": {
         "source-map": {
           "version": "0.4.2",
