@@ -16,13 +16,7 @@ import {NoAnnotationError} from './exceptions';
  */
 export class Dependency {
   constructor(public key: Key, public asPromise: boolean, public lazy: boolean,
-              public optional: boolean, public properties: List<any>) {
-    this.key = key;
-    this.asPromise = asPromise;
-    this.lazy = lazy;
-    this.optional = optional;
-    this.properties = properties;
-  }
+              public optional: boolean, public properties: List<any>) {}
 
   static fromKey(key: Key) { return new Dependency(key, false, false, false, []); }
 }
@@ -254,33 +248,26 @@ export class Binding {
  * @exportedAs angular2/di
  */
 export class ResolvedBinding {
-  /**
-   * A key, usually a `Type`.
-   */
-  key: Key;
+  constructor(
+      /**
+       * A key, usually a `Type`.
+       */
+      public key: Key,
 
-  /**
-   * Factory function which can return an instance of an object represented by a key.
-   */
-  factory: Function;
+      /**
+       * Factory function which can return an instance of an object represented by a key.
+       */
+      public factory: Function,
 
-  /**
-   * Arguments (dependencies) to the `factory` function.
-   */
-  dependencies: List<Dependency>;
+      /**
+       * Arguments (dependencies) to the `factory` function.
+       */
+      public dependencies: List<Dependency>,
 
-  /**
-   * Specifies whether the `factory` function returns a `Promise`.
-   */
-  providedAsPromise: boolean;
-
-  constructor(key: Key, factory: Function, dependencies: List<Dependency>,
-              providedAsPromise: boolean) {
-    this.key = key;
-    this.factory = factory;
-    this.dependencies = dependencies;
-    this.providedAsPromise = providedAsPromise;
-  }
+      /**
+       * Specifies whether the `factory` function returns a `Promise`.
+       */
+      public providedAsPromise: boolean) {}
 }
 
 /**
@@ -307,9 +294,7 @@ export function bind(token): BindingBuilder {
  * @exportedAs angular2/di
  */
 export class BindingBuilder {
-  token;
-
-  constructor(token) { this.token = token; }
+  constructor(public token) {}
 
   /**
    * Binds an interface to an implementation / subclass.
