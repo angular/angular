@@ -3,7 +3,7 @@ import {Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Optional} from 'angular2/src/di/annotations_impl';
 import {Renderer} from 'angular2/src/render/api';
-import {isPresent, isString} from 'angular2/src/facade/lang';
+import {isPresent, isString, CONST_EXPR} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ControlGroup} from './model';
 import {Validators} from './validators';
@@ -272,6 +272,6 @@ export class ControlGroupDirective {
  * @exportedAs angular2/forms
  */
 // todo(misko): rename to lover case as it is not a Type but a var.
-export var FormDirectives:List = [
+export const FormDirectives:List = CONST_EXPR([
   ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor
-];
+]);
