@@ -417,6 +417,7 @@ gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
   watch('modules/angular2/**', function() {
     runSequence(
       '!build/tree.dart',
+      'build/format.dart',
       '!test.unit.dart/karma-run'
     );
   });
