@@ -32,8 +32,8 @@ var int;
 if (assertionsEnabled_) {
   _global.assert = assert;
   // `int` is not a valid JS type
-  int = assert.define(
-      'int', function(value) { return typeof value === 'number' && value % 1 === 0; });
+  int = assert.define('int',
+                      function(value) { return typeof value === 'number' && value % 1 === 0; });
 } else {
   int = {};
   _global.assert = function() {};
@@ -44,10 +44,10 @@ export {int};
 // see https://github.com/angular/ts2dart/pull/151 for more info
 export function CONST_EXPR<T>(expr: T): T {
   return expr;
-};
+}
 export function CONST() {
   return (target) => target;
-};
+}
 export class ABSTRACT {}
 export class IMPLEMENTS {}
 
