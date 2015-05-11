@@ -17,14 +17,14 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {NonBindable} from 'angular2/src/directives/non_bindable';
+import {NgNonBindable} from '../../src/directives/ng_non_bindable';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
 export function main() {
   describe('non-bindable', () => {
     it('should not interpolate children', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var template = '<div>{{text}}<span non-bindable>{{text}}</span></div>';
+      var template = '<div>{{text}}<span ng-non-bindable>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
         expect(DOM.getText(view.rootNodes[0])).toEqual('foo{{text}}');
@@ -33,7 +33,7 @@ export function main() {
     }));
 
     it('should ignore directives on child nodes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var template = '<div non-bindable><span id=child test-dec>{{text}}</span></div>';
+      var template = '<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
         var span = DOM.querySelector(view.rootNodes[0], '#child');
@@ -43,7 +43,7 @@ export function main() {
     }));
 
     it('should trigger directives on the same node', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var template = '<div><span id=child non-bindable test-dec>{{text}}</span></div>';
+      var template = '<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>';
       tb.createView(TestComponent, {html: template}).then((view) => {
         view.detectChanges();
         var span = DOM.querySelector(view.rootNodes[0], '#child');
@@ -55,7 +55,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [NonBindable, TestDirective]})
+@View({directives: [NgNonBindable, TestDirective]})
 class TestComponent {
   text: string;
   constructor() {

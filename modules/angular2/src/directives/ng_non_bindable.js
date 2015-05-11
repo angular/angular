@@ -1,7 +1,7 @@
 import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 
 /**
- * The `NonBindable` directive tells Angular not to compile or bind the contents of the current
+ * The `NgNonBindable` directive tells Angular not to compile or bind the contents of the current
  * DOM element. This is useful if the element contains what appears to be Angular directives and
  * bindings but which should be ignored by Angular. This could be the case if you have a site that
  * displays snippets of code, for instance.
@@ -16,8 +16,8 @@ import {Directive} from 'angular2/src/core/annotations_impl/annotations';
  * @exportedAs angular2/directives
  */
 @Directive({
-  selector: '[non-bindable]',
+  selector: '[ng-non-bindable]',
   compileChildren: false
 })
-export class NonBindable {
+export class NgNonBindable {
 }
