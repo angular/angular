@@ -3,12 +3,12 @@ import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
-import {AsyncPipe} from 'angular2/src/change_detection/pipes/async_pipe';
+import {ObservablePipe} from 'angular2/src/change_detection/pipes/observable_pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import {EventEmitter, Observable, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 
 export function main() {
-  describe("AsyncPipe", () => {
+  describe("ObservablePipe", () => {
     var emitter;
     var pipe;
     var ref;
@@ -17,7 +17,7 @@ export function main() {
     beforeEach(() => {
       emitter = new EventEmitter();
       ref = new SpyChangeDetectorRef();
-      pipe = new AsyncPipe(ref);
+      pipe = new ObservablePipe(ref);
     });
 
     describe("supports", () => {

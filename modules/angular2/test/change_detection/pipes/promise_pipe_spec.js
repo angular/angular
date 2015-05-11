@@ -23,7 +23,6 @@ export function main() {
 
     describe("supports", () => {
       it("should support promises", () => {
-        console.log('pipe', PromisePipe)
         expect(pipe.supports(completer.promise)).toBe(true);
       });
 
