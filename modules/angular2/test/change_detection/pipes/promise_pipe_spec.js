@@ -1,9 +1,8 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
   AsyncTestCompleter, inject, proxy, SpyObject} from 'angular2/test_lib';
 import {IMPLEMENTS} from 'angular2/src/facade/lang';
-
 import {PromisePipe} from 'angular2/src/change_detection/pipes/promise_pipe';
-import {NO_CHANGE} from 'angular2/src/change_detection/pipes/pipe';
+import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -24,6 +23,7 @@ export function main() {
 
     describe("supports", () => {
       it("should support promises", () => {
+        console.log('pipe', PromisePipe)
         expect(pipe.supports(completer.promise)).toBe(true);
       });
 
@@ -44,19 +44,19 @@ export function main() {
         completer.resolve(message);
 
         PromiseWrapper.setTimeout(() => {
-          expect(pipe.transform(completer.promise)).toEqual(message);
+          expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
           async.done();
         }, 0)
       }));
 
-      it("should return NO_CHANGE when nothing has changed since the last call",
+      it("should return unwrapped value when nothing has changed since the last call",
           inject([AsyncTestCompleter], (async) => {
         pipe.transform(completer.promise);
         completer.resolve(message);
 
         PromiseWrapper.setTimeout(() => {
           pipe.transform(completer.promise);
-          expect(pipe.transform(completer.promise)).toBe(NO_CHANGE);
+          expect(pipe.transform(completer.promise)).toBe(message);
           async.done();
         }, 0)
       }));
@@ -68,11 +68,11 @@ export function main() {
         var newCompleter = PromiseWrapper.completer();
         expect(pipe.transform(newCompleter.promise)).toBe(null);
 
-        // this should not affect the pipe, so it should return NO_CHANGE
+        // this should not affect the pipe, so it should return WrappedValue
         completer.resolve(message);
 
         PromiseWrapper.setTimeout(() => {
-          expect(pipe.transform(newCompleter.promise)).toBe(NO_CHANGE);
+          expect(pipe.transform(newCompleter.promise)).toBe(null);
           async.done();
         }, 0)
       }));
