@@ -25,16 +25,21 @@ export function main() {
       location = new Location(browserLocation);
     });
 
-    it('should normalize urls on navigate', () => {
+    it('should normalize relative urls on navigate', () => {
+      location.go('user/btford');
+      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/my/app/user/btford');
+    });
+
+    it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
-      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/user/btford');
+      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/my/app/user/btford');
     });
 
     it('should remove index.html from base href', () => {
       browserLocation.baseHref = '/my/app/index.html';
       location = new Location(browserLocation);
-      location.go('/my/app/user/btford');
-      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/user/btford');
+      location.go('user/btford');
+      expect(browserLocation.spy('pushState')).toHaveBeenCalledWith(null, '', '/my/app/user/btford');
     });
 
     it('should normalize urls on popstate', inject([AsyncTestCompleter], (async) => {
