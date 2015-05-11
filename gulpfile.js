@@ -390,7 +390,7 @@ gulp.task('watch.js.dev', ['build.js.dev'], function (neverDone) {
 
 
 gulp.task('!test.unit.js/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js'});
+  karma.server.start({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
 });
 
 
@@ -429,7 +429,7 @@ gulp.task('!test.unit.dart/karma-run', function (done) {
 
 
 gulp.task('!test.unit.dart/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js'});
+  karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
 });
 
 
