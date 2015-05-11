@@ -86,6 +86,22 @@ export class StringMapWrapper {
 
     return m;
   }
+
+  static equals(m1, m2) {
+    var k1 = Object.keys(m1);
+    var k2 = Object.keys(m2);
+    if (k1.length != k2.length) {
+      return false;
+    }
+    var key;
+    for (var i = 0; i < k1.length; i++) {
+      key = k1[i];
+      if (m1[key] !== m2[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 export class ListWrapper {
