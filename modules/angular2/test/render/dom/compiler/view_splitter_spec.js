@@ -144,12 +144,12 @@ export function main() {
     describe('elements with *directive_name attribute', () => {
 
       it('should replace the element with an empty <template> element', () => {
-        var rootElement = el('<div><span *if></span></div>');
+        var rootElement = el('<div><span *ng-if></span></div>');
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
-        expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template class="ng-binding" if=""></template></div>');
-        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span *if=""></span>')
+        expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template class="ng-binding" ng-if=""></template></div>');
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span *ng-if=""></span>')
         expect(results[2].element).toBe(originalChild);
       });
 

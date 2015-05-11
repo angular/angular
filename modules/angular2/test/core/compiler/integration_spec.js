@@ -32,7 +32,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
-import {If} from 'angular2/src/directives/if';
+import {NgIf} from 'angular2/src/directives/ng_if';
 import {For} from 'angular2/src/directives/for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
@@ -561,11 +561,11 @@ export function main() {
         tb.overrideView(MyComp, new View({
           template: `
             <some-directive>
-              <p *if="true">
+              <p *ng-if="true">
                 <cmp-with-ancestor #child></cmp-with-ancestor>
               </p>
             </some-directive>`,
-          directives: [SomeDirective, CompWithAncestor, If]
+          directives: [SomeDirective, CompWithAncestor, NgIf]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -728,8 +728,8 @@ export function main() {
 
       it('should support render global events from multiple directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
-          template: '<div *if="ctxBoolProp" listener listenerother></div>',
-          directives: [If, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
+          template: '<div *ng-if="ctxBoolProp" listener listenerother></div>',
+          directives: [NgIf, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
@@ -894,8 +894,8 @@ export function main() {
         it('should raise an error for missing template directive (2)', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           expectCompileError(
             tb,
-            '<div><template *if="condition"></template></div>',
-            'Missing directive to handle: <template *if="condition">',
+            '<div><template *ng-if="condition"></template></div>',
+            'Missing directive to handle: <template *ng-if="condition">',
             () => async.done()
           );
         }));
@@ -903,8 +903,8 @@ export function main() {
         it('should raise an error for missing template directive (3)', inject([TestBed, AsyncTestCompleter], (tb, async) => {
           expectCompileError(
             tb,
-            '<div *if="condition"></div>',
-            'Missing directive to handle \'if\' in MyComp: <div *if="condition">',
+            '<div *ng-if="condition"></div>',
+            'Missing directive to handle \'if\' in MyComp: <div *ng-if="condition">',
             () => async.done()
           );
         }));

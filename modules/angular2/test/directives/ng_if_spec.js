@@ -19,12 +19,12 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {If} from 'angular2/src/directives/if';
+import {NgIf} from 'angular2/src/directives/ng_if';
 
 export function main() {
   describe('if directive', () => {
     it('should work in a template attribute', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var html = '<div><copy-me template="if booleanCondition">hello</copy-me></div>';
+      var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.detectChanges();
@@ -35,7 +35,7 @@ export function main() {
     }));
 
     it('should work in a template element', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var html = '<div><template [if]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
+      var html = '<div><template [ng-if]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.detectChanges();
@@ -46,7 +46,7 @@ export function main() {
     }));
 
     it('should toggle node when condition changes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var html = '<div><copy-me template="if booleanCondition">hello</copy-me></div>';
+      var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.context.booleanCondition = false;
@@ -69,7 +69,7 @@ export function main() {
     }));
 
     it('should handle nested if correctly', inject([TestBed, AsyncTestCompleter], (tb, async) => {
-      var html = '<div><template [if]="booleanCondition"><copy-me *if="nestedBooleanCondition">hello</copy-me></template></div>';
+      var html = '<div><template [ng-if]="booleanCondition"><copy-me *ng-if="nestedBooleanCondition">hello</copy-me></template></div>';
 
       tb.createView(TestComponent, {html: html}).then((view) => {
         view.context.booleanCondition = false;
@@ -104,9 +104,9 @@ export function main() {
     it('should update several nodes with if', inject([TestBed, AsyncTestCompleter], (tb, async) => {
       var html =
       '<div>' +
-        '<copy-me template="if numberCondition + 1 >= 2">helloNumber</copy-me>' +
-        '<copy-me template="if stringCondition == \'foo\'">helloString</copy-me>' +
-        '<copy-me template="if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
+        '<copy-me template="ng-if numberCondition + 1 >= 2">helloNumber</copy-me>' +
+        '<copy-me template="ng-if stringCondition == \'foo\'">helloString</copy-me>' +
+        '<copy-me template="ng-if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
       '</div>';
 
       tb.createView(TestComponent, {html: html}).then((view) => {
@@ -132,7 +132,7 @@ export function main() {
     if (!IS_DARTIUM) {
       it('should not add the element twice if the condition goes from true to true (JS)',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-        var html = '<div><copy-me template="if numberCondition">hello</copy-me></div>';
+        var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
         tb.createView(TestComponent, {html: html}).then((view) => {
           view.detectChanges();
@@ -150,7 +150,7 @@ export function main() {
 
       it('should not recreate the element if the condition goes from true to true (JS)',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          var html = '<div><copy-me template="if numberCondition">hello</copy-me></div>';
+          var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
           tb.createView(TestComponent, {html: html}).then((view) => {
             view.detectChanges();
@@ -168,7 +168,7 @@ export function main() {
     if (IS_DARTIUM) {
       it('should not create the element if the condition is not a boolean (DART)',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
-          var html = '<div><copy-me template="if numberCondition">hello</copy-me></div>';
+          var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
 
           tb.createView(TestComponent, {html: html}).then((view) => {
             expect(() => view.detectChanges()).toThrowError();
@@ -183,7 +183,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [If]})
+@View({directives: [NgIf]})
 class TestComponent {
   booleanCondition: boolean;
   nestedBooleanCondition: boolean;
