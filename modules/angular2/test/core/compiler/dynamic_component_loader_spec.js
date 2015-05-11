@@ -20,7 +20,7 @@ import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {If} from 'angular2/src/directives/if';
+import {NgIf} from 'angular2/src/directives/ng_if';
 import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
@@ -64,8 +64,8 @@ export function main() {
       it('should allow to destroy and create them via viewcontainer directives',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
-            template: '<div><dynamic-comp #dynamic template="if: ctxBoolProp"></dynamic-comp></div>',
-            directives: [DynamicComp, If]
+            template: '<div><dynamic-comp #dynamic template="ng-if: ctxBoolProp"></dynamic-comp></div>',
+            directives: [DynamicComp, NgIf]
           }));
 
           tb.createView(MyComp).then((view) => {

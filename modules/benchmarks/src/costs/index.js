@@ -56,15 +56,15 @@ export function main() {
 @View({
   directives: [If, For, DummyComponent, DummyDirective, DynamicDummy],
   template: `
-    <div *if="testingPlainComponents">
+    <div *ng-if="testingPlainComponents">
       <dummy *for="#i of list"></dummy>
     </div>
 
-    <div *if="testingWithDirectives">
+    <div *ng-if="testingWithDirectives">
       <dummy dummy-decorator *for="#i of list"></dummy>
     </div>
 
-    <div *if="testingDynamicComponents">
+    <div *ng-if="testingDynamicComponents">
       <dynamic-dummy *for="#i of list"></dynamic-dummy>
     </div>
   `

@@ -17,7 +17,7 @@ import {TestBed} from 'angular2/src/test_lib/test_bed';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 import {Query} from 'angular2/src/core/annotations_impl/di';
 
-import {If, For} from 'angular2/angular2';
+import {NgIf, For} from 'angular2/angular2';
 
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
@@ -45,7 +45,7 @@ export function main() {
     it('should reflect dynamically inserted directives', inject([TestBed, AsyncTestCompleter], (tb, async) => {
       var template =
         '<div text="1"></div>' +
-        '<needs-query text="2"><div *if="shouldShow" [text]="\'3\'"></div></needs-query>' +
+        '<needs-query text="2"><div *ng-if="shouldShow" [text]="\'3\'"></div></needs-query>' +
         '<div text="4"></div>';
 
       tb.createView(MyComp, {html: template}).then((view) => {
@@ -113,7 +113,7 @@ class TextDirective {
 
 @Component({selector: 'my-comp'})
 @View({
-  directives: [NeedsQuery, TextDirective,  If, For]
+  directives: [NeedsQuery, TextDirective,  NgIf, For]
 })
 class MyComp {
   shouldShow: boolean;

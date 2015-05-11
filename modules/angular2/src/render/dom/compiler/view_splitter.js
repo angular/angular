@@ -38,7 +38,7 @@ export class ViewSplitter extends CompileStep {
     var templateBindings = MapWrapper.get(attrs, 'template');
     var hasTemplateBinding = isPresent(templateBindings);
 
-    // look for template shortcuts such as *if="condition" and treat them as template="if condition"
+    // look for template shortcuts such as *ng-if="condition" and treat them as template="if condition"
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       if (StringWrapper.startsWith(attrName, '*')) {
         var key = StringWrapper.substring(attrName, 1);  // remove the star

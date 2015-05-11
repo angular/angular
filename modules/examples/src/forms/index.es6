@@ -23,7 +23,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
         <div>
           <label>Title:</label> <br/>
           <input type="text" control="title"/>
-          <div *if="! header.controls.title.valid && header.controls.title.dirty">
+          <div *ng-if="! header.controls.title.valid && header.controls.title.dirty">
             Title is required
           </div>
         </div>
@@ -31,7 +31,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
         <div>
           <label>Description:</label> <br/>
           <textarea control="description"></textarea>
-          <div *if="! header.controls.description.valid && header.controls.description.dirty">
+          <div *ng-if="! header.controls.description.valid && header.controls.description.dirty">
             Description is required
           </div>
         </div>
@@ -79,7 +79,7 @@ class HeaderFields {
             <option value="checkbox">Checkbox</option>
             <option value="textarea">Textarea</option>
           </select>
-          <div *if="! question.controls.type.valid && question.controls.type.dirty">
+          <div *ng-if="! question.controls.type.valid && question.controls.type.dirty">
             Type is required
           </div>
         </div>
@@ -87,15 +87,15 @@ class HeaderFields {
         <div>
           <label>Question:</label> <br/>
           <input type="text" control="questionText">
-          <div *if="! question.controls.questionText.valid && question.controls.questionText.dirty">
+          <div *ng-if="! question.controls.questionText.valid && question.controls.questionText.dirty">
             Question is required
           </div>
         </div>
 
-        <div *if="question.contains('responseLength')">
+        <div *ng-if="question.contains('responseLength')">
           <label>Response Length:</label> <br/>
           <input type="number" control="responseLength">
-          <div *if="! question.controls.responseLength.valid && question.controls.responseLength.dirty">
+          <div *ng-if="! question.controls.responseLength.valid && question.controls.responseLength.dirty">
             Length is required
           </div>
         </div>

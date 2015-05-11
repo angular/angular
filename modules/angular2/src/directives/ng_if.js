@@ -12,7 +12,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  * # Example:
  *
  * ```
- * <div *if="errorCount > 0" class="error">
+ * <div *ng-if="errorCount > 0" class="error">
  *   <!-- Error message displayed when the errorCount property on the current context is greater than 0. -->
  *   {{errorCount}} errors detected
  * </div>
@@ -20,19 +20,19 @@ import {isBlank} from 'angular2/src/facade/lang';
  *
  * # Syntax
  *
- * - `<div *if="condition">...</div>`
- * - `<div template="if condition">...</div>`
- * - `<template [if]="condition"><div>...</div></template>`
+ * - `<div *ng-if="condition">...</div>`
+ * - `<div template="ng-if condition">...</div>`
+ * - `<template [ng-if]="condition"><div>...</div></template>`
  *
  * @exportedAs angular2/directives
  */
 @Directive({
-  selector: '[if]',
+  selector: '[ng-if]',
   properties: {
-    'condition': 'if'
+    'ngIf': 'ngIf'
   }
 })
-export class If {
+export class NgIf {
   viewContainer: ViewContainerRef;
   protoViewRef: ProtoViewRef;
   prevCondition: boolean;
@@ -43,7 +43,7 @@ export class If {
     this.protoViewRef = protoViewRef;
   }
 
-  set condition(newCondition /* boolean */) {
+  set ngIf(newCondition /* boolean */) {
     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
       this.prevCondition = true;
       this.viewContainer.create(this.protoViewRef);
