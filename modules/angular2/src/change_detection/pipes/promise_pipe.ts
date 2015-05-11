@@ -38,14 +38,12 @@ export class PromisePipe extends Pipe {
   _latestValue:Object;
   _latestReturnedValue:Object;
   _sourcePromise: Promise<any>;
-  _promise:Promise<any>;
 
   constructor(ref:ChangeDetectorRef) {
     super();
     this._ref = ref;
     this._latestValue = null;
     this._latestReturnedValue = null;
-    this._promise = null;
   }
 
   supports(promise):boolean {

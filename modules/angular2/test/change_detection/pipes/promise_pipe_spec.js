@@ -12,8 +12,6 @@ export function main() {
     var pipe;
     var completer;
     var ref;
-    var resolve;
-    var reject;
 
     beforeEach(() => {
       completer = PromiseWrapper.completer();
