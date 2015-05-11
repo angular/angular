@@ -29,6 +29,11 @@ export const INVALID = "INVALID";
 //  setParent(parent){}
 //}
 
+export function isControl(c:Object):boolean {
+  return c instanceof AbstractControl;
+}
+
+
 /**
  * Omitting from external API doc as this is really an abstract internal concept.
  */
