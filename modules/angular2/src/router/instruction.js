@@ -19,8 +19,10 @@ export class Instruction {
   router:any;
   matchedUrl:string;
   params:Map<string, string>;
+  reuse:boolean;
 
   constructor({params, component, children, matchedUrl}:{params:StringMap, component:any, children:Map, matchedUrl:string} = {}) {
+    this.reuse = false;
     this.matchedUrl = matchedUrl;
     if (isPresent(children)) {
       this._children = children;
@@ -58,6 +60,33 @@ export class Instruction {
     this.forEachChild((childInstruction, _) => fn(this, childInstruction));
     this.forEachChild((childInstruction, _) => childInstruction.traverseSync(fn));
   }
+
+  /**
+   * Takes a function:
+   * (parent:Instruction, child:Instruction) => {}
+   */
+  traverseAsync(fn:Function) {
+    return this.mapChildrenAsync(fn)
+        .then((_) => this.mapChildrenAsync((childInstruction, _) => childInstruction.traverseAsync(fn)));
+  }
+
+
+  /**
+   * Takes a currently active instruction and sets a reuse flag on this instruction
+   */
+  reuseComponentsFrom(oldInstruction:Instruction) {
+    this.forEachChild((childInstruction, outletName) => {
+      var oldInstructionChild = oldInstruction.getChildInstruction(outletName);
+      if (shouldReuseComponent(childInstruction, oldInstructionChild)) {
+        childInstruction.reuse = true;
+      }
+    });
+  }
+}
+
+function shouldReuseComponent(instr1:Instruction, instr2:Instruction) {
+  return instr1.component == instr2.component &&
+    StringMapWrapper.equals(instr1.params, instr2.params);
 }
 
 function mapObjAsync(obj:StringMap, fn) {
