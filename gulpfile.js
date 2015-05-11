@@ -384,6 +384,14 @@ gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
   });
 });
 
+gulp.task('watch.js.dev', ['build.js.dev'], function (neverDone) {
+  watch('modules/**', function() {
+    runSequence(
+      '!broccoli.js.dev'
+    );
+  });
+});
+
 
 gulp.task('!test.unit.js/karma-server', function() {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js'});
