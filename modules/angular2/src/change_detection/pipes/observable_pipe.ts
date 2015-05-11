@@ -35,7 +35,7 @@ export var __esModule = true;
  *
  * @exportedAs angular2/pipes
  */
-export class AsyncPipe extends Pipe {
+export class ObservablePipe extends Pipe {
   _ref: ChangeDetectorRef;
 
   _latestValue: Object;
@@ -101,15 +101,15 @@ export class AsyncPipe extends Pipe {
 }
 
 /**
- * Provides a factory for [AsyncPipe].
+ * Provides a factory for [ObervablePipe].
  *
  * @exportedAs angular2/pipes
  */
 @CONST()
-export class AsyncPipeFactory extends PipeFactory {
+export class ObservablePipeFactory extends PipeFactory {
   constructor() { super(); }
 
   supports(obs): boolean { return ObservableWrapper.isObservable(obs); }
 
-  create(cdRef): Pipe { return new AsyncPipe(cdRef); }
+  create(cdRef): Pipe { return new ObservablePipe(cdRef); }
 }

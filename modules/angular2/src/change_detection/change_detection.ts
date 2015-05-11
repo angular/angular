@@ -3,7 +3,8 @@ import {PipeFactory} from './pipes/pipe';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
-import {AsyncPipeFactory} from './pipes/async_pipe';
+import {ObservablePipeFactory} from './pipes/observable_pipe';
+import {PromisePipeFactory} from './pipes/promise_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord} from './directive_record';
@@ -37,7 +38,8 @@ export var iterableDiff: List <
  *
  * @exportedAs angular2/pipes
  */
-export var async: List < PipeFactory >= [new AsyncPipeFactory(), new NullPipeFactory()];
+export var async: List <
+    PipeFactory >= [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
 
 export var defaultPipes = {
   "iterableDiff": iterableDiff,
