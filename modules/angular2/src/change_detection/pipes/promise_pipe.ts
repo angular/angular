@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {Pipe, NO_CHANGE} from './pipe';
+import {Pipe, WrappedValue} from './pipe';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
@@ -30,11 +30,10 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  */
 export class PromisePipe extends Pipe {
   _ref:ChangeDetectorRef;
-
   _latestValue:Object;
   _latestReturnedValue:Object;
-
-  _promise:Promise;
+  _sourcePromise: Promise<any>;
+  _promise:Promise<any>;
 
   constructor(ref:ChangeDetectorRef) {
     super();
@@ -52,7 +51,7 @@ export class PromisePipe extends Pipe {
     //NO-OP
   }
 
-  transform(promise:Promise):any {
+  transform(promise:Promise<any>):any {
     var pipe = this;
     if (isBlank(this._sourcePromise)) {
       this._sourcePromise = promise;
@@ -70,10 +69,10 @@ export class PromisePipe extends Pipe {
     }
 
     if (this._latestValue === this._latestReturnedValue) {
-      return NO_CHANGE;
+      return this._latestReturnedValue;
     } else {
       this._latestReturnedValue = this._latestValue;
-      return this._latestValue;
+      return WrappedValue.wrap(this._latestValue);
     }
   }
 
