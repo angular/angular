@@ -8,13 +8,13 @@
 import {CONST_EXPR} from './src/facade/lang';
 import {For} from './src/directives/for';
 import {NgIf} from './src/directives/ng_if';
-import {NonBindable} from './src/directives/non_bindable';
+import {NgNonBindable} from './src/directives/ng_non_bindable';
 import {Switch, SwitchWhen, SwitchDefault} from './src/directives/switch';
 
 export * from './src/directives/class';
 export * from './src/directives/for';
 export * from './src/directives/ng_if';
-export * from './src/directives/non_bindable';
+export * from './src/directives/ng_non_bindable';
 export * from './src/directives/switch';
 
 /**
@@ -58,5 +58,5 @@ export * from './src/directives/switch';
  *
  */
 export const coreDirectives:List = CONST_EXPR([
-  For, NgIf, NonBindable, Switch, SwitchWhen, SwitchDefault
+  For, NgIf, NgNonBindable, Switch, SwitchWhen, SwitchDefault
 ]);
