@@ -1,7 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit}
   from 'angular2/test_lib';
 
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('ListWrapper', () => {
@@ -68,5 +68,45 @@ export function main() {
         expect(ListWrapper.slice(l, -3, -1)).toEqual([2, 3]);
       });
     });
+ });
+
+ describe('StringMapWrapper', () => {
+   describe('equals', () => {
+     it('should return true when comparing empty maps', () => {
+       expect(StringMapWrapper.equals({}, {})).toBe(true);
+     });
+
+     it('should return true when comparing the same map', () => {
+       var m1 = {'a': 1, 'b': 2, 'c': 3};
+       expect(StringMapWrapper.equals(m1, m1)).toBe(true);
+     });
+
+     it('should return true when comparing different maps with the same keys and values', () => {
+       var m1 = {'a': 1, 'b': 2, 'c': 3};
+       var m2 = {'a': 1, 'b': 2, 'c': 3};
+       expect(StringMapWrapper.equals(m1, m2)).toBe(true);
+     });
+
+     it('should return false when comparing maps with different numbers of keys', () => {
+       var m1 = {'a': 1, 'b': 2, 'c': 3};
+       var m2 = {'a': 1, 'b': 2, 'c': 3, 'd': 4};
+       expect(StringMapWrapper.equals(m1, m2)).toBe(false);
+       expect(StringMapWrapper.equals(m2, m1)).toBe(false);
+     });
+
+     it('should return false when comparing maps with different keys', () => {
+       var m1 = {'a': 1, 'b': 2, 'c': 3};
+       var m2 = {'a': 1, 'b': 2, 'CC': 3};
+       expect(StringMapWrapper.equals(m1, m2)).toBe(false);
+       expect(StringMapWrapper.equals(m2, m1)).toBe(false);
+     });
+
+     it('should return false when comparing maps with different values', () => {
+       var m1 = {'a': 1, 'b': 2, 'c': 3};
+       var m2 = {'a': 1, 'b': 20, 'c': 3};
+       expect(StringMapWrapper.equals(m1, m2)).toBe(false);
+       expect(StringMapWrapper.equals(m2, m1)).toBe(false);
+     });
+   });
  });
 }

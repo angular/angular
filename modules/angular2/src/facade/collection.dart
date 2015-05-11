@@ -83,6 +83,17 @@ class StringMapWrapper {
     return m;
   }
   static bool isEmpty(Map m) => m.isEmpty;
+  static bool equals(Map m1, Map m2) {
+    if (m1.length != m2.length) {
+      return false;
+    }
+    for (var key in m1.keys) {
+      if (m1[key] != m2[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 class ListWrapper {
