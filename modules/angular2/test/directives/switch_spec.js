@@ -15,7 +15,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {Switch, SwitchWhen, SwitchDefault} from 'angular2/src/directives/switch';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '../../src/directives/ng_switch';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
@@ -24,9 +24,9 @@ export function main() {
     describe('switch value changes', () => {
       it('should switch amongst when values', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         var template = '<div>' +
-          '<ul [switch]="switchValue">' +
-            '<template [switch-when]="\'a\'"><li>when a</li></template>' +
-            '<template [switch-when]="\'b\'"><li>when b</li></template>' +
+          '<ul [ng-switch]="switchValue">' +
+            '<template [ng-switch-when]="\'a\'"><li>when a</li></template>' +
+            '<template [ng-switch-when]="\'b\'"><li>when b</li></template>' +
           '</ul></div>';
 
         tb.createView(TestComponent, {html: template}).then((view) => {
@@ -48,9 +48,9 @@ export function main() {
       it('should switch amongst when values with fallback to default',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
         var template = '<div>' +
-          '<ul [switch]="switchValue">' +
-            '<li template="switch-when \'a\'">when a</li>' +
-            '<li template="switch-default">when default</li>' +
+          '<ul [ng-switch]="switchValue">' +
+            '<li template="ng-switch-when \'a\'">when a</li>' +
+            '<li template="ng-switch-default">when default</li>' +
           '</ul></div>';
 
         tb.createView(TestComponent, {html: template}).then((view) => {
@@ -72,13 +72,13 @@ export function main() {
       it('should support multiple whens with the same value',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
         var template = '<div>' +
-          '<ul [switch]="switchValue">' +
-            '<template [switch-when]="\'a\'"><li>when a1;</li></template>' +
-            '<template [switch-when]="\'b\'"><li>when b1;</li></template>' +
-            '<template [switch-when]="\'a\'"><li>when a2;</li></template>' +
-            '<template [switch-when]="\'b\'"><li>when b2;</li></template>' +
-            '<template [switch-default]><li>when default1;</li></template>' +
-            '<template [switch-default]><li>when default2;</li></template>' +
+          '<ul [ng-switch]="switchValue">' +
+            '<template [ng-switch-when]="\'a\'"><li>when a1;</li></template>' +
+            '<template [ng-switch-when]="\'b\'"><li>when b1;</li></template>' +
+            '<template [ng-switch-when]="\'a\'"><li>when a2;</li></template>' +
+            '<template [ng-switch-when]="\'b\'"><li>when b2;</li></template>' +
+            '<template [ng-switch-default]><li>when default1;</li></template>' +
+            '<template [ng-switch-default]><li>when default2;</li></template>' +
           '</ul></div>';
 
         tb.createView(TestComponent, {html: template}).then((view) => {
@@ -102,10 +102,10 @@ export function main() {
       it('should switch amongst when values',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
         var template = '<div>' +
-          '<ul [switch]="switchValue">' +
-            '<template [switch-when]="when1"><li>when 1;</li></template>' +
-            '<template [switch-when]="when2"><li>when 2;</li></template>' +
-            '<template [switch-default]><li>when default;</li></template>' +
+          '<ul [ng-switch]="switchValue">' +
+            '<template [ng-switch-when]="when1"><li>when 1;</li></template>' +
+            '<template [ng-switch-when]="when2"><li>when 2;</li></template>' +
+            '<template [ng-switch-default]><li>when default;</li></template>' +
           '</ul></div>';
 
         tb.createView(TestComponent, {html: template}).then((view) => {
@@ -139,7 +139,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp'})
-@View({directives: [Switch, SwitchWhen, SwitchDefault]})
+@View({directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]})
 class TestComponent {
   switchValue: any;
   when1: any;
