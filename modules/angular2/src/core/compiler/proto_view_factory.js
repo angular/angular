@@ -116,8 +116,9 @@ export class ProtoViewFactory {
     var sortedDirectives = ListWrapper.map(elementBinders, b => new SortedDirectives(b.directives, directives));
 
     var variableBindings = this._createVariableBindings(renderProtoView);
-    var protoLocals = this._createProtoLocals(renderProtoView);
+    var protoLocals = this._createProtoLocals(variableBindings);
     var variableNames = this._createVariableNames(parentProtoView, protoLocals);
+
     var protoChangeDetector = this._createProtoChangeDetector(elementBinders, sortedDirectives, componentBinding, variableNames);
     var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings, protoLocals, variableNames);
 
@@ -128,9 +129,9 @@ export class ProtoViewFactory {
     return protoView;
   }
 
-  _createProtoLocals(renderProtoView):Map {
+  _createProtoLocals(varBindings:Map):Map {
     var protoLocals = MapWrapper.create();
-    MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
+    MapWrapper.forEach(varBindings, (mappedName, varName) => {
       MapWrapper.set(protoLocals, mappedName, null);
     });
     return protoLocals;
@@ -140,6 +141,11 @@ export class ProtoViewFactory {
     var variableBindings = MapWrapper.create();
     MapWrapper.forEach(renderProtoView.variableBindings, (mappedName, varName) => {
       MapWrapper.set(variableBindings, varName, mappedName);
+    });
+    ListWrapper.forEach(renderProtoView.elementBinders, binder => {
+      MapWrapper.forEach(binder.variableBindings, (mappedName, varName) => {
+        MapWrapper.set(variableBindings, varName, mappedName);
+      });
     });
     return variableBindings;
   }

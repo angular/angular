@@ -365,10 +365,23 @@ export function main() {
         }));
 
         tb.createView(MyComp, {context: ctx}).then((view) => {
-
           expect(view.rawView.locals).not.toBe(null);
           expect(view.rawView.locals.get('alice')).toBeAnInstanceOf(ChildComp);
 
+          async.done();
+        })
+      }));
+
+      it('should make the assigned component accessible in property bindings', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<p><child-cmp var-alice></child-cmp>{{alice.ctxProp}}</p>',
+          directives: [ChildComp]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          view.detectChanges();
+
+          expect(view.rootNodes).toHaveText('hellohello'); // this first one is the component, the second one is the text binding
           async.done();
         })
       }));
