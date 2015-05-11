@@ -38,11 +38,8 @@ export var iterableDiff: List <
  *
  * @exportedAs angular2/pipes
  */
-export var async: List<PipeFactory> = [
-  new ObservablePipeFactory(),
-  new PromisePipeFactory(),
-  new NullPipeFactory()
-];
+export var async: List<
+    PipeFactory>= [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
 
 export var defaultPipes = {
   "iterableDiff": iterableDiff,

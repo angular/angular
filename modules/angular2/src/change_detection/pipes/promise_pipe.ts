@@ -34,27 +34,25 @@ export var __esModule = true;
  * @exportedAs angular2/pipes
  */
 export class PromisePipe extends Pipe {
-  _ref:ChangeDetectorRef;
-  _latestValue:Object;
-  _latestReturnedValue:Object;
+  _ref: ChangeDetectorRef;
+  _latestValue: Object;
+  _latestReturnedValue: Object;
   _sourcePromise: Promise<any>;
 
-  constructor(ref:ChangeDetectorRef) {
+  constructor(ref: ChangeDetectorRef) {
     super();
     this._ref = ref;
     this._latestValue = null;
     this._latestReturnedValue = null;
   }
 
-  supports(promise):boolean {
-    return PromiseWrapper.isPromise(promise);
+  supports(promise): boolean { return PromiseWrapper.isPromise(promise); }
+
+  onDestroy(): void {
+    // NO-OP
   }
 
-  onDestroy():void {
-    //NO-OP
-  }
-
-  transform(promise:Promise<any>):any {
+  transform(promise: Promise<any>): any {
     var pipe = this;
     if (isBlank(this._sourcePromise)) {
       this._sourcePromise = promise;
@@ -79,7 +77,7 @@ export class PromisePipe extends Pipe {
     }
   }
 
-  _updateLatestValue(value:Object) {
+  _updateLatestValue(value: Object) {
     this._latestValue = value;
     this._ref.requestCheck();
   }
@@ -91,11 +89,7 @@ export class PromisePipe extends Pipe {
  * @exportedAs angular2/pipes
  */
 export class PromisePipeFactory {
-  supports(promise):boolean {
-    return PromiseWrapper.isPromise(promise);
-  }
+  supports(promise): boolean { return PromiseWrapper.isPromise(promise); }
 
-  create(cdRef):Pipe {
-    return new PromisePipe(cdRef);
-  }
+  create(cdRef): Pipe { return new PromisePipe(cdRef); }
 }
