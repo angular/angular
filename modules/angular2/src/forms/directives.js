@@ -97,13 +97,13 @@ export class CheckboxControlValueAccessor {
  * the control will reflect that change. Likewise, if the value of the control changes, the input element reflects that
  * change.
  *
- * Here we use {@link FormDirectives}, rather than importing each form directive individually, e.g.
+ * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
  * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [FormDirectives],
+ *      directives: [formDirectives],
  *      inline: "<input type='text' [control]='loginControl'>"
  *      })
  * class LoginComp {
@@ -183,13 +183,13 @@ export class ControlDirective {
  * In this example, we bind the control group to the form element, and we bind the login and password controls to the
  * login and password elements.
  *
- * Here we use {@link FormDirectives}, rather than importing each form directive individually, e.g.
+ * Here we use {@link formDirectives}, rather than importing each form directive individually, e.g.
  * `ControlDirective`, `ControlGroupDirective`. This is just a shorthand for the same end result.
  *
  *  ```
  * @Component({selector: "login-comp"})
  * @View({
- *      directives: [FormDirectives],
+ *      directives: [formDirectives],
  *      inline: "<form [control-group]='loginForm'>" +
  *              "Login <input type='text' control='login'>" +
  *              "Password <input type='password' control='password'>" +
@@ -271,7 +271,6 @@ export class ControlGroupDirective {
  *
  * @exportedAs angular2/forms
  */
-// todo(misko): rename to lover case as it is not a Type but a var.
-export const FormDirectives:List = CONST_EXPR([
+export const formDirectives:List = CONST_EXPR([
   ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor
 ]);
