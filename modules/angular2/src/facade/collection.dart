@@ -82,6 +82,9 @@ class StringMapWrapper {
     }
     return m;
   }
+  static List<String> keys(Map<String,dynamic> a) {
+    return a.keys.toList();
+  }
   static bool isEmpty(Map m) => m.isEmpty;
 }
 

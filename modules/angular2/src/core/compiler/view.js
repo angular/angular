@@ -126,6 +126,10 @@ export class AppView {
     return isPresent(childView) ? childView.changeDetector : null;
   }
 
+  callAction(elementIndex:number, actionExpression:string, action:Object) {
+    this.renderer.callAction(this.render, elementIndex, actionExpression, action);
+  }
+
   // implementation of EventDispatcher#dispatchEvent
   // returns false if preventDefault must be applied to the DOM event
   dispatchEvent(elementIndex:number, eventName:string, locals:Map<string, any>): boolean {

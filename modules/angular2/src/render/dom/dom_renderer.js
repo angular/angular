@@ -192,6 +192,11 @@ export class DomRenderer extends Renderer {
     view.setElementProperty(elementIndex, propertyName, propertyValue);
   }
 
+  callAction(viewRef:RenderViewRef, elementIndex:number, actionExpression:string, actionArgs:any):void {
+    var view = resolveInternalDomView(viewRef);
+    view.callAction(elementIndex, actionExpression, actionArgs);
+  }
+
   setText(viewRef:RenderViewRef, textNodeIndex:number, text:string):void {
     var view = resolveInternalDomView(viewRef);
     DOM.setText(view.boundTextNodes[textNodeIndex], text);

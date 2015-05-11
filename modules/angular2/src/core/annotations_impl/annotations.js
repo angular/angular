@@ -621,6 +621,33 @@ export class Directive extends Injectable {
   hostAttributes:any; // String map
 
   /**
+   * Specifies which DOM methods a directive can invoke.
+   *
+   * ## Syntax
+   *
+   * ```
+   * @Directive({
+   *   selector: 'input',
+   *   hostActions: {
+   *     'emitFocus': 'focus()'
+   *   }
+   * })
+   * class InputDirective {
+   *   constructor() {
+   *     this.emitFocus = new EventEmitter();
+   *   }
+   *
+   *   focus() {
+   *     this.emitFocus.next();
+   *   }
+   * }
+   *
+   * In this example calling focus on InputDirective will result in calling focus on the DOM element.
+   * ```
+   */
+  hostActions:any; // String map
+
+  /**
    * Specifies a set of lifecycle hostListeners in which the directive participates.
    *
    * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
@@ -641,6 +668,7 @@ export class Directive extends Injectable {
       hostListeners,
       hostProperties,
       hostAttributes,
+      hostActions,
       lifecycle,
       compileChildren = true,
     }:{
@@ -650,6 +678,7 @@ export class Directive extends Injectable {
       hostListeners: any,
       hostProperties: any,
       hostAttributes: any,
+      hostActions: any,
       lifecycle:List,
       compileChildren:boolean
     }={})
@@ -661,6 +690,7 @@ export class Directive extends Injectable {
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
+    this.hostActions = hostActions;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
   }
@@ -858,6 +888,7 @@ export class Component extends Directive {
       hostListeners,
       hostProperties,
       hostAttributes,
+      hostActions,
       injectables,
       lifecycle,
       changeDetection = DEFAULT,
@@ -870,6 +901,7 @@ export class Component extends Directive {
       hostListeners:any,
       hostProperties:any,
       hostAttributes:any,
+      hostActions:any,
       injectables:List,
       lifecycle:List,
       changeDetection:string,
@@ -884,6 +916,7 @@ export class Component extends Directive {
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
+      hostActions: hostActions,
       lifecycle: lifecycle,
       compileChildren: compileChildren
     });

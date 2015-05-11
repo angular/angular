@@ -7,7 +7,7 @@ import {
 } from 'angular2/change_detection';
 
 import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './proto_view';
-import {ElementBinder, Event} from './element_binder';
+import {ElementBinder, Event, HostAction} from './element_binder';
 import {setterFactory} from './property_setter_factory';
 
 import * as api from '../../api';
@@ -48,12 +48,17 @@ export class ProtoViewBuilder {
     var apiElementBinders = [];
     ListWrapper.forEach(this.elements, (ebb) => {
       var propertySetters = MapWrapper.create();
+      var hostActions = MapWrapper.create();
 
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb) => {
         ebb.eventBuilder.merge(dbb.eventBuilder);
 
         MapWrapper.forEach(dbb.hostPropertyBindings, (_, hostPropertyName) => {
           MapWrapper.set(propertySetters, hostPropertyName, setterFactory(hostPropertyName));
+        });
+
+        ListWrapper.forEach(dbb.hostActions, (hostAction) => {
+          MapWrapper.set(hostActions, hostAction.actionExpression, hostAction.expression);
         });
 
         return new api.DirectiveBinder({
@@ -90,6 +95,7 @@ export class ProtoViewBuilder {
         eventLocals: new LiteralArray(ebb.eventBuilder.buildEventLocals()),
         localEvents: ebb.eventBuilder.buildLocalEvents(),
         globalEvents: ebb.eventBuilder.buildGlobalEvents(),
+        hostActions: hostActions,
         propertySetters: propertySetters
       }));
     });
@@ -213,6 +219,7 @@ export class DirectiveBuilder {
   directiveIndex:number;
   propertyBindings: Map<string, ASTWithSource>;
   hostPropertyBindings: Map<string, ASTWithSource>;
+  hostActions: List<HostAction>;
   eventBindings: List<api.EventBinding>;
   eventBuilder: EventBuilder;
 
@@ -220,6 +227,7 @@ export class DirectiveBuilder {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = MapWrapper.create();
     this.hostPropertyBindings = MapWrapper.create();
+    this.hostActions = ListWrapper.create();
     this.eventBindings = ListWrapper.create();
     this.eventBuilder = new EventBuilder();
   }
@@ -230,6 +238,10 @@ export class DirectiveBuilder {
 
   bindHostProperty(name, expression) {
     MapWrapper.set(this.hostPropertyBindings, name, expression);
+  }
+
+  bindHostAction(actionName:string, actionExpression:string, expression:ASTWithSource) {
+    ListWrapper.push(this.hostActions, new HostAction(actionName, actionExpression, expression));
   }
 
   bindEvent(name, expression, target = null) {

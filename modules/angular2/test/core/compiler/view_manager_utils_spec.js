@@ -31,6 +31,7 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 export function main() {
   // TODO(tbosch): add more tests here!
 
+
   describe('AppViewManagerUtils', () => {
 
     var metadataReader;
@@ -71,6 +72,7 @@ export function main() {
         'isExportingComponent' : false,
         'isExportingElement' : false,
         'getEventEmitterAccessors' : [],
+        'getHostActionAccessors' : [],
         'getComponent' : null,
         'getDynamicallyLoadedComponent': null,
         'getHost': host
@@ -154,11 +156,13 @@ export function main() {
         var hostView = createView(hostPv);
         var spyEventAccessor1 = SpyObject.stub({"subscribe" : null});
         SpyObject.stub(hostView.elementInjectors[0], {
+          'getHostActionAccessors': [],
           'getEventEmitterAccessors': [[spyEventAccessor1]],
           'getDirectiveAtIndex': dir
         });
         var spyEventAccessor2 = SpyObject.stub({"subscribe" : null});
         SpyObject.stub(hostView.elementInjectors[1], {
+          'getHostActionAccessors': [],
           'getEventEmitterAccessors': [[spyEventAccessor2]],
           'getDirectiveAtIndex': dir
         });
@@ -170,6 +174,36 @@ export function main() {
 
         expect(spyEventAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
         expect(spyEventAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
+      });
+
+      it("should set up host action listeners", () => {
+        var dir = new Object();
+
+        var hostPv = createProtoView([
+          createComponentElBinder(null),
+          createEmptyElBinder()
+        ]);
+        var hostView = createView(hostPv);
+        var spyActionAccessor1 = SpyObject.stub({"subscribe" : null});
+        SpyObject.stub(hostView.elementInjectors[0], {
+          'getHostActionAccessors': [[spyActionAccessor1]],
+          'getEventEmitterAccessors': [],
+          'getDirectiveAtIndex': dir
+        });
+        var spyActionAccessor2 = SpyObject.stub({"subscribe" : null});
+        SpyObject.stub(hostView.elementInjectors[1], {
+          'getHostActionAccessors': [[spyActionAccessor2]],
+          'getEventEmitterAccessors': [],
+          'getDirectiveAtIndex': dir
+        });
+
+        var shadowView = createView();
+        utils.attachComponentView(hostView, 0, shadowView);
+
+        utils.attachAndHydrateInPlaceHostView(null, null, hostView, createInjector());
+
+        expect(spyActionAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
+        expect(spyActionAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
       });
 
     });

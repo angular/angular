@@ -53,6 +53,7 @@ export class StringMapWrapper {
   static contains(map, key) { return map.hasOwnProperty(key); }
   static get(map, key) { return map.hasOwnProperty(key) ? map[key] : undefined; }
   static set(map, key, value) { map[key] = value; }
+  static keys(map) { return Object.keys(map); }
   static isEmpty(map) {
     for (var prop in map) {
       return false;

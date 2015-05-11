@@ -6,6 +6,7 @@
     "hostListeners": {},
     "hostProperties": {},
     "hostAttributes": {},
+    "hostActions": null,
     "properties": {},
     "readAttributes": [],
     "type": 1,

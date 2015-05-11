@@ -192,6 +192,7 @@ export class AppViewManagerUtils {
       if (isPresent(elementInjector)) {
         elementInjector.instantiateDirectives(appInjector, hostElementInjector, view.preBuiltObjects[i]);
         this._setUpEventEmitters(view, elementInjector, i);
+        this._setUpHostActions(view, elementInjector, i);
 
         // The exporting of $implicit is a special case. Since multiple elements will all export
         // the different values as $implicit, directly assign $implicit bindings to the variable
@@ -216,6 +217,19 @@ export class AppViewManagerUtils {
       for (var eventIndex = 0; eventIndex < directiveEmitters.length; ++eventIndex) {
         var eventEmitterAccessor = directiveEmitters[eventIndex];
         eventEmitterAccessor.subscribe(view, boundElementIndex, directive);
+      }
+    }
+  }
+
+  _setUpHostActions(view:viewModule.AppView, elementInjector:eli.ElementInjector, boundElementIndex:number) {
+    var hostActions = elementInjector.getHostActionAccessors();
+    for (var directiveIndex = 0; directiveIndex < hostActions.length; ++directiveIndex) {
+      var directiveHostActions = hostActions[directiveIndex];
+      var directive = elementInjector.getDirectiveAtIndex(directiveIndex);
+
+      for (var index = 0; index < directiveHostActions.length; ++index) {
+        var hostActionAccessor = directiveHostActions[index];
+        hostActionAccessor.subscribe(view, boundElementIndex, directive);
       }
     }
   }

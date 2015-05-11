@@ -581,14 +581,36 @@ export function main() {
 
           expect(listener.msg).toEqual('');
 
-          emitter.fireEvent('fired !');
-
-          PromiseWrapper.setTimeout(() => {
+          ObservableWrapper.subscribe(emitter.event, (_) => {
             expect(listener.msg).toEqual('fired !');
             async.done();
-          }, 0);
+          });
+
+          emitter.fireEvent('fired !');
         });
       }));
+
+      if (DOM.supportsDOMEvents()) {
+        it("should support invoking methods on the host element via hostActions", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+          tb.overrideView(MyComp, new View({
+            template: '<div update-host-actions></div>',
+            directives: [DirectiveUpdatingHostActions]
+          }));
+
+          tb.createView(MyComp, {context: ctx}).then((view) => {
+            var injector = view.rawView.elementInjectors[0];
+            var domElement = view.rootNodes[0];
+            var updateHost = injector.get(DirectiveUpdatingHostActions);
+
+            ObservableWrapper.subscribe(updateHost.setAttr, (_) => {
+              expect(DOM.getOuterHTML(domElement)).toEqual('<div update-host-actions="" class="ng-binding" key="value"></div>');
+              async.done();
+            });
+
+            updateHost.triggerSetAttr('value');
+          });
+        }));
+      }
 
       it('should support render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
         tb.overrideView(MyComp, new View({
@@ -670,6 +692,7 @@ export function main() {
           async.done();
         });
       }));
+
 
       if (DOM.supportsDOMEvents()) {
         it('should support preventing default on render events', inject([TestBed, AsyncTestCompleter], (tb, async) => {
@@ -1215,6 +1238,24 @@ class DirectiveUpdatingHostProperties {
 
   constructor() {
     this.id = "one";
+  }
+}
+
+@Directive({
+  selector: '[update-host-actions]',
+  hostActions: {
+    'setAttr': 'setAttribute("key", $action["attrValue"])'
+  }
+})
+class DirectiveUpdatingHostActions {
+  setAttr:EventEmitter;
+
+  constructor() {
+    this.setAttr = new EventEmitter();
+  }
+
+  triggerSetAttr(attrValue) {
+    ObservableWrapper.callNext(this.setAttr, {'attrValue': attrValue});
   }
 }
 

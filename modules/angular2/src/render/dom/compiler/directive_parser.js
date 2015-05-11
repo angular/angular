@@ -73,6 +73,11 @@ export class DirectiveParser extends CompileStep {
           this._bindDirectiveEvent(eventName, action, current, directiveBinderBuilder);
         });
       }
+      if (isPresent(directive.hostActions)) {
+        MapWrapper.forEach(directive.hostActions, (action, actionName) => {
+          this._bindHostAction(actionName, action, current, directiveBinderBuilder);
+        });
+      }
       if (isPresent(directive.hostProperties)) {
         MapWrapper.forEach(directive.hostProperties, (hostPropertyName, directivePropertyName) => {
           this._bindHostProperty(hostPropertyName, directivePropertyName, current, directiveBinderBuilder);
@@ -136,7 +141,11 @@ export class DirectiveParser extends CompileStep {
     } else {
       directiveBinderBuilder.bindEvent(eventName, ast);
     }
+  }
 
+  _bindHostAction(actionName, actionExpression, compileElement, directiveBinderBuilder) {
+    var ast = this._parser.parseAction(actionExpression, compileElement.elementDescription);
+    directiveBinderBuilder.bindHostAction(actionName, actionExpression, ast);
   }
 
   _bindHostProperty(hostPropertyName, directivePropertyName, compileElement, directiveBinderBuilder) {

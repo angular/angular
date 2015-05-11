@@ -2,7 +2,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 import {DirectiveMetadata} from 'angular2/src/render/api';
 import {directiveMetadataFromMap, directiveMetadataToMap} from
     'angular2/src/render/dom/convert';
-import {describe, expect, it} from 'angular2/test_lib';
+import {ddescribe, describe, expect, it} from 'angular2/test_lib';
 
 export function main() {
   describe('convert', () => {
@@ -12,6 +12,8 @@ export function main() {
         hostListeners: MapWrapper.createFromPairs([['listenKey', 'listenVal']]),
         hostProperties:
             MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]),
+        hostActions:
+            MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]),
         id: 'someComponent',
         properties: MapWrapper.createFromPairs([['propKey', 'propVal']]),
         readAttributes: ['read1', 'read2'],
@@ -24,6 +26,8 @@ export function main() {
           MapWrapper.createFromPairs([['listenKey', 'listenVal']]));
       expect(MapWrapper.get(map, 'hostProperties')).toEqual(
           MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]));
+      expect(MapWrapper.get(map, 'hostActions')).toEqual(
+          MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
       expect(MapWrapper.get(map, 'id')).toEqual('someComponent');
       expect(MapWrapper.get(map, 'properties')).toEqual(
           MapWrapper.createFromPairs([['propKey', 'propVal']]));
@@ -39,6 +43,8 @@ export function main() {
         ['hostListeners', MapWrapper.createFromPairs([['testKey', 'testVal']])],
         ['hostProperties',
             MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']])],
+        ['hostActions',
+            MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']])],
         ['id', 'testId'],
         ['properties', MapWrapper.createFromPairs([['propKey', 'propVal']])],
         ['readAttributes', ['readTest1', 'readTest2']],
@@ -51,6 +57,8 @@ export function main() {
           MapWrapper.createFromPairs([['testKey', 'testVal']]));
       expect(meta.hostProperties).toEqual(
           MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]));
+      expect(meta.hostActions).toEqual(
+          MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
       expect(meta.id).toEqual('testId');
       expect(meta.properties).toEqual(
           MapWrapper.createFromPairs([['propKey', 'propVal']]));

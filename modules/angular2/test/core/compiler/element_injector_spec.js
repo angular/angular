@@ -17,7 +17,7 @@ import {ViewRef, Renderer} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
 class DummyDirective extends Directive {
-  constructor({lifecycle, events} = {}) { super({lifecycle: lifecycle, events: events}); }
+  constructor({lifecycle, events, hostActions} = {}) { super({lifecycle: lifecycle, events: events, hostActions:hostActions}); }
 }
 
 @proxy
@@ -94,6 +94,13 @@ class HasEventEmitter {
   emitter;
   constructor() {
     this.emitter = "emitter";
+  }
+}
+
+class HasHostAction {
+  hostActionName;
+  constructor() {
+    this.hostActionName = "hostAction";
   }
 }
 
@@ -381,7 +388,7 @@ export function main() {
     });
 
     describe('event emitters', () => {
-      it('should return a list of event emitter accessors', () => {
+      it('should return a list of event accessors', () => {
         var binding = DirectiveBinding.createFromType(
           HasEventEmitter, new DummyDirective({events: ['emitter']}));
 
@@ -391,6 +398,18 @@ export function main() {
         var accessor = inj.eventEmitterAccessors[0][0];
         expect(accessor.eventName).toEqual('emitter');
         expect(accessor.getter(new HasEventEmitter())).toEqual('emitter');
+      });
+
+      it('should return a list of hostAction accessors', () => {
+        var binding = DirectiveBinding.createFromType(
+          HasEventEmitter, new DummyDirective({hostActions: {'hostActionName' : 'onAction'}}));
+
+        var inj = new ProtoElementInjector(null, 0, [binding]);
+        expect(inj.hostActionAccessors.length).toEqual(1);
+
+        var accessor = inj.hostActionAccessors[0][0];
+        expect(accessor.actionExpression).toEqual('onAction');
+        expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
   });

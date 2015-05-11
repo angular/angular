@@ -96,6 +96,25 @@ export function main() {
       });
     }));
 
+    it('should call actions on the element',
+        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+      tb.compileAll([someComponent,
+        new ViewDefinition({
+          componentId: 'someComponent',
+          template: '<div with-host-actions></div>',
+          directives: [directiveWithHostActions]
+        })
+      ]).then( (protoViewDtos) => {
+        var views = tb.createRootViews(protoViewDtos);
+        var componentView = views[1];
+
+        tb.renderer.callAction(componentView.viewRef, 0, 'setAttribute("key", "value")', null);
+        expect(DOM.getOuterHTML(tb.rootEl)).toContain('key="value"');
+        async.done();
+      });
+    }));
+
+
     it('should add and remove views to and from containers',
         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
       tb.compileAll([someComponent,
@@ -151,4 +170,13 @@ var someComponent = new DirectiveMetadata({
   id: 'someComponent',
   type: DirectiveMetadata.COMPONENT_TYPE,
   selector: 'some-comp'
+});
+
+var directiveWithHostActions = new DirectiveMetadata({
+  id: 'withHostActions',
+  type: DirectiveMetadata.DIRECTIVE_TYPE,
+  selector: '[with-host-actions]',
+  hostActions: MapWrapper.createFromStringMap({
+    'setAttr' : 'setAttribute("key", "value")'
+  })
 });

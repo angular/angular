@@ -14,6 +14,7 @@ export class ElementBinder {
   parentIndex:number;
   distanceToParent:number;
   propertySetters: Map<string, SetterFn>;
+  hostActions: Map<string, AST>;
 
   constructor({
     textNodeIndices,
@@ -23,6 +24,7 @@ export class ElementBinder {
     eventLocals,
     localEvents,
     globalEvents,
+    hostActions,
     parentIndex,
     distanceToParent,
     propertySetters
@@ -34,6 +36,7 @@ export class ElementBinder {
     this.eventLocals = eventLocals;
     this.localEvents = localEvents;
     this.globalEvents = globalEvents;
+    this.hostActions = hostActions;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
     this.propertySetters = propertySetters;
@@ -49,5 +52,17 @@ export class Event {
     this.name = name;
     this.target = target;
     this.fullName = fullName;
+  }
+}
+
+export class HostAction {
+  actionName: string;
+  actionExpression: string;
+  expression: AST;
+
+  constructor(actionName: string, actionExpression: string, expression: AST) {
+    this.actionName = actionName;
+    this.actionExpression = actionExpression;
+    this.expression = expression;
   }
 }

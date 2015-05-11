@@ -1,5 +1,6 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
+import {Locals} from 'angular2/change_detection';
 import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
 import {DomViewContainer} from './view_container';
@@ -78,6 +79,18 @@ export class DomView {
   setElementProperty(elementIndex:number, propertyName:string, value:any) {
     var setter = MapWrapper.get(this.proto.elementBinders[elementIndex].propertySetters, propertyName);
     setter(this.boundElements[elementIndex], value);
+  }
+
+  callAction(elementIndex:number, actionExpression:string, actionArgs:any) {
+    var binder = this.proto.elementBinders[elementIndex];
+    var hostAction = MapWrapper.get(binder.hostActions, actionExpression);
+    hostAction.eval(this.boundElements[elementIndex], this._localsWithAction(actionArgs));
+  }
+
+  _localsWithAction(action:Object):Locals {
+    var map = MapWrapper.create();
+    MapWrapper.set(map, '$action', action);
+    return new Locals(null, map);
   }
 
   setText(textIndex:number, value:string) {

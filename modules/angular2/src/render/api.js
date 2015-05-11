@@ -117,16 +117,18 @@ export class DirectiveMetadata {
   hostListeners:Map<string, string>;
   hostProperties:Map<string, string>;
   hostAttributes:Map<string, string>;
+  hostActions:Map<string, string>;
   properties:Map<string, string>;
   readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, hostListeners, hostProperties, hostAttributes, properties, readAttributes, type}) {
+  constructor({id, selector, compileChildren, hostListeners, hostProperties, hostAttributes, hostActions, properties, readAttributes, type}) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
+    this.hostActions = hostActions;
     this.properties = properties;
     this.readAttributes = readAttributes;
     this.type = type;
@@ -228,7 +230,7 @@ export class Renderer {
   /**
    * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views inside of the view pool.
    */
-  hydrateView(hviewRef:RenderViewRef) {
+  hydrateView(viewRef:RenderViewRef) {
   }
 
   /**
@@ -238,14 +240,22 @@ export class Renderer {
   }
 
   /**
-   * Sets a porperty on an element.
+   * Sets a property on an element.
    * Note: This will fail if the property was not mentioned previously as a host property
    * in the ProtoView
    */
   setElementProperty(viewRef:RenderViewRef, elementIndex:number, propertyName:string, propertyValue:any):void {
   }
 
-  /*
+  /**
+   * Calls an action.
+   * Note: This will fail if the action was not mentioned previously as a host action
+   * in the ProtoView
+   */
+  callAction(viewRef:RenderViewRef, elementIndex:number, actionExpression:string, actionArgs:any):void {
+  }
+
+  /**
    * Sets the value of a text node.
    */
   setText(viewRef:RenderViewRef, textNodeIndex:number, text:string):void {

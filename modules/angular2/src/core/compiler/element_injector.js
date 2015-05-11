@@ -1,7 +1,7 @@
-import {isPresent, isBlank, Type, int, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, Type, int, BaseException, stringify} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Math} from 'angular2/src/facade/math';
-import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
   AbstractBindingError, CyclicDependencyError} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
@@ -248,6 +248,10 @@ export class DirectiveBinding extends ResolvedBinding {
     return isPresent(this.annotation) && isPresent(this.annotation.events) ? this.annotation.events : [];
   }
 
+  get hostActions() { //StringMap
+    return isPresent(this.annotation) && isPresent(this.annotation.hostActions) ? this.annotation.hostActions : {};
+  }
+
   get changeDetection() {
     if (this.annotation instanceof Component) {
       var c:Component = this.annotation;
@@ -294,6 +298,22 @@ class EventEmitterAccessor {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe(eventEmitter,
         eventObj => view.triggerEventHandlers(this.eventName, eventObj, boundElementIndex));
+  }
+}
+
+class HostActionAccessor {
+  actionExpression:string;
+  getter:Function;
+
+  constructor(actionExpression:string, getter:Function) {
+    this.actionExpression = actionExpression;
+    this.getter = getter;
+  }
+
+  subscribe(view:viewModule.AppView, boundElementIndex:number, directive:Object) {
+    var eventEmitter = this.getter(directive);
+    return ObservableWrapper.subscribe(eventEmitter,
+        actionObj => view.callAction(boundElementIndex, this.actionExpression, actionObj));
   }
 }
 
@@ -346,6 +366,7 @@ export class ProtoElementInjector  {
   distanceToParent:number;
   attributes:Map;
   eventEmitterAccessors:List<List<EventEmitterAccessor>>;
+  hostActionAccessors:List<List<HostActionAccessor>>;
 
   numberOfDirectives:number;
 
@@ -380,56 +401,67 @@ export class ProtoElementInjector  {
     this.numberOfDirectives = bindings.length;
     var length = bindings.length;
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
+    this.hostActionAccessors = ListWrapper.createFixedSize(length);
 
     if (length > 0) {
       this._binding0 = this._createBinding(bindings[0]);
       this._keyId0 = this._binding0.key.id;
       this.eventEmitterAccessors[0] = this._createEventEmitterAccessors(this._binding0);
+      this.hostActionAccessors[0] = this._createHostActionAccessors(this._binding0);
     }
     if (length > 1) {
       this._binding1 = this._createBinding(bindings[1]);
       this._keyId1 = this._binding1.key.id;
       this.eventEmitterAccessors[1] = this._createEventEmitterAccessors(this._binding1);
+      this.hostActionAccessors[1] = this._createHostActionAccessors(this._binding1);
     }
     if (length > 2) {
       this._binding2 = this._createBinding(bindings[2]);
       this._keyId2 = this._binding2.key.id;
       this.eventEmitterAccessors[2] = this._createEventEmitterAccessors(this._binding2);
+      this.hostActionAccessors[2] = this._createHostActionAccessors(this._binding2);
     }
     if (length > 3) {
       this._binding3 = this._createBinding(bindings[3]);
       this._keyId3 = this._binding3.key.id;
       this.eventEmitterAccessors[3] = this._createEventEmitterAccessors(this._binding3);
+      this.hostActionAccessors[3] = this._createHostActionAccessors(this._binding3);
     }
     if (length > 4) {
       this._binding4 = this._createBinding(bindings[4]);
       this._keyId4 = this._binding4.key.id;
       this.eventEmitterAccessors[4] = this._createEventEmitterAccessors(this._binding4);
+      this.hostActionAccessors[4] = this._createHostActionAccessors(this._binding4);
     }
     if (length > 5) {
       this._binding5 = this._createBinding(bindings[5]);
       this._keyId5 = this._binding5.key.id;
       this.eventEmitterAccessors[5] = this._createEventEmitterAccessors(this._binding5);
+      this.hostActionAccessors[5] = this._createHostActionAccessors(this._binding5);
     }
     if (length > 6) {
       this._binding6 = this._createBinding(bindings[6]);
       this._keyId6 = this._binding6.key.id;
       this.eventEmitterAccessors[6] = this._createEventEmitterAccessors(this._binding6);
+      this.hostActionAccessors[6] = this._createHostActionAccessors(this._binding6);
     }
     if (length > 7) {
       this._binding7 = this._createBinding(bindings[7]);
       this._keyId7 = this._binding7.key.id;
       this.eventEmitterAccessors[7] = this._createEventEmitterAccessors(this._binding7);
+      this.hostActionAccessors[7] = this._createHostActionAccessors(this._binding7);
     }
     if (length > 8) {
       this._binding8 = this._createBinding(bindings[8]);
       this._keyId8 = this._binding8.key.id;
       this.eventEmitterAccessors[8] = this._createEventEmitterAccessors(this._binding8);
+      this.hostActionAccessors[8] = this._createHostActionAccessors(this._binding8);
     }
     if (length > 9) {
       this._binding9 = this._createBinding(bindings[9]);
       this._keyId9 = this._binding9.key.id;
       this.eventEmitterAccessors[9] = this._createEventEmitterAccessors(this._binding9);
+      this.hostActionAccessors[9] = this._createHostActionAccessors(this._binding9);
     }
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
@@ -440,6 +472,14 @@ export class ProtoElementInjector  {
     return ListWrapper.map(b.eventEmitters, eventName =>
       new EventEmitterAccessor(eventName, reflector.getter(eventName))
     );
+  }
+
+  _createHostActionAccessors(b:DirectiveBinding) {
+    var res = [];
+    StringMapWrapper.forEach(b.hostActions, (actionExpression, actionName) => {
+      ListWrapper.push(res, new HostActionAccessor(actionExpression, reflector.getter(actionName)))
+    });
+    return res;
   }
 
   instantiate(parent:ElementInjector):ElementInjector {
@@ -659,6 +699,10 @@ export class ElementInjector extends TreeNode {
 
   getEventEmitterAccessors() {
     return this._proto.eventEmitterAccessors;
+  }
+
+  getHostActionAccessors() {
+    return this._proto.hostActionAccessors;
   }
 
   getComponent() {
