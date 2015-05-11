@@ -9,13 +9,13 @@ import {CONST_EXPR} from './src/facade/lang';
 import {For} from './src/directives/for';
 import {NgIf} from './src/directives/ng_if';
 import {NgNonBindable} from './src/directives/ng_non_bindable';
-import {Switch, SwitchWhen, SwitchDefault} from './src/directives/switch';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './src/directives/ng_switch';
 
 export * from './src/directives/class';
 export * from './src/directives/for';
 export * from './src/directives/ng_if';
 export * from './src/directives/ng_non_bindable';
-export * from './src/directives/switch';
+export * from './src/directives/ng_switch';
 
 /**
  * A collection of the Angular core directives that are likely to be used in each and every Angular application.
@@ -24,7 +24,7 @@ export * from './src/directives/switch';
  * instead of writing:
  *
  * ```
- * import {If, For, Switch, SwitchWhen, SwitchDefault} from 'angular2/angular2';
+ * import {If, For, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
  * import {OtherDirective} from 'myDirectives';
  *
  * @Component({
@@ -32,7 +32,7 @@ export * from './src/directives/switch';
  * })
  * @View({
  *   templateUrl: 'myComponent.html',
- *   directives: [If, For, Switch, SwitchWhen, SwitchDefault, OtherDirective]
+ *   directives: [If, For, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
@@ -58,5 +58,5 @@ export * from './src/directives/switch';
  *
  */
 export const coreDirectives:List = CONST_EXPR([
-  For, NgIf, NgNonBindable, Switch, SwitchWhen, SwitchDefault
+  For, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault
 ]);
