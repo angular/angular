@@ -379,8 +379,7 @@ gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
   watch('modules/**', function() {
     runSequence(
       '!broccoli.js.dev',
-      '!test.unit.js/karma-run',
-      'check-format'
+      '!test.unit.js/karma-run'
     );
   });
 });
