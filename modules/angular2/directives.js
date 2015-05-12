@@ -6,13 +6,13 @@
  */
 
 import {CONST_EXPR} from './src/facade/lang';
-import {For} from './src/directives/for';
+import {NgFor} from './src/directives/ng_for';
 import {NgIf} from './src/directives/ng_if';
 import {NgNonBindable} from './src/directives/ng_non_bindable';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './src/directives/ng_switch';
 
 export * from './src/directives/class';
-export * from './src/directives/for';
+export * from './src/directives/ng_for';
 export * from './src/directives/ng_if';
 export * from './src/directives/ng_non_bindable';
 export * from './src/directives/ng_switch';
@@ -24,7 +24,7 @@ export * from './src/directives/ng_switch';
  * instead of writing:
  *
  * ```
- * import {If, For, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
+ * import {If, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
  * import {OtherDirective} from 'myDirectives';
  *
  * @Component({
@@ -32,7 +32,7 @@ export * from './src/directives/ng_switch';
  * })
  * @View({
  *   templateUrl: 'myComponent.html',
- *   directives: [If, For, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
+ *   directives: [If, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
@@ -58,5 +58,5 @@ export * from './src/directives/ng_switch';
  *
  */
 export const coreDirectives:List = CONST_EXPR([
-  For, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault
+  NgFor, NgIf, NgNonBindable, NgSwitch, NgSwitchWhen, NgSwitchDefault
 ]);

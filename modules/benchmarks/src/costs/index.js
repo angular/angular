@@ -8,7 +8,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {If, For} from 'angular2/directives';
+import {If, NgFor} from 'angular2/directives';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
@@ -54,18 +54,18 @@ export function main() {
 
 @Component({selector: 'app'})
 @View({
-  directives: [If, For, DummyComponent, DummyDirective, DynamicDummy],
+  directives: [If, NgFor, DummyComponent, DummyDirective, DynamicDummy],
   template: `
     <div *ng-if="testingPlainComponents">
-      <dummy *for="#i of list"></dummy>
+      <dummy *ng-for="#i of list"></dummy>
     </div>
 
     <div *ng-if="testingWithDirectives">
-      <dummy dummy-decorator *for="#i of list"></dummy>
+      <dummy dummy-decorator *ng-for="#i of list"></dummy>
     </div>
 
     <div *ng-if="testingDynamicComponents">
-      <dynamic-dummy *for="#i of list"></dynamic-dummy>
+      <dynamic-dummy *ng-for="#i of list"></dynamic-dummy>
     </div>
   `
 })

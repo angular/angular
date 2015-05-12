@@ -523,9 +523,17 @@ class _ParseAST {
 
   parseTemplateBindings() {
     var bindings = [];
+    var prefix = null;
     while (this.index < this.tokens.length) {
       var keyIsVar: boolean = this.optionalKeywordVar();
       var key = this.expectTemplateBindingKey();
+      if (!keyIsVar) {
+        if (prefix == null) {
+          prefix = key;
+        } else {
+          key = prefix + '-' + key;
+        }
+      }
       this.optionalCharacter($COLON);
       var name = null;
       var expression = null;

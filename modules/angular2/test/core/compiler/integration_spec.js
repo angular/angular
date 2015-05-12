@@ -33,7 +33,7 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
-import {For} from 'angular2/src/directives/for';
+import {NgFor} from '../../../src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
@@ -1517,8 +1517,8 @@ class ToolbarPart {
   selector: 'toolbar'
 })
 @View({
-  template: 'TOOLBAR(<div *for="var part of query" [toolbar-vc]="part"></div>)',
-  directives: [ToolbarViewContainer, For]
+  template: 'TOOLBAR(<div *ng-for="var part of query" [toolbar-vc]="part"></div>)',
+  directives: [ToolbarViewContainer, NgFor]
 })
 class ToolbarComponent {
   query:QueryList;
