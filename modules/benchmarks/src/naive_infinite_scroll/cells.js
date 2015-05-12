@@ -1,7 +1,7 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST}
     from './common';
-import {For} from 'angular2/directives';
+import {NgFor} from 'angular2/directives';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
@@ -80,7 +80,7 @@ export class Stage {
   }
 })
 @View({
-    directives: [For],
+    directives: [NgFor],
     template: `
       <div [style]="style">
           <button template="for #stage of stages"

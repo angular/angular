@@ -10,13 +10,13 @@ import {Offering, ITEMS, ITEM_HEIGHT, VISIBLE_ITEMS, VIEW_PORT_HEIGHT,
     ROW_WIDTH, HEIGHT} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
-import {For} from 'angular2/directives';
+import {NgFor} from 'angular2/directives';
 
 @Component({
   selector: 'scroll-area',
 })
 @View({
-  directives: [ScrollItemComponent, For],
+  directives: [ScrollItemComponent, NgFor],
   template: `
     <div>
         <div id="scrollDiv"

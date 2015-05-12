@@ -13,7 +13,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
 import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
-import {For, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
+import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -239,7 +239,7 @@ class AppComponent {
   }
 })
 @View({
-  directives: [For, NgSwitch, NgSwitchWhen, NgSwitchDefault],
+  directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
       <table [ng-switch]="benchmarkType">
         <tbody template="switch-when 'interpolation'">

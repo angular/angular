@@ -22,7 +22,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * ```
  * <ul>
- *   <li *for="#error of errors; #i = index">
+ *   <li *ng-for="#error of errors; #i = index">
  *     Error {{i}} of {{errors.length}}: {{error.message}}
  *   </li>
  * </ul>
@@ -30,19 +30,19 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * # Syntax
  *
- * - `<li *for="#item of items; #i = index">...</li>`
- * - `<li template="for #item of items; #i=index">...</li>`
- * - `<template [for]="#item" [of]="items" #i="index"><li>...</li></template>`
+ * - `<li *ng-for="#item of items; #i = index">...</li>`
+ * - `<li template="ng-for #item ng-for-of items; #i=index">...</li>`
+ * - `<template [ng-for]="#item" [ng-for-of]="items" #i="index"><li>...</li></template>`
  *
  * @exportedAs angular2/directives
  */
 @Directive({
-  selector: '[for][of]',
+  selector: '[ng-for][ng-for-of]',
   properties: {
-    'iterableChanges': 'of | iterableDiff'
+    'iterableChanges': 'ngForOf | iterableDiff'
   }
 })
-export class For  {
+export class NgFor  {
   viewContainer: ViewContainerRef;
   protoViewRef: ProtoViewRef;
   constructor(viewContainer:ViewContainerRef, protoViewRef: ProtoViewRef) {
@@ -67,13 +67,13 @@ export class For  {
       (movedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(movedRecord, null))
     );
 
-    var insertTuples = For.bulkRemove(recordViewTuples, this.viewContainer);
+    var insertTuples = NgFor.bulkRemove(recordViewTuples, this.viewContainer);
 
     changes.forEachAddedItem(
       (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
     );
 
-    For.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
+    NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
 
     for (var i = 0; i < insertTuples.length; i++) {
       this.perViewChange(insertTuples[i].view, insertTuples[i].record);

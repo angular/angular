@@ -456,7 +456,7 @@ Finally, we can move the `for` keyword to the left hand side and prefix it with 
 
 ```
 <ul>
-  <li *for="var person of people; var i=index">{{i}}. {{person}}<li>
+  <li *ng-for="var person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 

@@ -135,7 +135,7 @@ class SurveyQuestion {
 
       <button (click)="addQuestion()">Add Question</button>
       <survey-question
-          *for="var q of form.controls.questions.controls; var i=index"
+          *ng-for="var q of form.controls.questions.controls; var i=index"
           [question]="q"
           [index]="i + 1"
           (destroy)="destroyQuestion(i)">

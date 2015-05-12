@@ -62,7 +62,7 @@ export class View {
    *   directives: [For]
    *   template: '
    *   <ul>
-   *     <li *for="item in items">{{item}}</li>
+   *     <li *ng-for="item in items">{{item}}</li>
    *   </ul>'
    * })
    * class MyComponent {

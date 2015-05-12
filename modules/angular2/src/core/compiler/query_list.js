@@ -7,7 +7,7 @@ import {BaseQueryList} from './base_query_list';
  * The directives are kept in depth-first pre-order traversal of the DOM.
  *
  * The `QueryList` is iterable, therefore it can be used in both javascript code with `for..of` loop as well as in
- * template with `*for="of"` directive.
+ * template with `*ng-for="of"` directive.
  *
  * NOTE: In the future this class will implement an `Observable` interface. For now it uses a plain list of observable
  * callbacks.
@@ -20,7 +20,7 @@ import {BaseQueryList} from './base_query_list';
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *for="#o of objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -29,7 +29,7 @@ import {BaseQueryList} from './base_query_list';
  *
  * A possible solution would be for a `<pane>` to inject `<tabs>` component and then register itself with `<tabs>`
  * component's on `hydrate` and deregister on `dehydrate` event. While a reasonable approach, this would only work
- * partialy since `*for` could rearange the list of `<pane>` components which would not be reported to `<tabs>`
+ * partialy since `*ng-for` could rearange the list of `<pane>` components which would not be reported to `<tabs>`
  * component and thus the list of `<pane>` componets would be out of sync with respect to the list of `<pane>` elements.
  *
  * A preferred solution is to inject a `QueryList` which is a live list of directives in the component`s light DOM.
@@ -41,7 +41,7 @@ import {BaseQueryList} from './base_query_list';
  * @View({
  *  template: `
  *    <ul>
- *      <li *for="#pane of panes">{{pane.title}}</li>
+ *      <li *ng-for="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `
