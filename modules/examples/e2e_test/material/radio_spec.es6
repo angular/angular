@@ -6,5 +6,16 @@ describe('md-radio-button', function () {
   beforeEach(() => { browser.get(url); });
   afterEach(testUtil.verifyNoBrowserErrors);
 
-  // Radio buttons are broken right now, see https://github.com/angular/angular/issues/1643
+  it('should check one radio button and then check another', () => {
+    var standaloneRadios = element.all(by.css('[name="element"]'));
+    var firstRadio = standaloneRadios.first();
+    var lastRadio = standaloneRadios.last();
+
+    firstRadio.click();
+    expect(firstRadio.getAttribute('aria-checked')).toBe('true');
+
+    lastRadio.click();
+    expect(firstRadio.getAttribute('aria-checked')).toBe('false');
+    expect(lastRadio.getAttribute('aria-checked')).toBe('true');
+  });
 });
