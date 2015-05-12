@@ -54,4 +54,53 @@ void allTests() {
     expect(await writer.asyncToString())
         .toEqual('hello, world. It is a beautiful day.');
   });
+
+  it('should handle calls to async methods while waiting.', () {
+    var completer1 = new Completer<String>();
+    var completer2 = new Completer<String>();
+
+    var writer = new AsyncStringWriter();
+    writer.print('hello');
+    expect('$writer').toEqual('hello');
+
+    writer.asyncPrint(completer1.future);
+    var f1 = writer.asyncToString().then((result) {
+      expect(result).toEqual('hello, world.');
+    });
+
+    writer.asyncPrint(completer2.future);
+    var f2 = writer.asyncToString().then((result) {
+      expect(result).toEqual('hello, world. It is a beautiful day.');
+    });
+
+    completer1.complete(', world.');
+    completer2.complete(' It is a beautiful day.');
+
+    return Future.wait([f1, f2]);
+  });
+
+  it('should handle calls to async methods that complete in reverse '
+      'order while waiting.', () {
+    var completer1 = new Completer<String>();
+    var completer2 = new Completer<String>();
+
+    var writer = new AsyncStringWriter();
+    writer.print('hello');
+    expect('$writer').toEqual('hello');
+
+    writer.asyncPrint(completer1.future);
+    var f1 = writer.asyncToString().then((result) {
+      expect(result).toEqual('hello, world.');
+    });
+
+    writer.asyncPrint(completer2.future);
+    var f2 = writer.asyncToString().then((result) {
+      expect(result).toEqual('hello, world. It is a beautiful day.');
+    });
+
+    completer2.complete(' It is a beautiful day.');
+    completer1.complete(', world.');
+
+    return Future.wait([f1, f2]);
+  });
 }

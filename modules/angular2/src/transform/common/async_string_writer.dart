@@ -7,9 +7,10 @@ import 'package:analyzer/src/generated/java_core.dart';
 /// [asyncPrint] and [asyncToString]. See those methods for details.
 class AsyncStringWriter extends PrintWriter {
   /// All [Future]s we are currently waiting on.
-  final List<Future<String>> _awaiting = <Future<String>>[];
+  final List<Future<String>> _toAwait = <Future<String>>[];
   final List<StringBuffer> _bufs;
   StringBuffer _curr;
+  int _asyncCount = 0;
 
   AsyncStringWriter._(StringBuffer curr)
       : _curr = curr,
@@ -25,31 +26,50 @@ class AsyncStringWriter extends PrintWriter {
   /// in the string being built. If using this method, you must use
   /// [asyncToString] instead of [toString] to get the value of the writer or
   /// your string may not appear as expected.
-  void asyncPrint(Future<String> futureText) {
-    var myBuf = _curr;
+  Future<String> asyncPrint(Future<String> futureText) {
+    _semaphoreIncrement();
+    var myBuf = new StringBuffer();
+    _bufs.add(myBuf);
     _curr = new StringBuffer();
     _bufs.add(_curr);
-    _awaiting.add(futureText);
-    futureText
-        .then(myBuf.write)
-        .whenComplete(() => _awaiting.remove(futureText));
+
+    var toAwait = futureText.then((val) {
+      myBuf.write(val);
+      return val;
+    });
+    _toAwait.add(toAwait);
+    return toAwait.whenComplete(() {
+      _semaphoreDecrementAndCleanup();
+      _toAwait.remove(toAwait);
+    });
   }
 
   /// Waits for any values added via [asyncPrint] and returns the fully
   /// built string.
-  Future<String> asyncToString() async {
-    // Save length in case it is updated while we wait.
+  Future<String> asyncToString() {
+    _semaphoreIncrement();
     var bufLen = _bufs.length;
-    if (bufLen == 1) return '$_curr';
-    await Future.wait(_awaiting);
-
-    _curr = _bufs.first;
-    for (var i = 1; i < bufLen; ++i) {
-      _curr.write('${_bufs[i]}');
-    }
-    _bufs.removeRange(1, bufLen);
-    return '$_curr';
+    return Future.wait(_toAwait).then((_) {
+      return _bufs.sublist(0, bufLen).join('');
+    }).whenComplete(_semaphoreDecrementAndCleanup);
   }
 
   String toString() => _bufs.map((buf) => '$buf').join('(async gap)');
+
+  void _semaphoreIncrement() {
+    ++_asyncCount;
+  }
+
+  void _semaphoreDecrementAndCleanup() {
+    assert(_asyncCount > 0);
+
+    --_asyncCount;
+    if (_asyncCount == 0) {
+      _curr = _bufs[0];
+      for (var i = 1; i < _bufs.length; ++i) {
+        _curr.write('${_bufs[i]}');
+      }
+      _bufs.removeRange(1, _bufs.length);
+    }
+  }
 }
