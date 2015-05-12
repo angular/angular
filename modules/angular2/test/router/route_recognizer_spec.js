@@ -23,6 +23,7 @@ export function main() {
       recognizer.addConfig('/test', handler);
 
       expect(recognizer.recognize('/test')[0]).toEqual({
+        'cost' : 1,
         'handler': { 'components': { 'a': 'b' } },
         'params': {},
         'matchedUrl': '/test',
@@ -34,6 +35,7 @@ export function main() {
       recognizer.addConfig('/', handler);
 
       expect(recognizer.recognize('/')[0]).toEqual({
+        'cost': 0,
         'handler': { 'components': { 'a': 'b' } },
         'params': {},
         'matchedUrl': '/',
@@ -44,6 +46,7 @@ export function main() {
     it('should work with a dynamic segment', () => {
       recognizer.addConfig('/user/:name', handler);
       expect(recognizer.recognize('/user/brian')[0]).toEqual({
+        'cost': 101,
         'handler': handler,
         'params': { 'name': 'brian' },
         'matchedUrl': '/user/brian',
@@ -57,6 +60,7 @@ export function main() {
       var solutions = recognizer.recognize('/a');
       expect(solutions.length).toBe(1);
       expect(solutions[0]).toEqual({
+        'cost': 1,
         'handler': handler,
         'params': {},
         'matchedUrl': '/b',

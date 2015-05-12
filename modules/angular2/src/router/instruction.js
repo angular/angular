@@ -20,15 +20,18 @@ export class Instruction {
   matchedUrl:string;
   params:Map<string, string>;
   reuse:boolean;
+  cost:number;
 
-  constructor({params, component, children, matchedUrl}:{params:StringMap, component:any, children:Map, matchedUrl:string} = {}) {
+  constructor({params, component, children, matchedUrl, parentCost}:{params:StringMap, component:any, children:Map, matchedUrl:string, cost:int} = {}) {
     this.reuse = false;
     this.matchedUrl = matchedUrl;
+    this.cost = parentCost;
     if (isPresent(children)) {
       this._children = children;
       var childUrl;
       StringMapWrapper.forEach(this._children, (child, _) => {
         childUrl = child.matchedUrl;
+        this.cost += child.cost;
       });
       if (isPresent(childUrl)) {
         this.matchedUrl += childUrl;

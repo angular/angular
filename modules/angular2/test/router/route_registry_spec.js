@@ -27,6 +27,24 @@ export function main() {
       expect(instruction.getChildInstruction('default').component).toBe(DummyCompB);
     });
 
+    it('should prefer static segments to dynamic', () => {
+      registry.config(rootHostComponent, {'path': '/:site', 'component': DummyCompB});
+      registry.config(rootHostComponent, {'path': '/home', 'component': DummyCompA});
+
+      var instruction = registry.recognize('/home', rootHostComponent);
+
+      expect(instruction.getChildInstruction('default').component).toBe(DummyCompA);
+    });
+
+    it('should prefer dynamic segments to star', () => {
+      registry.config(rootHostComponent, {'path': '/:site', 'component': DummyCompA});
+      registry.config(rootHostComponent, {'path': '/*site', 'component': DummyCompB});
+
+      var instruction = registry.recognize('/home', rootHostComponent);
+
+      expect(instruction.getChildInstruction('default').component).toBe(DummyCompA);
+    });
+
     it('should match the full URL recursively', () => {
       registry.config(rootHostComponent, {'path': '/first', 'component': DummyParentComp});
 

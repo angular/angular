@@ -39,6 +39,7 @@ export class RouteRecognizer {
       var match;
       if (isPresent(match = RegExpWrapper.firstMatch(regex, url))) {
         var solution = StringMapWrapper.create();
+        StringMapWrapper.set(solution, 'cost', pathRecognizer.cost);
         StringMapWrapper.set(solution, 'handler', pathRecognizer.handler);
         StringMapWrapper.set(solution, 'params', pathRecognizer.parseParams(url));
 

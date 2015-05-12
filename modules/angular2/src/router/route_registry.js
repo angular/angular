@@ -77,37 +77,44 @@ export class RouteRegistry {
       return null;
     }
 
-    var solutions = componentRecognizer.recognize(url);
+    var componentSolutions = componentRecognizer.recognize(url);
+    var fullSolutions = ListWrapper.create();
 
-    for(var i = 0; i < solutions.length; i++) {
-      var candidate = solutions[i];
+    for(var i = 0; i < componentSolutions.length; i++) {
+      var candidate = componentSolutions[i];
       if (candidate['unmatchedUrl'].length == 0) {
-        return handlerToLeafInstructions(candidate, parentComponent);
-      }
+        ListWrapper.push(fullSolutions, handlerToLeafInstructions(candidate, parentComponent));
+      } else {
+        var children = StringMapWrapper.create(),
+            allMapped = true;
 
-      var children = StringMapWrapper.create(),
-          allMapped = true;
-
-      StringMapWrapper.forEach(candidate['handler']['components'], (component, name) => {
-        if (!allMapped) {
-          return;
-        }
-        var childInstruction = this.recognize(candidate['unmatchedUrl'], component);
-        if (isPresent(childInstruction)) {
-          childInstruction.params = candidate['params'];
-          children[name] = childInstruction;
-        } else {
-          allMapped = false;
-        }
-      });
-
-      if (allMapped) {
-        return new Instruction({
-          component: parentComponent,
-          children: children,
-          matchedUrl: candidate['matchedUrl']
+        StringMapWrapper.forEach(candidate['handler']['components'], (component, name) => {
+          if (!allMapped) {
+            return;
+          }
+          var childInstruction = this.recognize(candidate['unmatchedUrl'], component);
+          if (isPresent(childInstruction)) {
+            childInstruction.params = candidate['params'];
+            children[name] = childInstruction;
+          } else {
+            allMapped = false;
+          }
         });
+
+        if (allMapped) {
+          ListWrapper.push(fullSolutions, new Instruction({
+            component: parentComponent,
+            children: children,
+            matchedUrl: candidate['matchedUrl'],
+            parentCost: candidate['cost']
+          }));
+        }
       }
+    }
+
+    if (fullSolutions.length > 0) {
+      ListWrapper.sort(fullSolutions, (a, b) => a.cost < b.cost ? -1 : 1);
+      return fullSolutions[0];
     }
 
     return null;
@@ -127,13 +134,15 @@ function handlerToLeafInstructions(context, parentComponent) {
   StringMapWrapper.forEach(context['handler']['components'], (component, outletName) => {
     children[outletName] = new Instruction({
       component: component,
-      params: context['params']
+      params: context['params'],
+      parentCost: 0
     });
   });
   return new Instruction({
     component: parentComponent,
     children: children,
-    matchedUrl: context['matchedUrl']
+    matchedUrl: context['matchedUrl'],
+    parentCost: context['cost']
   });
 }
 

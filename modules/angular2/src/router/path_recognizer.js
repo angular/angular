@@ -52,7 +52,7 @@ class StarSegment {
 var paramMatcher = RegExpWrapper.create("^:([^\/]+)$");
 var wildcardMatcher = RegExpWrapper.create("^\\*([^\/]+)$");
 
-function parsePathString(route:string):List {
+function parsePathString(route:string) {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
   if (route[0] === "/") {
@@ -61,21 +61,25 @@ function parsePathString(route:string):List {
 
   var segments = splitBySlash(route);
   var results = ListWrapper.create();
+  var cost = 0;
 
   for (var i=0; i<segments.length; i++) {
     var segment = segments[i],
-      match;
+        match;
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
       ListWrapper.push(results, new DynamicSegment(match[1]));
+      cost += 100;
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
       ListWrapper.push(results, new StarSegment(match[1]));
+      cost += 10000;
     } else if (segment.length > 0) {
       ListWrapper.push(results, new StaticSegment(segment));
+      cost += 1;
     }
   }
 
-  return results;
+  return {segments: results, cost};
 }
 
 var SLASH_RE = RegExpWrapper.create('/');
@@ -89,12 +93,17 @@ export class PathRecognizer {
   segments:List;
   regex:RegExp;
   handler:any;
+  cost:number;
 
   constructor(path:string, handler:any) {
     this.handler = handler;
     this.segments = ListWrapper.create();
 
-    var segments = parsePathString(path);
+    // TODO: use destructuring assignment
+    // see https://github.com/angular/ts2dart/issues/158
+    var parsed = parsePathString(path);
+    var cost = parsed['cost'];
+    var segments = parsed['segments'];
     var regexString = '^';
 
     ListWrapper.forEach(segments, (segment) => {
@@ -103,6 +112,7 @@ export class PathRecognizer {
 
     this.regex = RegExpWrapper.create(regexString);
     this.segments = segments;
+    this.cost = cost;
   }
 
   parseParams(url:string):StringMap {
