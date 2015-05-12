@@ -100,9 +100,7 @@ export class DirectiveParser extends CompileStep {
       }
       if (isPresent(directive.hostAttributes)) {
         MapWrapper.forEach(directive.hostAttributes, (hostAttrValue, hostAttrName) => {
-          if (!DOM.hasAttribute(current.element, hostAttrName)) {
-            DOM.setAttribute(current.element, hostAttrName, hostAttrValue);
-          }
+          this._addHostAttribute(hostAttrName, hostAttrValue, current);
         });
       }
       if (isPresent(directive.readAttributes)) {
@@ -160,6 +158,16 @@ export class DirectiveParser extends CompileStep {
     var ast = this._parser.parseBinding(directivePropertyName,
       `hostProperties of ${compileElement.elementDescription}`);
     directiveBinderBuilder.bindHostProperty(hostPropertyName, ast);
+  }
+
+  _addHostAttribute(attrName, attrValue, compileElement) {
+    if (StringWrapper.equals(attrName, 'class')) {
+      ListWrapper.forEach(attrValue.split(' '), (className) => {
+        DOM.addClass(compileElement.element, className);
+      });
+    } else if (!DOM.hasAttribute(compileElement.element, attrName)) {
+      DOM.setAttribute(compileElement.element, attrName, attrValue);
+    }
   }
 
   _splitBindConfig(bindConfig:string) {

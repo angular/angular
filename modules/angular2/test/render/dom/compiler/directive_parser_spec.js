@@ -144,6 +144,15 @@ export function main() {
       expect(DOM.getAttribute(results[0].element, 'attr_name')).toEqual('attr_val');
     });
 
+    it('should add CSS classes if "class" specified in host element attributes', () => {
+      var element = el('<input class="foo baz" some-decor-with-host-attrs>');
+      var results = process(element);
+
+      expect(DOM.hasClass(results[0].element, 'foo')).toBeTruthy();
+      expect(DOM.hasClass(results[0].element, 'bar')).toBeTruthy();
+      expect(DOM.hasClass(results[0].element, 'baz')).toBeTruthy();
+    });
+
     it('should read attribute values', () => {
       var element = el('<input some-decor-props some-attr="someValue">');
       var results = process(element);
@@ -283,7 +292,8 @@ var someDirectiveWithHostProperties = new DirectiveMetadata({
 var someDirectiveWithHostAttributes = new DirectiveMetadata({
   selector: '[some-decor-with-host-attrs]',
   hostAttributes: MapWrapper.createFromStringMap({
-    'attr_name': 'attr_val'
+    'attr_name': 'attr_val',
+    'class': 'foo bar'
   })
 });
 
