@@ -36,7 +36,7 @@
     "systemjs": "^0.9.1",
     "traceur": "0.0.87",
     "which": "~1",
-    "zone.js": "0.4.4"
+    "zone.js": "0.5.0"
   },
   "devDependencies": {
     "angular": "1.3.5",

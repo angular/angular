@@ -78,8 +78,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
-      'zone/zone-microtask.js',
-      'zone/long-stack-trace-zone.js',
+      'node_modules/zone.js/dist/zone-microtask.js',
+      'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/systemjs/lib/extension-register.js',

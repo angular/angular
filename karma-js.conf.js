@@ -12,8 +12,9 @@ module.exports = function(config) {
       // Loaded through the es6-module-loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
-      'zone/zone-microtask.js',
-      'zone/long-stack-trace-zone.js',
+      // zone-microtask must be included first as it contains a Promise monkey patch
+      'node_modules/zone.js/dist/zone-microtask.js',
+      'node_modules/zone.js/dist/long-stack-trace-zone.js',
 
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',
