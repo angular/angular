@@ -22,13 +22,33 @@ class BindingRecordsCreator {
   }
 
   getBindingRecords(elementBinders:List<renderApi.ElementBinder>, sortedDirectives:List<SortedDirectives>):List<BindingRecord> {
-    var bindings = [];
+    // NOTE(kegluneq): Profiled & determined List GC operations were taking
+    // lots of time here. Optimization to determine list size prior to
+    // allocation.
+    // Result: benchmarks/src/compiler w/ bindings at 1500x from ~70s to <6s.
 
-    for (var boundElementIndex = 0; boundElementIndex < elementBinders.length; boundElementIndex++) {
+    var bindingsCount = 0;
+    for (var boundElementIndex = 0;
+        boundElementIndex < elementBinders.length;
+        boundElementIndex++) {
       var renderElementBinder = elementBinders[boundElementIndex];
-      bindings = ListWrapper.concat(bindings, this._createTextNodeRecords(renderElementBinder));
-      bindings = ListWrapper.concat(bindings, this._createElementPropertyRecords(boundElementIndex, renderElementBinder));
-      bindings = ListWrapper.concat(bindings, this._createDirectiveRecords(boundElementIndex, sortedDirectives[boundElementIndex]));
+      bindingsCount += this._countTextNodeRecords(renderElementBinder);
+      bindingsCount += this._countElementPropertyRecords(renderElementBinder);
+      assert(isPresent(sortedDirectives[boundElementIndex]));
+      bindingsCount += this._countDirectiveRecords(sortedDirectives[boundElementIndex]);
+    }
+    var bindings = ListWrapper.createFixedSize(bindingsCount);
+    var bindingsIdx = 0;
+    for (var boundElementIndex = 0;
+        boundElementIndex < elementBinders.length;
+        boundElementIndex++) {
+      var renderElementBinder = elementBinders[boundElementIndex];
+      bindingsIdx = this._createTextNodeRecords(bindings, bindingsIdx,
+          renderElementBinder);
+      bindingsIdx = this._createElementPropertyRecords(bindings,
+          bindingsIdx, boundElementIndex, renderElementBinder);
+      bindingsIdx = this._createDirectiveRecords(bindings, bindingsIdx,
+          boundElementIndex, sortedDirectives[boundElementIndex]);
     }
 
     return bindings;
@@ -47,21 +67,49 @@ class BindingRecordsCreator {
     return directiveRecords;
   }
 
-  _createTextNodeRecords(renderElementBinder:renderApi.ElementBinder) {
-    if (isBlank(renderElementBinder.textBindings)) return [];
-    return ListWrapper.map(renderElementBinder.textBindings, b => BindingRecord.createForTextNode(b, this._textNodeIndex++));
+  _countTextNodeRecords(renderElementBinder:renderApi.ElementBinder): number {
+    if (isBlank(renderElementBinder.textBindings)) return 0;
+    return renderElementBinder.textBindings.length;
   }
 
-  _createElementPropertyRecords(boundElementIndex:number, renderElementBinder:renderApi.ElementBinder) {
-    var res = [];
-    MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-      ListWrapper.push(res, BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
+  _createTextNodeRecords(bindings: List<BindingRecord>, idx: number,
+      renderElementBinder:renderApi.ElementBinder): number {
+    if (isBlank(renderElementBinder.textBindings)) return idx;
+    ListWrapper.forEach(renderElementBinder.textBindings, (b) => {
+      bindings[idx++] = BindingRecord.createForTextNode(b, this._textNodeIndex++);
     });
-    return res;
+    return idx;
   }
 
-  _createDirectiveRecords(boundElementIndex:number, sortedDirectives:SortedDirectives) {
-    var res = [];
+  _countElementPropertyRecords(renderElementBinder:renderApi.ElementBinder): number {
+    assert(isPresent(renderElementBinder.propertyBindings));
+    return MapWrapper.size(renderElementBinder.propertyBindings);
+  }
+
+  _createElementPropertyRecords(bindings: List<BindingRecord>, idx: number,
+      boundElementIndex:number, renderElementBinder:renderApi.ElementBinder): number {
+    MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
+      bindings[idx++] = BindingRecord.createForElement(
+          astWithSource, boundElementIndex, propertyName);
+    });
+    return idx;
+  }
+
+  _countDirectiveRecords(sortedDirectives: SortedDirectives): number {
+    var count = 0;
+    assert(isPresent(sortedDirectives.renderDirectives));
+    for (var i = 0; i < sortedDirectives.renderDirectives.length; i++) {
+      var directiveBinder = sortedDirectives.renderDirectives[i];
+      assert(isPresent(directiveBinder.propertyBindings));
+      count += MapWrapper.size(directiveBinder.propertyBindings);
+      assert(isPresent(directiveBinder.hostPropertyBindings));
+      count += MapWrapper.size(directiveBinder.hostPropertyBindings);
+    }
+    return count;
+  }
+
+  _createDirectiveRecords(bindings: List<BindingRecord>, idx: number,
+      boundElementIndex:number, sortedDirectives:SortedDirectives): number {
     for (var i = 0; i < sortedDirectives.renderDirectives.length; i++) {
       var directiveBinder = sortedDirectives.renderDirectives[i];
 
@@ -70,19 +118,20 @@ class BindingRecordsCreator {
         // TODO: these setters should eventually be created by change detection, to make
         // it monomorphic!
         var setter = reflector.setter(propertyName);
-        var directiveRecord = this._getDirectiveRecord(boundElementIndex, i, sortedDirectives.directives[i]);
-        var b = BindingRecord.createForDirective(astWithSource, propertyName, setter, directiveRecord);
-        ListWrapper.push(res, b);
+        var directiveRecord = this._getDirectiveRecord(
+            boundElementIndex, i, sortedDirectives.directives[i]);
+        bindings[idx++] = BindingRecord.createForDirective(
+            astWithSource, propertyName, setter, directiveRecord);
       });
 
       // host properties
       MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
         var dirIndex = new DirectiveIndex(boundElementIndex, i);
-        var b = BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName);
-        ListWrapper.push(res, b);
+        bindings[idx++] = BindingRecord.createForHostProperty(
+            dirIndex, astWithSource, propertyName);
       });
     }
-    return res;
+    return idx;
   }
 
   _getDirectiveRecord(boundElementIndex:number, directiveIndex:number, binding:DirectiveBinding): DirectiveRecord {
