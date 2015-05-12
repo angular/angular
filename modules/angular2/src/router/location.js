@@ -27,6 +27,13 @@ export class Location {
     return this._stripBaseHref(stripIndexHtml(url));
   }
 
+  normalizeAbsolutely(url) {
+    if (url[0] != '/') {
+      url = '/' + url;
+    }
+    return this._addBaseHref(url);
+  }
+
   _stripBaseHref(url) {
     if (this._baseHref.length > 0 && StringWrapper.startsWith(url, this._baseHref)) {
       return StringWrapper.substring(url, this._baseHref.length);
@@ -34,8 +41,15 @@ export class Location {
     return url;
   }
 
+  _addBaseHref(url) {
+    if (!StringWrapper.startsWith(url, this._baseHref)) {
+      return this._baseHref + url;
+    }
+    return url;
+  }
+
   go(url:string) {
-    var finalUrl = url[0] == '/' ? url : this._baseHref + '/' + url;
+    var finalUrl = this.normalizeAbsolutely(url);
     this._browserLocation.pushState(null, '', finalUrl);
   }
 

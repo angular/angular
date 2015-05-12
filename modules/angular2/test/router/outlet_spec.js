@@ -136,6 +136,19 @@ export function main() {
     }));
 
 
+    it('should generate absolute hrefs that include the base href', inject([AsyncTestCompleter], (async) => {
+      location.setBaseHref('/my/base');
+      compile('<a href="hello" router-link="user"></a>')
+        .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))
+        .then((_) => rtr.navigate('/a/b'))
+        .then((_) => {
+          view.detectChanges();
+          expect(DOM.getAttribute(view.rootNodes[0].childNodes[0], 'href')).toEqual('/my/base/user');
+          async.done();
+        });
+    }));
+
+
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
       compile('<a href="hello" router-link="user"></a>')
         .then((_) => rtr.config({'path': '/user', 'component': UserCmp, 'as': 'user'}))

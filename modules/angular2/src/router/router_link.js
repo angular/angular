@@ -6,6 +6,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Router} from './router';
+import {Location} from './location';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -41,11 +42,13 @@ export class RouterLink {
   _route:string;
   _params:any;
   _router:Router;
+  _location:Location;
   _href:string;
 
-  constructor(elementRef:ElementRef, router:Router) {
+  constructor(elementRef:ElementRef, router:Router, location:Location) {
     this._domEl = elementRef.domElement;
     this._router = router;
+    this._location = location;
     this._params = StringMapWrapper.create();
     DOM.on(this._domEl, 'click', (evt) => {
       evt.preventDefault();
@@ -64,10 +67,10 @@ export class RouterLink {
   onAllChangesDone() {
     if (isPresent(this._route) && isPresent(this._params)) {
       var newHref = this._router.generate(this._route, this._params);
-      this._href = newHref;
+      this._href = this._location.normalizeAbsolutely(newHref);
       // Keeping the link on the element to support contextual menu `copy link`
       // and other in-browser affordances.
-      DOM.setAttribute(this._domEl, 'href', newHref);
+      DOM.setAttribute(this._domEl, 'href', this._href);
     }
   }
 }

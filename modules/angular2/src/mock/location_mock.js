@@ -12,16 +12,22 @@ export class SpyLocation extends SpyObject {
   urlChanges:List<string>;
   _path:string;
   _subject:EventEmitter;
+  _baseHref:string;
 
   constructor() {
     super();
     this._path = '/';
     this.urlChanges = ListWrapper.create();
     this._subject = new EventEmitter();
+    this._baseHref = '';
   }
 
   setInitialPath(url:string) {
     this._path = url;
+  }
+
+  setBaseHref(url:string) {
+    this._baseHref = url;
   }
 
   path():string {
@@ -32,6 +38,10 @@ export class SpyLocation extends SpyObject {
     ObservableWrapper.callNext(this._subject, {
       'url': pathname
     });
+  }
+
+  normalizeAbsolutely(url) {
+    return this._baseHref + url;
   }
 
   go(url:string) {
