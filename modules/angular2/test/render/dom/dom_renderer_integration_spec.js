@@ -101,15 +101,16 @@ export function main() {
       tb.compileAll([someComponent,
         new ViewDefinition({
           componentId: 'someComponent',
-          template: '<div with-host-actions></div>',
+          template: '<input with-host-actions></input>',
           directives: [directiveWithHostActions]
         })
       ]).then( (protoViewDtos) => {
         var views = tb.createRootViews(protoViewDtos);
         var componentView = views[1];
 
-        tb.renderer.callAction(componentView.viewRef, 0, 'setAttribute("key", "value")', null);
-        expect(DOM.getOuterHTML(tb.rootEl)).toContain('key="value"');
+        tb.renderer.callAction(componentView.viewRef, 0, 'value = "val"', null);
+
+        expect(DOM.getValue(DOM.childNodes(tb.rootEl)[0])).toEqual('val');
         async.done();
       });
     }));
@@ -177,6 +178,6 @@ var directiveWithHostActions = new DirectiveMetadata({
   type: DirectiveMetadata.DIRECTIVE_TYPE,
   selector: '[with-host-actions]',
   hostActions: MapWrapper.createFromStringMap({
-    'setAttr' : 'setAttribute("key", "value")'
+    'setValue' : 'value = "val"'
   })
 });
