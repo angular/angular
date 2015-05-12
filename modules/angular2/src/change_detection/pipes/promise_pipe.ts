@@ -23,7 +23,7 @@ export var __esModule = true;
  *   changeDetection: ON_PUSH
  * })
  * @View({
- *  inline: "Task Description {{description|promise}}"
+ *  inline: "Task Description {{description|async}}"
  * })
  * class Task {
  *  description:Promise<string>;
