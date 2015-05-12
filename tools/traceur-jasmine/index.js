@@ -12,6 +12,9 @@ glob(process.argv[2], function (error, specFiles) {
     includeStackTrace: true,
     defaultTimeoutInterval: 1000,
     showColors: process.argv.indexOf('--no-color') === -1,
-    specs: specFiles
+    specs: specFiles,
+    onComplete: function(passed) {
+      process.exit(passed ? 0 : 1);
+    }
   });
 });
