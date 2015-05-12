@@ -53,7 +53,7 @@ var angularBuilder = {
 
 (function checkNodeAndNpmVersions() {
   var requiredNpmVersion = '>=2.9.0';
-  var requiredNodeVersion = '>=0.10.x'; // TODO: bump this to 0.12 once travis runs on 0.12
+  var requiredNodeVersion = '>=0.12.2';
 
   exec('npm --version', function(e, stdout) {
     var foundNpmVersion = semver.clean(stdout);
