@@ -29,7 +29,7 @@ export class DomCompiler extends RenderCompiler {
   compile(template: ViewDefinition):Promise<ProtoViewDto> {
     var tplPromise = this._templateLoader.load(template);
     return PromiseWrapper.then(tplPromise,
-      (el) => this._compileTemplate(template, el),
+      (el) => this._compileTemplate(template, el, ProtoViewDto.COMPONENT_VIEW_TYPE),
       (_) => { throw new BaseException(`Failed to load the template "${template.componentId}"`); }
     );
   }
@@ -42,13 +42,13 @@ export class DomCompiler extends RenderCompiler {
       directives: [directiveMetadata]
     });
     var element = DOM.createElement(directiveMetadata.selector);
-    return this._compileTemplate(hostViewDef, element);
+    return this._compileTemplate(hostViewDef, element, ProtoViewDto.HOST_VIEW_TYPE);
   }
 
-  _compileTemplate(viewDef: ViewDefinition, tplElement):Promise<ProtoViewDto> {
+  _compileTemplate(viewDef: ViewDefinition, tplElement, protoViewType:number):Promise<ProtoViewDto> {
     var subTaskPromises = [];
     var pipeline = new CompilePipeline(this._stepFactory.createSteps(viewDef, subTaskPromises));
-    var compileElements = pipeline.process(tplElement, viewDef.componentId);
+    var compileElements = pipeline.process(tplElement, protoViewType, viewDef.componentId);
 
     var protoView = compileElements[0].inheritedProtoView.build();
 

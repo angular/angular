@@ -24,7 +24,7 @@ import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ChangeDetector} from 'angular2/change_detection';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveBinding, ElementInjector, PreBuiltObjects} from 'angular2/src/core/compiler/element_injector';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 
@@ -34,7 +34,7 @@ export function main() {
 
   describe('AppViewManagerUtils', () => {
 
-    var metadataReader;
+    var directiveResolver;
     var utils;
 
     function createInjector() {
@@ -42,8 +42,8 @@ export function main() {
     }
 
     function createDirectiveBinding(type) {
-      var meta = metadataReader.read(type);
-      return DirectiveBinding.createFromType(meta.type, meta.annotation);
+      var annotation = directiveResolver.resolve(type);
+      return DirectiveBinding.createFromType(type, annotation);
     }
 
     function createEmptyElBinder() {
@@ -61,7 +61,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var res = new AppProtoView(null, null, null, null, null);
+      var res = new AppProtoView(null, null, null);
       res.elementBinders = binders;
       return res;
     }
@@ -100,8 +100,8 @@ export function main() {
     }
 
     beforeEach( () => {
-      metadataReader = new DirectiveMetadataReader();
-      utils = new AppViewManagerUtils(metadataReader);
+      directiveResolver = new DirectiveResolver();
+      utils = new AppViewManagerUtils(directiveResolver);
     });
 
     describe('hydrateDynamicComponentInElementInjector', () => {

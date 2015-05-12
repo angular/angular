@@ -7,7 +7,7 @@ import {NativeShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/native
 import {Parser, Lexer, DynamicChangeDetection} from 'angular2/change_detection';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {Directive} from 'angular2/src/core/annotations_impl/annotations';
@@ -57,7 +57,7 @@ export function main() {
   var count = getIntParameter('elements');
 
   setupReflector();
-  var reader = new DirectiveMetadataReader();
+  var reader = new DirectiveResolver();
   var cache = new CompilerCache();
   var templateResolver = new FakeTemplateResolver();
   var urlResolver = new UrlResolver();

@@ -168,20 +168,21 @@ export class AppProtoView {
   variableBindings: Map;
   protoLocals:Map;
   bindings:List;
-  variableNames:List;
   render:renderApi.RenderProtoViewRef;
 
   constructor(
       render:renderApi.RenderProtoViewRef,
       protoChangeDetector:ProtoChangeDetector,
-      variableBindings:Map,
-      protoLocals:Map,
-      variableNames:List) {
+      variableBindings:Map) {
     this.render = render;
     this.elementBinders = [];
     this.variableBindings = variableBindings;
-    this.protoLocals = protoLocals;
-    this.variableNames = variableNames;
+    this.protoLocals = MapWrapper.create();
+    if (isPresent(variableBindings)) {
+      MapWrapper.forEach(variableBindings, (templateName, _) => {
+        MapWrapper.set(this.protoLocals, templateName, null);
+      });
+    }
     this.protoChangeDetector = protoChangeDetector;
   }
 

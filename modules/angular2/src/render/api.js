@@ -93,7 +93,7 @@ export class ProtoViewDto {
   static get COMPONENT_VIEW_TYPE() { return 1; }
   // A view that is embedded into another View via a <template> element
   // inside of a component view
-  static get EMBEDDED_VIEW_TYPE() { return 1; }
+  static get EMBEDDED_VIEW_TYPE() { return 2; }
 
   render: RenderProtoViewRef;
   elementBinders:List<ElementBinder>;
@@ -114,6 +114,7 @@ export class DirectiveMetadata {
   id:any;
   selector:string;
   compileChildren:boolean;
+  events:List<string>;
   hostListeners:Map<string, string>;
   hostProperties:Map<string, string>;
   hostAttributes:Map<string, string>;
@@ -121,10 +122,19 @@ export class DirectiveMetadata {
   properties:Map<string, string>;
   readAttributes:List<string>;
   type:number;
-  constructor({id, selector, compileChildren, hostListeners, hostProperties, hostAttributes, hostActions, properties, readAttributes, type}) {
+  callOnDestroy:boolean;
+  callOnChange:boolean;
+  callOnAllChangesDone:boolean;
+  changeDetection: string;
+  constructor({id, selector, compileChildren, events, hostListeners, hostProperties,
+      hostAttributes, hostActions, properties, readAttributes, type,
+      callOnDestroy, callOnChange, callOnAllChangesDone,
+      changeDetection
+    }) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
+    this.events = events;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
@@ -132,6 +142,10 @@ export class DirectiveMetadata {
     this.properties = properties;
     this.readAttributes = readAttributes;
     this.type = type;
+    this.callOnDestroy = callOnDestroy;
+    this.callOnChange = callOnChange;
+    this.callOnAllChangesDone = callOnAllChangesDone;
+    this.changeDetection = changeDetection;
   }
 }
 

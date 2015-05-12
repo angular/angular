@@ -3,6 +3,7 @@ import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {ViewSplitter} from 'angular2/src/render/dom/compiler/view_splitter';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
+import {ProtoViewDto} from 'angular2/src/render/api';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 import {Lexer, Parser} from 'angular2/change_detection';
@@ -56,6 +57,7 @@ export function main() {
         var results = createPipeline().process(rootElement);
         expect(results[2].inheritedProtoView).not.toBe(null);
         expect(results[2].inheritedProtoView).toBe(results[1].inheritedElementBinder.nestedProtoView);
+        expect(results[2].inheritedProtoView.type).toBe(ProtoViewDto.EMBEDDED_VIEW_TYPE);
         expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement)).toEqual('<template>a</template>');
       });
 

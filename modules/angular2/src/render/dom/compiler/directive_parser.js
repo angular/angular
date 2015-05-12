@@ -57,9 +57,24 @@ export class DirectiveParser extends CompileStep {
     });
 
     var componentDirective;
-
+    var foundDirectiveIndices = [];
+    var elementBinder = null;
     this._selectorMatcher.match(cssSelector, (selector, directiveIndex) => {
-      var elementBinder = current.bindElement();
+      elementBinder = current.bindElement();
+      var directive = this._directives[directiveIndex];
+      if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
+        // components need to go first, so it is easier to locate them in the result.
+        ListWrapper.insert(foundDirectiveIndices, 0, directiveIndex);
+        if (isPresent(componentDirective)) {
+          throw new BaseException(`Only one component directive is allowed per element - check ${current.elementDescription}`);
+        }
+        componentDirective = directive;
+        elementBinder.setComponentId(directive.id);
+      } else {
+        ListWrapper.push(foundDirectiveIndices, directiveIndex);
+      }
+    });
+    ListWrapper.forEach(foundDirectiveIndices, (directiveIndex) => {
       var directive = this._directives[directiveIndex];
       var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
       current.compileChildren = current.compileChildren && directive.compileChildren;
@@ -94,13 +109,6 @@ export class DirectiveParser extends CompileStep {
         ListWrapper.forEach(directive.readAttributes, (attrName) => {
           elementBinder.readAttribute(attrName);
         });
-      }
-      if (directive.type === DirectiveMetadata.COMPONENT_TYPE) {
-        if (isPresent(componentDirective)) {
-          throw new BaseException(`Only one component directive is allowed per element - check ${current.elementDescription}`);
-        }
-        componentDirective = directive;
-        elementBinder.setComponentId(directive.id);
       }
     });
   }

@@ -9,7 +9,7 @@ import {Parser, Lexer, ChangeDetection, DynamicChangeDetection, PipeRegistry, de
 import {ExceptionHandler} from './exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from './compiler/template_resolver';
-import {DirectiveMetadataReader} from './compiler/directive_metadata_reader';
+import {DirectiveResolver} from './compiler/directive_resolver';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -39,8 +39,7 @@ import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {
-  appComponentRefToken,
-  appComponentAnnotatedTypeToken
+  appComponentRefToken
 } from './application_tokens';
 
 var _rootInjector: Injector;
@@ -54,16 +53,14 @@ var _rootBindings = [
 function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(DOCUMENT_TOKEN).toValue(DOM.defaultDoc()),
-      bind(appComponentAnnotatedTypeToken).toFactory((reader) => {
-        // TODO(rado): investigate whether to support bindings on root component.
-        return reader.read(appComponentType);
-      }, [DirectiveMetadataReader]),
-
       bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector,
-        appComponentAnnotatedType, testability, registry) => {
+        metadataReader, testability, registry) => {
 
-        var selector = appComponentAnnotatedType.annotation.selector;
-        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, selector, injector).then( (componentRef) => {
+        var annotation = metadataReader.resolve(appComponentType);
+
+        var selector = annotation.selector;
+        // TODO(rado): investigate whether to support bindings on root component.
+        return dynamicComponentLoader.loadIntoNewLocation(appComponentType, null, selector, injector).then( (componentRef) => {
           var domView = resolveInternalDomView(componentRef.hostView.render);
           // We need to do this here to ensure that we create Testability and
           // it's ready on the window for users.
@@ -71,7 +68,7 @@ function _injectorBindings(appComponentType): List<Binding> {
 
           return componentRef;
         });
-      }, [DynamicComponentLoader, Injector, appComponentAnnotatedTypeToken,
+      }, [DynamicComponentLoader, Injector, DirectiveResolver,
         Testability, TestabilityRegistry]),
 
       bind(appComponentType).toFactory((ref) => ref.instance,
@@ -109,7 +106,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       bind(PipeRegistry).toValue(defaultPipeRegistry),
       bind(ChangeDetection).toClass(DynamicChangeDetection),
       TemplateLoader,
-      DirectiveMetadataReader,
+      DirectiveResolver,
       Parser,
       Lexer,
       ExceptionHandler,
@@ -262,7 +259,7 @@ export function bootstrap(appComponentType: Type,
         lc.registerWith(zone, appChangeDetector);
         lc.tick(); //the first tick that will bootstrap the app
 
-        bootstrapProcess.resolve(new ApplicationRef(componentRef, appInjector));
+        bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
       },
 
       (err) => {
@@ -276,9 +273,15 @@ export function bootstrap(appComponentType: Type,
 export class ApplicationRef {
   _hostComponent:ComponentRef;
   _injector:Injector;
-  constructor(hostComponent:ComponentRef, injector:Injector) {
+  _hostComponentType:Type;
+  constructor(hostComponent:ComponentRef, hostComponentType:Type, injector:Injector) {
     this._hostComponent = hostComponent;
     this._injector = injector;
+    this._hostComponentType = hostComponentType;
+  }
+
+  get hostComponentType() {
+    return this._hostComponentType;
   }
 
   get hostComponent() {

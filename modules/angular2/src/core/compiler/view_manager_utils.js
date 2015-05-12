@@ -7,15 +7,15 @@ import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {Renderer} from 'angular2/src/render/api';
 import {BindingPropagationConfig, Locals} from 'angular2/change_detection';
-import {DirectiveMetadataReader} from './directive_metadata_reader';
+import {DirectiveResolver} from './directive_resolver';
 import {RenderViewRef} from 'angular2/src/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {
-  _metadataReader:DirectiveMetadataReader;
+  _directiveResolver:DirectiveResolver;
 
-  constructor(metadataReader:DirectiveMetadataReader) {
-    this._metadataReader = metadataReader;
+  constructor(metadataReader:DirectiveResolver) {
+    this._directiveResolver = metadataReader;
   }
 
   getComponentInstance(parentView:viewModule.AppView, boundElementIndex:number):any {
@@ -171,7 +171,7 @@ export class AppViewManagerUtils {
     if (isBlank(injector)) {
       injector = elementInjector.getLightDomAppInjector();
     }
-    var annotation = this._metadataReader.read(componentBinding.token).annotation;
+    var annotation = this._directiveResolver.resolve(componentBinding.token);
     var componentDirective = eli.DirectiveBinding.createFromBinding(componentBinding, annotation);
     elementInjector.dynamicallyCreateComponent(componentDirective, injector);
   }

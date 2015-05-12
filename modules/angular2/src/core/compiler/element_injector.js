@@ -15,6 +15,8 @@ import {Directive, Component, onChange, onDestroy, onAllChangesDone} from 'angul
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
+import {DirectiveMetadata} from 'angular2/src/render/api';
+
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
@@ -223,21 +225,32 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveBinding extends ResolvedBinding {
-  callOnDestroy:boolean;
-  callOnChange:boolean;
-  callOnAllChangesDone:boolean;
-  annotation:Directive;
   resolvedInjectables:List<ResolvedBinding>;
+  metadata: DirectiveMetadata;
+  publishAs: List<Type>;
 
-  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean, annotation:Directive) {
+  constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean,
+      resolvedInjectables:List<ResolvedBinding>, metadata:DirectiveMetadata, annotation: Directive) {
     super(key, factory, dependencies, providedAsPromise);
-    this.callOnDestroy = isPresent(annotation) && annotation.hasLifecycleHook(onDestroy);
-    this.callOnChange = isPresent(annotation) && annotation.hasLifecycleHook(onChange);
-    this.callOnAllChangesDone = isPresent(annotation) && annotation.hasLifecycleHook(onAllChangesDone);
-    this.annotation = annotation;
-    if (annotation instanceof Component && isPresent(annotation.injectables)) {
-      this.resolvedInjectables = Injector.resolve(annotation.injectables);
+    this.resolvedInjectables = resolvedInjectables;
+    this.metadata = metadata;
+    if (annotation instanceof Component) {
+      this.publishAs = annotation.publishAs;
+    } else {
+      this.publishAs = null;
     }
+  }
+
+  get callOnDestroy() {
+    return this.metadata.callOnDestroy;
+  }
+
+  get callOnChange() {
+    return this.metadata.callOnChange;
+  }
+
+  get callOnAllChangesDone() {
+    return this.metadata.callOnAllChangesDone;
   }
 
   get displayName() {
@@ -245,32 +258,71 @@ export class DirectiveBinding extends ResolvedBinding {
   }
 
   get eventEmitters():List<string> {
-    return isPresent(this.annotation) && isPresent(this.annotation.events) ? this.annotation.events : [];
+    return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
   }
 
-  get hostActions() { //StringMap
-    return isPresent(this.annotation) && isPresent(this.annotation.hostActions) ? this.annotation.hostActions : {};
+  get hostActions():Map<string,string> {
+    return isPresent(this.metadata) && isPresent(this.metadata.hostActions) ? this.metadata.hostActions : MapWrapper.create();
   }
 
   get changeDetection() {
-    if (this.annotation instanceof Component) {
-      var c:Component = this.annotation;
-      return c.changeDetection;
+    if (isPresent(metadata)) {
+      return metadata.changeDetection;
     } else {
       return null;
     }
   }
 
-  static createFromBinding(b:Binding, annotation:Directive):DirectiveBinding {
+  static createFromBinding(b:Binding, ann:Directive):DirectiveBinding {
+    if (isBlank(ann)) {
+      ann = new Directive();
+    }
     var rb = b.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise, annotation);
+    var renderType;
+    var compileChildren = ann.compileChildren;
+    var resolvedInjectables = null;
+    var changeDetection = null;
+    if (ann instanceof Component) {
+      renderType = DirectiveMetadata.COMPONENT_TYPE;
+      if (isPresent(ann.injectables)) {
+        resolvedInjectables = Injector.resolve(ann.injectables);
+      }
+      changeDetection = ann.changeDetection;
+    } else {
+      renderType = DirectiveMetadata.DIRECTIVE_TYPE;
+    }
+    var readAttributes = [];
+    ListWrapper.forEach(deps, (dep) => {
+      if (isPresent(dep.attributeName)) {
+        ListWrapper.push(readAttributes, dep.attributeName);
+      }
+    });
+    var metadata = new DirectiveMetadata({
+      id: stringify(rb.key.token),
+      type: renderType,
+      selector: ann.selector,
+      compileChildren: compileChildren,
+      events: ann.events,
+      hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
+      hostProperties: isPresent(ann.hostProperties) ? MapWrapper.createFromStringMap(ann.hostProperties) : null,
+      hostAttributes: isPresent(ann.hostAttributes) ? MapWrapper.createFromStringMap(ann.hostAttributes) : null,
+      hostActions: isPresent(ann.hostActions) ? MapWrapper.createFromStringMap(ann.hostActions) : null,
+      properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
+      readAttributes: readAttributes,
+      callOnDestroy: ann.hasLifecycleHook(onDestroy),
+      callOnChange: ann.hasLifecycleHook(onChange),
+      callOnAllChangesDone: ann.hasLifecycleHook(onAllChangesDone),
+      changeDetection: changeDetection
+    });
+    return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise, resolvedInjectables, metadata, ann);
   }
 
   static createFromType(type:Type, annotation:Directive):DirectiveBinding {
     var binding = new Binding(type, {toClass: type});
     return DirectiveBinding.createFromBinding(binding, annotation);
   }
+
 }
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
@@ -476,7 +528,7 @@ export class ProtoElementInjector  {
 
   _createHostActionAccessors(b:DirectiveBinding) {
     var res = [];
-    StringMapWrapper.forEach(b.hostActions, (actionExpression, actionName) => {
+    MapWrapper.forEach(b.hostActions, (actionExpression, actionName) => {
       ListWrapper.push(res, new HostActionAccessor(actionExpression, reflector.getter(actionName)))
     });
     return res;
@@ -627,8 +679,7 @@ export class ElementInjector extends TreeNode {
     var p = this._proto;
     if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
     if (isPresent(shadowDomAppInjector)) {
-      var componentAnnotation:Component = this._proto._binding0.annotation;
-      var publishAs = componentAnnotation.publishAs;
+      var publishAs = this._proto._binding0.publishAs;
       if (isPresent(publishAs) && publishAs.length > 0) {
         // If there's a component directive on this element injector, then
         // 0-th key must contain the directive itself.

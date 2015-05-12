@@ -18,7 +18,7 @@ import {Router, RootRouter} from './src/router/router';
 import {RouteRegistry} from './src/router/route_registry';
 import {Pipeline} from './src/router/pipeline';
 import {Location} from './src/router/location';
-import {appComponentAnnotatedTypeToken} from './src/core/application_tokens';
+import {appComponentRefToken} from './src/core/application_tokens';
 import {bind} from './di';
 
 export var routerInjectables:List = [
@@ -26,7 +26,7 @@ export var routerInjectables:List = [
   Pipeline,
   BrowserLocation,
   Location,
-  bind(Router).toFactory((registry, pipeline, location, meta) => {
-    return new RootRouter(registry, pipeline, location, meta.type);
-  }, [RouteRegistry, Pipeline, Location, appComponentAnnotatedTypeToken])
+  bind(Router).toFactory((registry, pipeline, location, app) => {
+    return new RootRouter(registry, pipeline, location, app.hostComponentType);
+  }, [RouteRegistry, Pipeline, Location, appComponentRefToken])
 ];

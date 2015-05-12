@@ -37,7 +37,7 @@ export function main() {
     }
 
     function createProtoView() {
-      return new AppProtoView(null, null, null, null, null);
+      return new AppProtoView(null, null, null);
     }
 
     function createView() {

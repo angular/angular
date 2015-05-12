@@ -29,7 +29,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 var teamCmpCount;
 
@@ -41,7 +41,7 @@ export function main() {
     beforeEachBindings(() => [
       Pipeline,
       RouteRegistry,
-      DirectiveMetadataReader,
+      DirectiveResolver,
       bind(Location).toClass(SpyLocation),
       bind(Router).toFactory((registry, pipeline, location) => {
         return new RootRouter(registry, pipeline, location, MyComp);

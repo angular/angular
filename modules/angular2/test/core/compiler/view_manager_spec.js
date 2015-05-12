@@ -24,7 +24,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Renderer, RenderViewRef, RenderProtoViewRef, RenderViewContainerRef} from 'angular2/src/render/api';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {DirectiveBinding, ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
@@ -38,7 +38,7 @@ export function main() {
     var utils;
     var viewPool;
     var manager;
-    var reader;
+    var directiveResolver;
     var createdViews;
     var createdRenderViews;
 
@@ -55,8 +55,8 @@ export function main() {
     }
 
     function createDirectiveBinding(type) {
-      var meta = reader.read(type);
-      return DirectiveBinding.createFromType(meta.type, meta.annotation);
+      var annotation = directiveResolver.resolve(type);
+      return DirectiveBinding.createFromType(type, annotation);
     }
 
     function createEmptyElBinder() {
@@ -80,7 +80,7 @@ export function main() {
           staticChildComponentCount++;
         }
       }
-      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null, null, null, null);
+      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null, null);
       res.elementBinders = binders;
       return res;
     }
@@ -117,7 +117,7 @@ export function main() {
     }
 
     beforeEach( () => {
-      reader = new DirectiveMetadataReader();
+      directiveResolver = new DirectiveResolver();
       renderer = new SpyRenderer();
       utils = new SpyAppViewManagerUtils();
       viewPool = new SpyAppViewPool();

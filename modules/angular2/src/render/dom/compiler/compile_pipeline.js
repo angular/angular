@@ -1,10 +1,11 @@
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {CompileElement} from './compile_element';
 import {CompileControl} from './compile_control';
 import {CompileStep} from './compile_step';
 import {ProtoViewBuilder} from '../view/proto_view_builder';
+import {ProtoViewDto} from '../../api';
 
 /**
  * CompilePipeline for executing CompileSteps recursively for
@@ -16,10 +17,13 @@ export class CompilePipeline {
     this._control = new CompileControl(steps);
   }
 
-  process(rootElement, compilationCtxtDescription:string = ''):List {
+  process(rootElement, protoViewType:number = null, compilationCtxtDescription:string = ''):List {
+    if (isBlank(protoViewType)) {
+      protoViewType = ProtoViewDto.COMPONENT_VIEW_TYPE;
+    }
     var results = ListWrapper.create();
     var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
-    rootCompileElement.inheritedProtoView = new ProtoViewBuilder(rootElement);
+    rootCompileElement.inheritedProtoView = new ProtoViewBuilder(rootElement, protoViewType);
     rootCompileElement.isViewRoot = true;
     this._process(results, null, rootCompileElement,
       compilationCtxtDescription

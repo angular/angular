@@ -204,6 +204,14 @@ export function main() {
            );
          }).toThrowError(new RegExp('Only one component directive is allowed per element' ));
       });
+
+      it('should sort the directives and store the component as the first directive', () => {
+        var results = process(
+          el('<some-comp some-decor></some-comp>')
+        );
+        expect(annotatedDirectives[results[0].directives[0].directiveIndex].id).toEqual('someComponent');
+        expect(annotatedDirectives[results[0].directives[1].directiveIndex].id).toEqual('someDirective');
+      });
     });
   });
 }
@@ -239,6 +247,7 @@ var someComponent2 = new DirectiveMetadata({
 
 var someDirective = new DirectiveMetadata({
   selector: '[some-decor]',
+  id: 'someDirective',
   type: DirectiveMetadata.DIRECTIVE_TYPE
 });
 

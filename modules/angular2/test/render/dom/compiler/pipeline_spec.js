@@ -9,6 +9,7 @@ import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step'
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
+import {ProtoViewDto} from 'angular2/src/render/api';
 
 export function main() {
   describe('compile_pipeline', () => {
@@ -39,7 +40,7 @@ export function main() {
       var element = el('<div><div><span viewroot><span></span></span></div></div>');
       var pipeline = new CompilePipeline([new MockStep((parent, current, control) => {
         if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-          current.inheritedProtoView = new ProtoViewBuilder(current.element);
+          current.inheritedProtoView = new ProtoViewBuilder(current.element, ProtoViewDto.EMBEDDED_VIEW_TYPE);
         }
       })]);
       var results = pipeline.process(element);

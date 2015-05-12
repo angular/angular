@@ -7,7 +7,7 @@ import {Parser, Lexer, ChangeDetection, DynamicChangeDetection,
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
-import {DirectiveMetadataReader} from 'angular2/src/core/compiler/directive_metadata_reader';
+import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
@@ -92,7 +92,7 @@ function _getAppBindings() {
     bind(ChangeDetection).toClass(DynamicChangeDetection),
     TemplateLoader,
     DynamicComponentLoader,
-    DirectiveMetadataReader,
+    DirectiveResolver,
     Parser,
     Lexer,
     ExceptionHandler,

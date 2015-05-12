@@ -18,11 +18,13 @@ export class ProtoViewBuilder {
   rootElement;
   variableBindings: Map<string, string>;
   elements:List<ElementBinderBuilder>;
+  type:number;
 
-  constructor(rootElement) {
+  constructor(rootElement, type:number) {
     this.rootElement = rootElement;
     this.elements = [];
     this.variableBindings = MapWrapper.create();
+    this.type = type;
   }
 
   bindElement(element, description = null):ElementBinderBuilder {
@@ -104,6 +106,7 @@ export class ProtoViewBuilder {
         element: this.rootElement,
         elementBinders: renderElementBinders
       })),
+      type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings
     });
@@ -169,7 +172,7 @@ export class ElementBinderBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
-    this.nestedProtoView = new ProtoViewBuilder(rootElement);
+    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ProtoViewDto.EMBEDDED_VIEW_TYPE);
     return this.nestedProtoView;
   }
 

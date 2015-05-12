@@ -11,7 +11,6 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {bootstrap} from 'angular2/src/core/application';
-import {appComponentAnnotatedTypeToken} from 'angular2/src/core/application_tokens';
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
@@ -114,7 +113,7 @@ export function main() {
     it('should resolve an injector promise and contain bindings', inject([AsyncTestCompleter], (async) => {
       var refPromise = bootstrap(HelloRootCmp, testBindings);
       refPromise.then((ref) => {
-        expect(ref.injector.get(appComponentAnnotatedTypeToken).type).toBe(HelloRootCmp);
+        expect(ref.injector.get(HelloRootCmp)).toBeAnInstanceOf(HelloRootCmp);
         async.done();
       });
     }));
