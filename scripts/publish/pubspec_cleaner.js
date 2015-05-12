@@ -24,7 +24,7 @@ var BASE_PACKAGE_JSON = require('../../package.json');
 doc['version'] = BASE_PACKAGE_JSON.version;
 doc['homepage'] = BASE_PACKAGE_JSON.homepage;
 doc['authors'] = Object.keys(BASE_PACKAGE_JSON.contributors).map(function(name) {
-  return name + ' <' + BASE_PACKAGE_JSON.contributors[name] + '>';
+  return BASE_PACKAGE_JSON.contributors[name];
 });
 
 fs.writeFileSync(pubspecFile, yaml.safeDump(doc));
