@@ -22,6 +22,7 @@ env:
   - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
   matrix:
   - MODE=js DART_CHANNEL=dev
+  - MODE=router DART_CHANNEL=dev
   - MODE=dart DART_CHANNEL=stable
   - MODE=dart DART_CHANNEL=dev
 

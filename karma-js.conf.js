@@ -29,6 +29,7 @@ module.exports = function(config) {
 
     exclude: [
       'dist/js/dev/es5/**/e2e_test/**',
+      'dist/angular1_router.js'
     ],
 
     customLaunchers: {

@@ -64,6 +64,8 @@ export class RouteRecognizer {
 
   generate(name:string, params:any) {
     var pathRecognizer = MapWrapper.get(this.names, name);
-    return pathRecognizer.generate(params);
+    if (isPresent(pathRecognizer)) {
+      return pathRecognizer.generate(params);
+    }
   }
 }

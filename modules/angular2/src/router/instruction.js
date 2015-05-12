@@ -100,5 +100,3 @@ function mapObj(obj:StringMap, fn):List {
   StringMapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
   return result;
 }
-
-export var noopInstruction = new Instruction();

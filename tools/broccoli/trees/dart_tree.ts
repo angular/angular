@@ -43,7 +43,7 @@ function stripModulePrefix(relativePath: string): string {
 
 function getSourceTree() {
   // Transpile everything in 'modules' except for rtts_assertions.
-  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
+  var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*', 'angular1_router/**']);
   var transpiled = ts2dart.transpile(tsInputTree);
   // Native sources, dart only examples, etc.
   var dartSrcs = modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/css/**']);

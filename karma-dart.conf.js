@@ -26,6 +26,7 @@ module.exports = function(config) {
 
     exclude: [
       'dist/dart/**/packages/**',
+      'modules/angular1_router/**'
     ],
 
     karmaDartImports: {

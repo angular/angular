@@ -94,9 +94,8 @@ export class Router {
   config(config:any) {
     if (config instanceof List) {
       config.forEach((configObject) => {
-        // TODO: this is a hack
         this._registry.config(this.hostComponent, configObject);
-      })
+      });
     } else {
       this._registry.config(this.hostComponent, config);
     }
@@ -203,7 +202,13 @@ export class Router {
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the app's base href.
    */
   generate(name:string, params:any) {
-    return this._registry.generate(name, params, this.hostComponent);
+    var url = this._registry.generate(name, params, this.hostComponent);
+    if (isPresent(url)) {
+      return url;
+    }
+    if (isPresent(this.parent)) {
+      return this.parent.generate(name, params);
+    }
   }
 }
 
