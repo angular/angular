@@ -53,12 +53,11 @@ export class PromisePipe extends Pipe {
   }
 
   transform(promise: Promise<any>): any {
-    var pipe = this;
     if (isBlank(this._sourcePromise)) {
       this._sourcePromise = promise;
       promise.then((val) => {
-        if (pipe._sourcePromise === promise) {
-          pipe._updateLatestValue(val);
+        if (this._sourcePromise === promise) {
+          this._updateLatestValue(val);
         }
       });
       return null;
