@@ -1,3 +1,67 @@
+<a name"2.0.0-alpha.23"></a>
+### 2.0.0-alpha.23 (2015-05-12)
+
+
+#### Bug Fixes
+
+* **change_detection:** updated dynamic change detector not to mutate when throwing ([d717529e](https://github.com/angular/angular/commit/d717529e), closes [#1762](https://github.com/angular/angular/issues/1762))
+* **dart:** Remove unused imports. ([4ce0d5e0](https://github.com/angular/angular/commit/4ce0d5e0))
+* **forms:** export directives as const in Dart ([5036086f](https://github.com/angular/angular/commit/5036086f), closes [#1283](https://github.com/angular/angular/issues/1283))
+* **gulpfile:** fixed test.unit.dart to format dart code before running test ([92d6aa1f](https://github.com/angular/angular/commit/92d6aa1f))
+* **location:** dartium does not like pushState with null. ([c2a42d5d](https://github.com/angular/angular/commit/c2a42d5d))
+* **router:**
+  * add baseUrl to relative paths, but not absolute. ([a5741541](https://github.com/angular/angular/commit/a5741541), closes [#1783](https://github.com/angular/angular/issues/1783))
+  * reuse common parent components ([ac80df09](https://github.com/angular/angular/commit/ac80df09))
+  * router-link works without params ([77d1fc14](https://github.com/angular/angular/commit/77d1fc14))
+  * strip base href from URLs when navigating ([853d1de6](https://github.com/angular/angular/commit/853d1de6))
+* **test_lib:** spy funcs should match null arguments ([84dc6ae7](https://github.com/angular/angular/commit/84dc6ae7))
+* **transformer:** remove classDefParser in favor of hardcoded strings to speed up build ([01d5c295](https://github.com/angular/angular/commit/01d5c295))
+* **view:** fixed ProtoViewFactory to get all property bindings ([7f976381](https://github.com/angular/angular/commit/7f976381))
+
+
+#### Features
+
+* **PromisePipe:** add pipe for promises ([74987585](https://github.com/angular/angular/commit/74987585))
+* **VmTurnZone:** Rework the implementation to minimize change detection runs ([e8a6c95e](https://github.com/angular/angular/commit/e8a6c95e))
+* **change_detection.js:** export null pipes ([4b62a722](https://github.com/angular/angular/commit/4b62a722), closes [#1624](https://github.com/angular/angular/issues/1624))
+* **compiler:**
+  * added support for host actions ([f9c1de46](https://github.com/angular/angular/commit/f9c1de46))
+  * allow setting attributes on a host element ([51839ca6](https://github.com/angular/angular/commit/51839ca6), closes [#1402](https://github.com/angular/angular/issues/1402))
+* **di:**
+  * support type literals in DI ([358a6750](https://github.com/angular/angular/commit/358a6750))
+  * expose parent injector ([2185e7ce](https://github.com/angular/angular/commit/2185e7ce))
+  * components can self-publish via publishAs ([1a0da11e](https://github.com/angular/angular/commit/1a0da11e))
+* **directives:** export collection of core directives ([a5638a94](https://github.com/angular/angular/commit/a5638a94), closes [#1524](https://github.com/angular/angular/issues/1524))
+* **dom:** add getBaseHref method ([05219a54](https://github.com/angular/angular/commit/05219a54))
+* **facade:** add equals method to StringMapWrapper ([aff85b50](https://github.com/angular/angular/commit/aff85b50))
+* **gulpfuile:** added watch.js.dev ([3256ff1c](https://github.com/angular/angular/commit/3256ff1c))
+* **lang:** support const expressions in TS/JS and Dart ([4665726f](https://github.com/angular/angular/commit/4665726f), closes [#1796](https://github.com/angular/angular/issues/1796))
+* **material:**
+  * add early version of md-grid-list. ([8ef183b5](https://github.com/angular/angular/commit/8ef183b5), closes [#1683](https://github.com/angular/angular/issues/1683))
+  * early version of md-input ([ad239218](https://github.com/angular/angular/commit/ad239218), closes [#1753](https://github.com/angular/angular/issues/1753))
+* **view:** allow to transplant a view into a ViewContainer at another place. ([4f3433b5](https://github.com/angular/angular/commit/4f3433b5), closes [#1492](https://github.com/angular/angular/issues/1492))
+
+
+#### Breaking Changes
+
+* 
+VmTurnZone has been renamed to NgZone.
+
+- The public API has not chnanged,
+- The "outer" zone is now named "mount" zone (private to NgZone).
+
+ ([e11c2054](https://github.com/angular/angular/commit/e11c2054))
+* 
+A collection of all the form directives is exported
+under `formDirectives`
+while those were previously available
+under `FormDirectives`.
+
+Closes #1804
+
+ ([229e770a](https://github.com/angular/angular/commit/229e770a))
+
+
 <a name"2.0.0-alpha.22"></a>
 ### 2.0.0-alpha.22 (2015-05-07)
 
