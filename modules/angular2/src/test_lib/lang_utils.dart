@@ -1,3 +1,5 @@
+library test_lib.lang_utils;
+
 import 'dart:mirrors';
 
 Type getTypeOf(instance) => instance.runtimeType;

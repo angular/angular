@@ -25,8 +25,19 @@ class PromiseWrapper {
 
   static _Completer completer() => new _Completer(new Completer());
 
-  static void setTimeout(fn(), int millis) {
-    new Timer(new Duration(milliseconds: millis), fn);
+  // TODO(vic): create a TimerWrapper
+  static Timer setTimeout(fn(), int millis)
+      => new Timer(new Duration(milliseconds: millis), fn);
+  static void clearTimeout(Timer timer) {
+    timer.cancel();
+  }
+
+  static Timer setInterval(fn(), int millis) {
+    var interval = new Duration(milliseconds: millis);
+    return new Timer.periodic(interval, (Timer timer) { fn(); });
+  }
+  static void clearInterval(Timer timer) {
+    timer.cancel();
   }
 
   static bool isPromise(maybePromise) {
