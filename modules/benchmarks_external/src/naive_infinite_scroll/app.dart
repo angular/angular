@@ -10,7 +10,7 @@ import 'package:angular2/src/test_lib/benchmark_util.dart';
         <div style="display: flex">
           <scroll-area scroll-top="scrollTop"></scroll-area>
         </div>
-        <div *ng-if="scrollAreas.length > 0">
+        <div ng-if="scrollAreas.length > 0">
           <p>Following tables are only here to add weight to the UI:</p>
           <scroll-area ng-repeat="scrollArea in scrollAreas"></scroll-area>
         </div>
