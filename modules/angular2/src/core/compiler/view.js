@@ -151,7 +151,7 @@ export class AppView {
         }
         var result = expr.eval(context, new Locals(this.locals, locals));
         if (isPresent(result)) {
-          allowDefaultBehavior = allowDefaultBehavior && result;
+          allowDefaultBehavior = allowDefaultBehavior && result == true;
         }
       });
     }

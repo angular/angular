@@ -12,12 +12,13 @@ import {dashCaseToCamelCase} from '../util';
 // Group 1 = "bind-"
 // Group 2 = "var-" or "#"
 // Group 3 = "on-"
-// Group 4 = the identifier after "bind-", "var-/#", or "on-"
-// Group 5 = idenitifer inside square braces
-// Group 6 = identifier inside parenthesis
+// Group 4 = "bindon-"
+// Group 5 = the identifier after "bind-", "var-/#", or "on-"
+// Group 6 = idenitifer inside [()]
+// Group 7 = idenitifer inside []
+// Group 8 = identifier inside ()
 var BIND_NAME_REGEXP = RegExpWrapper.create(
-    '^(?:(?:(?:(bind-)|(var-|#)|(on-))(.+))|\\[([^\\]]+)\\]|\\(([^\\)]+)\\))$');
-
+    '^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\\[\\(([^\\)]+)\\)\\]|\\[([^\\]]+)\\]|\\(([^\\)]+)\\))$');
 /**
  * Parses the property bindings on a single element.
  */
@@ -36,23 +37,30 @@ export class PropertyBindingParser extends CompileStep {
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       var bindParts = RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
       if (isPresent(bindParts)) {
-        if (isPresent(bindParts[1])) {
-          // match: bind-prop
-          this._bindProperty(bindParts[4], attrValue, current, newAttrs);
-        } else if (isPresent(bindParts[2])) {
-          // match: var-name / var-name="iden" / #name / #name="iden"
-          var identifier = bindParts[4];
+        if (isPresent(bindParts[1])) { // match: bind-prop
+          this._bindProperty(bindParts[5], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[2])) { // match: var-name / var-name="iden" / #name / #name="iden"
+          var identifier = bindParts[5];
           var value = attrValue == '' ? '\$implicit' : attrValue;
           this._bindVariable(identifier, value, current, newAttrs);
-        } else if (isPresent(bindParts[3])) {
-          // match: on-event
-          this._bindEvent(bindParts[4], attrValue, current, newAttrs);
-        } else if (isPresent(bindParts[5])) {
-          // match: [prop]
+
+        } else if (isPresent(bindParts[3])) { // match: on-event
+          this._bindEvent(bindParts[5], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[4])) { // match: bindon-prop
           this._bindProperty(bindParts[5], attrValue, current, newAttrs);
-        } else if (isPresent(bindParts[6])) {
-          // match: (event)
-          this._bindEvent(bindParts[6], attrValue, current, newAttrs);
+          this._bindAssignmentEvent(bindParts[5], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[6])) { // match: [(expr)]
+          this._bindProperty(bindParts[6], attrValue, current, newAttrs);
+          this._bindAssignmentEvent(bindParts[6], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[7])) { // match: [expr]
+          this._bindProperty(bindParts[7], attrValue, current, newAttrs);
+
+        } else if (isPresent(bindParts[8])) { // match: (event)
+          this._bindEvent(bindParts[8], attrValue, current, newAttrs);
         }
       } else {
         var expr = this._parser.parseInterpolation(
@@ -88,6 +96,10 @@ export class PropertyBindingParser extends CompileStep {
     var camelCaseName = dashCaseToCamelCase(name);
     binder.bindProperty(camelCaseName, ast);
     MapWrapper.set(newAttrs, name, ast.source);
+  }
+
+  _bindAssignmentEvent(name, expression, current:CompileElement, newAttrs) {
+    this._bindEvent(name, `${expression}=$event`, current, newAttrs);
   }
 
   _bindEvent(name, expression, current:CompileElement, newAttrs) {

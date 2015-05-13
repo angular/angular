@@ -149,6 +149,18 @@ export function main() {
       expect(MapWrapper.get(results[0].attrs(), 'a')).toEqual('b');
       expect(MapWrapper.get(results[0].attrs(), 'c')).toEqual('d');
     });
+
+    it('should detect [()] syntax', () => {
+      var results = process(el('<div [(a)]="b"></div>'));
+      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
+    });
+
+    it('should detect bindon- syntax', () => {
+      var results = process(el('<div bindon-a="b"></div>'));
+      expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
+      expect(results[0].eventBindings[0].source.source).toEqual('b=$event');
+    });
   });
 }
 

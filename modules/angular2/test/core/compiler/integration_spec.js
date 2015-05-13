@@ -603,6 +603,30 @@ export function main() {
         });
       }));
 
+      it('should support [()] syntax', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: '<div [(control)]="ctxProp" two-way></div>',
+          directives: [DirectiveWithTwoWayBinding]
+        }));
+
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var injector = view.rawView.elementInjectors[0];
+          var dir = injector.get(DirectiveWithTwoWayBinding);
+
+          ctx.ctxProp = 'one';
+          view.detectChanges();
+
+          expect(dir.value).toEqual('one');
+
+          ObservableWrapper.subscribe(dir.control, (_) => {
+            expect(ctx.ctxProp).toEqual('two');
+            async.done();
+          });
+
+          dir.triggerChange('two');
+        });
+      }));
+
       if (DOM.supportsDOMEvents()) {
         it("should support invoking methods on the host element via hostActions", inject([TestBed, AsyncTestCompleter], (tb, async) => {
           tb.overrideView(MyComp, new View({
@@ -1527,5 +1551,23 @@ class ToolbarComponent {
   constructor(@Query(ToolbarPart) query: QueryList) {
     this.ctxProp = 'hello world';
     this.query = query;
+  }
+}
+
+@Directive({
+  selector: '[two-way]',
+  properties: {value: 'control'},
+  events: ['control']
+})
+class DirectiveWithTwoWayBinding {
+  control:EventEmitter;
+  value:any;
+
+  constructor() {
+    this.control = new EventEmitter();
+  }
+
+  triggerChange(value) {
+    ObservableWrapper.callNext(this.control, value);
   }
 }
