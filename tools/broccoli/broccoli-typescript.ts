@@ -128,7 +128,7 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   constructor(private compilerOptions: ts.CompilerOptions, private fileNames: string[],
               private fileRegistry: FileRegistry, private treeInputPath: string) {
     this.currentDirectory = process.cwd();
-    this.defaultLibFilePath = ts.getDefaultLibFilePath(compilerOptions);
+    this.defaultLibFilePath = ts.getDefaultLibFilePath(compilerOptions).replace(/\\/g, '/');
   }
 
 
