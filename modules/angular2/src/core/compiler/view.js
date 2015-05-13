@@ -164,6 +164,7 @@ export class AppView {
  */
 export class AppProtoView {
   elementBinders:List<ElementBinder>;
+  protoDto:any;
   protoChangeDetector:ProtoChangeDetector;
   variableBindings: Map;
   protoLocals:Map;
@@ -176,13 +177,15 @@ export class AppProtoView {
       protoChangeDetector:ProtoChangeDetector,
       variableBindings:Map,
       protoLocals:Map,
-      variableNames:List) {
+      variableNames:List,
+      protoDto:any) {
     this.render = render;
     this.elementBinders = [];
     this.variableBindings = variableBindings;
     this.protoLocals = protoLocals;
     this.variableNames = variableNames;
     this.protoChangeDetector = protoChangeDetector;
+    this.protoDto = protoDto;
   }
 
   bindElement(parent:ElementBinder, distanceToParent:int, protoElementInjector:ProtoElementInjector,

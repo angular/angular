@@ -58,22 +58,20 @@ function _injectorBindings(appComponentType): List<Binding> {
         // TODO(rado): investigate whether to support bindings on root component.
         return reader.read(appComponentType);
       }, [DirectiveMetadataReader]),
-
       bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector,
-        appComponentAnnotatedType, testability, registry) => {
+        appComponentAnnotatedType) => {
 
         var selector = appComponentAnnotatedType.annotation.selector;
-        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, selector, injector).then( (componentRef) => {
-          var domView = resolveInternalDomView(componentRef.hostView.render);
-          // We need to do this here to ensure that we create Testability and
-          // it's ready on the window for users.
-          registry.registerApplication(domView.boundElements[0], testability);
-
-          return componentRef;
-        });
-      }, [DynamicComponentLoader, Injector, appComponentAnnotatedTypeToken,
-        Testability, TestabilityRegistry]),
-
+        return dynamicComponentLoader.loadIntoNewLocation(appComponentAnnotatedType.type, null, selector, injector);
+      }, [DynamicComponentLoader, Injector, appComponentAnnotatedTypeToken]),
+      bind(Testability).toAsyncFactory((appComponentRef, registry) => {
+        var testability = new Testability(appComponentRef);
+        var domView = resolveInternalDomView(appComponentRef.hostView.render);
+        // We need to do this here to ensure that we create Testability and
+        // it's ready on the window for users.
+        registry.registerApplication(domView.boundElements[0], testability);        
+        return testability;
+      }, [appComponentRefToken, TestabilityRegistry]),
       bind(appComponentType).toFactory((ref) => ref.instance,
           [appComponentRefToken]),
       bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),[ExceptionHandler]),
@@ -118,8 +116,7 @@ function _injectorBindings(appComponentType): List<Binding> {
       UrlResolver,
       StyleUrlResolver,
       StyleInliner,
-      DynamicComponentLoader,
-      Testability
+      DynamicComponentLoader
   ];
 }
 
@@ -254,8 +251,10 @@ export function bootstrap(appComponentType: Type,
 
     var appInjector = _createAppInjector(appComponentType, componentInjectableBindings, zone);
 
-    PromiseWrapper.then(appInjector.asyncGet(appComponentRefToken),
-      (componentRef) => {
+    PromiseWrapper.then(PromiseWrapper.all([appInjector.asyncGet(appComponentRefToken),
+        appInjector.asyncGet(Testability)]),
+      (results) => {
+        var componentRef = results[0];
         var appChangeDetector = internalView(componentRef.hostView).changeDetector;
         // retrieve life cycle: may have already been created if injected in root component
         var lc = appInjector.get(LifeCycle);
