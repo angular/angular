@@ -10,7 +10,7 @@ All of our npm dependencies are locked via the `npm-shrinkwrap.json` file for th
 However npm's shrinkwrap is known to be buggy, so we need to take some extra steps to deal with this.
 The most important step is generating the npm-shrinkwrap.clean.js which is used during code reviews
 or debugging to easily review what has actually changed. 
-See https://github.com/npm/npm/issues/3581 for related npm issue.
+See https://github.com/npm/npm/issues/3581 for related npm issue. A common symptom is that the `from` property of various dependencies in `npm-shrinkwrap.json` "arbitrarily" changes depending on when and where the shrinkwrap command was run.
 
 To add a new dependency do the following:
 
