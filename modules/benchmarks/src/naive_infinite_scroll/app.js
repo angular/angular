@@ -20,9 +20,9 @@ import {View} from 'angular2/src/core/annotations_impl/view';
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>
     </div>
-    <div template="if scrollAreas.length > 0">
+    <div template="ng-if scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="for #scrollArea of scrollAreas"></scroll-area>
+      <scroll-area template="ng-for #scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>`
 })
