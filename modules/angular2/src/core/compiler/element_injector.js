@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
-  AbstractBindingError, CyclicDependencyError} from 'angular2/di';
+  AbstractBindingError, CyclicDependencyError, resolveForwardRef} from 'angular2/di';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import * as viewModule from './view';
@@ -220,7 +220,7 @@ export class DirectiveDependency extends Dependency {
 
   static _query(properties) {
     var p = ListWrapper.find(properties, (p) => p instanceof Query);
-    return isPresent(p) ? p.directive : null;
+    return isPresent(p) ? resolveForwardRef(p.directive) : null;
   }
 }
 

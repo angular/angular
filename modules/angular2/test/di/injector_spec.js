@@ -1,6 +1,6 @@
 import {isBlank, BaseException} from 'angular2/src/facade/lang';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Injector, bind, ResolvedBinding} from 'angular2/di';
+import {Injector, bind, ResolvedBinding, Key, forwardRef} from 'angular2/di';
 import {Optional, Inject, InjectLazy} from 'angular2/src/di/annotations_impl';
 
 
@@ -382,12 +382,31 @@ export function main() {
     });
 
     describe('resolve', function() {
-      it('should resolve and flatten', function() {
+      it('should resolve and flatten', () => {
         var bindings = Injector.resolve([Engine, [BrokenEngine]]);
         bindings.forEach(function(b) {
           if (isBlank(b)) return;  // the result is a sparse array
           expect(b instanceof ResolvedBinding).toBe(true);
         });
+      });
+
+      it('should resolve forward references', () => {
+        var bindings = Injector.resolve([
+          forwardRef(() => Engine),
+          [ bind(forwardRef(() => BrokenEngine)).toClass(forwardRef(() => Engine)) ],
+          bind(forwardRef(() => String)).toFactory(() => 'OK', [forwardRef(() => Engine)]),
+          bind(forwardRef(() => DashboardSoftware)).toAsyncFactory(() => 123, [forwardRef(() => BrokenEngine)])
+        ]);
+
+        var engineBinding = bindings[Key.get(Engine).id];
+        var brokenEngineBinding = bindings[Key.get(BrokenEngine).id];
+        var stringBinding = bindings[Key.get(String).id];
+        var dashboardSoftwareBinding = bindings[Key.get(DashboardSoftware).id];
+
+        expect(engineBinding.factory() instanceof Engine).toBe(true);
+        expect(brokenEngineBinding.factory() instanceof Engine).toBe(true);
+        expect(stringBinding.dependencies[0].key).toEqual(Key.get(Engine));
+        expect(dashboardSoftwareBinding.dependencies[0].key).toEqual(Key.get(BrokenEngine));
       });
     });
   });
