@@ -1,4 +1,4 @@
-import {bootstrap, For} from 'angular2/angular2';
+import {bootstrap, NgFor} from 'angular2/angular2';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
@@ -17,7 +17,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 })
 @View({
   templateUrl: 'todo.html',
-  directives: [For]
+  directives: [NgFor]
 })
 class TodoApp {
   todoStore: Store;

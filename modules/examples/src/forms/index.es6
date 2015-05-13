@@ -1,4 +1,4 @@
-import {bootstrap, If, For, EventEmitter} from 'angular2/angular2';
+import {bootstrap, NgIf, NgFor, EventEmitter} from 'angular2/angular2';
 import {FormBuilder, Validators, formDirectives, ControlGroup} from 'angular2/forms';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
@@ -42,7 +42,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
         </div>
       </div>
   `,
-  directives: [formDirectives, If]
+  directives: [formDirectives, NgIf]
 })
 class HeaderFields {
   header:ControlGroup;
@@ -144,7 +144,7 @@ class SurveyQuestion {
       <button (click)="submitForm()">Submit</button>
     </div>
   `,
-  directives: [formDirectives, For, HeaderFields, SurveyQuestion]
+  directives: [formDirectives, NgFor, HeaderFields, SurveyQuestion]
 })
 class SurveyBuilder {
   form:ControlGroup;
