@@ -43,7 +43,7 @@ export function main() {
 
 
     it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
-      var outlet = makeDummyRef();
+      var outlet = makeDummyOutlet();
 
       router.config({'path': '/', 'component': 'Index' })
         .then((_) => router.registerOutlet(outlet))
@@ -56,7 +56,7 @@ export function main() {
 
 
     it('should activate viewports and update URL on navigate', inject([AsyncTestCompleter], (async) => {
-      var outlet = makeDummyRef();
+      var outlet = makeDummyOutlet();
 
       router.registerOutlet(outlet)
         .then((_) => {
@@ -71,7 +71,7 @@ export function main() {
     }));
 
     it('should navigate after being configured', inject([AsyncTestCompleter], (async) => {
-      var outlet = makeDummyRef();
+      var outlet = makeDummyOutlet();
 
       router.registerOutlet(outlet)
         .then((_) => router.navigate('/a'))
@@ -89,10 +89,10 @@ export function main() {
 
 @proxy
 @IMPLEMENTS(RouterOutlet)
-class DummyOutletRef extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
+class DummyOutlet extends SpyObject {noSuchMethod(m){return super.noSuchMethod(m)}}
 
-function makeDummyRef() {
-  var ref = new DummyOutletRef();
+function makeDummyOutlet() {
+  var ref = new DummyOutlet();
   ref.spy('activate').andCallFake((_) => PromiseWrapper.resolve(true));
   ref.spy('canActivate').andCallFake((_) => PromiseWrapper.resolve(true));
   ref.spy('canDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));
