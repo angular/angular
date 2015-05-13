@@ -50,8 +50,8 @@ main() {
     selector: 'tree',
     map: const {'data': '=>data'},
     template: '<span> {{data.value}}'
-    '<span *ng-if="data.right != null"><tree data=data.right></span>'
-    '<span *ng-if="data.left != null"><tree data=data.left></span>'
+    '<span ng-if="data.right != null"><tree data=data.right></span>'
+    '<span ng-if="data.left != null"><tree data=data.left></span>'
     '</span>')
 class TreeComponent {
   var data;
