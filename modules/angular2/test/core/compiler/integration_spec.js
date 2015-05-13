@@ -33,7 +33,7 @@ import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
-import {NgFor} from '../../../src/directives/ng_for';
+import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';

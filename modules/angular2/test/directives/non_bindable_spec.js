@@ -17,7 +17,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 
-import {NgNonBindable} from '../../src/directives/ng_non_bindable';
+import {NgNonBindable} from 'angular2/src/directives/ng_non_bindable';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 

@@ -15,7 +15,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '../../src/directives/ng_switch';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/src/directives/ng_switch';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 

@@ -18,7 +18,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 
-import {NgFor} from '../../src/directives/ng_for';
+import {NgFor} from 'angular2/src/directives/ng_for';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
