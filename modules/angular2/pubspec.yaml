@@ -24,3 +24,4 @@ transformers:
 - $dart2js:
     commandLineOptions:
     - --show-package-warnings
+    - --enable-experimental-mirrors
