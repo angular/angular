@@ -1,22 +1,29 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {PreGeneratedChangeDetection} from 'angular2/change_detection';
+import {PreGeneratedChangeDetection, ChangeDetectorDefinition, ProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/change_detection';
+
+class DummyChangeDetector extends ProtoChangeDetector {}
 
 export function main() {
   describe("PreGeneratedChangeDetection", () => {
-    it("sfs", () => {
+    var proto;
+    var def;
 
-      var rs = coalesce([
-        r("user",  [],  0, 1, true),
-        r("user",  [],  0, 2, true)
-      ]);
+    beforeEach(() => {
+      proto = new DummyChangeDetector();
+      def = new ChangeDetectorDefinition('id', null, [], [], []);
+    });
 
-      expect(rs[1]).toEqual(new ProtoRecord(
-        RECORD_TYPE_SELF, "self", null,
-        [], null, 1, null, 2,
-        null, null,
-        true, false)
-      );
+    it("should return a proto change detector when one is available", () => {
+      var map = {'id' : (registry) => proto};
+      var cd = new PreGeneratedChangeDetection(null, map);
+
+      expect(cd.createProtoChangeDetector(def)).toBe(proto)
+    });
+
+    it("should delegate to dynamic change detection otherwise", () => {
+      var cd = new PreGeneratedChangeDetection(null, {});
+      expect(cd.createProtoChangeDetector(def)).toBeAnInstanceOf(DynamicProtoChangeDetector);
     });
   });
 }

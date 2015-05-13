@@ -53,6 +53,8 @@ export {
   defaultPipes,
   DynamicChangeDetection,
   JitChangeDetection,
+  PreGeneratedChangeDetection,
+  preGeneratedProtoDetectors,
   defaultPipeRegistry
 } from './src/change_detection/change_detection';
 

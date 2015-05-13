@@ -6,12 +6,10 @@ import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {ObservablePipeFactory} from './pipes/observable_pipe';
 import {PromisePipeFactory} from './pipes/promise_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
-import {BindingRecord} from './binding_record';
-import {DirectiveRecord} from './directive_record';
-import {DEFAULT} from './constants';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Injectable} from 'angular2/src/di/decorators';
-import {List} from 'angular2/src/facade/collection';
+import {List, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, BaseException} from 'angular2/src/facade/lang';
 
 // HACK: workaround for Traceur behavior.
 // It expects all transpiled modules to contain this marker.
@@ -47,6 +45,34 @@ export var defaultPipes = {
   "async": async
 };
 
+export var preGeneratedProtoDetectors = {};
+
+
+/**
+ * Implements change detection using a map of pregenerated proto detectors.
+ *
+ * @exportedAs angular2/change_detection
+ */
+export class PreGeneratedChangeDetection extends ChangeDetection {
+  _dynamicChangeDetection: ChangeDetection;
+  _protoChangeDetectors: any;
+
+  constructor(private registry: PipeRegistry, protoChangeDetectors?) {
+    super();
+    this._dynamicChangeDetection = new DynamicChangeDetection(registry);
+    this._protoChangeDetectors =
+        isPresent(protoChangeDetectors) ? protoChangeDetectors : preGeneratedProtoDetectors;
+  }
+
+  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
+    var id = definition.id;
+    if (StringMapWrapper.contains(this._protoChangeDetectors, id)) {
+      return StringMapWrapper.get(this._protoChangeDetectors, id)(this.registry);
+    }
+    return this._dynamicChangeDetection.createProtoChangeDetector(definition);
+  }
+}
+
 
 /**
  * Implements change detection that does not require `eval()`.
@@ -57,9 +83,9 @@ export var defaultPipes = {
  */
 @Injectable()
 export class DynamicChangeDetection extends ChangeDetection {
-  constructor(public registry: PipeRegistry) { super(); }
+  constructor(private registry: PipeRegistry) { super(); }
 
-  createProtoChangeDetector(definition:ChangeDetectorDefinition): ProtoChangeDetector {
+  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new DynamicProtoChangeDetector(this.registry, definition);
   }
 }
@@ -76,7 +102,7 @@ export class DynamicChangeDetection extends ChangeDetection {
 export class JitChangeDetection extends ChangeDetection {
   constructor(public registry: PipeRegistry) { super(); }
 
-  createProtoChangeDetector(definition:ChangeDetectorDefinition): ProtoChangeDetector {
+  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return new JitProtoChangeDetector(this.registry, definition);
   }
 }
