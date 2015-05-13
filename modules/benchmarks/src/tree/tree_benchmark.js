@@ -13,7 +13,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {List} from 'angular2/src/facade/collection';
 import {window, document, gc} from 'angular2/src/facade/browser';
 import {getIntParameter, getStringParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {If} from 'angular2/directives';
+import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {bind} from 'angular2/di';
@@ -245,8 +245,8 @@ class AppComponent {
   properties: {'data': 'data'}
 })
 @View({
-  directives: [TreeComponent, If],
-  template: `<span> {{data.value}} <span template='if data.right != null'><tree [data]='data.right'></tree></span><span template='if data.left != null'><tree [data]='data.left'></tree></span></span>`
+  directives: [TreeComponent, NgIf],
+  template: `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
 })
 class TreeComponent {
   data:TreeNode;
