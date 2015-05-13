@@ -4,7 +4,7 @@ import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 
-import {ChangeDetection, DirectiveIndex, BindingRecord, DirectiveRecord, ProtoChangeDetector} from 'angular2/change_detection';
+import {ChangeDetection, DirectiveIndex, BindingRecord, DirectiveRecord, ProtoChangeDetector, ChangeDetectorDefinition} from 'angular2/change_detection';
 import {Component} from '../annotations_impl/annotations';
 
 import * as renderApi from 'angular2/src/render/api';
@@ -171,13 +171,8 @@ export class ProtoViewFactory {
       name = 'dummy';
     }
 
-    return this._changeDetection.createProtoChangeDetector(
-      name,
-      bindingRecords,
-      variableNames,
-      directiveRecords,
-      changeDetection
-    );
+    var definition = new ChangeDetectorDefinition(name, changeDetection, variableNames, bindingRecords, directiveRecords);
+    return this._changeDetection.createProtoChangeDetector(definition);
   }
 
   _createElementBinders(protoView, elementBinders, sortedDirectives) {

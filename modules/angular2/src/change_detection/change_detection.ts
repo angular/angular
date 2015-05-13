@@ -9,7 +9,7 @@ import {NullPipeFactory} from './pipes/null_pipe';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 import {DEFAULT} from './constants';
-import {ChangeDetection, ProtoChangeDetector} from './interfaces';
+import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Injectable} from 'angular2/src/di/decorators';
 import {List} from 'angular2/src/facade/collection';
 
@@ -59,11 +59,8 @@ export var defaultPipes = {
 export class DynamicChangeDetection extends ChangeDetection {
   constructor(public registry: PipeRegistry) { super(); }
 
-  createProtoChangeDetector(name: string, bindingRecords: List<BindingRecord>,
-                            variableBindings: List<string>, directiveRecords: List<DirectiveRecord>,
-                            changeControlStrategy: string = DEFAULT): ProtoChangeDetector {
-    return new DynamicProtoChangeDetector(this.registry, bindingRecords, variableBindings,
-                                          directiveRecords, changeControlStrategy);
+  createProtoChangeDetector(definition:ChangeDetectorDefinition): ProtoChangeDetector {
+    return new DynamicProtoChangeDetector(this.registry, definition);
   }
 }
 
@@ -79,11 +76,8 @@ export class DynamicChangeDetection extends ChangeDetection {
 export class JitChangeDetection extends ChangeDetection {
   constructor(public registry: PipeRegistry) { super(); }
 
-  createProtoChangeDetector(name: string, bindingRecords: List<BindingRecord>,
-                            variableBindings: List<string>, directiveRecords: List<DirectiveRecord>,
-                            changeControlStrategy: string = DEFAULT): ProtoChangeDetector {
-    return new JitProtoChangeDetector(this.registry, bindingRecords, variableBindings,
-                                      directiveRecords, changeControlStrategy);
+  createProtoChangeDetector(definition:ChangeDetectorDefinition): ProtoChangeDetector {
+    return new JitProtoChangeDetector(this.registry, definition);
   }
 }
 

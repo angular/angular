@@ -10,6 +10,7 @@ import {
   ChangeDetection,
   DynamicChangeDetection,
   JitChangeDetection,
+  ChangeDetectorDefinition,
   BindingRecord,
   DirectiveRecord,
   DirectiveIndex,
@@ -187,7 +188,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
-  var parentProto = changeDetection.createProtoChangeDetector('parent', [], [], []);
+  var parentProto = changeDetection.createProtoChangeDetector(new ChangeDetectorDefinition('parent', null, [], [], []));
   var parentCd = parentProto.instantiate(dispatcher);
 
   var directiveRecord = new DirectiveRecord(new DirectiveIndex(0, 0), false, false, DEFAULT);
@@ -204,7 +205,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
     BindingRecord.createForDirective(parser.parseBinding('field9', null), "field9", reflector.setter("field9"), directiveRecord)
   ];
 
-  var proto = changeDetection.createProtoChangeDetector("proto", bindings, [], [directiveRecord]);
+  var proto = changeDetection.createProtoChangeDetector(new ChangeDetectorDefinition("proto", null, [], bindings, [directiveRecord]));
 
   var targetObj = new Obj();
   for (var i = 0; i < iterations; ++i) {

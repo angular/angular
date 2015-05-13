@@ -26,7 +26,8 @@ export {
   ProtoChangeDetector,
   ChangeDispatcher,
   ChangeDetector,
-  ChangeDetection
+  ChangeDetection,
+  ChangeDetectorDefinition
 } from './src/change_detection/interfaces';
 export {
   CHECK_ONCE,

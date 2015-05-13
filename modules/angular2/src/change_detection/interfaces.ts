@@ -1,7 +1,7 @@
 import {List} from 'angular2/src/facade/collection';
 import {Locals} from './parser/locals';
-import {DEFAULT} from './constants';
 import {BindingRecord} from './binding_record';
+import {DirectiveRecord} from './directive_record';
 
 // HACK: workaround for Traceur behavior.
 // It expects all transpiled modules to contain this marker.
@@ -38,9 +38,7 @@ export class ProtoChangeDetector {
  * @exportedAs angular2/change_detection
  */
 export class ChangeDetection {
-  createProtoChangeDetector(name: string, bindingRecords: List<any>, variableBindings: List<any>,
-                            directiveRecords: List<any>,
-                            changeControlStrategy: string = DEFAULT): ProtoChangeDetector {
+  createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     return null;
   }
 }
@@ -64,4 +62,10 @@ export class ChangeDetector {
 
   detectChanges() {}
   checkNoChanges() {}
+}
+
+export class ChangeDetectorDefinition {
+  constructor(public id: string, public strategy: string, public variableNames: List<string>,
+              public bindingRecords: List<BindingRecord>,
+              public directiveRecords: List<DirectiveRecord>) {}
 }
