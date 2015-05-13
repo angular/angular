@@ -1,5 +1,5 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {stringify, CONST, Type} from 'angular2/src/facade/lang';
+import {stringify, CONST, Type, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {TypeLiteral} from './type_literal';
 
 export {TypeLiteral} from './type_literal';
@@ -26,6 +26,9 @@ export class Key {
    * @private
    */
   constructor(token: Object, id: number) {
+    if (isBlank(token)) {
+      throw new BaseException('Token must be defined!');
+    }
     this.token = token;
     this.id = id;
   }

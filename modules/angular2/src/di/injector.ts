@@ -13,6 +13,7 @@ import {
 import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {Key} from './key';
+import {resolveForwardRef} from './forward_ref';
 
 var _constructing = new Object();
 var _notFound = new Object();
@@ -370,7 +371,7 @@ class _AsyncInjectorStrategy {
 function _resolveBindings(bindings: List<any>): List<ResolvedBinding> {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
-    var unresolved = bindings[i];
+    var unresolved = resolveForwardRef(bindings[i]);
     var resolved;
     if (unresolved instanceof ResolvedBinding) {
       resolved = unresolved;  // ha-ha! I'm easily amused

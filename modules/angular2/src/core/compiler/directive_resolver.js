@@ -1,4 +1,5 @@
 import {Injectable} from 'angular2/src/di/annotations_impl';
+import {resolveForwardRef} from 'angular2/di';
 import {Type, isPresent, BaseException, stringify} from 'angular2/src/facade/lang';
 import {Directive} from '../annotations_impl/annotations';
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -6,7 +7,7 @@ import {reflector} from 'angular2/src/reflection/reflection';
 @Injectable()
 export class DirectiveResolver {
   resolve(type:Type):Directive {
-    var annotations = reflector.annotations(type);
+    var annotations = reflector.annotations(resolveForwardRef(type));
     if (isPresent(annotations)) {
       for (var i=0; i<annotations.length; i++) {
         var annotation = annotations[i];

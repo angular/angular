@@ -1,4 +1,4 @@
-import {Binding} from 'angular2/di';
+import {Binding, resolveForwardRef} from 'angular2/di';
 import {Injectable} from 'angular2/src/di/annotations_impl';
 import {Type, isBlank, isPresent, BaseException, normalizeBlank, stringify} from 'angular2/src/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -237,7 +237,7 @@ export class Compiler {
 
   _flattenList(tree:List<any>, out:List<any> /*<Type|Binding>*/):void {
     for (var i = 0; i < tree.length; i++) {
-      var item = tree[i];
+      var item = resolveForwardRef(tree[i]);
       if (ListWrapper.isList(item)) {
         this._flattenList(item, out);
       } else {

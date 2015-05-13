@@ -10,6 +10,7 @@ import {
   DependencyAnnotation
 } from './annotations_impl';
 import {NoAnnotationError} from './exceptions';
+import {resolveForwardRef} from './forward_ref';
 
 /**
  * @private
@@ -217,8 +218,9 @@ export class Binding {
     var resolvedDeps;
     var isAsync = false;
     if (isPresent(this.toClass)) {
-      factoryFn = reflector.factory(this.toClass);
-      resolvedDeps = _dependenciesFor(this.toClass);
+      var toClass = resolveForwardRef(this.toClass);
+      factoryFn = reflector.factory(toClass);
+      resolvedDeps = _dependenciesFor(toClass);
     } else if (isPresent(this.toAlias)) {
       factoryFn = (aliasInstance) => aliasInstance;
       resolvedDeps = [Dependency.fromKey(Key.get(this.toAlias))];
@@ -234,7 +236,8 @@ export class Binding {
       resolvedDeps = _EMPTY_LIST;
     }
 
-    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps, isAsync);
+    return new ResolvedBinding(Key.get(resolveForwardRef(this.token)), factoryFn, resolvedDeps,
+                               isAsync);
   }
 }
 
@@ -428,7 +431,8 @@ export class BindingBuilder {
 function _constructDependencies(factoryFunction: Function, dependencies: List<any>) {
   return isBlank(dependencies) ?
              _dependenciesFor(factoryFunction) :
-             ListWrapper.map(dependencies, (t) => Dependency.fromKey(Key.get(t)));
+             ListWrapper.map(dependencies,
+                             (t) => Dependency.fromKey(Key.get(resolveForwardRef(t))));
 }
 
 function _dependenciesFor(typeOrFunc): List<any> {
@@ -474,6 +478,8 @@ function _extractToken(typeOrFunc, annotations) {
       ListWrapper.push(depProps, paramAnnotation);
     }
   }
+
+  token = resolveForwardRef(token);
 
   if (isPresent(token)) {
     return _createDependency(token, asPromise, lazy, optional, depProps);
