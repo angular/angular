@@ -832,6 +832,11 @@ process.on('SIGINT', function() {
 });
 
 // register cleanup listener for all non-persistent tasks
+var beforeExitRan = false;
+
 process.on('beforeExit', function() {
+  if (beforeExitRan) return;
+
+  beforeExitRan = true;
   gulp.start('cleanup.builder');
 });
