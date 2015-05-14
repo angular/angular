@@ -382,20 +382,20 @@ Example of conditionally included template:
 
 ```
 Hello {{user}}!
-<div template="if: isAdministrator">
+<div template="ng-if: isAdministrator">
   ...administrator menu here...
 </div>
 ```
 
-In the above example the `if` directive determines whether the child view (an instance of the child template) should be
-inserted into the root view. The `if` makes this decision based on if the `isAdministrator` binding is true.
+In the above example the `ng-if` directive determines whether the child view (an instance of the child template) should be
+inserted into the root view. The `ng-if` makes this decision based on if the `isAdministrator` binding is true.
 
 The above example is in the short form, for better clarity let's rewrite it in the canonical form, which is functionally
 identical.
 
 ```
 Hello {{user}}!
-<template [if]="isAdministrator">
+<template [ng-if]="isAdministrator">
   <div>
     ...administrator menu here...
   </div>
@@ -406,22 +406,22 @@ Hello {{user}}!
 ### Template Microsyntax
 
 Often times it is necessary to encode a lot of different bindings into a template to control how the instantiation
-of the templates occurs. One such example is `for`.
+of the templates occurs. One such example is `ng-for`.
 
 ```
 <form #foo=form>
 </form>
 <ul>
-  <template for #person [in]="people" #i="index">
+  <template [ng-for] #person [ng-for-of]="people" #i="index">
     <li>{{i}}. {{person}}<li>
   </template>
 </ul>
 ```
 
 Where:
-* `for` triggers the for directive.
-* `[in]="people"` binds an iterable object to the `for` controller.
-* `#person` exports the implicit `for` item.
+* `[ng-for]` triggers the for directive.
+* `#person` exports the implicit `ng-for` item. 
+* `[ng-for-of]="people"` binds an iterable object to the `ng-for` controller.
 * `#i=index` exports item index as `i`.
 
 The above example is explicit but quite wordy. For this reason in most situations a short hand version of the
@@ -429,7 +429,7 @@ syntax is preferable.
 
 ```
 <ul>
-  <li template="for; #person; of=people; #i=index;">{{i}}. {{person}}<li>
+  <li template="ng-for; #person; of=people; #i=index;">{{i}}. {{person}}<li>
 </ul>
 ```
 
@@ -439,20 +439,20 @@ which allows us to further shorten the text.
 
 ```
 <ul>
-  <li template="for #person of people #i=index">{{i}}. {{person}}<li>
+  <li template="ng-for #person of people #i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
 We can also optionally use `var` instead of `#` and add `:` to `for` which creates the following recommended
-microsyntax for `for`.
+microsyntax for `ng-for`.
 
 ```
 <ul>
-  <li template="for: var person of people; var i=index">{{i}}. {{person}}<li>
+  <li template="ng-for: var person of people; var i=index">{{i}}. {{person}}<li>
 </ul>
 ```
 
-Finally, we can move the `for` keyword to the left hand side and prefix it with `*` as so:
+Finally, we can move the `ng-for` keyword to the left hand side and prefix it with `*` as so:
 
 ```
 <ul>
@@ -569,7 +569,7 @@ Angular are:
 <div title="{{expression}}">{{expression}}</div>
 <div [title]="expression">...</div>
 <div bind-title="expression">...</div>
-<div template="if: expression">...</div>
+<div template="ng-if: expression">...</div>
 ```
 
 Expressions are simplified version of expression in the language in which you are writing your application. (i.e.
