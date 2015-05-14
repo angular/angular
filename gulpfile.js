@@ -79,7 +79,22 @@ var angularBuilder = {
       console.warn(Array(80).join('!'));
     }
   });
-}())
+}());
+
+
+var treatTestErrorsAsFatal = true;
+
+function runJasmineTests(globs, done) {
+  fork('./tools/traceur-jasmine', globs, {
+    stdio: 'inherit'
+  }).on('close', function jasmineCloseHandler(exitCode) {
+    if (exitCode && treatTestErrorsAsFatal) {
+      done(new Error('Jasmine tests failed'));
+    } else {
+      done();
+    }
+  });
+}
 
 // Note: when DART_SDK is not found, all gulp tasks ending with `.dart` will be skipped.
 var DART_SDK = require('./tools/build/dartdetect')(gulp);
@@ -306,11 +321,7 @@ function createDocsTasks(publicBuild) {
   });
 
   gulp.task(taskPrefix + '/test', function (done) {
-    fork('./tools/traceur-jasmine', ['docs/**/*.spec.js'], {
-      stdio: 'inherit'
-    }).on('close', function (exitCode) {
-      done(exitCode);
-    });
+    runJasmineTests(['docs/**/*.spec.js'], done);
   });
 
   gulp.task(taskPrefix + '/serve', function() {
@@ -437,15 +448,14 @@ gulp.task('test.unit.dart/ci', function (done) {
 
 
 gulp.task('test.unit.cjs/ci', function(done) {
-  fork('./tools/traceur-jasmine', ['dist/js/cjs/angular2/test/**/*_spec.js'], {
-    stdio: 'inherit'
-  }).on('close', function (exitCode) {
-    done(exitCode);
-  });
+  runJasmineTests(['dist/js/cjs/angular2/test/**/*_spec.js'], done);
 });
 
 
-gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (done) {
+gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDone) {
+
+  treatTestErrorsAsFatal = false;
+
   var buildAndTest = [
     '!build.js.cjs',
     'test.unit.cjs/ci'
@@ -456,13 +466,14 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (done) {
 
 
 gulp.task('test.unit.tools/ci', function(done) {
-  fork('./tools/traceur-jasmine', ['dist/tools/**/*.spec.js'], {
-    stdio: 'inherit'
-  }).on('close', done.bind(null, null));
+  runJasmineTests(['dist/tools/**/*.spec.js'], done);
 });
 
 
 gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
+
+  treatTestErrorsAsFatal = false;
+
   var buildAndTest = [
     '!build.tools',
     'test.unit.tools/ci'
@@ -483,11 +494,7 @@ gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {
 // -----------------
 // test builders
 gulp.task('test.transpiler.unittest', function(done) {
-  fork('./tools/traceur-jasmine', ['tools/transpiler/unittest/**/*.js'], {
-    stdio: 'inherit'
-  }).on('close', function (exitCode) {
-    done(exitCode);
-  });
+  runJasmineTests(['tools/transpiler/unittest/**/*.js'], done);
 });
 
 // -----------------
