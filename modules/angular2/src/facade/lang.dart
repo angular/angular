@@ -64,6 +64,14 @@ class StringWrapper {
     return s.replaceAll(from, replace);
   }
 
+  static String toUpperCase(String s) {
+    return s.toUpperCase();
+  }
+
+  static String toLowerCase(String s) {
+    return s.toLowerCase();
+  }
+
   static startsWith(String s, String start) {
     return s.startsWith(start);
   }

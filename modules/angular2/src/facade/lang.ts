@@ -104,6 +104,10 @@ export class StringWrapper {
     return s.replace(from, replace);
   }
 
+  static toUpperCase(s: string): string { return s.toUpperCase(); }
+
+  static toLowerCase(s: string): string { return s.toLowerCase(); }
+
   static startsWith(s: string, start: string) { return s.startsWith(start); }
 
   static substring(s: string, start: int, end: int = null) {
