@@ -85,7 +85,8 @@ var angularBuilder = {
 var treatTestErrorsAsFatal = true;
 
 function runJasmineTests(globs, done) {
-  fork('./tools/traceur-jasmine', globs, {
+  var args = ['--'].concat(globs);
+  fork('./tools/traceur-jasmine', args, {
     stdio: 'inherit'
   }).on('close', function jasmineCloseHandler(exitCode) {
     if (exitCode && treatTestErrorsAsFatal) {
@@ -466,7 +467,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
 
 
 gulp.task('test.unit.tools/ci', function(done) {
-  runJasmineTests(['dist/tools/**/*.spec.js'], done);
+  runJasmineTests(['dist/tools/**/*.spec.js', 'tools/**/*.spec.js'], done);
 });
 
 
