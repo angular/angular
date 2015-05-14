@@ -90,7 +90,11 @@ function runJasmineTests(globs, done) {
     stdio: 'inherit'
   }).on('close', function jasmineCloseHandler(exitCode) {
     if (exitCode && treatTestErrorsAsFatal) {
-      done(new Error('Jasmine tests failed'));
+      var err = new Error('Jasmine tests failed');
+      // Mark the error for gulp similar to how gulp-utils.PluginError does it.
+      // The stack is not useful in this context.
+      err.showStack = false;
+      done(err);
     } else {
       done();
     }
