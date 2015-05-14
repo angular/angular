@@ -29,6 +29,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private rootFilePaths: string[];
   private tsServiceHost: ts.LanguageServiceHost;
   private tsService: ts.LanguageService;
+  private firstRun: boolean = true;
 
   static includeExtensions = ['.ts'];
   static excludeExtensions = ['.d.ts'];
@@ -76,25 +77,50 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
           fs.unlinkSync(path.join(this.cachePath, dtsFilePath));
         });
 
-    pathsToEmit.forEach((tsFilePath) => {
-      let output = this.tsService.getEmitOutput(tsFilePath);
+    if (this.firstRun) {
+      this.firstRun = false;
+      let program = this.tsService.getProgram();
+      let emitResult = program.emit(undefined, function(absoluteFilePath, fileContent) {
+        fse.mkdirsSync(path.dirname(absoluteFilePath));
+        fs.writeFileSync(absoluteFilePath, fileContent, FS_OPTS);
+      });
 
-      if (output.emitSkipped) {
-        let errorFound = this.logError(tsFilePath);
-        if (errorFound) {
-          pathsWithErrors.push(tsFilePath);
-        }
-      } else {
-        output.outputFiles.forEach(o => {
-          let destDirPath = path.dirname(o.name);
-          fse.mkdirsSync(destDirPath);
-          fs.writeFileSync(o.name, o.text, FS_OPTS);
+      if (emitResult.emitSkipped) {
+        let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+        let errorMessages = [];
+
+        allDiagnostics.forEach(diagnostic => {
+          var { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+          var message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+          errorMessages.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
         });
-      }
-    });
 
-    if (pathsWithErrors.length) {
-      throw new Error('Typescript found errors listed above...');
+        if (errorMessages.length) {
+          console.log(errorMessages.join('\n'));
+          throw new Error('Typescript found errors listed above...');
+        }
+      }
+    } else {
+      pathsToEmit.forEach((tsFilePath) => {
+        let output = this.tsService.getEmitOutput(tsFilePath);
+
+        if (output.emitSkipped) {
+          let errorFound = this.logError(tsFilePath);
+          if (errorFound) {
+            pathsWithErrors.push(tsFilePath);
+          }
+        } else {
+          output.outputFiles.forEach(o => {
+            let destDirPath = path.dirname(o.name);
+            fse.mkdirsSync(destDirPath);
+            fs.writeFileSync(o.name, o.text, FS_OPTS);
+          });
+        }
+      });
+
+      if (pathsWithErrors.length) {
+        throw new Error('Typescript found errors listed above...');
+      }
     }
   }
 
@@ -140,9 +166,24 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   }
 
 
+  /**
+   * This method is called quite a bit to lookup 3 kinds of paths:
+   * 1/ files in the fileRegistry
+   *   - these are the files in our project that we are watching for changes
+   *   - in the future we could add caching for these files and invalidate the cache when
+   *     the file is changed lazily during lookup
+   * 2/ .d.ts and library files not in the fileRegistry
+   *   - these are not our files, they come from tsd or typescript itself
+   *   - these files change only rarely but since we need them very rarely, it's not worth the
+   *     cache invalidation hassle to cache them
+   * 3/ bogus paths that typescript compiler tries to lookup during import resolution
+   *   - these paths are tricky to cache since files come and go and paths that was bogus in the
+   *     past might not be bogus later
+   *
+   * In the initial experiments the impact of this caching was insignificant (single digit %) and
+   * not worth the potential issues with stale cache records.
+   */
   getScriptSnapshot(tsFilePath: string): ts.IScriptSnapshot {
-    // TODO: this method is called a lot, add cache
-
     let absoluteTsFilePath = (tsFilePath == this.defaultLibFilePath) ?
                                  tsFilePath :
                                  path.join(this.treeInputPath, tsFilePath);
