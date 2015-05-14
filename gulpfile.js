@@ -178,6 +178,12 @@ gulp.task('!build/tree.dart', function() {
 // Run a top-level `pub get` for this project.
 gulp.task('pubget.dart', pubget.dir(gulp, gulpPlugins, { dir: '.', command: DART_SDK.PUB }));
 
+// Run `pub get` only on the angular2 dir of CONFIG.dest.dart
+gulp.task('!build/pubget.angular2.dart', pubget.dir(gulp, gulpPlugins, {
+  dir: path.join(CONFIG.dest.dart, 'angular2'),
+  command: DART_SDK.PUB
+}));
+
 // Run `pub get` over CONFIG.dest.dart
 gulp.task('build/pubspec.dart', pubget.subDir(gulp, gulpPlugins, {
   dir: CONFIG.dest.dart,
@@ -588,6 +594,8 @@ gulp.task('build/packages.dart', function(done) {
   runSequence(
     'build/tree.dart',
     // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
+    '!build/pubget.angular2.dart',
+    '!build/change_detect.dart',
     'build/pure-packages.dart',
     'build/format.dart',
     done);
@@ -811,6 +819,34 @@ gulp.task('clean', ['build/clean.tools', 'build/clean.js', 'build/clean.dart', '
 
 gulp.task('build', ['build.js', 'build.dart']);
 
+// ------------
+// change detection codegen
+
+
+gulp.task('build.change_detect.dart', function(done) {
+  return runSequence('build/packages.dart', '!build/pubget.angular2.dart',
+                     '!build/change_detect.dart', done);
+});
+
+gulp.task('!build/change_detect.dart', function(done) {
+  var fs = require('fs');
+  var changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/change_detection/');
+  var srcDir = path.join(changeDetectDir, 'generator');
+  var destDir = path.join(changeDetectDir, 'generated');
+
+  var dartStream = fs.createWriteStream(path.join(destDir, 'simple_watch_classes.dart'));
+  var genMain = path.join(srcDir, 'gen_change_detectors.dart');
+  var proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
+  proc.on('error', function(code) {
+    done(new Error('Failed while generating change detector classes. Please run manually: ' +
+                   DART_SDK.VM + ' ' + dartArgs.join(' ')));
+  });
+  proc.on('close', function() {
+    dartStream.close();
+    done();
+  });
+  proc.stdout.pipe(dartStream);
+});
 
 // ------------
 // angular material testing rules

@@ -46,11 +46,11 @@ module.exports = function(gulp, plugins, config) {
 
     function analyze(dirName, done) {
       //TODO remove --package-warnings once dartanalyzer handles transitive libraries
-      var args = ['--fatal-warnings', '--package-warnings'].concat(tempFile);
+      var args = ['--fatal-warnings', '--package-warnings', '--format=machine'].concat(tempFile);
 
       var stream = spawn(config.command, args, {
         // inherit stdin and stderr, but filter stdout
-        stdio: [process.stdin, 'pipe', process.stderr],
+        stdio: [process.stdin, process.stdout, 'pipe'],
         cwd: dirName
       });
       // Filter out unused imports from our generated file.
@@ -58,7 +58,7 @@ module.exports = function(gulp, plugins, config) {
       // as this could lead to name clashes when two files
       // export the same thing.
       var rl = readline.createInterface({
-        input: stream.stdout,
+        input: stream.stderr,
         output: process.stdout,
         terminal: false
       });
@@ -66,32 +66,29 @@ module.exports = function(gulp, plugins, config) {
       var errorCount = 0;
       var warningCount = 0;
       rl.on('line', function(line) {
-        //TODO remove once dartanalyzer handles transitive libraries
-        //skip errors in third-party packages
-        if (line.indexOf(dirName) == -1) {
+        var parsedLine = _AnalyzerOutputLine.parse(line);
+        if (!parsedLine) {
+          errorCount++;
+          console.log('Unexpected output: ' + line);
           return;
         }
-        if (line.match(/Unused import/)) {
-          if (line.match(/_analyzer\.dart/)) {
-            return;
-          }
+        //TODO remove once dartanalyzer handles transitive libraries
+        //skip errors in third-party packages
+        if (parsedLine.source.indexOf(dirName) == -1) {
+          return;
         }
-        // TODO: https://github.com/angular/ts2dart/issues/168
-        if (line.match(/_stack' is not used/)) {
+        if (parsedLine.shouldIgnore()) {
           return;
         }
 
-        var skip = false;
-        if (!skip) {
-          if (line.match(/\[hint\]/)) {
-            hintCount++;
-          } else if (line.match(/\[warning\]/)) {
-            warningCount++;
-          } else {
-            errorCount ++;
-          }
+        if (parsedLine.isHint) {
+          hintCount++;
+        } else if (parsedLine.isWarning) {
+          warningCount++;
+        } else {
+          errorCount ++;
         }
-        console.log(dirName + ':' + line);
+        console.log(dirName + ':' + parsedLine);
       });
       stream.on('close', function() {
         var error;
@@ -112,4 +109,59 @@ module.exports = function(gulp, plugins, config) {
       });
     }
   };
+};
+
+// See https://github.com/dart-lang/analyzer_cli/blob/master/lib/src/error_formatter.dart
+function _AnalyzerOutputLine(result) {
+  this.severity = result[1];
+  this.errorType = result[2];
+  this.errorCode = result[3];
+  this.source = result[4];
+  this.lineNum = result[5];
+  this.colNum = result[6];
+  this.errorMsg = result[7];
+
+  this.isError = Boolean(this.severity.match(/ERROR/i));
+  this.isHint = Boolean(this.severity.match(/INFO/i));
+  this.isWarning = Boolean(this.severity.match(/WARNING/i));
+}
+
+_AnalyzerOutputLine.parse = function(line) {
+  var result = _AnalyzerOutputLine._analyzerParseRegExp.exec(line);
+  return result ? new _AnalyzerOutputLine(result) : null;
+};
+
+_AnalyzerOutputLine._analyzerParseRegExp = new RegExp(
+    '([^\|]+)\\|' + // #1, severity (NONE, INFO, WARNING, ERROR)
+    '([^\|]+)\\|' + // #2, errorCode.type (HINT, *_WARNING, *_ERROR, etc)
+    '([^\|]+)\\|' + // #3, errorCode (UNUSED_IMPORT, UNUSED_CATCH_STACK, etc)
+    '([^\|]+)\\|' + // #4, source path
+    '([^\|]+)\\|' + // #5, line number
+    '([^\|]+)\\|' + // #6, column number
+    '[^\|]+\\|'   + // length of the ASCII line to draw (ignored)
+    '(.*)$');       // #7, error message
+
+_AnalyzerOutputLine.prototype = {
+  toString: function() {
+    return '[' + this.errorCode + '] ' + this.errorMsg +
+        ' (' + this.source + ', line ' + this.lineNum + ', col ' + this.colNum + ')';
+  },
+
+  shouldIgnore: function() {
+    if (this.errorCode.match(/UNUSED_IMPORT/i)) {
+      if (this.source.match(/_analyzer\.dart/)) {
+        return true;
+      }
+    }
+    // TODO: https://github.com/angular/ts2dart/issues/168
+    if (this.errorCode.match(/UNUSED_CATCH_STACK/i)) {
+      return true;
+    }
+
+    // Don't worry about hints in generated files.
+    if (this.isHint && this.source.match(/generated/i)) {
+      return true;
+    }
+    return false;
+  }
 };

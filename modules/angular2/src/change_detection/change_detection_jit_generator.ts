@@ -27,6 +27,10 @@ import {
  * The code generator takes a list of proto records and creates a function/class
  * that "emulates" what the developer would write by hand to implement the same
  * kind of behaviour.
+ *
+ * This code should be kept in sync with the Dart transformer's
+ * `angular2.transform.template_compiler.change_detector_codegen` library. If you make updates
+ * here, please make equivalent changes there.
 */
 var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 var UTIL = "ChangeDetectionUtil";

@@ -7,15 +7,17 @@ module.exports = function(gulp) {
     console.log('Dart SDK detected');
     if (process.platform === 'win32') {
       DART_SDK = {
-        PUB: 'pub.bat',
         ANALYZER: 'dartanalyzer.bat',
-        DARTFMT: 'dartfmt.bat'
+        DARTFMT: 'dartfmt.bat',
+        PUB: 'pub.bat',
+        VM: 'dart.bat'
       };
     } else {
       DART_SDK = {
-        PUB: 'pub',
         ANALYZER: 'dartanalyzer',
-        DARTFMT: 'dartfmt'
+        DARTFMT: 'dartfmt',
+        PUB: 'pub',
+        VM: 'dart'
       };
     }
   } catch (e) {

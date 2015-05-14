@@ -22,8 +22,15 @@ Future<ViewDefinitionResults> createViewDefinitions(
 
 class ViewDefinitionResults {
   final NgDeps ngDeps;
-  final Map<RegisteredType, ViewDefinition> viewDefinitions;
+  final Map<RegisteredType, ViewDefinitionEntry> viewDefinitions;
   ViewDefinitionResults._(this.ngDeps, this.viewDefinitions);
+}
+
+class ViewDefinitionEntry {
+  final DirectiveMetadata hostMetadata;
+  final ViewDefinition viewDef;
+
+  ViewDefinitionEntry._(this.hostMetadata, this.viewDef);
 }
 
 String _getComponentId(AssetId assetId, String className) =>
@@ -48,21 +55,24 @@ class _ViewDefinitionCreator {
   Future<ViewDefinitionResults> createViewDefs() async {
     var ngDeps = await ngDepsFuture;
 
-    var retVal = <RegisteredType, ViewDefinition>{};
+    var retVal = <RegisteredType, ViewDefinitionEntry>{};
     var visitor = new _TemplateExtractVisitor(await _createMetadataMap());
     ngDeps.registeredTypes.forEach((rType) {
       visitor.reset();
       rType.annotations.accept(visitor);
       if (visitor.viewDef != null) {
         var typeName = '${rType.typeName}';
+        var hostMetadata = null;
         if (visitor._metadataMap.containsKey(typeName)) {
-          visitor.viewDef.componentId = visitor._metadataMap[typeName].id;
+          hostMetadata = visitor._metadataMap[typeName];
+          visitor.viewDef.componentId = hostMetadata.id;
         } else {
-          logger.warning('Missing component "$typeName" in metadata map',
+          logger.error('Missing component "$typeName" in metadata map',
               asset: entryPoint);
           visitor.viewDef.componentId = _getComponentId(entryPoint, typeName);
         }
-        retVal[rType] = visitor.viewDef;
+        retVal[rType] =
+            new ViewDefinitionEntry._(hostMetadata, visitor.viewDef);
       }
     });
     return new ViewDefinitionResults._(ngDeps, retVal);

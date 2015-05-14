@@ -44,8 +44,120 @@ import {
   ProtoChangeDetector
 } from 'angular2/change_detection';
 
+import {getDefinition} from './simple_watch_config';
+import {getFactoryById} from './generated/simple_watch_classes';
+
 
 export function main() {
+  // These tests also run against pre-generated Dart Change Detectors. We will move tests up from
+  // the loop below as they are converted.
+  ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
+
+    if (cdType == "JIT" && IS_DARTIUM) return;
+    if (cdType == "Pregen" && !IS_DARTIUM) return;
+
+    describe(`${cdType} Change Detector`, () => {
+
+      function _getProtoChangeDetector(def: ChangeDetectorDefinition) {
+        var registry = null;
+        switch (cdType) {
+          case 'dynamic':
+            return new DynamicProtoChangeDetector(registry, def);
+          case 'JIT':
+            return new JitProtoChangeDetector(registry, def);
+          case 'Pregen':
+            return getFactoryById(def.id)(registry, def);
+          default:
+            return null;
+        }
+      }
+
+      function _bindConstValue(expression: string) {
+        var dispatcher = new TestDispatcher();
+        var protoCd = _getProtoChangeDetector(getDefinition(expression, 'propName'));
+        var cd = protoCd.instantiate(dispatcher);
+
+        var context = null;
+        var locals = null;
+        cd.hydrate(context, locals, null);
+        cd.detectChanges();
+        return dispatcher.log;
+      }
+
+      it('should support literals',
+         () => { expect(_bindConstValue('10')).toEqual(['propName=10']); });
+      it('should strip quotes from literals',
+         () => { expect(_bindConstValue('"str"')).toEqual(['propName=str']); });
+      it('should support newlines in literals',
+         () => { expect(_bindConstValue('"a\n\nb"')).toEqual(['propName=a\n\nb']); });
+      it('should support + operations',
+         () => { expect(_bindConstValue('10 + 2')).toEqual(['propName=12']); });
+      it('should support - operations',
+         () => { expect(_bindConstValue('10 - 2')).toEqual(['propName=8']); });
+      it('should support * operations',
+         () => { expect(_bindConstValue('10 * 2')).toEqual(['propName=20']); });
+      it('should support / operations', () => {
+        expect(_bindConstValue('10 / 2')).toEqual([`propName=${5.0}`]);
+      });  // dart exp=5.0, js exp=5
+      it('should support % operations',
+         () => { expect(_bindConstValue('11 % 2')).toEqual(['propName=1']); });
+      it('should support == operations on identical',
+         () => { expect(_bindConstValue('1 == 1')).toEqual(['propName=true']); });
+      it('should support != operations',
+         () => { expect(_bindConstValue('1 != 1')).toEqual(['propName=false']); });
+      it('should support == operations on coerceible', () => {
+        var expectedValue = IS_DARTIUM ? 'false' : 'true';
+        expect(_bindConstValue('1 == true')).toEqual([`propName=${expectedValue}`]);
+      });
+      it('should support === operations on identical',
+         () => { expect(_bindConstValue('1 === 1')).toEqual(['propName=true']); });
+      it('should support !== operations',
+         () => { expect(_bindConstValue('1 !== 1')).toEqual(['propName=false']); });
+      it('should support === operations on coerceible',
+         () => { expect(_bindConstValue('1 === true')).toEqual(['propName=false']); });
+      it('should support true < operations',
+         () => { expect(_bindConstValue('1 < 2')).toEqual(['propName=true']); });
+      it('should support false < operations',
+         () => { expect(_bindConstValue('2 < 1')).toEqual(['propName=false']); });
+      it('should support false > operations',
+         () => { expect(_bindConstValue('1 > 2')).toEqual(['propName=false']); });
+      it('should support true > operations',
+         () => { expect(_bindConstValue('2 > 1')).toEqual(['propName=true']); });
+      it('should support true <= operations',
+         () => { expect(_bindConstValue('1 <= 2')).toEqual(['propName=true']); });
+      it('should support equal <= operations',
+         () => { expect(_bindConstValue('2 <= 2')).toEqual(['propName=true']); });
+      it('should support false <= operations',
+         () => { expect(_bindConstValue('2 <= 1')).toEqual(['propName=false']); });
+      it('should support true >= operations',
+         () => { expect(_bindConstValue('2 >= 1')).toEqual(['propName=true']); });
+      it('should support equal >= operations',
+         () => { expect(_bindConstValue('2 >= 2')).toEqual(['propName=true']); });
+      it('should support false >= operations',
+         () => { expect(_bindConstValue('1 >= 2')).toEqual(['propName=false']); });
+      it('should support true && operations',
+         () => { expect(_bindConstValue('true && true')).toEqual(['propName=true']); });
+      it('should support false && operations',
+         () => { expect(_bindConstValue('true && false')).toEqual(['propName=false']); });
+      it('should support true || operations',
+         () => { expect(_bindConstValue('true || false')).toEqual(['propName=true']); });
+      it('should support false || operations',
+         () => { expect(_bindConstValue('false || false')).toEqual(['propName=false']); });
+      it('should support negate',
+         () => { expect(_bindConstValue('!true')).toEqual(['propName=false']); });
+      it('should support double negate',
+         () => { expect(_bindConstValue('!!true')).toEqual(['propName=true']); });
+      it('should support true conditionals',
+         () => { expect(_bindConstValue('1 < 2 ? 1 : 2')).toEqual(['propName=1']); });
+      it('should support false conditionals',
+         () => { expect(_bindConstValue('1 > 2 ? 1 : 2')).toEqual(['propName=2']); });
+      it('should support keyed access to a list item',
+         () => { expect(_bindConstValue('["foo", "bar"][0]')).toEqual(['propName=foo']); });
+      it('should support keyed access to a map item',
+         () => { expect(_bindConstValue('{"foo": "bar"}["foo"]')).toEqual(['propName=bar']); });
+    });
+  });
+
   describe("change detection", () => {
     StringMapWrapper.forEach(
         {
@@ -145,12 +257,6 @@ export function main() {
               expect(executeWatch('a', 'a', td)).toEqual(['a=null']);
             });
 
-            it("should support literals", () => {
-              expect(executeWatch('const', '10')).toEqual(['const=10']);
-              expect(executeWatch('const', '"str"')).toEqual(['const=str']);
-              expect(executeWatch('const', '"a\n\nb"')).toEqual(['const=a\n\nb']);
-            });
-
             it('should support simple chained property access', () => {
               var address = new Address('Grenoble');
               var person = new Person('Victor', address);
@@ -205,68 +311,6 @@ export function main() {
               c = createChangeDetector('map', '{z:a}', new TestData(1));
               c["changeDetector"].detectChanges();
               expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
-            });
-
-            it("should support binary operations", () => {
-              expect(executeWatch('exp', '10 + 2')).toEqual(['exp=12']);
-              expect(executeWatch('exp', '10 - 2')).toEqual(['exp=8']);
-
-              expect(executeWatch('exp', '10 * 2')).toEqual(['exp=20']);
-              expect(executeWatch('exp', '10 / 2'))
-                  .toEqual([`exp=${5.0}`]);  // dart exp=5.0, js exp=5
-              expect(executeWatch('exp', '11 % 2')).toEqual(['exp=1']);
-
-              expect(executeWatch('exp', '1 == 1')).toEqual(['exp=true']);
-              if (IS_DARTIUM) {
-                expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=false']);
-              } else {
-                expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=true']);
-              }
-              expect(executeWatch('exp', '1 != 1')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', '1 === 1')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '1 !== 1')).toEqual(['exp=false']);
-              expect(executeWatch('exp', '1 === "1"')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', '1 < 2')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '2 < 1')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', '2 > 1')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '2 < 1')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', '1 <= 2')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '2 <= 2')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '2 <= 1')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', '2 >= 1')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '2 >= 2')).toEqual(['exp=true']);
-              expect(executeWatch('exp', '1 >= 2')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', 'true && true')).toEqual(['exp=true']);
-              expect(executeWatch('exp', 'true && false')).toEqual(['exp=false']);
-
-              expect(executeWatch('exp', 'true || false')).toEqual(['exp=true']);
-              expect(executeWatch('exp', 'false || false')).toEqual(['exp=false']);
-            });
-
-            it("should support negate", () => {
-              expect(executeWatch('exp', '!true')).toEqual(['exp=false']);
-              expect(executeWatch('exp', '!!true')).toEqual(['exp=true']);
-            });
-
-            it("should support conditionals", () => {
-              expect(executeWatch('m', '1 < 2 ? 1 : 2')).toEqual(['m=1']);
-              expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
-            });
-
-            describe("keyed access", () => {
-              it("should support accessing a list item", () => {
-                expect(executeWatch('array[0]', '["foo", "bar"][0]')).toEqual(['array[0]=foo']);
-              });
-
-              it("should support accessing a map item", () => {
-                expect(executeWatch('map[foo]', '{"foo": "bar"}["foo"]')).toEqual(['map[foo]=bar']);
-              });
             });
 
             it("should support interpolation", () => {
