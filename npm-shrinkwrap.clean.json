@@ -8181,6 +8181,9 @@
     "reflect-metadata": {
       "version": "0.1.0"
     },
+    "rewire": {
+      "version": "2.3.3"
+    },
     "run-sequence": {
       "version": "1.1.0",
       "dependencies": {
@@ -9405,5 +9408,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.22"
+  "version": "2.0.0-alpha.23"
 }

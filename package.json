@@ -99,6 +99,7 @@
     "protractor": "2.0.0",
     "q": "^1.0.1",
     "react": "^0.13.2",
+    "rewire": "^2.3.3",
     "run-sequence": "^1.1.0",
     "semver": "^4.3.4",
     "sorted-object": "^1.0.0",
