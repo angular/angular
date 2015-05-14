@@ -29,10 +29,10 @@ class BindingRecordsCreator {
 
     for (var boundElementIndex = 0; boundElementIndex < elementBinders.length; boundElementIndex++) {
       var renderElementBinder = elementBinders[boundElementIndex];
-      bindings = ListWrapper.concat(bindings, this._createTextNodeRecords(renderElementBinder));
-      bindings = ListWrapper.concat(bindings, this._createElementPropertyRecords(boundElementIndex, renderElementBinder));
-      bindings = ListWrapper.concat(bindings, this._createDirectiveRecords(boundElementIndex,
-        renderElementBinder.directives, allDirectiveMetadatas));
+      this._createTextNodeRecords(bindings, renderElementBinder);
+      this._createElementPropertyRecords(bindings, boundElementIndex, renderElementBinder);
+      this._createDirectiveRecords(bindings, boundElementIndex,
+          renderElementBinder.directives, allDirectiveMetadatas);
     }
 
     return bindings;
@@ -46,29 +46,35 @@ class BindingRecordsCreator {
     for (var elementIndex = 0; elementIndex < elementBinders.length; ++elementIndex) {
       var dirs = elementBinders[elementIndex].directives;
       for (var dirIndex = 0; dirIndex < dirs.length; ++dirIndex) {
-        ListWrapper.push(directiveRecords, this._getDirectiveRecord(elementIndex, dirIndex, allDirectiveMetadatas[dirs[dirIndex].directiveIndex]));
+        ListWrapper.push(directiveRecords,
+            this._getDirectiveRecord(
+                elementIndex, dirIndex, allDirectiveMetadatas[dirs[dirIndex].directiveIndex]));
       }
     }
 
     return directiveRecords;
   }
 
-  _createTextNodeRecords(renderElementBinder:renderApi.ElementBinder) {
-    if (isBlank(renderElementBinder.textBindings)) return [];
-    return ListWrapper.map(renderElementBinder.textBindings, b => BindingRecord.createForTextNode(b, this._textNodeIndex++));
-  }
+  _createTextNodeRecords(bindings: List<BindingRecord>,
+      renderElementBinder: renderApi.ElementBinder) {
+    if (isBlank(renderElementBinder.textBindings)) return;
 
-  _createElementPropertyRecords(boundElementIndex:number, renderElementBinder:renderApi.ElementBinder) {
-    var res = [];
-    MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
-      ListWrapper.push(res, BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
+    ListWrapper.forEach(renderElementBinder.textBindings, (b) => {
+      ListWrapper.push(bindings, BindingRecord.createForTextNode(b, this._textNodeIndex++));
     });
-    return res;
   }
 
-  _createDirectiveRecords(boundElementIndex:number, directiveBinders:List<renderApi.DirectiveBinder>,
+  _createElementPropertyRecords(bindings: List<BindingRecord>,
+      boundElementIndex:number, renderElementBinder:renderApi.ElementBinder) {
+    MapWrapper.forEach(renderElementBinder.propertyBindings, (astWithSource, propertyName) => {
+      ListWrapper.push(bindings,
+          BindingRecord.createForElement(astWithSource, boundElementIndex, propertyName));
+    });
+  }
+
+  _createDirectiveRecords(bindings: List<BindingRecord>,
+      boundElementIndex:number, directiveBinders:List<renderApi.DirectiveBinder>,
       allDirectiveMetadatas:List<renderApi.DirectiveMetadata>) {
-    var res = [];
     for (var i = 0; i < directiveBinders.length; i++) {
       var directiveBinder = directiveBinders[i];
       var directiveMetadata = allDirectiveMetadatas[directiveBinder.directiveIndex];
@@ -79,18 +85,17 @@ class BindingRecordsCreator {
         // it monomorphic!
         var setter = reflector.setter(propertyName);
         var directiveRecord = this._getDirectiveRecord(boundElementIndex, i, directiveMetadata);
-        var b = BindingRecord.createForDirective(astWithSource, propertyName, setter, directiveRecord);
-        ListWrapper.push(res, b);
+        ListWrapper.push(bindings,
+            BindingRecord.createForDirective(astWithSource, propertyName, setter, directiveRecord));
       });
 
       // host properties
       MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
         var dirIndex = new DirectiveIndex(boundElementIndex, i);
-        var b = BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName);
-        ListWrapper.push(res, b);
+        ListWrapper.push(bindings,
+            BindingRecord.createForHostProperty(dirIndex, astWithSource, propertyName));
       });
     }
-    return res;
   }
 
   _getDirectiveRecord(boundElementIndex:number, directiveIndex:number, directiveMetadata:renderApi.DirectiveMetadata): DirectiveRecord {
