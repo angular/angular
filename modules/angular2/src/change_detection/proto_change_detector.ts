@@ -228,7 +228,7 @@ class _ConvertAstIntoProtoRecords {
   }
 
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
-    var selfIndex = this._records.length;
+    var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
       ListWrapper.push(this._records, new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1,
                                                       context, selfIndex, this._bindingRecord,
