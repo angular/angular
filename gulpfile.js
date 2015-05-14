@@ -322,7 +322,10 @@ function createDocsTasks(publicBuild) {
 
   gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
   gulp.task(taskPrefix + '/watch', function() {
-    return watch('docs/app/**/*', { ignoreInitial: false }, [taskPrefix + '/app']);
+    return watch('docs/app/**/*', {
+      ignoreInitial: false,
+      log: watchLog
+    }, [taskPrefix + '/app']);
   });
 
   gulp.task(taskPrefix + '/test', function (done) {
@@ -466,7 +469,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
     'test.unit.cjs/ci'
   ];
 
-  watch('modules/**', { ignoreInitial: false }, buildAndTest);
+  watch('modules/**', { ignoreInitial: false, log: watchLog }, buildAndTest);
 });
 
 
@@ -484,7 +487,10 @@ gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
     'test.unit.tools/ci'
   ];
 
-  watch(['tools/**', '!tools/**/test-fixtures/**'], {ignoreInitial: false}, buildAndTest);
+  watch(['tools/**', '!tools/**/test-fixtures/**'], {
+    ignoreInitial: false,
+    log: watchLog
+  }, buildAndTest);
 });
 
 
@@ -836,3 +842,21 @@ process.on('beforeExit', function() {
   beforeExitRan = true;
   gulp.start('cleanup.builder');
 });
+
+function watchLog(triggerCount) {
+  // Ignore initial event
+  if (!--triggerCount) return;
+
+  process.stdout.write([
+    '',
+    '==================================================',
+    ' WATCH TRIGGERED BY FILE CHANGE #' + triggerCount,
+    ' On: ' + prettyTime(),
+    '==================================================\n',
+  ].join('\n'));
+
+  function prettyTime() {
+    var now = new Date();
+    return now.toLocaleDateString() + " at " + now.toLocaleTimeString();
+  }
+}
