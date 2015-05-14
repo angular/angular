@@ -7,7 +7,6 @@ var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
-var ts2dart = require('../broccoli-ts2dart');
 import transpileWithTraceur from '../traceur/index';
 import compileWithTypescript from '../broccoli-typescript';
 

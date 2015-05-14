@@ -7,7 +7,6 @@ var mergeTrees = require('broccoli-merge-trees');
 var path = require('path');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
-var ts2dart = require('../broccoli-ts2dart');
 
 import compileWithTypescript from '../broccoli-typescript';
 import destCopy from '../broccoli-dest-copy';
