@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException, Type, isString} from 'angular2/src/facade/lang';
+import {BaseException, Type, isBlank, isPresent, isString} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {
@@ -109,37 +109,30 @@ class ProtoRecordBuilder {
   constructor() { this.records = []; }
 
   addAst(b: BindingRecord, variableNames: List < string >= null) {
-    var last = ListWrapper.last(this.records);
-    if (isPresent(last) && last.bindingRecord.directiveRecord == b.directiveRecord) {
-      last.lastInDirective = false;
+    var oldLast = ListWrapper.last(this.records);
+    if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
+      oldLast.lastInDirective = false;
     }
 
-    var pr = _ConvertAstIntoProtoRecords.convert(b, this.records.length, variableNames);
-    if (!ListWrapper.isEmpty(pr)) {
-      var last = ListWrapper.last(pr);
-      last.lastInBinding = true;
-      last.lastInDirective = true;
-
-      this.records = ListWrapper.concat(this.records, pr);
+    _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
+    var newLast = ListWrapper.last(this.records);
+    if (isPresent(newLast) && newLast !== oldLast) {
+      newLast.lastInBinding = true;
+      newLast.lastInDirective = true;
     }
   }
 }
 
 class _ConvertAstIntoProtoRecords {
-  protoRecords: List<any>;
+  constructor(private _records: List<ProtoRecord>, private _bindingRecord: BindingRecord,
+              private _expressionAsString: string, private _variableNames: List<any>) {}
 
-  constructor(private bindingRecord: BindingRecord, private contextIndex: number,
-              private expressionAsString: string, private variableNames: List<any>) {
-    this.protoRecords = [];
-  }
-
-  static convert(b: BindingRecord, contextIndex: number, variableNames: List<any>) {
-    var c = new _ConvertAstIntoProtoRecords(b, contextIndex, b.ast.toString(), variableNames);
+  static append(records: List<ProtoRecord>, b: BindingRecord, variableNames: List<any>) {
+    var c = new _ConvertAstIntoProtoRecords(records, b, b.ast.toString(), variableNames);
     b.ast.visit(c);
-    return c.protoRecords;
   }
 
-  visitImplicitReceiver(ast: ImplicitReceiver) { return this.bindingRecord.implicitReceiver; }
+  visitImplicitReceiver(ast: ImplicitReceiver) { return this._bindingRecord.implicitReceiver; }
 
   visitInterpolation(ast: Interpolation) {
     var args = this._visitAll(ast.expressions);
@@ -153,7 +146,7 @@ class _ConvertAstIntoProtoRecords {
 
   visitAccessMember(ast: AccessMember) {
     var receiver = ast.receiver.visit(this);
-    if (isPresent(this.variableNames) && ListWrapper.contains(this.variableNames, ast.name) &&
+    if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name) &&
             ast.receiver instanceof
             ImplicitReceiver) {
       return this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
@@ -163,10 +156,9 @@ class _ConvertAstIntoProtoRecords {
   }
 
   visitMethodCall(ast: MethodCall) {
-    ;
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
-    if (isPresent(this.variableNames) && ListWrapper.contains(this.variableNames, ast.name)) {
+    if (isPresent(this._variableNames) && ListWrapper.contains(this._variableNames, ast.name)) {
       var target = this._addRecord(RECORD_TYPE_LOCAL, ast.name, ast.name, [], null, receiver);
       return this._addRecord(RECORD_TYPE_INVOKE_CLOSURE, "closure", null, args, null, target);
     } else {
@@ -236,17 +228,15 @@ class _ConvertAstIntoProtoRecords {
   }
 
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
-    var selfIndex = ++this.contextIndex;
+    var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
-      ListWrapper.push(
-          this.protoRecords,
-          new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1, context, selfIndex,
-                          this.bindingRecord, this.expressionAsString, false, false));
+      ListWrapper.push(this._records, new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1,
+                                                      context, selfIndex, this._bindingRecord,
+                                                      this._expressionAsString, false, false));
     } else {
-      ListWrapper.push(
-          this.protoRecords,
-          new ProtoRecord(type, name, funcOrValue, args, fixedArgs, context, null, selfIndex,
-                          this.bindingRecord, this.expressionAsString, false, false));
+      ListWrapper.push(this._records, new ProtoRecord(type, name, funcOrValue, args, fixedArgs,
+                                                      context, null, selfIndex, this._bindingRecord,
+                                                      this._expressionAsString, false, false));
     }
     return selfIndex;
   }
