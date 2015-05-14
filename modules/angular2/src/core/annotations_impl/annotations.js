@@ -832,7 +832,7 @@ export class Component extends Directive {
    * })
    * @View({
    *   template: `{{greeter.greet('world')}}!`,
-   *   directives: Child
+   *   directives: [Child]
    * })
    * class HelloWorld {
    *   greeter:Greeter;
