@@ -24,7 +24,7 @@ export function main() {
 
       var instruction = registry.recognize('/test', rootHostComponent);
 
-      expect(instruction.getChildInstruction('default').component).toBe(DummyCompB);
+      expect(instruction.getChild('default').component).toBe(DummyCompB);
     });
 
     it('should prefer static segments to dynamic', () => {
@@ -33,7 +33,7 @@ export function main() {
 
       var instruction = registry.recognize('/home', rootHostComponent);
 
-      expect(instruction.getChildInstruction('default').component).toBe(DummyCompA);
+      expect(instruction.getChild('default').component).toBe(DummyCompA);
     });
 
     it('should prefer dynamic segments to star', () => {
@@ -42,7 +42,7 @@ export function main() {
 
       var instruction = registry.recognize('/home', rootHostComponent);
 
-      expect(instruction.getChildInstruction('default').component).toBe(DummyCompA);
+      expect(instruction.getChild('default').component).toBe(DummyCompA);
     });
 
     it('should match the full URL recursively', () => {
@@ -50,8 +50,8 @@ export function main() {
 
       var instruction = registry.recognize('/first/second', rootHostComponent);
 
-      var parentInstruction = instruction.getChildInstruction('default');
-      var childInstruction = parentInstruction.getChildInstruction('default');
+      var parentInstruction = instruction.getChild('default');
+      var childInstruction = parentInstruction.getChild('default');
 
       expect(parentInstruction.component).toBe(DummyParentComp);
       expect(childInstruction.component).toBe(DummyCompB);
