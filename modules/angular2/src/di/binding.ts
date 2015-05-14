@@ -139,7 +139,7 @@ export class Binding {
    * var injector = Injector.resolveAndCreate([
    *   new Binding(Number, { toFactory: () => { return 1+2; }}),
    *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [String] })
+   *                         dependencies: [Number] })
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
@@ -159,7 +159,7 @@ export class Binding {
    *     return new Promise((resolve) => resolve(1 + 2));
    *   }}),
    *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [String]})
+   *                         dependencies: [Number]})
    * ]);
    *
    * injector.asyncGet(Number).then((v) => expect(v).toBe(3));
@@ -186,7 +186,7 @@ export class Binding {
    * var injector = Injector.resolveAndCreate([
    *   new Binding(Number, { toFactory: () => { return 1+2; }}),
    *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
-   *                         dependencies: [String] })
+   *                         dependencies: [Number] })
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
