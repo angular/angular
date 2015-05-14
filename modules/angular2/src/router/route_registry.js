@@ -87,18 +87,21 @@ export class RouteRegistry {
         var children = StringMapWrapper.create(),
             allMapped = true;
 
-        StringMapWrapper.forEach(candidate['handler']['components'], (component, name) => {
-          if (!allMapped) {
-            return;
-          }
+        var components = candidate['handler']['components'];
+        var componentNames = StringMapWrapper.keys(components);
+
+        for (var cmpIndex = 0; cmpIndex < componentNames.length; cmpIndex++) {
+          var name = componentNames[cmpIndex];
+          var component = components[name];
           var childInstruction = this.recognize(candidate['unmatchedUrl'], component);
           if (isPresent(childInstruction)) {
             childInstruction.params = candidate['params'];
             children[name] = childInstruction;
           } else {
             allMapped = false;
+            break;
           }
-        });
+        }
 
         if (allMapped) {
           ListWrapper.push(fullSolutions, new Instruction({
@@ -112,8 +115,16 @@ export class RouteRegistry {
     }
 
     if (fullSolutions.length > 0) {
-      ListWrapper.sort(fullSolutions, (a, b) => a.cost < b.cost ? -1 : 1);
-      return fullSolutions[0];
+      var lowCost = fullSolutions[0].cost;
+      var lowIndex = 0;
+      for (var solIdx = 1; solIdx < fullSolutions.length; solIdx++) {
+        if (fullSolutions[solIdx].cost < lowCost) {
+          lowCost = fullSolutions[solIdx].cost;
+          lowIndex = solIdx;
+        }
+      }
+
+      return fullSolutions[lowIndex];
     }
 
     return null;
