@@ -5,6 +5,8 @@ import {IterableChangesFactory} from './pipes/iterable_changes';
 import {KeyValueChangesFactory} from './pipes/keyvalue_changes';
 import {ObservablePipeFactory} from './pipes/observable_pipe';
 import {PromisePipeFactory} from './pipes/promise_pipe';
+import {UpperCaseFactory} from './pipes/uppercase_pipe';
+import {LowerCaseFactory} from './pipes/lowercase_pipe';
 import {NullPipeFactory} from './pipes/null_pipe';
 import {ChangeDetection, ProtoChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {Injectable} from 'angular2/src/di/decorators';
@@ -39,10 +41,26 @@ export var iterableDiff: List <
 export var async: List <
     PipeFactory >= [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
 
+/**
+ * Uppercase text transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export var uppercase: List < PipeFactory >= [new UpperCaseFactory(), new NullPipeFactory()];
+
+/**
+ * Lowercase text transform.
+ *
+ * @exportedAs angular2/pipes
+ */
+export var lowercase: List < PipeFactory >= [new LowerCaseFactory(), new NullPipeFactory()];
+
 export var defaultPipes = {
   "iterableDiff": iterableDiff,
   "keyValDiff": keyValDiff,
-  "async": async
+  "async": async,
+  "uppercase": uppercase,
+  "lowercase": lowercase
 };
 
 export var preGeneratedProtoDetectors = {};
