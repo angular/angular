@@ -8,16 +8,17 @@ UI bindings. Zones means that in Angular v2 you don't have to remember to call `
 ## Execution Context
 
 ```
-zone['inTheZone'] = false;
-zone.run(function () {
-  zone['inTheZone'] = true;
+zone.inTheZone = false;
+
+zone.fork().run(function () {
+  zone.inTheZone = true;
 
   setTimeout(function () {
-    console.log('async in the zone: ' + zone['inTheZone']);
+    console.log('async in the zone: ' + zone.inTheZone);
   }, 0);
 });
 
-console.log('sync in the zone: ' + zone['inTheZone']);
+console.log('sync in the zone: ' + zone.inTheZone);
 ```
 
 The above will log:
@@ -57,6 +58,8 @@ execution which was registered in the `run` block.
 
 In Angular2 it is not necessary to notify Angular of changes manually after async callback, because a relevant
 async callbacks are intercepted. The question is how do we know which callbacks are Angular relevant?
+
+// TODO(vicb): outdated, rework.
 
 ```
 /// Some other code running on page can do async operation

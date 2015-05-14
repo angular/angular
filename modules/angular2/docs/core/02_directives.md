@@ -21,6 +21,7 @@ Angular supports these CSS selector constructs:
 * Class: `.class`
 * AND operation: `name[attribute]`
 * OR operation: `name,.class`
+* NOT operation: `:not(.class)`
 
 Angular does not support these (and any CSS selector which crosses element boundaries):
 * Descendant: `body div`
@@ -29,7 +30,7 @@ Angular does not support these (and any CSS selector which crosses element bound
 * Sibling: `div ~ table`
 * Wildcard: `*`
 * ID: `#id`
-* Pseudo selectors: `:pseudo`
+* Pseudo selectors: `:pseudo` other than `:not`
 
 
 
@@ -61,20 +62,20 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
 
 ```
 @Directive({
-  selector: '[tooltip]', // CSS Selector which triggers the decorator
-  properties: {          // List which properties need to be bound
-    text: 'tooltip'      //  - DOM element tooltip property should be
-  },                     //    mapped to the directive text property.
-  hostListeners: {       // List which events need to be mapped.
-    mouseover: 'show'    //  - Invoke the show() method every time
-  }                      //    the mouseover event is fired.
-})
-class Form {             // Directive controller class, instantiated
-                         // when CSS matches.
-  text:string;           // text property on the Directive Controller.
-
-  show(event) {          // Show method which implements the show action.
-    console.log(this.text);
+  selector: '[tooltip]',     | CSS Selector which triggers the decorator
+  properties: {              | List which properties need to be bound
+    text: 'tooltip'          |  - DOM element tooltip property should be
+  },                         |    mapped to the directive text property.
+  hostListeners: {           | List which events need to be mapped.
+    mouseover: 'show'        |  - Invoke the show() method every time
+  }                          |    the mouseover event is fired.
+})                           |
+class Form {                 | Directive controller class, instantiated
+                             | when CSS matches.
+  text:string;               | text property on the Directive Controller.
+                             |
+  show(event) {              | Show method which implements the show action.
+    console.log(this.text);  |
   }
 }
 ```
@@ -113,7 +114,7 @@ Example of a component:
   },                              |
 })                                |
 @View({                           | View annotation
-  templateUrl: 'pane.html'                |  - URL of template HTML
+  templateUrl: 'pane.html'        |  - URL of template HTML
 })                                |
 class Pane {                      | Component controller class
   title:string;                   |  - title property
@@ -160,7 +161,7 @@ Example of usage:
 
 ## Directives that use a ViewContainer
 
-Directives that use a ViewContainer can control instantiation of child views which are then inserted into the DOM. (Examples are `if` and `for`.)
+Directives that use a ViewContainer can control instantiation of child views which are then inserted into the DOM. (Examples are `ng-if` and `ng-for`.)
 
 * Every `template` element creates a `ProtoView` which can be used to create Views via the ViewContainer.
 * The child views show up as siblings of the directive in the DOM.
@@ -229,7 +230,7 @@ class MyService {}                   | Assume a service which needs to be inject
   injectables: [MyService]           |
 })                                   |
 @View({                              | Assume we have a template that needs to be
-  templateUrl: 'my_app.html',                | configured with directives to be injected.
+  templateUrl: 'my_app.html',        | configured with directives to be injected.
   directives: [House]                |
 })                                   |
 class MyApp {}                       |
@@ -358,7 +359,6 @@ class Dad {
   constructor(@Parent() dad:Grandpa) {
     this.name = 'Joe Jr';
     this.dad = dad.name;
-    console.log(dad)
   }
 }
 

@@ -94,7 +94,7 @@ Let's start with a View such as:
 
 ```
 <ul>
-  <li template="foreach: person in people">{{person}}</li>
+  <li template="ng-for: #person of people">{{person}}</li>
 </ul>
 ```
 
@@ -119,33 +119,33 @@ The next step is to compose these two ProtoViews into an actual view which is re
 
 ```
 <ul>                    | viewA(someContext)
-  <template></template> | viewA(someContext): new Foreach(new ViewContainer(protoViewB))
+  <template></template> | viewA(someContext): new NgFor(new ViewContainer(protoViewB))
 </ul>                   | viewA(someContext)
 ```
 
-*Step2:* Instantiate `Foreach` directive which will receive the `ViewContainerRef`. (The ViewContainerRef
+*Step2:* Instantiate `NgFor` directive which will receive the `ViewContainerRef`. (The ViewContainerRef
 has a reference to `protoViewA`).
 
 
-*Step3:* As the `Foreach` directive unrolls it asks the `ViewContainerRef` to instantiate `protoViewB` and insert
+*Step3:* As the `NgFor` directive unrolls it asks the `ViewContainerRef` to instantiate `protoViewB` and insert
 it after the `ViewContainer` anchor. This is repeated for each `person` in `people`. Notice that
 
 ```
 <ul>                    | viewA(someContext)
-  <template></template> | viewA(someContext): new Foreach(new ViewContainer(protoViewB))
+  <template></template> | viewA(someContext): new NgFor(new ViewContainer(protoViewB))
   <li>{{person}}</li>   | viewB0(locals0(someContext))
   <li>{{person}}</li>   | viewB1(locals0(someContext))
 </ul>                   | viewA(someContext)
 ```
 
-*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `Foreach`
+*Step4:* All of the bindings in the child Views are updated. Notice that in the case of `NgFor`
 the evaluation context for the `viewB0` and `viewB1` are `locals0` and `locals1` respectively.
 Locals allow the introduction of new local variables visible only within the scope of the View, and
 delegate any unknown references to the parent context.
 
 ```
 <ul>                    | viewA
-  <template></template> | viewA: new Foreach(new ViewContainer(protoViewB))
+  <template></template> | viewA: new NgFor(new ViewContainer(protoViewB))
   <li>Alice</li>        | viewB0
   <li>Bob</li>          | viewB1
 </ul>                   | viewA
