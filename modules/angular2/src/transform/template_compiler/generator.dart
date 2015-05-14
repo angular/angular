@@ -12,13 +12,13 @@ import 'package:angular2/src/services/xhr.dart' show XHR;
 import 'package:angular2/src/reflection/reflection.dart';
 import 'package:angular2/src/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/property_utils.dart' as prop;
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:barback/barback.dart';
 
+import 'change_detector_codegen.dart' as change;
 import 'compile_step_factory.dart';
 import 'recording_reflection_capabilities.dart';
+import 'reflector_register_codegen.dart' as reg;
 import 'view_definition_creator.dart';
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
@@ -26,81 +26,42 @@ import 'view_definition_creator.dart';
 /// `setter`s, and `method`s that would otherwise be reflectively accessed.
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
-Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
+Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
+    {bool generateRegistrations: true,
+    bool generateChangeDetectors: true}) async {
   var viewDefResults = await createViewDefinitions(reader, entryPoint);
   var extractor = new _TemplateExtractor(new XhrImpl(reader, entryPoint));
 
-  var registrations = new StringBuffer();
-  for (var viewDefEntry in viewDefResults.viewDefinitions.values) {
+  var registrations = new reg.Codegen();
+  var changeDetectorClasses = new change.Codegen();
+  for (var rType in viewDefResults.viewDefinitions.keys) {
+    var viewDefEntry = viewDefResults.viewDefinitions[rType];
     var result = await extractor.extractTemplates(viewDefEntry.viewDef);
     if (result == null) continue;
-    if (result.recording != null) {
-      var calls = _generateGetters(result.recording.getterNames);
-      if (calls.isNotEmpty) {
-        registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'
-        '({${calls.join(', ')}})');
+
+    registrations.generate(result.recording);
+    if (result.protoView != null && generateChangeDetectors) {
+      var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
+          result.protoView, viewDefEntry.viewDef.directives);
+      for (var i = 0; i < defs.length; ++i) {
+        changeDetectorClasses.generate(
+            '_${rType.typeName}_ChangeDetector$i', defs[i]);
       }
-      calls = _generateSetters(result.recording.setterNames);
-      if (calls.isNotEmpty) {
-        registrations.write('..${REGISTER_SETTERS_METHOD_NAME}'
-        '({${calls.join(', ')}})');
-      }
-      calls = _generateMethods(result.recording.methodNames);
-      if (calls.isNotEmpty) {
-        registrations.write('..${REGISTER_METHODS_METHOD_NAME}'
-        '({${calls.join(', ')}})');
-      }
-    }
-    if (result.protoView != null) {
-      var cdDef = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
-          result.protoView,
-          viewDefEntry.viewDef.directives);
-      print(cdDef);
     }
   }
 
   var code = viewDefResults.ngDeps.code;
-  if (registrations.length == 0) return code;
+  if (registrations.isEmpty && changeDetectorClasses.isEmpty) return code;
+  var importInjectIdx =
+      viewDefResults.ngDeps.lib != null ? viewDefResults.ngDeps.lib.end : 0;
   var codeInjectIdx =
       viewDefResults.ngDeps.registeredTypes.last.registerMethod.end;
-  return '${code.substring(0, codeInjectIdx)}'
+  return '${code.substring(0, importInjectIdx)}'
+      '${changeDetectorClasses.imports}'
+      '${code.substring(importInjectIdx, codeInjectIdx)}'
       '${registrations}'
-      '${code.substring(codeInjectIdx)}';
-}
-
-Iterable<String> _generateGetters(Iterable<String> getterNames) {
-  return getterNames.map((getterName) {
-    if (!prop.isValid(getterName)) {
-      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
-      return prop.lazyInvalidGetter(getterName);
-    } else {
-      return ''' '${prop.sanitize(getterName)}': (o) => o.$getterName''';
-    }
-  });
-}
-
-Iterable<String> _generateSetters(Iterable<String> setterName) {
-  return setterName.map((setterName) {
-    if (!prop.isValid(setterName)) {
-      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
-      return prop.lazyInvalidSetter(setterName);
-    } else {
-      return ''' '${prop.sanitize(setterName)}': '''
-          ''' (o, v) => o.$setterName = v ''';
-    }
-  });
-}
-
-Iterable<String> _generateMethods(Iterable<String> methodNames) {
-  return methodNames.map((methodName) {
-    if (!prop.isValid(methodName)) {
-      // TODO(kegluenq): Eagerly throw here once #1295 is addressed.
-      return prop.lazyInvalidMethod(methodName);
-    } else {
-      return ''' '${prop.sanitize(methodName)}': '''
-          '(o, List args) => Function.apply(o.$methodName, args) ';
-    }
-  });
+      '${code.substring(codeInjectIdx)}'
+      '$changeDetectorClasses';
 }
 
 /// Extracts `template` and `url` values from `View` annotations, reads
@@ -113,8 +74,7 @@ class _TemplateExtractor {
           new CompileStepFactory(new ng.Parser(new ng.Lexer())),
           new TemplateLoader(xhr, new UrlResolver()));
 
-  Future<_ExtractResult> extractTemplates(
-      ViewDefinition viewDef) async {
+  Future<_ExtractResult> extractTemplates(ViewDefinition viewDef) async {
     // Check for "imperative views".
     if (viewDef.template == null && viewDef.absUrl == null) return null;
 

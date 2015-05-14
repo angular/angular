@@ -71,8 +71,8 @@ class _ViewDefinitionCreator {
               asset: entryPoint);
           visitor.viewDef.componentId = _getComponentId(entryPoint, typeName);
         }
-        retVal[rType] = new ViewDefinitionEntry._(
-            hostMetadata, visitor.viewDef);
+        retVal[rType] =
+            new ViewDefinitionEntry._(hostMetadata, visitor.viewDef);
       }
     });
     return new ViewDefinitionResults._(ngDeps, retVal);
