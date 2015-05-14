@@ -29,7 +29,7 @@ export class RouterOutlet {
     this._router.registerOutlet(this, nameAttr);
   }
 
-  activate(instruction:Instruction) {
+  activate(instruction:Instruction): Promise {
     return this._compiler.compileInHost(instruction.component).then((pv) => {
       var outletInjector = this._injector.resolveAndCreateChild([
         bind(RouteParams).toValue(new RouteParams(instruction.params)),
@@ -41,11 +41,11 @@ export class RouterOutlet {
     });
   }
 
-  canActivate(instruction:any) {
+  canActivate(instruction:Instruction): Promise<boolean> {
     return PromiseWrapper.resolve(true);
   }
 
-  canDeactivate(instruction:any) {
+  canDeactivate(instruction:Instruction): Promise<boolean> {
     return PromiseWrapper.resolve(true);
   }
 }

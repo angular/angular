@@ -4,21 +4,22 @@ export class BrowserLocation {
   _location;
   _history;
   _baseHref:string;
+
   constructor() {
     this._location = DOM.getLocation();
     this._history = DOM.getHistory();
     this._baseHref = DOM.getBaseHref();
   }
 
-  onPopState(fn) {
+  onPopState(fn: Function): void {
     DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
-  getBaseHref() {
+  getBaseHref(): string {
     return this._baseHref;
   }
 
-  path() {
+  path(): string {
     return this._location.pathname;
   }
 
@@ -26,11 +27,11 @@ export class BrowserLocation {
     this._history.pushState(state, title, url);
   }
 
-  forward() {
+  forward(): void {
     this._history.forward();
   }
 
-  back() {
+  back(): void {
     this._history.back();
   }
 }

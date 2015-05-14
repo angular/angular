@@ -11,6 +11,7 @@ import {List, Map} from 'angular2/src/facade/collection';
  */
 export class RouteConfig {
   configs:List<Map>;
+
   @CONST()
   constructor(configs:List<Map>) {
     this.configs = configs;

@@ -1,28 +1,29 @@
-import {Map, MapWrapper, StringMap, StringMapWrapper,  List, ListWrapper} from 'angular2/src/facade/collection';
+import {Map, MapWrapper, StringMap, StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 
 export class RouteParams {
-  params:Map<string, string>;
+  params:StringMap<string, string>;
+
   constructor(params:StringMap) {
     this.params = params;
   }
 
-  get(param:string) {
-    return StringMapWrapper.get(this.params, param);
+  get(param:string): string {
+    return normalizeBlank(StringMapWrapper.get(this.params, param));
   }
 }
 
 export class Instruction {
   component:any;
-  _children:Map<string, Instruction>;
+  _children:StringMap<string, Instruction>;
   router:any;
   matchedUrl:string;
-  params:Map<string, string>;
+  params:StringMap<string, string>;
   reuse:boolean;
   cost:number;
 
-  constructor({params, component, children, matchedUrl, parentCost}:{params:StringMap, component:any, children:Map, matchedUrl:string, cost:int} = {}) {
+  constructor({params, component, children, matchedUrl, parentCost}:{params:StringMap, component:any, children:StringMap, matchedUrl:string, cost:number} = {}) {
     this.reuse = false;
     this.matchedUrl = matchedUrl;
     this.cost = parentCost;
@@ -43,11 +44,11 @@ export class Instruction {
     this.params = params;
   }
 
-  getChildInstruction(outletName:string) {
+  getChildInstruction(outletName:string): Instruction {
     return StringMapWrapper.get(this._children, outletName);
   }
 
-  forEachChild(fn:Function) {
+  forEachChild(fn:Function): void {
     StringMapWrapper.forEach(this._children, fn);
   }
 
@@ -60,7 +61,7 @@ export class Instruction {
    * Takes a function with signature:
    * (parent:Instruction, child:Instruction) => {}
    */
-  traverseSync(fn:Function) {
+  traverseSync(fn:Function): void {
     this.forEachChild((childInstruction, _) => fn(this, childInstruction));
     this.forEachChild((childInstruction, _) => childInstruction.traverseSync(fn));
   }
@@ -70,7 +71,7 @@ export class Instruction {
    * Takes a function with signature:
    * (child:Instruction, parentOutletName:string) => {}
    */
-  traverseAsync(fn:Function) {
+  traverseAsync(fn:Function):Promise {
     return this.mapChildrenAsync(fn)
         .then((_) => this.mapChildrenAsync((childInstruction, _) => childInstruction.traverseAsync(fn)));
   }
@@ -79,7 +80,7 @@ export class Instruction {
   /**
    * Takes a currently active instruction and sets a reuse flag on this instruction
    */
-  reuseComponentsFrom(oldInstruction:Instruction) {
+  reuseComponentsFrom(oldInstruction:Instruction): void {
     this.forEachChild((childInstruction, outletName) => {
       var oldInstructionChild = oldInstruction.getChildInstruction(outletName);
       if (shouldReuseComponent(childInstruction, oldInstructionChild)) {
@@ -89,16 +90,16 @@ export class Instruction {
   }
 }
 
-function shouldReuseComponent(instr1:Instruction, instr2:Instruction) {
+function shouldReuseComponent(instr1:Instruction, instr2:Instruction): boolean {
   return instr1.component == instr2.component &&
     StringMapWrapper.equals(instr1.params, instr2.params);
 }
 
-function mapObjAsync(obj:StringMap, fn) {
+function mapObjAsync(obj:StringMap, fn): Promise {
   return PromiseWrapper.all(mapObj(obj, fn));
 }
 
-function mapObj(obj:StringMap, fn):List {
+function mapObj(obj:StringMap, fn: Function):List {
   var result = ListWrapper.create();
   StringMapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
   return result;

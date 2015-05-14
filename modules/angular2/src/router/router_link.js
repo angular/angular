@@ -40,7 +40,7 @@ import {Location} from './location';
 export class RouterLink {
   _domEl;
   _route:string;
-  _params:any;
+  _params:StringMap<string, string>;
   _router:Router;
   _location:Location;
   _href:string;
@@ -56,15 +56,15 @@ export class RouterLink {
     });
   }
 
-  set route(changes) {
+  set route(changes: string) {
     this._route = changes;
   }
 
-  set params(changes) {
+  set params(changes: StringMap) {
     this._params = changes;
   }
 
-  onAllChangesDone() {
+  onAllChangesDone(): void {
     if (isPresent(this._route) && isPresent(this._params)) {
       var newHref = this._router.generate(this._route, this._params);
       this._href = this._location.normalizeAbsolutely(newHref);

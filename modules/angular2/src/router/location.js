@@ -13,62 +13,62 @@ export class Location {
     this._browserLocation.onPopState((_) => this._onPopState(_));
   }
 
-  _onPopState(_) {
+  _onPopState(_): void {
     ObservableWrapper.callNext(this._subject, {
       'url': this.path()
     });
   }
 
-  path() {
+  path(): string {
     return this.normalize(this._browserLocation.path());
   }
 
-  normalize(url) {
+  normalize(url: string): string {
     return this._stripBaseHref(stripIndexHtml(url));
   }
 
-  normalizeAbsolutely(url) {
+  normalizeAbsolutely(url: string): string {
     if (url[0] != '/') {
       url = '/' + url;
     }
     return this._addBaseHref(url);
   }
 
-  _stripBaseHref(url) {
+  _stripBaseHref(url: string): string {
     if (this._baseHref.length > 0 && StringWrapper.startsWith(url, this._baseHref)) {
       return StringWrapper.substring(url, this._baseHref.length);
     }
     return url;
   }
 
-  _addBaseHref(url) {
+  _addBaseHref(url: string): string {
     if (!StringWrapper.startsWith(url, this._baseHref)) {
       return this._baseHref + url;
     }
     return url;
   }
 
-  go(url:string) {
+  go(url:string): void {
     var finalUrl = this.normalizeAbsolutely(url);
     this._browserLocation.pushState(null, '', finalUrl);
   }
 
-  forward() {
+  forward(): void {
     this._browserLocation.forward();
   }
 
-  back() {
+  back(): void {
     this._browserLocation.back();
   }
 
-  subscribe(onNext, onThrow = null, onReturn = null) {
+  subscribe(onNext, onThrow = null, onReturn = null): void {
     ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 }
 
 
 
-function stripIndexHtml(url) {
+function stripIndexHtml(url: string): string {
   // '/index.html'.length == 11
   if (url.length > 10 && StringWrapper.substring(url, url.length - 11) == '/index.html') {
     return StringWrapper.substring(url, 0, url.length - 11);

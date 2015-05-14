@@ -7,7 +7,8 @@ import {Instruction} from './instruction';
  * "Steps" are conceptually similar to "middleware"
  */
 export class Pipeline {
-  steps:List;
+  steps:List<Function>;
+
   constructor() {
     this.steps = [
       instruction => instruction.traverseSync((parentInstruction, childInstruction) => {

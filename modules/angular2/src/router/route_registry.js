@@ -12,7 +12,7 @@ export class RouteRegistry {
     this._rules = MapWrapper.create();
   }
 
-  config(parentComponent, config) {
+  config(parentComponent, config: StringMap<string, any>): void {
     if (!StringMapWrapper.contains(config, 'path')) {
       throw new BaseException('Route config does not contain "path"');
     }
@@ -23,10 +23,9 @@ export class RouteRegistry {
       throw new BaseException('Route config does not contain "component," "components," or "redirectTo"');
     }
 
-    var recognizer:RouteRecognizer;
-    if (MapWrapper.contains(this._rules, parentComponent)) {
-      recognizer = MapWrapper.get(this._rules, parentComponent);
-    } else {
+    var recognizer:RouteRecognizer = MapWrapper.get(this._rules, parentComponent);
+
+    if (isBlank(recognizer)) {
       recognizer = new RouteRecognizer();
       MapWrapper.set(this._rules, parentComponent, recognizer);
     }
@@ -46,7 +45,7 @@ export class RouteRegistry {
     recognizer.addConfig(config['path'], config, config['as']);
   }
 
-  configFromComponent(component) {
+  configFromComponent(component): void {
     if (!isType(component)) {
       return;
     }
@@ -71,14 +70,14 @@ export class RouteRegistry {
   }
 
 
-  recognize(url:string, parentComponent) {
+  recognize(url:string, parentComponent): Instruction {
     var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
     if (isBlank(componentRecognizer)) {
       return null;
     }
 
     var componentSolutions = componentRecognizer.recognize(url);
-    var fullSolutions = ListWrapper.create();
+    var fullSolutions = [];
 
     for(var i = 0; i < componentSolutions.length; i++) {
       var candidate = componentSolutions[i];
@@ -120,16 +119,14 @@ export class RouteRegistry {
     return null;
   }
 
-  generate(name:string, params:any, hostComponent) {
+  generate(name:string, params:StringMap<string, string>, hostComponent): string {
     //TODO: implement for hierarchical routes
     var componentRecognizer = MapWrapper.get(this._rules, hostComponent);
-    if (isPresent(componentRecognizer)) {
-      return componentRecognizer.generate(name, params);
-    }
+    return isPresent(componentRecognizer) ? componentRecognizer.generate(name, params) : null;
   }
 }
 
-function handlerToLeafInstructions(context, parentComponent) {
+function handlerToLeafInstructions(context, parentComponent): Instruction {
   var children = StringMapWrapper.create();
   StringMapWrapper.forEach(context['handler']['components'], (component, outletName) => {
     children[outletName] = new Instruction({
@@ -150,7 +147,7 @@ function handlerToLeafInstructions(context, parentComponent) {
 // { component: Foo }
 // mutates the config to:
 // { components: { default: Foo } }
-function normalizeConfig(config:StringMap) {
+function normalizeConfig(config:StringMap<string, any>): StringMap<string, any> {
   if (StringMapWrapper.contains(config, 'component')) {
     var component = StringMapWrapper.get(config, 'component');
     var components = StringMapWrapper.create();

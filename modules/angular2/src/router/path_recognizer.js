@@ -1,4 +1,4 @@
-import {RegExp, RegExpWrapper, RegExpMatcherWrapper, StringWrapper, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {RegExp, RegExpWrapper, RegExpMatcherWrapper, StringWrapper, isPresent, isBlank, BaseException, normalizeBlank} from 'angular2/src/facade/lang';
 import {Map, MapWrapper, StringMap, StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
 
 import {escapeRegex} from './url';
@@ -7,13 +7,14 @@ class StaticSegment {
   string:string;
   regex:string;
   name:string;
+
   constructor(string:string) {
     this.string = string;
     this.name = '';
     this.regex = escapeRegex(string);
   }
 
-  generate(params) {
+  generate(params): string {
     return this.string;
   }
 }
@@ -26,11 +27,11 @@ class DynamicSegment {
     this.regex = "([^/]+)";
   }
 
-  generate(params:StringMap) {
+  generate(params:StringMap<string, string>): string {
     if (!StringMapWrapper.contains(params, this.name)) {
       throw new BaseException(`Route generator for '${this.name}' was not included in parameters passed.`)
     }
-    return StringMapWrapper.get(params, this.name);
+    return normalizeBlank(StringMapWrapper.get(params, this.name));
   }
 }
 
@@ -43,8 +44,8 @@ class StarSegment {
     this.regex = "(.+)";
   }
 
-  generate(params:StringMap) {
-    return StringMapWrapper.get(params, this.name);
+  generate(params:StringMap<string, string>): string {
+    return normalizeBlank(StringMapWrapper.get(params, this.name));
   }
 }
 
@@ -82,9 +83,8 @@ function parsePathString(route:string) {
   return {segments: results, cost};
 }
 
-var SLASH_RE = RegExpWrapper.create('/');
 function splitBySlash (url:string):List<string> {
-  return StringWrapper.split(url, SLASH_RE);
+  return url.split('/');
 }
 
 
@@ -97,7 +97,7 @@ export class PathRecognizer {
 
   constructor(path:string, handler:any) {
     this.handler = handler;
-    this.segments = ListWrapper.create();
+    this.segments = [];
 
     // TODO: use destructuring assignment
     // see https://github.com/angular/ts2dart/issues/158
@@ -115,7 +115,7 @@ export class PathRecognizer {
     this.cost = cost;
   }
 
-  parseParams(url:string):StringMap {
+  parseParams(url:string):StringMap<string, string> {
     var params = StringMapWrapper.create();
     var urlPart = url;
     for(var i=0; i<this.segments.length; i++) {
@@ -130,7 +130,7 @@ export class PathRecognizer {
     return params;
   }
 
-  generate(params:StringMap):string {
+  generate(params:StringMap<string, string>):string {
     return ListWrapper.join(ListWrapper.map(this.segments, (segment) =>
       '/' + segment.generate(params)), '');
   }

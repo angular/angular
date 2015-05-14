@@ -14,11 +14,11 @@ export class RouteRecognizer {
     this.redirects = MapWrapper.create();
   }
 
-  addRedirect(path:string, target:string) {
+  addRedirect(path:string, target:string): void {
     MapWrapper.set(this.redirects, path, target);
   }
 
-  addConfig(path:string, handler:any, alias:string = null) {
+  addConfig(path:string, handler:any, alias:string = null): void {
     var recognizer = new PathRecognizer(path, handler);
     MapWrapper.set(this.matchers, recognizer.regex, recognizer);
     if (isPresent(alias)) {
@@ -59,12 +59,12 @@ export class RouteRecognizer {
     return solutions;
   }
 
-  hasRoute(name:string) {
+  hasRoute(name:string): boolean {
     return MapWrapper.contains(this.names, name);
   }
 
-  generate(name:string, params:any) {
+  generate(name:string, params:any): string {
     var pathRecognizer = MapWrapper.get(this.names, name);
-    return pathRecognizer.generate(params);
+    return isPresent(pathRecognizer) ? pathRecognizer.generate(params) : null;
   }
 }

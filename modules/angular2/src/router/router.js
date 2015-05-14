@@ -51,18 +51,22 @@ export class Router {
   /**
    * Constructs a child router. You probably don't need to use this unless you're writing a reusable component.
    */
-  childRouter(outletName = 'default') {
-    if (!MapWrapper.contains(this._children, outletName)) {
-      MapWrapper.set(this._children, outletName, new ChildRouter(this, outletName));
+  childRouter(outletName = 'default'): Router {
+    var router = MapWrapper.get(this._children, outletName);
+
+    if (isBlank(router)) {
+      router = new ChildRouter(this, outletName);
+      MapWrapper.set(this._children, outletName, router);
     }
-    return MapWrapper.get(this._children, outletName);
+
+    return router;
   }
 
 
   /**
    * Register an object to notify of route changes. You probably don't need to use this unless you're writing a reusable component.
    */
-  registerOutlet(outlet:RouterOutlet, name = 'default'):Promise {
+  registerOutlet(outlet:RouterOutlet, name: string = 'default'):Promise {
     MapWrapper.set(this._outlets, name, outlet);
     if (isPresent(this._currentInstruction)) {
       var childInstruction = this._currentInstruction.getChildInstruction(name);
@@ -91,12 +95,12 @@ export class Router {
    * ```
    *
    */
-  config(config:any) {
+  config(config:any): Promise {
     if (config instanceof List) {
       config.forEach((configObject) => {
         // TODO: this is a hack
         this._registry.config(this.hostComponent, configObject);
-      })
+      });
     } else {
       this._registry.config(this.hostComponent, config);
     }
@@ -140,18 +144,18 @@ export class Router {
     return result;
   }
 
-  _startNavigating() {
+  _startNavigating(): void {
     this.navigating = true;
   }
 
-  _finishNavigating() {
+  _finishNavigating(): void {
     this.navigating = false;
   }
 
   /**
    * Subscribe to URL updates from the router
    */
-  subscribe(onNext) {
+  subscribe(onNext): void {
     ObservableWrapper.subscribe(this._subject, onNext);
   }
 
@@ -182,7 +186,7 @@ export class Router {
   /**
    * Given a URL, returns an instruction representing the component graph
    */
-  recognize(url:string) {
+  recognize(url:string): Instruction {
     return this._registry.recognize(url, this.hostComponent);
   }
 
@@ -202,7 +206,7 @@ export class Router {
   /**
    * Generate a URL from a component name and optional map of parameters. The URL is relative to the app's base href.
    */
-  generate(name:string, params:any) {
+  generate(name:string, params:StringMap<string, string>): string {
     return this._registry.generate(name, params, this.hostComponent);
   }
 }
@@ -223,7 +227,7 @@ class ChildRouter extends Router {
   }
 }
 
-function mapObjAsync(obj:Map, fn) {
+function mapObjAsync(obj:Map, fn): Promise {
   return PromiseWrapper.all(mapObj(obj, fn));
 }
 
