@@ -25,6 +25,7 @@ Future<String> removeReflectionCapabilities(AssetReader reader,
 
   var codegen = new Codegen(reflectionEntryPointPath, newEntryPointPaths);
   return new Rewriter(code, codegen,
-          mirrorMode: mirrorMode, writeStaticInit: writeStaticInit)
-      .rewrite(parseCompilationUnit(code, name: reflectionEntryPointPath));
+      mirrorMode: mirrorMode, writeStaticInit: writeStaticInit).rewrite(
+      parseCompilationUnit(code,
+          name: reflectionEntryPointPath, parseFunctionBodies: false));
 }

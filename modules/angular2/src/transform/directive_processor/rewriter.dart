@@ -30,7 +30,8 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
   var visitor = new CreateNgDepsVisitor(
       writer, assetId, new XhrImpl(reader, assetId), annotationMatcher);
   var code = await reader.readAsString(assetId);
-  parseCompilationUnit(code, name: assetId.path).accept(visitor);
+  parseCompilationUnit(code, name: assetId.path, parseFunctionBodies: false)
+      .accept(visitor);
   return await writer.asyncToString();
 }
 

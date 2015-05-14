@@ -9,6 +9,8 @@ import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
+main() => allTests();
+
 void allTests() {
   var reader = new TestAssetReader();
 
