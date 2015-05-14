@@ -31,3 +31,4 @@ transformers:
     - --trust-type-annotations
     - --trust-primitives
     - --show-package-warnings
+    - --enable-experimental-mirrors
