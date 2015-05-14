@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:angular2/src/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/change_detection/parser/parser.dart' as ng;
+import 'package:angular2/src/core/compiler/proto_view_factory.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/compiler/compiler.dart';
 import 'package:angular2/src/render/dom/compiler/template_loader.dart';
@@ -30,23 +31,31 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint) async {
   var extractor = new _TemplateExtractor(new XhrImpl(reader, entryPoint));
 
   var registrations = new StringBuffer();
-  for (var viewDef in viewDefResults.viewDefinitions.values) {
-    var values = await extractor.extractTemplates(viewDef);
-    if (values == null) continue;
-    var calls = _generateGetters(values.getterNames);
-    if (calls.isNotEmpty) {
-      registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'
-          '({${calls.join(', ')}})');
+  for (var viewDefEntry in viewDefResults.viewDefinitions.values) {
+    var result = await extractor.extractTemplates(viewDefEntry.viewDef);
+    if (result == null) continue;
+    if (result.recording != null) {
+      var calls = _generateGetters(result.recording.getterNames);
+      if (calls.isNotEmpty) {
+        registrations.write('..${REGISTER_GETTERS_METHOD_NAME}'
+        '({${calls.join(', ')}})');
+      }
+      calls = _generateSetters(result.recording.setterNames);
+      if (calls.isNotEmpty) {
+        registrations.write('..${REGISTER_SETTERS_METHOD_NAME}'
+        '({${calls.join(', ')}})');
+      }
+      calls = _generateMethods(result.recording.methodNames);
+      if (calls.isNotEmpty) {
+        registrations.write('..${REGISTER_METHODS_METHOD_NAME}'
+        '({${calls.join(', ')}})');
+      }
     }
-    calls = _generateSetters(values.setterNames);
-    if (calls.isNotEmpty) {
-      registrations.write('..${REGISTER_SETTERS_METHOD_NAME}'
-          '({${calls.join(', ')}})');
-    }
-    calls = _generateMethods(values.methodNames);
-    if (calls.isNotEmpty) {
-      registrations.write('..${REGISTER_METHODS_METHOD_NAME}'
-          '({${calls.join(', ')}})');
+    if (result.protoView != null) {
+      var cdDef = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
+          result.protoView,
+          viewDefEntry.viewDef.directives);
+      print(cdDef);
     }
   }
 
@@ -104,7 +113,7 @@ class _TemplateExtractor {
           new CompileStepFactory(new ng.Parser(new ng.Lexer())),
           new TemplateLoader(xhr, new UrlResolver()));
 
-  Future<RecordingReflectionCapabilities> extractTemplates(
+  Future<_ExtractResult> extractTemplates(
       ViewDefinition viewDef) async {
     // Check for "imperative views".
     if (viewDef.template == null && viewDef.absUrl == null) return null;
@@ -114,9 +123,16 @@ class _TemplateExtractor {
     reflector.reflectionCapabilities = recordingCapabilities;
 
     // TODO(kegluneq): Rewrite url to inline `template` where possible.
-    await _compiler.compile(viewDef);
+    var protoViewDto = await _compiler.compile(viewDef);
 
     reflector.reflectionCapabilities = savedReflectionCapabilities;
-    return recordingCapabilities;
+    return new _ExtractResult(recordingCapabilities, protoViewDto);
   }
+}
+
+class _ExtractResult {
+  final RecordingReflectionCapabilities recording;
+  final ProtoViewDto protoView;
+
+  _ExtractResult(this.recording, this.protoView);
 }
