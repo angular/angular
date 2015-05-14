@@ -8,8 +8,12 @@ function watch(globs, opts, tasks) {
     opts = {};
   }
 
+  var triggerCount = 0;
   var useRunSequence = typeof tasks !== 'function';
   var runTasks;
+
+  function noop() {}
+  var log = typeof opts.log === 'function' ? opts.log : noop;
 
   if (useRunSequence) {
     if (!Array.isArray(tasks)) tasks = [tasks];
@@ -66,6 +70,7 @@ function watch(globs, opts, tasks) {
 
   function invokeCallback() {
     eventsRecorded = 0;
+    log(++triggerCount);
     runTasks();
   }
 
