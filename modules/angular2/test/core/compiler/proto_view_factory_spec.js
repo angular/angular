@@ -17,7 +17,7 @@ import {isBlank} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 
 import {ChangeDetection, ChangeDetectorDefinition} from 'angular2/change_detection';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {ProtoViewFactory, getChangeDetectorDefinitions} from 'angular2/src/core/compiler/proto_view_factory';
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
@@ -45,7 +45,7 @@ export function main() {
 
       it('should create a ChangeDetectorDefinition for the root render proto view', () => {
         var renderPv = createRenderProtoView();
-        var defs = protoViewFactory.getChangeDetectorDefinitions(bindDirective(MainComponent).metadata,
+        var defs = getChangeDetectorDefinitions(bindDirective(MainComponent).metadata,
           renderPv, []);
         expect(defs.length).toBe(1);
         expect(defs[0].id).toEqual('MainComponent_comp_0');
