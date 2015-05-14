@@ -11,15 +11,6 @@ export class Pipeline {
 
   constructor() {
     this.steps = [
-      instruction => instruction.traverseSync((parentInstruction, childInstruction) => {
-        childInstruction.router = parentInstruction.router.childRouter(childInstruction.component);
-      }),
-      instruction => instruction.router.traverseOutlets((outlet, name) => {
-        return outlet.canDeactivate(instruction.getChildInstruction(name));
-      }),
-      instruction => instruction.router.traverseOutlets((outlet, name) => {
-        return outlet.canActivate(instruction.getChildInstruction(name));
-      }),
       instruction => instruction.router.activateOutlets(instruction)
     ];
   }

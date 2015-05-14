@@ -16,26 +16,32 @@ export class RouteParams {
 
 export class Instruction {
   component:any;
-  _children:StringMap<string, Instruction>;
-  router:any;
-  matchedUrl:string;
-  params:StringMap<string, string>;
+  _children:Map<string, Instruction>;
+
+  // the part of the URL captured by this instruction
+  capturedUrl:string;
+
+  // the part of the URL captured by this instruction and all children
+  accumulatedUrl:string;
+
+  params:Map<string, string>;
   reuse:boolean;
   cost:number;
 
   constructor({params, component, children, matchedUrl, parentCost}:{params:StringMap, component:any, children:StringMap, matchedUrl:string, cost:number} = {}) {
     this.reuse = false;
-    this.matchedUrl = matchedUrl;
+    this.capturedUrl = matchedUrl;
+    this.accumulatedUrl = matchedUrl;
     this.cost = parentCost;
     if (isPresent(children)) {
       this._children = children;
       var childUrl;
       StringMapWrapper.forEach(this._children, (child, _) => {
-        childUrl = child.matchedUrl;
+        childUrl = child.accumulatedUrl;
         this.cost += child.cost;
       });
       if (isPresent(childUrl)) {
-        this.matchedUrl += childUrl;
+        this.accumulatedUrl += childUrl;
       }
     } else {
       this._children = StringMapWrapper.create();
@@ -44,16 +50,16 @@ export class Instruction {
     this.params = params;
   }
 
-  getChildInstruction(outletName:string): Instruction {
+  hasChild(outletName:string):Instruction {
+    return StringMapWrapper.contains(this._children, outletName);
+  }
+
+  getChild(outletName:string):Instruction {
     return StringMapWrapper.get(this._children, outletName);
   }
 
   forEachChild(fn:Function): void {
     StringMapWrapper.forEach(this._children, fn);
-  }
-
-  mapChildrenAsync(fn):Promise {
-    return mapObjAsync(this._children, fn);
   }
 
   /**
@@ -62,18 +68,8 @@ export class Instruction {
    * (parent:Instruction, child:Instruction) => {}
    */
   traverseSync(fn:Function): void {
-    this.forEachChild((childInstruction, _) => fn(this, childInstruction));
+    this.forEachChild(fn);
     this.forEachChild((childInstruction, _) => childInstruction.traverseSync(fn));
-  }
-
-  /**
-   * Does an asynchronous, breadth-first traversal of the graph of instructions.
-   * Takes a function with signature:
-   * (child:Instruction, parentOutletName:string) => {}
-   */
-  traverseAsync(fn:Function):Promise {
-    return this.mapChildrenAsync(fn)
-        .then((_) => this.mapChildrenAsync((childInstruction, _) => childInstruction.traverseAsync(fn)));
   }
 
 
@@ -81,8 +77,8 @@ export class Instruction {
    * Takes a currently active instruction and sets a reuse flag on this instruction
    */
   reuseComponentsFrom(oldInstruction:Instruction): void {
-    this.forEachChild((childInstruction, outletName) => {
-      var oldInstructionChild = oldInstruction.getChildInstruction(outletName);
+    this.traverseSync((childInstruction, outletName) => {
+      var oldInstructionChild = oldInstruction.getChild(outletName);
       if (shouldReuseComponent(childInstruction, oldInstructionChild)) {
         childInstruction.reuse = true;
       }
@@ -104,5 +100,3 @@ function mapObj(obj:StringMap, fn: Function):List {
   StringMapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
   return result;
 }
-
-export var noopInstruction = new Instruction();
