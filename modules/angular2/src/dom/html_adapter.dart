@@ -126,7 +126,9 @@ class Html5LibDomAdapter implements DomAdapter {
   clearNodes(el) {
     throw 'not implemented';
   }
-  appendChild(el, node) => null;
+  appendChild(el, node) {
+    throw 'not implemented';
+  }
   removeChild(el, node) {
     throw 'not implemented';
   }

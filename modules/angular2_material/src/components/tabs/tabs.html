@@ -1,0 +1,25 @@
+<style>@import "angular2_material/src/components/tabs/tabs.css";</style>
+
+<!-- Strip of tabs at the top of the content. -->
+<div class="md-tabs-wrapper" role="tablist">
+  <div class="md-tabs-canvas">
+    <div class="md-pagination-wrapper">
+
+      <div *ng-for="#tab of tabs" role="tab" class="md-tab-item md-tab" (^click)="selectTab(tab)"
+          [class.md-active]="tab == selectedTab">
+        <div *ng-if="tab.customLabel != null" [md-tab-view-container]="tab.customLabel"></div>
+        <div *ng-if="tab.customLabel == null">{{tab.label}}</div>
+      </div>
+
+      <div class="md-ink-bar"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Content of the current tab. -->
+<div class="md-tabs-content-wrapper" role="tabpanel">
+  <div class="md-tab-content">
+    <template [md-tab-view-container]="selectedTab.content"></template>
+  </div>
+</div>

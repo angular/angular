@@ -1,0 +1,53 @@
+<!-- Demo styles. -->
+<style>
+  md-tabs {
+    background: #f6f6f6;
+    border: 1px solid #e1e1e1;
+    width: 400px;
+  }
+
+  .md-tab-content {
+    padding: 16px;
+  }
+
+  .md-tabs-canvas {
+    background: white;;
+  }
+</style>
+
+<div md-theme="default">
+  <h2>Tabs demo</h2>
+
+  <md-tabs md-border-bottom>
+
+    <!-- Custom label and custom content -->
+    <div md-tab>
+
+      <template md-tab-label>
+        {{vegetablesLabel}}
+      </template>
+
+      <template md-tab-content>
+        {{vegetables}}
+      </template>
+
+    </div>
+
+    <!-- Bound label attribute and interpolated text content. -->
+    <template md-tab [label]="fruitsLabel">
+      {{fruits}}
+    </template>
+
+    <!-- Static label attribute and static content. -->
+    <template md-tab label="Other">
+      Cotton candy
+    </template>
+
+    <div md-tab label="Hidden tab" *ng-if="nope">
+      Nothing here.
+    </div>
+
+
+  </md-tabs>
+
+</div>
