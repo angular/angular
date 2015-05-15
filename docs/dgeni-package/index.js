@@ -55,12 +55,8 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
   ];
 
   readTypeScriptModules.sourceFiles = [
-    '*/*.js',
-    '*/src/**/*.js',
-    '*/*.es6',
-    '*/src/**/*.es6',
-    '*/*.ts',
-    '*/src/**/*.ts'
+    '*/*.@(js|es6|ts])',
+    '*/src/**/*.@(js|es6|ts)'
   ];
   readTypeScriptModules.basePath = 'modules';
 })
