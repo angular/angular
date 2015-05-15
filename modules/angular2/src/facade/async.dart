@@ -6,7 +6,9 @@ export 'dart:async' show Future, Stream, StreamController, StreamSubscription;
 class PromiseWrapper {
   static Future resolve(obj) => new Future.value(obj);
 
-  static Future reject(obj) => new Future.error(obj);
+  static Future reject(obj) => new Future.error(
+      obj,
+      obj is Error ? obj.stackTrace : null);
 
   static Future<List> all(List<Future> promises) => Future.wait(promises);
 
@@ -98,6 +100,10 @@ class _Completer {
   }
 
   void reject(v) {
-    c.completeError(v);
+    var stack = null;
+    if (v is Error) {
+      stack = v.stackTrace;
+    }
+    c.completeError(v, stack);
   }
 }

@@ -6,6 +6,19 @@ import 'package:angular2/di.dart';
 import 'package:angular2/src/test_lib/test_bed.dart';
 import 'package:angular2/test_lib.dart';
 
+class MockException implements Error { var message; var stackTrace; }
+
+void functionThatThrows() {
+  try { throw new MockException(); }
+  catch(e, stack) {
+    // If we lose the stack trace the message will no longer match
+    // the first line in the stack
+    e.message = stack.toString().split('\n')[0];
+    e.stackTrace = stack;
+    rethrow;
+  }
+}
+
 main() {
   describe('TypeLiteral', () {
     it('should publish via injectables',
@@ -18,6 +31,21 @@ main() {
       tb.createView(Dummy).then((view) {
         view.detectChanges();
         expect(view.rootNodes).toHaveText('[Hello, World]');
+        async.done();
+      });
+    }));
+  });
+
+  describe('Error handling', () {
+    it('should preserve stack traces throws from components',
+        inject([TestBed, AsyncTestCompleter], (tb, async) {
+      tb.overrideView(Dummy, new View(
+        template: '<throwing-component></throwing-component>',
+        directives: [ThrowingComponent]
+      ));
+
+      tb.createView(Dummy).catchError((e, stack) {
+        expect(stack.toString().split('\n')[0]).toEqual(e.message);
         async.done();
       });
     }));
@@ -42,4 +70,14 @@ class TypeLiteralComponent {
   final List<String> list;
 
   TypeLiteralComponent(this.list);
+}
+
+@Component(
+  selector: 'throwing-component'
+)
+@View(template: '')
+class ThrowingComponent {
+  ThrowingComponent() {
+    functionThatThrows();
+  }
 }
