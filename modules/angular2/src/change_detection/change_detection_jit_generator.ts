@@ -112,7 +112,7 @@ ${type}.prototype.dehydrate = function() {
   ${LOCALS_ACCESSOR} = null;
 }
 ${type}.prototype.hydrated = function() {
-  return ${CONTEXT_ACCESSOR} !== ${UTIL}.unitialized();
+  return ${CONTEXT_ACCESSOR} !== ${UTIL}.uninitialized();
 }
 `;
 }
@@ -159,7 +159,7 @@ function pipeCheckTemplate(protoIndex: number, context: string, bindingPropagati
                            lastInDirective: string): string {
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
-if (${pipe} === ${UTIL}.unitialized()) {
+if (${pipe} === ${UTIL}.uninitialized()) {
   ${pipe} = ${PIPE_REGISTRY_ACCESSOR}.get('${pipeType}', ${context}, ${bindingPropagationConfig});
 } else if (!${pipe}.supports(${context})) {
   ${pipe}.onDestroy();
@@ -207,7 +207,7 @@ function changeDefinitionsTemplate(names: List<any>): string {
 }
 
 function fieldDefinitionsTemplate(names: List<any>): string {
-  return names.map((n) => `${n} = ${UTIL}.unitialized();`).join("\n");
+  return names.map((n) => `${n} = ${UTIL}.uninitialized();`).join("\n");
 }
 
 function ifChangedGuardTemplate(changeNames: List<any>, body: string): string {

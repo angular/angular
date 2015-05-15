@@ -49,7 +49,7 @@ function _simpleChange(previousValue, currentValue) {
 }
 
 export class ChangeDetectionUtil {
-  static unitialized() { return uninitialized; }
+  static uninitialized() { return uninitialized; }
 
   static arrayFn0() { return []; }
   static arrayFn1(a1) { return [a1]; }
