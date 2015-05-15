@@ -1,5 +1,8 @@
 {% extends 'layout/base.template.html' -%}
 {% block body -%}
+p.location-badge.
+  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.fileInfo.relativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}">{$ doc.fileInfo.relativePath $} (line {$ doc.location.start.line+1 $})</a>
+
 ul
   for page, slug in public.docs[current.path[1]][current.path[2]][current.path[3]][current.path[4]]._data
     if slug != 'index'

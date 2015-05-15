@@ -5,10 +5,15 @@
 .l-main-section
   h2(class="function export") {$ doc.name $}
 
-  p <code>{$ paramList(doc.parameters) $}</code>
+  {% if doc.parameters %}
+  pre.prettyprint
+    code.
+      {$ doc.name $}{$ paramList(doc.parameters) | indent(4, true) | trim $}{$ returnType(doc.returnType) $}
+  {% endif %}
 
   p.location-badge.
-    exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
+    exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
+    defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.fileInfo.relativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}">{$ doc.fileInfo.relativePath $} (line {$ doc.location.start.line+1 $})</a>
 
   :markdown
 {$ doc.description | indent(4, true) $}

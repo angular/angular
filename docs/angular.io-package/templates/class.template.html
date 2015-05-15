@@ -3,8 +3,8 @@
 
 {% block body %}
 p.location-badge.
-  exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a>
-  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.location.start.source.name $}.js#L{$ doc.location.start.line $}">{$ doc.location.start.source.name $}.js (line {$ doc.location.start.line $})</a>
+  exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
+  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.fileInfo.relativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}">{$ doc.fileInfo.relativePath $} (line {$ doc.location.start.line+1 $})</a>
 
 :markdown
 {$ doc.description | indent(2, true) $}
@@ -17,10 +17,10 @@ p.location-badge.
   .l-sub-section
     h3 {$ doc.constructorDoc.name $}
 
-    {% if doc.constructorDoc.params %}
+    {% if doc.constructorDoc.parameters %}
     pre.prettyprint
       code.
-        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.params) | indent(4, true) | trim $}
+        {$ doc.constructorDoc.name $}{$ paramList(doc.constructorDoc.parameters) | indent(4, true) | trim $}
     {% endif %}
     :markdown
 {$ doc.constructorDoc.description | indent(6, true) | replace('## Example', '') | replace('# Example', '') $}
@@ -32,10 +32,10 @@ p.location-badge.
   .l-sub-section
     h3 {$ member.name $}
 
-    {% if member.params %}
+    {% if member.parameters %}
     pre.prettyprint
       code.
-        {$ member.name $}{$ paramList(member.params) | indent(4, true) | trim $}
+        {$ member.name $}{$ paramList(member.parameters) | indent(4, true) | trim $}{$ returnType(doc.returnType) $}
     {% endif %}
     :markdown
 

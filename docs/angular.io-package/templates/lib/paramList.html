@@ -5,3 +5,8 @@
     {%- endfor %})
   {%- endif %}
 {%- endmacro -%}
+
+
+{% macro returnType(returnType) -%}
+  {%- if returnType %} : {$ returnType | escape $}{% endif -%}
+{%- endmacro -%}
