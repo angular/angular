@@ -45,6 +45,33 @@ export function main() {
       expect(instruction.getChild('default').component).toBe(DummyCompA);
     });
 
+    it('should prefer routes with more dynamic segments', () => {
+      registry.config(rootHostComponent, {'path': '/:first/*rest', 'component': DummyCompA});
+      registry.config(rootHostComponent, {'path': '/*all', 'component': DummyCompB});
+
+      var instruction = registry.recognize('/some/path', rootHostComponent);
+
+      expect(instruction.getChild('default').component).toBe(DummyCompA);
+    });
+
+    it('should prefer routes with more static segments', () => {
+      registry.config(rootHostComponent, {'path': '/first/:second', 'component': DummyCompA});
+      registry.config(rootHostComponent, {'path': '/:first/:second', 'component': DummyCompB});
+
+      var instruction = registry.recognize('/first/second', rootHostComponent);
+
+      expect(instruction.getChild('default').component).toBe(DummyCompA);
+    });
+
+    it('should prefer routes with static segments before dynamic segments', () => {
+      registry.config(rootHostComponent, {'path': '/first/second/:third', 'component': DummyCompB});
+      registry.config(rootHostComponent, {'path': '/first/:second/third', 'component': DummyCompA});
+
+      var instruction = registry.recognize('/first/second/third', rootHostComponent);
+
+      expect(instruction.getChild('default').component).toBe(DummyCompB);
+    });
+
     it('should match the full URL recursively', () => {
       registry.config(rootHostComponent, {'path': '/first', 'component': DummyParentComp});
 
