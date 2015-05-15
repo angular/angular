@@ -11,7 +11,7 @@ var INLINE_LINK = /(\S+)(?:\s+([\s\S]+))?/;
  *
  * @property {boolean} relativeLinks Whether we expect the links to be relative to the originating doc
  */
-module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage) {
+module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage, log) {
   return {
     name: 'link',
     description: 'Process inline link tags (of the form {@link some/uri Some Title}), replacing them with HTML anchors',
@@ -23,7 +23,7 @@ module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage) {
         var linkInfo = getLinkInfo(uri, title, doc);
 
         if ( !linkInfo.valid ) {
-          throw new Error(createDocMessage(linkInfo.error, doc));
+          log.warn(createDocMessage(linkInfo.error, doc));
         }
 
         return "<a href='" + linkInfo.url + "'>" + linkInfo.title + "</a>";
