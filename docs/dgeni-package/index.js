@@ -3,6 +3,7 @@ require('../../tools/transpiler/index.js').init();
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
+var linksPackage = require('../links-package');
 var path = require('canonical-path');
 
 var PARTIAL_PATH = 'partials';
@@ -10,7 +11,7 @@ var MODULES_DOCS_PATH = PARTIAL_PATH + '/modules';
 var GUIDES_PATH = PARTIAL_PATH + '/guides';
 
 // Define the dgeni package for generating the docs
-module.exports = new Package('angular', [jsdocPackage, nunjucksPackage])
+module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPackage])
 
 // Register the services and file readers
 .factory(require('./services/modules'))
