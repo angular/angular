@@ -15,6 +15,11 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 // Register the services and file readers
 .factory(require('./services/modules'))
+.factory(require('./services/tsParser'))
+.factory(require('./services/tsParser/createCompilerHost'))
+.factory(require('./services/tsParser/getFileInfo'))
+.factory(require('./services/tsParser/getExportDocType'))
+.factory(require('./services/tsParser/getContent'))
 .factory(require('./readers/ngdoc'))
 
 .factory('EXPORT_DOC_TYPES', function() {
@@ -28,6 +33,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 
 // Register the processors
+.processor(require('./processors/readTypeScriptModules'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
@@ -40,13 +46,23 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 
 // Configure file reading
-.config(function(readFilesProcessor, ngdocFileReader) {
+.config(function(readFilesProcessor, ngdocFileReader, readTypeScriptModules) {
   readFilesProcessor.fileReaders = [ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];
+
+  readTypeScriptModules.sourceFiles = [
+    '*/*.js',
+    '*/src/**/*.js',
+    '*/*.es6',
+    '*/src/**/*.es6',
+    '*/*.ts',
+    '*/src/**/*.ts'
+  ];
+  readTypeScriptModules.basePath = 'modules';
 })
 
 
@@ -54,6 +70,14 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/public'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/private'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/exportedAs'));
+
+  // We actually don't want to parse param docs in this package as we are getting the data out using TS
+  parseTagsProcessor.tagDefinitions.forEach(function(tagDef) {
+    if (tagDef.name === 'param') {
+      tagDef.ignore = true;
+    }
+  });
+
 })
 
 
@@ -89,12 +113,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: EXPORT_DOC_TYPES,
-    idTemplate: '${moduleDoc.id}.${name}',
-    getAliases: function(doc) { return [doc.id, doc.name]; }
-  });
-
-  computeIdsProcessor.idTemplates.push({
     docTypes: ['member'],
     idTemplate: '${classDoc.id}.${name}',
     getAliases: function(doc) { return [doc.id]; }
@@ -117,7 +135,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
-    pathTemplate: '${id}',
+    pathTemplate: '/${id}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
   });
 
@@ -136,7 +154,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['guide'],
-    pathTemplate: '${id}',
+    pathTemplate: '/${id}',
     outputPathTemplate: GUIDES_PATH + '/${id}.html'
   });
 });
