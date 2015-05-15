@@ -3,12 +3,12 @@ import * as viewModule from './view';
 import {RenderViewRef} from 'angular2/src/render/api';
 
 // This is a workaround for privacy in Dart as we don't have library parts
-export function internalView(viewRef:ViewRef) {
+export function internalView(viewRef:ViewRef):viewModule.AppView {
   return viewRef._view;
 }
 
 // This is a workaround for privacy in Dart as we don't have library parts
-export function internalProtoView(protoViewRef:ProtoViewRef) {
+export function internalProtoView(protoViewRef:ProtoViewRef):viewModule.AppProtoView {
   return isPresent(protoViewRef) ? protoViewRef._protoView : null;
 }
 
@@ -26,7 +26,7 @@ export class ViewRef {
     return this._view.render;
   }
 
-  setLocal(contextName: string, value:any) {
+  setLocal(contextName:string, value:any):void {
     this._view.setLocal(contextName, value);
   }
 }
