@@ -38,8 +38,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   // See [Chrome Trace Event Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
   readPerfLog() {
-    // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
-    // so that the browser logs can be read out!
+    // TODO(tbosch): Chromedriver bug https://code.google.com/p/chromedriver/issues/detail?id=1098
+    // Need to execute at least one command so that the browser logs can be read out!
     return this._driver.executeScript('1+1')
       .then( (_) => this._driver.logs('performance') )
       .then( (entries) => {
