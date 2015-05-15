@@ -34,7 +34,7 @@ module.exports = function getContent() {
           content += sourceFile.text
               .substring(commentRange.pos+ '/**'.length, commentRange.end - '*/'.length)
               .replace(LEADING_STAR, '')
-              .trim()
+              .trim();
           if (commentRange.hasTrailingNewLine) {
             content += '\n';
           }
