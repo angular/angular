@@ -15,16 +15,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 // Register the services and file readers
 .factory(require('./services/modules'))
-.factory(require('./services/atParser'))
-.factory(require('./services/getJSDocComment'))
-.factory(require('./services/SourceFile'))
-.factory(require('./services/TraceurParser'))
-.factory(require('./services/traceurOptions'))
-.factory(require('./services/ParseTreeVisitor'))
-.factory(require('./services/AttachCommentTreeVisitor'))
-.factory(require('./services/ExportTreeVisitor'))
-
-.factory(require('./readers/atScript'))
 .factory(require('./readers/ngdoc'))
 
 .factory('EXPORT_DOC_TYPES', function() {
@@ -38,11 +28,6 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 
 // Register the processors
-.processor(require('./processors/captureModuleExports'))
-.processor(require('./processors/captureClassMembers'))
-.processor(require('./processors/captureModuleDocs'))
-.processor(require('./processors/attachModuleDocs'))
-.processor(require('./processors/cloneExportedFromDocs'))
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
@@ -55,16 +40,10 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 
 
 // Configure file reading
-.config(function(readFilesProcessor, atScriptFileReader, ngdocFileReader) {
-  readFilesProcessor.fileReaders = [atScriptFileReader, ngdocFileReader];
+.config(function(readFilesProcessor, ngdocFileReader) {
+  readFilesProcessor.fileReaders = [ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
-    { include: 'modules/*/*.js', basePath: 'modules' },
-    { include: 'modules/*/src/**/*.js', basePath: 'modules' },
-    { include: 'modules/*/*.es6', basePath: 'modules' },
-    { include: 'modules/*/src/**/*.es6', basePath: 'modules' },
-    { include: 'modules/*/*.ts', basePath: 'modules' },
-    { include: 'modules/*/src/**/*.ts', basePath: 'modules' },
     { include: 'modules/*/docs/**/*.md', basePath: 'modules' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];
