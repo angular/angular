@@ -9,10 +9,10 @@ export {SetterFn, GetterFn, MethodFn} from './types';
 export var __esModule = true;
 
 export class Reflector {
-  _typeInfo: Map<any, any>;
-  _getters: Map<any, any>;
-  _setters: Map<any, any>;
-  _methods: Map<any, any>;
+  _typeInfo: Map<Type, any>;
+  _getters: Map<string, GetterFn>;
+  _setters: Map<string, SetterFn>;
+  _methods: Map<string, MethodFn>;
   reflectionCapabilities: any;
 
   constructor(reflectionCapabilities) {
@@ -23,13 +23,15 @@ export class Reflector {
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
-  registerType(type, typeInfo) { MapWrapper.set(this._typeInfo, type, typeInfo); }
+  registerType(type: Type, typeInfo: Map<Type, any>): void {
+    MapWrapper.set(this._typeInfo, type, typeInfo);
+  }
 
-  registerGetters(getters) { _mergeMaps(this._getters, getters); }
+  registerGetters(getters: Map<string, GetterFn>): void { _mergeMaps(this._getters, getters); }
 
-  registerSetters(setters) { _mergeMaps(this._setters, setters); }
+  registerSetters(setters: Map<string, SetterFn>): void { _mergeMaps(this._setters, setters); }
 
-  registerMethods(methods) { _mergeMaps(this._methods, methods); }
+  registerMethods(methods: Map<string, MethodFn>): void { _mergeMaps(this._methods, methods); }
 
   factory(type: Type): Function {
     if (MapWrapper.contains(this._typeInfo, type)) {
@@ -80,6 +82,6 @@ export class Reflector {
   }
 }
 
-function _mergeMaps(target: Map<any, any>, config) {
+function _mergeMaps(target: Map<any, any>, config: Map<string, Function>): void {
   StringMapWrapper.forEach(config, (v, k) => MapWrapper.set(target, k, v));
 }
