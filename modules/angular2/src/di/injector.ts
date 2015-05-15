@@ -43,8 +43,8 @@ function _isWaiting(obj): boolean {
  * }
  *
  * class Car {
- * 	constructor(@Inject(Engine) engine) {
- * 	}
+ *   constructor(@Inject(Engine) engine) {
+ *   }
  * }
  *
  * ```
