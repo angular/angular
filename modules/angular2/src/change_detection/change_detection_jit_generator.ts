@@ -41,7 +41,6 @@ var IS_CHANGED_LOCAL = "isChanged";
 var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var MODE_ACCESSOR = "this.mode";
-var TEMP_LOCAL = "temp";
 var CURRENT_PROTO = "currentProto";
 
 function typeTemplate(type: string, cons: string, detectChanges: string,
@@ -84,13 +83,13 @@ function hydrateTemplate(type: string, mode: string, fieldDefinitions: string,
   var directiveInit = "";
   for (var i = 0; i < directiveFieldNames.length; ++i) {
     directiveInit +=
-        `${directiveFieldNames[i]} = directives.getDirectiveFor(this.directiveRecords[${i}].directiveIndex);\n`;
+        `${directiveFieldNames[i]} = directives.getDirectiveFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);\n`;
   }
 
   var detectorInit = "";
   for (var i = 0; i < detectorFieldNames.length; ++i) {
     detectorInit +=
-        `${detectorFieldNames[i]} = directives.getDetectorFor(this.directiveRecords[${i}].directiveIndex);\n`;
+        `${detectorFieldNames[i]} = directives.getDetectorFor(${DIRECTIVES_ACCESSOR}[${i}].directiveIndex);\n`;
   }
 
   return `
@@ -138,7 +137,6 @@ function detectChangesBodyTemplate(localDefinitions: string, changeDefinitions: 
   return `
 ${localDefinitions}
 ${changeDefinitions}
-var ${TEMP_LOCAL};
 var ${IS_CHANGED_LOCAL} = false;
 var ${CURRENT_PROTO};
 var ${CHANGES_LOCAL} = null;
@@ -176,10 +174,11 @@ ${lastInDirective}
 function referenceCheckTemplate(protoIndex: number, assignment: string, oldValue: string,
                                 newValue: string, change: string, update: string,
                                 addToChanges: string, lastInDirective: string): string {
+  // TODO(kegluneq): DO NOT SUBMIT! Ensure change to `looseIdentical` is correct.
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 ${assignment}
-if (${newValue} !== ${oldValue} || (${newValue} !== ${newValue}) && (${oldValue} !== ${oldValue})) {
+if (!looseIdentical(${newValue}, ${oldValue})) {
   ${change} = true;
   ${update}
   ${addToChanges}
@@ -358,8 +357,7 @@ export class ChangeDetectorJITGenerator {
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
       if (dir.callOnAllChangesDone) {
-        var directive = `this.directive_${dir.directiveIndex.name}`;
-        notifications.push(onAllChangesDoneTemplate(directive));
+        notifications.push(onAllChangesDoneTemplate(this.getDirective(dir.directiveIndex)));
       }
     }
 
