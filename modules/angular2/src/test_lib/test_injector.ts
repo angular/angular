@@ -35,6 +35,7 @@ import {MockXHR} from 'angular2/src/mock/xhr_mock';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 
 import {TestBed} from './test_bed';
+import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/di';
 
@@ -113,6 +114,7 @@ function _getAppBindings() {
     StyleUrlResolver,
     StyleInliner,
     TestBed,
+    TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
     bind(EventManager)
         .toFactory((zone) =>

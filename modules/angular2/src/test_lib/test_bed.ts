@@ -23,6 +23,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 
 /**
  * @exportedAs angular2/test
+ * TODO(juliemr): Deprecate in favor of TestComponentBuilder
  */
 @Injectable()
 export class TestBed {
@@ -61,7 +62,7 @@ export class TestBed {
    * @param {Type} to
    */
   overrideDirective(component: Type, from: Type, to: Type): void {
-    this._injector.get(TemplateResolver).overrideTemplateDirective(component, from, to);
+    this._injector.get(TemplateResolver).overrideViewDirective(component, from, to);
   }
 
   /**
@@ -107,6 +108,7 @@ export class TestBed {
 /**
  * Proxy to `AppView` return by `createView` in {@link TestBed} which offers a high level API for
  * tests.
+ * TODO(juliemr): Deprecate in favor of TestElement
  */
 export class ViewProxy {
   _componentRef: ComponentRef;
