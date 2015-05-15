@@ -845,41 +845,6 @@ export class Component extends Directive {
    */
   injectables:List;
 
-  // TODO(naomib): needs documentation
-  /**
-   * Dependency injection tokens that this component publishes _itself_ to its
-   * children in its view via the application injector.
-   *
-   * ## Examples
-   *
-   * Imagine you have parent component that implements the [RpcService]
-   * interface. It can pose as [RpcService] to its children. Child components
-   * do not need to know about this fact. They only need to declare their
-   * dependency on [RpcService] without knowing exactly how it is provided.
-   *
-   * ```
-   * @Component({
-   *   selector: 'parent',
-   *   publishAs: [RpcService]
-   * })
-   * @View({
-   *   template: '<child></child>',
-   *   directives: [Child]
-   * })
-   * class Parent implements RpcService {
-   * }
-   *
-   * @Component({
-   *   selector: 'child'
-   * })
-   * class Child {
-   *   // Just asks for RpcService; doesn't know that it's Parent.
-   *   constructor(RpcService rpc);
-   * }
-   * ```
-   */
-  publishAs:List;
-
   @CONST()
   constructor({
       selector,
@@ -892,8 +857,7 @@ export class Component extends Directive {
       injectables,
       lifecycle,
       changeDetection = DEFAULT,
-      compileChildren = true,
-      publishAs
+      compileChildren = true
     }:{
       selector:string,
       properties:Object,
@@ -905,8 +869,7 @@ export class Component extends Directive {
       injectables:List,
       lifecycle:List,
       changeDetection:string,
-      compileChildren:boolean,
-      publishAs:List
+      compileChildren:boolean
     }={})
   {
     super({
@@ -923,7 +886,6 @@ export class Component extends Directive {
 
     this.changeDetection = changeDetection;
     this.injectables = injectables;
-    this.publishAs = publishAs;
   }
 }
 

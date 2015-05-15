@@ -227,18 +227,12 @@ export class DirectiveDependency extends Dependency {
 export class DirectiveBinding extends ResolvedBinding {
   resolvedInjectables:List<ResolvedBinding>;
   metadata: DirectiveMetadata;
-  publishAs: List<Type>;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean,
       resolvedInjectables:List<ResolvedBinding>, metadata:DirectiveMetadata, annotation: Directive) {
     super(key, factory, dependencies, providedAsPromise);
     this.resolvedInjectables = resolvedInjectables;
     this.metadata = metadata;
-    if (annotation instanceof Component) {
-      this.publishAs = annotation.publishAs;
-    } else {
-      this.publishAs = null;
-    }
   }
 
   get callOnDestroy() {
@@ -678,20 +672,6 @@ export class ElementInjector extends TreeNode {
 
     var p = this._proto;
     if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
-    if (isPresent(shadowDomAppInjector)) {
-      var publishAs = this._proto._binding0.publishAs;
-      if (isPresent(publishAs) && publishAs.length > 0) {
-        // If there's a component directive on this element injector, then
-        // 0-th key must contain the directive itself.
-        // TODO(yjbanov): need to make injector creation faster:
-        //  - remove flattening of bindings array
-        //  - precalc token key
-        this._shadowDomAppInjector = shadowDomAppInjector.resolveAndCreateChild(
-          ListWrapper.map(publishAs, (token) => {
-            return bind(token).toValue(this.getComponent());
-          }));
-      }
-    }
     if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
     if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);
     if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);

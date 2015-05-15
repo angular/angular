@@ -195,30 +195,6 @@ class TestNode extends TreeNode {
   }
 }
 
-// TypeScript erases interfaces, so it has to be a class
-class ParentInterface {}
-
-class ParentComponent extends ParentInterface {
-}
-
-class AppDependency {
-  parent:ParentInterface;
-
-  constructor(p:ParentInterface) {
-    this.parent = p;
-  }
-}
-
-class ChildComponent {
-  parent:ParentInterface;
-  appDependency:AppDependency;
-
-  constructor(p:ParentInterface, a:AppDependency) {
-    this.parent = p;
-    this.appDependency = a;
-  }
-}
-
 export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
@@ -646,31 +622,6 @@ export function main() {
         var destroy = inj.get(DirectiveWithDestroy);
         inj.clearDirectives();
         expect(destroy.onDestroyCounter).toBe(1);
-      });
-
-      it("should publish component to its children via app injector when requested", function() {
-        var parentDirective = new Component({
-          selector: 'parent',
-          publishAs: [ParentInterface]
-        });
-        var parentBinding = DirectiveBinding.createFromType(ParentComponent, parentDirective);
-
-        var childDirective = new Component({
-          selector: 'child',
-          injectables: [AppDependency]
-        });
-        var childBinding = DirectiveBinding.createFromType(ChildComponent, childDirective);
-
-        var child = hostShadowInjectors([parentBinding], [childBinding], true, true);
-        var d = child.get(ChildComponent);
-
-        // Verify that the child component can inject parent via interface binding
-        expect(d).toBeAnInstanceOf(ChildComponent);
-        expect(d.parent).toBeAnInstanceOf(ParentComponent);
-
-        // Verify that the binding is available down the dependency tree
-        expect(d.appDependency.parent).toBeAnInstanceOf(ParentComponent);
-        expect(d.parent).toBe(d.appDependency.parent);
       });
     });
 
