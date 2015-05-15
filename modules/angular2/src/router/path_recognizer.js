@@ -62,7 +62,17 @@ function parsePathString(route:string) {
 
   var segments = splitBySlash(route);
   var results = ListWrapper.create();
-  var cost = 0;
+  var specificity = 0;
+
+  // The "specificity" of a path is used to determine which route is used when multiple routes match a URL.
+  // Static segments (like "/foo") are the most specific, followed by dynamic segments (like "/:id"). Star segments
+  // add no specificity. Segments at the start of the path are more specific than proceeding ones.
+  // The code below uses place values to combine the different types of segments into a single integer that we can
+  // sort later. Each static segment is worth hundreds of points of specificity (10000, 9900, ..., 200), and each
+  // dynamic segment is worth single points of specificity (100, 99, ... 2).
+  if (segments.length > 98) {
+    throw new BaseException(`'${route}' has more than the maximum supported number of segments.`);
+  }
 
   for (var i=0; i<segments.length; i++) {
     var segment = segments[i],
@@ -70,17 +80,16 @@ function parsePathString(route:string) {
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
       ListWrapper.push(results, new DynamicSegment(match[1]));
-      cost += 100;
+      specificity += (100 - i);
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
       ListWrapper.push(results, new StarSegment(match[1]));
-      cost += 10000;
     } else if (segment.length > 0) {
       ListWrapper.push(results, new StaticSegment(segment));
-      cost += 1;
+      specificity += 100 * (100 - i);
     }
   }
 
-  return {segments: results, cost};
+  return {segments: results, specificity};
 }
 
 function splitBySlash (url:string):List<string> {
@@ -93,16 +102,18 @@ export class PathRecognizer {
   segments:List;
   regex:RegExp;
   handler:any;
-  cost:number;
+  specificity:number;
+  path:string;
 
   constructor(path:string, handler:any) {
+    this.path = path;
     this.handler = handler;
     this.segments = [];
 
     // TODO: use destructuring assignment
     // see https://github.com/angular/ts2dart/issues/158
     var parsed = parsePathString(path);
-    var cost = parsed['cost'];
+    var specificity = parsed['specificity'];
     var segments = parsed['segments'];
     var regexString = '^';
 
@@ -112,7 +123,7 @@ export class PathRecognizer {
 
     this.regex = RegExpWrapper.create(regexString);
     this.segments = segments;
-    this.cost = cost;
+    this.specificity = specificity;
   }
 
   parseParams(url:string):StringMap<string, string> {

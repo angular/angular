@@ -37,7 +37,7 @@ export class Router {
 
   _pipeline:Pipeline;
   _registry:RouteRegistry;
-  _outlets:Map<any, Outlet>;
+  _outlets:Map<any, RouterOutlet>;
   _subject:EventEmitter;
 
 

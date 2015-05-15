@@ -14,64 +14,77 @@ export function main() {
     var handler = {
       'components': { 'a': 'b' }
     };
+    var handler2 = {
+      'components': { 'b': 'c' }
+    };
 
     beforeEach(() => {
       recognizer = new RouteRecognizer();
     });
 
-    it('should work with a static segment', () => {
+
+    it('should recognize a static segment', () => {
       recognizer.addConfig('/test', handler);
-
-      expect(recognizer.recognize('/test')[0]).toEqual({
-        'cost' : 1,
-        'handler': { 'components': { 'a': 'b' } },
-        'params': {},
-        'matchedUrl': '/test',
-        'unmatchedUrl': ''
-      });
+      expect(recognizer.recognize('/test')[0].handler).toEqual(handler);
     });
 
-    it('should work with leading slash', () => {
+
+    it('should recognize a single slash', () => {
       recognizer.addConfig('/', handler);
-
-      expect(recognizer.recognize('/')[0]).toEqual({
-        'cost': 0,
-        'handler': { 'components': { 'a': 'b' } },
-        'params': {},
-        'matchedUrl': '/',
-        'unmatchedUrl': ''
-      });
+      var solution = recognizer.recognize('/')[0];
+      expect(solution.handler).toEqual(handler);
     });
 
-    it('should work with a dynamic segment', () => {
+
+    it('should recognize a dynamic segment', () => {
       recognizer.addConfig('/user/:name', handler);
-      expect(recognizer.recognize('/user/brian')[0]).toEqual({
-        'cost': 101,
-        'handler': handler,
-        'params': { 'name': 'brian' },
-        'matchedUrl': '/user/brian',
-        'unmatchedUrl': ''
-      });
+      var solution = recognizer.recognize('/user/brian')[0];
+      expect(solution.handler).toEqual(handler);
+      expect(solution.params).toEqual({ 'name': 'brian' });
     });
 
-    it('should allow redirects', () => {
+
+    it('should recognize a star segment', () => {
+      recognizer.addConfig('/first/*rest', handler);
+      var solution = recognizer.recognize('/first/second/third')[0];
+      expect(solution.handler).toEqual(handler);
+      expect(solution.params).toEqual({ 'rest': 'second/third' });
+    });
+
+
+    it('should throw when given two routes that start with the same static segment', () => {
+      recognizer.addConfig('/hello', handler);
+      expect(() => recognizer.addConfig('/hello', handler2)).toThrowError(
+        'Configuration \'/hello\' conflicts with existing route \'/hello\''
+      );
+    });
+
+
+    it('should throw when given two routes that have dynamic segments in the same order', () => {
+      recognizer.addConfig('/hello/:person/how/:doyoudou', handler);
+      expect(() => recognizer.addConfig('/hello/:friend/how/:areyou', handler2)).toThrowError(
+        'Configuration \'/hello/:friend/how/:areyou\' conflicts with existing route \'/hello/:person/how/:doyoudou\''
+      );
+    });
+
+
+    it('should recognize redirects', () => {
       recognizer.addRedirect('/a', '/b');
       recognizer.addConfig('/b', handler);
       var solutions = recognizer.recognize('/a');
       expect(solutions.length).toBe(1);
-      expect(solutions[0]).toEqual({
-        'cost': 1,
-        'handler': handler,
-        'params': {},
-        'matchedUrl': '/b',
-        'unmatchedUrl': ''
-      });
+
+      var solution = solutions[0];
+      expect(solution.handler).toEqual(handler);
+      expect(solution.matchedUrl).toEqual('/b');
     });
+
 
     it('should generate URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
       expect(recognizer.generate('user', {'name' : 'misko'})).toEqual('/app/user/misko');
     });
+
 
     it('should throw in the absence of required params URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');

@@ -14,6 +14,9 @@ export class RouteParams {
   }
 }
 
+/**
+ * An `Instruction` represents the component hierarchy of the application based on a given route
+ */
 export class Instruction {
   component:any;
   _children:Map<string, Instruction>;
@@ -24,21 +27,21 @@ export class Instruction {
   // the part of the URL captured by this instruction and all children
   accumulatedUrl:string;
 
-  params:Map<string, string>;
+  params:StringMap<string, string>;
   reuse:boolean;
-  cost:number;
+  specificity:number;
 
-  constructor({params, component, children, matchedUrl, parentCost}:{params:StringMap, component:any, children:StringMap, matchedUrl:string, cost:number} = {}) {
+  constructor({params, component, children, matchedUrl, parentSpecificity}:{params:StringMap, component:any, children:Map, matchedUrl:string, parentSpecificity:number} = {}) {
     this.reuse = false;
     this.capturedUrl = matchedUrl;
     this.accumulatedUrl = matchedUrl;
-    this.cost = parentCost;
+    this.specificity = parentSpecificity;
     if (isPresent(children)) {
       this._children = children;
       var childUrl;
       StringMapWrapper.forEach(this._children, (child, _) => {
         childUrl = child.accumulatedUrl;
-        this.cost += child.cost;
+        this.specificity += child.specificity;
       });
       if (isPresent(childUrl)) {
         this.accumulatedUrl += childUrl;
@@ -50,14 +53,20 @@ export class Instruction {
     this.params = params;
   }
 
-  hasChild(outletName:string):Instruction {
+  hasChild(outletName:string):boolean {
     return StringMapWrapper.contains(this._children, outletName);
   }
 
+  /**
+   * Returns the child instruction with the given outlet name
+   */
   getChild(outletName:string):Instruction {
     return StringMapWrapper.get(this._children, outletName);
   }
 
+  /**
+   * (child:Instruction, outletName:string) => {}
+   */
   forEachChild(fn:Function): void {
     StringMapWrapper.forEach(this._children, fn);
   }
@@ -65,7 +74,7 @@ export class Instruction {
   /**
    * Does a synchronous, breadth-first traversal of the graph of instructions.
    * Takes a function with signature:
-   * (parent:Instruction, child:Instruction) => {}
+   * (child:Instruction, outletName:string) => {}
    */
   traverseSync(fn:Function): void {
     this.forEachChild(fn);
@@ -74,7 +83,7 @@ export class Instruction {
 
 
   /**
-   * Takes a currently active instruction and sets a reuse flag on this instruction
+   * Takes a currently active instruction and sets a reuse flag on each of this instruction's children
    */
   reuseComponentsFrom(oldInstruction:Instruction): void {
     this.traverseSync((childInstruction, outletName) => {
