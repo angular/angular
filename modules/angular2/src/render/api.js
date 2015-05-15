@@ -187,20 +187,19 @@ export class RenderCompiler {
 
 export class Renderer {
   /**
-   * Creates a host view that includes the given element.
-   * @param {RenderViewRef} parentHostViewRef (might be null)
-   * @param {any} hostElementSelector css selector for the host element
+   * Creates a root host view that includes the given element.
    * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type ProtoViewDto.HOST_VIEW_TYPE
+   * @param {any} hostElementSelector css selector for the host element (will be queried against the main document)
    * @return {RenderViewRef} the created view
    */
-  createInPlaceHostView(parentHostViewRef:RenderViewRef, hostElementSelector:string, hostProtoViewRef:RenderProtoViewRef):RenderViewRef {
+  createRootHostView(hostProtoViewRef:RenderProtoViewRef, hostElementSelector:string):RenderViewRef {
     return null;
   }
 
   /**
-   * Destroys the given host view in the given parent view.
+   * Detaches a free host view's element from the DOM.
    */
-  destroyInPlaceHostView(parentHostViewRef:RenderViewRef, hostViewRef:RenderViewRef) {
+  detachFreeHostView(parentHostViewRef:RenderViewRef, hostViewRef:RenderViewRef) {
   }
 
   /**

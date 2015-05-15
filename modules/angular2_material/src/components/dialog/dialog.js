@@ -1,4 +1,4 @@
-import {DynamicComponentLoader, ElementRef, ComponentRef, onDestroy} from 'angular2/angular2';
+import {DynamicComponentLoader, ElementRef, ComponentRef, onDestroy, DomRenderer} from 'angular2/angular2';
 import {bind, Injector} from 'angular2/di';
 import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, Type} from 'angular2/src/facade/lang';
@@ -11,7 +11,6 @@ import {KEY_ESC} from 'angular2_material/src/core/constants'
 import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {Parent} from 'angular2/src/core/annotations_impl/visibility';
 import {View} from 'angular2/src/core/annotations_impl/view';
-
 
 // TODO(jelbourn): Opener of dialog can control where it is rendered.
 // TODO(jelbourn): body scrolling is disabled while dialog is open.
@@ -29,9 +28,11 @@ var _nextDialogId = 0;
  */
 export class MdDialog {
   componentLoader: DynamicComponentLoader;
+  domRenderer: DomRenderer;
 
-  constructor(loader: DynamicComponentLoader) {
+  constructor(loader: DynamicComponentLoader, domRenderer: DomRenderer) {
     this.componentLoader = loader;
+    this.domRenderer = domRenderer;
   }
 
   /**
@@ -47,25 +48,6 @@ export class MdDialog {
       options: MdDialogConfig = null): Promise<MdDialogRef> {
     var config = isPresent(options) ? options : new MdDialogConfig();
 
-    // TODO(jelbourn): Don't use direct DOM access. Need abstraction to create an element
-    // directly on the document body (also needed for web workers stuff).
-    // Create a DOM node to serve as a physical host element for the dialog.
-    var dialogElement = this._createHostElement();
-    DOM.appendChild(DOM.query('body'), dialogElement);
-
-    // TODO(jelbourn): Use hostProperties binding to set these once #1539 is fixed.
-    // Configure properties on the host element.
-    DOM.addClass(dialogElement, 'md-dialog');
-    DOM.setAttribute(dialogElement, 'tabindex', '0');
-
-    // TODO(jelbourn): Do this with hostProperties (or another rendering abstraction) once ready.
-    if (isPresent(config.width)) {
-      DOM.setStyle(dialogElement, 'width', config.width);
-    }
-    if (isPresent(config.height)) {
-      DOM.setStyle(dialogElement, 'height', config.height);
-    }
-
     // Create the dialogRef here so that it can be injected into the content component.
     var dialogRef = new MdDialogRef();
 
@@ -76,7 +58,27 @@ export class MdDialog {
 
     // First, load the MdDialogContainer, into which the given component will be loaded.
     return this.componentLoader.loadIntoNewLocation(
-        MdDialogContainer, elementRef, `:document#${dialogElement.id}`).then(containerRef => {
+        MdDialogContainer, elementRef).then(containerRef => {
+      // TODO(tbosch): clean this up when we have custom renderers (https://github.com/angular/angular/issues/1807)
+      // TODO(jelbourn): Don't use direct DOM access. Need abstraction to create an element
+      // directly on the document body (also needed for web workers stuff).
+      // Create a DOM node to serve as a physical host element for the dialog.
+      var dialogElement = this.domRenderer.getHostElement(containerRef.hostView.render);
+      DOM.appendChild(DOM.query('body'), dialogElement);
+
+      // TODO(jelbourn): Use hostProperties binding to set these once #1539 is fixed.
+      // Configure properties on the host element.
+      DOM.addClass(dialogElement, 'md-dialog');
+      DOM.setAttribute(dialogElement, 'tabindex', '0');
+
+      // TODO(jelbourn): Do this with hostProperties (or another rendering abstraction) once ready.
+      if (isPresent(config.width)) {
+        DOM.setStyle(dialogElement, 'width', config.width);
+      }
+      if (isPresent(config.height)) {
+        DOM.setStyle(dialogElement, 'height', config.height);
+      }
+
       dialogRef.containerRef = containerRef;
 
       // Now load the given component into the MdDialogContainer.
@@ -102,18 +104,14 @@ export class MdDialog {
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
   _openBackdrop(elementRef:ElementRef, injector: Injector): Promise<ComponentRef> {
-    var backdropElement = this._createHostElement();
-    DOM.addClass(backdropElement, 'md-backdrop');
-    DOM.appendChild(DOM.query('body'), backdropElement);
-
     return this.componentLoader.loadIntoNewLocation(
-        MdBackdrop, elementRef, `:document#${backdropElement.id}`, injector);
-  }
-
-  _createHostElement() {
-    var hostElement = DOM.createElement('div');
-    hostElement.id = `mdDialog${_nextDialogId++}`;
-    return hostElement;
+        MdBackdrop, elementRef, injector).then( (componentRef) => {
+      // TODO(tbosch): clean this up when we have custom renderers (https://github.com/angular/angular/issues/1807)
+      var backdropElement = this.domRenderer.getHostElement(componentRef.hostView.render);
+      DOM.addClass(backdropElement, 'md-backdrop');
+      DOM.appendChild(DOM.query('body'), backdropElement);
+      return componentRef;
+    });
   }
 
   alert(message: string, okMessage: string): Promise {

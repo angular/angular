@@ -77,7 +77,7 @@ export class DomTestbed {
   }
 
   createRootView(rootProtoView:ProtoViewDto):TestView {
-    var viewRef = this.renderer.createInPlaceHostView(null, '#root', rootProtoView.render);
+    var viewRef = this.renderer.createRootHostView(rootProtoView.render, '#root');
     this.renderer.hydrateView(viewRef);
     return this._createTestView(viewRef);
   }

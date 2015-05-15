@@ -17,7 +17,7 @@ import {
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {DomTestbed} from './dom_testbed';
+import {DomTestbed, TestView} from './dom_testbed';
 
 import {ViewDefinition, DirectiveMetadata, RenderViewRef} from 'angular2/src/render/api';
 
@@ -27,15 +27,29 @@ export function main() {
       DomTestbed
     ]);
 
-    it('should create and destroy host views while using the given elements in place',
+    it('should create and destroy root host views while using the given elements in place',
         inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
-      tb.compileAll([someComponent]).then( (protoViewDtos) => {
-        var view = tb.createRootView(protoViewDtos[0]);
-        expect(tb.rootEl.parentNode).toBeTruthy();
+      tb.compiler.compileHost(someComponent).then( (hostProtoViewDto) => {
+        var view = new TestView(tb.renderer.createRootHostView(hostProtoViewDto.render, '#root'));
         expect(view.rawView.rootNodes[0]).toEqual(tb.rootEl);
 
-        tb.renderer.destroyInPlaceHostView(null, view.viewRef);
-        expect(tb.rootEl.parentNode).toBeFalsy();
+        tb.renderer.destroyView(view.viewRef);
+        // destroying a root view should not disconnect it!
+        expect(tb.rootEl.parentNode).toBeTruthy();
+
+        async.done();
+      });
+    }));
+
+    it('should create and destroy free host views',
+        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
+      tb.compiler.compileHost(someComponent).then( (hostProtoViewDto) => {
+        var view = new TestView(tb.renderer.createView(hostProtoViewDto.render));
+        var hostElement = tb.renderer.getHostElement(view.viewRef);
+        DOM.appendChild(tb.rootEl, hostElement);
+
+        tb.renderer.detachFreeHostView(null, view.viewRef);
+        expect(DOM.parentElement(hostElement)).toBeFalsy();
 
         async.done();
       });

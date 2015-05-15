@@ -19,8 +19,6 @@ import {Renderer, RenderProtoViewRef, RenderViewRef} from '../api';
 // const expressions!
 export const DOCUMENT_TOKEN = 'DocumentToken';
 
-var _DOCUMENT_SELECTOR_REGEX = RegExpWrapper.create('\\:document(.+)');
-
 @Injectable()
 export class DomRenderer extends Renderer {
   _eventManager:EventManager;
@@ -34,27 +32,16 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
-  createInPlaceHostView(parentHostViewRef:RenderViewRef, hostElementSelector:string, hostProtoViewRef:RenderProtoViewRef):RenderViewRef {
-    var containerNode;
-    var documentSelectorMatch = RegExpWrapper.firstMatch(_DOCUMENT_SELECTOR_REGEX, hostElementSelector);
-    if (isPresent(documentSelectorMatch)) {
-      containerNode = this._document;
-      hostElementSelector = documentSelectorMatch[1];
-    } else if (isPresent(parentHostViewRef)) {
-      var parentHostView = resolveInternalDomView(parentHostViewRef);
-      containerNode = parentHostView.shadowRoot;
-    } else {
-      containerNode = this._document;
-    }
-    var element = DOM.querySelector(containerNode, hostElementSelector);
+  createRootHostView(hostProtoViewRef:RenderProtoViewRef, hostElementSelector:string):RenderViewRef {
+    var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
+    var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     return new DomViewRef(this._createView(hostProtoView, element));
   }
 
-  destroyInPlaceHostView(parentHostViewRef:RenderViewRef, hostViewRef:RenderViewRef) {
+  detachFreeHostView(parentHostViewRef:RenderViewRef, hostViewRef:RenderViewRef) {
     var hostView = resolveInternalDomView(hostViewRef);
     this._removeViewNodes(hostView);
   }
@@ -87,6 +74,11 @@ export class DomRenderer extends Renderer {
     this._removeViewNodes(componentView);
     componentView.rootNodes = rootNodes;
     this._moveViewNodesIntoParent(componentView.shadowRoot, componentView);
+  }
+
+  getHostElement(hostViewRef:RenderViewRef) {
+    var hostView = resolveInternalDomView(hostViewRef);
+    return hostView.boundElements[0];
   }
 
   detachComponentView(hostViewRef:RenderViewRef, boundElementIndex:number, componentViewRef:RenderViewRef) {
