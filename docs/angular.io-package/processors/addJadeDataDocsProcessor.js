@@ -19,9 +19,9 @@ var titleCase = function(text) {
 *
 */
 
-module.exports = function addJadeDataDocsProcessor(EXPORT_DOC_TYPES) {
+module.exports = function addJadeDataDocsProcessor() {
   return {
-    $runAfter: ['adding-extra-docs', 'cloneExportedFromDocs'],
+    $runAfter: ['adding-extra-docs'],
     $runBefore: ['extra-docs-added'],
     $process: function(docs) {
       var extraDocs = [];
