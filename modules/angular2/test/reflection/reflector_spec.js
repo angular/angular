@@ -121,6 +121,11 @@ export function main() {
         reflector.registerType(TestObj, {"annotations" : [1,2]});
         expect(reflector.annotations(TestObj)).toEqual([1,2]);
       });
+
+      it("should work for a clas without annotations", () => {
+        var p = reflector.annotations(ClassWithoutAnnotations);
+        expect(p).toEqual([]);
+      });
     });
 
     describe("getter", () => {

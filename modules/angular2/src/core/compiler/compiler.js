@@ -92,7 +92,7 @@ export class Compiler {
   // Used for bootstrapping.
   compileInHost(componentTypeOrBinding:any):Promise<ProtoViewRef> {
     var componentBinding = this._bindDirective(componentTypeOrBinding);
-    this._assertTypeIsComponent(componentBinding);
+    Compiler._assertTypeIsComponent(componentBinding);
 
     var directiveMetadata = componentBinding.metadata;
     return this._render.compileHost(directiveMetadata).then( (hostRenderPv) => {
@@ -104,7 +104,7 @@ export class Compiler {
 
   compile(component: Type):Promise<ProtoViewRef> {
     var componentBinding = this._bindDirective(component);
-    this._assertTypeIsComponent(componentBinding);
+    Compiler._assertTypeIsComponent(componentBinding);
     var protoView = this._compile(componentBinding);
     var pvPromise = PromiseWrapper.isPromise(protoView) ? protoView : PromiseWrapper.resolve(protoView);
     return pvPromise.then( (appProtoView) => {
@@ -134,13 +134,21 @@ export class Compiler {
     if (isBlank(template)) {
       return null;
     }
-    var directives = ListWrapper.map(
-      this._flattenDirectives(template),
-      (directive) => this._bindDirective(directive)
-    );
-    var renderTemplate = this._buildRenderTemplate(component, template, directives);
+
+    var directives = this._flattenDirectives(template);
+
+    for (var i = 0; i < directives.length; i++) {
+      if (!Compiler._isValidDirective(directives[i])) {
+        throw new BaseException(
+            `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
+      }
+    }
+
+    var boundDirectives = ListWrapper.map(directives,  (directive) => this._bindDirective(directive));
+
+    var renderTemplate = this._buildRenderTemplate(component, template, boundDirectives);
     pvPromise = this._render.compile(renderTemplate).then( (renderPv) => {
-      return this._compileNestedProtoViews(componentBinding, renderPv, directives);
+      return this._compileNestedProtoViews(componentBinding, renderPv, boundDirectives);
     });
 
     MapWrapper.set(this._compiling, component, pvPromise);
@@ -227,7 +235,7 @@ export class Compiler {
     return directives;
   }
 
-  _flattenList(tree:List<any>, out:List<Type>):void {
+  _flattenList(tree:List<any>, out:List<any> /*<Type|Binding>*/):void {
     for (var i = 0; i < tree.length; i++) {
       var item = tree[i];
       if (ListWrapper.isList(item)) {
@@ -238,7 +246,11 @@ export class Compiler {
     }
   }
 
-  _assertTypeIsComponent(directiveBinding:DirectiveBinding):void {
+  static _isValidDirective(value: any): boolean {
+    return isPresent(value) && (value instanceof Type || value instanceof Binding);
+  }
+
+  static _assertTypeIsComponent(directiveBinding:DirectiveBinding):void {
     if (directiveBinding.metadata.type !== renderApi.DirectiveMetadata.COMPONENT_TYPE) {
       throw new BaseException(`Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
     }

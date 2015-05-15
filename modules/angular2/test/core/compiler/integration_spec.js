@@ -9,6 +9,7 @@ import {
   expect,
   iit,
   inject,
+  IS_DARTIUM,
   beforeEachBindings,
   it,
   xit
@@ -823,6 +824,57 @@ export function main() {
     });
 
     describe("error handling", () => {
+      it('should report a meaningful error when a directive is missing annotation',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          directives: [SomeDirectiveMissingAnnotation]
+        }));
+
+        PromiseWrapper.catchError(
+            tb.createView(MyComp, {context: ctx}),
+            (e) => {
+              expect(e.message).toEqual('No Directive annotation found on SomeDirectiveMissingAnnotation');
+              async.done();
+            }
+        );
+      }));
+
+      it('should report a meaningful error when a directive is null',
+        inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+        tb.overrideView(MyComp, new View({
+          directives: [[null]]
+        }));
+
+        PromiseWrapper.catchError(
+            tb.createView(MyComp, {context: ctx}),
+            (e) => {
+              expect(e.message).toEqual("Unexpected directive value 'null' on the View of component 'MyComp'");
+              async.done();
+            }
+        );
+      }));
+
+      if (!IS_DARTIUM) {
+        it('should report a meaningful error when a directive is undefined',
+          inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+          var undefinedValue;
+
+          tb.overrideView(MyComp, new View({
+            directives: [undefinedValue]
+          }));
+
+          PromiseWrapper.catchError(
+              tb.createView(MyComp, {context: ctx}),
+              (e) => {
+                expect(e.message).toEqual("Unexpected directive value 'undefined' on the View of component 'MyComp'");
+                async.done();
+              }
+          );
+        }));
+      }
 
       it('should specify a location of an error that happened during change detection (text)',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
@@ -1110,7 +1162,6 @@ class MyComp {
   }
 }
 
-
 @Component({
   selector: 'component-with-pipes',
   properties: {
@@ -1158,6 +1209,8 @@ class ChildCompUsingService {
   selector: 'some-directive'
 })
 class SomeDirective { }
+
+class SomeDirectiveMissingAnnotation { }
 
 @Component({
   selector: 'cmp-with-parent'
