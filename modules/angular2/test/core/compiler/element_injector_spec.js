@@ -150,6 +150,13 @@ class NeedsProtoViewRef {
   }
 }
 
+class OptionallyInjectsProtoViewRef {
+  protoViewRef;
+  constructor(@Optional() ref:ProtoViewRef) {
+    this.protoViewRef = ref;
+  }
+}
+
 class NeedsChangeDetectorRef {
   changeDetectorRef;
   constructor(cdr:ChangeDetectorRef) {
@@ -810,6 +817,12 @@ export function main() {
         expect(
           () => injector([NeedsProtoViewRef])
         ).toThrowError('No provider for ProtoViewRef! (NeedsProtoViewRef -> ProtoViewRef)');
+      });
+
+      it('should inject null if there is no ProtoViewRef when the dependency is optional', () => {
+        var inj = injector([OptionallyInjectsProtoViewRef]);
+        var instance = inj.get(OptionallyInjectsProtoViewRef);
+        expect(instance.protoViewRef).toBeNull();
       });
     });
 

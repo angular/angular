@@ -851,6 +851,10 @@ export class ElementInjector extends TreeNode {
     }
     if (dep.key.id === StaticKeys.instance().protoViewId) {
       if (isBlank(this._preBuiltObjects.protoView)) {
+        if (dep.optional) {
+          return null;
+        }
+
         throw new NoBindingError(dep.key);
       }
       return new ProtoViewRef(this._preBuiltObjects.protoView);
