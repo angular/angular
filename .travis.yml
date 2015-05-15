@@ -36,7 +36,7 @@ before_install:
 
 install:
   # Update npm
-  - npm install -g npm@2.7.4
+  - npm install -g npm@2.9.1
   - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
