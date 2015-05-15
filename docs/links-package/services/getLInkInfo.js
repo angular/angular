@@ -28,13 +28,14 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
 
     var docs = getDocFromAlias(url, currentDoc);
 
-    if ( docs.length > 1 ) {
+    if ( !getLinkInfoImpl.useFirstAmbiguousLink && docs.length > 1 ) {
 
       linkInfo.valid = false;
+      linkInfo.errorType = 'ambiguous';
       linkInfo.error = 'Ambiguous link: "' + url + '".\n' +
-        docs.reduce(function(msg, doc) { return msg + '\n  "' + doc.id + '" ('+ doc.docType + ') : (' + doc.area + ')'; }, 'Matching docs: ');
+        docs.reduce(function(msg, doc) { return msg + '\n  "' + doc.id + '" ('+ doc.docType + ') : (' + doc.path + ' / ' + doc.fileInfo.relativePath + ')'; }, 'Matching docs: ');
 
-    } else if ( docs.length === 1 ) {
+    } else if ( docs.length >= 1 ) {
 
       linkInfo.url = docs[0].path;
       linkInfo.title = title || encodeCodeBlock(docs[0].name, true);
@@ -57,6 +58,7 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
     } else if ( url.indexOf('/') === -1 && url.indexOf('#') !== 0 ) {
 
       linkInfo.valid = false;
+      linkInfo.errorType = 'missing';
       linkInfo.error = 'Invalid link (does not match any doc): "' + url + '"';
 
     } else {

@@ -81,6 +81,12 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 })
 
 
+// Configure links
+.config(function(getLinkInfo) {
+  getLinkInfo.useFirstAmbiguousLink = true;
+})
+
+
 // Configure file writing
 .config(function(writeFilesProcessor) {
   writeFilesProcessor.outputFolder  = 'dist/docs';
