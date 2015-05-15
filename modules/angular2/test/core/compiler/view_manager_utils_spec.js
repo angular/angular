@@ -31,7 +31,6 @@ import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils
 export function main() {
   // TODO(tbosch): add more tests here!
 
-
   describe('AppViewManagerUtils', () => {
 
     var directiveResolver;
@@ -170,7 +169,7 @@ export function main() {
         var shadowView = createView();
         utils.attachComponentView(hostView, 0, shadowView);
 
-        utils.attachAndHydrateInPlaceHostView(null, null, hostView, createInjector());
+        utils.hydrateRootHostView(hostView, createInjector());
 
         expect(spyEventAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
         expect(spyEventAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
@@ -200,7 +199,7 @@ export function main() {
         var shadowView = createView();
         utils.attachComponentView(hostView, 0, shadowView);
 
-        utils.attachAndHydrateInPlaceHostView(null, null, hostView, createInjector());
+        utils.hydrateRootHostView(hostView, createInjector());
 
         expect(spyActionAccessor1.spy('subscribe')).toHaveBeenCalledWith(hostView, 0, dir);
         expect(spyActionAccessor2.spy('subscribe')).toHaveBeenCalledWith(hostView, 1, dir);
@@ -264,6 +263,27 @@ export function main() {
         utils.hydrateViewInContainer(parentView, 0, contextView, 0, 0, null);
         expect(childView.rootElementInjectors[0].spy('instantiateDirectives'))
           .toHaveBeenCalledWith(null, contextView.elementInjectors[0].getHost(), childView.preBuiltObjects[0]);
+      });
+
+    });
+
+    describe('hydrateRootHostView', () => {
+      var hostView;
+
+      function createViews() {
+        var hostPv = createProtoView([
+          createComponentElBinder()
+        ]);
+        hostView = createView(hostPv);
+      }
+
+      it("should instantiate the elementInjectors with the given injector and an empty host element injector", () => {
+        var injector = createInjector();
+        createViews();
+
+        utils.hydrateRootHostView(hostView, injector);
+        expect(hostView.rootElementInjectors[0].spy('instantiateDirectives'))
+          .toHaveBeenCalledWith(injector, null, hostView.preBuiltObjects[0]);
       });
 
     });

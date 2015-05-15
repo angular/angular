@@ -54,13 +54,10 @@ function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(DOCUMENT_TOKEN).toValue(DOM.defaultDoc()),
       bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector,
-        metadataReader, testability, registry) => {
+        testability, registry) => {
 
-        var annotation = metadataReader.resolve(appComponentType);
-
-        var selector = annotation.selector;
         // TODO(rado): investigate whether to support bindings on root component.
-        return dynamicComponentLoader.loadIntoNewLocation(appComponentType, null, selector, injector).then( (componentRef) => {
+        return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector).then( (componentRef) => {
           var domView = resolveInternalDomView(componentRef.hostView.render);
           // We need to do this here to ensure that we create Testability and
           // it's ready on the window for users.
@@ -68,7 +65,7 @@ function _injectorBindings(appComponentType): List<Binding> {
 
           return componentRef;
         });
-      }, [DynamicComponentLoader, Injector, DirectiveResolver,
+      }, [DynamicComponentLoader, Injector,
         Testability, TestabilityRegistry]),
 
       bind(appComponentType).toFactory((ref) => ref.instance,

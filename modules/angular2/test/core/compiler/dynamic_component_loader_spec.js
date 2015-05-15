@@ -11,17 +11,18 @@ import {
   inject,
   beforeEachBindings,
   it,
-  xit
+  xit,
+  viewRootNodes
   } from 'angular2/test_lib';
 
-import {TestBed} from 'angular2/src/test_lib/test_bed';
-
+import {TestBed, ViewProxy} from 'angular2/src/test_lib/test_bed';
+import {Injector} from 'angular2/di';
 import {Component} from 'angular2/src/core/annotations_impl/annotations';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {NgIf} from 'angular2/src/directives/ng_if';
-import {DomRenderer} from 'angular2/src/render/dom/dom_renderer';
+import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 
@@ -193,6 +194,37 @@ export function main() {
 
     });
 
+    describe('loadAsRoot', () => {
+
+      it('should allow to create, update and destroy components',
+          inject([TestBed, AsyncTestCompleter, DynamicComponentLoader, DOCUMENT_TOKEN, Injector], (tb, async, dcl, doc, injector) => {
+        var rootEl = el('<child-cmp></child-cmp>');
+        DOM.appendChild(doc.body, rootEl);
+        dcl.loadAsRoot(ChildComp, null, injector).then( (componentRef) => {
+          var view = new ViewProxy(componentRef);
+          expect(rootEl.parentNode).toBe(doc.body);
+
+          view.detectChanges();
+
+          expect(rootEl).toHaveText('hello');
+
+          componentRef.instance.ctxProp = 'new';
+
+          view.detectChanges();
+
+          expect(rootEl).toHaveText('new');
+
+          componentRef.dispose();
+
+          expect(rootEl).toHaveText('');
+          expect(rootEl.parentNode).toBe(doc.body);
+
+          async.done();
+        });
+      }));
+
+    });
+
   });
 }
 
@@ -200,7 +232,6 @@ export function main() {
   selector: 'imp-ng-cmp'
 })
 @View({
-  renderer: 'imp-ng-cmp-renderer',
   template: ''
 })
 class ImperativeViewComponentUsingNgComponent {
@@ -210,7 +241,11 @@ class ImperativeViewComponentUsingNgComponent {
     var div = el('<div id="impHost"></div>');
     var shadowViewRef = viewManager.getComponentView(self);
     renderer.setComponentViewRootNodes(shadowViewRef.render, [div]);
-    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, '#impHost', null);
+    this.done = dynamicComponentLoader.loadIntoNewLocation(ChildComp, self, null).then( (componentRef) => {
+      var element = renderer.getHostElement(componentRef.hostView.render);
+      DOM.appendChild(div, element);
+      return componentRef;
+    });
   }
 }
 

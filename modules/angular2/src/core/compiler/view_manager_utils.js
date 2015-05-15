@@ -93,24 +93,23 @@ export class AppViewManagerUtils {
     );
   }
 
-  attachAndHydrateInPlaceHostView(parentComponentHostView:viewModule.AppView, parentComponentBoundElementIndex:number,
+  hydrateRootHostView(hostView:viewModule.AppView, injector:Injector = null) {
+    this._hydrateView(hostView, injector, null, new Object(), null);
+  }
+
+  attachAndHydrateFreeHostView(parentComponentHostView:viewModule.AppView, parentComponentBoundElementIndex:number,
       hostView:viewModule.AppView, injector:Injector = null) {
-    var hostElementInjector = null;
-    if (isPresent(parentComponentHostView)) {
-      hostElementInjector = parentComponentHostView.elementInjectors[parentComponentBoundElementIndex];
-      var parentView = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex];
-      parentView.changeDetector.addChild(hostView.changeDetector);
-      ListWrapper.push(parentView.inPlaceHostViews, hostView);
-    }
+    var hostElementInjector = parentComponentHostView.elementInjectors[parentComponentBoundElementIndex];
+    var parentView = parentComponentHostView.componentChildViews[parentComponentBoundElementIndex];
+    parentView.changeDetector.addChild(hostView.changeDetector);
+    ListWrapper.push(parentView.freeHostViews, hostView);
     this._hydrateView(hostView, injector, hostElementInjector, new Object(), null);
   }
 
-  detachInPlaceHostView(parentView:viewModule.AppView,
+  detachFreeHostView(parentView:viewModule.AppView,
       hostView:viewModule.AppView) {
-    if (isPresent(parentView)) {
-      parentView.changeDetector.removeChild(hostView.changeDetector);
-      ListWrapper.remove(parentView.inPlaceHostViews, hostView);
-    }
+    parentView.changeDetector.removeChild(hostView.changeDetector);
+    ListWrapper.remove(parentView.freeHostViews, hostView);
   }
 
   attachViewInContainer(parentView:viewModule.AppView, boundElementIndex:number,

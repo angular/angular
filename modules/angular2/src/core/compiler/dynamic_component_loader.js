@@ -62,19 +62,38 @@ export class DynamicComponentLoader {
   }
 
   /**
-   * Loads a component in the element specified by elementSelector. The loaded component receives
-   * injection normally as a hosted view.
+   * Loads a root component that is placed at the first element that matches the
+   * component's selector.
+   * The loaded component receives injection normally as a hosted view.
    */
-  loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef, elementSelector:string,
-                      injector:Injector = null):Promise<ComponentRef> {
+  loadAsRoot(typeOrBinding, overrideSelector = null, injector:Injector = null):Promise<ComponentRef> {
     return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoViewRef => {
-      var hostViewRef = this._viewManager.createInPlaceHostView(
-        parentComponentLocation, elementSelector, hostProtoViewRef, injector);
+      var hostViewRef = this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector);
       var newLocation = new ElementRef(hostViewRef, 0);
       var component = this._viewManager.getComponent(newLocation);
 
       var dispose = () => {
-        this._viewManager.destroyInPlaceHostView(parentComponentLocation, hostViewRef);
+        this._viewManager.destroyRootHostView(hostViewRef);
+      };
+      return new ComponentRef(newLocation, component, dispose);
+    });
+  }
+
+  /**
+   * Loads a component into a free host view that is not yet attached to
+   * a parent on the render side, although it is attached to a parent in the injector hierarchy.
+   * The loaded component receives injection normally as a hosted view.
+   */
+  loadIntoNewLocation(typeOrBinding, parentComponentLocation:ElementRef,
+                      injector:Injector = null):Promise<ComponentRef> {
+    return  this._compiler.compileInHost(this._getBinding(typeOrBinding)).then(hostProtoViewRef => {
+      var hostViewRef = this._viewManager.createFreeHostView(
+        parentComponentLocation, hostProtoViewRef, injector);
+      var newLocation = new ElementRef(hostViewRef, 0);
+      var component = this._viewManager.getComponent(newLocation);
+
+      var dispose = () => {
+        this._viewManager.destroyFreeHostView(parentComponentLocation, hostViewRef);
       };
       return new ComponentRef(newLocation, component, dispose);
     });

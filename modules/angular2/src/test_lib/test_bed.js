@@ -94,7 +94,7 @@ export class TestBed {
     DOM.appendChild(doc.body, rootEl);
 
     var componentBinding = bind(component).toValue(context);
-    return this._injector.get(DynamicComponentLoader).loadIntoNewLocation(componentBinding, null, '#root', this._injector).then((hostComponentRef) => {
+    return this._injector.get(DynamicComponentLoader).loadAsRoot(componentBinding,'#root', this._injector).then((hostComponentRef) => {
       return new ViewProxy(hostComponentRef);
     });
   }
