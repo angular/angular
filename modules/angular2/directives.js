@@ -40,7 +40,7 @@ export * from './src/directives/ng_switch';
  * ```
  * one could enumerate all the core directives at once:
  *
- ** ```
+ * ```
  * import {coreDirectives} from 'angular2/angular2';
  * import {OtherDirective} from 'myDirectives';
  *
