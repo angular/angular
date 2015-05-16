@@ -193,7 +193,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@Query(Marker) dependencies:QueryList<Maker>) {
+ *   constructor(@Query(Dependency) dependencies:QueryList<Dependency>) {
  *   }
  * }
  * ```
@@ -210,7 +210,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  * @Directive({ selector: '[my-directive]' })
  * class MyDirective {
- *   constructor(@QueryDescendents(Marker) dependencies:QueryList<Maker>) {
+ *   constructor(@QueryDescendents(Dependency) dependencies:QueryList<Dependency>) {
  *   }
  * }
  * ```
