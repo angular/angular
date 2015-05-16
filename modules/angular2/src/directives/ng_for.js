@@ -31,8 +31,8 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  * # Syntax
  *
  * - `<li *ng-for="#item of items; #i = index">...</li>`
- * - `<li template="ng-for #item of items; #i=index">...</li>`
- * - `<template [ng-for]="#item" [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<li template="ng-for #item of items; #i = index">...</li>`
+ * - `<template [ng-for] #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  *
  * @exportedAs angular2/directives
  */
