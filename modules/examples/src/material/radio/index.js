@@ -12,7 +12,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({
   selector: 'demo-app',
-  injectables: [MdRadioDispatcher]
+  appInjector: [MdRadioDispatcher]
 })
 @View({
   templateUrl: './demo_app.html',

@@ -27,7 +27,6 @@ import {PipeRegistry, defaultPipeRegistry,
   ChangeDetection, DynamicChangeDetection, Pipe, ChangeDetectorRef, ON_PUSH} from 'angular2/change_detection';
 
 import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 import {View} from 'angular2/src/core/annotations_impl/view';
 import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
@@ -1112,7 +1111,7 @@ class ComponentWithPipes {
 
 @Component({
   selector: 'child-cmp',
-  injectables: [MyService],
+  appInjector: [MyService],
 })
 @View({
   directives: [MyDir],
@@ -1177,7 +1176,7 @@ class CompWithAncestor {
 
 @Component({
   selector: '[child-cmp2]',
-  injectables: [MyService]
+  appInjector: [MyService]
 })
 class ChildComp2 {
   ctxProp:string;
@@ -1411,23 +1410,6 @@ class PrivateImpl extends PublicApi {
 class NeedsPublicApi {
   constructor(@Parent() api:PublicApi) {
     expect(api instanceof PrivateImpl).toBe(true);
-  }
-}
-
-@Component({
-  selector: 'child',
-  injectables: [AppDependency]
-})
-@View({
-  template: `<div>{{parent.message}}</div>,<div>{{appDependency.parent.message}}</div>`
-})
-class ChildComponent {
-  parent:ParentInterface;
-  appDependency:AppDependency;
-
-  constructor(p:ParentInterface, a:AppDependency) {
-    this.parent = p;
-    this.appDependency = a;
   }
 }
 

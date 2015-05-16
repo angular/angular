@@ -10,7 +10,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 @Component({
   selector: 'todo-app',
-  injectables: [
+  appInjector: [
     Store,
     TodoFactory
   ]

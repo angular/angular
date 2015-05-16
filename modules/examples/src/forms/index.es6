@@ -124,7 +124,7 @@ class SurveyQuestion {
 // SurveyBuilder is a form that allows you to create a survey.
 @Component({
   selector: 'survey-builder-app',
-  injectables: [FormBuilder]
+  appInjector: [FormBuilder]
 })
 @View({
   template: `

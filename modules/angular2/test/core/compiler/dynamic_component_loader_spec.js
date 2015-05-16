@@ -279,7 +279,7 @@ class DynamicComp {
 
 @Component({
   selector: 'hello-cmp',
-  injectables: [DynamicallyCreatedComponentService]
+  appInjector: [DynamicallyCreatedComponentService]
 })
 @View({
   template: "{{greeting}}"

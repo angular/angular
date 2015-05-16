@@ -21,7 +21,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  injectables: [GreetingService]
+  appInjector: [GreetingService]
 })
 // The template for the component.
 @View({

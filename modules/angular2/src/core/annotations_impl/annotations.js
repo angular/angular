@@ -714,7 +714,7 @@ export class Directive extends Injectable {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates a child {@link Injector} which is configured with the `injectables` for the {@link Component}.
+ * - creates a child {@link Injector} which is configured with the `appInjector` for the {@link Component}.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -800,16 +800,16 @@ export class Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to a Component and its children.
    *
-   * The `injectables` defined in the Component annotation allow you to configure a set of bindings for the component's
+   * The `appInjector` defined in the Component annotation allow you to configure a set of bindings for the component's
    * injector.
    *
    * When a component is instantiated, Angular creates a new child Injector, which is configured with the bindings in
-   * the Component `injectables` annotation. The injectable objects then become available for injection to the component
+   * the Component `appInjector` annotation. The injectable objects then become available for injection to the component
    * itself and any of the directives in the component's template, i.e. they are not available to the directives which
    * are children in the component's light DOM.
    *
    *
-   * The syntax for configuring the `injectables` injectable is identical to {@link Injector} injectable configuration.
+   * The syntax for configuring the `appInjector` injectable is identical to {@link Injector} injectable configuration.
    * See {@link Injector} for additional detail.
    *
    *
@@ -826,7 +826,7 @@ export class Component extends Directive {
    *
    * @Component({
    *   selector: 'greet',
-   *   injectables: [
+   *   appInjector: [
    *     Greeter
    *   ]
    * })
@@ -843,7 +843,7 @@ export class Component extends Directive {
    * }
    * ```
    */
-  injectables:List;
+  appInjector:List;
 
   @CONST()
   constructor({
@@ -854,7 +854,7 @@ export class Component extends Directive {
       hostProperties,
       hostAttributes,
       hostActions,
-      injectables,
+      appInjector,
       lifecycle,
       changeDetection = DEFAULT,
       compileChildren = true
@@ -866,7 +866,7 @@ export class Component extends Directive {
       hostProperties:any,
       hostAttributes:any,
       hostActions:any,
-      injectables:List,
+      appInjector:List,
       lifecycle:List,
       changeDetection:string,
       compileChildren:boolean
@@ -885,7 +885,7 @@ export class Component extends Directive {
     });
 
     this.changeDetection = changeDetection;
-    this.injectables = injectables;
+    this.appInjector = appInjector;
   }
 }
 

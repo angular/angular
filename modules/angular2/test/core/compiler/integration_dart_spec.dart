@@ -21,7 +21,7 @@ void functionThatThrows() {
 
 main() {
   describe('TypeLiteral', () {
-    it('should publish via injectables',
+    it('should publish via appInjector',
         inject([TestBed, AsyncTestCompleter], (tb, async) {
       tb.overrideView(Dummy, new View(
         template: '<type-literal-component></type-literal-component>',
@@ -57,7 +57,7 @@ class Dummy {}
 
 @Component(
   selector: 'type-literal-component',
-  injectables: const [
+  appInjector: const [
       const Binding(
           const TypeLiteral<List<String>>(),
           toValue: const <String>['Hello', 'World'])

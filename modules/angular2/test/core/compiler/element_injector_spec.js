@@ -516,7 +516,7 @@ export function main() {
 
       it("should instantiate component directives that depend on app services in the shadow app injector", () => {
         var directiveAnnotation = new Component({
-          injectables: [
+          appInjector: [
             bind("service").toValue("service")
           ]
         });
@@ -531,7 +531,7 @@ export function main() {
 
       it("should not instantiate other directives that depend on app services in the shadow app injector", () => {
         var directiveAnnotation = new Component({
-          injectables: [
+          appInjector: [
             bind("service").toValue("service")
           ]
         });

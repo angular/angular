@@ -184,7 +184,7 @@ function _createNgZone(givenReporter:Function): NgZone {
  *  1. It uses the component's `selector` property to locate the DOM element which needs to be upgraded into
  *     the angular component.
  *  2. It creates a new child injector (from the platform injector) and configures the injector with the component's
- *     `injectables`. Optionally, you can also override the injector configuration for an app by invoking
+ *     `appInjector`. Optionally, you can also override the injector configuration for an app by invoking
  *     `bootstrap` with the `componentInjectableBindings` argument.
  *  3. It creates a new `Zone` and connects it to the angular application's change detection domain instance.
  *  4. It creates a shadow DOM on the selected component's host element and loads the template into it.
@@ -227,7 +227,7 @@ function _createNgZone(givenReporter:Function): NgZone {
  * # API
  * - `appComponentType`: The root component which should act as the application. This is a reference to a `Type`
  *   which is annotated with `@Component(...)`.
- * - `componentInjectableBindings`: An additional set of bindings that can be added to `injectables` for the
+ * - `componentInjectableBindings`: An additional set of bindings that can be added to `appInjector` for the
  * {@link Component} to override default injection behavior.
  * - `errorReporter`: `function(exception:any, stackTrace:string)` a default error reporter for unhandled exceptions.
  *

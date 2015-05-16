@@ -216,7 +216,7 @@ To better understand the kinds of injections which are supported in Angular we h
 
 ### Injecting Services
 
-Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `injectables` and then letting the directive ask for the configured service.
+Service injection is the most straight forward kind of injection which Angular supports. It involves a component configuring the `appInjector` and then letting the directive ask for the configured service.
 
 This example illustrates how to inject `MyService` into `House` directive.
 
@@ -227,7 +227,7 @@ class MyService {}                   | Assume a service which needs to be inject
                                      |
 @Component({                         | Assume a top level application component which
   selector: 'my-app',                | configures the services to be injected.
-  injectables: [MyService]           |
+  appInjector: [MyService]           |
 })                                   |
 @View({                              | Assume we have a template that needs to be
   templateUrl: 'my_app.html',        | configured with directives to be injected.
@@ -330,7 +330,7 @@ Shadow DOM provides an encapsulation for components, so as a general rule it doe
 ```
 @Component({
   selector: '[kid]',
-  injectables: []
+  appInjector: []
 })
 @View({
   templateUrl: 'kid.html',
@@ -349,7 +349,7 @@ class Kid {
 
 @Component({
   selector: '[dad]',
-  injectables: [Grandpa]
+  appInjector: [Grandpa]
 })
 @View({
   templateUrl: 'dad.html',
@@ -364,7 +364,7 @@ class Dad {
 
 @Component({
   selector: '[grandpa]',
-  injectables: []
+  appInjector: []
 })
 @View({
   templateUrl: 'grandpa.html',

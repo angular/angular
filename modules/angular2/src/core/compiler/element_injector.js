@@ -279,8 +279,8 @@ export class DirectiveBinding extends ResolvedBinding {
     var changeDetection = null;
     if (ann instanceof Component) {
       renderType = DirectiveMetadata.COMPONENT_TYPE;
-      if (isPresent(ann.injectables)) {
-        resolvedInjectables = Injector.resolve(ann.injectables);
+      if (isPresent(ann.appInjector)) {
+        resolvedInjectables = Injector.resolve(ann.appInjector);
       }
       changeDetection = ann.changeDetection;
     } else {
