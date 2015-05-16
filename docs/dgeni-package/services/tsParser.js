@@ -1,4 +1,5 @@
 var ts = require('typescript');
+var path = require('canonical-path');
 
 module.exports = function tsParser(createCompilerHost, log) {
 
@@ -9,9 +10,9 @@ module.exports = function tsParser(createCompilerHost, log) {
     },
 
     parse: function(fileNames, baseDir) {
-      // This is the easiest way I could find to ensure that we loaded
-      // modules with paths relative to the baseDir
-      process.chdir(baseDir);
+      fileNames = fileNames.map(function(fileName) {
+        return path.resolve(baseDir, fileName);
+      });
 
       // "Compile" a program from the given module filenames, to get hold of a
       // typeChecker that can be used to interrogate the modules, exports and so on.
