@@ -1,10 +1,9 @@
 import {isPresent, isBlank, Type, int, BaseException, stringify} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Math} from 'angular2/src/facade/math';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
-  AbstractBindingError, CyclicDependencyError, resolveForwardRef} from 'angular2/di';
-import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+  AbstractBindingError, CyclicDependencyError, resolveForwardRef, resolveBindings} from 'angular2/di';
+import {Visibility, Self} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
@@ -19,8 +18,6 @@ import {DirectiveMetadata} from 'angular2/src/render/api';
 
 
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
-
-var MAX_DEPTH = Math.pow(2, 30) - 1;
 
 var _undefined = new Object();
 
@@ -177,14 +174,14 @@ export class TreeNode {
 }
 
 export class DirectiveDependency extends Dependency {
-  depth:int;
+  visibility:Visibility;
   attributeName:string;
   queryDirective;
 
   constructor(key:Key, asPromise:boolean, lazy:boolean, optional:boolean, properties:List,
-              depth:int, attributeName:string, queryDirective) {
+              visibility:Visibility, attributeName:string, queryDirective) {
     super(key, asPromise, lazy, optional, properties);
-    this.depth = depth;
+    this.visibility = visibility;;
     this.attributeName = attributeName;
     this.queryDirective = queryDirective;
     this._verify();
@@ -199,18 +196,17 @@ export class DirectiveDependency extends Dependency {
   }
 
   static createFrom(d:Dependency):Dependency {
-    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional,
-      d.properties, DirectiveDependency._depth(d.properties),
+    return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties,
+        DirectiveDependency._visibility(d.properties),
       DirectiveDependency._attributeName(d.properties),
       DirectiveDependency._query(d.properties)
     );
   }
 
-  static _depth(properties):int {
-    if (properties.length == 0) return 0;
-    if (ListWrapper.any(properties, p => p instanceof Parent)) return 1;
-    if (ListWrapper.any(properties, p => p instanceof Ancestor)) return MAX_DEPTH;
-    return 0;
+  static _visibility(properties):Visibility {
+    if (properties.length == 0) return new Self();
+    var p = ListWrapper.find(properties, p => p instanceof Visibility);
+    return isPresent(p) ? p : new Self();
   }
 
   static _attributeName(properties):string {
@@ -225,13 +221,18 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveBinding extends ResolvedBinding {
-  resolvedInjectables:List<ResolvedBinding>;
+  resolvedAppInjectables:List<ResolvedBinding>;
+  resolvedHostInjectables:List<ResolvedBinding>;
+  resolvedViewInjectables:List<ResolvedBinding>;
   metadata: DirectiveMetadata;
 
   constructor(key:Key, factory:Function, dependencies:List, providedAsPromise:boolean,
-      resolvedInjectables:List<ResolvedBinding>, metadata:DirectiveMetadata, annotation: Directive) {
+              resolvedAppInjectables:List<ResolvedBinding>, resolvedHostInjectables:List<ResolvedBinding>,
+              resolvedViewInjectables:List<ResolvedBinding>, metadata:DirectiveMetadata) {
     super(key, factory, dependencies, providedAsPromise);
-    this.resolvedInjectables = resolvedInjectables;
+    this.resolvedAppInjectables = resolvedAppInjectables;
+    this.resolvedHostInjectables = resolvedHostInjectables;
+    this.resolvedViewInjectables = resolvedViewInjectables;
     this.metadata = metadata;
   }
 
@@ -260,59 +261,52 @@ export class DirectiveBinding extends ResolvedBinding {
   }
 
   get changeDetection() {
-    if (isPresent(metadata)) {
-      return metadata.changeDetection;
-    } else {
-      return null;
-    }
+    return this.metadata.changeDetection;
   }
 
-  static createFromBinding(b:Binding, ann:Directive):DirectiveBinding {
+  static createFromBinding(binding:Binding, ann:Directive):DirectiveBinding {
     if (isBlank(ann)) {
       ann = new Directive();
     }
-    var rb = b.resolve();
+
+    var rb = binding.resolve();
     var deps = ListWrapper.map(rb.dependencies, DirectiveDependency.createFrom);
-    var renderType;
-    var compileChildren = ann.compileChildren;
-    var resolvedInjectables = null;
-    var changeDetection = null;
-    if (ann instanceof Component) {
-      renderType = DirectiveMetadata.COMPONENT_TYPE;
-      if (isPresent(ann.appInjector)) {
-        resolvedInjectables = Injector.resolve(ann.appInjector);
-      }
-      changeDetection = ann.changeDetection;
-    } else {
-      renderType = DirectiveMetadata.DIRECTIVE_TYPE;
-    }
-    var readAttributes = [];
-    ListWrapper.forEach(deps, (dep) => {
-      if (isPresent(dep.attributeName)) {
-        ListWrapper.push(readAttributes, dep.attributeName);
-      }
-    });
+    var resolvedAppInjectables = ann instanceof Component && isPresent(ann.appInjector) ? Injector.resolve(ann.appInjector) : [];
+    var resolvedHostInjectables = isPresent(ann.hostInjector) ? resolveBindings(ann.hostInjector) : [];
+    var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ? resolveBindings(ann.viewInjector) : [];
+
     var metadata = new DirectiveMetadata({
       id: stringify(rb.key.token),
-      type: renderType,
+      type: ann instanceof Component ? DirectiveMetadata.COMPONENT_TYPE : DirectiveMetadata.DIRECTIVE_TYPE,
       selector: ann.selector,
-      compileChildren: compileChildren,
+      compileChildren: ann.compileChildren,
       events: ann.events,
       hostListeners: isPresent(ann.hostListeners) ? MapWrapper.createFromStringMap(ann.hostListeners) : null,
       hostProperties: isPresent(ann.hostProperties) ? MapWrapper.createFromStringMap(ann.hostProperties) : null,
       hostAttributes: isPresent(ann.hostAttributes) ? MapWrapper.createFromStringMap(ann.hostAttributes) : null,
       hostActions: isPresent(ann.hostActions) ? MapWrapper.createFromStringMap(ann.hostActions) : null,
       properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
-      readAttributes: readAttributes,
+      readAttributes: DirectiveBinding._readAttributes(deps),
       callOnDestroy: ann.hasLifecycleHook(onDestroy),
       callOnChange: ann.hasLifecycleHook(onChange),
       callOnAllChangesDone: ann.hasLifecycleHook(onAllChangesDone),
-      changeDetection: changeDetection
+      changeDetection: ann instanceof Component ? ann.changeDetection : null
     });
-    return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise, resolvedInjectables, metadata, ann);
+    return new DirectiveBinding(rb.key, rb.factory, deps, rb.providedAsPromise, resolvedAppInjectables,
+        resolvedHostInjectables, resolvedViewInjectables, metadata);
   }
 
-  static createFromType(type:Type, annotation:Directive):DirectiveBinding {
+  static _readAttributes(deps) {
+    var readAttributes = [];
+    ListWrapper.forEach(deps, (dep) => {
+      if (isPresent(dep.attributeName)) {
+        ListWrapper.push(readAttributes, dep.attributeName);
+      }
+    });
+    return readAttributes;
+  }
+
+  static  createFromType(type:Type, annotation:Directive):DirectiveBinding {
     var binding = new Binding(type, {toClass: type});
     return DirectiveBinding.createFromBinding(binding, annotation);
   }
@@ -363,6 +357,42 @@ class HostActionAccessor {
   }
 }
 
+const LIGHT_DOM = 1;
+const SHADOW_DOM = 2;
+const LIGHT_DOM_AND_SHADOW_DOM = 3;
+
+class BindingData {
+  binding:ResolvedBinding;
+  visibility:number;
+
+  constructor(binding:ResolvedBinding, visibility:number) {
+    this.binding = binding;
+    this.visibility = visibility;
+  }
+
+  getKeyId() {
+    return this.binding.key.id;
+  }
+
+  createEventEmitterAccessors() {
+    if (!(this.binding instanceof DirectiveBinding)) return [];
+    var db:DirectiveBinding = this.binding;
+    return ListWrapper.map(db.eventEmitters, eventName =>
+      new EventEmitterAccessor(eventName, reflector.getter(eventName))
+    );
+  }
+
+  createHostActionAccessors() {
+    if (!(this.binding instanceof DirectiveBinding)) return [];
+    var res = [];
+    var db:DirectiveBinding = this.binding;
+    MapWrapper.forEach(db.hostActions, (actionExpression, actionName) => {
+      ListWrapper.push(res, new HostActionAccessor(actionExpression, reflector.getter(actionName)))
+    });
+    return res;
+  }
+}
+
 /**
 
 Difference between di.Injector and ElementInjector
@@ -382,20 +412,19 @@ ElementInjector:
 
  PERF BENCHMARK: http://www.williambrownstreet.net/blog/2014/04/faster-angularjs-rendering-angularjs-and-reactjs/
  */
-
-
 export class ProtoElementInjector  {
-  _binding0:DirectiveBinding;
-  _binding1:DirectiveBinding;
-  _binding2:DirectiveBinding;
-  _binding3:DirectiveBinding;
-  _binding4:DirectiveBinding;
-  _binding5:DirectiveBinding;
-  _binding6:DirectiveBinding;
-  _binding7:DirectiveBinding;
-  _binding8:DirectiveBinding;
-  _binding9:DirectiveBinding;
-  _binding0IsComponent:boolean;
+  // only _binding0 can contain a component
+  _binding0:ResolvedBinding;
+  _binding1:ResolvedBinding;
+  _binding2:ResolvedBinding;
+  _binding3:ResolvedBinding;
+  _binding4:ResolvedBinding;
+  _binding5:ResolvedBinding;
+  _binding6:ResolvedBinding;
+  _binding7:ResolvedBinding;
+  _binding8:ResolvedBinding;
+  _binding9:ResolvedBinding;
+
   _keyId0:int;
   _keyId1:int;
   _keyId2:int;
@@ -406,6 +435,18 @@ export class ProtoElementInjector  {
   _keyId7:int;
   _keyId8:int;
   _keyId9:int;
+
+  _visibility0:number;
+  _visibility1:number;
+  _visibility2:number;
+  _visibility3:number;
+  _visibility4:number;
+  _visibility5:number;
+  _visibility6:number;
+  _visibility7:number;
+  _visibility8:number;
+  _visibility9:number;
+
   parent:ProtoElementInjector;
   index:int;
   view:viewModule.AppView;
@@ -413,8 +454,6 @@ export class ProtoElementInjector  {
   attributes:Map;
   eventEmitterAccessors:List<List<EventEmitterAccessor>>;
   hostActionAccessors:List<List<HostActionAccessor>>;
-
-  numberOfDirectives:number;
 
   /** Whether the element is exported as $implicit. */
   exportElement:boolean;
@@ -425,107 +464,142 @@ export class ProtoElementInjector  {
   /** The variable name that will be set to $implicit for the element. */
   exportImplicitName:string;
 
-  constructor(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean = false, distanceToParent:number = 0) {
+  _firstBindingIsComponent:boolean;
+
+  static create(parent:ProtoElementInjector, index:int, bindings:List, firstBindingIsComponent:boolean, distanceToParent:number) {
+    var bd = [];
+
+    ProtoElementInjector._createDirectiveBindingData(bindings, bd, firstBindingIsComponent);
+    ProtoElementInjector._createHostInjectorBindingData(bindings, bd);
+    if (firstBindingIsComponent) {
+      ProtoElementInjector._createViewInjectorBindingData(bindings, bd);
+    }
+
+    return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent);
+  }
+  
+  static _createDirectiveBindingData(bindings:List, bd:List, firstBindingIsComponent:boolean) {
+    if (firstBindingIsComponent) {
+      ListWrapper.push(bd, new BindingData(bindings[0], LIGHT_DOM_AND_SHADOW_DOM));
+      for (var i = 1; i < bindings.length; ++i) {
+        ListWrapper.push(bd, new BindingData(bindings[i], LIGHT_DOM));
+      }
+    } else {
+      ListWrapper.forEach(bindings, b => {
+        ListWrapper.push(bd, new BindingData(b, LIGHT_DOM))
+      });
+    }
+  }
+  
+  static _createHostInjectorBindingData(bindings:List, bd:List) {
+    ListWrapper.forEach(bindings, b => {
+      ListWrapper.forEach(b.resolvedHostInjectables, b => {
+        ListWrapper.push(bd, new BindingData(b, LIGHT_DOM));
+      });
+    });
+  }
+    
+  static _createViewInjectorBindingData(bindings:List, bd:List) {
+      ListWrapper.forEach(bindings[0].resolvedViewInjectables,
+              b => ListWrapper.push(bd, new BindingData(b, SHADOW_DOM)));
+  }
+
+  constructor(parent:ProtoElementInjector, index:int, bd:List<BindingData>, distanceToParent:number, firstBindingIsComponent:boolean) {
     this.parent = parent;
     this.index = index;
     this.distanceToParent = distanceToParent;
     this.exportComponent = false;
     this.exportElement = false;
-
-    this._binding0IsComponent = firstBindingIsComponent;
-    this._binding0 = null; this._keyId0 = null;
-    this._binding1 = null; this._keyId1 = null;
-    this._binding2 = null; this._keyId2 = null;
-    this._binding3 = null; this._keyId3 = null;
-    this._binding4 = null; this._keyId4 = null;
-    this._binding5 = null; this._keyId5 = null;
-    this._binding6 = null; this._keyId6 = null;
-    this._binding7 = null; this._keyId7 = null;
-    this._binding8 = null; this._keyId8 = null;
-    this._binding9 = null; this._keyId9 = null;
-
-    this.numberOfDirectives = bindings.length;
-    var length = bindings.length;
+    this._firstBindingIsComponent = firstBindingIsComponent;
+    
+    this._binding0 = null; this._keyId0 = null; this._visibility0 = null;
+    this._binding1 = null; this._keyId1 = null; this._visibility1 = null;
+    this._binding2 = null; this._keyId2 = null; this._visibility2 = null;
+    this._binding3 = null; this._keyId3 = null; this._visibility3 = null;
+    this._binding4 = null; this._keyId4 = null; this._visibility4 = null;
+    this._binding5 = null; this._keyId5 = null; this._visibility5 = null;
+    this._binding6 = null; this._keyId6 = null; this._visibility6 = null;
+    this._binding7 = null; this._keyId7 = null; this._visibility7 = null;
+    this._binding8 = null; this._keyId8 = null; this._visibility8 = null;
+    this._binding9 = null; this._keyId9 = null; this._visibility9 = null;
+    
+    var length = bd.length;
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
 
     if (length > 0) {
-      this._binding0 = this._createBinding(bindings[0]);
-      this._keyId0 = this._binding0.key.id;
-      this.eventEmitterAccessors[0] = this._createEventEmitterAccessors(this._binding0);
-      this.hostActionAccessors[0] = this._createHostActionAccessors(this._binding0);
+      this._binding0 = bd[0].binding;
+      this._keyId0 = bd[0].getKeyId();
+      this._visibility0 = bd[0].visibility;
+      this.eventEmitterAccessors[0] = bd[0].createEventEmitterAccessors();
+      this.hostActionAccessors[0] = bd[0].createHostActionAccessors();
     }
     if (length > 1) {
-      this._binding1 = this._createBinding(bindings[1]);
-      this._keyId1 = this._binding1.key.id;
-      this.eventEmitterAccessors[1] = this._createEventEmitterAccessors(this._binding1);
-      this.hostActionAccessors[1] = this._createHostActionAccessors(this._binding1);
+      this._binding1 = bd[1].binding;
+      this._keyId1 = bd[1].getKeyId();
+      this._visibility1 = bd[1].visibility;
+      this.eventEmitterAccessors[1] = bd[1].createEventEmitterAccessors();
+      this.hostActionAccessors[1] = bd[1].createHostActionAccessors();
     }
     if (length > 2) {
-      this._binding2 = this._createBinding(bindings[2]);
-      this._keyId2 = this._binding2.key.id;
-      this.eventEmitterAccessors[2] = this._createEventEmitterAccessors(this._binding2);
-      this.hostActionAccessors[2] = this._createHostActionAccessors(this._binding2);
+      this._binding2 = bd[2].binding;
+      this._keyId2 = bd[2].getKeyId();
+      this._visibility2 = bd[2].visibility;
+      this.eventEmitterAccessors[2] = bd[2].createEventEmitterAccessors();
+      this.hostActionAccessors[2] = bd[2].createHostActionAccessors();
     }
     if (length > 3) {
-      this._binding3 = this._createBinding(bindings[3]);
-      this._keyId3 = this._binding3.key.id;
-      this.eventEmitterAccessors[3] = this._createEventEmitterAccessors(this._binding3);
-      this.hostActionAccessors[3] = this._createHostActionAccessors(this._binding3);
+      this._binding3 = bd[3].binding;
+      this._keyId3 = bd[3].getKeyId();
+      this._visibility3 = bd[3].visibility;
+      this.eventEmitterAccessors[3] = bd[3].createEventEmitterAccessors();
+      this.hostActionAccessors[3] = bd[3].createHostActionAccessors();
     }
     if (length > 4) {
-      this._binding4 = this._createBinding(bindings[4]);
-      this._keyId4 = this._binding4.key.id;
-      this.eventEmitterAccessors[4] = this._createEventEmitterAccessors(this._binding4);
-      this.hostActionAccessors[4] = this._createHostActionAccessors(this._binding4);
+      this._binding4 = bd[4].binding;
+      this._keyId4 = bd[4].getKeyId();
+      this._visibility4 = bd[4].visibility;
+      this.eventEmitterAccessors[4] = bd[4].createEventEmitterAccessors();
+      this.hostActionAccessors[4] = bd[4].createHostActionAccessors();
     }
     if (length > 5) {
-      this._binding5 = this._createBinding(bindings[5]);
-      this._keyId5 = this._binding5.key.id;
-      this.eventEmitterAccessors[5] = this._createEventEmitterAccessors(this._binding5);
-      this.hostActionAccessors[5] = this._createHostActionAccessors(this._binding5);
+      this._binding5 = bd[5].binding;
+      this._keyId5 = bd[5].getKeyId();
+      this._visibility5 = bd[5].visibility;
+      this.eventEmitterAccessors[5] = bd[5].createEventEmitterAccessors();
+      this.hostActionAccessors[5] = bd[5].createHostActionAccessors();
     }
     if (length > 6) {
-      this._binding6 = this._createBinding(bindings[6]);
-      this._keyId6 = this._binding6.key.id;
-      this.eventEmitterAccessors[6] = this._createEventEmitterAccessors(this._binding6);
-      this.hostActionAccessors[6] = this._createHostActionAccessors(this._binding6);
+      this._binding6 = bd[6].binding;
+      this._keyId6 = bd[6].getKeyId();
+      this._visibility6 = bd[6].visibility;
+      this.eventEmitterAccessors[6] = bd[6].createEventEmitterAccessors();
+      this.hostActionAccessors[6] = bd[6].createHostActionAccessors();
     }
     if (length > 7) {
-      this._binding7 = this._createBinding(bindings[7]);
-      this._keyId7 = this._binding7.key.id;
-      this.eventEmitterAccessors[7] = this._createEventEmitterAccessors(this._binding7);
-      this.hostActionAccessors[7] = this._createHostActionAccessors(this._binding7);
+      this._binding7 = bd[7].binding;
+      this._keyId7 = bd[7].getKeyId();
+      this._visibility7 = bd[7].visibility;
+      this.eventEmitterAccessors[7] = bd[7].createEventEmitterAccessors();
+      this.hostActionAccessors[7] = bd[7].createHostActionAccessors();
     }
     if (length > 8) {
-      this._binding8 = this._createBinding(bindings[8]);
-      this._keyId8 = this._binding8.key.id;
-      this.eventEmitterAccessors[8] = this._createEventEmitterAccessors(this._binding8);
-      this.hostActionAccessors[8] = this._createHostActionAccessors(this._binding8);
+      this._binding8 = bd[8].binding;
+      this._keyId8 = bd[8].getKeyId();
+      this._visibility8 = bd[8].visibility;
+      this.eventEmitterAccessors[8] = bd[8].createEventEmitterAccessors();
+      this.hostActionAccessors[8] = bd[8].createHostActionAccessors();
     }
     if (length > 9) {
-      this._binding9 = this._createBinding(bindings[9]);
-      this._keyId9 = this._binding9.key.id;
-      this.eventEmitterAccessors[9] = this._createEventEmitterAccessors(this._binding9);
-      this.hostActionAccessors[9] = this._createHostActionAccessors(this._binding9);
+      this._binding9 = bd[9].binding;
+      this._keyId9 = bd[9].getKeyId();
+      this._visibility9 = bd[9].visibility;
+      this.eventEmitterAccessors[9] = bd[9].createEventEmitterAccessors();
+      this.hostActionAccessors[9] = bd[9].createHostActionAccessors();
     }
     if (length > 10) {
       throw 'Maximum number of directives per element has been reached.';
     }
-  }
-
-  _createEventEmitterAccessors(b:DirectiveBinding) {
-    return ListWrapper.map(b.eventEmitters, eventName =>
-      new EventEmitterAccessor(eventName, reflector.getter(eventName))
-    );
-  }
-
-  _createHostActionAccessors(b:DirectiveBinding) {
-    var res = [];
-    MapWrapper.forEach(b.hostActions, (actionExpression, actionName) => {
-      ListWrapper.push(res, new HostActionAccessor(actionExpression, reflector.getter(actionName)))
-    });
-    return res;
   }
 
   instantiate(parent:ElementInjector):ElementInjector {
@@ -536,20 +610,11 @@ export class ProtoElementInjector  {
     return this.distanceToParent < 2 ? this.parent : null;
   }
 
-  _createBinding(bindingOrType) {
-    if (bindingOrType instanceof DirectiveBinding) {
-      return bindingOrType;
-    } else {
-      var b = bind(bindingOrType).toClass(bindingOrType);
-      return DirectiveBinding.createFromBinding(b, null);
-    }
-  }
-
   get hasBindings():boolean {
     return isPresent(this._binding0);
   }
 
-  getDirectiveBindingAtIndex(index:int) {
+  getBindingAtIndex(index:int) {
     if (index == 0) return this._binding0;
     if (index == 1) return this._binding1;
     if (index == 2) return this._binding2;
@@ -597,7 +662,7 @@ export class ElementInjector extends TreeNode {
     super(parent);
     this._proto = proto;
 
-    //we cannot call clearDirectives because fields won't be detected
+    //we cannot call dehydrate because fields won't be detected
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
     this._shadowDomAppInjector = null;
@@ -617,7 +682,7 @@ export class ElementInjector extends TreeNode {
     this._buildQueries();
   }
 
-  clearDirectives() {
+  dehydrate() {
     this._host = null;
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
@@ -625,16 +690,16 @@ export class ElementInjector extends TreeNode {
 
     var p = this._proto;
 
-    if (isPresent(p._binding0) && p._binding0.callOnDestroy) {this._obj0.onDestroy();}
-    if (isPresent(p._binding1) && p._binding1.callOnDestroy) {this._obj1.onDestroy();}
-    if (isPresent(p._binding2) && p._binding2.callOnDestroy) {this._obj2.onDestroy();}
-    if (isPresent(p._binding3) && p._binding3.callOnDestroy) {this._obj3.onDestroy();}
-    if (isPresent(p._binding4) && p._binding4.callOnDestroy) {this._obj4.onDestroy();}
-    if (isPresent(p._binding5) && p._binding5.callOnDestroy) {this._obj5.onDestroy();}
-    if (isPresent(p._binding6) && p._binding6.callOnDestroy) {this._obj6.onDestroy();}
-    if (isPresent(p._binding7) && p._binding7.callOnDestroy) {this._obj7.onDestroy();}
-    if (isPresent(p._binding8) && p._binding8.callOnDestroy) {this._obj8.onDestroy();}
-    if (isPresent(p._binding9) && p._binding9.callOnDestroy) {this._obj9.onDestroy();}
+    if (p._binding0 instanceof DirectiveBinding && p._binding0.callOnDestroy) {this._obj0.onDestroy();}
+    if (p._binding1 instanceof DirectiveBinding && p._binding1.callOnDestroy) {this._obj1.onDestroy();}
+    if (p._binding2 instanceof DirectiveBinding && p._binding2.callOnDestroy) {this._obj2.onDestroy();}
+    if (p._binding3 instanceof DirectiveBinding && p._binding3.callOnDestroy) {this._obj3.onDestroy();}
+    if (p._binding4 instanceof DirectiveBinding && p._binding4.callOnDestroy) {this._obj4.onDestroy();}
+    if (p._binding5 instanceof DirectiveBinding && p._binding5.callOnDestroy) {this._obj5.onDestroy();}
+    if (p._binding6 instanceof DirectiveBinding && p._binding6.callOnDestroy) {this._obj6.onDestroy();}
+    if (p._binding7 instanceof DirectiveBinding && p._binding7.callOnDestroy) {this._obj7.onDestroy();}
+    if (p._binding8 instanceof DirectiveBinding && p._binding8.callOnDestroy) {this._obj8.onDestroy();}
+    if (p._binding9 instanceof DirectiveBinding && p._binding9.callOnDestroy) {this._obj9.onDestroy();}
     if (isPresent(this._dynamicallyCreatedComponentBinding) && this._dynamicallyCreatedComponentBinding.callOnDestroy) {
       this._dynamicallyCreatedComponent.onDestroy();
     }
@@ -655,45 +720,38 @@ export class ElementInjector extends TreeNode {
     this._constructionCounter = 0;
   }
 
-  instantiateDirectives(
-      lightDomAppInjector:Injector,
-      host:ElementInjector,
-      preBuiltObjects:PreBuiltObjects) {
-    var shadowDomAppInjector = null;
-    if (this._proto._binding0IsComponent) {
-      shadowDomAppInjector = this._createShadowDomAppInjector(this._proto._binding0, lightDomAppInjector);
-    }
-    this._host = host;
-    this._checkShadowDomAppInjector(shadowDomAppInjector);
 
-    this._preBuiltObjects = preBuiltObjects;
-    this._lightDomAppInjector = lightDomAppInjector;
-    this._shadowDomAppInjector = shadowDomAppInjector;
-
+  hydrate(injector:Injector, host:ElementInjector, preBuiltObjects:PreBuiltObjects) {
     var p = this._proto;
-    if (isPresent(p._keyId0)) this._getDirectiveByKeyId(p._keyId0);
-    if (isPresent(p._keyId1)) this._getDirectiveByKeyId(p._keyId1);
-    if (isPresent(p._keyId2)) this._getDirectiveByKeyId(p._keyId2);
-    if (isPresent(p._keyId3)) this._getDirectiveByKeyId(p._keyId3);
-    if (isPresent(p._keyId4)) this._getDirectiveByKeyId(p._keyId4);
-    if (isPresent(p._keyId5)) this._getDirectiveByKeyId(p._keyId5);
-    if (isPresent(p._keyId6)) this._getDirectiveByKeyId(p._keyId6);
-    if (isPresent(p._keyId7)) this._getDirectiveByKeyId(p._keyId7);
-    if (isPresent(p._keyId8)) this._getDirectiveByKeyId(p._keyId8);
-    if (isPresent(p._keyId9)) this._getDirectiveByKeyId(p._keyId9);
+
+    this._host = host;
+    this._lightDomAppInjector = injector;
+    this._preBuiltObjects = preBuiltObjects;
+    
+    if (p._firstBindingIsComponent) {
+      this._shadowDomAppInjector = this._createShadowDomAppInjector(p._binding0, injector); 
+    }
+    
+    this._checkShadowDomAppInjector(this._shadowDomAppInjector);
+
+    if (isPresent(p._keyId0)) this._getObjByKeyId(p._keyId0, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId1)) this._getObjByKeyId(p._keyId1, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId2)) this._getObjByKeyId(p._keyId2, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId3)) this._getObjByKeyId(p._keyId3, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId4)) this._getObjByKeyId(p._keyId4, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId5)) this._getObjByKeyId(p._keyId5, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId6)) this._getObjByKeyId(p._keyId6, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId7)) this._getObjByKeyId(p._keyId7, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId8)) this._getObjByKeyId(p._keyId8, LIGHT_DOM_AND_SHADOW_DOM);
+    if (isPresent(p._keyId9)) this._getObjByKeyId(p._keyId9, LIGHT_DOM_AND_SHADOW_DOM);
   }
 
   _createShadowDomAppInjector(componentDirective:DirectiveBinding, appInjector:Injector) {
-    var shadowDomAppInjector = null;
-
-    // shadowDomAppInjector
-    var injectables = componentDirective.resolvedInjectables;
-    if (isPresent(injectables)) {
-      shadowDomAppInjector = appInjector.createChildFromResolved(injectables);
+    if (! ListWrapper.isEmpty(componentDirective.resolvedAppInjectables)) {
+      return appInjector.createChildFromResolved(componentDirective.resolvedAppInjectables);
     } else {
-      shadowDomAppInjector = appInjector;
+      return appInjector;
     }
-    return shadowDomAppInjector;
   }
 
   dynamicallyCreateComponent(componentDirective:DirectiveBinding, parentInjector:Injector) {
@@ -704,9 +762,9 @@ export class ElementInjector extends TreeNode {
   }
 
   _checkShadowDomAppInjector(shadowDomAppInjector:Injector) {
-    if (this._proto._binding0IsComponent && isBlank(shadowDomAppInjector)) {
+    if (this._proto._firstBindingIsComponent && isBlank(shadowDomAppInjector)) {
       throw new BaseException('A shadowDomAppInjector is required as this ElementInjector contains a component');
-    } else if (!this._proto._binding0IsComponent && isPresent(shadowDomAppInjector)) {
+    } else if (!this._proto._firstBindingIsComponent && isPresent(shadowDomAppInjector)) {
       throw new BaseException('No shadowDomAppInjector allowed as there is not component stored in this ElementInjector');
     }
   }
@@ -716,7 +774,7 @@ export class ElementInjector extends TreeNode {
       return this._dynamicallyCreatedComponent;
     }
 
-    return this._getByKey(Key.get(token), 0, false, null);
+    return this._getByKey(Key.get(token), new Self(), false, null);
   }
 
   _isDynamicallyLoadedComponent(token) {
@@ -725,7 +783,7 @@ export class ElementInjector extends TreeNode {
   }
 
   hasDirective(type:Type):boolean {
-    return this._getDirectiveByKeyId(Key.get(type).id) !== _undefined;
+    return this._getObjByKeyId(Key.get(type).id, LIGHT_DOM_AND_SHADOW_DOM) !== _undefined;
   }
 
   getEventEmitterAccessors() {
@@ -737,11 +795,7 @@ export class ElementInjector extends TreeNode {
   }
 
   getComponent() {
-    if (this._proto._binding0IsComponent) {
-      return this._obj0;
-    } else {
-      throw new BaseException('There is no component stored in this ElementInjector');
-    }
+    return this._obj0;
   }
 
   getElementRef() {
@@ -761,7 +815,7 @@ export class ElementInjector extends TreeNode {
   }
 
   _isComponentKey(key:Key) {
-    return this._proto._binding0IsComponent && key.id === this._proto._keyId0;
+    return this._proto._firstBindingIsComponent && key.id === this._proto._keyId0;
   }
 
   _isDynamicallyLoadedComponentKey(key:Key) {
@@ -839,7 +893,7 @@ export class ElementInjector extends TreeNode {
       }
       return new ProtoViewRef(this._preBuiltObjects.protoView);
     }
-    return this._getByKey(dep.key, dep.depth, dep.optional, requestor);
+    return this._getByKey(dep.key, dep.visibility, dep.optional, requestor);
   }
 
   _buildAttribute(dep): string {
@@ -965,24 +1019,45 @@ export class ElementInjector extends TreeNode {
     if (this._query2 == query) this._query2 = null;
   }
 
-  _getByKey(key:Key, depth:number, optional:boolean, requestor:Key) {
+  _getByKey(key:Key, visibility:Visibility, optional:boolean, requestor:Key) {
     var ei = this;
-    if (! this._shouldIncludeSelf(depth)) {
-      depth -= ei._proto.distanceToParent;
-      ei = ei._parent;
-    }
 
+    var currentVisibility = LIGHT_DOM;
+    var depth = visibility.depth;
+
+    if (! visibility.shouldIncludeSelf()) {
+      depth -= ei._proto.distanceToParent;
+      
+      if (isPresent(ei._parent)) {
+        ei = ei._parent;
+      } else {
+        ei = ei._host;
+        if (!visibility.crossComponentBoundaries) {
+          currentVisibility = SHADOW_DOM; 
+        }
+      }
+    }
+    
     while (ei != null && depth >= 0) {
       var preBuiltObj = ei._getPreBuiltObjectByKeyId(key.id);
       if (preBuiltObj !== _undefined) return preBuiltObj;
 
-      var dir = ei._getDirectiveByKeyId(key.id);
+      var dir = ei._getObjByKeyId(key.id, currentVisibility);
       if (dir !== _undefined) return dir;
 
       depth -= ei._proto.distanceToParent;
-      ei = ei._parent;
+      
+      if (currentVisibility === SHADOW_DOM) break;
+      
+      if (isPresent(ei._parent)) {
+        ei = ei._parent;
+      } else {
+        ei = ei._host;
+        if (!visibility.crossComponentBoundaries) {
+          currentVisibility = SHADOW_DOM; 
+        }
+      }
     }
-
 
     if (isPresent(this._host) && this._host._isComponentKey(key)) {
       return this._host.getComponent();
@@ -994,17 +1069,13 @@ export class ElementInjector extends TreeNode {
       return this._appInjector(requestor).get(key);
     }
   }
-
+  
   _appInjector(requestor:Key) {
     if (isPresent(requestor) && (this._isComponentKey(requestor) || this._isDynamicallyLoadedComponentKey(requestor))) {
       return this._shadowDomAppInjector;
     } else {
       return this._lightDomAppInjector;
     }
-  }
-
-  _shouldIncludeSelf(depth:int) {
-    return depth === 0;
   }
 
   _getPreBuiltObjectByKeyId(keyId:int) {
@@ -1015,19 +1086,20 @@ export class ElementInjector extends TreeNode {
     return _undefined;
   }
 
-  _getDirectiveByKeyId(keyId:int) {
+  _getObjByKeyId(keyId:int, visibility:number) {
     var p = this._proto;
 
-    if (p._keyId0 === keyId) {if (isBlank(this._obj0)){this._obj0 = this._new(p._binding0);} return this._obj0;}
-    if (p._keyId1 === keyId) {if (isBlank(this._obj1)){this._obj1 = this._new(p._binding1);} return this._obj1;}
-    if (p._keyId2 === keyId) {if (isBlank(this._obj2)){this._obj2 = this._new(p._binding2);} return this._obj2;}
-    if (p._keyId3 === keyId) {if (isBlank(this._obj3)){this._obj3 = this._new(p._binding3);} return this._obj3;}
-    if (p._keyId4 === keyId) {if (isBlank(this._obj4)){this._obj4 = this._new(p._binding4);} return this._obj4;}
-    if (p._keyId5 === keyId) {if (isBlank(this._obj5)){this._obj5 = this._new(p._binding5);} return this._obj5;}
-    if (p._keyId6 === keyId) {if (isBlank(this._obj6)){this._obj6 = this._new(p._binding6);} return this._obj6;}
-    if (p._keyId7 === keyId) {if (isBlank(this._obj7)){this._obj7 = this._new(p._binding7);} return this._obj7;}
-    if (p._keyId8 === keyId) {if (isBlank(this._obj8)){this._obj8 = this._new(p._binding8);} return this._obj8;}
-    if (p._keyId9 === keyId) {if (isBlank(this._obj9)){this._obj9 = this._new(p._binding9);} return this._obj9;}
+    if (p._keyId0 === keyId && (p._visibility0 & visibility) > 0) {if (isBlank(this._obj0)){this._obj0 = this._new(p._binding0);} return this._obj0;}
+    if (p._keyId1 === keyId && (p._visibility1 & visibility) > 0) {if (isBlank(this._obj1)){this._obj1 = this._new(p._binding1);} return this._obj1;}
+    if (p._keyId2 === keyId && (p._visibility2 & visibility) > 0) {if (isBlank(this._obj2)){this._obj2 = this._new(p._binding2);} return this._obj2;}
+    if (p._keyId3 === keyId && (p._visibility3 & visibility) > 0) {if (isBlank(this._obj3)){this._obj3 = this._new(p._binding3);} return this._obj3;}
+    if (p._keyId4 === keyId && (p._visibility4 & visibility) > 0) {if (isBlank(this._obj4)){this._obj4 = this._new(p._binding4);} return this._obj4;}
+    if (p._keyId5 === keyId && (p._visibility5 & visibility) > 0) {if (isBlank(this._obj5)){this._obj5 = this._new(p._binding5);} return this._obj5;}
+    if (p._keyId6 === keyId && (p._visibility6 & visibility) > 0) {if (isBlank(this._obj6)){this._obj6 = this._new(p._binding6);} return this._obj6;}
+    if (p._keyId7 === keyId && (p._visibility7 & visibility) > 0) {if (isBlank(this._obj7)){this._obj7 = this._new(p._binding7);} return this._obj7;}
+    if (p._keyId8 === keyId && (p._visibility8 & visibility) > 0) {if (isBlank(this._obj8)){this._obj8 = this._new(p._binding8);} return this._obj8;}
+    if (p._keyId9 === keyId && (p._visibility9 & visibility) > 0) {if (isBlank(this._obj9)){this._obj9 = this._new(p._binding9);} return this._obj9;}
+    
     return _undefined;
   }
 

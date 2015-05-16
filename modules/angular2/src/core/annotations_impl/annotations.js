@@ -660,6 +660,37 @@ export class Directive extends Injectable {
   //TODO(vsavkin): This would better fall under the Macro directive concept.
   compileChildren: boolean;
 
+  /**
+   * Defines the set of injectable objects that are visible to a Directive and its light dom children.
+   *
+   * ## Simple Example
+   *
+   * Here is an example of a class that can be injected:
+   *
+   * ```
+   * class Greeter {
+   *    greet(name:string) {
+   *      return 'Hello ' + name + '!';
+   *    }
+   * }
+   *
+   * @Directive({
+   *   selector: 'greet',
+   *   hostInjector: [
+   *     Greeter
+   *   ]
+   * })
+   * class HelloWorld {
+   *   greeter:Greeter;
+   *
+   *   constructor(greeter:Greeter) {
+   *     this.greeter = greeter;
+   *   }
+   * }
+   * ```
+   */
+  hostInjector:List;
+
   @CONST()
   constructor({
       selector,
@@ -670,6 +701,7 @@ export class Directive extends Injectable {
       hostAttributes,
       hostActions,
       lifecycle,
+      hostInjector,
       compileChildren = true,
     }:{
       selector:string,
@@ -680,6 +712,7 @@ export class Directive extends Injectable {
       hostAttributes: any,
       hostActions: any,
       lifecycle:List,
+      hostInjector:List,
       compileChildren:boolean
     }={})
   {
@@ -693,6 +726,7 @@ export class Directive extends Injectable {
     this.hostActions = hostActions;
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
+    this.hostInjector = hostInjector;
   }
 
   /**
@@ -845,6 +879,48 @@ export class Component extends Directive {
    */
   appInjector:List;
 
+  /**
+   * Defines the set of injectable objects that are visible to its view dom children.
+   *
+   * ## Simple Example
+   *
+   * Here is an example of a class that can be injected:
+   *
+   * ```
+   * class Greeter {
+   *    greet(name:string) {
+   *      return 'Hello ' + name + '!';
+   *    }
+   * }
+   *
+   * @Directive({
+   *   selector: 'needs-greeter'
+   * })
+   * class NeedsGreeter {
+   *   greeter:Greeter;
+   *
+   *   constructor(greeter:Greeter) {
+   *     this.greeter = greeter;
+   *   }
+   * }
+   *
+   * @Component({
+   *   selector: 'greet',
+   *   viewInjector: [
+   *     Greeter
+   *   ]
+   * })
+   * @View({
+   *   template: `<needs-greeter></needs-greeter>`,
+   *   directives: [NeedsGreeter]
+   * })
+   * class HelloWorld {
+   * }
+   *
+   * ```
+   */
+  viewInjector:List;
+
   @CONST()
   constructor({
       selector,
@@ -856,6 +932,8 @@ export class Component extends Directive {
       hostActions,
       appInjector,
       lifecycle,
+      hostInjector,
+      viewInjector,
       changeDetection = DEFAULT,
       compileChildren = true
     }:{
@@ -868,6 +946,8 @@ export class Component extends Directive {
       hostActions:any,
       appInjector:List,
       lifecycle:List,
+      hostInjector:List,
+      viewInjector:List,
       changeDetection:string,
       compileChildren:boolean
     }={})
@@ -880,12 +960,14 @@ export class Component extends Directive {
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
       hostActions: hostActions,
+      hostInjector: hostInjector,
       lifecycle: lifecycle,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
     this.appInjector = appInjector;
+    this.viewInjector = viewInjector;
   }
 }
 

@@ -2,11 +2,11 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, SpyObj
 import {isBlank, isPresent, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, List, StringMapWrapper, iterateListLike} from 'angular2/src/facade/collection';
 import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding, TreeNode}
-  from 'angular2/src/core/compiler/element_injector';
-import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+    from 'angular2/src/core/compiler/element_injector';
+import {Parent, Ancestor, Unbounded} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import {Component, Directive, onDestroy} from 'angular2/src/core/annotations_impl/annotations';
-import {bind, Injector} from 'angular2/di';
+import {bind, Injector, Binding} from 'angular2/di';
 import {Optional, Inject} from 'angular2/src/di/annotations_impl';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
@@ -16,8 +16,10 @@ import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/
 import {ViewRef, Renderer} from 'angular2/src/render/api';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
-class DummyDirective extends Directive {
-  constructor({lifecycle, events, hostActions} = {}) { super({lifecycle: lifecycle, events: events, hostActions:hostActions}); }
+class DummyDirective extends Component {
+  constructor({lifecycle, events, hostActions, hostInjector, viewInjector} = {}) {
+    super({lifecycle: lifecycle, events: events, hostActions: hostActions, hostInjector: hostInjector, viewInjector: viewInjector});
+  }
 }
 
 @proxy
@@ -35,6 +37,9 @@ class DummyView extends SpyObject {
 
 
 class SimpleDirective {
+}
+
+class SimpleService {
 }
 
 class SomeOtherDirective {
@@ -69,16 +74,23 @@ class OptionallyNeedsDirective {
   }
 }
 
-class NeedDirectiveFromParent {
+class NeedsDirectiveFromParent {
   dependency:SimpleDirective;
   constructor(@Parent() dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
 
-class NeedDirectiveFromAncestor {
+class NeedsDirectiveFromAncestor {
   dependency:SimpleDirective;
   constructor(@Ancestor() dependency:SimpleDirective){
+    this.dependency = dependency;
+  }
+}
+
+class NeedsDirectiveFromAnAncestorShadowDom {
+  dependency:SimpleDirective;
+  constructor(@Unbounded() dependency:SimpleDirective){
     this.dependency = dependency;
   }
 }
@@ -199,10 +211,19 @@ export function main() {
   var defaultPreBuiltObjects = new PreBuiltObjects(null, null, null);
   var appInjector = Injector.resolveAndCreate([]);
 
+  function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false) {
+    var directiveBinding =  ListWrapper.map(bindings, b => {
+      if (b instanceof DirectiveBinding) return b;
+      if (b instanceof Binding) return DirectiveBinding.createFromBinding(b, null);
+      return DirectiveBinding.createFromType(b, null);
+    });
+    return ProtoElementInjector.create(parent, index, directiveBinding, hasShadowRoot, distance);
+  }
+
   function humanize(tree, names:List) {
     var lookupName = (item) =>
-      ListWrapper.last(
-        ListWrapper.find(names, (pair) => pair[0] === item));
+        ListWrapper.last(
+            ListWrapper.find(names, (pair) => pair[0] === item));
 
     if (tree.children.length == 0) return lookupName(tree);
     var children = tree.children.map(m => humanize(m, names));
@@ -210,56 +231,46 @@ export function main() {
   }
 
   function injector(bindings, lightDomAppInjector = null,
-      isComponent:bool = false, preBuiltObjects = null, attributes = null) {
+                    isComponent:bool = false, preBuiltObjects = null, attributes = null) {
     if (isBlank(lightDomAppInjector)) lightDomAppInjector = appInjector;
 
-    var proto = new ProtoElementInjector(null, 0, bindings, isComponent);
+    var proto =  createPei(null, 0, bindings, 0, isComponent);
     proto.attributes = attributes;
-    var inj = proto.instantiate(null);
-    var preBuilt = isPresent(preBuiltObjects)
-      ? preBuiltObjects
-      : defaultPreBuiltObjects;
 
-    inj.instantiateDirectives(lightDomAppInjector, null, preBuilt);
+    var inj = proto.instantiate(null);
+    var preBuilt = isPresent(preBuiltObjects) ? preBuiltObjects : defaultPreBuiltObjects;
+    inj.hydrate(lightDomAppInjector, null, preBuilt);
     return inj;
   }
 
-  function parentChildInjectors(
-      parentBindings,
-      childBindings,
-      parentPreBuildObjects = null,
-      isParentComponent:bool = false) {
+  function parentChildInjectors(parentBindings, childBindings, parentPreBuildObjects = null) {
     if (isBlank(parentPreBuildObjects)) parentPreBuildObjects = defaultPreBuiltObjects;
 
     var inj = Injector.resolveAndCreate([]);
 
-    var protoParent = new ProtoElementInjector(null, 0, parentBindings, isParentComponent);
+
+    var protoParent =  createPei(null, 0, parentBindings);
     var parent = protoParent.instantiate(null);
 
-    parent.instantiateDirectives(inj, null, parentPreBuildObjects);
+    parent.hydrate(inj, null, parentPreBuildObjects);
 
-    var protoChild = new ProtoElementInjector(protoParent, 1, childBindings, false, 1);
+    var protoChild =  createPei(protoParent, 1, childBindings, 1, false);
     var child = protoChild.instantiate(parent);
-    child.instantiateDirectives(inj, null, defaultPreBuiltObjects);
+    child.hydrate(inj, null, defaultPreBuiltObjects);
 
     return child;
   }
 
-  function hostShadowInjectors(
-      hostBindings:List,
-      shadowBindings:List,
-      isParentComponent:bool = true,
-      isChildComponent:bool = false):ElementInjector {
+  function hostShadowInjectors(hostBindings:List, shadowBindings:List):ElementInjector {
     var inj = Injector.resolveAndCreate([]);
 
-    var protoParent = new ProtoElementInjector(null, 0, hostBindings, isParentComponent);
-    var host = protoParent.instantiate(null);
-    host.instantiateDirectives(inj, null, defaultPreBuiltObjects);
+    var protoHost =  createPei(null, 0, hostBindings, 0, true);
+    var host = protoHost.instantiate(null);
+    host.hydrate(inj, null, defaultPreBuiltObjects);
 
-    var protoChild = new ProtoElementInjector(protoParent, 0, shadowBindings,
-        isChildComponent, 1);
-    var shadow = protoChild.instantiate(null);
-    shadow.instantiateDirectives(host.getShadowDomAppInjector(), host, null);
+    var protoShadow =  createPei(null, 0, shadowBindings, 0, false);
+    var shadow = protoShadow.instantiate(null);
+    shadow.hydrate(host.getShadowDomAppInjector(), host, null);
 
     return shadow;
   }
@@ -268,13 +279,13 @@ export function main() {
     var root, firstParent, lastParent, node;
 
     /*
-      Build a tree of the following shape:
-      root
-        - p1
-          - c1
-          - c2
-        - p2
-          - c3
+     Build a tree of the following shape:
+     root
+      - p1
+         - c1
+         - c2
+      - p2
+        - c3
      */
     beforeEach(() => {
       root = new TestNode(null, 'root');
@@ -339,43 +350,45 @@ export function main() {
     });
   });
 
+
+
   describe("ProtoElementInjector", () => {
     describe("direct parent", () => {
       it("should return parent proto injector when distance is 1", () => {
         var distance = 1;
-        var protoParent = new ProtoElementInjector(null, 0, []);
-        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+        var protoParent = createPei(null, 0, []);
+        var protoChild = createPei(protoParent, 0, [], distance, false);
 
         expect(protoChild.directParent()).toEqual(protoParent);
       });
 
       it("should return null otherwise", () => {
         var distance = 2;
-        var protoParent = new ProtoElementInjector(null, 0, []);
-        var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+        var protoParent = createPei(null, 0, []);
+        var protoChild = createPei(protoParent, 0, [], distance, false);
 
         expect(protoChild.directParent()).toEqual(null);
       });
 
-      it("should allow for direct access using getDirectiveBindingAtIndex", function () {
+      it("should allow for direct access using getBindingAtIndex", function () {
         var binding = DirectiveBinding.createFromBinding(
-          bind(SimpleDirective).toClass(SimpleDirective), null);
-        var proto = new ProtoElementInjector(null, 0, [binding]);
+            bind(SimpleDirective).toClass(SimpleDirective), null);
+        var proto = createPei(null, 0, [binding]);
 
-        expect(proto.getDirectiveBindingAtIndex(0)).toBeAnInstanceOf(DirectiveBinding);
-        expect(() => proto.getDirectiveBindingAtIndex(-1)).toThrowError(
-          'Index -1 is out-of-bounds.');
-        expect(() => proto.getDirectiveBindingAtIndex(10)).toThrowError(
-          'Index 10 is out-of-bounds.');
+        expect(proto.getBindingAtIndex(0)).toBeAnInstanceOf(DirectiveBinding);
+        expect(() => proto.getBindingAtIndex(-1)).toThrowError(
+            'Index -1 is out-of-bounds.');
+        expect(() => proto.getBindingAtIndex(10)).toThrowError(
+            'Index 10 is out-of-bounds.');
       });
     });
 
     describe('event emitters', () => {
       it('should return a list of event accessors', () => {
         var binding = DirectiveBinding.createFromType(
-          HasEventEmitter, new DummyDirective({events: ['emitter']}));
+            HasEventEmitter, new DummyDirective({events: ['emitter']}));
 
-        var inj = new ProtoElementInjector(null, 0, [binding]);
+        var inj = createPei(null, 0, [binding]);
         expect(inj.eventEmitterAccessors.length).toEqual(1);
 
         var accessor = inj.eventEmitterAccessors[0][0];
@@ -385,9 +398,9 @@ export function main() {
 
       it('should return a list of hostAction accessors', () => {
         var binding = DirectiveBinding.createFromType(
-          HasEventEmitter, new DummyDirective({hostActions: {'hostActionName' : 'onAction'}}));
+            HasEventEmitter, new DummyDirective({hostActions: {'hostActionName' : 'onAction'}}));
 
-        var inj = new ProtoElementInjector(null, 0, [binding]);
+        var inj = createPei(null, 0, [binding]);
         expect(inj.hostActionAccessors.length).toEqual(1);
 
         var accessor = inj.hostActionAccessors[0][0];
@@ -395,14 +408,41 @@ export function main() {
         expect(accessor.getter(new HasHostAction())).toEqual('hostAction');
       });
     });
+
+
+    describe(".create", () => {
+      it("should collect hostInjector injectables from all directives", () => {
+        var pei = createPei(null, 0, [
+          DirectiveBinding.createFromType(SimpleDirective,
+              new DummyDirective({hostInjector: [bind('injectable1').toValue('injectable1')]})),
+          DirectiveBinding.createFromType(SomeOtherDirective,
+              new DummyDirective({hostInjector: [bind('injectable2').toValue('injectable2')]}))
+        ]);
+
+        expect(pei.getBindingAtIndex(0).key.token).toBe(SimpleDirective);
+        expect(pei.getBindingAtIndex(1).key.token).toBe(SomeOtherDirective);
+        expect(pei.getBindingAtIndex(2).key.token).toEqual("injectable1");
+        expect(pei.getBindingAtIndex(3).key.token).toEqual("injectable2");
+      });
+
+      it("should collect viewInjector injectables from the component", () => {
+        var pei = createPei(null, 0, [
+          DirectiveBinding.createFromType(SimpleDirective,
+              new DummyDirective({viewInjector: [bind('injectable1').toValue('injectable1')]}))
+        ], 0, true);
+
+        expect(pei.getBindingAtIndex(0).key.token).toBe(SimpleDirective);
+        expect(pei.getBindingAtIndex(1).key.token).toEqual("injectable1");
+      });
+    });
   });
 
   describe("ElementInjector", function () {
     describe("instantiate", function () {
       it("should create an element injector", function () {
-        var protoParent = new ProtoElementInjector(null, 0, []);
-        var protoChild1 = new ProtoElementInjector(protoParent, 1, []);
-        var protoChild2 = new ProtoElementInjector(protoParent, 2, []);
+        var protoParent = createPei(null, 0, []);
+        var protoChild1 = createPei(protoParent, 1, []);
+        var protoChild2 = createPei(protoParent, 2, []);
 
         var p = protoParent.instantiate(null);
         var c1 = protoChild1.instantiate(p);
@@ -418,8 +458,8 @@ export function main() {
       describe("direct parent", () => {
         it("should return parent injector when distance is 1", () => {
           var distance = 1;
-          var protoParent = new ProtoElementInjector(null, 0, []);
-          var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+          var protoParent = createPei(null, 0, []);
+          var protoChild = createPei(protoParent, 1, [], distance);
 
           var p = protoParent.instantiate(null);
           var c = protoChild.instantiate(p);
@@ -429,8 +469,8 @@ export function main() {
 
         it("should return null otherwise", () => {
           var distance = 2;
-          var protoParent = new ProtoElementInjector(null, 0, []);
-          var protoChild = new ProtoElementInjector(protoParent, 1, [], false, distance);
+          var protoParent = createPei(null, 0, []);
+          var protoChild = createPei(protoParent, 1, [], distance);
 
           var p = protoParent.instantiate(null);
           var c = protoChild.instantiate(p);
@@ -442,12 +482,12 @@ export function main() {
 
     describe("hasBindings", function () {
       it("should be true when there are bindings", function () {
-        var p = new ProtoElementInjector(null, 0, [SimpleDirective]);
+        var p = createPei(null, 0, [SimpleDirective]);
         expect(p.hasBindings).toBeTruthy();
       });
 
       it("should be false otherwise", function () {
-        var p = new ProtoElementInjector(null, 0, []);
+        var p = createPei(null, 0, []);
         expect(p.hasBindings).toBeFalsy();
       });
     });
@@ -462,7 +502,7 @@ export function main() {
       });
     });
 
-    describe("instantiateDirectives", function () {
+    describe("hydrate", function () {
       it("should instantiate directives that have no dependencies", function () {
         var inj = injector([SimpleDirective]);
         expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
@@ -495,52 +535,6 @@ export function main() {
         expect(inj.get(NeedsProtoViewRef).protoViewRef).toEqual(new ProtoViewRef(protoView));
       });
 
-      it("should instantiate directives that depend on the containing component", function () {
-        var directiveBinding = DirectiveBinding.createFromType(SimpleDirective, new Component());
-        var shadow = hostShadowInjectors([directiveBinding], [NeedsDirective]);
-
-        var d = shadow.get(NeedsDirective);
-        expect(d).toBeAnInstanceOf(NeedsDirective);
-        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
-      });
-
-      it("should not instantiate directives that depend on other directives in the containing component's ElementInjector", () => {
-        var directiveBinding = DirectiveBinding
-            .createFromType(SomeOtherDirective, new Component());
-        expect(() => {
-          hostShadowInjectors(
-            [directiveBinding, SimpleDirective],
-            [NeedsDirective]);
-        }).toThrowError('No provider for SimpleDirective! (NeedsDirective -> SimpleDirective)');
-      });
-
-      it("should instantiate component directives that depend on app services in the shadow app injector", () => {
-        var directiveAnnotation = new Component({
-          appInjector: [
-            bind("service").toValue("service")
-          ]
-        });
-        var componentDirective = DirectiveBinding.createFromType(
-          NeedsService, directiveAnnotation);
-        var inj = injector([componentDirective], null, true);
-
-        var d = inj.get(NeedsService);
-        expect(d).toBeAnInstanceOf(NeedsService);
-        expect(d.service).toEqual("service");
-      });
-
-      it("should not instantiate other directives that depend on app services in the shadow app injector", () => {
-        var directiveAnnotation = new Component({
-          appInjector: [
-            bind("service").toValue("service")
-          ]
-        });
-        var componentDirective = DirectiveBinding.createFromType(SimpleDirective, directiveAnnotation);
-        expect(() => {
-          injector([componentDirective, NeedsService], null);
-        }).toThrowError('No provider for service! (NeedsService -> service)');
-      });
-
       it("should return app services", function () {
         var appInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
@@ -551,41 +545,51 @@ export function main() {
       });
 
       it("should get directives from parent", function () {
-        var child = parentChildInjectors([SimpleDirective], [NeedDirectiveFromParent]);
+        var child = parentChildInjectors([SimpleDirective], [NeedsDirectiveFromParent]);
 
-        var d = child.get(NeedDirectiveFromParent);
+        var d = child.get(NeedsDirectiveFromParent);
 
-        expect(d).toBeAnInstanceOf(NeedDirectiveFromParent);
+        expect(d).toBeAnInstanceOf(NeedsDirectiveFromParent);
         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should not return parent's directives on self", function () {
         expect(() => {
-          injector([SimpleDirective, NeedDirectiveFromParent]);
+          injector([SimpleDirective, NeedsDirectiveFromParent]);
         }).toThrowError(new RegExp("No provider for SimpleDirective"));
       });
 
       it("should get directives from ancestor", function () {
-        var child = parentChildInjectors([SimpleDirective], [NeedDirectiveFromAncestor]);
+        var child = parentChildInjectors([SimpleDirective], [NeedsDirectiveFromAncestor]);
 
-        var d = child.get(NeedDirectiveFromAncestor);
+        var d = child.get(NeedsDirectiveFromAncestor);
 
-        expect(d).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        expect(d).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should throw when no SimpleDirective found", function () {
-        expect(() => injector([NeedDirectiveFromParent])).
-          toThrowError('No provider for SimpleDirective! (NeedDirectiveFromParent -> SimpleDirective)');
+      it("should get directives crossing the boundaries", function () {
+        var child = hostShadowInjectors([SomeOtherDirective, SimpleDirective],
+            [NeedsDirectiveFromAnAncestorShadowDom]);
+
+        var d = child.get(NeedsDirectiveFromAnAncestorShadowDom);
+
+        expect(d).toBeAnInstanceOf(NeedsDirectiveFromAnAncestorShadowDom);
+        expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
-      it("should inject null when no directive found", function () {
+      it("should throw when a depenency cannot be resolved", function () {
+        expect(() => injector([NeedsDirectiveFromParent])).
+            toThrowError('No provider for SimpleDirective! (NeedsDirectiveFromParent -> SimpleDirective)');
+      });
+
+      it("should inject null when an optional dependency cannot be resolved", function () {
         var inj = injector([OptionallyNeedsDirective]);
         var d = inj.get(OptionallyNeedsDirective);
         expect(d.dependency).toEqual(null);
       });
 
-      it("should accept SimpleDirective bindings instead of SimpleDirective types", function () {
+      it("should accept bindings instead types", function () {
         var inj = injector([
           DirectiveBinding.createFromBinding(bind(SimpleDirective).toClass(SimpleDirective), null)
         ]);
@@ -598,10 +602,11 @@ export function main() {
         ]);
         expect(inj.getDirectiveAtIndex(0)).toBeAnInstanceOf(SimpleDirective);
         expect(() => inj.getDirectiveAtIndex(-1)).toThrowError(
-          'Index -1 is out-of-bounds.');
+            'Index -1 is out-of-bounds.');
         expect(() => inj.getDirectiveAtIndex(10)).toThrowError(
-          'Index 10 is out-of-bounds.');
+            'Index 10 is out-of-bounds.');
       });
+
 
       it("should handle cyclic dependencies", function () {
         expect(() => {
@@ -612,56 +617,107 @@ export function main() {
             DirectiveBinding.createFromBinding(bBneedsA, null)
           ]);
         }).toThrowError('Cannot instantiate cyclic dependency! ' +
-        '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
+            '(A_Needs_B -> B_Needs_A -> A_Needs_B)');
       });
 
+      describe("shadow DOM components", () => {
+        it("should instantiate directives that depend on the containing component", function () {
+          var directiveBinding = DirectiveBinding.createFromType(SimpleDirective, new Component());
+          var shadow = hostShadowInjectors([directiveBinding], [NeedsDirective]);
+
+          var d = shadow.get(NeedsDirective);
+          expect(d).toBeAnInstanceOf(NeedsDirective);
+          expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
+        });
+
+        it("should not instantiate directives that depend on other directives in the containing component's ElementInjector", () => {
+          var directiveBinding = DirectiveBinding.createFromType(SomeOtherDirective, new Component());
+          expect(() => {
+            hostShadowInjectors([directiveBinding, SimpleDirective],[NeedsDirective]);
+          }).toThrowError('No provider for SimpleDirective! (NeedsDirective -> SimpleDirective)');
+        });
+
+        it("should instantiate component directives that depend on app services in the shadow app injector", () => {
+          var directiveAnnotation = new Component({
+            appInjector: [
+              bind("service").toValue("service")
+            ]
+          });
+          var componentDirective = DirectiveBinding.createFromType(
+              NeedsService, directiveAnnotation);
+          var inj = injector([componentDirective], null, true);
+
+          var d = inj.get(NeedsService);
+          expect(d).toBeAnInstanceOf(NeedsService);
+          expect(d.service).toEqual("service");
+        });
+
+        it("should not instantiate other directives that depend on app services in the shadow app injector", () => {
+          var directiveAnnotation = new Component({
+            appInjector: [
+              bind("service").toValue("service")
+            ]
+          });
+          var componentDirective = DirectiveBinding.createFromType(SimpleDirective, directiveAnnotation);
+          expect(() => {
+            injector([componentDirective, NeedsService], null);
+          }).toThrowError('No provider for service! (NeedsService -> service)');
+        });
+      });
+    });
+    
+    describe("lifecycle", () => {
       it("should call onDestroy on directives subscribed to this event", function() {
-        var inj = injector([DirectiveBinding.createFromType(
-            DirectiveWithDestroy,
-            new DummyDirective({lifecycle: [onDestroy]}))]);
+        var inj = injector([DirectiveBinding.createFromType(DirectiveWithDestroy, new DummyDirective({lifecycle: [onDestroy]}))]);
         var destroy = inj.get(DirectiveWithDestroy);
-        inj.clearDirectives();
+        inj.dehydrate();
         expect(destroy.onDestroyCounter).toBe(1);
+      });
+
+      it("should work with services", function() {
+        var inj = injector([DirectiveBinding.createFromType(SimpleDirective, new DummyDirective({hostInjector: [SimpleService]}))]);
+        inj.dehydrate();
       });
     });
 
     describe("dynamicallyCreateComponent", () => {
       it("should create a component dynamically", () => {
         var inj = injector([]);
-        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null), null);
+
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(SimpleDirective, null), appInjector);
         expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(SimpleDirective);
         expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should inject parent dependencies into the dynamically-loaded component", () => {
         var inj = parentChildInjectors([SimpleDirective], []);
-        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedDirectiveFromAncestor, null), null);
-        expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(NeedDirectiveFromAncestor);
+        inj.dynamicallyCreateComponent(DirectiveBinding.createFromType(NeedsDirectiveFromAncestor, null), appInjector);
+        expect(inj.getDynamicallyLoadedComponent()).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
         expect(inj.getDynamicallyLoadedComponent().dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should not inject the proxy component into the children of the dynamically-loaded component", () => {
         var injWithDynamicallyLoadedComponent = injector([SimpleDirective]);
-        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(DirectiveBinding.createFromType(SomeOtherDirective, null), null);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(DirectiveBinding.createFromType(SomeOtherDirective, null), appInjector);
 
-        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomProtoInjector = createPei(null, 0, [NeedsDirectiveFromAncestor]);
         var shadowDomInj = shadowDomProtoInjector.instantiate(null);
 
         expect(() =>
-          shadowDomInj.instantiateDirectives(appInjector, injWithDynamicallyLoadedComponent, defaultPreBuiltObjects)).
-          toThrowError(new RegExp("No provider for SimpleDirective"));
+            shadowDomInj.hydrate(appInjector, injWithDynamicallyLoadedComponent, defaultPreBuiltObjects)).
+            toThrowError(new RegExp("No provider for SimpleDirective"));
       });
 
       it("should not inject the dynamically-loaded component into directives on the same element", () => {
         var dynamicComp = DirectiveBinding.createFromType(SomeOtherDirective, new Component());
-        var proto = new ProtoElementInjector(null, 0, [dynamicComp, NeedsDirective], true);
+        var proto = createPei(null, 0, [dynamicComp, NeedsDirective], 1, true);
         var inj = proto.instantiate(null);
         inj.dynamicallyCreateComponent(
-          DirectiveBinding.createFromType(SimpleDirective, null), null);
+            DirectiveBinding.createFromType(SimpleDirective, null), appInjector);
 
         var error = null;
         try {
-          inj.instantiateDirectives(Injector.resolveAndCreate([]), null, null);
+          inj.hydrate(Injector.resolveAndCreate([]), null, null);
         } catch(e) {
           error = e;
         }
@@ -672,32 +728,32 @@ export function main() {
       it("should inject the dynamically-loaded component into the children of the dynamically-loaded component", () => {
         var componentDirective = DirectiveBinding.createFromType(SimpleDirective, null);
         var injWithDynamicallyLoadedComponent = injector([]);
-        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(componentDirective, null);
+        injWithDynamicallyLoadedComponent.dynamicallyCreateComponent(componentDirective, appInjector);
 
-        var shadowDomProtoInjector = new ProtoElementInjector(null, 0, [NeedDirectiveFromAncestor], false);
+        var shadowDomProtoInjector = createPei(null, 0, [NeedsDirectiveFromAncestor]);
         var shadowDomInjector = shadowDomProtoInjector.instantiate(null);
-        shadowDomInjector.instantiateDirectives(appInjector, injWithDynamicallyLoadedComponent, defaultPreBuiltObjects);
+        shadowDomInjector.hydrate(appInjector, injWithDynamicallyLoadedComponent, defaultPreBuiltObjects);
 
-        expect(shadowDomInjector.get(NeedDirectiveFromAncestor)).toBeAnInstanceOf(NeedDirectiveFromAncestor);
-        expect(shadowDomInjector.get(NeedDirectiveFromAncestor).dependency).toBeAnInstanceOf(SimpleDirective);
+        expect(shadowDomInjector.get(NeedsDirectiveFromAncestor)).toBeAnInstanceOf(NeedsDirectiveFromAncestor);
+        expect(shadowDomInjector.get(NeedsDirectiveFromAncestor).dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
       it("should remove the dynamically-loaded component when dehydrating", () => {
         var inj = injector([]);
         inj.dynamicallyCreateComponent(
-          DirectiveBinding.createFromType(
-            DirectiveWithDestroy,
-            new DummyDirective({lifecycle: [onDestroy]})
-          ),
-          null);
+            DirectiveBinding.createFromType(
+                DirectiveWithDestroy,
+                new DummyDirective({lifecycle: [onDestroy]})
+            ),
+            appInjector);
         var dir = inj.getDynamicallyLoadedComponent();
 
-        inj.clearDirectives();
+        inj.dehydrate();
 
         expect(inj.getDynamicallyLoadedComponent()).toBe(null);
         expect(dir.onDestroyCounter).toBe(1);
 
-        inj.instantiateDirectives(null, null, null);
+        inj.hydrate(null, null, null);
 
         expect(inj.getDynamicallyLoadedComponent()).toBe(null);
       });
@@ -766,7 +822,7 @@ export function main() {
 
       it("should throw if there is no ProtoViewRef", function () {
         expect(
-          () => injector([NeedsProtoViewRef])
+            () => injector([NeedsProtoViewRef])
         ).toThrowError('No provider for ProtoViewRef! (NeedsProtoViewRef -> ProtoViewRef)');
       });
 
@@ -814,25 +870,25 @@ export function main() {
       //});
 
       it('should contain directives on the same and a child injector in construction order', () => {
-        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
-        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoParent = createPei(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild = createPei(protoParent, 1, [CountingDirective]);
 
         var parent = protoParent.instantiate(null);
         var child = protoChild.instantiate(parent);
-        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
+        parent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
 
         expectDirectives(parent.get(NeedsQuery).query, CountingDirective, [0,1]);
       });
 
       it('should reflect unlinking an injector', () => {
-        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
-        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoParent = createPei(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild = createPei(protoParent, 1, [CountingDirective]);
 
         var parent = protoParent.instantiate(null);
         var child = protoChild.instantiate(parent);
-        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
+        parent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
 
         child.unlink();
 
@@ -840,17 +896,17 @@ export function main() {
       });
 
       it('should reflect moving an injector as a last child', () => {
-        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
-        var protoChild1 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
-        var protoChild2 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoParent = createPei(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild1 = createPei(protoParent, 1, [CountingDirective]);
+        var protoChild2 = createPei(protoParent, 1, [CountingDirective]);
 
         var parent = protoParent.instantiate(null);
         var child1 = protoChild1.instantiate(parent);
         var child2 = protoChild2.instantiate(parent);
 
-        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child1.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child2.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
+        parent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child1.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child2.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
 
         child1.unlink();
         child1.link(parent);
@@ -860,17 +916,17 @@ export function main() {
       });
 
       it('should reflect moving an injector as a first child', () => {
-        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery, CountingDirective]);
-        var protoChild1 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
-        var protoChild2 = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoParent = createPei(null, 0, [NeedsQuery, CountingDirective]);
+        var protoChild1 = createPei(protoParent, 1, [CountingDirective]);
+        var protoChild2 = createPei(protoParent, 1, [CountingDirective]);
 
         var parent = protoParent.instantiate(null);
         var child1 = protoChild1.instantiate(parent);
         var child2 = protoChild2.instantiate(parent);
 
-        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child1.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child2.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
+        parent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child1.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child2.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
 
         child2.unlink();
         child2.linkAfter(parent, null);
@@ -880,17 +936,17 @@ export function main() {
       });
 
       it('should support two concurrent queries for the same directive', () => {
-        var protoGrandParent = new ProtoElementInjector(null, 0, [NeedsQuery]);
-        var protoParent = new ProtoElementInjector(null, 0, [NeedsQuery]);
-        var protoChild = new ProtoElementInjector(protoParent, 1, [CountingDirective]);
+        var protoGrandParent = createPei(null, 0, [NeedsQuery]);
+        var protoParent = createPei(null, 0, [NeedsQuery]);
+        var protoChild = createPei(protoParent, 1, [CountingDirective]);
 
         var grandParent = protoGrandParent.instantiate(null);
         var parent = protoParent.instantiate(grandParent);
         var child = protoChild.instantiate(parent);
 
-        grandParent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        parent.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
-        child.instantiateDirectives(Injector.resolveAndCreate([]), null, preBuildObjects);
+        grandParent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        parent.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
+        child.hydrate(Injector.resolveAndCreate([]), null, preBuildObjects);
 
         var queryList1 = grandParent.get(NeedsQuery).query;
         var queryList2 = parent.get(NeedsQuery).query;

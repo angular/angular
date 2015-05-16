@@ -35,7 +35,7 @@ export function main() {
 
 @Component({
   selector: 'app',
-  injectables: [
+  appInjector: [
     forwardRef(() => Frame)
   ]
 })

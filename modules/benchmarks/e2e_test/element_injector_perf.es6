@@ -20,11 +20,11 @@ describe('ng2 element injector benchmark', function () {
     }).then(done, done.fail);
   });
 
-  it('should log the stats for instantiateDirectives', function(done) {
+  it('should log the stats for hydrate', function(done) {
     perfUtil.runClickBenchmark({
       url: URL,
-      buttons: ['#instantiateDirectives'],
-      id: 'ng2.elementInjector.instantiateDirectives',
+      buttons: ['#hydrate'],
+      id: 'ng2.elementInjector.hydrate',
       params: [{
         name: 'iterations', value: 20000, scale: 'linear'
       }],

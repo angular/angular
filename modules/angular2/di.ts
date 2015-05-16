@@ -8,7 +8,7 @@
 export * from './src/di/annotations';
 export * from './src/di/decorators';
 export * from './src/di/forward_ref';
-export {Injector} from './src/di/injector';
+export {resolveBindings, Injector} from './src/di/injector';
 export {Binding, ResolvedBinding, Dependency, bind} from './src/di/binding';
 export {Key, KeyRegistry, TypeLiteral} from './src/di/key';
 export {

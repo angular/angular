@@ -91,7 +91,7 @@ export class Injector {
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
   static resolve(bindings: List<any>): List<ResolvedBinding> {
-    var resolvedBindings = _resolveBindings(bindings);
+    var resolvedBindings = resolveBindings(bindings);
     var flatten = _flattenBindings(resolvedBindings, MapWrapper.create());
     return _createListOfBindings(flatten);
   }
@@ -368,7 +368,7 @@ class _AsyncInjectorStrategy {
   }
 }
 
-function _resolveBindings(bindings: List<any>): List<ResolvedBinding> {
+export function resolveBindings(bindings: List<any>): List<ResolvedBinding> {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
     var unresolved = resolveForwardRef(bindings[i]);
@@ -380,7 +380,7 @@ function _resolveBindings(bindings: List<any>): List<ResolvedBinding> {
     } else if (unresolved instanceof Binding) {
       resolved = unresolved.resolve();
     } else if (unresolved instanceof List) {
-      resolved = _resolveBindings(unresolved);
+      resolved = resolveBindings(unresolved);
     } else if (unresolved instanceof BindingBuilder) {
       throw new InvalidBindingError(unresolved.token);
     } else {
@@ -389,6 +389,13 @@ function _resolveBindings(bindings: List<any>): List<ResolvedBinding> {
     resolvedList[i] = resolved;
   }
   return resolvedList;
+}
+
+function flattenBindings(bindings: List<ResolvedBinding>): List<ResolvedBinding> {
+  var map = _flattenBindings(bindings, MapWrapper.create());
+  var res = ListWrapper.create();
+  MapWrapper.forEach(map, (binding, keyId) => ListWrapper.push(res, binding));
+  return res;
 }
 
 function _createListOfBindings(flattenedBindings): List<any> {

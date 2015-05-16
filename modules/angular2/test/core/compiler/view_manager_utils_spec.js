@@ -131,14 +131,14 @@ export function main() {
 
         // (() => () nonsense is required until our transpiler supports type casting
         var spyEi = (() => componentView.elementInjectors[0])();
-        spyEi.spy('instantiateDirectives').andCallFake(log.fn('instantiateDirectives'));
+        spyEi.spy('hydrate').andCallFake(log.fn('hydrate'));
 
         var spyCd = (() => componentView.changeDetector)();
         spyCd.spy('hydrate').andCallFake(log.fn('hydrateCD'));
 
         utils.hydrateComponentView(hostView, 0)
 
-        expect(log.result()).toEqual('instantiateDirectives; hydrateCD');
+        expect(log.result()).toEqual('hydrate; hydrateCD');
       });
 
     });
@@ -261,7 +261,7 @@ export function main() {
         createViews();
 
         utils.hydrateViewInContainer(parentView, 0, contextView, 0, 0, null);
-        expect(childView.rootElementInjectors[0].spy('instantiateDirectives'))
+        expect(childView.rootElementInjectors[0].spy('hydrate'))
           .toHaveBeenCalledWith(null, contextView.elementInjectors[0].getHost(), childView.preBuiltObjects[0]);
       });
 
@@ -282,7 +282,7 @@ export function main() {
         createViews();
 
         utils.hydrateRootHostView(hostView, injector);
-        expect(hostView.rootElementInjectors[0].spy('instantiateDirectives'))
+        expect(hostView.rootElementInjectors[0].spy('hydrate'))
           .toHaveBeenCalledWith(injector, null, hostView.preBuiltObjects[0]);
       });
 

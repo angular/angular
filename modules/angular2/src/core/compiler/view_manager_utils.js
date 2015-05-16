@@ -189,7 +189,7 @@ export class AppViewManagerUtils {
     for (var i = 0; i < binders.length; ++i) {
       var elementInjector = view.elementInjectors[i];
       if (isPresent(elementInjector)) {
-        elementInjector.instantiateDirectives(appInjector, hostElementInjector, view.preBuiltObjects[i]);
+        elementInjector.hydrate(appInjector, hostElementInjector, view.preBuiltObjects[i]);
         this._setUpEventEmitters(view, elementInjector, i);
         this._setUpHostActions(view, elementInjector, i);
 
@@ -238,7 +238,7 @@ export class AppViewManagerUtils {
     for (var i = 0; i < binders.length; ++i) {
       var elementInjector = view.elementInjectors[i];
       if (isPresent(elementInjector)) {
-        elementInjector.clearDirectives();
+        elementInjector.dehydrate();
       }
     }
     if (isPresent(view.locals)) {

@@ -29,7 +29,7 @@ import {PipeRegistry, defaultPipeRegistry,
 import {Directive, Component} from 'angular2/src/core/annotations_impl/annotations';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 import {View} from 'angular2/src/core/annotations_impl/view';
-import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
+import {Parent, Ancestor, Unbounded} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 
 import {NgIf} from 'angular2/src/directives/ng_if';
@@ -822,6 +822,68 @@ export function main() {
       }));
     });
 
+    describe("dependency injection", () => {
+      it("should support hostInjector", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: `
+            <directive-providing-injectable>
+              <directive-consuming-injectable #consuming>
+              </directive-consuming-injectable>
+            </directive-providing-injectable>
+          `,
+          directives: [DirectiveProvidingInjectable, DirectiveConsumingInjectable]
+        }));
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var comp = view.rawView.locals.get("consuming");
+          expect(comp.injectable).toBeAnInstanceOf(Injectable);
+
+          async.done();
+        });
+      }));
+
+      it("should support viewInjector", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(DirectiveProvidingInjectableInView, new View({
+          template: `
+              <directive-consuming-injectable #consuming>
+              </directive-consuming-injectable>
+          `,
+          directives: [DirectiveConsumingInjectable]
+        }));
+        tb.createView(DirectiveProvidingInjectableInView, {context: new DirectiveProvidingInjectableInView()}).then((view) => {
+          var comp = view.rawView.locals.get("consuming");
+          expect(comp.injectable).toBeAnInstanceOf(Injectable);
+
+          async.done();
+        });
+      }));
+      
+      it("should support unbounded lookup", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        tb.overrideView(MyComp, new View({
+          template: `
+            <directive-providing-injectable>
+              <directive-containing-directive-consuming-an-injectable #dir>
+              </directive-containing-directive-consuming-an-injectable>
+            </directive-providing-injectable>
+          `,
+          directives: [DirectiveProvidingInjectable, DirectiveContainingDirectiveConsumingAnInjectable]
+        }));
+        
+        tb.overrideView(DirectiveContainingDirectiveConsumingAnInjectable, new View({
+          template: `
+            <directive-consuming-injectable-unbounded></directive-consuming-injectable-unbounded>
+          `,
+          directives: [DirectiveConsumingInjectableUnbounded]
+        }));
+        
+        tb.createView(MyComp, {context: ctx}).then((view) => {
+          var comp = view.rawView.locals.get("dir");
+          expect(comp.directive.injectable).toBeAnInstanceOf(Injectable);
+
+          async.done();
+        });
+      }));
+    });
+
     describe("error handling", () => {
       it('should report a meaningful error when a directive is missing annotation',
         inject([TestBed, AsyncTestCompleter], (tb, async) => {
@@ -1475,5 +1537,59 @@ class DirectiveWithTwoWayBinding {
 
   triggerChange(value) {
     ObservableWrapper.callNext(this.control, value);
+  }
+}
+
+class Injectable {}
+
+@Directive({
+  selector: 'directive-providing-injectable',
+  hostInjector: [Injectable]
+})
+class DirectiveProvidingInjectable {
+}
+
+@Component({
+  selector: 'directive-providing-injectable',
+  viewInjector: [Injectable]
+})
+@View({template:''})
+class DirectiveProvidingInjectableInView {
+}
+
+@Component({
+  selector: 'directive-consuming-injectable'
+})
+@View({template:''})
+class DirectiveConsumingInjectable {
+  injectable;
+
+  constructor(@Ancestor() injectable:Injectable) {
+    this.injectable = injectable;
+  }
+}
+
+
+
+@Component({
+  selector: 'directive-containing-directive-consuming-an-injectable'
+})
+class DirectiveContainingDirectiveConsumingAnInjectable {
+  directive;
+}
+
+@Component({
+  selector: 'directive-consuming-injectable-unbounded'
+})
+@View({template:''})
+class DirectiveConsumingInjectableUnbounded {
+  injectable;
+
+  constructor(
+    @Unbounded() injectable:Injectable, 
+    @Ancestor() parent:DirectiveContainingDirectiveConsumingAnInjectable) {
+      
+    this.injectable = injectable;
+    parent.directive = this;
   }
 }

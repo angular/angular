@@ -319,7 +319,7 @@ function _createProtoElementInjector(binderIndex, parentPeiWithDistance, renderE
   // so that, when hydrating, $implicit can be set to the element.
   var hasVariables = MapWrapper.size(renderElementBinder.variableBindings) > 0;
   if (directiveBindings.length > 0 || hasVariables) {
-    protoElementInjector = new ProtoElementInjector(
+    protoElementInjector = ProtoElementInjector.create(
         parentPeiWithDistance.protoElementInjector, binderIndex,
         directiveBindings,
         isPresent(componentDirectiveBinding), parentPeiWithDistance.distance
