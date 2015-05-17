@@ -162,7 +162,6 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
         '" in ' + sourceFile.fileName +
         ' at line ' + location.start.line);
     }
-    var signature = typeChecker.getSignatureFromDeclaration(declaration);
     return declaration.parameters.map(function(parameter) {
       return getText(sourceFile, parameter).trim();
     });
@@ -172,7 +171,6 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
     if(declaration.type) {
-      var signature = typeChecker.getSignatureFromDeclaration(declaration);
       return getText(sourceFile, declaration.type).trim();
     }
   }
