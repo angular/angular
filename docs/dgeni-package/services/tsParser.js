@@ -46,7 +46,7 @@ module.exports = function tsParser(createCompilerHost, log) {
         // by the compiler/binder, it seems that explicit imports (e.g. `export {SomeClass} from 'some/module'`)
         // do not so we have to do a little work.
         tsModule.exportArray.forEach(function(moduleExport) {
-          if (moduleExport.flags & 8388608 /* Alias */) {
+          if (moduleExport.flags & ts.SymbolFlags.Alias) {
             // To maintain the alias information (particularly the alias name)
             // we just attach the original "resolved" symbol to the alias symbol
             moduleExport.resolvedSymbol = typeChecker.getAliasedSymbol(moduleExport);
