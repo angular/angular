@@ -153,13 +153,14 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     return memberDoc;
   }
 
-
   function getParameters(typeChecker, symbol) {
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
     if(!declaration.parameters) {
-      console.log(declaration);
-      throw 'missing declaration parameters';
+      var location = getLocation(symbol);
+      throw new Error('missing declaration parameters for "' + symbol.name +
+        '" in ' + sourceFile.fileName +
+        ' at line ' + location.start.line);
     }
     var signature = typeChecker.getSignatureFromDeclaration(declaration);
     return declaration.parameters.map(function(parameter) {
