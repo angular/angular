@@ -13,17 +13,23 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       sourceFiles: {presence: true},
       basePath: {presence: true},
       hidePrivateMembers: { inclusion: [true, false] },
-      hideSpecialExports: { inclusion: [true, false] }
+      ignoreExportsMatching: {}
     },
 
+    // A collection of globs that identify those modules for which we should create docs
     sourceFiles: [],
+    // The base path from which to load the source files
     basePath: '.',
+    // We can ignore members of classes that are private
     hidePrivateMembers: false,
-    hideSpecialExports: true,
+    // We can provide a collection of strings or regexes to ignore exports whose export names match
+    ignoreExportsMatching: ['___esModule'],
 
     $process: function(docs) {
 
-      var hideSpecialExports = this.hideSpecialExports;
+      // Convert ignoreExportsMatching to an array of regexes
+      var ignoreExportsMatching = convertToRegexCollection(this.ignoreExportsMatching);
+
       var hidePrivateMembers = this.hidePrivateMembers;
 
       var basePath = path.resolve(readFilesProcessor.basePath, this.basePath);
@@ -45,7 +51,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
         moduleSymbol.exportArray.forEach(function(exportSymbol) {
 
           // Ignore exports starting with an underscore
-          if (hideSpecialExports && exportSymbol.name.charAt(0) === '_') return;
+          if (anyMatches(ignoreExportsMatching, exportSymbol.name)) return;
 
           // If the symbol is an Alias then for most things we want the original resolved symbol
           var resolvedExport = exportSymbol.resolvedSymbol || exportSymbol;
@@ -198,4 +204,25 @@ function insertSorted(collection, item, property) {
     index -= 1;
   }
   collection.splice(index, 0, item);
+}
+
+function convertToRegexCollection(items) {
+  if (!items) return [];
+
+  // Must be an array
+  if (!_.isArray(items)) {
+    items = [items];
+  }
+
+  // Convert string to exact matching regexes
+  return items.map(function(item) {
+    return _.isString(item) ? new RegExp('^' + item + '$') : item;
+  });
+}
+
+function anyMatches(regexes, item) {
+  for(var i=0; i<regexes.length; ++i) {
+    if ( item.match(regexes[i]) ) return true;
+  }
+  return false;
 }
