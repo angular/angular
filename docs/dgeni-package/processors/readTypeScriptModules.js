@@ -208,15 +208,6 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
 
 };
 
-function insertSorted(collection, item, property) {
-  var index = collection.length;
-  while(index>0) {
-    if(collection[index-1][property] < item[property]) break;
-    index -= 1;
-  }
-  collection.splice(index, 0, item);
-}
-
 function convertToRegexCollection(items) {
   if (!items) return [];
 
