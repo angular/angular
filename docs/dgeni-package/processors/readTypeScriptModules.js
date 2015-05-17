@@ -34,9 +34,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       var ignoreExportsMatching = convertToRegexCollection(this.ignoreExportsMatching);
 
       var hidePrivateMembers = this.hidePrivateMembers;
-      var addMember = this.sortClassMembers ? insertSorted : function(collection, item) {
-        collection.push(item);
-      };
+      var sortClassMembers = this.sortClassMembers;
 
       var basePath = path.resolve(readFilesProcessor.basePath, this.basePath);
       var filesPaths = expandSourceFiles(this.sourceFiles, basePath);
@@ -79,8 +77,16 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
                 docs.push(memberDoc);
               } else if (!hidePrivateMembers || memberSymbol.name.charAt(0) !== '_') {
                 docs.push(memberDoc);
-                addMember(exportDoc.members, memberDoc, 'name');
+                exportDoc.members.push(memberDoc);
               }
+            }
+
+            if (sortClassMembers) {
+              exportDoc.members.sort(function(a, b) {
+                if (a.name > b.name) return 1;
+                if (a.name < b.name) return -1;
+                return 0;
+              });
             }
           }
 
