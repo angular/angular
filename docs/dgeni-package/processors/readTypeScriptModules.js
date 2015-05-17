@@ -13,6 +13,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       sourceFiles: {presence: true},
       basePath: {presence: true},
       hidePrivateMembers: { inclusion: [true, false] },
+      sortClassMembers: { inclusion: [true, false] },
       ignoreExportsMatching: {}
     },
 
@@ -22,6 +23,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     basePath: '.',
     // We can ignore members of classes that are private
     hidePrivateMembers: false,
+    // We can sort class members alphabetically
+    sortClassMembers: true,
     // We can provide a collection of strings or regexes to ignore exports whose export names match
     ignoreExportsMatching: ['___esModule'],
 
@@ -31,6 +34,9 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       var ignoreExportsMatching = convertToRegexCollection(this.ignoreExportsMatching);
 
       var hidePrivateMembers = this.hidePrivateMembers;
+      var addMember = this.sortClassMembers ? insertSorted : function(collection, item) {
+        collection.push(item);
+      };
 
       var basePath = path.resolve(readFilesProcessor.basePath, this.basePath);
       var filesPaths = expandSourceFiles(this.sourceFiles, basePath);
@@ -73,7 +79,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
                 docs.push(memberDoc);
               } else if (!hidePrivateMembers || memberSymbol.name.charAt(0) !== '_') {
                 docs.push(memberDoc);
-                insertSorted(exportDoc.members, memberDoc, 'name');
+                addMember(exportDoc.members, memberDoc, 'name');
               }
             }
           }
