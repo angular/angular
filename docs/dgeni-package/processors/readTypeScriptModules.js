@@ -170,7 +170,7 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
   function getReturnType(typeChecker, symbol) {
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
-    if(declaration.type) {
+    if (declaration.type) {
       return getText(sourceFile, declaration.type).trim();
     }
   }
