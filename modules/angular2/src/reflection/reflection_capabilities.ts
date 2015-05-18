@@ -48,12 +48,21 @@ export class ReflectionCapabilities {
   }
 
   _zipTypesAndAnnotaions(paramTypes, paramAnnotations): List<List<any>> {
-    var result = ListWrapper.createFixedSize(paramTypes.length);
+    var result;
+
+    if (typeof paramTypes === 'undefined') {
+      result = ListWrapper.createFixedSize(paramAnnotations.length);
+    } else {
+      result = ListWrapper.createFixedSize(paramTypes.length);
+    }
+
     for (var i = 0; i < result.length; i++) {
       // TS outputs Object for parameters without types, while Traceur omits
       // the annotations. For now we preserve the Traceur behavior to aid
       // migration, but this can be revisited.
-      if (paramTypes[i] != Object) {
+      if (typeof paramTypes === 'undefined') {
+        result[i] = [];
+      } else if (paramTypes[i] != Object) {
         result[i] = [paramTypes[i]];
       } else {
         result[i] = [];
