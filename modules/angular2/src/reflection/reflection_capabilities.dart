@@ -4,7 +4,7 @@ import 'package:angular2/src/facade/lang.dart';
 import 'types.dart';
 import 'dart:mirrors';
 
-class ReflectionCapabilities {
+class ReflectionCapabilities implements IReflectionCapabilities {
   ReflectionCapabilities([metadataReader]) {}
 
   Function factory(Type type) {

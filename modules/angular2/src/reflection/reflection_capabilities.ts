@@ -1,8 +1,8 @@
 import {Type, isPresent, global, stringify, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {GetterFn, SetterFn, MethodFn} from './types';
+import {GetterFn, SetterFn, MethodFn, IReflectionCapabilities} from './types';
 
-export class ReflectionCapabilities {
+export class ReflectionCapabilities implements IReflectionCapabilities {
   private _reflect: any;
 
   constructor(reflect?: any) { this._reflect = isPresent(reflect) ? reflect : global.Reflect; }
@@ -99,13 +99,15 @@ export class ReflectionCapabilities {
 
   interfaces(type): List<any> { throw new BaseException("JavaScript does not support interfaces"); }
 
-  getter(name: string): GetterFn { return new Function('o', 'return o.' + name + ';'); }
+  getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
 
-  setter(name: string): SetterFn { return new Function('o', 'v', 'return o.' + name + ' = v;'); }
+  setter(name: string): SetterFn {
+    return <SetterFn>new Function('o', 'v', 'return o.' + name + ' = v;');
+  }
 
   method(name: string): MethodFn {
     let functionBody = `if (!o.${name}) throw new Error('"${name}" is undefined');
         return o.${name}.apply(o, args);`;
-    return new Function('o', 'args', functionBody);
+    return <MethodFn>new Function('o', 'args', functionBody);
   }
 }
