@@ -1,51 +1,90 @@
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {Directive} from 'angular2/src/core/annotations_impl/annotations';
 import {Attribute} from 'angular2/src/core/annotations_impl/di';
-import {Compiler, ViewContainerRef} from 'angular2/core';
+import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/core';
 import {Injector, bind} from 'angular2/di';
 
 import * as routerMod from './router';
 import {Instruction, RouteParams} from './instruction'
 
+
+/**
+ * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+ *
+ * ## Use
+ *
+ * ```
+ * <router-outlet></router-outlet>
+ * ```
+ *
+ * Route outlets can also optionally have a name:
+ *
+ * ```
+ * <router-outlet name="side"></router-outlet>
+ * <router-outlet name="main"></router-outlet>
+ * ```
+ *
+ */
 @Directive({
   selector: 'router-outlet'
 })
 export class RouterOutlet {
-  _compiler:Compiler;
   _injector:Injector;
-  _router:routerMod.Router;
-  _viewContainer:ViewContainerRef;
+  _parentRouter:routerMod.Router;
+  _childRouter:routerMod.Router;
+  _loader:DynamicComponentLoader;
+  _componentRef:ComponentRef;
+  _elementRef:ElementRef;
 
-  constructor(viewContainer:ViewContainerRef, compiler:Compiler, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr:String) {
+  constructor(elementRef:ElementRef, loader:DynamicComponentLoader, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr:String) {
     if (isBlank(nameAttr)) {
       nameAttr = 'default';
     }
-    this._router = router;
-    this._viewContainer = viewContainer;
-    this._compiler = compiler;
+    this._loader = loader;
+    this._parentRouter = router;
+    this._elementRef = elementRef;
     this._injector = injector;
-    this._router.registerOutlet(this, nameAttr);
+
+    this._childRouter = null;
+    this._componentRef = null;
+    this._parentRouter.registerOutlet(this, nameAttr);
   }
 
-  activate(instruction:Instruction) {
-    return this._compiler.compileInHost(instruction.component).then((pv) => {
-      var outletInjector = this._injector.resolveAndCreateChild([
-        bind(RouteParams).toValue(new RouteParams(instruction.params)),
-        bind(routerMod.Router).toValue(instruction.router)
-      ]);
 
-      this._viewContainer.clear();
-      this._viewContainer.create(pv, 0, null, outletInjector);
+  /**
+   * Given an instruction, update the contents of this viewport.
+   */
+  activate(instruction:Instruction):Promise {
+    // if we're able to reuse the component, we just have to pass along the instruction to the component's router
+    // so it can propagate changes to its children
+    if (instruction.reuse && isPresent(this._childRouter)) {
+      return this._childRouter.commit(instruction);
+    }
+
+    this._childRouter = this._parentRouter.childRouter(instruction.component);
+    var outletInjector = this._injector.resolveAndCreateChild([
+      bind(RouteParams).toValue(new RouteParams(instruction.params)),
+      bind(routerMod.Router).toValue(this._childRouter)
+    ]);
+
+    if (isPresent(this._componentRef)) {
+      this._componentRef.dispose();
+    }
+    return this._loader.loadNextToExistingLocation(instruction.component, this._elementRef, outletInjector).then((componentRef) => {
+      this._componentRef = componentRef;
+      return this._childRouter.commit(instruction);
     });
   }
 
-  canActivate(instruction:any) {
-    return PromiseWrapper.resolve(true);
+  deactivate():Promise {
+    return (isPresent(this._childRouter) ? this._childRouter.deactivate() : PromiseWrapper.resolve(true))
+        .then((_) =>this._componentRef.dispose());
   }
 
   canDeactivate(instruction:any) {
+    // TODO: how to get ahold of the component instance here?
     return PromiseWrapper.resolve(true);
   }
 }

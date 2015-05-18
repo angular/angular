@@ -61,7 +61,7 @@ function parsePathString(route:string) {
 
   var segments = splitBySlash(route);
   var results = ListWrapper.create();
-  var cost = 0;
+  var specificity = 0;
 
   for (var i=0; i<segments.length; i++) {
     var segment = segments[i],
@@ -69,17 +69,16 @@ function parsePathString(route:string) {
 
     if (isPresent(match = RegExpWrapper.firstMatch(paramMatcher, segment))) {
       ListWrapper.push(results, new DynamicSegment(match[1]));
-      cost += 100;
+      specificity += (100 - i);
     } else if (isPresent(match = RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
       ListWrapper.push(results, new StarSegment(match[1]));
-      cost += 10000;
     } else if (segment.length > 0) {
       ListWrapper.push(results, new StaticSegment(segment));
-      cost += 1;
+      specificity += 100 * (100 - i);
     }
   }
 
-  return {segments: results, cost};
+  return {segments: results, specificity};
 }
 
 var SLASH_RE = RegExpWrapper.create('/');
@@ -93,16 +92,18 @@ export class PathRecognizer {
   segments:List;
   regex:RegExp;
   handler:any;
-  cost:number;
+  specificity:number;
+  path:string;
 
   constructor(path:string, handler:any) {
+    this.path = path;
     this.handler = handler;
     this.segments = ListWrapper.create();
 
     // TODO: use destructuring assignment
     // see https://github.com/angular/ts2dart/issues/158
     var parsed = parsePathString(path);
-    var cost = parsed['cost'];
+    var specificity = parsed['specificity'];
     var segments = parsed['segments'];
     var regexString = '^';
 
@@ -112,7 +113,7 @@ export class PathRecognizer {
 
     this.regex = RegExpWrapper.create(regexString);
     this.segments = segments;
-    this.cost = cost;
+    this.specificity = specificity;
   }
 
   parseParams(url:string):StringMap {
