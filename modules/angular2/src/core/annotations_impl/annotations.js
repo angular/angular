@@ -49,8 +49,8 @@ import {DEFAULT} from 'angular2/change_detection';
  *    Shadow DOM root. Current element is not included in the resolution, therefore even if it could resolve it, it will
  *    be ignored.
  * - `@Parent() directive:DirectiveType`: any directive that matches the type on a direct parent element only.
- * - `@Query query:QueryList<DirectiveType>`: A live collection of direct child directives.
- * - `@QueryDescendants query:QueryList<DirectiveType>`: A live collection of any child directives.
+ * - `@Query(DirectiveType) query:QueryList<DirectiveType>`: A live collection of direct child directives.
+ * - `@QueryDescendants(DirectiveType) query:QueryList<DirectiveType>`: A live collection of any child directives.
  *
  * To inject element-specific special objects, declare the constructor parameter as:
  * - `element: ElementRef` to obtain a reference to logical element in the view.
