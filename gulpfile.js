@@ -25,7 +25,6 @@ var pubbuild = require('./tools/build/pubbuild');
 var dartanalyzer = require('./tools/build/dartanalyzer');
 var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
-var file2moduleName = require('./tools/build/file2modulename');
 var karma = require('karma');
 var minimist = require('minimist');
 var runServerDartTests = require('./tools/build/run_server_dart_tests');

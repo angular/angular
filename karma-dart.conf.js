@@ -1,7 +1,5 @@
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
-var file2moduleName = require('./tools/build/file2modulename');
-
 module.exports = function(config) {
   config.set({
 
