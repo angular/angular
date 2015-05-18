@@ -104,6 +104,79 @@ describe('TreeDiffer', () => {
     });
 
 
+    it('should handle changes via symbolic links', () => {
+      let testDir = {
+        'orig_path': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.txt': mockfs.file({content: 'file-2.txt content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt':
+                mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)})
+          }
+        },
+        'symlinks': {
+          'file-1.txt': mockfs.symlink({path: '../orig_path/file-1.txt'}),
+          'file-2.txt': mockfs.symlink({path: '../orig_path/file-2.txt'}),
+          'subdir-1':
+              {'file-1.1.txt': mockfs.symlink({path: '../../orig_path/subdir-1/file-1.1.txt'})}
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('symlinks');
+
+      let diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths)
+          .toEqual(['file-1.txt', 'file-2.txt', 'subdir-1/file-1.1.txt']);
+
+      // change two files
+      testDir['orig_path']['file-1.txt'] =
+          mockfs.file({content: 'new content', mtime: new Date(1000)});
+      testDir['orig_path']['subdir-1']['file-1.1.txt'] =
+          mockfs.file({content: 'file-1.1.txt content', mtime: new Date(9999)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt']);
+
+      expect(diffResult.removedPaths).toEqual([]);
+
+      // change one file
+      testDir['orig_path']['file-1.txt'] =
+          mockfs.file({content: 'super new', mtime: new Date(1000)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
+
+      // remove a link
+      delete testDir['orig_path']['file-1.txt'];
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual(['file-1.txt']);
+
+      // don't report it as a removal twice
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual([]);
+      expect(diffResult.removedPaths).toEqual([]);
+
+      // re-add it.
+      testDir['orig_path']['file-1.txt'] =
+          mockfs.file({content: 'super new', mtime: new Date(1000)});
+      mockfs(testDir);
+
+      diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['file-1.txt']);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
     it('should ignore files with extensions not listed in includeExtensions', () => {
       let testDir = {
         'dir1': {

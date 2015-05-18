@@ -4,6 +4,16 @@ import fs = require('fs');
 import path = require('path');
 
 
+function tryStatSync(path) {
+  try {
+    return fs.statSync(path);
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+
+
 export class TreeDiffer {
   private fingerprints: {[key: string]: string} = Object.create(null);
   private nextFingerprints: {[key: string]: string} = Object.create(null);
@@ -41,7 +51,11 @@ export class TreeDiffer {
   private dirtyCheckPath(rootDir: string, result: DirtyCheckingDiffResult) {
     fs.readdirSync(rootDir).forEach((segment) => {
       let absolutePath = path.join(rootDir, segment);
-      let pathStat = fs.statSync(absolutePath);
+      let pathStat = fs.lstatSync(absolutePath);
+      if (pathStat.isSymbolicLink()) {
+        pathStat = tryStatSync(absolutePath);
+        if (pathStat === null) return;
+      }
 
       if (pathStat.isDirectory()) {
         result.directoriesChecked++;
