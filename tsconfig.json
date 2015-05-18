@@ -12,5 +12,5 @@
     "filesGlob": [
         "./**/*.ts",
         "!./node_modules/**/*.ts"
-    ],
+    ]
 }
