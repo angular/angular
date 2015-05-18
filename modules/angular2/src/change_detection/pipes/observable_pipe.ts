@@ -25,7 +25,7 @@ export var __esModule = true;
  *   changeDetection: ON_PUSH
  * })
  * @View({
- *  inline: "Task Description {{description|async}}"
+ *   template: "Task Description {{ description | async }}"
  * })
  * class Task {
  *  description:Observable<string>;
