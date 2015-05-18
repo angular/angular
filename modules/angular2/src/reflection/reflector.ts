@@ -7,16 +7,17 @@ import {
   StringMap,
   StringMapWrapper
 } from 'angular2/src/facade/collection';
-import {SetterFn, GetterFn, MethodFn} from './types';
+import {SetterFn, GetterFn, MethodFn, IReflectionCapabilities} from './types';
+export {SetterFn, GetterFn, MethodFn, IReflectionCapabilities} from './types';
 
 export class Reflector {
   _typeInfo: Map<Type, any>;
   _getters: Map<string, GetterFn>;
   _setters: Map<string, SetterFn>;
   _methods: Map<string, MethodFn>;
-  reflectionCapabilities: any;
+  reflectionCapabilities: IReflectionCapabilities;
 
-  constructor(reflectionCapabilities) {
+  constructor(reflectionCapabilities: IReflectionCapabilities) {
     this._typeInfo = MapWrapper.create();
     this._getters = MapWrapper.create();
     this._setters = MapWrapper.create();
