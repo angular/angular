@@ -1,4 +1,4 @@
-import {isPresent, isBlank, BaseException, Type} from 'angular2/src/facade/lang';
+import {BaseException, Type, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {AbstractChangeDetector} from './abstract_change_detector';
@@ -174,11 +174,10 @@ ${lastInDirective}
 function referenceCheckTemplate(protoIndex: number, assignment: string, oldValue: string,
                                 newValue: string, change: string, update: string,
                                 addToChanges: string, lastInDirective: string): string {
-  // TODO(kegluneq): DO NOT SUBMIT! Ensure change to `looseIdentical` is correct.
   return `
 ${CURRENT_PROTO} = ${PROTOS_ACCESSOR}[${protoIndex}];
 ${assignment}
-if (!looseIdentical(${newValue}, ${oldValue})) {
+if (${newValue} !== ${oldValue}) {
   ${change} = true;
   ${update}
   ${addToChanges}
