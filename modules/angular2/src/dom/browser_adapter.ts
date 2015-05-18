@@ -296,16 +296,11 @@ isShadowRoot(node): boolean {
   return node instanceof DocumentFragment;
 }
 importIntoDoc(node: Node) {
-  var result = document.importNode(node, true);
-  // Workaround WebKit https://bugs.webkit.org/show_bug.cgi?id=137619
-  if (this.isTemplateElement(result) && !this.content(result).childNodes.length &&
-      this.content(node).childNodes.length) {
-    var childNodes = this.content(node).childNodes;
-    for (var i = 0; i < childNodes.length; ++i) {
-      this.content(result).appendChild(this.importIntoDoc(childNodes[i]));
-    }
+  var toImport = node;
+  if (this.isTemplateElement(node)) {
+    toImport = this.content(node);
   }
-  return result;
+  return document.importNode(toImport, true);
 }
 isPageRule(rule): boolean {
   return rule.type === CSSRule.PAGE_RULE;
