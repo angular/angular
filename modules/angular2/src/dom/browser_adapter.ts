@@ -273,7 +273,7 @@ defaultDoc() {
 getBoundingClientRect(el) {
   return el.getBoundingClientRect();
 }
-getTitle() {
+getTitle(): string {
   return document.title;
 }
 setTitle(newTitle: string) {

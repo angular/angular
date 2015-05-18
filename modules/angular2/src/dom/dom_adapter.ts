@@ -81,7 +81,7 @@ export class DomAdapter {
   removeStyle(element, stylename: string) { throw _abstract(); }
   getStyle(element, stylename: string) { throw _abstract(); }
   tagName(element): string { throw _abstract(); }
-  attributeMap(element) { throw _abstract(); }
+  attributeMap(element): Map<string, string> { throw _abstract(); }
   hasAttribute(element, attribute: string): boolean { throw _abstract(); }
   getAttribute(element, attribute: string): string { throw _abstract(); }
   setAttribute(element, name: string, value: string) { throw _abstract(); }
@@ -90,7 +90,7 @@ export class DomAdapter {
   createHtmlDocument() { throw _abstract(); }
   defaultDoc(): any { throw _abstract(); }
   getBoundingClientRect(el) { throw _abstract(); }
-  getTitle() { throw _abstract(); }
+  getTitle(): string { throw _abstract(); }
   setTitle(newTitle: string) { throw _abstract(); }
   elementMatches(n, selector: string): boolean { throw _abstract(); }
   isTemplateElement(el: any): boolean { throw _abstract(); }

@@ -32,8 +32,7 @@ export function main() {
       it('should return a string when there is no import statement', inject([StyleInliner], (inliner) => {
         var css = '.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
-        expect(loadedCss).not.toBePromise();
-        expect(loadedCss).toEqual(css);
+        expect(loadedCss.syncResult).toEqual(css);
       }));
 
       it('should inline @import rules',
@@ -41,9 +40,9 @@ export function main() {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import url("one.css");.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('.one {}\n.main {}');
             async.done();
@@ -59,9 +58,9 @@ export function main() {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import url(one.css);.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('.one {}\n.main {}');
             async.done();
@@ -76,9 +75,9 @@ export function main() {
         inject([StyleInliner, AsyncTestCompleter], (inliner, async) => {
         var css = '@import "one.css";.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('/* failed to import http://base/one.css */\n.main {}');
             async.done();
@@ -95,9 +94,9 @@ export function main() {
         xhr.reply('http://base/two.css', '.two {}');
         var css = '@import "one.css";@import "two.css";.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('.one {}\n.two {}\n.main {}');
             async.done();
@@ -114,9 +113,9 @@ export function main() {
         xhr.reply('http://base/two.css', '.two {}');
         var css = '@import "one.css";.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('.two {}\n.one {}\n.main {}');
             async.done();
@@ -133,9 +132,9 @@ export function main() {
         xhr.reply('http://base/two.css', '@import "one.css";.two {}');
         var css = '@import "one.css";.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('.two {}\n.one {}\n.main {}');
             async.done();
@@ -151,9 +150,9 @@ export function main() {
         // Invalid rule: the url is not quoted
         var css = '@import one.css;.main {}';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('/* Invalid import rule: "@import one.css;" */.main {}');
             async.done();
@@ -171,9 +170,9 @@ export function main() {
         xhr.reply('http://base/one.css', '.one {}');
         var css = '@import "one.css" (min-width: 700px) and (orientation: landscape);';
         var loadedCss = inliner.inlineImports(css, 'http://base/');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual('@media (min-width: 700px) and (orientation: landscape) {\n.one {}\n}\n');
             async.done();
@@ -193,9 +192,9 @@ export function main() {
         xhr.reply('http://base/nested/two.css', '.two {background-image: url("../img/two.jpg");}');
         var css = '@import "one.css";'
         var loadedCss = inliner.inlineImports(css, 'http://base/');
-        expect(loadedCss).toBePromise();
+        expect(loadedCss.asyncResult).toBePromise();
         PromiseWrapper.then(
-          loadedCss,
+          loadedCss.asyncResult,
           function(css) {
             expect(css).toEqual(
               ".two {background-image: url('http://base/img/two.jpg');}\n" +

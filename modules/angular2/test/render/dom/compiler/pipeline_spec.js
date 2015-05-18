@@ -1,7 +1,7 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
 import {ListWrapper, List, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {isPresent, NumberWrapper, StringWrapper, IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
@@ -182,10 +182,10 @@ export function main() {
   });
 }
 
-class MockStep extends CompileStep {
+@IMPLEMENTS(CompileStep)
+class MockStep {
   processClosure:Function;
   constructor(process) {
-    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
@@ -193,7 +193,8 @@ class MockStep extends CompileStep {
   }
 }
 
-export class IgnoreChildrenStep extends CompileStep {
+@IMPLEMENTS(CompileStep)
+export class IgnoreChildrenStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-children')) {
@@ -202,7 +203,8 @@ export class IgnoreChildrenStep extends CompileStep {
   }
 }
 
-class IgnoreCurrentElementStep extends CompileStep {
+@IMPLEMENTS(CompileStep)
+class IgnoreCurrentElementStep {
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-current')) {

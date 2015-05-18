@@ -1,5 +1,5 @@
 import {describe, beforeEach, it, xit, expect, iit, ddescribe, el} from 'angular2/test_lib';
-import {isPresent, isBlank, assertionsEnabled} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, assertionsEnabled, IMPLEMENTS} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {DirectiveParser} from 'angular2/src/render/dom/compiler/directive_parser';
@@ -225,10 +225,10 @@ export function main() {
   });
 }
 
-class MockStep extends CompileStep {
+@IMPLEMENTS(CompileStep)
+class MockStep {
   processClosure:Function;
   constructor(process) {
-    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {

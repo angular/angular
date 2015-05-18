@@ -10,13 +10,12 @@ import {RenderViewRef, ProtoViewDto, ViewDefinition, EventDispatcher, DirectiveM
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {el, dispatchEvent} from 'angular2/test_lib';
 
-export class TestView extends EventDispatcher {
+export class TestView {
   rawView:DomView;
   viewRef:RenderViewRef;
   events:List;
 
   constructor(viewRef:RenderViewRef) {
-    super();
     this.viewRef = viewRef;
     this.rawView = resolveInternalDomView(viewRef);
     this.events = [];
@@ -24,11 +23,11 @@ export class TestView extends EventDispatcher {
 }
 
 
-class LoggingEventDispatcher extends EventDispatcher {
+@IMPLEMENTS(EventDispatcher)
+class LoggingEventDispatcher {
   log:List;
 
   constructor(log:List) {
-    super();
     this.log = log;
   }
 

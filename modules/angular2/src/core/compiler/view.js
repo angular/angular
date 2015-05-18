@@ -6,6 +6,7 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding
 import {ElementBinder} from './element_binder';
 import {IMPLEMENTS, int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
+import {EventDispatcher} from 'angular2/src/render/api';
 
 export class AppViewContainer {
   views: List<AppView>;
@@ -21,8 +22,7 @@ export class AppViewContainer {
  *
  */
 @IMPLEMENTS(ChangeDispatcher)
-// TODO(tbosch): this is not supported in dart2js (no '.' is allowed)
-// @IMPLEMENTS(renderApi.EventDispatcher)
+@IMPLEMENTS(EventDispatcher)
 export class AppView {
   render:renderApi.RenderViewRef;
   /// This list matches the _nodes list. It is sparse, since only Elements have ElementInjector

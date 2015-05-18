@@ -1,9 +1,10 @@
 import {describe, beforeEach, it, expect, iit, ddescribe, el} from 'angular2/test_lib';
+import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {PropertyBindingParser} from 'angular2/src/render/dom/compiler/property_binding_parser';
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step'
+import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {Lexer, Parser} from 'angular2/change_detection';
 
@@ -164,10 +165,10 @@ export function main() {
   });
 }
 
-class MockStep extends CompileStep {
+@IMPLEMENTS(CompileStep)
+class MockStep {
   processClosure:Function;
   constructor(process) {
-    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {

@@ -2,11 +2,16 @@
  * This file contains declarations of global symbols we reference in our code
  */
 
+/// <reference path="typings/hammerjs/hammerjs"/>
+/// <reference path="typings/zone/zone.d.ts"/>
+
 declare var assert: any;
 declare var global: Window;
 type int = number;
 
 interface List<T> extends Array<T> {}
+
+interface StringMap<K,V> extends Object {}
 
 interface Window {
   Object: typeof Object;
@@ -20,4 +25,6 @@ interface Window {
   assert: typeof assert;
   gc(): void;
   Reflect: any;
+  zone: Zone;
+  Hammer: HammerStatic;
 }

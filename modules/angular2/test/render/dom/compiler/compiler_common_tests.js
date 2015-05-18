@@ -183,10 +183,9 @@ class MockStepFactory extends CompileStepFactory {
   }
 }
 
-class MockStep extends CompileStep {
+class MockStep /*implements CompileStep*/ {
   processClosure:Function;
   constructor(process) {
-    super();
     this.processClosure = process;
   }
   process(parent:CompileElement, current:CompileElement, control:CompileControl) {

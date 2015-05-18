@@ -22,8 +22,7 @@ export function makeDecorator(annotationCls) {
 }
 
 export function makeParamDecorator(annotationCls) {
-  return function() {
-    var args = arguments;
+  return function(... args) {
     var Reflect = global.Reflect;
     if (!(Reflect && Reflect.getMetadata)) {
       throw 'reflect-metadata shim is required when using parameter decorators';
