@@ -38,6 +38,7 @@ if (assertionsEnabled_) {
   int = {};
   _global.assert = function() {};
 }
+
 export {int};
 
 // This function is needed only to properly support Dart's const expressions
@@ -45,10 +46,13 @@ export {int};
 export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
+
 export function CONST() {
   return (target) => target;
 }
+
 export class ABSTRACT {}
+
 export class IMPLEMENTS {}
 
 export function isPresent(obj): boolean {
@@ -246,7 +250,13 @@ export function print(obj) {
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
-export var Json = _global.JSON;
+export class Json {
+  static parse(s: string) { return _global.JSON.parse(s); }
+  static stringify(data): string {
+    // Dart doesn't take 3 arguments
+    return _global.JSON.stringify(data, null, 2);
+  }
+}
 
 export class DateWrapper {
   static fromMillis(ms) { return new Date(ms); }
