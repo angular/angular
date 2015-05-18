@@ -89,7 +89,7 @@ export function main() {
 
     describe("onDestroy", () => {
       it("should do nothing when no subscription", () => {
-        pipe.onDestroy();
+        expect(() => pipe.onDestroy()).not.toThrow();
       });
 
       it("should dispose of the existing subscription", inject([AsyncTestCompleter], (async) => {
