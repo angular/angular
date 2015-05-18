@@ -18,10 +18,10 @@ export var __esModule = true;
  *   selector: "username-cmp"
  * })
  * @View({
- *  inline: "Username: {{ user | lowercase }}"
+ *   template: "Username: {{ user | lowercase }}"
  * })
  * class Username {
- *  user:string;
+ *   user:string;
  * }
  *
  * ```
