@@ -1,3 +1,69 @@
+<a name"2.0.0-alpha.24"></a>
+### 2.0.0-alpha.24 (2015-05-19)
+
+
+#### Bug Fixes
+
+* **Compiler:** add an error when a directive is null or undefined ([25cd6e43](https://github.com/angular/angular/commit/25cd6e43), closes [#1908](https://github.com/angular/angular/issues/1908))
+* **benchmark:**
+  * change If for NgIf ([cdbb2473](https://github.com/angular/angular/commit/cdbb2473))
+  * fixes ng-if ng-for renaming for templates. ([38926f71](https://github.com/angular/angular/commit/38926f71))
+* **build:** npm shrinkwrap to pick up changed SHA1. ([04a9eb88](https://github.com/angular/angular/commit/04a9eb88))
+* **directives:** fix import path ([c20060d2](https://github.com/angular/angular/commit/c20060d2))
+* **errors:** require passing stack traces explicitly in ng2 own code ([8ab77353](https://github.com/angular/angular/commit/8ab77353))
+* **examples:** prefix directives with Ng ([0e82970a](https://github.com/angular/angular/commit/0e82970a))
+* **facade:** MapWrapper.createFromPairs ([af9dcad8](https://github.com/angular/angular/commit/af9dcad8), closes [#1640](https://github.com/angular/angular/issues/1640))
+* **ng1 benchmarks:** revert *ng-if to ng-if ([909233f7](https://github.com/angular/angular/commit/909233f7))
+* **router:**
+  * use appRootComponentToken to get root route configs ([791caf00](https://github.com/angular/angular/commit/791caf00), closes [#1947](https://github.com/angular/angular/issues/1947))
+  * improve route matching priorities ([5db89071](https://github.com/angular/angular/commit/5db89071))
+  * generate links for router-link with baseHref ([390cfb79](https://github.com/angular/angular/commit/390cfb79))
+  * sort possible routes by cost ([17392f66](https://github.com/angular/angular/commit/17392f66))
+* **tree-differ:** treat symlinks to deleted paths as removals ([aad57954](https://github.com/angular/angular/commit/aad57954), closes [#1961](https://github.com/angular/angular/issues/1961))
+
+
+#### Features
+
+* allow for forward references in injection ([1eea2b25](https://github.com/angular/angular/commit/1eea2b25), closes [#1891](https://github.com/angular/angular/issues/1891))
+* **change_detection:**
+  * json pipe ([98603824](https://github.com/angular/angular/commit/98603824), closes [#1957](https://github.com/angular/angular/issues/1957))
+  * uppercase and lowercase pipes ([7a4a6353](https://github.com/angular/angular/commit/7a4a6353))
+  * implemented change detection that can be configured with pregenerated change det ([08f21dbf](https://github.com/angular/angular/commit/08f21dbf))
+* **compiler:**
+  * special-case class attribute in hostAttributes ([3011cd86](https://github.com/angular/angular/commit/3011cd86), closes [#1774](https://github.com/angular/angular/issues/1774), [#1841](https://github.com/angular/angular/issues/1841))
+  * added support for [()] syntax ([685a6507](https://github.com/angular/angular/commit/685a6507))
+* **di:**
+  * added hostInjector and viewInjector to the Directive annotation ([b066b8d1](https://github.com/angular/angular/commit/b066b8d1))
+  * removed publishAs ([3a53f679](https://github.com/angular/angular/commit/3a53f679))
+* **element_injector:** allow @Optional for ProtoViewRef ([bb2eda2d](https://github.com/angular/angular/commit/bb2eda2d))
+* **errors:** preserve stack traces of user exceptions in Dart ([b6f29b44](https://github.com/angular/angular/commit/b6f29b44))
+* **facade:** toUpperCase and toLowerCase ([557d54b3](https://github.com/angular/angular/commit/557d54b3))
+* **fakeAsync:** allow simulating the passage of time ([0f002a5b](https://github.com/angular/angular/commit/0f002a5b))
+* **forms:** improved error messages ([11e43851](https://github.com/angular/angular/commit/11e43851), closes [#1839](https://github.com/angular/angular/issues/1839))
+* **pipe:** reexported pipes to genereate docs ([155b1e2b](https://github.com/angular/angular/commit/155b1e2b))
+
+
+#### Breaking Changes
+
+* `AppViewManager.createInPlaceHostView` is replaced by
+`AppViewManager.createRootHostView` (for bootstrap) and
+`AppViewManager.createFreeHostView` (for imperative components).
+
+The later creates new host elements that are not attached anywhere.
+To attach them, use `DomRenderer.getHostElement(hostviewRef)`
+to get the host element.
+
+Closes #1920
+
+ ([421d8916](https://github.com/angular/angular/commit/421d8916))
+* - renames `DirectiveMetadataReader` into `DirectiveResolver`
+  and removes `src/core/compiler/directive_metadata`.
+
+Fixes #1712
+Fixes #1713
+ ([ecb06801](https://github.com/angular/angular/commit/ecb06801))
+
+
 <a name"2.0.0-alpha.23"></a>
 ### 2.0.0-alpha.23 (2015-05-12)
 
