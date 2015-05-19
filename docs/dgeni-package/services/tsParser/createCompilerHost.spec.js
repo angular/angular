@@ -1,6 +1,7 @@
 var mockPackage = require('../../mocks/mockPackage');
 var Dgeni = require('dgeni');
 var path = require('canonical-path');
+var ts = require('typescript');
 
 describe('createCompilerHost', function() {
   var dgeni, injector, options, host, baseDir, extensions;
@@ -57,15 +58,16 @@ describe('createCompilerHost', function() {
 
 
   describe('useCaseSensitiveFileNames', function() {
-    it('should return false', function() {
-      expect(host.useCaseSensitiveFileNames()).toBe(false);
+    it('should return true if the OS is case sensitive', function() {
+      expect(host.useCaseSensitiveFileNames()).toBe(ts.sys.useCaseSensitiveFileNames);
     });
   });
 
 
   describe('getCanonicalFileName', function() {
     it('should lower case the filename', function() {
-      expect(host.getCanonicalFileName('SomeFile.ts')).toEqual('somefile.ts');
+      var expectedFilePath = host.useCaseSensitiveFileNames() ? 'SomeFile.ts' : 'somefile.ts';
+      expect(host.getCanonicalFileName('SomeFile.ts')).toEqual(expectedFilePath);
     });
   });
 
