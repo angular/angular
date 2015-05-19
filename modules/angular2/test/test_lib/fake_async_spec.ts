@@ -37,14 +37,10 @@ export function main() {
     it('should work with inject()',
        inject([Parser], fakeAsync((parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
 
-    if (!IS_DARTIUM) {
-      it('should throw on nested calls', () => {
-        // TODO(vicb): re-enable once the jasmine patch from zone.js is applied
-        if (!IS_DARTIUM) return;
-        expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
-            .toThrowError('fakeAsync() calls can not be nested');
-      });
-    }
+    it('should throw on nested calls', () => {
+      expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
+          .toThrowError('fakeAsync() calls can not be nested');
+    });
 
     it('should flush microtasks before returning', () => {
       var thenRan = false;
