@@ -339,6 +339,22 @@ export function main() {
 
                   expect(directive1.onChangesDoneCalled).toBe(true);
                   expect(directive2.onChangesDoneCalled).toBe(true);
+                  
+                  // reset directives
+                  directive1.onChangesDoneCalled = false;
+                  directive2.onChangesDoneCalled = false;
+                  
+                  // Verify that checking should not call them.
+                  cd.checkNoChanges();
+                  
+                  expect(directive1.onChangesDoneCalled).toBe(false);
+                  expect(directive2.onChangesDoneCalled).toBe(false);
+
+                  // re-verify that changes are still detected
+                  cd.detectChanges();
+
+                  expect(directive1.onChangesDoneCalled).toBe(true);
+                  expect(directive2.onChangesDoneCalled).toBe(true);                  
                 });
 
 
