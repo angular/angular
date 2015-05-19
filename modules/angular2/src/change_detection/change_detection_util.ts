@@ -67,6 +67,8 @@ export class ChangeDetectionUtil {
   static operation_remainder(left, right) { return left % right; }
   static operation_equals(left, right) { return left == right; }
   static operation_not_equals(left, right) { return left != right; }
+  static operation_identical(left, right) { return left === right; }
+  static operation_not_identical(left, right) { return left !== right; }
   static operation_less_then(left, right) { return left < right; }
   static operation_greater_then(left, right) { return left > right; }
   static operation_less_or_equals_then(left, right) { return left <= right; }

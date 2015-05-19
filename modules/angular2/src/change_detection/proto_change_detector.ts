@@ -286,6 +286,10 @@ function _operationToPrimitiveName(operation: string): string {
       return "operation_equals";
     case '!=':
       return "operation_not_equals";
+    case '===':
+      return "operation_identical";
+    case '!==':
+      return "operation_not_identical";
     case '<':
       return "operation_less_then";
     case '>':
@@ -319,6 +323,10 @@ function _operationToFunction(operation: string): Function {
       return ChangeDetectionUtil.operation_equals;
     case '!=':
       return ChangeDetectionUtil.operation_not_equals;
+    case '===':
+      return ChangeDetectionUtil.operation_identical;
+    case '!==':
+      return ChangeDetectionUtil.operation_not_identical;
     case '<':
       return ChangeDetectionUtil.operation_less_then;
     case '>':

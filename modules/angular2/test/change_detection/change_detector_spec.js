@@ -168,7 +168,16 @@ export function main() {
             expect(executeWatch('exp', '11 % 2')).toEqual(['exp=1']);
 
             expect(executeWatch('exp', '1 == 1')).toEqual(['exp=true']);
+            if (IS_DARTIUM) {
+              expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=false']);
+            } else {
+              expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=true']);
+            }
             expect(executeWatch('exp', '1 != 1')).toEqual(['exp=false']);
+
+            expect(executeWatch('exp', '1 === 1')).toEqual(['exp=true']);
+            expect(executeWatch('exp', '1 !== 1')).toEqual(['exp=false']);
+            expect(executeWatch('exp', '1 === "1"')).toEqual(['exp=false']);
 
             expect(executeWatch('exp', '1 < 2')).toEqual(['exp=true']);
             expect(executeWatch('exp', '2 < 1')).toEqual(['exp=false']);
