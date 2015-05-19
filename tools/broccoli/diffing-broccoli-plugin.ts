@@ -5,7 +5,7 @@
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-import {TreeDiffer, DiffResult} from './tree-differ';
+import {IncludeFilterFn, TreeDiffer, DiffResult} from './tree-differ';
 let symlinkOrCopy = require('symlink-or-copy');
 
 
@@ -91,10 +91,17 @@ class DiffingPluginWrapper implements BroccoliTree {
 
   private init() {
     if (!this.initialized) {
-      let includeExtensions = this.pluginClass.includeExtensions || [];
-      let excludeExtensions = this.pluginClass.excludeExtensions || [];
+      let includeExtensions: string[] = this.pluginClass.includeExtensions || [];
+      let excludeExtensions: string[] = this.pluginClass.excludeExtensions || [];
+      let includeFilter: IncludeFilterFn = null;
+      let includeFilterMethod = this.pluginClass.includeFilterMethod;
+      if (includeFilterMethod) {
+        includeFilter = (filePath: string) => this.wrappedPlugin[includeFilterMethod](filePath);
+      }
+
       this.initialized = true;
-      this.treeDiffer = new TreeDiffer(this.inputPath, includeExtensions, excludeExtensions);
+      this.treeDiffer =
+          new TreeDiffer(this.inputPath, {includeExtensions, excludeExtensions, includeFilter});
       this.wrappedPlugin =
           new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
     }
