@@ -72,6 +72,28 @@ describe('watch()', function() {
   });
 
 
+  it('should continue to trigger callbacks if task throws', function() {
+    var calls = 0;
+    spyOn(console, 'log');
+    function cb(done) {
+      calls += 1;
+      if (calls === 1) throw new Error('oops!');
+      done();
+    }
+
+    var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+
+    watcher._emit('change', './$$fake_path/test1.txt');
+    timeout.flush();
+    expect(calls).toBe(1);
+    expect(console.log).toHaveBeenCalledWith('Watch task error:', 'Error: oops!');
+
+    watcher._emit('change', './$$fake_path/test2.txt');
+    timeout.flush();
+    expect(calls).toBe(2);
+  });
+
+
   it('should cancel pending callback if FSWatcher is closed', function() {
     var cb = jasmine.createSpy('callback');
     var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);

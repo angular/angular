@@ -49,7 +49,7 @@ function watch(globs, opts, tasks) {
   watcher.close = function() {
     if (timeoutId !== null) clearTimeout(timeoutId);
     close();
-  }
+  };
 
   var eventsRecorded = 0; // Number of events recorded
   var timeoutId = null; // If non-null, event capture window is open
@@ -75,12 +75,14 @@ function watch(globs, opts, tasks) {
   }
 
   function tasksDone(err) {
-    if (err) throw err;
     if (eventsRecorded) {
       // eventsRecorded has increased during the run, run again on the next turn
       timeoutId = setTimeout(invokeCallback, 0);
     } else {
       timeoutId = null;
+    }
+    if (!useRunSequence && err) {
+      console.log('Watch task error:', err.toString());
     }
   }
 }
