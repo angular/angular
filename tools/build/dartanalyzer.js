@@ -76,6 +76,10 @@ module.exports = function(gulp, plugins, config) {
             return;
           }
         }
+        // TODO(yjbanov): fix ng2 code and remove the check below
+        if (line.match(/_stack/)) {
+          return;
+        }
 
         var skip = false;
         if (!skip) {
