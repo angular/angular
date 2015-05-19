@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/facade/lang';
+import {Type, stringify} from 'angular2/src/facade/lang';
 
 export interface ForwardRefFn { (): any; }
 
@@ -30,6 +30,7 @@ export interface ForwardRefFn { (): any; }
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
+  (<any>forwardRefFn).toString = function() { return stringify(this()); };
   return (<Type><any>forwardRefFn);
 }
 

@@ -1,5 +1,5 @@
 import {ListWrapper, List} from 'angular2/src/facade/collection';
-import {stringify, BaseException} from 'angular2/src/facade/lang';
+import {stringify, BaseException, isBlank} from 'angular2/src/facade/lang';
 
 function findFirstClosedCycle(keys: List<any>): List<any> {
   var res = [];
@@ -179,9 +179,19 @@ export class InvalidBindingError extends BaseException {
 export class NoAnnotationError extends BaseException {
   name: string;
   message: string;
-  constructor(typeOrFunc) {
+  constructor(typeOrFunc, params: List<List<any>>) {
     super();
-    this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + ". " +
+    var signature = ListWrapper.create();
+    for (var i = 0, ii = params.length; i < ii; i++) {
+      var parameter = params[i];
+      if (isBlank(parameter) || parameter.length == 0) {
+        ListWrapper.push(signature, '?');
+      } else {
+        ListWrapper.push(signature, ListWrapper.map(parameter, stringify).join(' '));
+      }
+    }
+    this.message = "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +
+                   signature.join(', ') + "). " +
                    'Make sure they all have valid type or annotations.';
   }
 

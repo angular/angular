@@ -1,8 +1,9 @@
 import {Type, isPresent, global, stringify, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {GetterFn, SetterFn, MethodFn, IReflectionCapabilities} from './types';
+import {GetterFn, SetterFn, MethodFn} from './types';
+import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
 
-export class ReflectionCapabilities implements IReflectionCapabilities {
+export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
   constructor(reflect?: any) { this._reflect = isPresent(reflect) ? reflect : global.Reflect; }
