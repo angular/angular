@@ -39,7 +39,8 @@ import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 
 import {
-  appComponentRefToken
+  appComponentRefToken,
+  appComponentTypeToken
 } from './application_tokens';
 
 var _rootInjector: Injector;
@@ -53,6 +54,7 @@ var _rootBindings = [
 function _injectorBindings(appComponentType): List<Binding> {
   return [
       bind(DOCUMENT_TOKEN).toValue(DOM.defaultDoc()),
+      bind(appComponentTypeToken).toValue(appComponentType),
       bind(appComponentRefToken).toAsyncFactory((dynamicComponentLoader, injector,
         testability, registry) => {
 
