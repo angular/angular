@@ -106,7 +106,7 @@ export function main() {
 
     it('should throw when no type and not @Inject', () => {
       expect(() => Injector.resolveAndCreate([NoAnnotations]))
-          .toThrowError('Cannot resolve all parameters for NoAnnotations. ' +
+          .toThrowError('Cannot resolve all parameters for NoAnnotations(?). ' +
                         'Make sure they all have valid type or annotations.');
     });
 

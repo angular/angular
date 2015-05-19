@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST, stringify} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 
 /**
@@ -41,6 +41,7 @@ export class Attribute extends DependencyAnnotation {
     // account.
     return this;
   }
+  toString() { return `@Attribute(${stringify(this.attributeName)})`; }
 }
 
 /**
@@ -53,4 +54,5 @@ export class Attribute extends DependencyAnnotation {
 @CONST()
 export class Query extends DependencyAnnotation {
   constructor(public directive: any) { super(); }
+  toString() { return `@Query(${stringify(this.directive)})`; }
 }

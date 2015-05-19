@@ -3,10 +3,15 @@ library reflection.reflection;
 import 'reflector.dart';
 import 'types.dart';
 export 'reflector.dart';
+import 'platform_reflection_capabilities.dart';
 import 'package:angular2/src/facade/lang.dart';
 
-class NoReflectionCapabilities implements IReflectionCapabilities {
+class NoReflectionCapabilities implements PlatformReflectionCapabilities {
   Function factory(Type type) {
+    throw "Cannot find reflection information on ${stringify(type)}";
+  }
+
+  List interfaces(Type type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
