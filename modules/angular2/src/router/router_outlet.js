@@ -37,6 +37,7 @@ export class RouterOutlet {
   _loader:DynamicComponentLoader;
   _componentRef:ComponentRef;
   _elementRef:ElementRef;
+  _currentInstruction:Instruction;
 
   constructor(elementRef:ElementRef, loader:DynamicComponentLoader, router:routerMod.Router, injector:Injector, @Attribute('name') nameAttr:String) {
     if (isBlank(nameAttr)) {
@@ -49,6 +50,7 @@ export class RouterOutlet {
 
     this._childRouter = null;
     this._componentRef = null;
+    this._currentInstruction = null;
     this._parentRouter.registerOutlet(this, nameAttr);
   }
 
@@ -58,10 +60,11 @@ export class RouterOutlet {
   activate(instruction:Instruction): Promise {
     // if we're able to reuse the component, we just have to pass along the instruction to the component's router
     // so it can propagate changes to its children
-    if (instruction.reuse && isPresent(this._childRouter)) {
+    if ((instruction == this._currentInstruction) || instruction.reuse && isPresent(this._childRouter)) {
       return this._childRouter.commit(instruction);
     }
 
+    this._currentInstruction = instruction;
     this._childRouter = this._parentRouter.childRouter(instruction.component);
     var outletInjector = this._injector.resolveAndCreateChild([
       bind(RouteParams).toValue(new RouteParams(instruction.params)),
@@ -71,6 +74,7 @@ export class RouterOutlet {
     if (isPresent(this._componentRef)) {
       this._componentRef.dispose();
     }
+
     return this._loader.loadNextToExistingLocation(instruction.component, this._elementRef, outletInjector).then((componentRef) => {
       this._componentRef = componentRef;
       return this._childRouter.commit(instruction);
