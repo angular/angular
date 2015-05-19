@@ -1,4 +1,4 @@
-import {Type, isPresent, global} from 'angular2/src/facade/lang';
+import {Type, isPresent, global, stringify} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
@@ -39,7 +39,8 @@ export class ReflectionCapabilities {
         };
     };
 
-    throw new Error("Factory cannot take more than 10 arguments");
+    throw new Error(
+        `Cannot create a factory for '${stringify(t)}' because its constructor has more than 10 arguments`);
   }
 
   _zipTypesAndAnnotaions(paramTypes, paramAnnotations): List<List<any>> {

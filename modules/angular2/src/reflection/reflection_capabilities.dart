@@ -1,6 +1,7 @@
 library reflection.reflection_capabilities;
 
 import 'reflection.dart';
+import 'package:angular2/src/facade/lang.dart';
 import 'types.dart';
 import 'dart:mirrors';
 
@@ -45,7 +46,7 @@ class ReflectionCapabilities {
             create(name, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10]).reflectee;
     }
 
-    throw "Factory cannot take more than 10 arguments";
+    throw "Cannot create a factory for '${stringify(type)}' because its constructor has more than 10 arguments";
   }
 
   List<List> parameters(typeOrFunc) {
