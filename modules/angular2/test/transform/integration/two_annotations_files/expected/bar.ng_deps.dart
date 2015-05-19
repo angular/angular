@@ -36,7 +36,7 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final dynamic _protos;
   final dynamic _directiveRecords;
   dynamic _locals = null;
-  dynamic _context = _gen.ChangeDetectionUtil.unitialized();
+  dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   _MyComponent_ChangeDetector0(this._dispatcher, this._pipeRegistry,
       this._protos, this._directiveRecords)
       : super();
@@ -60,10 +60,10 @@ class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   }
 
   void dehydrate() {
-    _context = _gen.ChangeDetectionUtil.unitialized();
+    _context = _gen.ChangeDetectionUtil.uninitialized();
     _locals = null;
   }
 
   hydrated() =>
-      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.unitialized());
+      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.uninitialized());
 }

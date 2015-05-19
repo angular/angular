@@ -17,15 +17,7 @@ class Codegen {
   }
 
   String get imports {
-    return _buf.isEmpty
-        ? ''
-        : '''
-    import '$_FACADE_CLASS_IMPORT' as $_GEN_PREFIX
-      show NumberWrapper, looseIdentical;
-    import '$_CHANGE_DETECT_CLASS_IMPORT' as $_GEN_PREFIX
-      show ChangeDetectionUtil;
-    import '$_BASE_CLASS_IMPORT' as $_GEN_PREFIX show AbstractChangeDetector;
-  ''';
+    return _buf.isEmpty ? '' : _ALL_IMPORTS;
   }
 
   bool get isEmpty => _buf.isEmpty;
@@ -95,7 +87,7 @@ class _CodegenState {
         final dynamic $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
         ${_allFields().map(
-            (f) => 'dynamic $f = $_UTIL.unitialized();').join('')}
+            (f) => 'dynamic $f = $_UTIL.uninitialized();').join('')}
         $_typeName(
             this.$_DISPATCHER_ACCESSOR,
             this.$_PIPE_REGISTRY_ACCESSOR,
@@ -127,12 +119,12 @@ class _CodegenState {
 
         void dehydrate() {
           ${_getNonNullPipeNames().map((p) => '$p.onDestroy();').join('')}
-          ${_allFields().map((f) => '$f = $_UTIL.unitialized();').join('')}
+          ${_allFields().map((f) => '$f = $_UTIL.uninitialized();').join('')}
           $_LOCALS_ACCESSOR = null;
         }
 
         hydrated() => !$_IDENTICAL_CHECK_FN(
-            $_CONTEXT_ACCESSOR, $_UTIL.unitialized());
+            $_CONTEXT_ACCESSOR, $_UTIL.uninitialized());
       }
     ''');
   }
@@ -220,7 +212,7 @@ class _CodegenState {
     var pipeType = r.name;
     return '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
-      if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.unitialized())) {
+      if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized())) {
         $pipe = $_PIPE_REGISTRY_ACCESSOR.get('$pipeType', $context, $cdRef);
       } else if (!$pipe.supports($context)) {
         $pipe.onDestroy();
@@ -414,6 +406,13 @@ class _CodegenState {
   }
 }
 
+const _ALL_IMPORTS = '''
+    import '$_FACADE_CLASS_IMPORT' as $_GEN_PREFIX
+      show NumberWrapper, looseIdentical;
+    import '$_CHANGE_DETECT_CLASS_IMPORT' as $_GEN_PREFIX
+      show ChangeDetectionUtil;
+    import '$_BASE_CLASS_IMPORT' as $_GEN_PREFIX show AbstractChangeDetector;
+  ''';
 const _BASE_CLASS_IMPORT =
     'package:angular2/src/change_detection/abstract_change_detector.dart';
 const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';

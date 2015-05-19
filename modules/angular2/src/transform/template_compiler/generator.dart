@@ -41,12 +41,32 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
 
     registrations.generate(result.recording);
     if (result.protoView != null && generateChangeDetectors) {
+      var savedReflectionCapabilities = reflector.reflectionCapabilities;
+      var recordingCapabilities = new RecordingReflectionCapabilities();
+      reflector.reflectionCapabilities = recordingCapabilities;
+
       var defs = getChangeDetectorDefinitions(viewDefEntry.hostMetadata,
           result.protoView, viewDefEntry.viewDef.directives);
       for (var i = 0; i < defs.length; ++i) {
         changeDetectorClasses.generate(
             '_${rType.typeName}_ChangeDetector$i', defs[i]);
       }
+
+      // Check that getters, setters, methods are the same as above.
+      assert(recordingCapabilities.getterNames
+          .containsAll(result.recording.getterNames));
+      assert(result.recording.getterNames
+          .containsAll(recordingCapabilities.getterNames));
+      assert(recordingCapabilities.setterNames
+          .containsAll(result.recording.setterNames));
+      assert(result.recording.setterNames
+          .containsAll(recordingCapabilities.setterNames));
+      assert(recordingCapabilities.methodNames
+          .containsAll(result.recording.methodNames));
+      assert(result.recording.methodNames
+          .containsAll(recordingCapabilities.methodNames));
+
+      reflector.reflectionCapabilities = savedReflectionCapabilities;
     }
   }
 
