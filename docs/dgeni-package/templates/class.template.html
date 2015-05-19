@@ -2,7 +2,7 @@
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
-<h1 class="class export">{$ doc.name $} <span class="type">class</span></h1>
+<h1 class="class export">{$ doc.name $} <span class="type">{$ doc.docType $}</span></h1>
 <p class="module">exported from <a href="/{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.id $}</a><br/>
 defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.fileInfo.relativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}">
   {$ doc.fileInfo.relativePath $} (line {$ doc.location.start.line+1 $})</a></p>

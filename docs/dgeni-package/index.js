@@ -25,6 +25,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 .factory('EXPORT_DOC_TYPES', function() {
   return [
     'class',
+    'interface',
     'function',
     'var',
     'const'
