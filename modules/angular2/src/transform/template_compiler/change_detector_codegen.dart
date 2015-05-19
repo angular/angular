@@ -9,6 +9,9 @@ import 'package:angular2/src/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/change_detection/proto_record.dart';
 
 /// Responsible for generating change detector classes for Angular 2.
+///
+/// This code should be kept in sync with the `ChangeDetectorJITGenerator`
+/// class. If you make updates here, please make equivalent changes there.
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
 
@@ -95,8 +98,8 @@ class _CodegenState {
             this.$_DIRECTIVES_ACCESSOR) : super();
 
         void detectChangesInRecords(throwOnChange) {
-          ${_localNames.map((name) => 'var $name = null;').join('')}
-          ${_changeNames.map((name) => 'var $name = false;').join('')}
+          ${_genLocalDefinitions()}
+          ${_genChangeDefinitons()}
           var $_IS_CHANGED_LOCAL = false;
           var $_CURRENT_PROTO;
           var $_CHANGES_LOCAL = null;
@@ -113,12 +116,12 @@ class _CodegenState {
           $_MODE_ACCESSOR = '$_changeDetectionMode';
           $_CONTEXT_ACCESSOR = context;
           $_LOCALS_ACCESSOR = locals;
-          ${_hydrateDirectives()}
-          ${_hydrateDetectors()}
+          ${_genHydrateDirectives()}
+          ${_genHydrateDetectors()}
         }
 
         void dehydrate() {
-          ${_getNonNullPipeNames().map((p) => '$p.onDestroy();').join('')}
+          ${_genPipeOnDestroy()}
           ${_allFields().map((f) => '$f = $_UTIL.uninitialized();').join('')}
           $_LOCALS_ACCESSOR = null;
         }
@@ -129,12 +132,21 @@ class _CodegenState {
     ''');
   }
 
-  List<String> _allFields() {
-    return new List.from(_fieldNames)
-      ..addAll(_getNonNullPipeNames())
-      ..addAll(_getDirectiveFieldNames())
-      ..addAll(_getDetectorFieldNames());
+  List<String> _genGetDirectiveFieldNames() {
+    return _directiveRecords
+        .map((d) => _genGetDirective(d.directiveIndex))
+        .toList();
   }
+
+  List<String> _genGetDetectorFieldNames() {
+    return _directiveRecords
+        .where((d) => d.isOnPushChangeDetection())
+        .map((d) => _genGetDetector(d.directiveIndex))
+        .toList();
+  }
+
+  String _genGetDirective(DirectiveIndex d) => '_directive_${d.name}';
+  String _genGetDetector(DirectiveIndex d) => '_detector_${d.name}';
 
   List<String> _getNonNullPipeNames() {
     return _records
@@ -144,36 +156,16 @@ class _CodegenState {
         .toList();
   }
 
-  List<String> _getDirectiveFieldNames() {
-    return _directiveRecords
-        .map((d) => _getDirective(d.directiveIndex))
-        .toList();
+  List<String> _allFields() {
+    return new List.from(_fieldNames)
+      ..addAll(_getNonNullPipeNames())
+      ..addAll(_genGetDirectiveFieldNames())
+      ..addAll(_genGetDetectorFieldNames());
   }
 
-  List<String> _getDetectorFieldNames() {
-    return _directiveRecords
-        .where((d) => d.isOnPushChangeDetection())
-        .map((d) => _getDetector(d.directiveIndex))
-        .toList();
-  }
-
-  String _getDirective(DirectiveIndex d) => '_directive_${d.name}';
-  String _getDetector(DirectiveIndex d) => '_detector_${d.name}';
-
-  /// Generates calls to `onAllChangesDone` for all `Directive`s that request
-  /// them.
-  String _getCallOnAllChangesDoneBody() {
-    // NOTE(kegluneq): Order is important!
-    return _directiveRecords.reversed
-        .where((rec) => rec.callOnAllChangesDone)
-        .map(
-            (rec) => '${_getDirective(rec.directiveIndex)}.onAllChangesDone();')
-        .join('');
-  }
-
-  String _hydrateDirectives() {
+  String _genHydrateDirectives() {
     var buf = new StringBuffer();
-    var directiveFieldNames = _getDirectiveFieldNames();
+    var directiveFieldNames = _genGetDirectiveFieldNames();
     for (var i = 0; i < directiveFieldNames.length; ++i) {
       buf.writeln('${directiveFieldNames[i]} = directives.getDirectiveFor('
           '$_DIRECTIVES_ACCESSOR[$i].directiveIndex);');
@@ -181,15 +173,35 @@ class _CodegenState {
     return '$buf';
   }
 
-  String _hydrateDetectors() {
+  String _genHydrateDetectors() {
     var buf = new StringBuffer();
-    var detectorFieldNames = _getDetectorFieldNames();
+    var detectorFieldNames = _genGetDetectorFieldNames();
     for (var i = 0; i < detectorFieldNames.length; ++i) {
       buf.writeln('${detectorFieldNames[i]} = directives.getDetectorFor('
           '$_DIRECTIVES_ACCESSOR[$i].directiveIndex)');
     }
     return '$buf';
   }
+
+  String _genPipeOnDestroy() =>
+      _getNonNullPipeNames().map((p) => '$p.onDestroy();').join('');
+
+  /// Generates calls to `onAllChangesDone` for all `Directive`s that request
+  /// them.
+  String _getCallOnAllChangesDoneBody() {
+    // NOTE(kegluneq): Order is important!
+    return _directiveRecords.reversed
+        .where((rec) => rec.callOnAllChangesDone)
+        .map((rec) =>
+            '${_genGetDirective(rec.directiveIndex)}.onAllChangesDone();')
+        .join('');
+  }
+
+  String _genLocalDefinitions() =>
+      _localNames.map((name) => 'var $name = null;').join('');
+
+  String _genChangeDefinitons() =>
+      _changeNames.map((name) => 'var $name = false;').join('');
 
   String _genRecord(ProtoRecord r) {
     if (r.mode == RECORD_TYPE_PIPE || r.mode == RECORD_TYPE_BINDING_PIPE) {
@@ -261,11 +273,11 @@ class _CodegenState {
 
   String _genUpdateCurrentValue(ProtoRecord r) {
     var context = r.contextIndex == -1
-        ? _getDirective(r.directiveIndex)
+        ? _genGetDirective(r.directiveIndex)
         : _localNames[r.contextIndex];
 
     var newValue = _localNames[r.selfIndex];
-    var args = r.args.map((arg) => _localNames[arg]).join(', ');
+    var argString = r.args.map((arg) => _localNames[arg]).join(', ');
 
     var rhs;
     switch (r.mode) {
@@ -286,15 +298,15 @@ class _CodegenState {
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
-        rhs = '$context.${r.name}($args)';
+        rhs = '$context.${r.name}($argString)';
         break;
 
       case RECORD_TYPE_INVOKE_CLOSURE:
-        rhs = '$context($args)';
+        rhs = '$context($argString)';
         break;
 
       case RECORD_TYPE_PRIMITIVE_OP:
-        rhs = '$_UTIL.${r.name}($args)';
+        rhs = '$_UTIL.${r.name}($argString)';
         break;
 
       case RECORD_TYPE_INTERPOLATE:
@@ -330,36 +342,27 @@ class _CodegenState {
     var br = r.bindingRecord;
     if (br.isDirective()) {
       var directiveProperty =
-          '${_getDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}';
-      return _updateDirectiveTemplate(oldValue, newValue, directiveProperty);
+          '${_genGetDirective(br.directiveRecord.directiveIndex)}.${br.propertyName}';
+      return '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
+      $directiveProperty = $newValue;
+      $_IS_CHANGED_LOCAL = true;
+    ''';
     } else {
-      return _updateElementTemplate(oldValue, newValue);
+      return '''
+      ${_genThrowOnChangeCheck(oldValue, newValue)}
+      $_DISPATCHER_ACCESSOR.notifyOnBinding(
+          $_CURRENT_PROTO.bindingRecord, ${newValue});
+    ''';
     }
   }
 
-  String _throwOnChangeCheck(String oldValue, String newValue) {
+  String _genThrowOnChangeCheck(String oldValue, String newValue) {
     return '''
       if(throwOnChange) {
         $_UTIL.throwOnChange(
             $_CURRENT_PROTO, $_UTIL.simpleChange(${oldValue}, ${newValue}));
       }
-    ''';
-  }
-
-  String _updateElementTemplate(String oldValue, String newValue) {
-    return '''
-      ${_throwOnChangeCheck(oldValue, newValue)}
-      $_DISPATCHER_ACCESSOR.notifyOnBinding(
-          $_CURRENT_PROTO.bindingRecord, ${newValue});
-    ''';
-  }
-
-  String _updateDirectiveTemplate(
-      String oldValue, String newValue, String directiveProperty) {
-    return '''
-      ${_throwOnChangeCheck(oldValue, newValue)}
-      $directiveProperty = $newValue;
-      $_IS_CHANGED_LOCAL = true;
     ''';
   }
 
@@ -388,7 +391,7 @@ class _CodegenState {
     if (!r.lastInDirective || !br.callOnChange()) return '';
     return '''
       if($_CHANGES_LOCAL) {
-        ${_getDirective(br.directiveRecord.directiveIndex)}
+        ${_genGetDirective(br.directiveRecord.directiveIndex)}
           .onChange($_CHANGES_LOCAL);
         $_CHANGES_LOCAL = null;
       }
@@ -400,7 +403,7 @@ class _CodegenState {
     if (!r.lastInDirective || !br.isOnPushChangeDetection()) return '';
     return '''
       if($_IS_CHANGED_LOCAL) {
-        ${_getDetector(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
+        ${_genGetDetector(br.directiveRecord.directiveIndex)}.markAsCheckOnce();
       }
     ''';
   }
