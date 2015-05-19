@@ -1,8 +1,9 @@
+{% include "lib/githubLinks.html" -%}
 {% extends 'layout/base.template.html' %}
 
 {% block body %}
 <h1 class="id">{$ doc.id $} <span class="type">module</span></h1>
-
+<p>defined in {$ githubViewLink(doc) $}</p>
 <p>{$ doc.description | marked $}</p>
 
 {% if doc.exports.length %}

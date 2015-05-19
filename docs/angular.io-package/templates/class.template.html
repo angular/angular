@@ -1,10 +1,11 @@
+{% include "lib/githubLinks.html" -%}
 {% include "lib/paramList.html" -%}
 {% extends 'layout/base.template.html' -%}
 
 {% block body %}
 p.location-badge.
   exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
-  defined in <a href="https://github.com/angular/angular/tree/master/modules/{$ doc.fileInfo.relativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}">{$ doc.fileInfo.relativePath $} (line {$ doc.location.start.line+1 $})</a>
+  defined in {$ githubViewLink(doc) $}
 
 :markdown
 {$ doc.description | indent(2, true) $}

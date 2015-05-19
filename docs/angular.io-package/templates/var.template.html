@@ -1,3 +1,4 @@
+{% include "lib/githubLinks.html" -%}
 {% extends 'layout/base.template.html' %}
 
 {% block body %}
@@ -5,6 +6,7 @@
   h2 {$ doc.name $} <span class="type">variable</span>
   p.location-badge.
     exported from {@link {$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }
+    defined in {$ githubViewLink(doc) $}
 
   :markdown
 {$ doc.description | indent(4, true) $}

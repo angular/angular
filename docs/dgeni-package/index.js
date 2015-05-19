@@ -1,5 +1,6 @@
 require('../../tools/transpiler/index.js').init();
 
+var versionInfo = require('./versionInfo');
 var Package = require('dgeni').Package;
 var jsdocPackage = require('dgeni-packages/jsdoc');
 var nunjucksPackage = require('dgeni-packages/nunjucks');
@@ -46,6 +47,10 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
   log.level = 'warn';
 })
 
+
+.config(function(renderDocsProcessor) {
+  renderDocsProcessor.extraData.versionInfo = versionInfo;
+})
 
 // Configure file reading
 .config(function(readFilesProcessor, ngdocFileReader, readTypeScriptModules) {

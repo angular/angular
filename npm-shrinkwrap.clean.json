@@ -8564,6 +8564,9 @@
     "semver": {
       "version": "4.3.4"
     },
+    "shelljs": {
+      "version": "0.5.0"
+    },
     "sorted-object": {
       "version": "1.0.0"
     },
@@ -8984,12 +8987,7 @@
           "version": "0.1.4"
         },
         "minitable": {
-          "version": "0.0.3",
-          "dependencies": {
-            "minichain": {
-              "version": "0.0.1"
-            }
-          }
+          "version": "0.0.3"
         },
         "es6-shim": {
           "version": "0.9.1"
@@ -9255,6 +9253,9 @@
         },
         "detect-indent": {
           "version": "0.1.4"
+        },
+        "minichain": {
+          "version": "0.0.1"
         }
       }
     },
