@@ -7,11 +7,11 @@
 
 declare var assert: any;
 declare var global: Window;
-type int = number;
+declare type int = number;
 
 interface List<T> extends Array<T> {}
 
-interface StringMap<K,V> extends Object {}
+interface StringMap<K, V> extends Object {}
 
 interface Window {
   Object: typeof Object;

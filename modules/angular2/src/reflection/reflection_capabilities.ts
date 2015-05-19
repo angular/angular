@@ -2,11 +2,6 @@ import {Type, isPresent, global} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export class ReflectionCapabilities {
   private _reflect: any;
 

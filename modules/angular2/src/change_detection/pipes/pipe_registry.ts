@@ -4,11 +4,6 @@ import {Pipe} from './pipe';
 import {Injectable} from 'angular2/src/di/decorators';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 @Injectable()
 export class PipeRegistry {
   constructor(public config) {}

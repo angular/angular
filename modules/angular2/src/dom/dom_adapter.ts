@@ -1,12 +1,11 @@
-import {BaseException} from 'angular2/src/facade/lang';
-
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
+import {BaseException, isBlank} from 'angular2/src/facade/lang';
 
 export var DOM: DomAdapter;
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  DOM = adapter;
+  if (isBlank(DOM)) {
+    DOM = adapter;
+  }
 }
 
 function _abstract() {

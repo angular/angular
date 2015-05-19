@@ -134,12 +134,12 @@ toString(): string {
  * are contained in a given CssSelector.
  */
 export class SelectorMatcher {
-  static createNotMatcher(notSelector:CssSelector) {
+  static createNotMatcher(notSelector: CssSelector) {
     var notMatcher = new SelectorMatcher();
     notMatcher._addSelectable(notSelector, null, null);
-    return notMatcher;    
+    return notMatcher;
   }
-  
+
   private _elementMap: Map<string, string>;
   private _elementPartialMap: Map<string, string>;
   private _classMap: Map<string, string>;
@@ -147,7 +147,7 @@ export class SelectorMatcher {
   private _attrValueMap: Map<string, string>;
   private _attrValuePartialMap: Map<string, string>;
   private _listContexts: List<SelectorListContext>;
-  
+
   constructor() {
     this._elementMap = MapWrapper.create();
     this._elementPartialMap = MapWrapper.create();
@@ -177,7 +177,8 @@ export class SelectorMatcher {
    * @param cssSelector A css selector
    * @param callbackCtxt An opaque object that will be given to the callback of the `match` function
    */
-  private _addSelectable(cssSelector: CssSelector, callbackCtxt: any, listContext: SelectorListContext) {
+  private _addSelectable(cssSelector: CssSelector, callbackCtxt: any,
+                         listContext: SelectorListContext) {
     var matcher = this;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;

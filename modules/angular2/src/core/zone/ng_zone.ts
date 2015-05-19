@@ -32,7 +32,7 @@ export class NgZone {
   //   zone.run(() => {});    // nested call -> in-turn
   // });
   _nestedRun: number;
-  
+
   // TODO(vicb): implement this class properly for node.js environment
   // This disabled flag is only here to please cjs tests
   _disabled: boolean;
@@ -54,7 +54,7 @@ export class NgZone {
     this._pendingMicrotasks = 0;
     this._hasExecutedCodeInInnerZone = false;
     this._nestedRun = 0;
-    
+
     if (global.zone) {
       this._disabled = false;
       this._mountZone = global.zone;
@@ -99,11 +99,11 @@ export class NgZone {
    * });
    * ```
    */
-  run(fn) { 
+  run(fn) {
     if (this._disabled) {
       return fn();
     } else {
-      return this._innerZone.run(fn);     
+      return this._innerZone.run(fn);
     }
   }
 
@@ -123,12 +123,12 @@ export class NgZone {
    * });
    * ```
    */
-  runOutsideAngular(fn) { 
+  runOutsideAngular(fn) {
     if (this._disabled) {
       return fn();
     } else {
       return this._mountZone.run(fn);
-    } 
+    }
   }
 
   _createInnerZone(zone, enableLongStackTrace) {

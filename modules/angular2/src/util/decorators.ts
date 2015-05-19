@@ -1,5 +1,3 @@
-export var __esModule = true;
-
 import {global} from 'angular2/src/facade/lang';
 
 export function makeDecorator(annotationCls) {

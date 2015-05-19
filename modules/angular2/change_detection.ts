@@ -57,8 +57,3 @@ export {
   preGeneratedProtoDetectors,
   defaultPipeRegistry
 } from './src/change_detection/change_detection';
-
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;

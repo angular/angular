@@ -3,11 +3,6 @@ import {SetterFn} from 'angular2/src/reflection/types';
 import {AST} from './parser/ast';
 import {DirectiveIndex, DirectiveRecord} from './directive_record';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 const DIRECTIVE = "directive";
 const ELEMENT = "element";
 const TEXT_NODE = "textNode";

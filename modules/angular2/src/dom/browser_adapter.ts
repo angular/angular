@@ -3,11 +3,6 @@ import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 var _attrToPropMap = {'innerHtml': 'innerHTML', 'readonly': 'readOnly', 'tabindex': 'tabIndex'};
 
 const DOM_KEY_LOCATION_NUMPAD = 3;

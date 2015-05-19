@@ -4,11 +4,6 @@ import {ChangeDetectorRef} from './change_detector_ref';
 import {ChangeDetector} from './interfaces';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export class AbstractChangeDetector extends ChangeDetector {
   lightDomChildren: List<any>;
   shadowDomChildren: List<any>;

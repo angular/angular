@@ -2,11 +2,6 @@ import {List} from 'angular2/src/facade/collection';
 import {BindingRecord} from './binding_record';
 import {DirectiveIndex} from './directive_record';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export const RECORD_TYPE_SELF = 0;
 export const RECORD_TYPE_CONST = 1;
 export const RECORD_TYPE_PRIMITIVE_OP = 2;

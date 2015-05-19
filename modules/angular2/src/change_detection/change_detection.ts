@@ -14,11 +14,6 @@ import {Injectable} from 'angular2/src/di/decorators';
 import {List, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 /**
  * Structural diffing for `Object`s and `Map`s.
  *

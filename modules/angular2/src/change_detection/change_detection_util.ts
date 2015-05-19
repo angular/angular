@@ -5,11 +5,6 @@ import {ExpressionChangedAfterItHasBeenChecked} from './exceptions';
 import {WrappedValue} from './pipes/pipe';
 import {CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH} from './constants';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export var uninitialized = new Object();
 
 export class SimpleChange {

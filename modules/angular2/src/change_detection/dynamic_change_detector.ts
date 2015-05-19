@@ -24,11 +24,6 @@ import {
 
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export class DynamicChangeDetector extends AbstractChangeDetector {
   locals: any;
   values: List<any>;

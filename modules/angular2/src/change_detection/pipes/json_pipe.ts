@@ -1,12 +1,6 @@
 import {isBlank, isPresent, CONST, Json} from 'angular2/src/facade/lang';
 import {Pipe, PipeFactory} from './pipe';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
-
 /**
  * Implements json transforms to any object.
  *

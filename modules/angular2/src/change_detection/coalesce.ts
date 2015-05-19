@@ -2,11 +2,6 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {RECORD_TYPE_SELF, ProtoRecord} from './proto_record';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 /**
  * Removes "duplicate" records. It assuming that record evaluation does not
  * have side-effects.

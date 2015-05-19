@@ -1,11 +1,6 @@
 import {ChangeDetector} from './interfaces';
 import {CHECK_ONCE, DETACHED, CHECK_ALWAYS} from './constants';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 /**
  * Controls change detection.
  *

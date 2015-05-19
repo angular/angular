@@ -3,11 +3,6 @@ import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src
 import {SetterFn, GetterFn, MethodFn} from './types';
 export {SetterFn, GetterFn, MethodFn} from './types';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export class Reflector {
   _typeInfo: Map<Type, any>;
   _getters: Map<string, GetterFn>;

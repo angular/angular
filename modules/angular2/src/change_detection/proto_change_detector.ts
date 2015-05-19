@@ -52,12 +52,6 @@ import {
   RECORD_TYPE_INTERPOLATE
 } from './proto_record';
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
-
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _records: List<ProtoRecord>;
 

@@ -1,11 +1,6 @@
 import {isBlank, isPresent, FunctionWrapper, BaseException} from "angular2/src/facade/lang";
 import {List, Map, ListWrapper, StringMapWrapper} from "angular2/src/facade/collection";
 
-// HACK: workaround for Traceur behavior.
-// It expects all transpiled modules to contain this marker.
-// TODO: remove this when we no longer use traceur
-export var __esModule = true;
-
 export class AST {
   eval(context, locals) { throw new BaseException("Not supported"); }
 
