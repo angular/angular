@@ -18,3 +18,5 @@ export * from './src/core/compiler/dynamic_component_loader';
 export {ViewRef, ProtoViewRef} from './src/core/compiler/view_ref';
 export {ViewContainerRef} from './src/core/compiler/view_container_ref';
 export {ElementRef} from './src/core/compiler/element_ref';
+
+export {NgZone} from './src/core/zone/ng_zone';
