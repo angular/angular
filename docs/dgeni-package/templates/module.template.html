@@ -10,7 +10,7 @@
 <ul>
 {%- for exportDoc in doc.exports %}
   {% if not exportDoc.private -%}
-  <li><a href="/{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
+  <li><a href="{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
   {%- endif %}
 {%- endfor %}
 </ul>
