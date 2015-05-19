@@ -39,17 +39,16 @@ export class PromiseWrapper {
 
     return {promise: p, resolve: resolve, reject: reject};
   }
+  static isPromise(maybePromise): boolean { return maybePromise instanceof Promise; }
+}
 
-  // TODO(vicb): create a TimerWrapper
+export class TimerWrapper {
   static setTimeout(fn: Function, millis: int): int { return global.setTimeout(fn, millis); }
   static clearTimeout(id: int): void { global.clearTimeout(id); }
 
   static setInterval(fn: Function, millis: int): int { return global.setInterval(fn, millis); }
   static clearInterval(id: int): void { global.clearInterval(id); }
-
-  static isPromise(maybePromise): boolean { return maybePromise instanceof Promise; }
 }
-
 
 export class ObservableWrapper {
   static subscribe(emitter: Observable, onNext, onThrow = null, onReturn = null): Object {

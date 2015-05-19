@@ -13,7 +13,7 @@ import {
   isInInnerZone
 } from 'angular2/test_lib';
 
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/lang';
 
@@ -21,7 +21,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 // Schedules a macrotask (using a timer)
 function macroTask(fn: Function): void {
-  _zone.runOutsideAngular(() => PromiseWrapper.setTimeout(fn, 1));
+  _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, 1));
 }
 
 // Schedules a microtasks (using a resolved promise .then())
@@ -71,8 +71,8 @@ export function main() {
           var c = PromiseWrapper.completer();
 
           _zone.run(() => {
-            PromiseWrapper.setTimeout(() => {
-              PromiseWrapper.setTimeout(() => {
+            TimerWrapper.setTimeout(() => {
+              TimerWrapper.setTimeout(() => {
                 c.resolve(null);
                 throw new BaseException('ccc');
               }, 0);
@@ -124,8 +124,8 @@ export function main() {
           var c = PromiseWrapper.completer();
 
           _zone.run(() => {
-            PromiseWrapper.setTimeout(() => {
-              PromiseWrapper.setTimeout(() => {
+            TimerWrapper.setTimeout(() => {
+              TimerWrapper.setTimeout(() => {
                 c.resolve(null);
                 throw new BaseException('ccc');
               }, 0);

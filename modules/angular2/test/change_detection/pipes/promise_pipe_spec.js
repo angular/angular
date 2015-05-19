@@ -4,7 +4,7 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {PromisePipe} from 'angular2/src/change_detection/pipes/promise_pipe';
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe("PromisePipe", () => {
@@ -40,7 +40,7 @@ export function main() {
 
         completer.resolve(message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
           async.done();
         }, 0)
@@ -51,7 +51,7 @@ export function main() {
         pipe.transform(completer.promise);
         completer.resolve(message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           pipe.transform(completer.promise);
           expect(pipe.transform(completer.promise)).toBe(message);
           async.done();
@@ -68,7 +68,7 @@ export function main() {
         // this should not affect the pipe, so it should return WrappedValue
         completer.resolve(message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(pipe.transform(newCompleter.promise)).toBe(null);
           async.done();
         }, 0)
@@ -79,7 +79,7 @@ export function main() {
         pipe.transform(completer.promise);
         completer.resolve(message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(ref.spy('requestCheck')).toHaveBeenCalled();
           async.done();
         }, 0)

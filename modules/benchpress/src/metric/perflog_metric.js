@@ -1,4 +1,4 @@
-import { PromiseWrapper, Promise } from 'angular2/src/facade/async';
+import { PromiseWrapper, Promise, TimerWrapper } from 'angular2/src/facade/async';
 import {
   isPresent, isBlank, int, BaseException, StringWrapper, Math, RegExpWrapper, NumberWrapper
 } from 'angular2/src/facade/lang';
@@ -248,5 +248,5 @@ var _BINDINGS = [
       new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc),
     [WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC]
   ),
-  bind(_SET_TIMEOUT).toValue( (fn, millis) => PromiseWrapper.setTimeout(fn, millis) )
+  bind(_SET_TIMEOUT).toValue( (fn, millis) => TimerWrapper.setTimeout(fn, millis) )
 ];

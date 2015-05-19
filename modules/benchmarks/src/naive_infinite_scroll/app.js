@@ -1,6 +1,6 @@
 import {int, isPresent} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/directives';
@@ -57,7 +57,7 @@ export class App {
     var n:int = this.iterationCount;
     var scheduleScroll;
     scheduleScroll = () => {
-      PromiseWrapper.setTimeout(() => {
+      TimerWrapper.setTimeout(() => {
         scrollDiv.scrollTop += this.scrollIncrement;
         n--;
         if (n > 0) {
@@ -77,7 +77,7 @@ export class App {
       // Nothing to do, the marker is already there
       return;
     }
-    PromiseWrapper.setTimeout(() => {
+    TimerWrapper.setTimeout(() => {
       var finishedDiv = DOM.createElement('div');
       finishedDiv.id = 'done';
       DOM.setInnerHTML(finishedDiv, 'Finished');

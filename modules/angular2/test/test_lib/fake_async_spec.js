@@ -14,7 +14,7 @@ import {
     tick,
     xit
 } from 'angular2/test_lib';
-import {PromiseWrapper} from 'angular2/src/facade/async';
+import {TimerWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, global} from 'angular2/src/facade/lang';
 import {Parser} from 'angular2/change_detection';
 
@@ -120,7 +120,7 @@ export function main() {
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
         var ran = false;
-        PromiseWrapper.setTimeout(() => { ran = true }, 0);
+        TimerWrapper.setTimeout(() => { ran = true }, 0);
 
         expect(ran).toEqual(false);
 
@@ -131,7 +131,7 @@ export function main() {
 
       it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
         var ran = false;
-        PromiseWrapper.setTimeout(() => { ran = true; }, 10);
+        TimerWrapper.setTimeout(() => { ran = true; }, 10);
 
         tick(6);
         expect(ran).toEqual(false);
@@ -142,7 +142,7 @@ export function main() {
 
       it('should run queued timer only once', fakeAsync(() => {
         var cycles = 0;
-        PromiseWrapper.setTimeout(() => { cycles++; }, 10);
+        TimerWrapper.setTimeout(() => { cycles++; }, 10);
 
         tick(10);
         expect(cycles).toEqual(1);
@@ -156,8 +156,8 @@ export function main() {
 
       it('should not run cancelled timer', fakeAsync(() => {
         var ran = false;
-        var id = PromiseWrapper.setTimeout(() => { ran = true; }, 10);
-        PromiseWrapper.clearTimeout(id);
+        var id = TimerWrapper.setTimeout(() => { ran = true; }, 10);
+        TimerWrapper.clearTimeout(id);
 
         tick(10);
         expect(ran).toEqual(false);
@@ -168,7 +168,7 @@ export function main() {
         if (IS_DARTIUM) return;
         expect(() => {
           fakeAsync(() => {
-            PromiseWrapper.setTimeout(() => { }, 10);
+            TimerWrapper.setTimeout(() => { }, 10);
           })();
         }).toThrowError('1 timer(s) still in the queue.');
       });
@@ -178,14 +178,14 @@ export function main() {
         if (IS_DARTIUM) return;
         expect(() => {
           fakeAsync(() => {
-            PromiseWrapper.setInterval(() => { }, 10);
+            TimerWrapper.setInterval(() => { }, 10);
           })();
         }).toThrowError('1 periodic timer(s) still in the queue.');
       });
 
       it('should run periodic timers', fakeAsync(() => {
         var cycles = 0;
-        var id = PromiseWrapper.setInterval(() => { cycles++; }, 10);
+        var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
 
         tick(10);
         expect(cycles).toEqual(1);
@@ -196,13 +196,13 @@ export function main() {
         tick(10);
         expect(cycles).toEqual(3);
 
-        PromiseWrapper.clearInterval(id);
+        TimerWrapper.clearInterval(id);
       }));
 
       it('should not run cancelled periodic timer', fakeAsync(() => {
         var ran = false;
-        var id = PromiseWrapper.setInterval(() => { ran = true; }, 10);
-        PromiseWrapper.clearInterval(id);
+        var id = TimerWrapper.setInterval(() => { ran = true; }, 10);
+        TimerWrapper.clearInterval(id);
 
         tick(10);
         expect(ran).toEqual(false);
@@ -218,9 +218,9 @@ export function main() {
         var cycles = 0;
         var id;
 
-        id = PromiseWrapper.setInterval(() => {
+        id = TimerWrapper.setInterval(() => {
           cycles++;
-          PromiseWrapper.clearInterval(id);
+          TimerWrapper.clearInterval(id);
         }, 10);
 
         tick(10);
@@ -235,16 +235,16 @@ export function main() {
 
         PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
 
-        PromiseWrapper.setTimeout(() => log.add('timer'), 9);
+        TimerWrapper.setTimeout(() => log.add('timer'), 9);
 
-        var id = PromiseWrapper.setInterval(() => log.add('periodic timer'), 10);
+        var id = TimerWrapper.setInterval(() => log.add('periodic timer'), 10);
 
         expect(log.result()).toEqual('');
 
         tick(10);
         expect(log.result()).toEqual('microtask; timer; periodic timer');
 
-        PromiseWrapper.clearInterval(id);
+        TimerWrapper.clearInterval(id);
       }));
 
       it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
@@ -252,12 +252,12 @@ export function main() {
 
         PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           log.add('timer');
           PromiseWrapper.resolve(null).then((_) => log.add('t microtask'));
         }, 9);
 
-        var id = PromiseWrapper.setInterval(() => {
+        var id = TimerWrapper.setInterval(() => {
           log.add('periodic timer');
           PromiseWrapper.resolve(null).then((_) => log.add('pt microtask'));
         }, 10);
@@ -268,7 +268,7 @@ export function main() {
         tick(10);
         expect(log.result()).toEqual('microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
 
-        PromiseWrapper.clearInterval(id);
+        TimerWrapper.clearInterval(id);
       }));
     });
 

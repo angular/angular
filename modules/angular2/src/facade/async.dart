@@ -29,7 +29,12 @@ class PromiseWrapper {
 
   static CompleterWrapper completer() => new CompleterWrapper(new Completer());
 
-  // TODO(vic): create a TimerWrapper
+  static bool isPromise(maybePromise) {
+    return maybePromise is Future;
+  }
+}
+
+class TimerWrapper {
   static Timer setTimeout(fn(), int millis)
       => new Timer(new Duration(milliseconds: millis), fn);
   static void clearTimeout(Timer timer) {
@@ -42,10 +47,6 @@ class PromiseWrapper {
   }
   static void clearInterval(Timer timer) {
     timer.cancel();
-  }
-
-  static bool isPromise(maybePromise) {
-    return maybePromise is Future;
   }
 }
 

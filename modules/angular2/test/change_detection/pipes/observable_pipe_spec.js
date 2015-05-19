@@ -5,7 +5,7 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ObservablePipe} from 'angular2/src/change_detection/pipes/observable_pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
-import {EventEmitter, Observable, ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
+import {EventEmitter, Observable, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe("ObservablePipe", () => {
@@ -41,7 +41,7 @@ export function main() {
 
         ObservableWrapper.callNext(emitter, message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
           async.done();
         }, 0)
@@ -52,7 +52,7 @@ export function main() {
         pipe.transform(emitter);
         ObservableWrapper.callNext(emitter, message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           pipe.transform(emitter);
           expect(pipe.transform(emitter)).toBe(message);
           async.done();
@@ -69,7 +69,7 @@ export function main() {
         // this should not affect the pipe
         ObservableWrapper.callNext(emitter, message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(pipe.transform(newEmitter)).toBe(null);
           async.done();
         }, 0)
@@ -80,7 +80,7 @@ export function main() {
         pipe.transform(emitter);
         ObservableWrapper.callNext(emitter, message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(ref.spy('requestCheck')).toHaveBeenCalled();
           async.done();
         }, 0)
@@ -98,7 +98,7 @@ export function main() {
 
         ObservableWrapper.callNext(emitter, message);
 
-        PromiseWrapper.setTimeout(() => {
+        TimerWrapper.setTimeout(() => {
           expect(pipe.transform(emitter)).toBe(null);
           async.done();
         }, 0)
