@@ -51,7 +51,7 @@ export class AbstractChangeDetector extends ChangeDetector {
 
     this._detectChangesInLightDomChildren(throwOnChange);
 
-    this.callOnAllChangesDone();
+    if (throwOnChange === false) this.callOnAllChangesDone();
 
     this._detectChangesInShadowDomChildren(throwOnChange);
 
