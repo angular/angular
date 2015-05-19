@@ -8594,7 +8594,7 @@
         },
         "source-map-support": {
           "version": "0.2.10",
-          "resolved": "git://github.com/mprobst/node-source-map-support.git#9766df880690100dc99d244a797e83bd6138d2e4",
+          "resolved": "git://github.com/mprobst/node-source-map-support.git#e6e77abddda62dec1581d393fce921cc40e8375b",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
@@ -8723,7 +8723,7 @@
                   "version": "0.6.6"
                 },
                 "json-stringify-safe": {
-                  "version": "5.0.0"
+                  "version": "5.0.1"
                 },
                 "forever-agent": {
                   "version": "0.5.2"
@@ -8749,7 +8749,7 @@
                       }
                     },
                     "async": {
-                      "version": "0.9.0"
+                      "version": "0.9.2"
                     }
                   }
                 },
@@ -8843,7 +8843,7 @@
                       "version": "0.6.6"
                     },
                     "json-stringify-safe": {
-                      "version": "5.0.0"
+                      "version": "5.0.1"
                     },
                     "forever-agent": {
                       "version": "0.5.2"
@@ -8909,7 +8909,7 @@
                           }
                         },
                         "async": {
-                          "version": "0.9.0"
+                          "version": "0.9.2"
                         }
                       }
                     }
@@ -8968,7 +8968,7 @@
               }
             },
             "universal-analytics": {
-              "version": "0.3.6",
+              "version": "0.3.8",
               "dependencies": {
                 "underscore": {
                   "version": "1.8.3"
