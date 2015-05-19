@@ -15,11 +15,11 @@ export class XHRImpl extends XHR {
       if (200 <= status && status <= 300) {
         completer.resolve(xhr.responseText);
       } else {
-        completer.reject(`Failed to load ${url}`);
+        completer.reject(`Failed to load ${url}`, null);
       }
     };
 
-    xhr.onerror = function() { completer.reject(`Failed to load ${url}`); };
+    xhr.onerror = function() { completer.reject(`Failed to load ${url}`, null); };
 
     xhr.send();
     return completer.promise;

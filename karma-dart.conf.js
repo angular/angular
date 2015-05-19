@@ -19,7 +19,8 @@ module.exports = function(config) {
       {pattern: 'packages/**/*.dart', included: false, watched: false},
 
       // Init and configure guiness.
-      {pattern: 'test-main.dart', included: true}
+      {pattern: 'test-main.dart', included: true},
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false},
     ],
 
     exclude: [

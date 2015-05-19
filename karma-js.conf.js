@@ -23,7 +23,8 @@ module.exports = function(config) {
       'node_modules/rx/dist/rx.js',
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
-      'test-main.js'
+      'test-main.js',
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
     ],
 
     exclude: [
