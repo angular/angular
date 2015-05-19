@@ -223,7 +223,7 @@ class FakeXHR extends XHR {
   get(url: string): Promise<string> {
     var response = MapWrapper.get(this._responses, url);
     if (isBlank(response)) {
-      return PromiseWrapper.reject('xhr error');
+      return PromiseWrapper.reject('xhr error', null);
     }
 
     return PromiseWrapper.resolve(response);

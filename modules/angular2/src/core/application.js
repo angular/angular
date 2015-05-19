@@ -259,8 +259,8 @@ export function bootstrap(appComponentType: Type,
         bootstrapProcess.resolve(new ApplicationRef(componentRef, appComponentType, appInjector));
       },
 
-      (err) => {
-        bootstrapProcess.reject(err)
+      (err, stackTrace) => {
+        bootstrapProcess.reject(err, stackTrace)
       });
   });
 

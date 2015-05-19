@@ -219,7 +219,7 @@ class FakeTemplateLoader extends TemplateLoader {
       }
     }
 
-    return PromiseWrapper.reject('Load failed');
+    return PromiseWrapper.reject('Load failed', null);
   }
 }
 

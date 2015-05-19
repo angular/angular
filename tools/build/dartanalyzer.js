@@ -76,8 +76,8 @@ module.exports = function(gulp, plugins, config) {
             return;
           }
         }
-        // TODO(yjbanov): fix ng2 code and remove the check below
-        if (line.match(/_stack/)) {
+        // TODO: https://github.com/angular/ts2dart/issues/168
+        if (line.match(/_stack' is not used/)) {
           return;
         }
 

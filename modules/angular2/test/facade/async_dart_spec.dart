@@ -5,6 +5,7 @@ import 'package:angular2/test_lib.dart';
 import 'package:angular2/src/facade/async.dart';
 
 class MockException implements Error { var message; var stackTrace; }
+class NonError { var message; }
 
 void functionThatThrows() {
   try { throw new MockException(); }
@@ -18,7 +19,13 @@ void functionThatThrows() {
 }
 
 void functionThatThrowsNonError() {
-  throw 'this is an error';
+  try { throw new NonError(); }
+  catch(e, stack) {
+    // If we lose the stack trace the message will no longer match
+    // the first line in the stack
+    e.message = stack.toString().split('\n')[0];
+    rethrow;
+  }
 }
 
 void expectFunctionThatThrowsWithStackTrace(
@@ -29,70 +36,63 @@ void expectFunctionThatThrowsWithStackTrace(
   });
 }
 
-void expectFunctionThatThrowsWithoutStackTrace(Future future,
-    AsyncTestCompleter async) {
-  PromiseWrapper.catchError(future, (err, StackTrace stack) {
-    expect(stack).toBe(null);
-    async.done();
-  });
-}
-
 main() {
-  describe('Completer', () {
+  describe('async facade', () {
+    describe('Completer', () {
 
-    it('should preserve error stack traces',
-        inject([AsyncTestCompleter], (async) {
-      var c = PromiseWrapper.completer();
-
-      expectFunctionThatThrowsWithStackTrace(c.promise, async);
-
-      try {
-        functionThatThrows();
-      } catch(e) {
-        c.reject(e);
-      }
-    }));
-
-    // TODO: We might fix this one day; for now testing it to be explicit
-    it('CANNOT preserve error stack traces for non-Errors',
-        inject([AsyncTestCompleter], (async) {
-      var c = PromiseWrapper.completer();
-
-      expectFunctionThatThrowsWithoutStackTrace(c.promise, async);
-
-      try {
-        functionThatThrowsNonError();
-      } catch(e) {
-        c.reject(e);
-      }
-    }));
-
-  });
-
-  describe('PromiseWrapper', () {
-
-    describe('reject', () {
-
-      it('should preserve error stack traces',
+      it('should preserve Error stack traces',
           inject([AsyncTestCompleter], (async) {
+        var c = PromiseWrapper.completer();
+
+        expectFunctionThatThrowsWithStackTrace(c.promise, async);
+
         try {
           functionThatThrows();
         } catch(e) {
-          var rejectedFuture = PromiseWrapper.reject(e);
-          expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
+          c.reject(e, null);
         }
       }));
 
-      // TODO: We might fix this one day; for now testing it to be explicit
-      it('CANNOT preserve stack traces for non-Errors',
+      it('should preserve error stack traces for non-Errors',
           inject([AsyncTestCompleter], (async) {
+        var c = PromiseWrapper.completer();
+
+        expectFunctionThatThrowsWithStackTrace(c.promise, async);
+
         try {
           functionThatThrowsNonError();
-        } catch(e) {
-          var rejectedFuture = PromiseWrapper.reject(e);
-          expectFunctionThatThrowsWithoutStackTrace(rejectedFuture, async);
+        } catch(e, s) {
+          c.reject(e, s);
         }
       }));
+
+    });
+
+    describe('PromiseWrapper', () {
+
+      describe('reject', () {
+
+        it('should preserve Error stack traces',
+            inject([AsyncTestCompleter], (async) {
+          try {
+            functionThatThrows();
+          } catch(e) {
+            var rejectedFuture = PromiseWrapper.reject(e, null);
+            expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
+          }
+        }));
+
+        it('should preserve stack traces for non-Errors',
+            inject([AsyncTestCompleter], (async) {
+          try {
+            functionThatThrowsNonError();
+          } catch(e, s) {
+            var rejectedFuture = PromiseWrapper.reject(e, s);
+            expectFunctionThatThrowsWithStackTrace(rejectedFuture, async);
+          }
+        }));
+
+      });
 
     });
 

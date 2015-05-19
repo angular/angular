@@ -15,7 +15,7 @@ export var Promise = (<any>global).Promise;
 export class PromiseWrapper {
   static resolve(obj): Promise<any> { return Promise.resolve(obj); }
 
-  static reject(obj): Promise<any> { return Promise.reject(obj); }
+  static reject(obj, _): Promise<any> { return Promise.reject(obj); }
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
@@ -29,7 +29,7 @@ export class PromiseWrapper {
   }
 
   static then<T>(promise: Promise<T>, success: (value: any) => T | Thenable<T>,
-                 rejection: (error: any) => T | Thenable<T>): Promise<T> {
+                 rejection: (error: any, stack?: any) => T | Thenable<T>): Promise<T> {
     return promise.then(success, rejection);
   }
 

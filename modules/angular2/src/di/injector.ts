@@ -338,7 +338,7 @@ class _AsyncInjectorStrategy {
     var deps = this.injector._resolveDependencies(key, binding, true);
     var depsPromise = PromiseWrapper.all(deps);
 
-    var promise = PromiseWrapper.then(depsPromise, null, (e) => this._errorHandler(key, e))
+    var promise = PromiseWrapper.then(depsPromise, null, (e, s) => this._errorHandler(key, e, s))
                       .then(deps => this._findOrCreate(key, binding, deps))
                       .then(instance => this._cacheInstance(key, instance));
 
@@ -346,9 +346,9 @@ class _AsyncInjectorStrategy {
     return promise;
   }
 
-  _errorHandler(key: Key, e): Promise<any> {
+  _errorHandler(key: Key, e, stack): Promise<any> {
     if (e instanceof AbstractBindingError) e.addKey(key);
-    return PromiseWrapper.reject(e);
+    return PromiseWrapper.reject(e, stack);
   }
 
   _findOrCreate(key: Key, binding: ResolvedBinding, deps: List<any>) {
