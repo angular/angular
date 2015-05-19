@@ -93,6 +93,18 @@ var angularBuilder = {
   });
 }());
 
+function sequenceComplete(done) {
+  return function (err) {
+    if (err) {
+      var error = new Error('build sequence failed');
+      error.showStack = false;
+      done(error);
+    } else {
+      done();
+    }
+  };
+}
+
 
 var treatTestErrorsAsFatal = true;
 
@@ -163,7 +175,7 @@ gulp.task('build/clean.docs',  function(done) {
 // transpile
 
 gulp.task('build/tree.dart', ['build/clean.dart', 'build.tools'], function(done) {
-  runSequence('!build/tree.dart', done);
+  runSequence('!build/tree.dart', sequenceComplete(done));
 });
 
 
@@ -370,11 +382,11 @@ gulp.task('docs/angular.io', function() {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
-              'test.unit.cjs/ci', done);
+              'test.unit.cjs/ci', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci', done);
+  runSequence('test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci', sequenceComplete(done));
 });
 
 // Reuse the Travis scripts
@@ -585,7 +597,8 @@ gulp.task('build/packages.dart', function(done) {
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     'build/pure-packages.dart',
-    done);
+    'build/format.dart',
+    sequenceComplete(done));
 });
 
 // Builds and compiles all Dart packages
@@ -595,14 +608,14 @@ gulp.task('build.dart', function(done) {
     'build/pubspec.dart',
     'build/analyze.dart',
     'build/pubbuild.dart',
-    done
+    sequenceComplete(done)
   );
 });
 
 
 // public task to build tools
 gulp.task('build.tools', ['build/clean.tools'], function(done) {
-  runSequence('!build.tools', done);
+  runSequence('!build.tools', sequenceComplete(done));
 });
 
 
@@ -634,7 +647,7 @@ gulp.task('!build.tools', function() {
 });
 
 gulp.task('broccoli.js.dev', ['build.tools'], function(done) {
-  runSequence('!broccoli.js.dev', done);
+  runSequence('!broccoli.js.dev', sequenceComplete(done));
 });
 
 gulp.task('!broccoli.js.dev', function() {
@@ -647,7 +660,7 @@ gulp.task('build.js.dev', ['build/clean.js'], function(done) {
     'broccoli.js.dev',
     'build/checkCircularDependencies',
     'check-format',
-    done
+    sequenceComplete(done)
   );
 });
 
@@ -660,7 +673,7 @@ gulp.task('build.js.prod', ['build.tools'], function() {
  * public task
  */
 gulp.task('build.js.cjs', ['build.tools'], function(done) {
-  runSequence('!build.js.cjs', done);
+  runSequence('!build.js.cjs', sequenceComplete(done));
 });
 
 
@@ -848,11 +861,11 @@ gulp.task('build.css.material', function() {
 
 
 gulp.task('build.js.material', function(done) {
-  runSequence('build.js.dev', 'build.css.material', done);
+  runSequence('build.js.dev', 'build.css.material', sequenceComplete(done));
 });
 
 gulp.task('build.dart2js.material', function(done) {
-  runSequence('build.dart', 'build.css.material', done);
+  runSequence('build.dart', 'build.css.material', sequenceComplete(done));
 });
 
 // TODO: this target is temporary until we find a way to use the SASS transformer

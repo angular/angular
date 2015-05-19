@@ -94,7 +94,9 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
       if (pathsWithErrors.length) {
         this.previousRunFailed = true;
-        throw new Error('Typescript found errors listed above...');
+        var error = new Error('Typescript found errors listed above...');
+        error['showStack'] = false;
+        throw error;
       } else if (this.previousRunFailed) {
         this.doFullBuild();
       }
@@ -142,7 +144,9 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       if (errorMessages.length) {
         this.previousRunFailed = true;
         console.log(errorMessages.join('\n'));
-        throw new Error('Typescript found errors listed above...');
+        var error = new Error('Typescript found errors listed above...');
+        error['showStack'] = false;
+        throw error;
       } else {
         this.previousRunFailed = false;
       }
