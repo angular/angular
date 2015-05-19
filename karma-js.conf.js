@@ -13,6 +13,7 @@ module.exports = function(config) {
       // zone-microtask must be included first as it contains a Promise monkey patch
       'node_modules/zone.js/dist/zone-microtask.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
+      'node_modules/zone.js/dist/jasmine-patch.js',
 
       'node_modules/traceur/bin/traceur-runtime.js',
       'node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.src.js',

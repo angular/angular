@@ -25,10 +25,9 @@ interface FakeAsyncZone extends NgZoneZone {
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
  */
 export function fakeAsync(fn: Function): Function {
-  // TODO(vicb) re-enable once the jasmine patch from zone.js is applied
-  // if (global.zone._inFakeAsyncZone) {
-  //  throw new Error('fakeAsync() calls can not be nested');
-  //}
+  if ((<FakeAsyncZone>global.zone)._inFakeAsyncZone) {
+    throw new Error('fakeAsync() calls can not be nested');
+  }
 
   var fakeAsyncZone = <FakeAsyncZone>global.zone.fork({
     setTimeout: _setTimeout,
