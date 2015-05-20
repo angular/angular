@@ -27,4 +27,5 @@ interface Window {
   Reflect: any;
   zone: Zone;
   Hammer: HammerStatic;
+  getAngularTestability: Function;
 }

@@ -40,14 +40,15 @@ export class EmulatedScopedShadowDomStrategy extends EmulatedUnscopedShadowDomSt
     cssText = this.styleUrlResolver.resolveUrls(cssText, templateUrl);
     var inlinedCss = this.styleInliner.inlineImports(cssText, templateUrl);
 
-    if (isPresent(inlinedCss.asyncResult)) {
+    if (PromiseWrapper.isPromise(inlinedCss)) {
       DOM.setText(styleEl, '');
-      return inlinedCss.asyncResult.then((css) => {
-        css = shimCssForComponent(css, hostComponentId);
-        DOM.setText(styleEl, css);
-      });
+      return (<Promise<string>>inlinedCss)
+          .then((css) => {
+            css = shimCssForComponent(css, hostComponentId);
+            DOM.setText(styleEl, css);
+          });
     } else {
-      var css = shimCssForComponent(inlinedCss.syncResult, hostComponentId);
+      var css = shimCssForComponent(<string>inlinedCss, hostComponentId);
       DOM.setText(styleEl, css);
       DOM.remove(styleEl);
       insertStyleElement(this.styleHost, styleEl);

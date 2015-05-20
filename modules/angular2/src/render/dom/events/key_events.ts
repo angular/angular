@@ -11,7 +11,7 @@ import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-var modifierKeyGetters =
+var modifierKeyGetters: StringMap<string, Function> =
     {
       'alt': (event) => event.altKey,
       'control': (event) => event.ctrlKey,

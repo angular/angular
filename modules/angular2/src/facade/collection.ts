@@ -37,47 +37,49 @@ export class MapWrapper {
     return result;
   }
   static createFromPairs(pairs: List<any>): Map<any, any> { return createMapFromPairs(pairs); }
-  static get(m, k) { return m.get(k); }
-  static set(m, k, v) { m.set(k, v); }
-  static contains(m, k) { return m.has(k); }
-  static forEach(m, fn) { m.forEach(fn); }
-  static size(m) { return m.size; }
-  static delete (m, k) { m.delete(k); }
-  static clear(m) { m.clear(); }
-  static clearValues(m) {
+  static get<K, V>(m: Map<K, V>, k: K): V { return m.get(k); }
+  static set<K, V>(m: Map<K, V>, k: K, v: V) { m.set(k, v); }
+  static contains<K>(m: Map<K, any>, k: K) { return m.has(k); }
+  static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
+  static size(m: Map<any, any>) { return m.size; }
+  static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
+  static clear(m: Map<any, any>) { m.clear(); }
+  static clearValues(m: Map<any, any>) {
     var keyIterator = m.keys();
     var k;
-    while (!((k = keyIterator.next()).done)) {
+    while (!((k = (<any>keyIterator).next()).done)) {
       m.set(k.value, null);
     }
   }
   static iterable(m) { return m; }
-  static keys(m) { return m.keys(); }
-  static values(m) { return m.values(); }
+  static keys<K>(m: Map<K, any>): List<K> { return m.keys(); }
+  static values<V>(m: Map<any, V>): List<V> { return m.values(); }
 }
 
 /**
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static create(): Object {
+  static create(): StringMap<any, any> {
     // Note: We are not using Object.create(null) here due to
     // performance!
     // http://jsperf.com/ng2-object-create-null
     return {};
   }
-  static contains(map, key) { return map.hasOwnProperty(key); }
-  static get(map, key) { return map.hasOwnProperty(key) ? map[key] : undefined; }
-  static set(map, key, value) { map[key] = value; }
-  static keys(map) { return Object.keys(map); }
-  static isEmpty(map) {
+  static contains(map: StringMap<string, any>, key: string) { return map.hasOwnProperty(key); }
+  static get<V>(map: StringMap<string, V>, key: string): V {
+    return map.hasOwnProperty(key) ? map[key] : undefined;
+  }
+  static set<V>(map: StringMap<string, V>, key: string, value: V) { map[key] = value; }
+  static keys(map: StringMap<string, any>): List<string> { return Object.keys(map); }
+  static isEmpty(map: StringMap<string, any>) {
     for (var prop in map) {
       return false;
     }
     return true;
   }
-  static delete (map, key) { delete map[key]; }
-  static forEach(map, callback) {
+  static delete (map: StringMap<string, any>, key: string) { delete map[key]; }
+  static forEach<K, V>(map: StringMap<string, V>, callback: /*(V, K) => void*/ Function) {
     for (var prop in map) {
       if (map.hasOwnProperty(prop)) {
         callback(map[prop], prop);
@@ -85,7 +87,7 @@ export class StringMapWrapper {
     }
   }
 
-  static merge(m1, m2) {
+  static merge<V>(m1: StringMap<string, V>, m2: StringMap<string, V>): StringMap<string, V> {
     var m = {};
 
     for (var attr in m1) {
@@ -103,7 +105,7 @@ export class StringMapWrapper {
     return m;
   }
 
-  static equals(m1, m2) {
+  static equals<V>(m1: StringMap<string, V>, m2: StringMap<string, V>): boolean {
     var k1 = Object.keys(m1);
     var k2 = Object.keys(m2);
     if (k1.length != k2.length) {

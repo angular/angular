@@ -18,12 +18,15 @@ import {CompileControl} from './compile_control';
 
 import {DirectiveMetadata} from '../../api';
 import {dashCaseToCamelCase, camelCaseToDashCase, EVENT_TARGET_SEPARATOR} from '../util';
+import {
+  DirectiveBuilder
+} from '../view/proto_view_builder'
 
-/**
- * Parses the directives on a single element. Assumes ViewSplitter has already created
- * <template> elements for template directives.
- */
-export class DirectiveParser implements CompileStep {
+    /**
+     * Parses the directives on a single element. Assumes ViewSplitter has already created
+     * <template> elements for template directives.
+     */
+    export class DirectiveParser implements CompileStep {
   _selectorMatcher: SelectorMatcher;
   _directives: List<DirectiveMetadata>;
   _parser: Parser;
@@ -118,7 +121,8 @@ export class DirectiveParser implements CompileStep {
     });
   }
 
-  _bindDirectiveProperty(dirProperty, bindConfig, compileElement, directiveBinderBuilder) {
+  _bindDirectiveProperty(dirProperty: string, bindConfig: string, compileElement: CompileElement,
+                         directiveBinderBuilder: DirectiveBuilder) {
     var pipes = this._splitBindConfig(bindConfig);
     var elProp = ListWrapper.removeAt(pipes, 0);
 

@@ -75,9 +75,9 @@ export class NgZone {
    * micro task
    */
   initCallbacks({onTurnStart, onTurnDone, onErrorHandler}: {
-    onTurnStart?: () => void,
-    onTurnDone?: () => void,
-    onErrorHandler?: (error, stack) => void
+    onTurnStart?: /*() => void*/ Function,
+    onTurnDone?: /*() => void*/ Function,
+    onErrorHandler?: /*(error, stack) => void*/ Function
   } = {}) {
     this._onTurnStart = normalizeBlank(onTurnStart);
     this._onTurnDone = normalizeBlank(onTurnDone);

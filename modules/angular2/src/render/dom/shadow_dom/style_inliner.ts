@@ -18,10 +18,6 @@ import {
   PromiseWrapper,
 } from 'angular2/src/facade/async';
 
-export class SyncAsyncResult<T> {
-  constructor(public syncResult: T, public asyncResult: Promise<T>) {}
-}
-
 /**
  * Inline @import rules in the given CSS.
  *
@@ -48,18 +44,18 @@ export class StyleInliner {
    * @param {string} baseUrl
    * @returns {*} a Promise<string> when @import rules are present, a string otherwise
    */
-  inlineImports(cssText: string, baseUrl: string): SyncAsyncResult<string> {
+  inlineImports(cssText: string, baseUrl: string): Promise<string>| string {
     return this._inlineImports(cssText, baseUrl, []);
   }
 
-  _inlineImports(cssText: string, baseUrl: string,
-                 inlinedUrls: List<string>): SyncAsyncResult<string> {
+  _inlineImports(cssText: string, baseUrl: string, inlinedUrls: List<string>): Promise<string>|
+      string {
     var partIndex = 0;
     var parts = StringWrapper.split(cssText, _importRe);
 
     if (parts.length === 1) {
       // no @import rule found, return the original css
-      return new SyncAsyncResult(cssText, null);
+      return cssText;
     }
 
     var promises = [];
@@ -87,14 +83,14 @@ export class StyleInliner {
         promise = PromiseWrapper.then(this._xhr.get(url), (rawCss) => {
           // resolve nested @import rules
           var inlinedCss = this._inlineImports(rawCss, url, inlinedUrls);
-          if (isPresent(inlinedCss.asyncResult)) {
+          if (PromiseWrapper.isPromise(inlinedCss)) {
             // wait until nested @import are inlined
-            return inlinedCss.asyncResult.then(
-                (css) => {return prefix + this._transformImportedCss(css, mediaQuery, url) + '\n'});
+            return (<Promise<string>>inlinedCss)
+                .then((css) => {return prefix + this._transformImportedCss(css, mediaQuery, url) +
+                                       '\n'});
           } else {
             // there are no nested @import, return the css
-            return prefix + this._transformImportedCss(inlinedCss.syncResult, mediaQuery, url) +
-                   '\n';
+            return prefix + this._transformImportedCss(<string>inlinedCss, mediaQuery, url) + '\n';
           }
         }, (error) => `/* failed to import ${url} */\n`);
       }
@@ -102,14 +98,14 @@ export class StyleInliner {
       partIndex += 2;
     }
 
-    return new SyncAsyncResult(null, PromiseWrapper.all(promises).then(function(cssParts) {
+    return PromiseWrapper.all(promises).then(function(cssParts) {
       var cssText = cssParts.join('');
       if (partIndex < parts.length) {
         // append then content located after the last @import rule
         cssText += parts[partIndex];
       }
       return cssText;
-    }));
+    });
   }
 
   _transformImportedCss(css: string, mediaQuery: string, url: string): string {

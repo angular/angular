@@ -22,7 +22,7 @@ export class DomAdapter {
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  get attrToPropMap(): any { throw _abstract(); }
+  get attrToPropMap(): StringMap<string, string> { throw _abstract(); }
 
   parse(templateHtml: string) { throw _abstract(); }
   query(selector: string): any { throw _abstract(); }

@@ -77,19 +77,19 @@ export var preGeneratedProtoDetectors = {};
  */
 export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
-  _protoChangeDetectors: any;
+  _protoChangeDetectorFactories: StringMap<string, Function>;
 
   constructor(private registry: PipeRegistry, protoChangeDetectors?) {
     super();
     this._dynamicChangeDetection = new DynamicChangeDetection(registry);
-    this._protoChangeDetectors =
+    this._protoChangeDetectorFactories =
         isPresent(protoChangeDetectors) ? protoChangeDetectors : preGeneratedProtoDetectors;
   }
 
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     var id = definition.id;
-    if (StringMapWrapper.contains(this._protoChangeDetectors, id)) {
-      return StringMapWrapper.get(this._protoChangeDetectors, id)(this.registry);
+    if (StringMapWrapper.contains(this._protoChangeDetectorFactories, id)) {
+      return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(this.registry);
     }
     return this._dynamicChangeDetection.createProtoChangeDetector(definition);
   }

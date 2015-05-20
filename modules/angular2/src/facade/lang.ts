@@ -2,7 +2,7 @@ var _global = typeof window === 'undefined' ? global : window;
 export {_global as global};
 
 export var Type = Function;
-export type Type = typeof Function;
+export type Type = new (... args: any[]) => any;
 
 export class BaseException extends Error {
   message;

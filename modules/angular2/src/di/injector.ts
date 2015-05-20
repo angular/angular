@@ -67,7 +67,7 @@ function _isWaiting(obj): boolean {
  * @exportedAs angular2/di
  */
 export class Injector {
-  private _bindings: List<any>;
+  private _bindings: List<ResolvedBinding>;
   private _instances: List<any>;
   private _parent: Injector;
   private _defaultBindings: boolean;
@@ -90,7 +90,7 @@ export class Injector {
    *such as
    * `fromResolvedBindings` and `createChildFromResolved`.
    */
-  static resolve(bindings: List<any>): List<ResolvedBinding> {
+  static resolve(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
     var resolvedBindings = resolveBindings(bindings);
     var flatten = _flattenBindings(resolvedBindings, MapWrapper.create());
     return _createListOfBindings(flatten);
@@ -109,7 +109,8 @@ export class Injector {
    * bindings.
    * @param `defaultBindings` Setting to true will auto-create bindings.
    */
-  static resolveAndCreate(bindings: List<any>, {defaultBindings = false}: any = {}): Injector {
+  static resolveAndCreate(bindings: List<Type | Binding | List<any>>,
+                          {defaultBindings = false}: any = {}): Injector {
     return new Injector(Injector.resolve(bindings), null, defaultBindings);
   }
 
@@ -184,7 +185,7 @@ export class Injector {
    * recursive list of more bindings.
    *
    */
-  resolveAndCreateChild(bindings: List<any>): Injector {
+  resolveAndCreateChild(bindings: List<Type | Binding | List<any>>): Injector {
     return new Injector(Injector.resolve(bindings), this, false);
   }
 
@@ -368,7 +369,7 @@ class _AsyncInjectorStrategy {
   }
 }
 
-export function resolveBindings(bindings: List<any>): List<ResolvedBinding> {
+export function resolveBindings(bindings: List<Type | Binding | List<any>>): List<ResolvedBinding> {
   var resolvedList = ListWrapper.createFixedSize(bindings.length);
   for (var i = 0; i < bindings.length; i++) {
     var unresolved = resolveForwardRef(bindings[i]);
@@ -398,13 +399,14 @@ function flattenBindings(bindings: List<ResolvedBinding>): List<ResolvedBinding>
   return res;
 }
 
-function _createListOfBindings(flattenedBindings): List<any> {
+function _createListOfBindings(
+    flattenedBindings: Map<number, ResolvedBinding>): List<ResolvedBinding> {
   var bindings = ListWrapper.createFixedSize(Key.numberOfKeys + 1);
   MapWrapper.forEach(flattenedBindings, (v, keyId) => bindings[keyId] = v);
   return bindings;
 }
 
-function _flattenBindings(bindings: List<ResolvedBinding /* | List<any>*/>,
+function _flattenBindings(bindings: List<ResolvedBinding | List<any>>,
                           res: Map<number, ResolvedBinding>): Map<number, ResolvedBinding> {
   ListWrapper.forEach(bindings, function(b) {
     if (b instanceof ResolvedBinding) {
