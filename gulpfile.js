@@ -47,7 +47,9 @@ var angularBuilder = {
   rebuildBrowserProdTree: throwToolsBuildMissingError,
   rebuildNodeTree: throwToolsBuildMissingError,
   rebuildDartTree: throwToolsBuildMissingError,
-  cleanup: function() {}
+  cleanup: function() {
+    return Promise.resolve();
+  }
 };
 
 (function checkNodeAndNpmVersions() {
