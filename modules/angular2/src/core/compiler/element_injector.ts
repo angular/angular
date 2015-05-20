@@ -831,7 +831,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
   private _isComponentKey(key: Key) {
-    return this._proto._firstBindingIsComponent && key.id === this._proto._keyId0;
+    return this._proto._firstBindingIsComponent && isPresent(key) && key.id === this._proto._keyId0;
   }
 
   private _isDynamicallyLoadedComponentKey(key: Key) {
@@ -1134,7 +1134,11 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   private _getByKey(key: Key, visibility: Visibility, optional: boolean, requestor: Key) {
     var ei = this;
 
-    var currentVisibility = LIGHT_DOM;
+    var currentVisibility = this._isComponentKey(requestor) ?
+                                LIGHT_DOM_AND_SHADOW_DOM :  // component can access both shadow dom
+                                                            // and light dom dependencies
+                                LIGHT_DOM;
+
     var depth = visibility.depth;
 
     if (!visibility.shouldIncludeSelf()) {
@@ -1144,9 +1148,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
         ei = ei._parent;
       } else {
         ei = ei._host;
-        if (!visibility.crossComponentBoundaries) {
-          currentVisibility = SHADOW_DOM;
-        }
+        currentVisibility = visibility.crossComponentBoundaries ? LIGHT_DOM : SHADOW_DOM;
       }
     }
 
@@ -1159,15 +1161,14 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
       depth -= ei._proto.distanceToParent;
 
+      // we check only one mode with the SHADOW_DOM visibility
       if (currentVisibility === SHADOW_DOM) break;
 
       if (isPresent(ei._parent)) {
         ei = ei._parent;
       } else {
         ei = ei._host;
-        if (!visibility.crossComponentBoundaries) {
-          currentVisibility = SHADOW_DOM;
-        }
+        currentVisibility = visibility.crossComponentBoundaries ? LIGHT_DOM : SHADOW_DOM;
       }
     }
 

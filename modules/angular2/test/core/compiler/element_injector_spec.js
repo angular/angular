@@ -528,6 +528,16 @@ export function main() {
         expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
       });
 
+      it("should instantiate components that depends on viewInjector dependencies", function () {
+        var inj = injector([
+          DirectiveBinding.createFromType(NeedsService,
+            new DummyDirective({viewInjector: [
+              bind('service').toValue('service')
+            ]}))
+        ], null, true);
+        expect(inj.get(NeedsService).service).toEqual('service');
+      });
+
       it("should instantiate directives that depend on app services", function () {
         var appInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")
