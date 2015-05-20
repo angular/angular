@@ -20,7 +20,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --config modules/angular2/tsd.json && tsd reinstall --config tools/tsd.json",
+    "postinstall": "node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --config modules/angular2/tsd.json && tsd reinstall --config tools/tsd.json",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
@@ -96,7 +96,7 @@
     "mock-fs": "^2.5.0",
     "node-html-encoder": "0.0.2",
     "parse5": "1.3.2",
-    "protractor": "2.0.0",
+    "protractor": "2.1.0",
     "q": "^1.0.1",
     "react": "^0.13.2",
     "rewire": "^2.3.3",
