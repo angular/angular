@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/facade/lang';
+import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 
 export class Visibility extends DependencyAnnotation {
@@ -60,6 +60,9 @@ export class Self extends Visibility {
     super(0, false);
   }
 }
+
+// make constants after switching to ts2dart
+export var self = new Self();
 
 /**
  * Specifies that an injector should retrieve a dependency from the direct parent.

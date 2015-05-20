@@ -517,6 +517,17 @@ export function main() {
         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
       });
 
+      it("should instantiate hostInjector injectables that have dependencies", function () {
+        var inj = injector([
+          DirectiveBinding.createFromType(SimpleDirective,
+            new DummyDirective({hostInjector: [
+              bind('injectable1').toValue('injectable1'),
+              bind('injectable2').toFactory((val) => `${val}-injectable2`,  ['injectable1'])
+            ]}))
+        ]);
+        expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
+      });
+
       it("should instantiate directives that depend on app services", function () {
         var appInjector = Injector.resolveAndCreate([
           bind("service").toValue("service")

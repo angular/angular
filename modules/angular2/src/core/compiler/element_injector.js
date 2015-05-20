@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injector, Key, Dependency, bind, Binding, ResolvedBinding, NoBindingError,
   AbstractBindingError, CyclicDependencyError, resolveForwardRef, resolveBindings} from 'angular2/di';
-import {Visibility, Self} from 'angular2/src/core/annotations_impl/visibility';
+import {Visibility, self} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
@@ -204,9 +204,9 @@ export class DirectiveDependency extends Dependency {
   }
 
   static _visibility(properties):Visibility {
-    if (properties.length == 0) return new Self();
+    if (properties.length == 0) return self;
     var p = ListWrapper.find(properties, p => p instanceof Visibility);
-    return isPresent(p) ? p : new Self();
+    return isPresent(p) ? p : self;
   }
 
   static _attributeName(properties):string {
@@ -774,7 +774,7 @@ export class ElementInjector extends TreeNode {
       return this._dynamicallyCreatedComponent;
     }
 
-    return this._getByKey(Key.get(token), new Self(), false, null);
+    return this._getByKey(Key.get(token), self, false, null);
   }
 
   _isDynamicallyLoadedComponent(token) {
@@ -870,30 +870,36 @@ export class ElementInjector extends TreeNode {
     return obj;
   }
 
-  _getByDependency(dep:DirectiveDependency, requestor:Key) {
-    if (isPresent(dep.attributeName)) return this._buildAttribute(dep);
-    if (isPresent(dep.queryDirective)) return this._findQuery(dep.queryDirective).list;
-    if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
+  _getByDependency(dep:Dependency, requestor:Key) {
+    if (! (dep instanceof DirectiveDependency)) {
+      return this._getByKey(dep.key, self, dep.optional, requestor);
+    }
+
+    var dirDep:DirectiveDependency = dep;
+
+    if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
+    if (isPresent(dirDep.queryDirective)) return this._findQuery(dirDep.queryDirective).list;
+    if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
       var componentView = this._preBuiltObjects.view.componentChildViews[this._proto.index];
       return componentView.changeDetector.ref;
     }
-    if (dep.key.id === StaticKeys.instance().elementRefId) {
+    if (dirDep.key.id === StaticKeys.instance().elementRefId) {
       return this.getElementRef();
     }
-    if (dep.key.id === StaticKeys.instance().viewContainerId) {
+    if (dirDep.key.id === StaticKeys.instance().viewContainerId) {
       return this.getViewContainerRef();
     }
-    if (dep.key.id === StaticKeys.instance().protoViewId) {
+    if (dirDep.key.id === StaticKeys.instance().protoViewId) {
       if (isBlank(this._preBuiltObjects.protoView)) {
-        if (dep.optional) {
+        if (dirDep.optional) {
           return null;
         }
 
-        throw new NoBindingError(dep.key);
+        throw new NoBindingError(dirDep.key);
       }
       return new ProtoViewRef(this._preBuiltObjects.protoView);
     }
-    return this._getByKey(dep.key, dep.visibility, dep.optional, requestor);
+    return this._getByKey(dirDep.key, dirDep.visibility, dirDep.optional, requestor);
   }
 
   _buildAttribute(dep): string {
@@ -939,16 +945,16 @@ export class ElementInjector extends TreeNode {
   _buildQueries() {
     if (isBlank(this._proto)) return;
     var p = this._proto;
-    if (isPresent(p._binding0)) {this._buildQueriesForDeps(p._binding0.dependencies);}
-    if (isPresent(p._binding1)) {this._buildQueriesForDeps(p._binding1.dependencies);}
-    if (isPresent(p._binding2)) {this._buildQueriesForDeps(p._binding2.dependencies);}
-    if (isPresent(p._binding3)) {this._buildQueriesForDeps(p._binding3.dependencies);}
-    if (isPresent(p._binding4)) {this._buildQueriesForDeps(p._binding4.dependencies);}
-    if (isPresent(p._binding5)) {this._buildQueriesForDeps(p._binding5.dependencies);}
-    if (isPresent(p._binding6)) {this._buildQueriesForDeps(p._binding6.dependencies);}
-    if (isPresent(p._binding7)) {this._buildQueriesForDeps(p._binding7.dependencies);}
-    if (isPresent(p._binding8)) {this._buildQueriesForDeps(p._binding8.dependencies);}
-    if (isPresent(p._binding9)) {this._buildQueriesForDeps(p._binding9.dependencies);}
+    if (p._binding0 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding0.dependencies);}
+    if (p._binding1 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding1.dependencies);}
+    if (p._binding2 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding2.dependencies);}
+    if (p._binding3 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding3.dependencies);}
+    if (p._binding4 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding4.dependencies);}
+    if (p._binding5 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding5.dependencies);}
+    if (p._binding6 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding6.dependencies);}
+    if (p._binding7 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding7.dependencies);}
+    if (p._binding8 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding8.dependencies);}
+    if (p._binding9 instanceof DirectiveBinding) {this._buildQueriesForDeps(p._binding9.dependencies);}
   }
 
   _findQuery(token) {
