@@ -28,6 +28,7 @@ export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
 
 export interface DiffingBroccoliPlugin {
   rebuild(diff: DiffResult): (Promise<any>| void);
+  rebuildFast ? () : (Promise<any>| void);
   cleanup ? () : void;
 }
 
@@ -65,10 +66,16 @@ class DiffingPluginWrapper implements BroccoliTree {
       let firstRun = !this.initialized;
       this.init();
 
-      let diffResult = this.treeDiffer.diffTree();
-      diffResult.log(!firstRun);
+      let rebuildPromise;
 
-      var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
+      if (firstRun && typeof this.wrappedPlugin.rebuildFast === "function") {
+        rebuildPromise = this.wrappedPlugin.rebuildFast();
+      } else {
+        let diffResult = this.treeDiffer.diffTree();
+        diffResult.log(!firstRun);
+
+        rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
+      }
 
       if (rebuildPromise) {
         return (<Promise<any>>rebuildPromise).then(this.relinkOutputAndCachePaths.bind(this));
