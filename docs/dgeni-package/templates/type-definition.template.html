@@ -1,0 +1,37 @@
+{%- macro commentBlock(doc, level) -%}
+{%- if doc.content | trim %}
+{% if level > 1 %}{$ '/**' | indent(level-1, true) | replace(r/\n$/, "") $}{% else %}/**{% endif %}
+{$ doc.content | replace(r/^/gm, "* ") | indent(level, true) | replace(r/\n$/, "") $}
+{$ '*/' | indent(level, true) | replace(r/\n$/, "") $}{% endif -%}
+{%- endmacro -%}
+
+// Type definitions for Angular v2.0.0-alpha.22
+// Project: http://angular.io/
+// Definitions by: angular team <https://github.com/angular/>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
+
+{% for module in doc.modules %}
+{$ commentBlock(module, 1) $}
+declare module "{$ module.id $}" {
+
+  {% for export in module.exports -%}
+  {$ commentBlock(export, 3) $}
+  {$ export.docType $} {$ export.name $}
+  {%- if export.docType == 'class' or export.docType == 'interface' %} {
+  {% for member in export.members -%}
+    {$ commentBlock(member, 5) $}
+    {$ member.name $}
+    {%- if member.parameters %}({% for param in member.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
+    {%- if member.returnType %} : {$ member.returnType $} {% endif %}
+  {% endfor %}
+  }
+  {%- else -%}
+    {% if export.parameters %}({% for param in export.parameters %}{$ param $}{% if not loop.last %}, {% endif %}{% endfor %}){%- endif %}
+    {%- if export.returnType %} : {$ export.returnType $} {% endif -%}
+  {% endif %}
+
+  {% endfor %}
+}
+
+{% endfor %}
+

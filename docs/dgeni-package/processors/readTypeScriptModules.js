@@ -127,6 +127,8 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
     };
     if(exportSymbol.flags & ts.SymbolFlags.Function) {
       exportDoc.parameters = getParameters(typeChecker, exportSymbol);
+    }
+    if(exportSymbol.flags & ts.SymbolFlags.Value) {
       exportDoc.returnType = getReturnType(typeChecker, exportSymbol);
     }
     return exportDoc;
@@ -148,12 +150,15 @@ module.exports = function readTypeScriptModules(tsParser, readFilesProcessor, mo
       // with the `params` property that will be updated by dgeni reading the
       // `@param` tags from the docs
       memberDoc.parameters = getParameters(typeChecker, memberSymbol);
-      memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
     }
 
     if (memberSymbol.flags & ts.SymbolFlags.Constructor) {
       memberDoc.parameters = getParameters(typeChecker, memberSymbol);
       memberDoc.name = 'constructor';
+    }
+
+    if(memberSymbol.flags & ts.SymbolFlags.Value) {
+      memberDoc.returnType = getReturnType(typeChecker, memberSymbol);
     }
 
     return memberDoc;

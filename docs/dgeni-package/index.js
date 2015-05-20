@@ -38,6 +38,7 @@ module.exports = new Package('angular', [jsdocPackage, nunjucksPackage, linksPac
 .processor(require('./processors/generateNavigationDoc'))
 .processor(require('./processors/extractTitleFromGuides'))
 .processor(require('./processors/createOverviewDump'))
+.processor(require('./processors/createTypeDefinitionFile'))
 
 
 // Configure the log service
