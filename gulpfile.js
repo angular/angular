@@ -67,7 +67,7 @@ var angularBuilder = {
     }
 
     if (!semver.satisfies(foundNpmVersion, requiredNpmVersion)) {
-      issues.push('You are running unsuported npm version. Found: ' + foundNpmVersion +
+      issues.push('You are running unsupported npm version. Found: ' + foundNpmVersion +
         ' Expected: ' + requiredNpmVersion);
     }
 
