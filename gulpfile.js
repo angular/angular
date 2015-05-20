@@ -18,7 +18,6 @@ var path = require('path');
 var semver = require('semver');
 var watch = require('./tools/build/watch');
 
-var clean = require('./tools/build/clean');
 var transpile = require('./tools/build/transpile');
 var pubget = require('./tools/build/pubget');
 var linknodemodules = require('./tools/build/linknodemodules');
@@ -134,17 +133,17 @@ gulp.task('build/clean.tools', function() {
   del(path.join('dist', 'tools'));
 });
 
-gulp.task('build/clean.js', clean(gulp, gulpPlugins, {
-  path: CONFIG.dest.js.all
-}));
+gulp.task('build/clean.js', function(done) {
+  del(CONFIG.dest.js.all, done);
+});
 
-gulp.task('build/clean.dart', clean(gulp, gulpPlugins, {
-  path: CONFIG.dest.dart
-}));
+gulp.task('build/clean.dart', function(done) {
+  del(CONFIG.dest.dart, done);
+});
 
-gulp.task('build/clean.docs', clean(gulp, gulpPlugins, {
-    path: CONFIG.dest.docs
-}));
+gulp.task('build/clean.docs',  function(done) {
+  del(CONFIG.dest.docs, done);
+});
 
 
 // ------------
