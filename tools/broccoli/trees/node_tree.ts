@@ -98,7 +98,7 @@ module.exports = function makeNodeTree(destinationPath) {
 
   // HACK: workaround for Traceur behavior.
   // It expects all transpiled modules to contain this marker.
-  // TODO: remove this when we no longer use traceur        
+  // TODO: remove this when we no longer use traceur
   var traceurCompatibleTsModulesTree = replace(modulesTree, {
     files: ['**/*.ts'],
     patterns: [{
@@ -106,36 +106,35 @@ module.exports = function makeNodeTree(destinationPath) {
       match: /$/g,
       replacement: ""
     }],
-    replaceWithPath: (path, content) => {
+    replaceWithPath: function(path, content) {
       if (!path.endsWith('.d.ts')) {
-    content += '\r\nexport var __esModule = true;\n';
+        content += '\r\nexport var __esModule = true;\n';
       }
       return content;
-}
-});
+    }
+  });
 
-var typescriptTree = compileWithTypescript(traceurCompatibleTsModulesTree, {
-  allowNonTsExtensions: false,
-  emitDecoratorMetadata: true,
-  declaration: true,
-  mapRoot: '', /* force sourcemaps to use relative path */
-  module: 'commonjs',
-  noEmitOnError: true,
-  rootDir: '.',
-  rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
-  sourceMap: true,
-  sourceRoot: '.',
-  target: 'ES5'
-});
+  var typescriptTree = compileWithTypescript(traceurCompatibleTsModulesTree, {
+    allowNonTsExtensions: false,
+    emitDecoratorMetadata: true,
+    declaration: true,
+    mapRoot: '', /* force sourcemaps to use relative path */
+    module: 'commonjs',
+    noEmitOnError: true,
+    rootDir: '.',
+    rootFilePaths: ['angular2/traceur-runtime.d.ts', 'angular2/globals.d.ts'],
+    sourceMap: true,
+    sourceRoot: '.',
+    target: 'ES5'
+  });
 
 
-nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
+  nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
 
-// TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
-//   ENOENT error is thrown while doing fs.readdirSync on inputRoot
-//   in the meantime, we just do noop mv to create a new tree
-nodeTree = stew.mv(nodeTree, '');
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  nodeTree = stew.mv(nodeTree, '');
 
-return destCopy(nodeTree, destinationPath);
-}
-;
+  return destCopy(nodeTree, destinationPath);
+};
