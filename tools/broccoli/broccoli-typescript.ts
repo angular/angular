@@ -68,14 +68,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
           this.rootFilePaths.splice(this.rootFilePaths.indexOf(tsFilePath), 1);
           this.fileRegistry[tsFilePath] = null;
-
-          let jsFilePath = tsFilePath.replace(/\.ts$/, '.js');
-          let mapFilePath = tsFilePath.replace(/.ts$/, '.js.map');
-          let dtsFilePath = tsFilePath.replace(/\.ts$/, '.d.ts');
-
-          fs.unlinkSync(path.join(this.cachePath, jsFilePath));
-          fs.unlinkSync(path.join(this.cachePath, mapFilePath));
-          fs.unlinkSync(path.join(this.cachePath, dtsFilePath));
+          this.removeOutputFor(tsFilePath);
         });
 
     if (this.firstRun) {
@@ -153,6 +146,19 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       } else {
         this.previousRunFailed = false;
       }
+    }
+  }
+
+
+  private removeOutputFor(tsFilePath: string) {
+    let absoluteJsFilePath = path.join(this.cachePath, tsFilePath.replace(/\.ts$/, '.js'));
+    let absoluteMapFilePath = path.join(this.cachePath, tsFilePath.replace(/.ts$/, '.js.map'));
+    let absoluteDtsFilePath = path.join(this.cachePath, tsFilePath.replace(/\.ts$/, '.d.ts'));
+
+    if (fs.existsSync(absoluteJsFilePath)) {
+      fs.unlinkSync(absoluteJsFilePath);
+      fs.unlinkSync(absoluteMapFilePath);
+      fs.unlinkSync(absoluteDtsFilePath);
     }
   }
 }
