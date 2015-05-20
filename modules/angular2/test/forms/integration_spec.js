@@ -21,8 +21,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 
 import {TestBed} from 'angular2/src/test_lib/test_bed';
 
-import {ControlGroupDirective, ControlDirective, Control, ControlGroup, RequiredValidatorDirective, CheckboxControlValueAccessor,
-  DefaultValueAccessor, Validators} from 'angular2/forms';
+import {ControlGroupDirective, ControlDirective, Control, ControlGroup, RequiredValidatorDirective, CheckboxControlValueAccessor, DefaultValueAccessor, SelectControlValueAccessor, Validators} from 'angular2/forms';
 
 export function main() {
   describe("integration tests", () => {
@@ -266,6 +265,19 @@ export function main() {
           async.done();
         });
       }));
+
+      it("should throw when cannot find a value accessor", inject([TestBed, AsyncTestCompleter], (tb, async) => {
+        var ctx = new MyComp(new ControlGroup({"name": new Control("aa")}));
+
+        var t = `<div [control-group]="form">
+                  <div control="name">
+                </div>`;
+
+        tb.createView(MyComp, {context: ctx, html: t}).then((view) => {
+          expect(() => view.detectChanges()).toThrowError(new RegExp("Cannot find value accessor"))
+          async.done();
+        });
+      }));
     });
 
     describe("validations", () => {
@@ -377,7 +389,9 @@ export function main() {
   WrappedValue,
   RequiredValidatorDirective,
   DefaultValueAccessor,
-  CheckboxControlValueAccessor]})
+  CheckboxControlValueAccessor,
+  SelectControlValueAccessor
+]})
 class MyComp {
   form:any;
   name:string;

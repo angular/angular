@@ -6,7 +6,7 @@ export function main() {
   describe("Form Directives", () => {
     describe("Control", () => {
       it("should throw when the group is not found and the control is not set", () => {
-        var c = new ControlDirective(null, null);
+        var c = new ControlDirective(null);
         expect(() => {
           c.controlOrName = 'login';
         }).toThrowError(new RegExp('No control group found for "login"'));
@@ -16,7 +16,7 @@ export function main() {
         var emptyGroup = new ControlGroupDirective(null);
         emptyGroup.controlOrName = new ControlGroup({});
 
-        var c = new ControlDirective(emptyGroup, null);
+        var c = new ControlDirective(emptyGroup);
         expect(() => {
           c.controlOrName = 'login';
         }).toThrowError(new RegExp('Cannot find control "login"'));
