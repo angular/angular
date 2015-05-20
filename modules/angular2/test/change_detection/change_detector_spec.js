@@ -8,6 +8,7 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRe
     JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition,
     Lexer, Parser, Locals} from 'angular2/change_detection';
 
+import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
 
 export function main() {
   describe("change detection", () => {
@@ -109,12 +110,6 @@ export function main() {
             expect(executeWatch('a', 'a', td)).toEqual(['a=null']);
           });
 
-          it("should support literals", () => {
-            expect(executeWatch('const', '10')).toEqual(['const=10']);
-            expect(executeWatch('const', '"str"')).toEqual(['const=str']);
-            expect(executeWatch('const', '"a\n\nb"')).toEqual(['const=a\n\nb']);
-          });
-
           it('simple chained property access', () => {
             var address = new Address('Grenoble');
             var person = new Person('Victor', address);
@@ -159,65 +154,13 @@ export function main() {
             expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
           });
 
-          it("should support binary operations", () => {
-            expect(executeWatch('exp', '10 + 2')).toEqual(['exp=12']);
-            expect(executeWatch('exp', '10 - 2')).toEqual(['exp=8']);
-
-            expect(executeWatch('exp', '10 * 2')).toEqual(['exp=20']);
+          it("should support / operations", () => {
             expect(executeWatch('exp', '10 / 2')).toEqual([`exp=${5.0}`]); //dart exp=5.0, js exp=5
-            expect(executeWatch('exp', '11 % 2')).toEqual(['exp=1']);
-
-            expect(executeWatch('exp', '1 == 1')).toEqual(['exp=true']);
             if (IS_DARTIUM) {
               expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=false']);
             } else {
               expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=true']);
             }
-            expect(executeWatch('exp', '1 != 1')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', '1 === 1')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '1 !== 1')).toEqual(['exp=false']);
-            expect(executeWatch('exp', '1 === "1"')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', '1 < 2')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '2 < 1')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', '2 > 1')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '2 < 1')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', '1 <= 2')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '2 <= 2')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '2 <= 1')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', '2 >= 1')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '2 >= 2')).toEqual(['exp=true']);
-            expect(executeWatch('exp', '1 >= 2')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', 'true && true')).toEqual(['exp=true']);
-            expect(executeWatch('exp', 'true && false')).toEqual(['exp=false']);
-
-            expect(executeWatch('exp', 'true || false')).toEqual(['exp=true']);
-            expect(executeWatch('exp', 'false || false')).toEqual(['exp=false']);
-          });
-
-          it("should support negate", () => {
-            expect(executeWatch('exp', '!true')).toEqual(['exp=false']);
-            expect(executeWatch('exp', '!!true')).toEqual(['exp=true']);
-          });
-
-          it("should support conditionals", () => {
-            expect(executeWatch('m', '1 < 2 ? 1 : 2')).toEqual(['m=1']);
-            expect(executeWatch('m', '1 > 2 ? 1 : 2')).toEqual(['m=2']);
-          });
-
-          describe("keyed access", () => {
-            it("should support accessing a list item", () => {
-              expect(executeWatch('array[0]', '["foo", "bar"][0]')).toEqual(['array[0]=foo']);
-            });
-
-            it("should support accessing a map item", () => {
-              expect(executeWatch('map[foo]', '{"foo": "bar"}["foo"]')).toEqual(['map[foo]=bar']);
-            });
           });
 
           it("should support interpolation", () => {
@@ -821,192 +764,4 @@ export function main() {
         });
       });
   });
-}
-
-class CountingPipe extends Pipe {
-  state:number;
-
-  constructor() {
-    super();
-    this.state = 0;
-  }
-
-  supports(newValue) {
-    return true;
-  }
-
-  transform(value) {
-    return `${value} state:${this.state ++}`;
-  }
-}
-
-class OncePipe extends Pipe {
-  called:boolean;
-  destroyCalled:boolean;
-
-  constructor() {
-    super();
-    this.called = false;
-    this.destroyCalled = false;
-  }
-
-  supports(newValue) {
-    return !this.called;
-  }
-
-  onDestroy() {
-    this.destroyCalled = true;
-  }
-
-  transform(value) {
-    this.called = true;
-    return value;
-  }
-}
-
-class IdentityPipe extends Pipe {
-  transform(value) {
-    return value;
-  }
-}
-
-class WrappedPipe extends Pipe {
-  transform(value) {
-    return WrappedValue.wrap(value);
-  }
-}
-
-class FakePipeRegistry extends PipeRegistry {
-  numberOfLookups:number;
-  pipeType:string;
-  factory:Function;
-  cdRef:any;
-
-  constructor(pipeType, factory) {
-    super({});
-    this.pipeType = pipeType;
-    this.factory = factory;
-    this.numberOfLookups = 0;
-  }
-
-  get(type:string, obj, cdRef) {
-    if (type != this.pipeType) return null;
-    this.numberOfLookups ++;
-    this.cdRef = cdRef;
-    return this.factory();
-  }
-}
-
-class TestDirective {
-  a;
-  b;
-  changes;
-  onChangesDoneCalled;
-  onChangesDoneSpy;
-
-  constructor(onChangesDoneSpy = null) {
-    this.onChangesDoneCalled = false;
-    this.onChangesDoneSpy = onChangesDoneSpy;
-    this.a = null;
-    this.b = null;
-    this.changes = null;
-  }
-
-  onChange(changes) {
-    var r = {};
-    StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
-    this.changes = r;
-  }
-
-  onAllChangesDone() {
-    this.onChangesDoneCalled = true;
-    if(isPresent(this.onChangesDoneSpy)) {
-      this.onChangesDoneSpy();
-    }
-  }
-}
-
-class Person {
-  name:string;
-  age:number;
-  address:Address;
-  constructor(name:string, address:Address = null) {
-    this.name = name;
-    this.address = address;
-  }
-
-  sayHi(m) {
-    return `Hi, ${m}`;
-  }
-
-  toString():string {
-    var address = this.address == null ? '' : ' address=' + this.address.toString();
-
-    return 'name=' + this.name + address;
-  }
-}
-
-class Address {
-  city:string;
-  constructor(city:string) {
-    this.city = city;
-  }
-
-  toString():string {
-    return this.city;
-  }
-}
-
-class Uninitialized {
-  value:any;
-}
-
-class TestData {
-  a;
-
-  constructor(a) {
-    this.a = a;
-  }
-}
-
-class FakeDirectives {
-  directives:List;
-  detectors:List;
-
-  constructor(directives:List, detectors:List) {
-    this.directives = directives;
-    this.detectors = detectors;
-  }
-
-  getDirectiveFor(di:DirectiveIndex) {
-    return this.directives[di.directiveIndex];
-  }
-
-  getDetectorFor(di:DirectiveIndex) {
-    return this.detectors[di.directiveIndex];
-  }
-}
-
-class TestDispatcher extends ChangeDispatcher {
-  log:List;
-  loggedValues:List;
-
-  constructor() {
-    super();
-    this.clear();
-  }
-
-  clear() {
-    this.log = ListWrapper.create();
-    this.loggedValues = ListWrapper.create();
-  }
-
-  notifyOnBinding(binding, value) {
-    ListWrapper.push(this.log, `${binding.propertyName}=${this._asString(value)}`);
-    ListWrapper.push(this.loggedValues, value);
-  }
-
-  _asString(value) {
-    return (isBlank(value) ? 'null' : value.toString());
-  }
 }

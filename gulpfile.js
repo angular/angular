@@ -7,6 +7,7 @@ var exec = require('child_process').exec;
 var fork = require('child_process').fork;
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
+var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var shell = require('gulp-shell');
 var spawn = require('child_process').spawn;
@@ -16,6 +17,7 @@ var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
 var semver = require('semver');
+var template = require('gulp-template');
 var watch = require('./tools/build/watch');
 
 var transpile = require('./tools/build/transpile');
@@ -27,6 +29,7 @@ var jsserve = require('./tools/build/jsserve');
 var pubserve = require('./tools/build/pubserve');
 var karma = require('karma');
 var minimist = require('minimist');
+var readFileSync = require('fs').readFileSync;
 var runServerDartTests = require('./tools/build/run_server_dart_tests');
 var sourcemaps = require('gulp-sourcemaps');
 var tsc = require('gulp-typescript');
@@ -634,6 +637,7 @@ gulp.task('!broccoli.js.dev', function() {
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
+    'CREATE_ME',
     'broccoli.js.dev',
     'build/checkCircularDependencies',
     'check-format',
@@ -831,6 +835,15 @@ gulp.task('cleanup.builder', function(done) {
     del('tmp', done); // TODO(iminar): remove after 2015-06-01
                       // this is here just to cleanup old files that we leaked in the past
   });
+});
+
+
+gulp.task('CREATE_ME', function() {
+  var values = JSON.parse(readFileSync('modules/angular2/test/change_detection/simple_watch_config.json'));
+  return gulp.src('modules/angular2/test/change_detection/simple_watch_template.jstemplate')
+      .pipe(template(values))
+      .pipe(rename('simple_watch_spec.js'))
+      .pipe(gulp.dest('modules/angular2/test/change_detection/'));
 });
 
 

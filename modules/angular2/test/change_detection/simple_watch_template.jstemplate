@@ -1,0 +1,49 @@
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DARTIUM} from 'angular2/test_lib';
+
+import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord, DirectiveIndex,
+  PipeRegistry, Pipe, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT, WrappedValue,
+    JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition,
+    Lexer, Parser, Locals} from 'angular2/change_detection';
+
+import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
+
+export function main() {
+  var parser = new Parser(new Lexer());
+  function createChangeDetectorDef(propName: string, expression: string) {
+    var bindingRecords = [BindingRecord.createForElement(parser.parseBinding(expression, 'location'), 0, propName)];
+
+    var id = null;
+    var strategy = null;
+    var variableBindings = [];
+    var directiveRecords = [];
+    return new ChangeDetectorDefinition(
+        id, strategy, variableBindings, bindingRecords, directiveRecords);
+  }
+  function executeWatch(protoCd: any) {
+    var dispatcher = new TestDispatcher();
+    var cd = protoCd.instantiate(dispatcher);
+
+    var context = null;
+    var locals = null;
+    cd.hydrate(context, locals, null);
+    cd.detectChanges();
+    return dispatcher.log;
+  }
+  <% _.forEach(changeDetectorTypes, function(changeDetectorType) { %>
+
+  describe('simple watch for ${changeDetectorType}', () => {
+    <% _.forEach(testConfig, function(config) { %>
+      it('${config.description}', () => {
+        var changeDetectorDef = createChangeDetectorDef('${config.propName}', '${config.expression}');
+	var registry = null;
+	var protoCd = new ${changeDetectorType}ProtoChangeDetector(registry, changeDetectorDef);
+        expect(executeWatch(protoCd)).toEqual(['${config.expectedResult}']);
+      });
+    <% }); %>
+  });
+
+  <% }); %>
+}
