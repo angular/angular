@@ -114,6 +114,11 @@ module.exports = function makeNodeTree(destinationPath) {
     }
   });
 
+  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
+  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
+  //   in the meantime, we just do noop mv to create a new tree
+  traceurCompatibleTsModulesTree = stew.mv(traceurCompatibleTsModulesTree, '');
+
   var typescriptTree = compileWithTypescript(traceurCompatibleTsModulesTree, {
     allowNonTsExtensions: false,
     emitDecoratorMetadata: true,
