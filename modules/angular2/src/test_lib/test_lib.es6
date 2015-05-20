@@ -31,10 +31,10 @@ export class AsyncTestCompleter {
 
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;
-var jsmDDescribe = _global.ddescribe;
+var jsmDDescribe = _global.fdescribe;
 var jsmXDescribe = _global.xdescribe;
 var jsmIt = _global.it;
-var jsmIIt = _global.iit;
+var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
 var runnerStack = [];

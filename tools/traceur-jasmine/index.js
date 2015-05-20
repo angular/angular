@@ -1,11 +1,13 @@
 'use strict';
 
 var glob = require('glob');
-var minijasminenode2 = require('minijasminenode2');
+var JasmineRunner = require('jasmine');
 var path = require('path');
 // Require traceur to exposes $traceurRuntime on global context so that CJS files can run
 require('traceur/bin/traceur-runtime.js');
 require('reflect-metadata/Reflect');
+
+var jrunner = new JasmineRunner();
 
 // Support passing multiple globs
 var globsIndex = process.argv.indexOf('--');
@@ -20,12 +22,16 @@ var specFiles = args.
   map(function(globstr) { return glob.sync(globstr); }).
   reduce(function(specFiles, paths) { return specFiles.concat(paths); }, []);
 
-minijasminenode2.executeSpecs({
-  includeStackTrace: true,
-  defaultTimeoutInterval: 1000,
-  showColors: process.argv.indexOf('--no-color') === -1,
-  specs: specFiles,
-  onComplete: function(passed) {
-    process.exit(passed ? 0 : 1);
-  }
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
+
+jrunner.configureDefaultReporter({
+  showColors: process.argv.indexOf('--no-color') === -1
 });
+
+jrunner.onComplete(function(passed) {
+  process.exit(passed ? 0 : 1);
+});
+jrunner.projectBaseDir = path.resolve(__dirname, '../../');
+jrunner.specDir = '';
+jrunner.addSpecFiles(specFiles);
+jrunner.execute();

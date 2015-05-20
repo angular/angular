@@ -10712,6 +10712,52 @@
         }
       }
     },
+    "jasmine": {
+      "version": "2.3.1",
+      "from": "jasmine@2.3.1",
+      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.3.1.tgz",
+      "dependencies": {
+        "exit": {
+          "version": "0.1.2",
+          "from": "exit@>=0.1.2 <0.2.0",
+          "resolved": "https://registry.npmjs.org/exit/-/exit-0.1.2.tgz"
+        },
+        "glob": {
+          "version": "3.2.11",
+          "from": "glob@>=3.2.11 <4.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz",
+          "dependencies": {
+            "inherits": {
+              "version": "2.0.1",
+              "from": "inherits@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
+            },
+            "minimatch": {
+              "version": "0.3.0",
+              "from": "minimatch@>=0.3.0 <0.4.0",
+              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
+              "dependencies": {
+                "lru-cache": {
+                  "version": "2.6.4",
+                  "from": "lru-cache@>=2.0.0 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                },
+                "sigmund": {
+                  "version": "1.0.1",
+                  "from": "sigmund@>=1.0.0 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.1.tgz"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "jasmine-core": {
+      "version": "2.3.4",
+      "from": "jasmine-core@2.3.4",
+      "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.3.4.tgz"
+    },
     "js-beautify": {
       "version": "1.5.5",
       "from": "https://registry.npmjs.org/js-beautify/-/js-beautify-1.5.5.tgz",
@@ -11726,9 +11772,9 @@
       }
     },
     "karma-jasmine": {
-      "version": "0.2.3",
-      "from": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.2.3.tgz",
-      "resolved": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.2.3.tgz"
+      "version": "0.3.5",
+      "from": "karma-jasmine@0.3.5",
+      "resolved": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.3.5.tgz"
     },
     "lodash": {
       "version": "2.4.2",
@@ -12006,18 +12052,6 @@
       "version": "0.3.5",
       "from": "https://registry.npmjs.org/merge2/-/merge2-0.3.5.tgz",
       "resolved": "https://registry.npmjs.org/merge2/-/merge2-0.3.5.tgz"
-    },
-    "minijasminenode2": {
-      "version": "1.0.0",
-      "from": "https://registry.npmjs.org/minijasminenode2/-/minijasminenode2-1.0.0.tgz",
-      "resolved": "https://registry.npmjs.org/minijasminenode2/-/minijasminenode2-1.0.0.tgz",
-      "dependencies": {
-        "jasmine-core": {
-          "version": "2.0.0",
-          "from": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.0.0.tgz",
-          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.0.0.tgz"
-        }
-      }
     },
     "minimatch": {
       "version": "2.0.7",

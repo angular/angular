@@ -6933,6 +6933,36 @@
         }
       }
     },
+    "jasmine": {
+      "version": "2.3.1",
+      "dependencies": {
+        "exit": {
+          "version": "0.1.2"
+        },
+        "glob": {
+          "version": "3.2.11",
+          "dependencies": {
+            "inherits": {
+              "version": "2.0.1"
+            },
+            "minimatch": {
+              "version": "0.3.0",
+              "dependencies": {
+                "lru-cache": {
+                  "version": "2.6.4"
+                },
+                "sigmund": {
+                  "version": "1.0.1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "jasmine-core": {
+      "version": "2.3.4"
+    },
     "js-beautify": {
       "version": "1.5.5",
       "dependencies": {
@@ -7593,7 +7623,7 @@
       }
     },
     "karma-jasmine": {
-      "version": "0.2.3"
+      "version": "0.3.5"
     },
     "lodash": {
       "version": "2.4.2"
@@ -7773,14 +7803,6 @@
     },
     "merge2": {
       "version": "0.3.5"
-    },
-    "minijasminenode2": {
-      "version": "1.0.0",
-      "dependencies": {
-        "jasmine-core": {
-          "version": "2.0.0"
-        }
-      }
     },
     "minimatch": {
       "version": "2.0.7",
