@@ -84,6 +84,26 @@ export function main() {
           async.done();
         }, 0)
       }));
+
+      describe("onDestroy", () => {
+        it("should do nothing when no source", () => {
+          expect(() => pipe.onDestroy()).not.toThrow();
+        });
+
+        it("should dispose of the existing source", inject([AsyncTestCompleter], (async) => {
+          pipe.transform(completer.promise);
+          expect(pipe.transform(completer.promise)).toBe(null);
+          completer.resolve(message)
+
+
+          TimerWrapper.setTimeout(() => {
+            expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
+            pipe.onDestroy();
+            expect(pipe.transform(completer.promise)).toBe(null);
+            async.done();
+          }, 0);
+        }));
+      });
     });
   });
 }

@@ -44,7 +44,11 @@ export class PromisePipe extends Pipe {
   supports(promise): boolean { return PromiseWrapper.isPromise(promise); }
 
   onDestroy(): void {
-    // NO-OP
+    if (isPresent(this._sourcePromise)) {
+      this._latestValue = null;
+      this._latestReturnedValue = null;
+      this._sourcePromise = null;
+    }
   }
 
   transform(promise: Promise<any>): any {
