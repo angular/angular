@@ -53,7 +53,7 @@ class BeforeEachRunner {
   }
 
   run(injector) {
-    if (this._parent) this._parent.run();
+    if (this._parent) this._parent.run(injector);
     this._fns.forEach((fn) => fn.execute(injector));
   }
 }
@@ -130,7 +130,6 @@ function _it(jsmFn, name, fn) {
     });
 
     var injector = createTestInjector([...testBindings, completerBinding]);
-
     runner.run(injector);
 
     if (!(fn instanceof FunctionWithParamTokens)) {
