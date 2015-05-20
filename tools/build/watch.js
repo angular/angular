@@ -12,8 +12,7 @@ function watch(globs, opts, tasks) {
   var useRunSequence = typeof tasks !== 'function';
   var runTasks;
 
-  function noop() {}
-  var log = typeof opts.log === 'function' ? opts.log : noop;
+  var log = typeof opts.log === 'function' ? opts.log : function noop() {};
 
   if (useRunSequence) {
     if (!Array.isArray(tasks)) tasks = [tasks];
@@ -35,7 +34,13 @@ function watch(globs, opts, tasks) {
   }
 
   var events = opts.events = opts.events || ['add', 'change', 'unlink'];
-  if (opts.ignoreInitial === undefined) opts.ignoreInitial = true;
+
+  // Don't let chokidar call us while initializing because on large trees it might take too long for
+  // all the add events to be emitted which causes the initial callback to be triggered more than
+  // once. Instead, we call handleEvent directly.
+  var ignoreInitial = opts.ignoreInitial;
+  opts.ignoreInitial = true;
+
   var delay = opts.delay;
   if (delay === undefined) delay = 100;
 
@@ -53,6 +58,10 @@ function watch(globs, opts, tasks) {
 
   var eventsRecorded = 0; // Number of events recorded
   var timeoutId = null; // If non-null, event capture window is open
+
+  if (!ignoreInitial) {
+    handleEvent('change', 'madeupFilePath'); // synthetic event to kick off the first task run
+  }
 
   return watcher;
 
