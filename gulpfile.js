@@ -386,14 +386,13 @@ gulp.task('test.unit.js', ['build.js.dev'], function (neverDone) {
 
   runSequence(
     '!test.unit.js/karma-server',
-    '!test.unit.js/karma-run',
-    'check-format'
+    function() {
+      watch('modules/**', [
+        '!broccoli.js.dev',
+        '!test.unit.js/karma-run'
+      ]);
+    }
   );
-
-  watch('modules/**', [
-    '!broccoli.js.dev',
-    '!test.unit.js/karma-run'
-  ]);
 });
 
 gulp.task('watch.js.dev', ['build.js.dev'], function (neverDone) {
@@ -410,9 +409,11 @@ gulp.task('!test.unit.js/karma-server', function() {
 
 
 gulp.task('!test.unit.js/karma-run', function(done) {
-  karma.runner.run({configFile: __dirname + '/karma-js.conf.js'}, function(exitCode) {
-    // ignore exitCode, we don't want to fail the build in the interactive (non-ci) mode
-    // karma will print all test failures
+  // run the run command in a new process to avoid duplicate logging by both server and runner from
+  // a single process
+  exec('node node_modules/.bin/karma run karma-js.conf.js', function(e, stdout) {
+    // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
+    // karma server will print all test failures
     done();
   });
 });
@@ -421,20 +422,23 @@ gulp.task('!test.unit.js/karma-run', function(done) {
 gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
   runSequence(
     '!test.unit.dart/karma-server',
-    '!test.unit.dart/karma-run'
+    '!test.unit.dart/karma-run',
+    function() {
+      watch('modules/angular2/**', [
+        '!build/tree.dart',
+        'build/format.dart',
+        '!test.unit.dart/karma-run'
+      ]);
+    }
   );
-
-  watch('modules/angular2/**', [
-    '!build/tree.dart',
-    'build/format.dart',
-    '!test.unit.dart/karma-run'
-  ]);
 });
 
 gulp.task('!test.unit.dart/karma-run', function (done) {
-  karma.runner.run({configFile: __dirname + '/karma-dart.conf.js'}, function(exitCode) {
-    // ignore exitCode, we don't want to fail the build in the interactive (non-ci) mode
-    // karma will print all test failures
+  // run the run command in a new process to avoid duplicate logging by both server and runner from
+  // a single process
+  exec('node node_modules/.bin/karma run karma-dart.conf.js', function(e, stdout) {
+    // ignore errors, we don't want to fail the build in the interactive (non-ci) mode
+    // karma server will print all test failures
     done();
   });
 });
