@@ -45,7 +45,8 @@ export class SpyLocation extends SpyObject {
   }
 
   go(url:string) {
-    if (this._path === url) {
+    url = this.normalizeAbsolutely(url);
+    if (this._path == url) {
       return;
     }
     this._path = url;
