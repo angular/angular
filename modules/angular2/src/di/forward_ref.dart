@@ -1,6 +1,6 @@
 library angular2.di.forward_ref;
 
-typedef Type ForwardRefFn();
+typedef dynamic ForwardRefFn();
 
 /**
  * Dart does not have the forward ref problem, so this function is a noop.

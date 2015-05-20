@@ -1,6 +1,7 @@
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {stringify, CONST, Type, isBlank, BaseException} from 'angular2/src/facade/lang';
 import {TypeLiteral} from './type_literal';
+import {resolveForwardRef} from './forward_ref';
 
 export {TypeLiteral} from './type_literal';
 
@@ -38,7 +39,7 @@ export class Key {
   /**
    * Retrieves a `Key` for a token.
    */
-  static get(token): Key { return _globalKeyRegistry.get(token); }
+  static get(token): Key { return _globalKeyRegistry.get(resolveForwardRef(token)); }
 
   /**
    * @returns the number of keys registered in the system.

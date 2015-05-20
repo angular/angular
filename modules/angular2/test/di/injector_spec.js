@@ -162,6 +162,14 @@ export function main() {
       expect(() => injector.get('car')).toThrowError('No provider for SportsCar! (car -> SportsCar)');
     });
 
+    it('should handle forwardRef in toAlias', function () {
+      var injector = Injector.resolveAndCreate([
+        bind('originalEngine').toClass(forwardRef(() => Engine)),
+        bind('aliasedEngine').toAlias(forwardRef(() => 'originalEngine'))
+      ]);
+      expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
+    });
+
     it('should support overriding factory dependencies', function () {
       var injector = Injector.resolveAndCreate([
         Engine,

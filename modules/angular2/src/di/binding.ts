@@ -236,8 +236,7 @@ export class Binding {
       resolvedDeps = _EMPTY_LIST;
     }
 
-    return new ResolvedBinding(Key.get(resolveForwardRef(this.token)), factoryFn, resolvedDeps,
-                               isAsync);
+    return new ResolvedBinding(Key.get(this.token), factoryFn, resolvedDeps, isAsync);
   }
 }
 
@@ -492,5 +491,5 @@ function _extractToken(typeOrFunc, annotations) {
 }
 
 function _createDependency(token, asPromise, lazy, optional, depProps): Dependency {
-  return new Dependency(Key.get(resolveForwardRef(token)), asPromise, lazy, optional, depProps);
+  return new Dependency(Key.get(token), asPromise, lazy, optional, depProps);
 }
