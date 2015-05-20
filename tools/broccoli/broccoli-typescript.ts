@@ -30,6 +30,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   private tsServiceHost: ts.LanguageServiceHost;
   private tsService: ts.LanguageService;
   private firstRun: boolean = true;
+  private previousRunFailed: boolean = false;
 
   static includeExtensions = ['.ts'];
   static excludeExtensions = ['.d.ts'];
@@ -79,27 +80,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
 
     if (this.firstRun) {
       this.firstRun = false;
-      let program = this.tsService.getProgram();
-      let emitResult = program.emit(undefined, function(absoluteFilePath, fileContent) {
-        fse.mkdirsSync(path.dirname(absoluteFilePath));
-        fs.writeFileSync(absoluteFilePath, fileContent, FS_OPTS);
-      });
-
-      if (emitResult.emitSkipped) {
-        let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
-        let errorMessages = [];
-
-        allDiagnostics.forEach(diagnostic => {
-          var { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-          var message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-          errorMessages.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
-        });
-
-        if (errorMessages.length) {
-          console.log(errorMessages.join('\n'));
-          throw new Error('Typescript found errors listed above...');
-        }
-      }
+      this.doFullBuild();
     } else {
       pathsToEmit.forEach((tsFilePath) => {
         let output = this.tsService.getEmitOutput(tsFilePath);
@@ -119,7 +100,10 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
       });
 
       if (pathsWithErrors.length) {
+        this.previousRunFailed = true;
         throw new Error('Typescript found errors listed above...');
+      } else if (this.previousRunFailed) {
+        this.doFullBuild();
       }
     }
   }
@@ -142,6 +126,34 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     });
 
     return !!allDiagnostics.length;
+  }
+
+
+  private doFullBuild() {
+    let program = this.tsService.getProgram();
+    let emitResult = program.emit(undefined, function(absoluteFilePath, fileContent) {
+      fse.mkdirsSync(path.dirname(absoluteFilePath));
+      fs.writeFileSync(absoluteFilePath, fileContent, FS_OPTS);
+    });
+
+    if (emitResult.emitSkipped) {
+      let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+      let errorMessages = [];
+
+      allDiagnostics.forEach(diagnostic => {
+        var { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+        var message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+        errorMessages.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+      });
+
+      if (errorMessages.length) {
+        this.previousRunFailed = true;
+        console.log(errorMessages.join('\n'));
+        throw new Error('Typescript found errors listed above...');
+      } else {
+        this.previousRunFailed = false;
+      }
+    }
   }
 }
 
