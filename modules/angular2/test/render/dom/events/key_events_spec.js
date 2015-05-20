@@ -65,5 +65,10 @@ export function main() {
 
     });
 
+    it('should alias esc to escape', () => {
+      expect(KeyEventsPlugin.parseEventName('keyup.control.esc'))
+          .toEqual(KeyEventsPlugin.parseEventName('keyup.control.escape'));
+    });
+
   });
 }
