@@ -43,7 +43,10 @@ export class RouterLink {
   _params:StringMap<string, string>;
   _router:Router;
   _location:Location;
-  _href:string;
+  // the url displayed on the anchor element.
+  _visibleHref: string;
+  // the url passed to the router navigation.
+  _navigationHref: string;
 
   constructor(elementRef:ElementRef, router:Router, location:Location) {
     this._domEl = elementRef.domElement;
@@ -52,7 +55,7 @@ export class RouterLink {
     this._params = StringMapWrapper.create();
     DOM.on(this._domEl, 'click', (evt) => {
       evt.preventDefault();
-      this._router.navigate(this._href);
+      this._router.navigate(this._navigationHref);
     });
   }
 
@@ -66,11 +69,11 @@ export class RouterLink {
 
   onAllChangesDone(): void {
     if (isPresent(this._route) && isPresent(this._params)) {
-      var newHref = this._router.generate(this._route, this._params);
-      this._href = this._location.normalizeAbsolutely(newHref);
+      this._navigationHref = this._router.generate(this._route, this._params);
+      this._visibleHref = this._location.normalizeAbsolutely(this._navigationHref);
       // Keeping the link on the element to support contextual menu `copy link`
       // and other in-browser affordances.
-      DOM.setAttribute(this._domEl, 'href', this._href);
+      DOM.setAttribute(this._domEl, 'href', this._visibleHref);
     }
   }
 }
