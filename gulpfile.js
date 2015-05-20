@@ -823,16 +823,21 @@ gulp.task('build.dart.material', ['build/packages.dart'], function() {
 });
 
 
-gulp.task('cleanup.builder', function() {
-  angularBuilder.cleanup();
+gulp.task('cleanup.builder', function(done) {
+  angularBuilder.cleanup().then(function() {
+    del('tmp', done); // TODO(iminar): remove after 2015-06-01
+                      // this is here just to cleanup old files that we leaked in the past
+  });
 });
 
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
 process.on('SIGINT', function() {
-  gulp.start('cleanup.builder');
-  process.exit();
+  runSequence('cleanup.builder', function() {
+    process.exit();
+  });
 });
+
 
 // register cleanup listener for all non-persistent tasks
 var beforeExitRan = false;
