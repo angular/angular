@@ -63,7 +63,7 @@ class _CodegenState {
     var localNames = new List<String>(records.length + 1);
     localNames[0] = 'context';
     for (var i = 0; i < records.length; ++i) {
-      var sanitizedName = records[i].name.replaceAll(new RegExp(r'\\W'), '');
+      var sanitizedName = records[i].name.replaceAll(new RegExp(r'\W'), '');
       localNames[i + 1] = '$sanitizedName$i';
     }
     return localNames;
@@ -251,10 +251,7 @@ class _CodegenState {
     var check = '''
       $_CURRENT_PROTO = $_PROTOS_ACCESSOR[$protoIndex];
       ${_genUpdateCurrentValue(r)}
-      // TODO(kegluneq): Ensure this is correctly ported & handled by dart2js?
-      if (!$_IDENTICAL_CHECK_FN($newValue, $oldValue) ||
-          ($newValue is num && $_IS_NAN_FN($newValue)) &&
-          ($oldValue is num && $_IS_NAN_FN($oldValue))) {
+      if (!$_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
         ${_changeNames[r.selfIndex]} = true;
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
@@ -430,7 +427,6 @@ const _FACADE_CLASS_IMPORT = 'package:angular2/src/facade/lang.dart';
 const _GEN_PREFIX = '_gen';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
-const _IS_NAN_FN = '$_GEN_PREFIX.NumberWrapper.isNaN';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
 const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
