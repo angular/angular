@@ -175,84 +175,83 @@ export class Compiler {
     var nestedPVPromises = [];
     ListWrapper.forEach(this._collectComponentElementBinders(protoViews), (elementBinder) => {
       var nestedComponent = elementBinder.componentDirective;
-      var elementBinderDone = (nestedPv: AppProtoView) => {
-        elementBinder.nestedProtoView = nestedPv;
-      };
+      var elementBinderDone =
+          (nestedPv: AppProtoView) => { elementBinder.nestedProtoView = nestedPv; };
       var nestedCall = this._compile(nestedComponent);
       if (PromiseWrapper.isPromise(nestedCall)) {
-      ListWrapper.push(nestedPVPromises,
-                       (<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
+        ListWrapper.push(nestedPVPromises,
+                         (<Promise<AppProtoView>>nestedCall).then(elementBinderDone));
       } else if (isPresent(nestedCall)) {
-      elementBinderDone(<AppProtoView>nestedCall);
-      }
-  });
-
-  if (nestedPVPromises.length > 0) {
-    return PromiseWrapper.all(nestedPVPromises).then((_) => protoView);
-  } else {
-    return protoView;
-  }
-}
-
-private _collectComponentElementBinders(protoViews: List<AppProtoView>): List<ElementBinder> {
-  var componentElementBinders = [];
-  ListWrapper.forEach(protoViews, (protoView) => {
-    ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
-      if (isPresent(elementBinder.componentDirective)) {
-        ListWrapper.push(componentElementBinders, elementBinder);
+        elementBinderDone(<AppProtoView>nestedCall);
       }
     });
-  });
-  return componentElementBinders;
-}
 
-private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
-  var componentUrl =
-      this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
-  var templateAbsUrl = null;
-  if (isPresent(view.templateUrl)) {
-    templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
-  } else if (isPresent(view.template)) {
-    // Note: If we have an inline template, we also need to send
-    // the url for the component to the render so that it
-    // is able to resolve urls in stylesheets.
-    templateAbsUrl = componentUrl;
-  }
-  return new renderApi.ViewDefinition({
-    componentId: stringify(component),
-    absUrl: templateAbsUrl, template: view.template,
-    directives: ListWrapper.map(directives, directiveBinding => directiveBinding.metadata)
-  });
-}
-
-private _flattenDirectives(template: View): List<Type> {
-  if (isBlank(template.directives)) return [];
-
-  var directives = [];
-  this._flattenList(template.directives, directives);
-
-  return directives;
-}
-
-private _flattenList(tree: List<any>, out: List<Type | Binding | List<any>>): void {
-  for (var i = 0; i < tree.length; i++) {
-    var item = resolveForwardRef(tree[i]);
-    if (ListWrapper.isList(item)) {
-      this._flattenList(item, out);
+    if (nestedPVPromises.length > 0) {
+      return PromiseWrapper.all(nestedPVPromises).then((_) => protoView);
     } else {
-      ListWrapper.push(out, item);
+      return protoView;
     }
   }
-}
 
-private static _isValidDirective(value: Type | Binding): boolean {
-  return isPresent(value) && (value instanceof Type || value instanceof Binding);
-}
-
-private static _assertTypeIsComponent(directiveBinding: DirectiveBinding): void {
-  if (directiveBinding.metadata.type !== renderApi.DirectiveMetadata.COMPONENT_TYPE) {
-    throw new BaseException(
-        `Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
+  private _collectComponentElementBinders(protoViews: List<AppProtoView>): List<ElementBinder> {
+    var componentElementBinders = [];
+    ListWrapper.forEach(protoViews, (protoView) => {
+      ListWrapper.forEach(protoView.elementBinders, (elementBinder) => {
+        if (isPresent(elementBinder.componentDirective)) {
+          ListWrapper.push(componentElementBinders, elementBinder);
+        }
+      });
+    });
+    return componentElementBinders;
   }
-}
+
+  private _buildRenderTemplate(component, view, directives): renderApi.ViewDefinition {
+    var componentUrl =
+        this._urlResolver.resolve(this._appUrl, this._componentUrlMapper.getUrl(component));
+    var templateAbsUrl = null;
+    if (isPresent(view.templateUrl)) {
+      templateAbsUrl = this._urlResolver.resolve(componentUrl, view.templateUrl);
+    } else if (isPresent(view.template)) {
+      // Note: If we have an inline template, we also need to send
+      // the url for the component to the render so that it
+      // is able to resolve urls in stylesheets.
+      templateAbsUrl = componentUrl;
+    }
+    return new renderApi.ViewDefinition({
+      componentId: stringify(component),
+      absUrl: templateAbsUrl, template: view.template,
+      directives: ListWrapper.map(directives, directiveBinding => directiveBinding.metadata)
+    });
+  }
+
+  private _flattenDirectives(template: View): List<Type> {
+    if (isBlank(template.directives)) return [];
+
+    var directives = [];
+    this._flattenList(template.directives, directives);
+
+    return directives;
+  }
+
+  private _flattenList(tree: List<any>, out: List<Type | Binding | List<any>>): void {
+    for (var i = 0; i < tree.length; i++) {
+      var item = resolveForwardRef(tree[i]);
+      if (ListWrapper.isList(item)) {
+        this._flattenList(item, out);
+      } else {
+        ListWrapper.push(out, item);
+      }
+    }
+  }
+
+  private static _isValidDirective(value: Type | Binding): boolean {
+    return isPresent(value) && (value instanceof Type || value instanceof Binding);
+  }
+
+  private static _assertTypeIsComponent(directiveBinding: DirectiveBinding): void {
+    if (directiveBinding.metadata.type !== renderApi.DirectiveMetadata.COMPONENT_TYPE) {
+      throw new BaseException(
+          `Could not load '${stringify(directiveBinding.key.token)}' because it is not a component.`);
+    }
+  }
 }
