@@ -8,7 +8,16 @@ import {
   StringMap,
   StringMapWrapper
 } from 'angular2/src/facade/collection';
-import {isPresent, isBlank, isType, StringWrapper, BaseException} from 'angular2/src/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {
+  isPresent,
+  isBlank,
+  isType,
+  isMap,
+  isFunction,
+  StringWrapper,
+  BaseException
+} from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 
@@ -26,16 +35,7 @@ export class RouteRegistry {
    * Given a component and a configuration object, add the route to this registry
    */
   config(parentComponent, config: StringMap<string, any>): void {
-    if (!StringMapWrapper.contains(config, 'path')) {
-      throw new BaseException('Route config does not contain "path"');
-    }
-
-    if (!StringMapWrapper.contains(config, 'component') &&
-        !StringMapWrapper.contains(config, 'components') &&
-        !StringMapWrapper.contains(config, 'redirectTo')) {
-      throw new BaseException(
-          'Route config does not contain "component," "components," or "redirectTo"');
-    }
+    assertValidConfig(config);
 
     var recognizer: RouteRecognizer = MapWrapper.get(this._rules, parentComponent);
 
@@ -44,18 +44,20 @@ export class RouteRegistry {
       MapWrapper.set(this._rules, parentComponent, recognizer);
     }
 
-    config = normalizeConfig(config);
-
     if (StringMapWrapper.contains(config, 'redirectTo')) {
       recognizer.addRedirect(config['path'], config['redirectTo']);
       return;
     }
 
-    var components = config['components'];
-    StringMapWrapper.forEach(components, (component, _) => this.configFromComponent(component));
+    config = StringMapWrapper.merge(
+        config, {'component': normalizeComponentDeclaration(config['component'])});
+
+    var component = config['component'];
+    this.configFromComponent(component);
 
     recognizer.addConfig(config['path'], config, config['as']);
   }
+
 
   /**
    * Reads the annotations of a component and configures the registry based on them
@@ -87,69 +89,58 @@ export class RouteRegistry {
    * Given a URL and a parent component, return the most specific instruction for navigating
    * the application into the state specified by the
    */
-  recognize(url: string, parentComponent): Instruction {
+  recognize(url: string, parentComponent): Promise<Instruction> {
     var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
     if (isBlank(componentRecognizer)) {
-      return null;
+      return PromiseWrapper.resolve(null);
     }
 
     // Matches some beginning part of the given URL
     var possibleMatches = componentRecognizer.recognize(url);
+    var matchPromises =
+        ListWrapper.map(possibleMatches, (candidate) => this._completeRouteMatch(candidate));
 
-    // A list of instructions that captures all of the given URL
-    var fullSolutions = ListWrapper.create();
+    return PromiseWrapper.all(matchPromises)
+        .then((solutions) => {
+          // remove nulls
+          var fullSolutions = ListWrapper.filter(solutions, (solution) => isPresent(solution));
 
-    for (var i = 0; i < possibleMatches.length; i++) {
-      var candidate: RouteMatch = possibleMatches[i];
-
-      // if the candidate captures all of the URL, add it to our list of solutions
-      if (candidate.unmatchedUrl.length == 0) {
-        ListWrapper.push(fullSolutions, routeMatchToInstruction(candidate, parentComponent));
-      } else {
-        // otherwise, recursively match the remaining part of the URL against the component's
-        // children
-        var children = StringMapWrapper.create(), allChildrenMatch = true,
-            components = StringMapWrapper.get(candidate.handler, 'components');
-
-        var componentNames = StringMapWrapper.keys(components);
-        for (var nameIndex = 0; nameIndex < componentNames.length; nameIndex++) {
-          var name = componentNames[nameIndex];
-          var component = StringMapWrapper.get(components, name);
-
-          var childInstruction = this.recognize(candidate.unmatchedUrl, component);
-          if (isPresent(childInstruction)) {
-            childInstruction.params = candidate.params;
-            children[name] = childInstruction;
-          } else {
-            allChildrenMatch = false;
-            break;
+          if (fullSolutions.length > 0) {
+            return mostSpecific(fullSolutions);
           }
-        }
+          return null;
+        });
+  }
 
-        if (allChildrenMatch) {
-          ListWrapper.push(fullSolutions, new Instruction({
-                             component: parentComponent,
-                             children: children,
-                             matchedUrl: candidate.matchedUrl,
-                             parentSpecificity: candidate.specificity
-                           }));
-        }
-      }
-    }
 
-    if (fullSolutions.length > 0) {
-      var mostSpecificSolution = fullSolutions[0];
-      for (var solutionIndex = 1; solutionIndex < fullSolutions.length; solutionIndex++) {
-        var solution = fullSolutions[solutionIndex];
-        if (solution.specificity > mostSpecificSolution.specificity) {
-          mostSpecificSolution = solution;
-        }
-      }
+  _completeRouteMatch(candidate: RouteMatch): Promise<Instruction> {
+    return componentHandlerToComponentType(candidate.handler)
+        .then((componentType) => {
+          this.configFromComponent(componentType);
 
-      return mostSpecificSolution;
-    }
+          if (candidate.unmatchedUrl.length == 0) {
+            return new Instruction({
+              component: componentType,
+              params: candidate.params,
+              matchedUrl: candidate.matchedUrl,
+              parentSpecificity: candidate.specificity
+            });
+          }
 
-    return null;
+          return this.recognize(candidate.unmatchedUrl, componentType)
+              .then(childInstruction => {
+                if (isBlank(childInstruction)) {
+                  return null;
+                }
+                return new Instruction({
+                  component: componentType,
+                  child: childInstruction,
+                  params: candidate.params,
+                  matchedUrl: candidate.matchedUrl,
+                  parentSpecificity: candidate.specificity
+                });
+              });
+        });
   }
 
   generate(name: string, params: StringMap<string, string>, hostComponent): string {
@@ -159,42 +150,74 @@ export class RouteRegistry {
   }
 }
 
-function routeMatchToInstruction(routeMatch: RouteMatch, parentComponent): Instruction {
-  var children = StringMapWrapper.create();
-  var components = StringMapWrapper.get(routeMatch.handler, 'components');
-  StringMapWrapper.forEach(components, (component, outletName) => {
-    children[outletName] =
-        new Instruction({component: component, params: routeMatch.params, parentSpecificity: 0});
-  });
-  return new Instruction({
-    component: parentComponent,
-    children: children,
-    matchedUrl: routeMatch.matchedUrl,
-    parentSpecificity: routeMatch.specificity
-  });
-}
-
 
 /*
- * Given a config object:
- * { 'component': Foo }
- * Returns a new config object:
- * { components: { default: Foo } }
- *
- * If the config object does not contain a `component` key, the original
- * config object is returned.
+ * A config should have a "path" property, and exactly one of:
+ * - `component`
+ * - `redirectTo`
  */
-function normalizeConfig(config: StringMap<string, any>): StringMap<string, any> {
-  if (!StringMapWrapper.contains(config, 'component')) {
-    return config;
+var ALLOWED_TARGETS = ['component', 'redirectTo'];
+function assertValidConfig(config: StringMap<string, any>): void {
+  if (!StringMapWrapper.contains(config, 'path')) {
+    throw new BaseException(`Route config should contain a "path" property`);
   }
-  var newConfig = {'components': {'default': config['component']}};
-
-  StringMapWrapper.forEach(config, (value, key) => {
-    if (key != 'component' && key != 'components') {
-      newConfig[key] = value;
+  var targets = 0;
+  ListWrapper.forEach(ALLOWED_TARGETS, (target) => {
+    if (StringMapWrapper.contains(config, target)) {
+      targets += 1;
     }
   });
+  if (targets != 1) {
+    throw new BaseException(
+        `Route config should contain exactly one 'component', or 'redirectTo' property`);
+  }
+}
 
-  return newConfig;
+/*
+ * Returns a StringMap like: `{ 'constructor': SomeType, 'type': 'constructor' }`
+ */
+var VALID_COMPONENT_TYPES = ['constructor', 'loader'];
+function normalizeComponentDeclaration(config: any): StringMap<string, any> {
+  if (isType(config)) {
+    return {'constructor': config, 'type': 'constructor'};
+  } else if (isMap(config)) {
+    if (isBlank(config['type'])) {
+      throw new BaseException(
+          `Component declaration when provided as a map should include a 'type' property`);
+    }
+    var componentType = config['type'];
+    if (!ListWrapper.contains(VALID_COMPONENT_TYPES, componentType)) {
+      throw new BaseException(`Invalid component type '${componentType}'`);
+    }
+    return config;
+  } else {
+    throw new BaseException(`Component declaration should be either a Map or a Type`);
+  }
+}
+
+function componentHandlerToComponentType(handler): Promise<any> {
+  var componentDeclaration = handler['component'], type = componentDeclaration['type'];
+
+  if (type == 'constructor') {
+    return PromiseWrapper.resolve(componentDeclaration['constructor']);
+  } else if (type == 'loader') {
+    var resolverFunction = componentDeclaration['loader'];
+    return resolverFunction();
+  } else {
+    throw new BaseException(`Cannot extract the component type from a '${type}' component`);
+  }
+}
+
+/*
+ * Given a list of instructions, returns the most specific instruction
+ */
+function mostSpecific(instructions: List<Instruction>): Instruction {
+  var mostSpecificSolution = instructions[0];
+  for (var solutionIndex = 1; solutionIndex < instructions.length; solutionIndex++) {
+    var solution = instructions[solutionIndex];
+    if (solution.specificity > mostSpecificSolution.specificity) {
+      mostSpecificSolution = solution;
+    }
+  }
+  return mostSpecificSolution;
 }
