@@ -276,7 +276,7 @@ getTitle(): string {
   return document.title;
 }
 setTitle(newTitle: string) {
-  document.title = newTitle;
+  document.title = newTitle || '';
 }
 elementMatches(n, selector: string): boolean {
   return n instanceof HTMLElement && n.matches(selector);
