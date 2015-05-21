@@ -15,16 +15,14 @@ import * as modelModule from './model';
  * @exportedAs angular2/forms
  */
 export class Validators {
-  static required(c:modelModule.Control) {
+  static required(c: modelModule.Control): StringMap<string, boolean> {
     return isBlank(c.value) || c.value == "" ? {"required": true} : null;
   }
 
-  static nullValidator(c:any) {
-    return null;
-  }
+  static nullValidator(c: any): StringMap<string, boolean> { return null; }
 
-  static compose(validators:List<Function>):Function {
-    return function (c:modelModule.Control) {
+  static compose(validators: List<Function>): Function {
+    return function(c: modelModule.Control) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
         var errors = validator(c);
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
@@ -33,7 +31,7 @@ export class Validators {
     }
   }
 
-  static group(c:modelModule.ControlGroup) {
+  static group(c: modelModule.ControlGroup): StringMap<string, boolean> {
     var res = {};
     StringMapWrapper.forEach(c.controls, (control, name) => {
       if (c.contains(name) && isPresent(control.errors)) {
@@ -43,7 +41,7 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static array(c:modelModule.ControlArray) {
+  static array(c: modelModule.ControlArray): StringMap<string, boolean> {
     var res = {};
     ListWrapper.forEach(c.controls, (control) => {
       if (isPresent(control.errors)) {
@@ -53,7 +51,7 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static _mergeErrors(control, res) {
+  static _mergeErrors(control: modelModule.AbstractControl, res: StringMap<string, any>): void {
     StringMapWrapper.forEach(control.errors, (value, error) => {
       if (!StringMapWrapper.contains(res, error)) {
         res[error] = [];

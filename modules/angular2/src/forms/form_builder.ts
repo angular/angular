@@ -51,7 +51,8 @@ import * as modelModule from './model';
  * bootstrap(LoginComp)
  * ```
  *
- * This example creates a {@link ControlGroup} that consists of a `login` {@link Control}, and a nested
+ * This example creates a {@link ControlGroup} that consists of a `login` {@link Control}, and a
+ * nested
  * {@link ControlGroup} that defines a `password` and a `passwordConfirmation` {@link Control}:
  *
  * ```
@@ -68,7 +69,8 @@ import * as modelModule from './model';
  * @exportedAs angular2/forms
  */
 export class FormBuilder {
-  group(controlsConfig, extra = null):modelModule.ControlGroup {
+  group(controlsConfig: StringMap<string, any>,
+        extra: StringMap<string, any> = null): modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null;
     var validator = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
@@ -80,7 +82,7 @@ export class FormBuilder {
     }
   }
 
-  control(value, validator:Function = null):modelModule.Control {
+  control(value: Object, validator: Function = null): modelModule.Control {
     if (isPresent(validator)) {
       return new modelModule.Control(value, validator);
     } else {
@@ -88,7 +90,7 @@ export class FormBuilder {
     }
   }
 
-  array(controlsConfig:List, validator:Function = null):modelModule.ControlArray  {
+  array(controlsConfig: List<any>, validator: Function = null): modelModule.ControlArray {
     var controls = ListWrapper.map(controlsConfig, (c) => this._createControl(c));
     if (isPresent(validator)) {
       return new modelModule.ControlArray(controls, validator);
@@ -97,7 +99,7 @@ export class FormBuilder {
     }
   }
 
-  _reduceControls(controlsConfig) {
+  _reduceControls(controlsConfig: any): StringMap<string, modelModule.AbstractControl> {
     var controls = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig, controlName) => {
       controls[controlName] = this._createControl(controlConfig);
@@ -105,10 +107,10 @@ export class FormBuilder {
     return controls;
   }
 
-  _createControl(controlConfig) {
-    if (controlConfig instanceof modelModule.Control ||
-      controlConfig instanceof modelModule.ControlGroup ||
-      controlConfig instanceof modelModule.ControlArray) {
+  _createControl(controlConfig: any): modelModule.AbstractControl {
+    if (controlConfig instanceof modelModule.Control || controlConfig instanceof
+                                     modelModule.ControlGroup || controlConfig instanceof
+                                         modelModule.ControlArray) {
       return controlConfig;
 
     } else if (ListWrapper.isList(controlConfig)) {

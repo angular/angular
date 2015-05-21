@@ -45,6 +45,7 @@ export function main() {
       });
     }));
 
+
     it("should update the control group values on DOM change",
       inject([TestBed, AsyncTestCompleter], (tb, async) => {
       var form = new ControlGroup({

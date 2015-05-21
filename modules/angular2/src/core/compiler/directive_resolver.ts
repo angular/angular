@@ -10,7 +10,6 @@ export class DirectiveResolver {
     if (isPresent(annotations)) {
       for (var i = 0; i < annotations.length; i++) {
         var annotation = annotations[i];
-
         if (annotation instanceof Directive) {
           return annotation;
         }
