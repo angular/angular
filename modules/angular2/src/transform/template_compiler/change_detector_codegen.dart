@@ -85,7 +85,7 @@ class _CodegenState {
     buf.write('''
       class $_typeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
-        final PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
+        final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
         final dynamic $_PROTOS_ACCESSOR;
         final dynamic $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
@@ -412,6 +412,7 @@ const _ALL_IMPORTS = '''
     import '$_CHANGE_DETECT_CLASS_IMPORT' as $_GEN_PREFIX
       show ChangeDetectionUtil;
     import '$_BASE_CLASS_IMPORT' as $_GEN_PREFIX show AbstractChangeDetector;
+    import '$_PIPE_REGISTRY_IMPORT' as $_GEN_PREFIX show PipeRegistry;
   ''';
 const _BASE_CLASS_IMPORT =
     'package:angular2/src/change_detection/abstract_change_detector.dart';
@@ -430,5 +431,7 @@ const _IS_CHANGED_LOCAL = 'isChanged';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
 const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
+const _PIPE_REGISTRY_IMPORT = '_pipeRegistry';
+    'package:angular2/src/change_detection/pipes/pipe_registry.dart';
 const _PROTOS_ACCESSOR = '_protos';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';
