@@ -21,8 +21,8 @@ class Codegen {
 
   String get imports {
     return _buf.isEmpty
-      ? ''
-      : '''import '$_PREGEN_PROTO_CHANGE_DETECTOR_IMPORT' as $_GEN_PREFIX;''';
+        ? ''
+        : '''import '$_PREGEN_PROTO_CHANGE_DETECTOR_IMPORT' as $_GEN_PREFIX;''';
   }
 
   bool get isEmpty => _buf.isEmpty;
@@ -45,21 +45,21 @@ class _CodegenState {
   final List<String> _pipeNames;
 
   _CodegenState._(this._typeName, String changeDetectionStrategy, this._records,
-                  this._directiveRecords, List<String> localNames)
-  : this._localNames = localNames,
-  _changeNames = _getChangeNames(localNames),
-  _fieldNames = _getFieldNames(localNames),
-  _pipeNames = _getPipeNames(localNames),
-  _changeDetectionMode = ChangeDetectionUtil
-  .changeDetectionMode(changeDetectionStrategy);
+      this._directiveRecords, List<String> localNames)
+      : this._localNames = localNames,
+        _changeNames = _getChangeNames(localNames),
+        _fieldNames = _getFieldNames(localNames),
+        _pipeNames = _getPipeNames(localNames),
+        _changeDetectionMode = ChangeDetectionUtil
+            .changeDetectionMode(changeDetectionStrategy);
 
   factory _CodegenState(String typeName, ChangeDetectorDefinition def) {
     var protoRecords = new ProtoRecordBuilder();
     def.bindingRecords
-    .forEach((rec) => protoRecords.addAst(rec, def.variableNames));
+        .forEach((rec) => protoRecords.addAst(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
     return new _CodegenState._(typeName, def.strategy, records,
-    def.directiveRecords, _getLocalNames(records));
+        def.directiveRecords, _getLocalNames(records));
   }
 
   /// Generates sanitized names for use as local variables.
@@ -75,15 +75,15 @@ class _CodegenState {
 
   /// Generates names for use as local change variables.
   static List<String> _getChangeNames(List<String> localNames) =>
-  localNames.map((name) => 'change_$name').toList();
+      localNames.map((name) => 'change_$name').toList();
 
   /// Generates names for use as private fields.
   static List<String> _getFieldNames(List<String> localNames) =>
-  localNames.map((name) => '_$name').toList();
+      localNames.map((name) => '_$name').toList();
 
   /// Generates names for use as private pipe variables.
   static List<String> _getPipeNames(List<String> localNames) =>
-  localNames.map((name) => '_${name}_pipe').toList();
+      localNames.map((name) => '_${name}_pipe').toList();
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''
@@ -94,9 +94,9 @@ class _CodegenState {
         final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
             $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
-
         ${_allFields().map(
             (f) => 'dynamic $f = $_UTIL.uninitialized();').join('')}
+
         $_typeName(
             this.$_DISPATCHER_ACCESSOR,
             this.$_PIPE_REGISTRY_ACCESSOR,

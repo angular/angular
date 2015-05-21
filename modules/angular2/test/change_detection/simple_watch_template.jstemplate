@@ -9,7 +9,12 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, Directive
 
 import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
 import {ChangeDetectorDefFactory} from 'angular2/src/test_lib/utils';
-import * as _gen from './n';
+import * as _gen from './generated/simple_watch_change_detectors';
+
+/* ==================================================================
+ * If the "Pregen" tests are failing, please re-generate Dart change
+ * detectors. Instructions for how to do so are at TODO(kegluneq).
+ * ================================================================== */
 
 export function main() {
   var defFactory = new ChangeDetectorDefFactory(null);
