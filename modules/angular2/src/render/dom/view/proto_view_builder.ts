@@ -184,13 +184,7 @@ export class ElementBinderBuilder {
     return this.nestedProtoView;
   }
 
-  bindProperty(name, expression) {
-    MapWrapper.set(this.propertyBindings, name, expression);
-
-    // TODO: required for Dart transformers. Remove when Dart transformers
-    // run all the steps of the render compiler
-    setterFactory(name);
-  }
+  bindProperty(name, expression) { MapWrapper.set(this.propertyBindings, name, expression); }
 
   bindVariable(name, value) {
     // When current is a view root, the variable bindings are set to the *nested* proto view.
