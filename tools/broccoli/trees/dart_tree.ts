@@ -6,7 +6,7 @@ import {MultiCopy} from './../multi_copy';
 import destCopy from '../broccoli-dest-copy';
 var Funnel = require('broccoli-funnel');
 var glob = require('glob');
-var mergeTrees = require('broccoli-merge-trees');
+import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
