@@ -189,7 +189,11 @@ export class ElementBinderBuilder {
 
     // TODO: required for Dart transformers. Remove when Dart transformers
     // run all the steps of the render compiler
-    setterFactory(name);
+    try {
+      setterFactory(name);
+    } catch(e) {
+      throw new BaseException(`Error processing property ${name} in expression ${expression.toString()}: ${e}`);
+    }
   }
 
   bindVariable(name, value) {
