@@ -28,7 +28,7 @@ export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
 
 
 export interface DiffingBroccoliPlugin {
-  rebuild(diff: DiffResult): (Promise<any>| void);
+  rebuild(diff: (DiffResult | DiffResult[])): (Promise<any>| void);
   cleanup ? () : void;
 }
 
@@ -38,7 +38,8 @@ type DiffingPluginWrapperFactory = (inputTrees: (BroccoliTree | BroccoliTree[]),
 
 
 class DiffingPluginWrapper implements BroccoliTree {
-  treeDiffer: TreeDiffer;
+  treeDiffer: TreeDiffer = null;
+  treeDiffers: TreeDiffer[] = null;
   initialized = false;
   wrappedPlugin: DiffingBroccoliPlugin = null;
   inputTree = null;
@@ -47,6 +48,7 @@ class DiffingPluginWrapper implements BroccoliTree {
 
   // props monkey-patched by broccoli builder:
   inputPath = null;
+  inputPaths = null;
   cachePath = null;
   outputPath = null;
 
@@ -61,13 +63,29 @@ class DiffingPluginWrapper implements BroccoliTree {
   }
 
 
+  private calculateDiff(firstRun: boolean): (DiffResult | DiffResult[]) {
+    if (this.treeDiffer) {
+      let diffResult = this.treeDiffer.diffTree();
+      diffResult.log(!firstRun);
+      return diffResult;
+    } else if (this.treeDiffers) {
+      return this.treeDiffers.map((treeDiffer) => treeDiffer.diffTree())
+          .map((diffResult) => {
+            diffResult.log(!firstRun);
+            return diffResult;
+          });
+    } else {
+      throw new Error("Missing TreeDiffer");
+    }
+  }
+
+
   rebuild() {
     try {
       let firstRun = !this.initialized;
       this.init();
 
-      let diffResult = this.treeDiffer.diffTree();
-      diffResult.log(!firstRun);
+      let diffResult = this.calculateDiff(firstRun);
 
       var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
 
@@ -101,11 +119,18 @@ class DiffingPluginWrapper implements BroccoliTree {
     if (!this.initialized) {
       let includeExtensions = this.pluginClass.includeExtensions || [];
       let excludeExtensions = this.pluginClass.excludeExtensions || [];
+      let description = this.description;
       this.initialized = true;
-      this.treeDiffer =
-          new TreeDiffer(this.description, this.inputPath, includeExtensions, excludeExtensions);
-      this.wrappedPlugin =
-          new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
+      if (this.inputPaths) {
+        this.treeDiffers =
+            this.inputPaths.map((inputPath) => new TreeDiffer(
+                                    description, inputPath, includeExtensions, excludeExtensions));
+      } else if (this.inputPath) {
+        this.treeDiffer =
+            new TreeDiffer(description, this.inputPath, includeExtensions, excludeExtensions);
+      }
+      this.wrappedPlugin = new this.pluginClass(this.inputPaths || this.inputPath, this.cachePath,
+                                                this.wrappedPluginArguments[1]);
     }
   }
 
