@@ -659,8 +659,8 @@ var firstBuildJsCjs = true;
 /**
  * private task
  */
-gulp.task('!build.js.cjs', function() {
-  return angularBuilder.rebuildNodeTree().then(function() {
+gulp.task('!build.js.cjs', function(done) {
+  angularBuilder.rebuildNodeTree().then(function() {
     if (firstBuildJsCjs) {
       firstBuildJsCjs = false;
       console.log('creating node_modules symlink hack');
@@ -669,7 +669,8 @@ gulp.task('!build.js.cjs', function() {
         dir: CONFIG.dest.js.cjs
       })();
     }
-  });
+    done();
+  }, done);
 });
 
 
