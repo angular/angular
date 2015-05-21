@@ -7,7 +7,8 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, Directive
   PipeRegistry, Pipe, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT, WrappedValue,
     JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition, Locals} from 'angular2/change_detection';
 
-import {ChangeDetectorDefFactory, CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
+import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
+import {ChangeDetectorDefFactory} from 'angular2/src/test_lib/util';
 
 export function main() {
   var defFactory = new ChangeDetectorDefFactory(null);

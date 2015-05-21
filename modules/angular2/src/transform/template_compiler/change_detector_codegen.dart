@@ -431,7 +431,7 @@ const _IS_CHANGED_LOCAL = 'isChanged';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
 const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
-const _PIPE_REGISTRY_IMPORT = '_pipeRegistry';
+const _PIPE_REGISTRY_IMPORT =
     'package:angular2/src/change_detection/pipes/pipe_registry.dart';
 const _PROTOS_ACCESSOR = '_protos';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';
