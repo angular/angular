@@ -24,7 +24,8 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
+      {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false},
+      'modules/angular2/src/test_lib/shims_for_IE.es6'
     ],
 
     exclude: [
