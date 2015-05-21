@@ -17,7 +17,18 @@ export function proxy() {
 var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach = _global.afterEach;
-export var expect = _global.expect;
+
+export interface NgMatchers extends jasmine.Matchers {
+  toBe(expected: any): boolean;
+  toEqual(expected: any): boolean;
+  toBePromise(expected: any): boolean;
+  toBeAnInstanceOf(expected: any): boolean;
+  toHaveText(expected: any): boolean;
+  toImplement(expected: any): boolean;
+  not: NgMatchers;
+}
+
+export var expect: (actual: any) => NgMatchers = <any>_global.expect;
 
 export var IS_DARTIUM = false;
 

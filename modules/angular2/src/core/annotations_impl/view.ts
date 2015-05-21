@@ -73,7 +73,10 @@ export class View {
    * }
    * ```
    */
-  directives: List<Type>;
+  // TODO(tbosch): use Type | Binding | List<any> when Dart supports union types,
+  // as otherwise we would need to import Binding type and Dart would warn
+  // for an unused import.
+  directives: List<Type | any | List<any>>;
 
   /**
    * Specify a custom renderer for this View.
@@ -89,7 +92,7 @@ export class View {
     }: {
       templateUrl?: string,
       template?: string,
-      directives?: List<Type>,
+      directives?: List<Type | any | List<any>>,
       renderer?: string
     } = {})
   {
