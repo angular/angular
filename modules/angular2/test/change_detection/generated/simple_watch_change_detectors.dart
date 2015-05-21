@@ -9,9 +9,9 @@ class ChangeDetector0 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector0(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -72,9 +72,9 @@ class ChangeDetector1 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector1(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -135,9 +135,9 @@ class ChangeDetector2 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector2(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -198,11 +198,11 @@ class ChangeDetector3 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_add2 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector3(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -293,11 +293,11 @@ class ChangeDetector4 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_subtract2 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector4(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -389,11 +389,11 @@ class ChangeDetector5 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_multiply2 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector5(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -485,11 +485,11 @@ class ChangeDetector6 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_remainder2 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector6(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -581,10 +581,10 @@ class ChangeDetector7 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_equals1 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector7(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -663,10 +663,10 @@ class ChangeDetector8 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_not_equals1 = _gen.ChangeDetectionUtil.uninitialized();
+
   ChangeDetector8(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
@@ -745,12 +745,273 @@ class ChangeDetector9 extends _gen.AbstractChangeDetector {
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
+  dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _operation_identical1 = _gen.ChangeDetectionUtil.uninitialized();
 
+  ChangeDetector9(this._dispatcher, this._pipeRegistry, this._protos,
+      this._directiveRecords)
+      : super();
+
+  void detectChangesInRecords(throwOnChange) {
+    var context = null;
+    var literal0 = null;
+    var operation_identical1 = null;
+    var change_context = false;
+    var change_literal0 = false;
+    var change_operation_identical1 = false;
+    var isChanged = false;
+    var currentProto;
+    var changes = null;
+
+    context = _context;
+    currentProto = _protos[0];
+    literal0 = 1;
+    if (!_gen.looseIdentical(literal0, _literal0)) {
+      change_literal0 = true;
+
+      _literal0 = literal0;
+    }
+
+    isChanged = false;
+
+    if (change_literal0 || change_literal0) {
+      currentProto = _protos[1];
+      operation_identical1 =
+          _gen.ChangeDetectionUtil.operation_identical(literal0, literal0);
+      if (!_gen.looseIdentical(operation_identical1, _operation_identical1)) {
+        change_operation_identical1 = true;
+        if (throwOnChange) {
+          _gen.ChangeDetectionUtil.throwOnChange(currentProto,
+              _gen.ChangeDetectionUtil.simpleChange(
+                  _operation_identical1, operation_identical1));
+        }
+
+        _dispatcher.notifyOnBinding(
+            currentProto.bindingRecord, operation_identical1);
+
+        _operation_identical1 = operation_identical1;
+      }
+
+      isChanged = false;
+    }
+  }
+
+  void callOnAllChangesDone() {}
+
+  void hydrate(context, locals, directives) {
+    mode = 'ALWAYS_CHECK';
+    _context = context;
+    _locals = locals;
+  }
+
+  void dehydrate() {
+    _context = _gen.ChangeDetectionUtil.uninitialized();
+    _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+    _operation_identical1 = _gen.ChangeDetectionUtil.uninitialized();
+    _locals = null;
+  }
+
+  hydrated() =>
+      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.uninitialized());
+
+  static _gen.ProtoChangeDetector newProtoChangeDetector(
+      _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
+    return new _gen.PregenProtoChangeDetector(
+        (a, b, c, d) => new ChangeDetector9(a, b, c, d), registry, def);
+  }
+}
+class ChangeDetector10 extends _gen.AbstractChangeDetector {
+  final dynamic _dispatcher;
+  final _gen.PipeRegistry _pipeRegistry;
+  final _gen.List<_gen.ProtoRecord> _protos;
+  final _gen.List<_gen.DirectiveRecord> _directiveRecords;
+  dynamic _locals = null;
+  dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _operation_not_identical1 = _gen.ChangeDetectionUtil.uninitialized();
+
+  ChangeDetector10(this._dispatcher, this._pipeRegistry, this._protos,
+      this._directiveRecords)
+      : super();
+
+  void detectChangesInRecords(throwOnChange) {
+    var context = null;
+    var literal0 = null;
+    var operation_not_identical1 = null;
+    var change_context = false;
+    var change_literal0 = false;
+    var change_operation_not_identical1 = false;
+    var isChanged = false;
+    var currentProto;
+    var changes = null;
+
+    context = _context;
+    currentProto = _protos[0];
+    literal0 = 1;
+    if (!_gen.looseIdentical(literal0, _literal0)) {
+      change_literal0 = true;
+
+      _literal0 = literal0;
+    }
+
+    isChanged = false;
+
+    if (change_literal0 || change_literal0) {
+      currentProto = _protos[1];
+      operation_not_identical1 =
+          _gen.ChangeDetectionUtil.operation_not_identical(literal0, literal0);
+      if (!_gen.looseIdentical(
+          operation_not_identical1, _operation_not_identical1)) {
+        change_operation_not_identical1 = true;
+        if (throwOnChange) {
+          _gen.ChangeDetectionUtil.throwOnChange(currentProto,
+              _gen.ChangeDetectionUtil.simpleChange(
+                  _operation_not_identical1, operation_not_identical1));
+        }
+
+        _dispatcher.notifyOnBinding(
+            currentProto.bindingRecord, operation_not_identical1);
+
+        _operation_not_identical1 = operation_not_identical1;
+      }
+
+      isChanged = false;
+    }
+  }
+
+  void callOnAllChangesDone() {}
+
+  void hydrate(context, locals, directives) {
+    mode = 'ALWAYS_CHECK';
+    _context = context;
+    _locals = locals;
+  }
+
+  void dehydrate() {
+    _context = _gen.ChangeDetectionUtil.uninitialized();
+    _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+    _operation_not_identical1 = _gen.ChangeDetectionUtil.uninitialized();
+    _locals = null;
+  }
+
+  hydrated() =>
+      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.uninitialized());
+
+  static _gen.ProtoChangeDetector newProtoChangeDetector(
+      _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
+    return new _gen.PregenProtoChangeDetector(
+        (a, b, c, d) => new ChangeDetector10(a, b, c, d), registry, def);
+  }
+}
+class ChangeDetector11 extends _gen.AbstractChangeDetector {
+  final dynamic _dispatcher;
+  final _gen.PipeRegistry _pipeRegistry;
+  final _gen.List<_gen.ProtoRecord> _protos;
+  final _gen.List<_gen.DirectiveRecord> _directiveRecords;
+  dynamic _locals = null;
+  dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
+  dynamic _operation_identical2 = _gen.ChangeDetectionUtil.uninitialized();
+
+  ChangeDetector11(this._dispatcher, this._pipeRegistry, this._protos,
+      this._directiveRecords)
+      : super();
+
+  void detectChangesInRecords(throwOnChange) {
+    var context = null;
+    var literal0 = null;
+    var literal1 = null;
+    var operation_identical2 = null;
+    var change_context = false;
+    var change_literal0 = false;
+    var change_literal1 = false;
+    var change_operation_identical2 = false;
+    var isChanged = false;
+    var currentProto;
+    var changes = null;
+
+    context = _context;
+    currentProto = _protos[0];
+    literal0 = 1;
+    if (!_gen.looseIdentical(literal0, _literal0)) {
+      change_literal0 = true;
+
+      _literal0 = literal0;
+    }
+
+    isChanged = false;
+
+    currentProto = _protos[1];
+    literal1 = true;
+    if (!_gen.looseIdentical(literal1, _literal1)) {
+      change_literal1 = true;
+
+      _literal1 = literal1;
+    }
+
+    isChanged = false;
+
+    if (change_literal0 || change_literal1) {
+      currentProto = _protos[2];
+      operation_identical2 =
+          _gen.ChangeDetectionUtil.operation_identical(literal0, literal1);
+      if (!_gen.looseIdentical(operation_identical2, _operation_identical2)) {
+        change_operation_identical2 = true;
+        if (throwOnChange) {
+          _gen.ChangeDetectionUtil.throwOnChange(currentProto,
+              _gen.ChangeDetectionUtil.simpleChange(
+                  _operation_identical2, operation_identical2));
+        }
+
+        _dispatcher.notifyOnBinding(
+            currentProto.bindingRecord, operation_identical2);
+
+        _operation_identical2 = operation_identical2;
+      }
+
+      isChanged = false;
+    }
+  }
+
+  void callOnAllChangesDone() {}
+
+  void hydrate(context, locals, directives) {
+    mode = 'ALWAYS_CHECK';
+    _context = context;
+    _locals = locals;
+  }
+
+  void dehydrate() {
+    _context = _gen.ChangeDetectionUtil.uninitialized();
+    _literal0 = _gen.ChangeDetectionUtil.uninitialized();
+    _literal1 = _gen.ChangeDetectionUtil.uninitialized();
+    _operation_identical2 = _gen.ChangeDetectionUtil.uninitialized();
+    _locals = null;
+  }
+
+  hydrated() =>
+      !_gen.looseIdentical(_context, _gen.ChangeDetectionUtil.uninitialized());
+
+  static _gen.ProtoChangeDetector newProtoChangeDetector(
+      _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
+    return new _gen.PregenProtoChangeDetector(
+        (a, b, c, d) => new ChangeDetector11(a, b, c, d), registry, def);
+  }
+}
+class ChangeDetector12 extends _gen.AbstractChangeDetector {
+  final dynamic _dispatcher;
+  final _gen.PipeRegistry _pipeRegistry;
+  final _gen.List<_gen.ProtoRecord> _protos;
+  final _gen.List<_gen.DirectiveRecord> _directiveRecords;
+  dynamic _locals = null;
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector9(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector12(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -832,21 +1093,21 @@ class ChangeDetector9 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector9(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector12(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector10 extends _gen.AbstractChangeDetector {
+class ChangeDetector13 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector10(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector13(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -928,21 +1189,21 @@ class ChangeDetector10 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector10(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector13(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector11 extends _gen.AbstractChangeDetector {
+class ChangeDetector14 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_greater_then2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector11(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector14(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1025,21 +1286,21 @@ class ChangeDetector11 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector11(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector14(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector12 extends _gen.AbstractChangeDetector {
+class ChangeDetector15 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector12(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector15(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1121,22 +1382,22 @@ class ChangeDetector12 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector12(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector15(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector13 extends _gen.AbstractChangeDetector {
+class ChangeDetector16 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_or_equals_then2 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector13(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector16(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1220,21 +1481,21 @@ class ChangeDetector13 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector13(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector16(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector14 extends _gen.AbstractChangeDetector {
+class ChangeDetector17 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_or_equals_then1 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector14(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector17(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1305,22 +1566,22 @@ class ChangeDetector14 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector14(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector17(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector15 extends _gen.AbstractChangeDetector {
+class ChangeDetector18 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_or_equals_then2 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector15(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector18(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1404,22 +1665,22 @@ class ChangeDetector15 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector15(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector18(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector16 extends _gen.AbstractChangeDetector {
+class ChangeDetector19 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_greater_or_equals_then2 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector16(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector19(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1504,21 +1765,21 @@ class ChangeDetector16 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector16(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector19(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector17 extends _gen.AbstractChangeDetector {
+class ChangeDetector20 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_greater_or_equals_then1 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector17(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector20(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1590,22 +1851,22 @@ class ChangeDetector17 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector17(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector20(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector18 extends _gen.AbstractChangeDetector {
+class ChangeDetector21 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_greater_or_equals_then2 =
       _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector18(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector21(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1690,20 +1951,20 @@ class ChangeDetector18 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector18(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector21(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector19 extends _gen.AbstractChangeDetector {
+class ChangeDetector22 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_logical_and1 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector19(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector22(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1773,21 +2034,21 @@ class ChangeDetector19 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector19(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector22(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector20 extends _gen.AbstractChangeDetector {
+class ChangeDetector23 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_logical_and2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector20(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector23(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1870,21 +2131,21 @@ class ChangeDetector20 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector20(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector23(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector21 extends _gen.AbstractChangeDetector {
+class ChangeDetector24 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_logical_or2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector21(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector24(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -1966,20 +2227,20 @@ class ChangeDetector21 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector21(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector24(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector22 extends _gen.AbstractChangeDetector {
+class ChangeDetector25 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_logical_or1 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector22(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector25(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2048,20 +2309,20 @@ class ChangeDetector22 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector22(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector25(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector23 extends _gen.AbstractChangeDetector {
+class ChangeDetector26 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_negate1 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector23(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector26(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2129,21 +2390,21 @@ class ChangeDetector23 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector23(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector26(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector24 extends _gen.AbstractChangeDetector {
+class ChangeDetector27 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_negate1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_negate2 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector24(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector27(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2226,22 +2487,22 @@ class ChangeDetector24 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector24(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector27(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector25 extends _gen.AbstractChangeDetector {
+class ChangeDetector28 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_less_then2 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _cond3 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector25(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector28(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2336,22 +2597,22 @@ class ChangeDetector25 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector25(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector28(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector26 extends _gen.AbstractChangeDetector {
+class ChangeDetector29 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _operation_greater_then2 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _cond3 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector26(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector29(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2447,23 +2708,23 @@ class ChangeDetector26 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector26(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector29(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector27 extends _gen.AbstractChangeDetector {
+class ChangeDetector30 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _arrayFn22 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal3 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _keyedAccess4 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector27(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector30(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2567,22 +2828,22 @@ class ChangeDetector27 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector27(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector30(a, b, c, d), registry, def);
   }
 }
-class ChangeDetector28 extends _gen.AbstractChangeDetector {
+class ChangeDetector31 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;
   final _gen.PipeRegistry _pipeRegistry;
   final _gen.List<_gen.ProtoRecord> _protos;
   final _gen.List<_gen.DirectiveRecord> _directiveRecords;
   dynamic _locals = null;
-
   dynamic _context = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal0 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _mapFnfoo1 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _literal2 = _gen.ChangeDetectionUtil.uninitialized();
   dynamic _keyedAccess3 = _gen.ChangeDetectionUtil.uninitialized();
-  ChangeDetector28(this._dispatcher, this._pipeRegistry, this._protos,
+
+  ChangeDetector31(this._dispatcher, this._pipeRegistry, this._protos,
       this._directiveRecords)
       : super();
 
@@ -2673,7 +2934,7 @@ class ChangeDetector28 extends _gen.AbstractChangeDetector {
   static _gen.ProtoChangeDetector newProtoChangeDetector(
       _gen.PipeRegistry registry, _gen.ChangeDetectorDefinition def) {
     return new _gen.PregenProtoChangeDetector(
-        (a, b, c, d) => new ChangeDetector28(a, b, c, d), registry, def);
+        (a, b, c, d) => new ChangeDetector31(a, b, c, d), registry, def);
   }
 }
 

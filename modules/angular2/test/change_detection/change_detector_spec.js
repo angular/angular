@@ -154,12 +154,12 @@ export function main() {
             expect(c["dispatcher"].loggedValues[0]['z']).toEqual(1);
           });
 
-          it("should support / operations", () => {
+          it("should support binary operations", () => {
             expect(executeWatch('exp', '10 / 2')).toEqual([`exp=${5.0}`]); //dart exp=5.0, js exp=5
             if (IS_DARTIUM) {
-              expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=false']);
+              expect(executeWatch('exp', '1 == true')).toEqual(['exp=false']);
             } else {
-              expect(executeWatch('exp', '1 == "1"')).toEqual(['exp=true']);
+              expect(executeWatch('exp', '1 == true')).toEqual(['exp=true']);
             }
           });
 
