@@ -233,7 +233,26 @@ export function iterateListLike(obj, fn: Function) {
   }
 }
 
+
+// Safari and Internet Explorer do not support the iterable parameter to the
+// Set constructor.  We work around that by manually adding the items.
+var createSetFromList: {(lst: List<any>): Set<any>} = (function() {
+  var test = new Set([1, 2, 3]);
+  if (test.size === 3) {
+    return function createSetFromList(lst: List<any>): Set<any> { return new Set(lst); };
+  } else {
+    return function createSetAndPopulateFromList(lst: List<any>): Set<any> {
+      var res = new Set(lst);
+      if (res.size !== lst.length) {
+        for (var i = 0; i < lst.length; i++) {
+          res.add(lst[i]);
+        }
+      }
+      return res;
+    };
+  }
+})();
 export class SetWrapper {
-  static createFromList<T>(lst: List<T>): Set<T> { return new Set(lst); }
+  static createFromList<T>(lst: List<T>): Set<T> { return createSetFromList(lst); }
   static has<T>(s: Set<T>, key: T): boolean { return s.has(key); }
 }
