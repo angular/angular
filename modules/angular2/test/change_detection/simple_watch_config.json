@@ -1,5 +1,5 @@
 {
-  "changeDetectorTypes": ["Dynamic", "Jit"],
+  "changeDetectorTypes": ["Dynamic", "Jit", "Pregen"],
   "testConfig": [
     {"description": "should support literals", "propName": "const", "expression": "10", "expectedResult": "const=10"},
     {"description": "should strip quotes from literals", "propName": "const", "expression": "\\'str\\'", "expectedResult": "const=str"},

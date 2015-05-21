@@ -20,16 +20,15 @@ class Codegen {
   }
 
   String get imports {
-    return _buf.isEmpty ? '' : _ALL_IMPORTS;
+    return _buf.isEmpty
+      ? ''
+      : '''import '$_PREGEN_PROTO_CHANGE_DETECTOR_IMPORT' as $_GEN_PREFIX;''';
   }
 
   bool get isEmpty => _buf.isEmpty;
 
   @override
   String toString() {
-    if (!_buf.isEmpty) {
-      _buf.write(_GEN_RECORDS_METHOD);
-    }
     return '$_buf';
   }
 }
@@ -46,21 +45,21 @@ class _CodegenState {
   final List<String> _pipeNames;
 
   _CodegenState._(this._typeName, String changeDetectionStrategy, this._records,
-      this._directiveRecords, List<String> localNames)
-      : this._localNames = localNames,
-        _changeNames = _getChangeNames(localNames),
-        _fieldNames = _getFieldNames(localNames),
-        _pipeNames = _getPipeNames(localNames),
-        _changeDetectionMode = ChangeDetectionUtil
-            .changeDetectionMode(changeDetectionStrategy);
+                  this._directiveRecords, List<String> localNames)
+  : this._localNames = localNames,
+  _changeNames = _getChangeNames(localNames),
+  _fieldNames = _getFieldNames(localNames),
+  _pipeNames = _getPipeNames(localNames),
+  _changeDetectionMode = ChangeDetectionUtil
+  .changeDetectionMode(changeDetectionStrategy);
 
   factory _CodegenState(String typeName, ChangeDetectorDefinition def) {
     var protoRecords = new ProtoRecordBuilder();
     def.bindingRecords
-        .forEach((rec) => protoRecords.addAst(rec, def.variableNames));
+    .forEach((rec) => protoRecords.addAst(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
     return new _CodegenState._(typeName, def.strategy, records,
-        def.directiveRecords, _getLocalNames(records));
+    def.directiveRecords, _getLocalNames(records));
   }
 
   /// Generates sanitized names for use as local variables.
@@ -76,24 +75,26 @@ class _CodegenState {
 
   /// Generates names for use as local change variables.
   static List<String> _getChangeNames(List<String> localNames) =>
-      localNames.map((name) => 'change_$name').toList();
+  localNames.map((name) => 'change_$name').toList();
 
   /// Generates names for use as private fields.
   static List<String> _getFieldNames(List<String> localNames) =>
-      localNames.map((name) => '_$name').toList();
+  localNames.map((name) => '_$name').toList();
 
   /// Generates names for use as private pipe variables.
   static List<String> _getPipeNames(List<String> localNames) =>
-      localNames.map((name) => '_${name}_pipe').toList();
+  localNames.map((name) => '_${name}_pipe').toList();
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''
       class $_typeName extends $_BASE_CLASS {
         final dynamic $_DISPATCHER_ACCESSOR;
         final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
-        final dynamic $_PROTOS_ACCESSOR;
-        final dynamic $_DIRECTIVES_ACCESSOR;
+        final $_GEN_PREFIX.List<$_GEN_PREFIX.ProtoRecord> $_PROTOS_ACCESSOR;
+        final $_GEN_PREFIX.List<$_GEN_PREFIX.DirectiveRecord>
+            $_DIRECTIVES_ACCESSOR;
         dynamic $_LOCALS_ACCESSOR = null;
+
         ${_allFields().map(
             (f) => 'dynamic $f = $_UTIL.uninitialized();').join('')}
         $_typeName(
@@ -133,20 +134,14 @@ class _CodegenState {
 
         hydrated() => !$_IDENTICAL_CHECK_FN(
             $_CONTEXT_ACCESSOR, $_UTIL.uninitialized());
-      }
-      class Proto$_typeName extends $_GEN_PREFIX.ProtoChangeDetector {
-        final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
-        dynamic $_PROTOS_ACCESSOR;
-        dynamic $_DIRECTIVES_ACCESSOR;
-        Proto$_typeName(this.$_PIPE_REGISTRY_ACCESSOR,
-            $_GEN_PREFIX.ChangeDetectorDefinition def) {
-          $_PROTOS_ACCESSOR = $_GEN_RECORDS_METHOD_NAME(def);
-          $_DIRECTIVES_ACCESSOR = def.directiveRecords;
-        }
 
-        $_GEN_PREFIX.ChangeDetector instantiate(dispatcher) =>
-            new $_typeName(dispatcher, $_PIPE_REGISTRY_ACCESSOR,
-                $_PROTOS_ACCESSOR, $_DIRECTIVES_ACCESSOR);
+        static $_GEN_PREFIX.ProtoChangeDetector newProtoChangeDetector(
+            $_GEN_PREFIX.PipeRegistry registry,
+            $_GEN_PREFIX.ChangeDetectorDefinition def) {
+          return new $_GEN_PREFIX.PregenProtoChangeDetector(
+              (a, b, c, d) => new $_typeName(a, b, c, d),
+              registry, def);
+        }
       }
     ''');
   }
@@ -426,54 +421,22 @@ class _CodegenState {
 }
 
 const _ALL_IMPORTS = '''
-    import '$_COALESCE_IMPORT' as $_GEN_PREFIX show coalesce;
-    import '$_COLLECTION_CLASS_IMPORT' as $_GEN_PREFIX show ListWrapper;
-    import '$_FACADE_CLASS_IMPORT' as $_GEN_PREFIX
-      show NumberWrapper, looseIdentical;
-    import '$_CHANGE_DETECT_CLASS_IMPORT' as $_GEN_PREFIX
-      show ChangeDetectionUtil;
-    import '$_BASE_CLASS_IMPORT' as $_GEN_PREFIX show AbstractChangeDetector;
-    import '$_PIPE_REGISTRY_IMPORT' as $_GEN_PREFIX show PipeRegistry;
-    import '$_INTERFACES_IMPORT' as $_GEN_PREFIX show
-        ChangeDetector, ChangeDetectorDefinition, ProtoChangeDetector;
-    import '$_PROTO_CHANGE_DETECTOR_IMPORT' as $_GEN_PREFIX show
-        ProtoRecordBuilder;
+
   ''';
-const _BASE_CLASS_IMPORT =
-    'package:angular2/src/change_detection/abstract_change_detector.dart';
 const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
-const _CHANGE_DETECT_CLASS_IMPORT =
-    'package:angular2/src/change_detection/change_detection_util.dart';
-const _COALESCE_IMPORT =
-    'package:angular2/src/change_detection/coalesce.dart';
-const _COLLECTION_CLASS_IMPORT = 'package:angular2/src/facade/collection.dart';
 const _CONTEXT_ACCESSOR = '_context';
 const _CURRENT_PROTO = 'currentProto';
 const _DIRECTIVES_ACCESSOR = '_directiveRecords';
 const _DISPATCHER_ACCESSOR = '_dispatcher';
-const _FACADE_CLASS_IMPORT = 'package:angular2/src/facade/lang.dart';
 const _GEN_PREFIX = '_gen';
-const _GEN_RECORDS_METHOD = '''
-  $_GEN_RECORDS_METHOD_NAME($_GEN_PREFIX.ChangeDetectorDefinition definition) {
-    var recordBuilder = new $_GEN_PREFIX.ProtoRecordBuilder();
-    $_GEN_PREFIX.ListWrapper.forEach(definition.bindingRecords, (b) {
-      recordBuilder.addAst(b, definition.variableNames);
-    });
-    return $_GEN_PREFIX.coalesce(recordBuilder.records);
-  }
-''';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
-const _INTERFACES_IMPORT =
-    'package:angular2/src/change_detection/interfaces.dart';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
+const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
+    'package:angular2/src/change_detection/pregen_proto_change_detector.dart';
 const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
-const _PIPE_REGISTRY_IMPORT =
-    'package:angular2/src/change_detection/pipes/pipe_registry.dart';
 const _PROTOS_ACCESSOR = '_protos';
-const _PROTO_CHANGE_DETECTOR_IMPORT =
-    'package:angular2/src/change_detection/proto_change_detector.dart';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';

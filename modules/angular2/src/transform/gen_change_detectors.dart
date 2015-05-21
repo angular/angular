@@ -19,10 +19,11 @@ void main(List<String> args) {
     for (var config in configs) {
       var cdDef =
           factory.forConstBind(config["propName"], config["expression"]);
-      codegen.generate('Class${index++}', cdDef);
+      codegen.generate('ChangeDetector${index++}', cdDef);
     }
   }
   print(new DartFormatter().format('''
+    library dart_gen_change_detectors;
     ${codegen.imports}
     $codegen
   '''));

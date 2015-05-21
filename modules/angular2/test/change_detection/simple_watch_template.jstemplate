@@ -8,7 +8,8 @@ import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, Directive
     JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition, Locals} from 'angular2/change_detection';
 
 import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from './change_detector_common';
-import {ChangeDetectorDefFactory} from 'angular2/src/test_lib/util';
+import {ChangeDetectorDefFactory} from 'angular2/src/test_lib/utils';
+import * as _gen from './n';
 
 export function main() {
   var defFactory = new ChangeDetectorDefFactory(null);
@@ -26,12 +27,17 @@ export function main() {
 
   describe('simple watch for ${changeDetectorType}', () => {
     <% if (changeDetectorType == "Jit") { %>if (IS_DARTIUM) { return; }<% } %>
+    <% if (changeDetectorType == "Pregen") { %>if (!IS_DARTIUM) { return; }<% } %>
     <% _.forEach(testConfig, function(config, i) { %>
       it('${config.description}', () => {
         var changeDetectorDef = defFactory.forConstBind('${config.propName}', '${config.expression}');
-	changeDetectorDef.id = '${i}';
-	var registry = null;
-	var protoCd = new ${changeDetectorType}ProtoChangeDetector(registry, changeDetectorDef);
+        changeDetectorDef.id = '${i}';
+        var registry = null;
+        <% if (changeDetectorType == "Pregen") { %>
+        var protoCd = _gen.ChangeDetector${i}.newProtoChangeDetector(registry, changeDetectorDef);
+        <% } else { %>
+        var protoCd = new ${changeDetectorType}ProtoChangeDetector(registry, changeDetectorDef);
+        <% } %>
         expect(executeWatch(protoCd)).toEqual(['${config.expectedResult}']);
       });
     <% }); %>
