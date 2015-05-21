@@ -279,7 +279,8 @@ setTitle(newTitle: string) {
   document.title = newTitle || '';
 }
 elementMatches(n, selector: string): boolean {
-  return n instanceof HTMLElement && n.matches(selector);
+  return n instanceof HTMLElement && n.matches ? n.matches(selector) :
+                                                 n.msMatchesSelector(selector);
 }
 isTemplateElement(el: any): boolean {
   return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
