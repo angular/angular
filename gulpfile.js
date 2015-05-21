@@ -574,6 +574,7 @@ gulp.task('build/pure-packages.dart', function() {
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
   runSequence(
+    'CREATE_ME',
     'build/tree.dart',
     // Run after 'build/tree.dart' because broccoli clears the dist/dart folder
     'build/pure-packages.dart',

@@ -2,6 +2,7 @@ import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {isPresent} from 'angular2/src/facade/lang';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
+import {BindingRecord, ChangeDetectorDefinition, Lexer, Parser} from 'angular2/change_detection';
 
 export class Log {
   _result:List;
@@ -46,4 +47,27 @@ export function dispatchEvent(element, eventType) {
 
 export function el(html:string) {
   return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
+}
+
+export class ChangeDetectorDefFactory {
+  _parser: Parser;
+
+  constructor(parser: Parser) {
+    this._parser = parser;
+    if (this._parser == null) {
+      this._parser = new Parser(new Lexer());
+    }
+  }
+
+  forConstBind(propName: string, expression: string): ChangeDetectorDefinition {
+    var ast = this._parser.parseBinding(expression, 'location');
+    var bindingRecords = [BindingRecord.createForElement(ast, 0, propName)];
+
+    var id = null;
+    var strategy = null;
+    var variableBindings = [];
+    var directiveRecords = [];
+    return new ChangeDetectorDefinition(
+        id, strategy, variableBindings, bindingRecords, directiveRecords);
+  }
 }

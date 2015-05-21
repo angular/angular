@@ -46,7 +46,7 @@ function getSourceTree() {
   var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['rtts_assert/**/*']);
   var transpiled = ts2dart(tsInputTree, {generateLibraryName: true, generateSourceMap: false});
   // Native sources, dart only examples, etc.
-  var dartSrcs = modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/css/**']);
+  var dartSrcs = modulesFunnel(['**/*.dart', '**/*.json', '**/css/**']);
   return mergeTrees([transpiled, dartSrcs]);
 }
 
