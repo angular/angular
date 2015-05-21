@@ -153,7 +153,7 @@ gulp.task('build/clean.docs',  function(done) {
 // ------------
 // transpile
 
-gulp.task('build/tree.dart', ['build/clean.dart', 'build.tools', 'CREATE_ME'], function(done) {
+gulp.task('build/tree.dart', ['build/clean.dart', 'build.tools', 'build.js.test/change_detectors'], function(done) {
   runSequence('!build/tree.dart', done);
 });
 
@@ -500,6 +500,13 @@ gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
   }, buildAndTest);
 });
 
+gulp.task('build.js.test/change_detectors', function() {
+  var values = JSON.parse(readFileSync('modules/angular2/test/change_detection/source_for_generated/simple_watch_config.json'));
+  return gulp.src('modules/angular2/test/change_detection/source_for_generated/simple_watch_template.jstemplate')
+      .pipe(template(values))
+      .pipe(rename('simple_watch_spec.js'))
+      .pipe(gulp.dest('modules/angular2/test/change_detection/generated'));
+});
 
 // ------------------
 // server tests
@@ -637,7 +644,7 @@ gulp.task('!broccoli.js.dev', function() {
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence(
-    'CREATE_ME',
+    'build.js.test/change_detectors',
     'broccoli.js.dev',
     'build/checkCircularDependencies',
     'check-format',
@@ -835,15 +842,6 @@ gulp.task('cleanup.builder', function(done) {
     del('tmp', done); // TODO(iminar): remove after 2015-06-01
                       // this is here just to cleanup old files that we leaked in the past
   });
-});
-
-
-gulp.task('CREATE_ME', function() {
-  var values = JSON.parse(readFileSync('modules/angular2/test/change_detection/simple_watch_config.json'));
-  return gulp.src('modules/angular2/test/change_detection/simple_watch_template.jstemplate')
-      .pipe(template(values))
-      .pipe(rename('simple_watch_spec.js'))
-      .pipe(gulp.dest('modules/angular2/test/change_detection/'));
 });
 
 
