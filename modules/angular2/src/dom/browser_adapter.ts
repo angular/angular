@@ -70,12 +70,14 @@ dispatchEvent(el, evt) {
   el.dispatchEvent(evt);
 }
 createMouseEvent(eventType: string): MouseEvent {
-  var evt: MouseEvent = new MouseEvent(eventType);
+  var evt: MouseEvent = document.createEvent('MouseEvent');
   evt.initEvent(eventType, true, true);
   return evt;
 }
 createEvent(eventType): Event {
-  return new Event(eventType, true);
+  var evt: Event = document.createEvent('Event');
+  evt.initEvent(eventType, true, true);
+  return evt;
 }
 preventDefault(evt: Event) {
   evt.preventDefault();
