@@ -28,11 +28,12 @@ import {
   assertionsEnabled,
   isJsObject,
   global,
-  stringify
+  stringify,
+  CONST
 } from 'angular2/src/facade/lang';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Injector, bind, Injectable} from 'angular2/di';
+import {Injector, bind, Injectable, Binding, FORWARD_REF} from 'angular2/di';
 import {
   PipeRegistry,
   defaultPipeRegistry,
@@ -54,6 +55,7 @@ import {
   Query
 } from 'angular2/annotations';
 import * as viewAnn from 'angular2/src/core/annotations_impl/view';
+import * as visAnn from 'angular2/src/core/annotations_impl/visibility';
 
 import {QueryList} from 'angular2/src/core/compiler/query_list';
 
@@ -988,6 +990,43 @@ export function main() {
                  async.done();
                });
          }));
+
+      it("should support the event-bus scenario",
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           tb.overrideView(MyComp, new viewAnn.View({
+             template: `
+            <grand-parent-providing-event-bus>
+              <parent-providing-event-bus>
+                <child-consuming-event-bus>
+                </child-consuming-event-bus>
+              </parent-providing-event-bus>
+            </grand-parent-providing-event-bus>
+          `,
+             directives: [
+               GrandParentProvidingEventBus,
+               ParentProvidingEventBus,
+               ChildConsumingEventBus
+             ]
+           }));
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 var eis = view.rawView.elementInjectors;
+                 var childRawView = view.rawView.componentChildViews[1];
+
+                 var grandParent = eis[0].get(GrandParentProvidingEventBus);
+                 var parent = eis[1].get(ParentProvidingEventBus);
+                 var child1 = eis[2].get(ChildConsumingEventBus);
+                 var child2 = childRawView.elementInjectors[0].get(ChildConsumingEventBus);
+
+                 expect(grandParent.bus.name).toEqual("grandparent");
+                 expect(parent.bus.name).toEqual("parent");
+                 expect(parent.grandParentBus).toBe(grandParent.bus);
+                 expect(child1.bus).toBe(parent.bus);
+                 expect(child2.bus).toBe(parent.bus);
+
+                 async.done();
+               });
+         }));
     });
 
     describe("error handling", () => {
@@ -1539,4 +1578,65 @@ class DirectiveConsumingInjectableUnbounded {
     this.injectable = injectable;
     parent.directive = this;
   }
+}
+
+
+@CONST()
+class EventBus {
+  parentEventBus: EventBus;
+  name: string;
+
+  constructor(parentEventBus: EventBus, name: string) {
+    this.parentEventBus = parentEventBus;
+    this.name = name;
+  }
+}
+
+@Directive({
+  selector: 'grand-parent-providing-event-bus',
+  hostInjector: [new Binding(EventBus, {toValue: new EventBus(null, "grandparent")})]
+})
+class GrandParentProvidingEventBus {
+  bus: EventBus;
+
+  constructor(bus: EventBus) { this.bus = bus; }
+}
+
+function createParentBusHost(peb) {
+  return new EventBus(peb, "parent");
+}
+
+function createParentBusView(p) {
+  return p.bus;
+}
+@Component({
+  selector: 'parent-providing-event-bus',
+  hostInjector: [new Binding(
+      EventBus, {toFactory: createParentBusHost, deps: [[EventBus, new visAnn.Unbounded()]]})],
+  viewInjector: [new Binding(
+      EventBus,
+      {toFactory: createParentBusView, deps: [[FORWARD_REF(() => ParentProvidingEventBus)]]})]
+})
+@View({
+  directives: [FORWARD_REF(() => ChildConsumingEventBus)],
+  template: `
+    <child-consuming-event-bus></child-consuming-event-bus>
+  `
+})
+class ParentProvidingEventBus {
+  bus: EventBus;
+  grandParentBus: EventBus;
+
+  constructor(bus: EventBus, @Unbounded() grandParentBus: EventBus) {
+    // constructor(bus: EventBus) {
+    this.bus = bus;
+    this.grandParentBus = grandParentBus;
+  }
+}
+
+@Directive({selector: 'child-consuming-event-bus'})
+class ChildConsumingEventBus {
+  bus: EventBus;
+
+  constructor(@Unbounded() bus: EventBus) { this.bus = bus; }
 }
