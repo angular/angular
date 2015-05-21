@@ -1,8 +1,10 @@
 import {isBlank, BaseException} from 'angular2/src/facade/lang';
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_lib';
-import {Injector, bind, ResolvedBinding, Key, forwardRef} from 'angular2/di';
+import {Injector, bind, ResolvedBinding, Key, forwardRef, DependencyAnnotation} from 'angular2/di';
 import {Optional, Inject, InjectLazy} from 'angular2/src/di/annotations_impl';
 
+class CustomDependencyAnnotation extends DependencyAnnotation {
+}
 
 class Engine {
 }
@@ -407,6 +409,16 @@ export function main() {
         expect(brokenEngineBinding.factory() instanceof Engine).toBe(true);
         expect(stringBinding.dependencies[0].key).toEqual(Key.get(Engine));
         expect(dashboardSoftwareBinding.dependencies[0].key).toEqual(Key.get(BrokenEngine));
+      });
+
+      it('should support overriding factory dependencies with dependency annotations', function () {
+        var bindings = Injector.resolve([
+          bind("token").toFactory((e) => "result", [[new Inject("dep"), new CustomDependencyAnnotation()]])
+        ]);
+        var binding = bindings[Key.get("token").id];
+
+        expect(binding.dependencies[0].key).toEqual(Key.get("dep"));
+        expect(binding.dependencies[0].properties).toEqual([new CustomDependencyAnnotation()]);
       });
     });
   });

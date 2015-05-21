@@ -431,8 +431,7 @@ export class BindingBuilder {
 function _constructDependencies(factoryFunction: Function, dependencies: List<any>) {
   return isBlank(dependencies) ?
              _dependenciesFor(factoryFunction) :
-             ListWrapper.map(dependencies,
-                             (t) => Dependency.fromKey(Key.get(resolveForwardRef(t))));
+             ListWrapper.map(dependencies, (t) => _extractToken(factoryFunction, t));
 }
 
 function _dependenciesFor(typeOrFunc): List<any> {
@@ -450,6 +449,10 @@ function _extractToken(typeOrFunc, annotations) {
   var optional = false;
   var lazy = false;
   var asPromise = false;
+
+  if (!ListWrapper.isList(annotations)) {
+    return _createDependency(annotations, asPromise, lazy, optional, depProps);
+  }
 
   for (var i = 0; i < annotations.length; ++i) {
     var paramAnnotation = annotations[i];
