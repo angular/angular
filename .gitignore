@@ -20,6 +20,9 @@ tmp
 *.js.deps
 *.js.map
 
+# Or the files created to test change detectors
+modules/angular2/test/change_detection/generated/*.js
+
 # Or type definitions we mirror from github
 **/typings/**/*.d.ts
 **/typings/tsd.cached.json

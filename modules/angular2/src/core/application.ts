@@ -17,7 +17,7 @@ import {
   Parser,
   Lexer,
   ChangeDetection,
-  DynamicChangeDetection,
+  PreGeneratedChangeDetection,
   PipeRegistry,
   defaultPipeRegistry
 } from 'angular2/change_detection';
@@ -123,7 +123,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     CompilerCache,
     TemplateResolver,
     bind(PipeRegistry).toValue(defaultPipeRegistry),
-    bind(ChangeDetection).toClass(DynamicChangeDetection),
+    bind(ChangeDetection).toClass(PreGeneratedChangeDetection),
     TemplateLoader,
     DirectiveResolver,
     Parser,

@@ -1,0 +1,52 @@
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, IS_DARTIUM} from 'angular2/test_lib';
+
+import {isPresent, isBlank, isJsObject, BaseException, FunctionWrapper} from 'angular2/src/facade/lang';
+import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+
+import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, DirectiveRecord, DirectiveIndex,
+  PipeRegistry, Pipe, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT, WrappedValue,
+    JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition, Locals} from 'angular2/change_detection';
+
+import {CountingPipe, OncePipe, IdentityPipe, WrappedPipe, FakePipeRegistry, TestDirective, Person, Address, Uninitialized, TestData, FakeDirectives, TestDispatcher} from '../change_detector_common';
+import {ChangeDetectorDefFactory} from 'angular2/src/test_lib/utils';
+import * as _gen from './simple_watch_change_detectors';
+
+/* ==================================================================
+ * If the "Pregen" tests are failing, please re-generate Dart change
+ * detectors. Instructions for how to do so are at TODO(kegluneq).
+ * ================================================================== */
+
+export function main() {
+  var defFactory = new ChangeDetectorDefFactory(null);
+  function executeWatch(protoCd: any) {
+    var dispatcher = new TestDispatcher();
+    var cd = protoCd.instantiate(dispatcher);
+
+    var context = null;
+    var locals = null;
+    cd.hydrate(context, locals, null);
+    cd.detectChanges();
+    return dispatcher.log;
+  }
+  <% _.forEach(changeDetectorTypes, function(changeDetectorType) { %>
+
+  describe('simple watch for ${changeDetectorType}', () => {
+    <% if (changeDetectorType == "Jit") { %>if (IS_DARTIUM) { return; }<% } %>
+    <% if (changeDetectorType == "Pregen") { %>if (!IS_DARTIUM) { return; }<% } %>
+    <% _.forEach(testConfig, function(config, i) { %>
+      it('${config.description}', () => {
+        var changeDetectorDef = defFactory.forConstBind('${config.propName}', '${config.expression}');
+        changeDetectorDef.id = '${i}';
+        var registry = null;
+        <% if (changeDetectorType == "Pregen") { %>
+        var protoCd = _gen.ChangeDetector${i}.newProtoChangeDetector(registry, changeDetectorDef);
+        <% } else { %>
+        var protoCd = new ${changeDetectorType}ProtoChangeDetector(registry, changeDetectorDef);
+        <% } %>
+        expect(executeWatch(protoCd)).toEqual(['${config.expectedResult}']);
+      });
+    <% }); %>
+  });
+
+  <% }); %>
+}
