@@ -17,10 +17,9 @@ void main(List<String> args) {
     contents = contents.replaceAll("'", '"').replaceAll(r'\\', r'\');
     var configs = JSON.decode(contents)["testConfig"];
     for (var config in configs) {
-      var cdDef = factory.forConstBind(config["propName"],
-      config["expression"]);
+      var cdDef =
+          factory.forConstBind(config["propName"], config["expression"]);
       codegen.generate('Class${index++}', cdDef);
-
     }
   }
   print(new DartFormatter().format('''

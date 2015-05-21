@@ -26,7 +26,12 @@ class Codegen {
   bool get isEmpty => _buf.isEmpty;
 
   @override
-  String toString() => '$_buf';
+  String toString() {
+    if (!_buf.isEmpty) {
+      _buf.write(_GEN_RECORDS_METHOD);
+    }
+    return '$_buf';
+  }
 }
 
 /// The state needed to generate a change detector for a single `Component`.
@@ -128,6 +133,20 @@ class _CodegenState {
 
         hydrated() => !$_IDENTICAL_CHECK_FN(
             $_CONTEXT_ACCESSOR, $_UTIL.uninitialized());
+      }
+      class Proto$_typeName extends $_GEN_PREFIX.ProtoChangeDetector {
+        final $_GEN_PREFIX.PipeRegistry $_PIPE_REGISTRY_ACCESSOR;
+        dynamic $_PROTOS_ACCESSOR;
+        dynamic $_DIRECTIVES_ACCESSOR;
+        Proto$_typeName(this.$_PIPE_REGISTRY_ACCESSOR,
+            $_GEN_PREFIX.ChangeDetectorDefinition def) {
+          $_PROTOS_ACCESSOR = $_GEN_RECORDS_METHOD_NAME(def);
+          $_DIRECTIVES_ACCESSOR = def.directiveRecords;
+        }
+
+        $_GEN_PREFIX.ChangeDetector instantiate(dispatcher) =>
+            new $_typeName(dispatcher, $_PIPE_REGISTRY_ACCESSOR,
+                $_PROTOS_ACCESSOR, $_DIRECTIVES_ACCESSOR);
       }
     ''');
   }
@@ -407,12 +426,18 @@ class _CodegenState {
 }
 
 const _ALL_IMPORTS = '''
+    import '$_COALESCE_IMPORT' as $_GEN_PREFIX show coalesce;
+    import '$_COLLECTION_CLASS_IMPORT' as $_GEN_PREFIX show ListWrapper;
     import '$_FACADE_CLASS_IMPORT' as $_GEN_PREFIX
       show NumberWrapper, looseIdentical;
     import '$_CHANGE_DETECT_CLASS_IMPORT' as $_GEN_PREFIX
       show ChangeDetectionUtil;
     import '$_BASE_CLASS_IMPORT' as $_GEN_PREFIX show AbstractChangeDetector;
     import '$_PIPE_REGISTRY_IMPORT' as $_GEN_PREFIX show PipeRegistry;
+    import '$_INTERFACES_IMPORT' as $_GEN_PREFIX show
+        ChangeDetector, ChangeDetectorDefinition, ProtoChangeDetector;
+    import '$_PROTO_CHANGE_DETECTOR_IMPORT' as $_GEN_PREFIX show
+        ProtoRecordBuilder;
   ''';
 const _BASE_CLASS_IMPORT =
     'package:angular2/src/change_detection/abstract_change_detector.dart';
@@ -420,13 +445,28 @@ const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
 const _CHANGE_DETECT_CLASS_IMPORT =
     'package:angular2/src/change_detection/change_detection_util.dart';
+const _COALESCE_IMPORT =
+    'package:angular2/src/change_detection/coalesce.dart';
+const _COLLECTION_CLASS_IMPORT = 'package:angular2/src/facade/collection.dart';
 const _CONTEXT_ACCESSOR = '_context';
 const _CURRENT_PROTO = 'currentProto';
 const _DIRECTIVES_ACCESSOR = '_directiveRecords';
 const _DISPATCHER_ACCESSOR = '_dispatcher';
 const _FACADE_CLASS_IMPORT = 'package:angular2/src/facade/lang.dart';
 const _GEN_PREFIX = '_gen';
+const _GEN_RECORDS_METHOD = '''
+  $_GEN_RECORDS_METHOD_NAME($_GEN_PREFIX.ChangeDetectorDefinition definition) {
+    var recordBuilder = new $_GEN_PREFIX.ProtoRecordBuilder();
+    $_GEN_PREFIX.ListWrapper.forEach(definition.bindingRecords, (b) {
+      recordBuilder.addAst(b, definition.variableNames);
+    });
+    return $_GEN_PREFIX.coalesce(recordBuilder.records);
+  }
+''';
+const _GEN_RECORDS_METHOD_NAME = '_createRecords';
 const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
+const _INTERFACES_IMPORT =
+    'package:angular2/src/change_detection/interfaces.dart';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _LOCALS_ACCESSOR = '_locals';
 const _MODE_ACCESSOR = 'mode';
@@ -434,4 +474,6 @@ const _PIPE_REGISTRY_ACCESSOR = '_pipeRegistry';
 const _PIPE_REGISTRY_IMPORT =
     'package:angular2/src/change_detection/pipes/pipe_registry.dart';
 const _PROTOS_ACCESSOR = '_protos';
+const _PROTO_CHANGE_DETECTOR_IMPORT =
+    'package:angular2/src/change_detection/proto_change_detector.dart';
 const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';
