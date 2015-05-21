@@ -76,11 +76,14 @@ Future<String> processTemplates(AssetReader reader, AssetId entryPoint,
       viewDefResults.ngDeps.lib != null ? viewDefResults.ngDeps.lib.end : 0;
   var codeInjectIdx =
       viewDefResults.ngDeps.registeredTypes.last.registerMethod.end;
+  var initInjectIdx = viewDefResults.ngDeps.setupMethod.end - 1;
   return '${code.substring(0, importInjectIdx)}'
       '${changeDetectorClasses.imports}'
       '${code.substring(importInjectIdx, codeInjectIdx)}'
       '${registrations}'
-      '${code.substring(codeInjectIdx)}'
+      '${code.substring(codeInjectIdx, initInjectIdx)}'
+      '${changeDetectorClasses.initialize}'
+      '${code.substring(initInjectIdx)}'
       '$changeDetectorClasses';
 }
 

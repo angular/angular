@@ -10,6 +10,8 @@ import 'package:angular2/src/change_detection/proto_record.dart';
 export 'dart:core' show List;
 export 'package:angular2/src/change_detection/abstract_change_detector.dart'
     show AbstractChangeDetector;
+export 'package:angular2/src/change_detection/change_detection.dart'
+    show preGeneratedProtoDetectors;
 export 'package:angular2/src/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/change_detection/interfaces.dart'

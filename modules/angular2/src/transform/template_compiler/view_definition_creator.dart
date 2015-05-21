@@ -34,7 +34,7 @@ class ViewDefinitionEntry {
 }
 
 String _getComponentId(AssetId assetId, String className) =>
-    '$assetId:$className';
+    '$className';
 
 // TODO(kegluenq): Improve this test.
 bool _isViewAnnotation(InstanceCreationExpression node) =>

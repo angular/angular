@@ -75,21 +75,22 @@ export var preGeneratedProtoDetectors = {};
  *
  * @exportedAs angular2/change_detection
  */
+@Injectable()
 export class PreGeneratedChangeDetection extends ChangeDetection {
   _dynamicChangeDetection: ChangeDetection;
   _protoChangeDetectorFactories: StringMap<string, Function>;
 
-  constructor(private registry: PipeRegistry, protoChangeDetectors?) {
+  constructor(private registry: PipeRegistry) {
     super();
     this._dynamicChangeDetection = new DynamicChangeDetection(registry);
-    this._protoChangeDetectorFactories =
-        isPresent(protoChangeDetectors) ? protoChangeDetectors : preGeneratedProtoDetectors;
+    this._protoChangeDetectorFactories = preGeneratedProtoDetectors;
   }
 
   createProtoChangeDetector(definition: ChangeDetectorDefinition): ProtoChangeDetector {
     var id = definition.id;
     if (StringMapWrapper.contains(this._protoChangeDetectorFactories, id)) {
-      return StringMapWrapper.get(this._protoChangeDetectorFactories, id)(this.registry);
+      return this._protoChangeDetectorFactories.values.first(
+          this.registry, definition);
     }
     return this._dynamicChangeDetection.createProtoChangeDetector(definition);
   }

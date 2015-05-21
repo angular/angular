@@ -15,8 +15,12 @@ import 'package:angular2/src/change_detection/proto_record.dart';
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
 
+  final StringBuffer _initBuf = new StringBuffer();
+
   void generate(String name, ChangeDetectorDefinition def) {
-    new _CodegenState(name, def)._writeToBuf(_buf);
+    new _CodegenState(name, def)
+      .._writeToBuf(_buf)
+      .._writeInitToBuf(_initBuf);
   }
 
   String get imports {
@@ -27,6 +31,8 @@ class Codegen {
 
   bool get isEmpty => _buf.isEmpty;
 
+  String get initialize => '$_initBuf';
+
   @override
   String toString() {
     return '$_buf';
@@ -35,6 +41,7 @@ class Codegen {
 
 /// The state needed to generate a change detector for a single `Component`.
 class _CodegenState {
+  final String _id;
   final String _typeName;
   final String _changeDetectionMode;
   final List<ProtoRecord> _records;
@@ -44,8 +51,8 @@ class _CodegenState {
   final List<String> _fieldNames;
   final List<String> _pipeNames;
 
-  _CodegenState._(this._typeName, String changeDetectionStrategy, this._records,
-      this._directiveRecords, List<String> localNames)
+  _CodegenState._(this._id, this._typeName, String changeDetectionStrategy,
+      this._records, this._directiveRecords, List<String> localNames)
       : this._localNames = localNames,
         _changeNames = _getChangeNames(localNames),
         _fieldNames = _getFieldNames(localNames),
@@ -58,7 +65,7 @@ class _CodegenState {
     def.bindingRecords
         .forEach((rec) => protoRecords.addAst(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
-    return new _CodegenState._(typeName, def.strategy, records,
+    return new _CodegenState._(def.id, typeName, def.strategy, records,
         def.directiveRecords, _getLocalNames(records));
   }
 
@@ -143,6 +150,13 @@ class _CodegenState {
               registry, def);
         }
       }
+    ''');
+  }
+
+  void _writeInitToBuf(StringBuffer buf) {
+    buf.write('''
+      $_GEN_PREFIX.preGeneratedProtoDetectors['$_id'] =
+          $_typeName.newProtoChangeDetector;
     ''');
   }
 
