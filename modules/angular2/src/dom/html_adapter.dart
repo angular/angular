@@ -303,4 +303,7 @@ class Html5LibDomAdapter implements DomAdapter {
   getBaseHref() {
     throw 'not implemented';
   }
+  String getUserAgent() {
+    throw 'not implemented';
+  }
 }

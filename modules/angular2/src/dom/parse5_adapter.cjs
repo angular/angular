@@ -540,6 +540,9 @@ export class Parse5DomAdapter extends DomAdapter {
   getLocation() {
     throw 'not implemented';
   }
+  getUserAgent() {
+    return "Fake user agent";
+  }
 }
 
 //TODO: build a proper list, this one is all the keys of a HTMLInputElement

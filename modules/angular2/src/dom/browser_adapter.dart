@@ -326,4 +326,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     var baseUri = Uri.parse(uri);
     return baseUri.path;
   }
+  String getUserAgent() {
+    return window.navigator.userAgent;
+  }
 }

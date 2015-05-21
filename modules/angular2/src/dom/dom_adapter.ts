@@ -114,4 +114,5 @@ export class DomAdapter {
   getHistory() { throw _abstract(); }
   getLocation() { throw _abstract(); }
   getBaseHref() { throw _abstract(); }
+  getUserAgent() { throw _abstract(); }
 }

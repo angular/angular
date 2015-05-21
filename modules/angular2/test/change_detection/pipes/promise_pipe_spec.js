@@ -5,6 +5,7 @@ import {PromisePipe} from 'angular2/src/change_detection/pipes/promise_pipe';
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   describe("PromisePipe", () => {
@@ -12,6 +13,8 @@ export function main() {
     var pipe;
     var completer;
     var ref;
+    //adds longer timers for passing tests in IE
+    var timer = (DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
 
     beforeEach(() => {
       completer = PromiseWrapper.completer();
@@ -43,7 +46,7 @@ export function main() {
         TimerWrapper.setTimeout(() => {
           expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
           async.done();
-        }, 0)
+        }, timer)
       }));
 
       it("should return unwrapped value when nothing has changed since the last call",
@@ -55,7 +58,7 @@ export function main() {
           pipe.transform(completer.promise);
           expect(pipe.transform(completer.promise)).toBe(message);
           async.done();
-        }, 0)
+        }, timer)
       }));
 
       it("should dispose of the existing subscription when subscribing to a new promise",
@@ -71,7 +74,7 @@ export function main() {
         TimerWrapper.setTimeout(() => {
           expect(pipe.transform(newCompleter.promise)).toBe(null);
           async.done();
-        }, 0)
+        }, timer)
       }));
 
       it("should request a change detection check upon receiving a new value",
@@ -82,7 +85,7 @@ export function main() {
         TimerWrapper.setTimeout(() => {
           expect(ref.spy('requestCheck')).toHaveBeenCalled();
           async.done();
-        }, 0)
+        }, timer)
       }));
 
       describe("onDestroy", () => {
@@ -101,7 +104,7 @@ export function main() {
             pipe.onDestroy();
             expect(pipe.transform(completer.promise)).toBe(null);
             async.done();
-          }, 0);
+          }, timer);
         }));
       });
     });

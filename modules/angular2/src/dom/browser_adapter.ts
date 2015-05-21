@@ -372,6 +372,9 @@ getLocation() {
 getBaseHref() {
   return relativePath(document.baseURI);
 }
+getUserAgent(): string {
+  return window.navigator.userAgent;
+}
 }
 
 // based on urlUtils.js in AngularJS 1
