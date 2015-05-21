@@ -538,19 +538,17 @@ class _ParseAST {
       this.optionalCharacter($COLON);
       var name = null;
       var expression = null;
-      if (this.next !== EOF) {
-        if (keyIsVar) {
-          if (this.optionalOperator("=")) {
-            name = this.expectTemplateBindingKey();
-          } else {
-            name = '\$implicit';
-          }
-        } else if (!this.peekKeywordVar()) {
-          var start = this.inputIndex;
-          var ast = this.parsePipe();
-          var source = this.input.substring(start, this.inputIndex);
-          expression = new ASTWithSource(ast, source, this.location);
+      if (keyIsVar) {
+        if (this.optionalOperator("=")) {
+          name = this.expectTemplateBindingKey();
+        } else {
+          name = '\$implicit';
         }
+      } else if (this.next !== EOF && !this.peekKeywordVar()) {
+        var start = this.inputIndex;
+        var ast = this.parsePipe();
+        var source = this.input.substring(start, this.inputIndex);
+        expression = new ASTWithSource(ast, source, this.location);
       }
       ListWrapper.push(bindings, new TemplateBinding(key, keyIsVar, name, expression));
       if (!this.optionalCharacter($SEMICOLON)) {
