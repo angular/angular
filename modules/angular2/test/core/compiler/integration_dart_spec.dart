@@ -74,6 +74,36 @@ main() {
       });
     }));
   });
+
+  describe('Property access', () {
+    it('should distinguish between map and property access',
+        inject([TestBed, AsyncTestCompleter], (tb, async) {
+      tb.overrideView(Dummy, new View(
+        template: '<property-access></property-access>',
+        directives: [PropertyAccess]
+      ));
+
+      tb.createView(Dummy).then((view) {
+        view.detectChanges();
+        expect(view.rootNodes).toHaveText('prop:foo-prop;map:foo-map');
+        async.done();
+      });
+    }));
+
+    it('should not fallback on map access if property missing',
+        inject([TestBed, AsyncTestCompleter], (tb, async) {
+      tb.overrideView(Dummy, new View(
+        template: '<no-property-access></no-property-access>',
+        directives: [NoPropertyAccess]
+      ));
+
+      tb.createView(Dummy).then((view) {
+        expect(() => view.detectChanges())
+            .toThrowError(new RegExp('property not found'));
+        async.done();
+      });
+    }));
+  });
 }
 
 @Component(selector: 'dummy')
@@ -114,4 +144,27 @@ class ThrowingComponent2 {
   ThrowingComponent2() {
     functionThatThrowsNonError();
   }
+}
+
+@proxy
+class PropModel implements Map {
+  final String foo = 'foo-prop';
+
+  operator[](_) => 'foo-map';
+
+  noSuchMethod(_) {
+    throw 'property not found';
+  }
+}
+
+@Component(selector: 'property-access')
+@View(template: '''prop:{{model.foo}};map:{{model['foo']}}''')
+class PropertyAccess {
+  final model = new PropModel();
+}
+
+@Component(selector: 'no-property-access')
+@View(template: '''{{model.doesNotExist}}''')
+class NoPropertyAccess {
+  final model = new PropModel();
 }
