@@ -192,8 +192,8 @@ createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScript
   return el;
 }
 createStyleElement(css: string, doc = document): HTMLStyleElement {
-  var style = <HTMLStyleElement>doc.createElement('STYLE');
-  style.innerText = css;
+  var style = <HTMLStyleElement>doc.createElement('style');
+  this.appendChild(style, this.createTextNode(css));
   return style;
 }
 createShadowRoot(el: HTMLElement): DocumentFragment {
