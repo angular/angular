@@ -6073,9 +6073,9 @@
       }
     },
     "gulp-clang-format": {
-      "version": "1.0.12",
-      "from": "https://registry.npmjs.org/gulp-clang-format/-/gulp-clang-format-1.0.12.tgz",
-      "resolved": "https://registry.npmjs.org/gulp-clang-format/-/gulp-clang-format-1.0.12.tgz",
+      "version": "1.0.13",
+      "from": "https://registry.npmjs.org/gulp-clang-format/-/gulp-clang-format-1.0.13.tgz",
+      "resolved": "https://registry.npmjs.org/gulp-clang-format/-/gulp-clang-format-1.0.13.tgz",
       "dependencies": {
         "gulp-util": {
           "version": "3.0.4",
@@ -6351,9 +6351,9 @@
           }
         },
         "clang-format": {
-          "version": "1.0.12",
-          "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.12.tgz",
-          "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.12.tgz"
+          "version": "1.0.14",
+          "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.14.tgz",
+          "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.14.tgz"
         }
       }
     },
