@@ -20,11 +20,10 @@ export class TreeDiffer {
   private rootDirName: string;
   private include: RegExp = null;
   private exclude: RegExp = null;
+  private rootPath: string = null;
 
-  constructor(private rootPath: string, includeExtensions?: string[],
+  constructor(includeExtensions?: string[],
               excludeExtensions?: string[]) {
-    this.rootDirName = path.basename(rootPath);
-
     let buildRegexp = (arr) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
 
     this.include = (includeExtensions || []).length ? buildRegexp(includeExtensions) : null;
@@ -39,7 +38,9 @@ export class TreeDiffer {
   }
 
 
-  public diffTree(): DiffResult {
+  public diffTree(rootPath): DiffResult {
+    this.rootPath = rootPath;
+    this.rootDirName = path.basename(rootPath);
     let result = new DirtyCheckingDiffResult(this.rootDirName);
     this.dirtyCheckPath(this.rootPath, result);
     this.detectDeletionsAndUpdateFingerprints(result);
