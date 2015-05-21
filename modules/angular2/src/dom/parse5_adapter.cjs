@@ -134,6 +134,9 @@ export class Parse5DomAdapter extends DomAdapter {
       };
     return evt;
   }
+  preventDefault(evt) { 
+    evt.returnValue = false;
+  }
   getInnerHTML(el) {
     return serializer.serialize(this.templateAwareRoot(el));
   }

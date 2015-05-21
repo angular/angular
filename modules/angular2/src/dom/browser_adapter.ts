@@ -77,6 +77,10 @@ createMouseEvent(eventType: string): MouseEvent {
 createEvent(eventType): Event {
   return new Event(eventType, true);
 }
+preventDefault(evt: Event) {
+  evt.preventDefault();
+  evt.returnValue = false;
+}
 getInnerHTML(el) {
   return el.innerHTML;
 }

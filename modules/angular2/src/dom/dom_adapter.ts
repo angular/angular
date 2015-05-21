@@ -33,6 +33,7 @@ export class DomAdapter {
   dispatchEvent(el, evt) { throw _abstract(); }
   createMouseEvent(eventType): any { throw _abstract(); }
   createEvent(eventType: string): any { throw _abstract(); }
+  preventDefault(evt) { throw _abstract(); }
   getInnerHTML(el): string { throw _abstract(); }
   getOuterHTML(el): string { throw _abstract(); }
   nodeName(node): string { throw _abstract(); }
