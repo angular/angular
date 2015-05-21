@@ -101,7 +101,7 @@ class HeaderFields {
         </div>
       </div>
   `,
-  directives: [formDirectives, If]
+  directives: [formDirectives, NgIf]
 })
 class SurveyQuestion {
   question:ControlGroup;
