@@ -29,6 +29,8 @@ export function wrapDiffingPlugin(pluginClass): DiffingPluginWrapperFactory {
 export interface DiffingBroccoliPlugin {
   rebuild(diff: DiffResult): (Promise<any>| void);
   cleanup ? () : void;
+  inputTree?: (BroccoliTree | string);
+  inputTrees?: (BroccoliTree[] | string[]);
 }
 
 
@@ -97,6 +99,10 @@ class DiffingPluginWrapper implements BroccoliTree {
       this.treeDiffer = new TreeDiffer(this.inputPath, includeExtensions, excludeExtensions);
       this.wrappedPlugin =
           new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
+
+      // Pass first argument to plugin.
+      this.wrappedPlugin.inputTrees = this.inputTrees;
+      this.wrappedPlugin.inputTree = this.inputTree;
     }
   }
 
