@@ -221,7 +221,7 @@ export function main() {
             view.detectChanges();
 
             var dispatchedEvent = clickOnElement(view);
-            expect(dispatchedEvent.defaultPrevented).toBe(true);
+            expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue).toBe(true);
 
             // router navigation is async.
             rtr.subscribe((_) => {
@@ -244,7 +244,7 @@ export function main() {
             view.detectChanges();
 
             var dispatchedEvent = clickOnElement(view);
-            expect(dispatchedEvent.defaultPrevented).toBe(true);
+            expect(dispatchedEvent.defaultPrevented || !dispatchedEvent.returnValue).toBe(true);
 
             // router navigation is async.
             rtr.subscribe((_) => {

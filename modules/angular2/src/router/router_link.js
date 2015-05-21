@@ -54,7 +54,7 @@ export class RouterLink {
     this._location = location;
     this._params = StringMapWrapper.create();
     DOM.on(this._domEl, 'click', (evt) => {
-      evt.preventDefault();
+      DOM.preventDefault(evt);
       this._router.navigate(this._navigationHref);
     });
   }
