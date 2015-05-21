@@ -4,9 +4,9 @@ import {isBlank, isPresent, normalizeBlank, BaseException} from 'angular2/src/fa
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 export class MockXHR extends XHR {
-  _expectations: List<_Expectation>;
-  _definitions: Map;
-  _requests: List<Promise>;
+  private _expectations: List<_Expectation>;
+  private _definitions: Map<string, string>;
+  private _requests: List<Promise<string>>;
 
   constructor() {
     super();
@@ -26,9 +26,7 @@ export class MockXHR extends XHR {
     ListWrapper.push(this._expectations, expectation);
   }
 
-  when(url: string, response: string) {
-    MapWrapper.set(this._definitions, url, response);
-  }
+  when(url: string, response: string) { MapWrapper.set(this._definitions, url, response); }
 
   flush() {
     if (this._requests.length === 0) {
@@ -55,7 +53,7 @@ export class MockXHR extends XHR {
     throw new BaseException(`Unsatisfied requests: ${ListWrapper.join(urls, ', ')}`);
   }
 
-  _processRequest(request: _PendingRequest) {
+  private _processRequest(request: _PendingRequest) {
     var url = request.url;
 
     if (this._expectations.length > 0) {
@@ -94,9 +92,7 @@ class _PendingRequest {
     }
   }
 
-  getPromise(): Promise<string> {
-    return this.completer.promise;
-  }
+  getPromise(): Promise<string> { return this.completer.promise; }
 }
 
 class _Expectation {

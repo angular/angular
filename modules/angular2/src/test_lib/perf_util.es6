@@ -1,4 +1,5 @@
 var testUtil = require('./e2e_util');
+
 var benchpress = require('benchpress/benchpress');
 
 module.exports = {
@@ -47,7 +48,7 @@ function runBenchmark(config) {
 }
 
 function getScaleFactor(possibleScalings) {
-  return browser.executeScript('return navigator.userAgent').then(function(userAgent) {
+  return browser.executeScript('return navigator.userAgent').then(function(userAgent:string) {
     var scaleFactor = 1;
     possibleScalings.forEach(function(entry) {
       if (userAgent.match(entry.userAgent)) {
@@ -60,7 +61,7 @@ function getScaleFactor(possibleScalings) {
 
 function applyScaleFactor(value, scaleFactor, method) {
   if (method === 'log2') {
-    return value + Math.log2(scaleFactor);
+    return value + Math.log(scaleFactor) / Math.LN2;
   } else if (method === 'sqrt') {
     return value * Math.sqrt(scaleFactor);
   } else if (method === 'linear') {

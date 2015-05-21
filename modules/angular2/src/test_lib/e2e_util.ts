@@ -1,17 +1,16 @@
-var webdriver = require('selenium-webdriver');
+/// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../../typings/angular-protractor/angular-protractor.d.ts" />
 
-module.exports = {
-  verifyNoBrowserErrors: verifyNoBrowserErrors,
-  clickAll: clickAll
-};
+import webdriver = require('selenium-webdriver');
 
-function clickAll(buttonSelectors) {
-  buttonSelectors.forEach(function(selector) {
-    $(selector).click();
-  });
+export var browser: protractor.IBrowser = global['browser'];
+export var $: cssSelectorHelper = global['$'];
+
+export function clickAll(buttonSelectors) {
+  buttonSelectors.forEach(function(selector) { $(selector).click(); });
 }
 
-function verifyNoBrowserErrors() {
+export function verifyNoBrowserErrors() {
   // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
   // so that the browser logs can be read out!
   browser.executeScript('1+1');
@@ -25,4 +24,3 @@ function verifyNoBrowserErrors() {
     expect(filteredLog.length).toEqual(0);
   });
 }
-

@@ -1,4 +1,4 @@
-import {Injector, bind} from 'angular2/di';
+import {Injector, bind, Injectable} from 'angular2/di';
 
 import {Type, isPresent, BaseException} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
@@ -10,7 +10,10 @@ import {View} from 'angular2/src/core/annotations_impl/view';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {AppView} from 'angular2/src/core/compiler/view';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
-import {DynamicComponentLoader, ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {
+  DynamicComponentLoader,
+  ComponentRef
+} from 'angular2/src/core/compiler/dynamic_component_loader';
 
 import {queryView, viewRootNodes, el} from './utils';
 import {instantiateType, getTypeOf} from './lang_utils';
@@ -21,12 +24,11 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 /**
  * @exportedAs angular2/test
  */
+@Injectable()
 export class TestBed {
   _injector: Injector;
 
-  constructor(injector: Injector) {
-    this._injector = injector;
-  }
+  constructor(injector: Injector) { this._injector = injector; }
 
   /**
    * Overrides the {@link View} of a {@link Component}.
@@ -70,11 +72,13 @@ export class TestBed {
    *
    * @param {Type} component
    * @param {*} context
-   * @param {string} html Use as the component template when specified (shortcut for setInlineTemplate)
+   * @param {string} html Use as the component template when specified (shortcut for
+   * setInlineTemplate)
    * @return {Promise<ViewProxy>}
    */
   createView(component: Type,
-             {context = null, html = null}: {context:any, html: string} = {}): Promise<ViewProxy> {
+             {context = null,
+              html = null}: {context?: any, html?: string} = {}): Promise<ViewProxy> {
     if (isBlank(component) && isBlank(context)) {
       throw new BaseException('You must specified at least a component or a context');
     }
@@ -94,14 +98,15 @@ export class TestBed {
     DOM.appendChild(doc.body, rootEl);
 
     var componentBinding = bind(component).toValue(context);
-    return this._injector.get(DynamicComponentLoader).loadAsRoot(componentBinding,'#root', this._injector).then((hostComponentRef) => {
-      return new ViewProxy(hostComponentRef);
-    });
+    return this._injector.get(DynamicComponentLoader)
+        .loadAsRoot(componentBinding, '#root', this._injector)
+        .then((hostComponentRef) => { return new ViewProxy(hostComponentRef); });
   }
 }
 
 /**
- * Proxy to `AppView` return by `createView` in {@link TestBed} which offers a high level API for tests.
+ * Proxy to `AppView` return by `createView` in {@link TestBed} which offers a high level API for
+ * tests.
  */
 export class ViewProxy {
   _componentRef: ComponentRef;
@@ -112,33 +117,23 @@ export class ViewProxy {
     this._view = internalView(componentRef.hostView).componentChildViews[0];
   }
 
-  get context(): any {
-    return this._view.context;
-  }
+  get context(): any { return this._view.context; }
 
-  get rootNodes(): List {
-    return viewRootNodes(this._view);
-  }
+  get rootNodes(): List</*node*/ any> { return viewRootNodes(this._view); }
 
   detectChanges(): void {
     this._view.changeDetector.detectChanges();
     this._view.changeDetector.checkNoChanges();
   }
 
-  querySelector(selector) {
-    return queryView(this._view, selector);
-  }
+  querySelector(selector) { return queryView(this._view, selector); }
 
-  destroy() {
-    this._componentRef.dispose();
-  }
+  destroy() { this._componentRef.dispose(); }
 
   /**
    * @returns `AppView` returns the underlying `AppView`.
    *
    * Prefer using the other methods which hide implementation details.
    */
-  get rawView(): AppView {
-    return this._view;
-  }
+  get rawView(): AppView { return this._view; }
 }

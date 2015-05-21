@@ -1,6 +1,8 @@
 import {List, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
 
+export interface NgZoneZone extends Zone { _innerZone: boolean; }
+
 /**
  * A wrapper around zones that lets you schedule tasks after it has executed a task.
  *

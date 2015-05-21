@@ -1,4 +1,4 @@
-var _global = typeof window === 'undefined' ? global : window;
+var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : window);
 export {_global as global};
 
 export var Type = Function;
@@ -19,23 +19,20 @@ export class BaseException extends Error {
 export var Math = _global.Math;
 export var Date = _global.Date;
 
-var assertionsEnabled_ = typeof assert !== 'undefined';
-
-var int;
-// global assert support, as Dart has it...
-// TODO: `assert` calls need to be removed in production code!
-if (assertionsEnabled_) {
-  _global.assert = assert;
-  // `int` is not a valid JS type
-  int = assert.define('int',
-                      function(value) { return typeof value === 'number' && value % 1 === 0; });
-} else {
-  int = {};
-  _global.assert = function() {};
+var assertionsEnabled_ = typeof _global['assert'] !== 'undefined';
+export function assertionsEnabled(): boolean {
+  return assertionsEnabled_;
 }
 
-export {int};
-
+// TODO: remove calls to assert in production environment
+// Note: Can't just export this and import in in other files
+// as `assert` is a reserved keyword in Dart
+_global.assert =
+    function assert(condition) {
+      if (assertionsEnabled_) {
+        _global['assert'].call(condition);
+      }
+    }
 // This function is needed only to properly support Dart's const expressions
 // see https://github.com/angular/ts2dart/pull/151 for more info
 export function CONST_EXPR<T>(expr: T): T {
@@ -114,7 +111,7 @@ export class StringWrapper {
   }
 
   static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
-    return s.replace(from, function(...matches) {
+    return s.replace(from, function(... matches) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
@@ -230,10 +227,6 @@ export function normalizeBlank(obj) {
 
 export function isJsObject(o): boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
-}
-
-export function assertionsEnabled(): boolean {
-  return assertionsEnabled_;
 }
 
 export function print(obj) {

@@ -1,6 +1,5 @@
 import {Injectable} from 'angular2/src/di/decorators';
 import {
-  int,
   isBlank,
   isPresent,
   BaseException,

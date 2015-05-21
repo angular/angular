@@ -8,7 +8,7 @@ export class MockTemplateResolver extends TemplateResolver {
   _templates: Map<Type, View>;
   _inlineTemplates: Map<Type, string>;
   _templateCache: Map<Type, View>;
-  _directiveOverrides: Map<Type, Type>;
+  _directiveOverrides: Map<Type, Map<Type, Type>>;
 
   constructor() {
     super();
@@ -62,7 +62,8 @@ export class MockTemplateResolver extends TemplateResolver {
 
   /**
    * Returns the {@link View} for a component:
-   * - Set the {@link View} to the overridden template when it exists or fallback to the default `TemplateResolver`,
+   * - Set the {@link View} to the overridden template when it exists or fallback to the default
+   * `TemplateResolver`,
    *   see `setView`.
    * - Override the directives, see `overrideTemplateDirective`.
    * - Override the @View definition, see `setInlineTemplate`.
@@ -91,24 +92,18 @@ export class MockTemplateResolver extends TemplateResolver {
       MapWrapper.forEach(overrides, (to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
-          throw new BaseException(`Overriden directive ${stringify(from)} not found in the template of ${stringify(component)}`);
+          throw new BaseException(
+              `Overriden directive ${stringify(from)} not found in the template of ${stringify(component)}`);
         }
         directives[srcIndex] = to;
       });
-      view = new View({
-        template: view.template,
-        templateUrl: view.templateUrl,
-        directives: directives
-      });
+      view = new View(
+          {template: view.template, templateUrl: view.templateUrl, directives: directives});
     }
 
     var inlineTemplate = MapWrapper.get(this._inlineTemplates, component);
     if (isPresent(inlineTemplate)) {
-      view = new View({
-        template: inlineTemplate,
-        templateUrl: null,
-        directives: view.directives
-      });
+      view = new View({template: inlineTemplate, templateUrl: null, directives: view.directives});
     }
 
     MapWrapper.set(this._templateCache, component, view);
@@ -127,7 +122,8 @@ export class MockTemplateResolver extends TemplateResolver {
     var cached = MapWrapper.get(this._templateCache, component);
 
     if (isPresent(cached)) {
-      throw new BaseException(`The component ${stringify(component)} has already been compiled, its configuration can not be changed`);
+      throw new BaseException(
+          `The component ${stringify(component)} has already been compiled, its configuration can not be changed`);
     }
   }
 }

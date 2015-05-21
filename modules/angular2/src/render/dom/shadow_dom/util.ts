@@ -1,4 +1,4 @@
-import {isBlank, isPresent, int} from 'angular2/src/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {MapWrapper, Map} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';

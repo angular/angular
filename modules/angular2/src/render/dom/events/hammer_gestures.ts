@@ -1,3 +1,5 @@
+/// <reference path="../../../../typings/hammerjs/hammerjs"/>
+
 import {HammerGesturesPluginCommon} from './hammer_common';
 import {isPresent, BaseException} from 'angular2/src/facade/lang';
 
@@ -7,7 +9,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   supports(eventName: string): boolean {
     if (!super.supports(eventName)) return false;
 
-    if (!isPresent(window.Hammer)) {
+    if (!isPresent(window['Hammer'])) {
       throw new BaseException(`Hammer.js is not loaded, can not bind ${eventName} event`);
     }
 

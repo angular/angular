@@ -1,12 +1,6 @@
 import {Injectable} from 'angular2/src/di/decorators';
 import {List, ListWrapper, SetWrapper} from "angular2/src/facade/collection";
-import {
-  int,
-  NumberWrapper,
-  StringJoiner,
-  StringWrapper,
-  BaseException
-} from "angular2/src/facade/lang";
+import {NumberWrapper, StringJoiner, StringWrapper, BaseException} from "angular2/src/facade/lang";
 
 export const TOKEN_TYPE_CHARACTER = 1;
 export const TOKEN_TYPE_IDENTIFIER = 2;

@@ -1,4 +1,4 @@
-import {isPresent, isBlank, Type, int, BaseException, stringify} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, Type, BaseException, stringify} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {

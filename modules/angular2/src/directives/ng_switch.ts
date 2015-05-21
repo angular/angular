@@ -1,11 +1,9 @@
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
+import {Directive, Parent} from 'angular2/annotations';
+import {ViewContainerRef, ProtoViewRef} from 'angular2/core';
 import {isPresent, isBlank, normalizeBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, List, MapWrapper, Map} from 'angular2/src/facade/collection';
-import {Parent} from 'angular2/src/core/annotations_impl/visibility';
 
-class SwitchView {
+export class SwitchView {
   _viewContainerRef: ViewContainerRef;
   _protoViewRef: ProtoViewRef;
 
@@ -14,13 +12,9 @@ class SwitchView {
     this._viewContainerRef = viewContainerRef;
   }
 
-  create() {
-    this._viewContainerRef.create(this._protoViewRef);
-  }
+  create() { this._viewContainerRef.create(this._protoViewRef); }
 
-  destroy() {
-    this._viewContainerRef.clear();
-  }
+  destroy() { this._viewContainerRef.clear(); }
 }
 
 /**
@@ -50,16 +44,11 @@ class SwitchView {
  *
  * @exportedAs angular2/directives
  */
-@Directive({
-  selector: '[ng-switch]',
-  properties: {
-    'ngSwitch': 'ngSwitch'
-  }
-})
+@Directive({selector: '[ng-switch]', properties: {'ngSwitch': 'ngSwitch'}})
 export class NgSwitch {
   _switchValue: any;
   _useDefault: boolean;
-  _valueViews: Map;
+  _valueViews: Map<any, List<SwitchView>>;
   _activeViews: List<SwitchView>;
 
   constructor() {
@@ -84,7 +73,7 @@ export class NgSwitch {
     this._switchValue = value;
   }
 
-  _onWhenValueChanged(oldWhen, newWhen, view: SwitchView):void {
+  _onWhenValueChanged(oldWhen, newWhen, view: SwitchView): void {
     this._deregisterView(oldWhen, view);
     this._registerView(newWhen, view);
 
@@ -107,7 +96,7 @@ export class NgSwitch {
     }
   }
 
-  _emptyAllActiveViews():void {
+  _emptyAllActiveViews(): void {
     var activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
       activeContainers[i].destroy();
@@ -115,7 +104,7 @@ export class NgSwitch {
     this._activeViews = ListWrapper.create();
   }
 
-  _activateViews(views: List<SwitchView>):void {
+  _activateViews(views: List<SwitchView>): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
     if (isPresent(views)) {
       for (var i = 0; i < views.length; i++) {
@@ -134,7 +123,7 @@ export class NgSwitch {
     ListWrapper.push(views, view);
   }
 
-  _deregisterView(value, view: SwitchView):void {
+  _deregisterView(value, view: SwitchView): void {
     // `_whenDefault` is used a marker for non-registered whens
     if (value == _whenDefault) return;
     var views = MapWrapper.get(this._valueViews, value);
@@ -164,27 +153,21 @@ export class NgSwitch {
  *
  * @exportedAs angular2/directives
  */
-@Directive({
-  selector: '[ng-switch-when]',
-  properties: {
-    'ngSwitchWhen' : 'ngSwitchWhen'
-  }
-})
+@Directive({selector: '[ng-switch-when]', properties: {'ngSwitchWhen': 'ngSwitchWhen'}})
 export class NgSwitchWhen {
   _value: any;
   _switch: NgSwitch;
   _view: SwitchView;
 
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef, @Parent() sswitch: NgSwitch) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef,
+              @Parent() sswitch: NgSwitch) {
     // `_whenDefault` is used as a marker for a not yet initialized value
     this._value = _whenDefault;
     this._switch = sswitch;
     this._view = new SwitchView(viewContainer, protoViewRef);
   }
 
-  onDestroy() {
-    this._switch
-  }
+  onDestroy() { this._switch }
 
   set ngSwitchWhen(value) {
     this._switch._onWhenValueChanged(this._value, value, this._view);
@@ -206,11 +189,10 @@ export class NgSwitchWhen {
  *
  * @exportedAs angular2/directives
  */
-@Directive({
-  selector: '[ng-switch-default]'
-})
+@Directive({selector: '[ng-switch-default]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef, @Parent() sswitch: NgSwitch) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef,
+              @Parent() sswitch: NgSwitch) {
     sswitch._registerView(_whenDefault, new SwitchView(viewContainer, protoViewRef));
   }
 }

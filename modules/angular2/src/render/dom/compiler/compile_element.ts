@@ -1,13 +1,6 @@
 import {List, Map, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {
-  int,
-  isBlank,
-  isPresent,
-  Type,
-  StringJoiner,
-  assertionsEnabled
-} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, Type, StringJoiner, assertionsEnabled} from 'angular2/src/facade/lang';
 
 import {ProtoViewBuilder, ElementBinderBuilder} from '../view/proto_view_builder';
 

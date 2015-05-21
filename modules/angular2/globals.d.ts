@@ -2,18 +2,16 @@
  * This file contains declarations of global symbols we reference in our code
  */
 
-/// <reference path="typings/hammerjs/hammerjs"/>
 /// <reference path="typings/zone/zone.d.ts"/>
 
 declare var assert: any;
-declare var global: Window;
 declare type int = number;
 
 interface List<T> extends Array<T> {}
 
 interface StringMap<K, V> extends Object {}
 
-interface Window {
+interface BrowserNodeGlobal {
   Object: typeof Object;
   Array: typeof Array;
   Map: typeof Map;
@@ -22,10 +20,12 @@ interface Window {
   RegExp: typeof RegExp;
   JSON: typeof JSON;
   Math: typeof Math;
-  assert: typeof assert;
-  gc(): void;
+  assert(condition): void;
   Reflect: any;
   zone: Zone;
-  Hammer: HammerStatic;
   getAngularTestability: Function;
+  setTimeout: Function;
+  clearTimeout: Function;
+  setInterval: Function;
+  clearInterval: Function;
 }

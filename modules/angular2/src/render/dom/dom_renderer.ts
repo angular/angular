@@ -1,5 +1,5 @@
 import {Inject, Injectable} from 'angular2/di';
-import {int, isPresent, isBlank, BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';

@@ -1,5 +1,5 @@
 import {AST} from 'angular2/change_detection';
-import {int, isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, BaseException} from 'angular2/src/facade/lang';
 import * as eiModule from './element_injector';
 import {DirectiveBinding} from './element_injector';
 import {List, StringMap} from 'angular2/src/facade/collection';

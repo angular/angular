@@ -14,16 +14,19 @@
     "jasmine/jasmine.d.ts": {
       "commit": "055b3172e8eb374a75826710c4d08677872620d3"
     },
+    "node/node.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
     "rx/rx.all.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.d.ts" : {
+    "rx/rx.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx-lite.d.ts" : {
+    "rx/rx-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.aggregates.d.ts" : {
+    "rx/rx.aggregates.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
     "rx/rx.time.d.ts": {
@@ -32,31 +35,31 @@
     "rx/rx.time-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.async.d.ts" : {
+    "rx/rx.async.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.async-lite.d.ts" : {
+    "rx/rx.async-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.binding.d.ts" : {
+    "rx/rx.binding.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.binding-lite.d.ts" : {
+    "rx/rx.binding-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.coincidence.d.ts" : {
+    "rx/rx.coincidence.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.coincidence-lite.d.ts" : {
+    "rx/rx.coincidence-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.experimental.d.ts" : {
+    "rx/rx.experimental.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.joinpatterns.d.ts" : {
+    "rx/rx.joinpatterns.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-    "rx/rx.virtualtime.d.ts" : {
+    "rx/rx.virtualtime.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
     "rx/rx.testing.d.ts": {
@@ -68,12 +71,14 @@
     "rx/rx.backpressure-lite.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
     },
-
     "selenium-webdriver/selenium-webdriver.d.ts": {
       "commit": "be0b6b394f77a59e192ad7cfec18078706e44db5"
     },
     "zone/zone.d.ts": {
       "commit": "055b3172e8eb374a75826710c4d08677872620d3"
+    },
+    "angular-protractor/angular-protractor.d.ts": {
+      "commit": "4207593c012565a7ea800ed861ffbe5011e7a501"
     }
   }
 }

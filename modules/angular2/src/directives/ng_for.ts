@@ -1,6 +1,5 @@
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ViewRef, ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
+import {Directive} from 'angular2/annotations';
+import {ViewContainerRef, ViewRef, ProtoViewRef} from 'angular2/core';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
@@ -36,16 +35,12 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  *
  * @exportedAs angular2/directives
  */
-@Directive({
-  selector: '[ng-for][ng-for-of]',
-  properties: {
-    'iterableChanges': 'ngForOf | iterableDiff'
-  }
-})
-export class NgFor  {
+@Directive(
+    {selector: '[ng-for][ng-for-of]', properties: {'iterableChanges': 'ngForOf | iterableDiff'}})
+export class NgFor {
   viewContainer: ViewContainerRef;
   protoViewRef: ProtoViewRef;
-  constructor(viewContainer:ViewContainerRef, protoViewRef: ProtoViewRef) {
+  constructor(viewContainer: ViewContainerRef, protoViewRef: ProtoViewRef) {
     this.viewContainer = viewContainer;
     this.protoViewRef = protoViewRef;
   }
@@ -59,19 +54,16 @@ export class NgFor  {
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
     var recordViewTuples = [];
-    changes.forEachRemovedItem(
-      (removedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(removedRecord, null))
-    );
+    changes.forEachRemovedItem((removedRecord) => ListWrapper.push(
+                                   recordViewTuples, new RecordViewTuple(removedRecord, null)));
 
-    changes.forEachMovedItem(
-      (movedRecord) => ListWrapper.push(recordViewTuples, new RecordViewTuple(movedRecord, null))
-    );
+    changes.forEachMovedItem((movedRecord) => ListWrapper.push(
+                                 recordViewTuples, new RecordViewTuple(movedRecord, null)));
 
     var insertTuples = NgFor.bulkRemove(recordViewTuples, this.viewContainer);
 
     changes.forEachAddedItem(
-      (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null))
-    );
+        (addedRecord) => ListWrapper.push(insertTuples, new RecordViewTuple(addedRecord, null)));
 
     NgFor.bulkInsert(insertTuples, this.viewContainer, this.protoViewRef);
 

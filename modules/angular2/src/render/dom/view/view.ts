@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 import {Locals} from 'angular2/change_detection';
-import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 
 import {DomViewContainer} from './view_container';
 import {DomProtoView} from './proto_view';

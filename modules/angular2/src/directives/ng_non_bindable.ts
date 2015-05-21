@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/src/core/annotations_impl/annotations';
+import {Directive} from 'angular2/annotations';
 
 /**
  * The `NgNonBindable` directive tells Angular not to compile or bind the contents of the current
@@ -15,9 +15,6 @@ import {Directive} from 'angular2/src/core/annotations_impl/annotations';
  *
  * @exportedAs angular2/directives
  */
-@Directive({
-  selector: '[ng-non-bindable]',
-  compileChildren: false
-})
+@Directive({selector: '[ng-non-bindable]', compileChildren: false})
 export class NgNonBindable {
 }

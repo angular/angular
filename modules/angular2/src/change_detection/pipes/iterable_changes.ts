@@ -7,7 +7,6 @@ import {
 } from 'angular2/src/facade/collection';
 
 import {
-  int,
   isBlank,
   isPresent,
   stringify,

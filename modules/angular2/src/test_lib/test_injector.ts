@@ -1,16 +1,24 @@
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 
 import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
 import {Reflector, reflector} from 'angular2/src/reflection/reflection';
-import {Parser, Lexer, ChangeDetection, DynamicChangeDetection,
-  PipeRegistry, defaultPipeRegistry} from 'angular2/change_detection';
+import {
+  Parser,
+  Lexer,
+  ChangeDetection,
+  DynamicChangeDetection,
+  PipeRegistry,
+  defaultPipeRegistry
+} from 'angular2/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/exception_handler';
 import {TemplateLoader} from 'angular2/src/render/dom/compiler/template_loader';
 import {TemplateResolver} from 'angular2/src/core/compiler/template_resolver';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
-import {EmulatedUnscopedShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
+import {
+  EmulatedUnscopedShadowDomStrategy
+} from 'angular2/src/render/dom/shadow_dom/emulated_unscoped_shadow_dom_strategy';
 import {XHR} from 'angular2/src/services/xhr';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
@@ -31,7 +39,7 @@ import {TestBed} from './test_bed';
 import {Injector} from 'angular2/di';
 
 import {List, ListWrapper} from 'angular2/src/facade/collection';
-import {FunctionWrapper} from 'angular2/src/facade/lang';
+import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
@@ -50,7 +58,8 @@ import {DefaultDomCompiler} from 'angular2/src/render/dom/compiler/compiler';
  */
 function _getRootBindings() {
   return [
-    bind(Reflector).toValue(reflector),
+    bind(Reflector)
+        .toValue(reflector),
   ];
 }
 
@@ -67,15 +76,17 @@ function _getAppBindings() {
   // The document is only available in browser environment
   try {
     appDoc = DOM.defaultDoc();
-  } catch(e) {
+  } catch (e) {
     appDoc = null;
   }
 
   return [
-    bind(DOCUMENT_TOKEN).toValue(appDoc),
-    bind(ShadowDomStrategy).toFactory(
-        (styleUrlResolver, doc) => new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
-        [StyleUrlResolver, DOCUMENT_TOKEN]),
+    bind(DOCUMENT_TOKEN)
+        .toValue(appDoc),
+    bind(ShadowDomStrategy)
+        .toFactory((styleUrlResolver, doc) =>
+                       new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
+                   [StyleUrlResolver, DOCUMENT_TOKEN]),
     DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),
@@ -103,16 +114,19 @@ function _getAppBindings() {
     StyleInliner,
     TestBed,
     bind(NgZone).toClass(MockNgZone),
-    bind(EventManager).toFactory((zone) => {
-      var plugins = [
-        new DomEventsPlugin(),
-      ];
-      return new EventManager(plugins, zone);
-    }, [NgZone]),
+    bind(EventManager)
+        .toFactory((zone) =>
+                   {
+                     var plugins = [
+                       new DomEventsPlugin(),
+                     ];
+                     return new EventManager(plugins, zone);
+                   },
+                   [NgZone]),
   ];
 }
 
-export function createTestInjector(bindings: List):Injector {
+export function createTestInjector(bindings: List<Type | Binding | List<any>>): Injector {
   var rootInjector = Injector.resolveAndCreate(_getRootBindings());
   return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), bindings));
 }
@@ -147,22 +161,21 @@ export function createTestInjector(bindings: List):Injector {
  * @return {FunctionWithParamTokens}
  * @exportedAs angular2/test
  */
-export function inject(tokens: List, fn: Function):FunctionWithParamTokens {
+export function inject(tokens: List<any>, fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn);
 }
 
 export class FunctionWithParamTokens {
-  _tokens: List;
+  _tokens: List<any>;
   _fn: Function;
 
-  constructor(tokens: List, fn: Function) {
+  constructor(tokens: List<any>, fn: Function) {
     this._tokens = tokens;
     this._fn = fn;
   }
 
-  execute(injector: Injector):void {
+  execute(injector: Injector): void {
     var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
     FunctionWrapper.apply(this._fn, params);
   }
 }
-

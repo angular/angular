@@ -18,7 +18,7 @@ import {
   DirectiveBinding
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {int, isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException} from 'angular2/src/facade/lang';
 import * as renderApi from 'angular2/src/render/api';
 import {EventDispatcher} from 'angular2/src/render/api';
 
