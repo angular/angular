@@ -30,10 +30,12 @@ export function main() {
       strategy = new NativeShadowDomStrategy(styleUrlResolver);
     });
 
-    it('should use the native shadow root', () => {
-      var host = el('<div><span>original content</span></div>');
-      expect(strategy.prepareShadowRoot(host)).toBe(DOM.getShadowRoot(host));
-    });
+    if (DOM.supportsNativeShadowDOM()) {
+      it('should use the native shadow root', () => {
+        var host = el('<div><span>original content</span></div>');
+        expect(strategy.prepareShadowRoot(host)).toBe(DOM.getShadowRoot(host));
+      });
+    }
 
     it('should rewrite style urls', () => {
       var styleElement = el('<style>.foo {background-image: url("img.jpg");}</style>');
