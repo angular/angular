@@ -6,7 +6,7 @@ import {ProtoElementInjector, ElementInjector, PreBuiltObjects, DirectiveBinding
 import {Parent, Ancestor, Unbounded} from 'angular2/src/core/annotations_impl/visibility';
 import {Attribute, Query} from 'angular2/src/core/annotations_impl/di';
 import {Component, Directive, onDestroy} from 'angular2/src/core/annotations_impl/annotations';
-import {bind, Injector, Binding} from 'angular2/di';
+import {bind, Injector, Binding, resolveBindings} from 'angular2/di';
 import {Optional, Inject} from 'angular2/src/di/annotations_impl';
 import {AppProtoView, AppView} from 'angular2/src/core/compiler/view';
 import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
@@ -526,6 +526,22 @@ export function main() {
             ]}))
         ]);
         expect(inj.get('injectable2')).toEqual('injectable1-injectable2');
+      });
+
+      it("should instantiate hostInjector injectables that have dependencies with set visibility", function () {
+        var childInj= parentChildInjectors([
+          DirectiveBinding.createFromType(SimpleDirective,
+              new DummyDirective({hostInjector: [
+                bind('injectable1').toValue('injectable1')
+              ]}))
+        ], [
+          DirectiveBinding.createFromType(SimpleDirective,
+              new DummyDirective({hostInjector: [
+                bind('injectable1').toValue('new-injectable1'),
+                bind('injectable2').toFactory((val) => `${val}-injectable2`,  [[new Inject('injectable1'), new Parent()]])
+              ]}))
+        ]);
+        expect(childInj.get('injectable2')).toEqual('injectable1-injectable2');
       });
 
       it("should instantiate components that depends on viewInjector dependencies", function () {

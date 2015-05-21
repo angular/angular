@@ -492,5 +492,5 @@ function _extractToken(typeOrFunc, annotations) {
 }
 
 function _createDependency(token, asPromise, lazy, optional, depProps): Dependency {
-  return new Dependency(Key.get(token), asPromise, lazy, optional, depProps);
+  return new Dependency(Key.get(resolveForwardRef(token)), asPromise, lazy, optional, depProps);
 }

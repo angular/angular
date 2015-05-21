@@ -189,10 +189,28 @@ export class TreeNode<T extends TreeNode<any>> {
   }
 }
 
-export class DirectiveDependency extends Dependency {
+export class DependencyWithVisibility extends Dependency {
   constructor(key: Key, asPromise: boolean, lazy: boolean, optional: boolean, properties: List<any>,
-              public visibility: Visibility, public attributeName: string, public queryDirective) {
+              public visibility: Visibility) {
     super(key, asPromise, lazy, optional, properties);
+  }
+
+  static createFrom(d: Dependency): Dependency {
+    return new DependencyWithVisibility(d.key, d.asPromise, d.lazy, d.optional, d.properties,
+                                        DependencyWithVisibility._visibility(d.properties));
+  }
+
+  static _visibility(properties): Visibility {
+    if (properties.length == 0) return self;
+    var p = ListWrapper.find(properties, p => p instanceof Visibility);
+    return isPresent(p) ? p : self;
+  }
+}
+
+export class DirectiveDependency extends DependencyWithVisibility {
+  constructor(key: Key, asPromise: boolean, lazy: boolean, optional: boolean, properties: List<any>,
+              visibility: Visibility, public attributeName: string, public queryDirective) {
+    super(key, asPromise, lazy, optional, properties, visibility);
     this._verify();
   }
 
@@ -207,15 +225,9 @@ export class DirectiveDependency extends Dependency {
 
   static createFrom(d: Dependency): Dependency {
     return new DirectiveDependency(d.key, d.asPromise, d.lazy, d.optional, d.properties,
-                                   DirectiveDependency._visibility(d.properties),
+                                   DependencyWithVisibility._visibility(d.properties),
                                    DirectiveDependency._attributeName(d.properties),
                                    DirectiveDependency._query(d.properties));
-  }
-
-  static _visibility(properties): Visibility {
-    if (properties.length == 0) return self;
-    var p = ListWrapper.find(properties, p => p instanceof Visibility);
-    return isPresent(p) ? p : self;
   }
 
   static _attributeName(properties): string {
@@ -476,16 +488,24 @@ export class ProtoElementInjector {
   private static _createHostInjectorBindingData(bindings: List<ResolvedBinding>,
                                                 bd: List<BindingData>) {
     ListWrapper.forEach(bindings, b => {
-      ListWrapper.forEach(b.resolvedHostInjectables,
-                          b => { ListWrapper.push(bd, new BindingData(b, LIGHT_DOM)); });
+      ListWrapper.forEach(b.resolvedHostInjectables, b => {
+        ListWrapper.push(bd, new BindingData(ProtoElementInjector._createBinding(b), LIGHT_DOM));
+      });
     });
   }
 
   private static _createViewInjectorBindingData(bindings: List<ResolvedBinding>,
                                                 bd: List<BindingData>) {
     var db = <DirectiveBinding>bindings[0];
-    ListWrapper.forEach(db.resolvedViewInjectables,
-                        b => ListWrapper.push(bd, new BindingData(b, SHADOW_DOM)));
+    ListWrapper.forEach(
+        db.resolvedViewInjectables,
+        b => ListWrapper.push(bd,
+                              new BindingData(ProtoElementInjector._createBinding(b), SHADOW_DOM)));
+  }
+
+  private static _createBinding(b: ResolvedBinding) {
+    var deps = ListWrapper.map(b.dependencies, d => DependencyWithVisibility.createFrom(d));
+    return new ResolvedBinding(b.key, b.factory, deps, b.providedAsPromise);
   }
 
   constructor(parent: ProtoElementInjector, index: int, bd: List<BindingData>,
@@ -909,9 +929,9 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return obj;
   }
 
-  private _getByDependency(dep: Dependency, requestor: Key) {
+  private _getByDependency(dep: DependencyWithVisibility, requestor: Key) {
     if (!(dep instanceof DirectiveDependency)) {
-      return this._getByKey(dep.key, self, dep.optional, requestor);
+      return this._getByKey(dep.key, dep.visibility, dep.optional, requestor);
     }
 
     var dirDep = <DirectiveDependency>dep;
