@@ -4,7 +4,7 @@ import destCopy from '../broccoli-dest-copy';
 import compileWithTypescript from '../broccoli-typescript';
 import transpileWithTraceur from '../traceur/index';
 var Funnel = require('broccoli-funnel');
-var mergeTrees = require('broccoli-merge-trees');
+import mergeTrees from '../broccoli-merge-trees';
 var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
