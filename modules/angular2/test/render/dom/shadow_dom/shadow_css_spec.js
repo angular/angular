@@ -84,19 +84,19 @@ export function main() {
     });
 
     it('should support polyfill-unscoped-rule', () => {
-      var css = s("polyfill-unscoped-rule {content: '#menu > .bar';background: blue;}", 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;background: blue;}')).toBeTruthy();
+      var css = s("polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}", 'a');
+      expect(StringWrapper.contains(css, '#menu > .bar {;color: blue;}')).toBeTruthy();
 
-      css = s('polyfill-unscoped-rule {content: "#menu > .bar";background: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;background: blue;}')).toBeTruthy();
+      css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
+      expect(StringWrapper.contains(css, '#menu > .bar {;color: blue;}')).toBeTruthy();
     });
 
     it('should support polyfill-rule', () => {
-      var css = s("polyfill-rule {content: ':host.foo .bar';background: blue;}", 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {background: blue;}');
+      var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
+      expect(css).toEqual('[a-host].foo .bar {color: blue;}');
 
-      css = s('polyfill-rule {content: ":host.foo .bar";background: blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {background: blue;}');
+      css = s('polyfill-rule {content: ":host.foo .bar";color: blue;}', 'a', 'a-host');
+      expect(css).toEqual('[a-host].foo .bar {color: blue;}');
     });
 
     it('should handle ::shadow', () => {
