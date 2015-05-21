@@ -447,7 +447,7 @@ export function main() {
       function keyValues(templateBindings) {
         return ListWrapper.map(templateBindings, (binding) => {
           if (binding.keyIsVar) {
-            return '#' + binding.key + (isBlank(binding.name) ? '' : '=' + binding.name);
+            return '#' + binding.key + (isBlank(binding.name) ? '=null' : '=' + binding.name);
           } else {
             return binding.key + (isBlank(binding.expression) ? '' : `=${binding.expression}`)
           }
@@ -471,7 +471,7 @@ export function main() {
         expect(bindings).toEqual([]);
       });
 
-      iit('should parse a string without a value', () => {
+      it('should parse a string without a value', () => {
         var bindings = parseTemplateBindings('a');
         expect(keys(bindings)).toEqual(['a']);
       });
@@ -508,7 +508,7 @@ export function main() {
 
       it('should detect names as value', () => {
         var bindings = parseTemplateBindings("a:#b");
-        expect(keyValues(bindings)).toEqual(['a', '#b']);
+        expect(keyValues(bindings)).toEqual(['a', '#b=\$implicit']);
       });
 
       it('should allow space and colon as separators', () => {
@@ -540,10 +540,16 @@ export function main() {
 
       it('should support var/# notation', () => {
         var bindings = parseTemplateBindings("var i");
-        expect(keyValues(bindings)).toEqual(['#i']);
+        expect(keyValues(bindings)).toEqual(['#i=\$implicit']);
 
         bindings = parseTemplateBindings("#i");
-        expect(keyValues(bindings)).toEqual(['#i']);
+        expect(keyValues(bindings)).toEqual(['#i=\$implicit']);
+
+        bindings = parseTemplateBindings("var a; var b");
+        expect(keyValues(bindings)).toEqual(['#a=\$implicit', '#b=\$implicit']);
+
+        bindings = parseTemplateBindings("#a; #b;");
+        expect(keyValues(bindings)).toEqual(['#a=\$implicit', '#b=\$implicit']);
 
         bindings = parseTemplateBindings("var i-a = k-a");
         expect(keyValues(bindings)).toEqual(['#i-a=k-a']);
