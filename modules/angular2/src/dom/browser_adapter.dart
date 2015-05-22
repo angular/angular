@@ -135,6 +135,9 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   MouseEvent createMouseEvent(String eventType) =>
       new MouseEvent(eventType, canBubble: true);
   Event createEvent(String eventType) => new Event(eventType, canBubble: true);
+  void preventDefault(Event evt) { 
+    evt.preventDefault();
+  }
   String getInnerHTML(Element el) => el.innerHtml;
   String getOuterHTML(Element el) => el.outerHtml;
   void setInnerHTML(Element el, String value) {
@@ -322,5 +325,8 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     var uri = document.baseUri;
     var baseUri = Uri.parse(uri);
     return baseUri.path;
+  }
+  String getUserAgent() {
+    return window.navigator.userAgent;
   }
 }

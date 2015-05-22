@@ -25,10 +25,38 @@ var createMapFromPairs: {(pairs: List<any>): Map<any, any>} = (function() {
     return map;
   }
 })();
+var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
+  try {
+    if (new Map(new Map())) {
+      return function createMapFromMap(m: Map<any, any>): Map<any, any> { return new Map(m); };
+    }
+  } catch (e) {
+  }
+  return function createMapAndPopulateFromMap(m: Map<any, any>): Map<any, any> {
+    var map = new Map();
+    m.forEach((v, k) => { map.set(k, v); });
+    return map;
+  }
+})();
+var _clearValues: {(m: Map<any, any>)} = (function() {
+  if ((<any>(new Map()).keys()).next) {
+    return function _clearValues(m: Map<any, any>) {
+      var keyIterator = m.keys();
+      var k;
+      while (!((k = (<any>keyIterator).next()).done)) {
+        m.set(k.value, null);
+      }
+    };
+  } else {
+    return function _clearValuesWithForeEach(m: Map<any, any>) {
+      m.forEach((v, k) => { m.set(k, null); });
+    }
+  }
+})();
 
 export class MapWrapper {
   static create(): Map<any, any> { return new Map(); }
-  static clone<K, V>(m: Map<K, V>): Map<K, V> { return new Map(m); }
+  static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
   static createFromStringMap(stringMap): Map<string, any> {
     var result = MapWrapper.create();
     for (var prop in stringMap) {
@@ -44,13 +72,7 @@ export class MapWrapper {
   static size(m: Map<any, any>) { return m.size; }
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clear(m: Map<any, any>) { m.clear(); }
-  static clearValues(m: Map<any, any>) {
-    var keyIterator = m.keys();
-    var k;
-    while (!((k = (<any>keyIterator).next()).done)) {
-      m.set(k.value, null);
-    }
-  }
+  static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable(m) { return m; }
   static keys<K>(m: Map<K, any>): List<K> { return m.keys(); }
   static values<V>(m: Map<any, V>): List<V> { return m.values(); }
@@ -233,7 +255,26 @@ export function iterateListLike(obj, fn: Function) {
   }
 }
 
+
+// Safari and Internet Explorer do not support the iterable parameter to the
+// Set constructor.  We work around that by manually adding the items.
+var createSetFromList: {(lst: List<any>): Set<any>} = (function() {
+  var test = new Set([1, 2, 3]);
+  if (test.size === 3) {
+    return function createSetFromList(lst: List<any>): Set<any> { return new Set(lst); };
+  } else {
+    return function createSetAndPopulateFromList(lst: List<any>): Set<any> {
+      var res = new Set(lst);
+      if (res.size !== lst.length) {
+        for (var i = 0; i < lst.length; i++) {
+          res.add(lst[i]);
+        }
+      }
+      return res;
+    };
+  }
+})();
 export class SetWrapper {
-  static createFromList<T>(lst: List<T>): Set<T> { return new Set(lst); }
+  static createFromList<T>(lst: List<T>): Set<T> { return createSetFromList(lst); }
   static has<T>(s: Set<T>, key: T): boolean { return s.has(key); }
 }

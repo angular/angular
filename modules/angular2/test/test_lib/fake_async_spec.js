@@ -209,12 +209,6 @@ export function main() {
       }));
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-        if (global != null && global.jasmine) {
-          // TODO(vicb): remove this when we switch to jasmine 2.3.3+
-          // see https://github.com/jasmine/jasmine/commit/51462f369b376615bc9d761dcaa5d822ea1ff8ee
-          return;
-        }
-
         var cycles = 0;
         var id;
 

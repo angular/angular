@@ -34,7 +34,19 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var shouldLog = require('./tools/build/logging');
 
+// Make it easy to quiet down portions of the build.
+// --logs=all -> log everything (This is the default)
+// --logs=quiet -> log nothing
+// --logs=<comma-separated-list> -> log listed items.
+//
+// Not all commands support optional logging, feel free
+// to add support by adding a new key to this list,
+// and toggling output from the command based on it.
+var logs = {
+  dartfmt: shouldLog('dartfmt')
+};
 
 // dynamic require in build.tools so we can bootstrap TypeScript compilation
 function throwToolsBuildMissingError() {
@@ -194,7 +206,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 
 gulp.task('build/format.dart', function() {
   return util.processToPromise(spawn(DART_SDK.DARTFMT, ['-w', CONFIG.dest.dart], {
-    stdio: 'inherit'
+    stdio: logs.dartfmt ? 'inherit' : ['ignore', 'ignore', 'inherit']
   }));
 });
 
@@ -215,7 +227,8 @@ gulp.task('check-format', function() {
 
 gulp.task('enforce-format', function() {
   return doCheckFormat().on('warning', function(e) {
-    console.log("ERROR: Some files need formatting");
+    console.log("ERROR: You forgot to run clang-format on your change.");
+    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
 });
@@ -797,7 +810,7 @@ gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
       .pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps']);
+gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps', 'router.bundle.js.dev']);
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
 

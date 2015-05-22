@@ -76,6 +76,9 @@ class Html5LibDomAdapter implements DomAdapter {
   createEvent(eventType) {
     throw 'not implemented';
   }
+  preventDefault(evt) { 
+    throw 'not implemented';
+  }
   getInnerHTML(el) {
     return el.innerHtml;
   }
@@ -298,6 +301,9 @@ class Html5LibDomAdapter implements DomAdapter {
     throw 'not implemented';
   }
   getBaseHref() {
+    throw 'not implemented';
+  }
+  String getUserAgent() {
     throw 'not implemented';
   }
 }

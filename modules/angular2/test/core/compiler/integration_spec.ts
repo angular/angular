@@ -227,7 +227,7 @@ export function main() {
           return [bind(ChangeDetection)
                       .toFactory(() => new DynamicChangeDetection(
                                      new PipeRegistry({"double": [new DoublePipeFactory()]})),
-                                     [])];
+                                 [])];
         });
 
         it("should support pipes in bindings and bind config",

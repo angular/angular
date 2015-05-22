@@ -39,15 +39,16 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   static parseEventName(eventName: string) /* {'domEventName': string, 'fullKey': string} */ {
-    eventName = eventName.toLowerCase();
-    var parts = eventName.split('.');
+    var parts = eventName.toLowerCase().split('.');
+
     var domEventName = ListWrapper.removeAt(parts, 0);
     if ((parts.length === 0) ||
         !(StringWrapper.equals(domEventName, 'keydown') ||
           StringWrapper.equals(domEventName, 'keyup'))) {
       return null;
     }
-    var key = ListWrapper.removeLast(parts);
+
+    var key = KeyEventsPlugin._normalizeKey(ListWrapper.removeLast(parts));
 
     var fullKey = '';
     ListWrapper.forEach(modifierKeys, (modifierName) => {
@@ -88,10 +89,21 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   static eventCallback(element, shouldSupportBubble, fullKey, handler, zone) {
-    return (event) => { var correctElement = shouldSupportBubble || event.target === element;
-    if (correctElement && KeyEventsPlugin.getEventFullKey(event) === fullKey) {
-      zone.run(() => handler(event));
+    return (event) => {
+      var correctElement = shouldSupportBubble || event.target === element;
+      if (correctElement && KeyEventsPlugin.getEventFullKey(event) === fullKey) {
+        zone.run(() => handler(event));
+      }
+    };
+  }
+
+  static _normalizeKey(keyName: string): string {
+    // TODO: switch to a StringMap if the mapping grows too much
+    switch (keyName) {
+      case 'esc':
+        return 'escape';
+      default:
+        return keyName;
     }
-  };
-}
+  }
 }
