@@ -1,16 +1,12 @@
-import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
-import {Attribute} from 'angular2/src/core/annotations_impl/di';
+import {Component, onChange, View, Attribute} from 'angular2/angular2';
+
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
 @Component({
   selector: 'md-progress-linear',
   lifecycle: [onChange],
-  properties: {
-    'value': 'value',
-    'bufferValue': 'buffer-value'
-  },
+  properties: {'value': 'value', 'bufferValue': 'buffer-value'},
   hostProperties: {
     'role': 'attr.role',
     'ariaValuemin': 'attr.aria-valuemin',
@@ -42,7 +38,7 @@ export class MdProgressLinear {
   ariaValuemin: string;
   ariaValuemax: string;
 
-  constructor(@Attribute('md-mode') mode: String) {
+  constructor(@Attribute('md-mode') mode: string) {
     this.primaryBarTransform = '';
     this.secondaryBarTransform = '';
 

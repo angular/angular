@@ -1,8 +1,13 @@
-import {Component, onDestroy, onChange, onAllChangesDone} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
-import {Parent} from 'angular2/src/core/annotations_impl/visibility';
+import {Component, View, Parent, onDestroy, onChange, onAllChangesDone} from 'angular2/angular2';
+
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {StringWrapper, isPresent, isString, NumberWrapper, RegExpWrapper} from 'angular2/src/facade/lang';
+import {
+  StringWrapper,
+  isPresent,
+  isString,
+  NumberWrapper,
+  RegExpWrapper
+} from 'angular2/src/facade/lang';
 import {Math} from 'angular2/src/facade/math';
 
 // TODO(jelbourn): Set appropriate aria attributes for grid list elements.
@@ -14,16 +19,10 @@ import {Math} from 'angular2/src/facade/math';
 
 @Component({
   selector: 'md-grid-list',
-  properties: {
-    'cols': 'cols',
-    'rowHeight': 'row-height',
-    'gutterSize': 'gutter-size'
-  },
+  properties: {'cols': 'cols', 'rowHeight': 'row-height', 'gutterSize': 'gutter-size'},
   lifecycle: [onAllChangesDone]
 })
-@View({
-  templateUrl: 'angular2_material/src/components/grid_list/grid_list.html'
-})
+@View({templateUrl: 'angular2_material/src/components/grid_list/grid_list.html'})
 export class MdGridList {
   /** List of tiles that are being rendered. */
   tiles: List<MdGridTile>;
@@ -218,10 +217,7 @@ export class MdGridList {
 
 @Component({
   selector: 'md-grid-tile',
-  properties: {
-    'rowspan': 'rowspan',
-    'colspan': 'colspan'
-  },
+  properties: {'rowspan': 'rowspan', 'colspan': 'colspan'},
   hostProperties: {
     'styleHeight': 'style.height',
     'styleWidth': 'style.width',
@@ -233,9 +229,7 @@ export class MdGridList {
   },
   lifecycle: [onDestroy, onChange]
 })
-@View({
-  templateUrl: 'angular2_material/src/components/grid_list/grid_tile.html'
-})
+@View({templateUrl: 'angular2_material/src/components/grid_list/grid_tile.html'})
 export class MdGridTile {
   gridList: MdGridList;
   _rowspan: number;
@@ -282,7 +276,6 @@ export class MdGridTile {
    * Notifies grid-list that a re-layout is required.
    */
   onChange(_) {
-    //console.log(`grid-tile on-change ${this.gridList.tiles.indexOf(this)}`);
     if (!this.isRegisteredWithGridList) {
       this.gridList.addTile(this);
       this.isRegisteredWithGridList = true;

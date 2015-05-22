@@ -1,14 +1,12 @@
-import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
-import {Parent, Ancestor} from 'angular2/src/core/annotations_impl/visibility';
-import {Attribute} from 'angular2/src/core/annotations_impl/di';
-import {Optional} from 'angular2/src/di/annotations_impl';
-import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher'
+import {Component, View, onChange, Parent, Ancestor, Attribute, Optional} from 'angular2/angular2';
+
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {KEY_UP, KEY_DOWN, KEY_SPACE} from 'angular2_material/src/core/constants'
 import {Event, KeyboardEvent} from 'angular2/src/facade/browser';
+
+import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
+import {KEY_UP, KEY_DOWN, KEY_SPACE} from 'angular2_material/src/core/constants';
 
 // TODO(jelbourn): Behaviors to test
 // Disabled radio don't select
@@ -22,156 +20,13 @@ import {Event, KeyboardEvent} from 'angular2/src/facade/browser';
 // Radio group changes on arrow keys
 // Radio group skips disabled radios on arrow keys
 
-var _uniqueIdCounter:number = 0;
-
-@Component({
-  selector: 'md-radio-button',
-  lifecycle: [onChange],
-  properties: {
-    'id': 'id',
-    'name': 'name',
-    'value': 'value',
-    'checked': 'checked',
-    'disabled': 'disabled'
-  },
-  hostListeners: {
-    'keydown': 'onKeydown($event)'
-  },
-  hostProperties: {
-    'id': 'id',
-    'tabindex': 'tabindex',
-    'role': 'attr.role',
-    'checked': 'attr.aria-checked',
-    'disabled': 'attr.aria-disabled'
-  }
-})
-@View({
-  templateUrl: 'angular2_material/src/components/radio/radio_button.html',
-  directives: []
-})
-export class MdRadioButton {
-  /** Whether this radio is checked. */
-  checked: boolean;
-
-  /** Whether the radio is disabled. */
-  disabled_: boolean;
-
-  /** The unique ID for the radio button. */
-  id: string;
-
-  /** Analog to HTML 'name' attribute used to group radios for unique selection. */
-  name: string;
-
-  /** Value assigned to this radio. Used to assign the value to the parent MdRadioGroup. */
-  value: any;
-
-  /** The parent radio group. May or may not be present. */
-  radioGroup: MdRadioGroup;
-
-  /** Dispatcher for coordinating radio unique-selection by name. */
-  radioDispatcher: MdRadioDispatcher;
-
-  tabindex: number;
-
-  role: string;
-
-  constructor(
-      @Optional() @Parent() radioGroup: MdRadioGroup,
-      @Attribute('id') id: String,
-      @Attribute('tabindex') tabindex: String,
-      radioDispatcher: MdRadioDispatcher) {
-    // Assertions. Ideally these should be stripped out by the compiler.
-    // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
-
-    this.radioGroup = radioGroup;
-    this.radioDispatcher = radioDispatcher;
-    this.value = null;
-
-    this.role = 'radio';
-    this.checked = false;
-
-    this.id = isPresent(id) ? id : `md-radio-${_uniqueIdCounter++}`;;
-
-    // Whenever a radio button with the same name is checked, uncheck this radio button.
-    radioDispatcher.listen((name) => {
-      if (name == this.name) {
-        this.checked = false;
-      }
-    });
-
-    // When this radio-button is inside of a radio-group, the group determines the name.
-    if (isPresent(radioGroup)) {
-      this.name = radioGroup.getName();
-      this.radioGroup.register(this);
-    }
-
-    // If the user has not set a tabindex, default to zero (in the normal document flow).
-    if (!isPresent(radioGroup)) {
-      this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
-    } else {
-      this.tabindex = -1;
-    }
-  }
-
-  /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onChange(_) {
-    if (isPresent(this.radioGroup)) {
-      this.name = this.radioGroup.getName();
-    }
-  }
-
-  /** Whether this radio button is disabled, taking the parent group into account. */
-  isDisabled(): boolean {
-    // Here, this.disabled may be true/false as the result of a binding, may be the empty string
-    // if the user just adds a `disabled` attribute with no value, or may be absent completely.
-    // TODO(jelbourn): If someone sets `disabled="disabled"`, will this work in dart?
-    return this.disabled ||
-        (isPresent(this.disabled) && StringWrapper.equals(this.disabled, '')) ||
-        (isPresent(this.radioGroup) && this.radioGroup.disabled);
-  }
-
-  get disabled() {
-    return this.disabled_;
-  }
-
-  set disabled(value) {
-    this.disabled_ = isPresent(value) && value !== false;
-  }
-
-  /** Select this radio button. */
-  select(event: Event) {
-    if (this.isDisabled()) {
-      event.stopPropagation();
-      return;
-    }
-
-    // Notifiy all radio buttons with the same name to un-check.
-    this.radioDispatcher.notify(this.name);
-
-    this.checked = true;
-
-    if (isPresent(this.radioGroup)) {
-      this.radioGroup.updateValue(this.value, this.id);
-    }
-  }
-
-  /** Handles pressing the space key to select this focused radio button. */
-  onKeydown(event: KeyboardEvent) {
-    if (event.keyCode == KEY_SPACE) {
-      event.preventDefault();
-      this.select(event);
-    }
-  }
-}
+var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
   lifecycle: [onChange],
   events: ['change'],
-  properties: {
-    'disabled': 'disabled',
-    'value': 'value'
-  },
+  properties: {'disabled': 'disabled', 'value': 'value'},
   hostListeners: {
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '^keydown': 'onKeydown($event)'
@@ -183,9 +38,7 @@ export class MdRadioButton {
     'activedescendant': 'attr.aria-activedescendant'
   }
 })
-@View({
-  templateUrl: 'angular2_material/src/components/radio/radio_group.html'
-})
+@View({templateUrl: 'angular2_material/src/components/radio/radio_group.html'})
 export class MdRadioGroup {
   /** The selected value for the radio group. The value comes from the options. */
   value: any;
@@ -212,10 +65,8 @@ export class MdRadioGroup {
 
   role: string;
 
-  constructor(
-      @Attribute('tabindex') tabindex: String,
-      @Attribute('disabled') disabled: String,
-      radioDispatcher: MdRadioDispatcher) {
+  constructor(@Attribute('tabindex') tabindex: string, @Attribute('disabled') disabled: string,
+              radioDispatcher: MdRadioDispatcher) {
     this.name_ = `md-radio-group-${_uniqueIdCounter++}`;
     this.radios_ = [];
     this.change = new EventEmitter();
@@ -328,5 +179,132 @@ export class MdRadioGroup {
     this.value = radio.value;
     this.selectedRadioId = radio.id;
     this.activedescendant = radio.id;
+  }
+}
+
+
+@Component({
+  selector: 'md-radio-button',
+  lifecycle: [onChange],
+  properties:
+      {'id': 'id', 'name': 'name', 'value': 'value', 'checked': 'checked', 'disabled': 'disabled'},
+  hostListeners: {'keydown': 'onKeydown($event)'},
+  hostProperties: {
+    'id': 'id',
+    'tabindex': 'tabindex',
+    'role': 'attr.role',
+    'checked': 'attr.aria-checked',
+    'disabled': 'attr.aria-disabled'
+  }
+})
+@View({templateUrl: 'angular2_material/src/components/radio/radio_button.html', directives: []})
+export class MdRadioButton {
+  /** Whether this radio is checked. */
+  checked: boolean;
+
+  /** Whether the radio is disabled. */
+  disabled_: boolean;
+
+  /** The unique ID for the radio button. */
+  id: string;
+
+  /** Analog to HTML 'name' attribute used to group radios for unique selection. */
+  name: string;
+
+  /** Value assigned to this radio. Used to assign the value to the parent MdRadioGroup. */
+  value: any;
+
+  /** The parent radio group. May or may not be present. */
+  radioGroup: MdRadioGroup;
+
+  /** Dispatcher for coordinating radio unique-selection by name. */
+  radioDispatcher: MdRadioDispatcher;
+
+  tabindex: number;
+
+  role: string;
+
+  constructor(@Optional() @Parent() radioGroup: MdRadioGroup, @Attribute('id') id: string,
+              @Attribute('tabindex') tabindex: string, radioDispatcher: MdRadioDispatcher) {
+    // Assertions. Ideally these should be stripped out by the compiler.
+    // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
+
+    this.radioGroup = radioGroup;
+    this.radioDispatcher = radioDispatcher;
+    this.value = null;
+
+    this.role = 'radio';
+    this.checked = false;
+
+    this.id = isPresent(id) ? id : `md-radio-${_uniqueIdCounter++}`;
+
+    // Whenever a radio button with the same name is checked, uncheck this radio button.
+    radioDispatcher.listen((name) => {
+      if (name == this.name) {
+        this.checked = false;
+      }
+    });
+
+    // When this radio-button is inside of a radio-group, the group determines the name.
+    if (isPresent(radioGroup)) {
+      this.name = radioGroup.getName();
+      this.radioGroup.register(this);
+    }
+
+    // If the user has not set a tabindex, default to zero (in the normal document flow).
+    if (!isPresent(radioGroup)) {
+      this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
+    } else {
+      this.tabindex = -1;
+    }
+  }
+
+  /** Change handler invoked when bindings are resolved or when bindings have changed. */
+  onChange(_) {
+    if (isPresent(this.radioGroup)) {
+      this.name = this.radioGroup.getName();
+    }
+  }
+
+  /** Whether this radio button is disabled, taking the parent group into account. */
+  isDisabled(): boolean {
+    // Here, this.disabled may be true/false as the result of a binding, may be the empty string
+    // if the user just adds a `disabled` attribute with no value, or may be absent completely.
+    // TODO(jelbourn): If someone sets `disabled="disabled"`, will this work in dart?
+    return this.disabled || (isPresent(this.disabled) && StringWrapper.equals(this.disabled, '')) ||
+           (isPresent(this.radioGroup) && this.radioGroup.disabled);
+  }
+
+  get disabled(): any {
+    return this.disabled_;
+  }
+
+  set disabled(value: any) {
+    this.disabled_ = isPresent(value) && value !== false;
+  }
+
+  /** Select this radio button. */
+  select(event: Event) {
+    if (this.isDisabled()) {
+      event.stopPropagation();
+      return;
+    }
+
+    // Notifiy all radio buttons with the same name to un-check.
+    this.radioDispatcher.notify(this.name);
+
+    this.checked = true;
+
+    if (isPresent(this.radioGroup)) {
+      this.radioGroup.updateValue(this.value, this.id);
+    }
+  }
+
+  /** Handles pressing the space key to select this focused radio button. */
+  onKeydown(event: KeyboardEvent) {
+    if (event.keyCode == KEY_SPACE) {
+      event.preventDefault();
+      this.select(event);
+    }
   }
 }

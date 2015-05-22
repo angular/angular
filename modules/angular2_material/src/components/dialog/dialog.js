@@ -4,7 +4,7 @@ import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/as
 import {isPresent, Type} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {MouseEvent, KeyboardEvent} from 'angular2/src/facade/browser';
-import {KEY_ESC} from 'angular2_material/src/core/constants'
+import {KEY_ESC} from 'angular2_material/src/core/constants';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';

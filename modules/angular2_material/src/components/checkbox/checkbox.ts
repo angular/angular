@@ -1,20 +1,13 @@
-import {Component} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
-import {Attribute} from 'angular2/src/core/annotations_impl/di';
+import {Component, View, Attribute} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
-import {KEY_SPACE} from 'angular2_material/src/core/constants'
+import {KEY_SPACE} from 'angular2_material/src/core/constants';
 import {KeyboardEvent} from 'angular2/src/facade/browser';
 import {NumberWrapper} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'md-checkbox',
-  properties: {
-    'checked': 'checked',
-    'disabled': 'disabled'
-  },
-  hostListeners: {
-    'keydown': 'onKeydown($event)'
-  },
+  properties: {'checked': 'checked', 'disabled': 'disabled'},
+  hostListeners: {'keydown': 'onKeydown($event)'},
   hostProperties: {
     'tabindex': 'tabindex',
     'role': 'attr.role',
@@ -22,10 +15,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
     'disabled': 'attr.aria-disabled'
   }
 })
-@View({
-  templateUrl: 'angular2_material/src/components/checkbox/checkbox.html',
-  directives: []
-})
+@View({templateUrl: 'angular2_material/src/components/checkbox/checkbox.html', directives: []})
 export class MdCheckbox {
   /** Whether this checkbox is checked. */
   checked: boolean;
@@ -39,7 +29,7 @@ export class MdCheckbox {
   /** Setter for tabindex */
   tabindex: number;
 
-  constructor(@Attribute('tabindex') tabindex: String) {
+  constructor(@Attribute('tabindex') tabindex: string) {
     this.role = 'checkbox';
     this.checked = false;
     this.tabindex = isPresent(tabindex) ? NumberWrapper.parseInt(tabindex, 10) : 0;
