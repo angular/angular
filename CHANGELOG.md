@@ -1,3 +1,31 @@
+<a name"2.0.0-alpha.25"></a>
+### 2.0.0-alpha.25 (2015-05-21)
+
+
+#### Bug Fixes
+
+* don't call onAllChangesDone on checkNoChanges ([a664f5a6](https://github.com/angular/angular/commit/a664f5a6))
+* **XHRImpl:** fix errors, add a spec ([91ccc9af](https://github.com/angular/angular/commit/91ccc9af), closes [#1715](https://github.com/angular/angular/issues/1715))
+* **browser:** template elements should have content imported instead of the element itself. ([c9ab8e4b](https://github.com/angular/angular/commit/c9ab8e4b))
+* **di:** changed host and view injector to respect visibility ([705ee46f](https://github.com/angular/angular/commit/705ee46f))
+* **element_injector:**
+  * fixed element injector to inject view dependencies into its components ([b6b52e62](https://github.com/angular/angular/commit/b6b52e62))
+  * fixed element injector to resolve dependencies of regular services ([28c2b8f4](https://github.com/angular/angular/commit/28c2b8f4))
+* **forms:** changed forms to create only one value accessor instead of always creating Defau ([30c3e5a8](https://github.com/angular/angular/commit/30c3e5a8))
+* **gulp:** continue watching when tasks throw ([ac28ac32](https://github.com/angular/angular/commit/ac28ac32), closes [#1915](https://github.com/angular/angular/issues/1915))
+* **router:** router link should navigate to non-base Url. ([c4528321](https://github.com/angular/angular/commit/c4528321))
+* **test_lib:** fixes nested beforeEach. ([826af401](https://github.com/angular/angular/commit/826af401))
+
+
+#### Features
+
+* **CD:** add support for === and !== ([0ae89ac0](https://github.com/angular/angular/commit/0ae89ac0))
+* **PromisePipe:** remove ref onDestroy ([4afd2b41](https://github.com/angular/angular/commit/4afd2b41))
+* **di:** changed toFactory to support dependency annotations ([f210c41c](https://github.com/angular/angular/commit/f210c41c))
+* **forms:** migrated forms to typescript ([00c3693d](https://github.com/angular/angular/commit/00c3693d))
+* **injector:** support forwardRef in toAlias ([fed86fc8](https://github.com/angular/angular/commit/fed86fc8))
+
+
 <a name"2.0.0-alpha.24"></a>
 ### 2.0.0-alpha.24 (2015-05-19)
 
