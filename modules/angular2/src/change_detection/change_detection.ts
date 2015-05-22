@@ -115,8 +115,8 @@ export class DynamicChangeDetection extends ChangeDetection {
 /**
  * Implements faster change detection, by generating source code.
  *
- * This requires `eval()`. For change detection that does not require `eval()`, see {@link
- *DynamicChangeDetection}.
+ * This requires `eval()`. For change detection that does not require `eval()`, see
+ * {@link DynamicChangeDetection}.
  *
  * @exportedAs angular2/change_detection
  */
