@@ -65,7 +65,7 @@ class DiffingPluginWrapper implements BroccoliTree {
       let firstRun = !this.initialized;
       this.init();
 
-      let diffResult = this.treeDiffer.diffTree();
+      let diffResult = this.treeDiffer.diffTree(this.inputPath);
       diffResult.log(!firstRun);
 
       var rebuildPromise = this.wrappedPlugin.rebuild(diffResult);
@@ -94,7 +94,7 @@ class DiffingPluginWrapper implements BroccoliTree {
       let includeExtensions = this.pluginClass.includeExtensions || [];
       let excludeExtensions = this.pluginClass.excludeExtensions || [];
       this.initialized = true;
-      this.treeDiffer = new TreeDiffer(this.inputPath, includeExtensions, excludeExtensions);
+      this.treeDiffer = new TreeDiffer(includeExtensions, excludeExtensions);
       this.wrappedPlugin =
           new this.pluginClass(this.inputPath, this.cachePath, this.wrappedPluginArguments[1]);
     }
