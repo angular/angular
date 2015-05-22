@@ -797,7 +797,7 @@ gulp.task('bundle.js.sfx.dev.deps', ['bundle.js.sfx.dev'], function() {
       .pipe(gulp.dest('dist/bundle'));
 });
 
-gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps']);
+gulp.task('bundle.js.deps', ['bundle.js.prod.deps', 'bundle.js.dev.deps', 'bundle.js.min.deps', 'bundle.js.sfx.dev.deps', 'router.bundle.js.dev']);
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundle.js.deps']);
 
