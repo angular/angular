@@ -1,8 +1,6 @@
 import {Directive} from 'angular2/angular2';
 
-@Directive({
-  selector: '[md-theme]'
-})
+@Directive({selector: '[md-theme]'})
 export class MdTheme {
   color: string;
 

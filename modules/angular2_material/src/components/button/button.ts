@@ -1,5 +1,4 @@
-import {Component, onChange} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component, View, onChange} from 'angular2/angular2';
 import {isPresent} from 'angular2/src/facade/lang';
 
 
@@ -12,16 +11,12 @@ export class MdButton {
 
 @Component({
   selector: '[md-button][href]',
-  properties: {
-    'disabled': 'disabled'
-  },
+  properties: {'disabled': 'disabled'},
   hostListeners: {'click': 'onClick($event)'},
   hostProperties: {'tabIndex': 'tabIndex'},
   lifecycle: [onChange]
 })
-@View({
-  templateUrl: 'angular2_material/src/components/button/button.html'
-})
+@View({templateUrl: 'angular2_material/src/components/button/button.html'})
 export class MdAnchor {
   tabIndex: number;
 
