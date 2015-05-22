@@ -11,18 +11,56 @@ import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
 
+/// Checks the `.ng_deps.dart` file represented by `entryPoint` and
+/// determines whether it is necessary to the functioning of the Angular 2
+/// Dart app.
+///
+/// An `.ng_deps.dart` file is not necessary if:
+/// 1. It does not register any `@Injectable` types with the system.
+/// 2. It does not import any libraries whose `.ng_deps.dart` files register
+///    any `@Injectable` types with the system.
+///
+/// Since `@Directive` and `@Component` inherit from `@Injectable`, we know
+/// we will not miss processing any classes annotated with those tags.
+Future<bool> isNecessary(AssetReader reader, AssetId entryPoint) async {
+  var parser = new Parser(reader);
+  NgDeps ngDeps = await parser.parse(entryPoint);
+
+  if (ngDeps.registeredTypes.isNotEmpty) return true;
+
+  // We do not register any @Injectables, do we call any dependencies?
+  var linkedDepsMap =
+      await _processNgImports(reader, entryPoint, _getSortedDeps(ngDeps));
+  return !linkedDepsMap.isEmpty;
+}
+
+/// Modifies the `.ng_deps.dart` file represented by `entryPoint` to call its
+/// dependencies associated `initReflector` methods.
+///
+/// For example, if entry_point.ng_deps.dart imports dependency.dart, this
+/// will check if dependency.ng_deps.dart exists. If it does, we add:
+///
+/// ```
+/// import 'dependency.ng_deps.dart' as i0;
+/// ...
+/// void setupReflection(reflector) {
+///   ...
+///   i0.initReflector(reflector);
+/// }
+/// ```
 Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
   var parser = new Parser(reader);
   NgDeps ngDeps = await parser.parse(entryPoint);
+
   if (ngDeps == null) return null;
 
-  var allDeps = <UriBasedDirective>[]
-    ..addAll(ngDeps.imports)
-    ..addAll(ngDeps.exports)
-    ..sort((a, b) => a.end.compareTo(b.end));
+  var allDeps = _getSortedDeps(ngDeps);
   var linkedDepsMap = await _processNgImports(reader, entryPoint, allDeps);
 
-  if (linkedDepsMap.isEmpty) return ngDeps.code;
+  if (linkedDepsMap.isEmpty) {
+    // We are not calling `initReflector` on any other libraries.
+    return ngDeps.code;
+  }
 
   var importBuf = new StringBuffer();
   var declarationBuf = new StringBuffer();
@@ -47,6 +85,15 @@ Future<String> linkNgDeps(AssetReader reader, AssetId entryPoint) async {
       '${code.substring(codeIdx, declarationSeamIdx)}'
       '$declarationBuf'
       '${code.substring(declarationSeamIdx)}';
+}
+
+/// All `import`s and `export`s in `ngDeps` sorted by order of appearance in
+/// the file.
+List<UriBasedDirective> _getSortedDeps(NgDeps ngDeps) {
+  return <UriBasedDirective>[]
+    ..addAll(ngDeps.imports)
+    ..addAll(ngDeps.exports)
+    ..sort((a, b) => a.end.compareTo(b.end));
 }
 
 String _toDepsUri(String importUri) =>

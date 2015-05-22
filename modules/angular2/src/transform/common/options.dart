@@ -3,6 +3,7 @@ library angular2.transform.common.options;
 import 'annotation_matcher.dart';
 import 'mirror_mode.dart';
 
+const EMPTY_DEPS_REMOVAL_ROUNDS = 5;
 const ENTRY_POINT_PARAM = 'entry_points';
 const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
 const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';

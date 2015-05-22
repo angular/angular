@@ -24,11 +24,15 @@ class AngularTransformerGroup extends TransformerGroup {
   factory AngularTransformerGroup(TransformerOptions options) {
     var phases = [
       [new ReflectionRemover(options)],
-      [new DirectiveProcessor(options)],
+      [new DirectiveProcessor(options)]
+    ];
+    phases.addAll(new List.generate(
+        EMPTY_DEPS_REMOVAL_ROUNDS, (_) => [new EmptyNgDepsRemover()]));
+    phases.addAll([
       [new DirectiveLinker(), new DirectiveMetadataExtractor()],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)]
-    ];
+    ]);
     return new AngularTransformerGroup._(phases);
   }
 

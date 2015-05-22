@@ -22,9 +22,11 @@ class DiTransformerGroup extends TransformerGroup {
   factory DiTransformerGroup(TransformerOptions options) {
     var phases = [
       [new ReflectionRemover(options)],
-      [new DirectiveProcessor(null)],
-      [new DirectiveLinker()]
+      [new DirectiveProcessor(null)]
     ];
+    phases.addAll(new List.generate(
+        EMPTY_DEPS_REMOVAL_ROUNDS, (_) => [new EmptyNgDepsRemover()]));
+    phases.add([new DirectiveLinker()]);
     return new DiTransformerGroup._(phases);
   }
 

@@ -50,13 +50,18 @@ void _testNgDeps(String name, String inputPath,
       reader.addAsset(assetId, await reader.readAsString(inputId));
       inputId = assetId;
     }
-    var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var output = formatter
-        .format(await createNgDeps(reader, inputId, annotationMatcher));
     var expectedPath = path.join(path.dirname(inputPath), 'expected',
         path.basename(inputPath).replaceFirst('.dart', '.ng_deps.dart'));
     var expectedId = _assetIdForPath(expectedPath);
-    expect(output).toEqual(await reader.readAsString(expectedId));
+
+    var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
+    var output = await createNgDeps(reader, inputId, annotationMatcher);
+    if (output == null) {
+      expect(await reader.hasInput(expectedId)).toBeFalse();
+    } else {
+      expect(formatter.format(output))
+          .toEqual(await reader.readAsString(expectedId));
+    }
   });
 }
 
