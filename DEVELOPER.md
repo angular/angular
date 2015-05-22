@@ -197,21 +197,34 @@ Angular specific command line options when running protractor (e.g. force gc, ..
 
 ## Formatting
 
-We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code style for our TypeScript code. This allows us to focus our code reviews more on the content, and less on style nit-picking. It also lets us encode our style guide in the `.clang-format` file in the repository, allowing many tools and editors to share our settings.
+We use [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to automatically enforce code style for our TypeScript code.
+This allows us to focus our code reviews more on the content, and less on style nit-picking.
+It also lets us encode our style guide in the `.clang-format` file in the repository,
+allowing many tools and editors to share our settings.
 
 To check the formatting of your code, run
 
     gulp check-format
 
-Note that the continuous build on Travis runs `gulp enforce-format`. Unlike the `check-format` task, this will actually fail the build if files aren't formatted according to the style guide.
+Note that the continuous build on Travis runs `gulp enforce-format`.
+Unlike the `check-format` task, this will actually fail the build if files aren't formatted according to the style guide.
 
-Your life will be easier if you include the formatter in your standard workflow. Otherwise, you'll likely forget to check the formatting, and waste time waiting for a build on Travis that fails due to some whitespace difference.
+Your life will be easier if you include the formatter in your standard workflow.
+Otherwise, you'll likely forget to check the formatting,
+and waste time waiting for a build on Travis that fails due to some whitespace difference.
 
-* **git pre-commit hook** is available at [llvm.org](https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/git-clang-format). This will automatically format your delta regions when you commit a change. To install, first patch this file to add `.ts` to the `default_extensions` section. Then copy the file somewhere in your path, for example, `/usr/local/git/current/bin/git-clang-format`. Make sure it is executable. Then, in the angular repo, run
+* **git pre-commit hook** is available at
+[llvm.org](https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/git-clang-format).
+This will automatically format your delta regions when you commit a change.
+To install, first patch this file to add `.ts` to the `default_extensions` section.
+Then copy the file somewhere in your path, for example, `/usr/local/git/current/bin/git-clang-format`.
+Make sure it is executable. Then, in the angular repo, run
+
 ```
     $ echo -e '#!/bin/sh\nexec git clang-format' > .git/hooks/pre-commit
     $ chmod u+x !$
 ```
+
 * **WebStorm** can run clang-format on the current file.
   1. Under Preferences, open Tools > External Tools.
   1. Plus icon to Create Tool

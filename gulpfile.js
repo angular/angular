@@ -227,7 +227,8 @@ gulp.task('check-format', function() {
 
 gulp.task('enforce-format', function() {
   return doCheckFormat().on('warning', function(e) {
-    console.log("ERROR: Some files need formatting");
+    console.log("ERROR: You forgot to run clang-format on your change.");
+    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
     process.exit(1);
   });
 });
