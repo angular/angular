@@ -4,11 +4,11 @@ export {_global as global};
 export var Type = Function;
 export type Type = new (... args: any[]) => any;
 
-export class BaseException extends Error {
-  message;
+export class BaseException implements Error {
+  message: string;
   stack;
+  name: string;
   constructor(message?: string) {
-    super(message);
     this.message = message;
     this.stack = (<any>new Error()).stack;
   }
