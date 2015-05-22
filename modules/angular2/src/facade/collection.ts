@@ -38,6 +38,21 @@ var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
     return map;
   }
 })();
+var _clearValues: {(m: Map<any, any>)} = (function() {
+  if ((<any>(new Map()).keys()).next) {
+    return function _clearValues(m: Map<any, any>) {
+      var keyIterator = m.keys();
+      var k;
+      while (!((k = (<any>keyIterator).next()).done)) {
+        m.set(k.value, null);
+      }
+    };
+  } else {
+    return function _clearValuesWithForeEach(m: Map<any, any>) {
+      m.forEach((v, k) => { m.set(k, null); });
+    }
+  }
+})();
 
 export class MapWrapper {
   static create(): Map<any, any> { return new Map(); }
@@ -57,13 +72,7 @@ export class MapWrapper {
   static size(m: Map<any, any>) { return m.size; }
   static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clear(m: Map<any, any>) { m.clear(); }
-  static clearValues(m: Map<any, any>) {
-    var keyIterator = m.keys();
-    var k;
-    while (!((k = (<any>keyIterator).next()).done)) {
-      m.set(k.value, null);
-    }
-  }
+  static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable(m) { return m; }
   static keys<K>(m: Map<K, any>): List<K> { return m.keys(); }
   static values<V>(m: Map<any, V>): List<V> { return m.values(); }
