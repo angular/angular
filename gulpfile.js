@@ -418,12 +418,21 @@ gulp.task('!test.unit.js/karma-run', function(done) {
 });
 
 
-gulp.task('test.unit.dart', ['build/tree.dart'], function (done) {
+gulp.task('test.unit.dart', function (done) {
   runSequence(
+    'build/tree.dart',
+    'build/format.dart',
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run',
-    function() {
-      watch('modules/angular2/**', [
+    function(error) {
+      // if initial build failed (likely due to build or formatting step) then exit
+      // otherwise karma server doesn't start and we can't continue running properly
+      if (error) {
+        done(error);
+        return;
+      }
+
+      watch('modules/angular2/**', { ignoreInitial: true, log: watchLog }, [
         '!build/tree.dart',
         'build/format.dart',
         '!test.unit.dart/karma-run'
