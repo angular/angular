@@ -34,7 +34,19 @@ var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
+var shouldLog = require('./tools/build/logging');
 
+// Make it easy to quiet down portions of the build.
+// --logs=all -> log everything (This is the default)
+// --logs=quiet -> log nothing
+// --logs=<comma-separated-list> -> log listed items.
+//
+// Not all commands support optional logging, feel free
+// to add support by adding a new key to this list,
+// and toggling output from the command based on it.
+var logs = {
+  dartfmt: shouldLog('dartfmt')
+};
 
 // dynamic require in build.tools so we can bootstrap TypeScript compilation
 function throwToolsBuildMissingError() {
@@ -194,7 +206,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 
 gulp.task('build/format.dart', function() {
   return util.processToPromise(spawn(DART_SDK.DARTFMT, ['-w', CONFIG.dest.dart], {
-    stdio: 'inherit'
+    stdio: logs.dartfmt ? 'inherit' : ['ignore', 'ignore', 'inherit']
   }));
 });
 
