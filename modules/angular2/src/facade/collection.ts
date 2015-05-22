@@ -25,10 +25,23 @@ var createMapFromPairs: {(pairs: List<any>): Map<any, any>} = (function() {
     return map;
   }
 })();
+var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
+  try {
+    if (new Map(new Map())) {
+      return function createMapFromMap(m: Map<any, any>): Map<any, any> { return new Map(m); };
+    }
+  } catch (e) {
+  }
+  return function createMapAndPopulateFromMap(m: Map<any, any>): Map<any, any> {
+    var map = new Map();
+    m.forEach((v, k) => { map.set(k, v); });
+    return map;
+  }
+})();
 
 export class MapWrapper {
   static create(): Map<any, any> { return new Map(); }
-  static clone<K, V>(m: Map<K, V>): Map<K, V> { return new Map(m); }
+  static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
   static createFromStringMap(stringMap): Map<string, any> {
     var result = MapWrapper.create();
     for (var prop in stringMap) {
