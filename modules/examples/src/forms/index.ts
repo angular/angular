@@ -1,22 +1,22 @@
-import {bootstrap, NgIf, NgFor, EventEmitter} from 'angular2/angular2';
-import {FormBuilder, Validators, formDirectives, ControlGroup} from 'angular2/forms';
+import {bootstrap, NgIf, NgFor, EventEmitter, Component, View} from 'angular2/angular2';
+import {
+  FormBuilder,
+  Validators,
+  formDirectives,
+  ControlGroup,
+  Control,
+  ControlArray
+} from 'angular2/forms';
 
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {ObservableWrapper} from 'angular2/src/facade/async';
+import {print} from 'angular2/src/facade/lang';
 
 // HeaderFields renders the bound header control group. It can used as follows:
 //
 //   <survey-header [header]="header"></survey-header>
 //
 // This component is self-contained and can be tested in isolation.
-@Component({
-  selector: 'survey-header',
-  properties: {
-    "header" : "header"
-  }
-})
+@Component({selector: 'survey-header', properties: {"header": "header"}})
 @View({
   template: `
       <div [control-group]="header">
@@ -45,7 +45,7 @@ import {View} from 'angular2/src/core/annotations_impl/view';
   directives: [formDirectives, NgIf]
 })
 class HeaderFields {
-  header:ControlGroup;
+  header: ControlGroup;
 }
 
 
@@ -59,10 +59,7 @@ class HeaderFields {
 @Component({
   selector: 'survey-question',
   events: ['destroy'],
-  properties: {
-    "question" : "question",
-    "index" : "index"
-  }
+  properties: {"question": "question", "index": "index"}
 })
 @View({
   template: `
@@ -104,28 +101,23 @@ class HeaderFields {
   directives: [formDirectives, NgIf]
 })
 class SurveyQuestion {
-  question:ControlGroup;
-  index:number;
-  destroy:EventEmitter;
+  question: ControlGroup;
+  index: number;
+  destroy: EventEmitter;
 
-  constructor() {
-    this.destroy = new EventEmitter();
-  }
+  constructor() { this.destroy = new EventEmitter(); }
 
-  deleteQuestion() {
+  deleteQuestion(): void {
     // Invoking an injected event emitter will fire an event,
     // which in this case will result in calling `deleteQuestion(i)`
-    this.destroy.next(null);
+    ObservableWrapper.callNext(this.destroy, null);
   }
 }
 
 
 
 // SurveyBuilder is a form that allows you to create a survey.
-@Component({
-  selector: 'survey-builder-app',
-  appInjector: [FormBuilder]
-})
+@Component({selector: 'survey-builder-app', appInjector: [FormBuilder]})
 @View({
   template: `
     <h1>Create New Survey</h1>
@@ -147,33 +139,31 @@ class SurveyQuestion {
   directives: [formDirectives, NgFor, HeaderFields, SurveyQuestion]
 })
 class SurveyBuilder {
-  form:ControlGroup;
-  builder:FormBuilder;
+  form: ControlGroup;
 
-  constructor(b:FormBuilder) {
-    this.builder = b;
-    this.form = b.group({
-      "header" : b.group({
-        "title" :       ["", Validators.required],
-        "description" : ["", Validators.required],
-        "date" :        ""
+  constructor(public builder: FormBuilder) {
+    this.form = builder.group({
+      "header": builder.group({
+        "title": ["", Validators.required],
+        "description": ["", Validators.required],
+        "date": ""
       }),
-      "questions": b.array([])
+      "questions": builder.array([])
     });
   }
 
-  addQuestion() {
-    var newQuestion = this.builder.group({
-      "type":           ["", Validators.required],
-      "questionText":   ["", Validators.required],
-      "responseLength": [100, Validators.required]
-    }, {
-      // Optional controls can be dynamically added or removed from the form.
-      // Here, the responseLength field is optional and not included by default.
-      "optionals": {
-        "responseLength": false
-      }
-    });
+  addQuestion(): void {
+    var newQuestion: ControlGroup = this.builder.group(
+        {
+          "type": ["", Validators.required],
+          "questionText": ["", Validators.required],
+          "responseLength": [100, Validators.required]
+        },
+        {
+          // Optional controls can be dynamically added or removed from the form.
+          // Here, the responseLength field is optional and not included by default.
+          "optionals": {"responseLength": false}
+        });
 
     // Every Control has an observable of value changes. You can subscribe to this observable
     // to update the form, update the application model, etc.
@@ -181,20 +171,25 @@ class SurveyBuilder {
     // complex form interactions in a declarative fashion.
     //
     // We are disabling the responseLength control when the question type is checkbox.
-    newQuestion.controls.type.valueChanges.observer({
-      next: (v) => v == 'text' || v == 'textarea' ? newQuestion.include('responseLength') : newQuestion.exclude('responseLength')
-    });
+    var typeCtrl: Control = newQuestion.controls['type'];
 
-    this.form.controls.questions.push(newQuestion);
+    ObservableWrapper.subscribe(typeCtrl.valueChanges,
+                                (v) => v == 'text' || v == 'textarea' ?
+                                           newQuestion.include('responseLength') :
+                                           newQuestion.exclude('responseLength'));
+
+    (<ControlArray>this.form.controls['questions']).push(newQuestion);
   }
 
-  destroyQuestion(index:number) {
-    this.form.controls.questions.removeAt(index);
+  destroyQuestion(index: number): void {
+    (<ControlArray>this.form.controls['questions']).removeAt(index);
   }
 
-  submitForm() {
-    console.log("Submitting a form")
-    console.log("value", this.form.value, "valid", this.form.valid, "errors", this.form.errors);
+  submitForm(): void {
+    print('Submitting a form');
+    print(`"value: ${this.form.value}`);
+    print(` valid: $ { this.form.valid } `);
+    print(` errors: $ { this.form.errors }`);
   }
 }
 
