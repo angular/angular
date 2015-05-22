@@ -88,10 +88,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   static eventCallback(element, shouldSupportBubble, fullKey, handler, zone) {
-    return (event) => { var correctElement = shouldSupportBubble || event.target === element;
-    if (correctElement && KeyEventsPlugin.getEventFullKey(event) === fullKey) {
-      zone.run(() => handler(event));
-    }
-  };
-}
+    return (event) => {
+      var correctElement = shouldSupportBubble || event.target === element;
+      if (correctElement && KeyEventsPlugin.getEventFullKey(event) === fullKey) {
+        zone.run(() => handler(event));
+      }
+    };
+  }
 }

@@ -39,43 +39,45 @@ export class LifeCycle {
 
   constructor(exceptionHandler: ExceptionHandler, changeDetector: ChangeDetector = null,
               enforceNoNewChanges: boolean = false) {
-    this._errorHandler = (exception, stackTrace) => { exceptionHandler.call(exception, stackTrace);
-    throw exception;
-  };
-  this._changeDetector =
-      changeDetector;  // may be null when instantiated from application bootstrap
-  this._enforceNoNewChanges = enforceNoNewChanges;
-}
-
-/**
- * @private
- */
-registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
-  if (isPresent(changeDetector)) {
-    this._changeDetector = changeDetector;
+    this._errorHandler = (exception, stackTrace) => {
+      exceptionHandler.call(exception, stackTrace);
+      throw exception;
+    };
+    this._changeDetector =
+        changeDetector;  // may be null when instantiated from application bootstrap
+    this._enforceNoNewChanges = enforceNoNewChanges;
   }
 
-  zone.initCallbacks({onErrorHandler: this._errorHandler, onTurnDone: () => this.tick()});
-}
+  /**
+   * @private
+   */
+  registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
+    if (isPresent(changeDetector)) {
+      this._changeDetector = changeDetector;
+    }
 
-/**
- *  Invoke this method to explicitly process change detection and its side-effects.
- *
- *  In development mode, `tick()` also performs a second change detection cycle to ensure that no
- * further
- *  changes are detected. If additional changes are picked up during this second cycle, bindings in
- * the app have
- *  side-effects that cannot be resolved in a single change detection pass. In this case, Angular
- * throws an error,
- *  since an Angular application can only have one change detection pass during which all change
- * detection must
- *  complete.
- *
- */
-tick() {
-  this._changeDetector.detectChanges();
-  if (this._enforceNoNewChanges) {
-    this._changeDetector.checkNoChanges();
+    zone.initCallbacks({onErrorHandler: this._errorHandler, onTurnDone: () => this.tick()});
   }
-}
+
+  /**
+   *  Invoke this method to explicitly process change detection and its side-effects.
+   *
+   *  In development mode, `tick()` also performs a second change detection cycle to ensure that no
+   * further
+   *  changes are detected. If additional changes are picked up during this second cycle, bindings
+   * in
+   * the app have
+   *  side-effects that cannot be resolved in a single change detection pass. In this case, Angular
+   * throws an error,
+   *  since an Angular application can only have one change detection pass during which all change
+   * detection must
+   *  complete.
+   *
+   */
+  tick() {
+    this._changeDetector.detectChanges();
+    if (this._enforceNoNewChanges) {
+      this._changeDetector.checkNoChanges();
+    }
+  }
 }

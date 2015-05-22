@@ -13,12 +13,10 @@ export class Log {
   fn(value) {
     return (a1 = null, a2 = null, a3 = null, a4 = null, a5 = null) => {
       ListWrapper.push(this._result, value);
+    }
   }
-}
 
-result(): string {
-  return ListWrapper.join(this._result, "; ");
-}
+  result(): string { return ListWrapper.join(this._result, "; "); }
 }
 
 export function viewRootNodes(view): List</*node*/ any> {

@@ -36,97 +36,96 @@ export class CssSelector {
       if (isPresent(cssSel.notSelector) && isBlank(cssSel.element) &&
           ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
         cssSel.element = "*";
-      } ListWrapper.push(res, cssSel);
-  }
-  var cssSelector = new CssSelector();
-  var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
-  var match;
-  var current = cssSelector;
-  while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
-    if (isPresent(match[1])) {
-      if (isPresent(cssSelector.notSelector)) {
-        throw new BaseException('Nesting :not is not allowed in a selector');
       }
-      current.notSelector = new CssSelector();
-      current = current.notSelector;
-    }
-    if (isPresent(match[2])) {
-      current.setElement(match[2]);
-    }
-    if (isPresent(match[3])) {
-      current.addClassName(match[3]);
-    }
-    if (isPresent(match[4])) {
-      current.addAttribute(match[4], match[5]);
-    }
-    if (isPresent(match[6])) {
-      _addResult(results, cssSelector);
-      cssSelector = current = new CssSelector();
-    }
-  }
-  _addResult(results, cssSelector);
-  return results;
-}
-
-constructor() {
-  this.element = null;
-  this.classNames = ListWrapper.create();
-  this.attrs = ListWrapper.create();
-  this.notSelector = null;
-}
-
-isElementSelector(): boolean {
-  return isPresent(this.element) && ListWrapper.isEmpty(this.classNames) &&
-         ListWrapper.isEmpty(this.attrs) && isBlank(this.notSelector);
-}
-
-setElement(element: string = null) {
-  if (isPresent(element)) {
-    element = element.toLowerCase();
-  }
-  this.element = element;
-}
-
-addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
-  ListWrapper.push(this.attrs, name.toLowerCase());
-  if (isPresent(value)) {
-    value = value.toLowerCase();
-  } else {
-    value = _EMPTY_ATTR_VALUE;
-  }
-  ListWrapper.push(this.attrs, value);
-}
-
-addClassName(name: string) {
-  ListWrapper.push(this.classNames, name.toLowerCase());
-}
-
-toString(): string {
-  var res = '';
-  if (isPresent(this.element)) {
-    res += this.element;
-  }
-  if (isPresent(this.classNames)) {
-    for (var i = 0; i < this.classNames.length; i++) {
-      res += '.' + this.classNames[i];
-    }
-  }
-  if (isPresent(this.attrs)) {
-    for (var i = 0; i < this.attrs.length;) {
-      var attrName = this.attrs[i++];
-      var attrValue = this.attrs[i++];
-      res += '[' + attrName;
-      if (attrValue.length > 0) {
-        res += '=' + attrValue;
+      ListWrapper.push(res, cssSel);
+    };
+    var cssSelector = new CssSelector();
+    var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
+    var match;
+    var current = cssSelector;
+    while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
+      if (isPresent(match[1])) {
+        if (isPresent(cssSelector.notSelector)) {
+          throw new BaseException('Nesting :not is not allowed in a selector');
+        }
+        current.notSelector = new CssSelector();
+        current = current.notSelector;
       }
-      res += ']';
+      if (isPresent(match[2])) {
+        current.setElement(match[2]);
+      }
+      if (isPresent(match[3])) {
+        current.addClassName(match[3]);
+      }
+      if (isPresent(match[4])) {
+        current.addAttribute(match[4], match[5]);
+      }
+      if (isPresent(match[6])) {
+        _addResult(results, cssSelector);
+        cssSelector = current = new CssSelector();
+      }
     }
+    _addResult(results, cssSelector);
+    return results;
   }
-  if (isPresent(this.notSelector)) {
-    res += ":not(" + this.notSelector.toString() + ")";
+
+  constructor() {
+    this.element = null;
+    this.classNames = ListWrapper.create();
+    this.attrs = ListWrapper.create();
+    this.notSelector = null;
   }
-  return res;
-}
+
+  isElementSelector(): boolean {
+    return isPresent(this.element) && ListWrapper.isEmpty(this.classNames) &&
+           ListWrapper.isEmpty(this.attrs) && isBlank(this.notSelector);
+  }
+
+  setElement(element: string = null) {
+    if (isPresent(element)) {
+      element = element.toLowerCase();
+    }
+    this.element = element;
+  }
+
+  addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
+    ListWrapper.push(this.attrs, name.toLowerCase());
+    if (isPresent(value)) {
+      value = value.toLowerCase();
+    } else {
+      value = _EMPTY_ATTR_VALUE;
+    }
+    ListWrapper.push(this.attrs, value);
+  }
+
+  addClassName(name: string) { ListWrapper.push(this.classNames, name.toLowerCase()); }
+
+  toString(): string {
+    var res = '';
+    if (isPresent(this.element)) {
+      res += this.element;
+    }
+    if (isPresent(this.classNames)) {
+      for (var i = 0; i < this.classNames.length; i++) {
+        res += '.' + this.classNames[i];
+      }
+    }
+    if (isPresent(this.attrs)) {
+      for (var i = 0; i < this.attrs.length;) {
+        var attrName = this.attrs[i++];
+        var attrValue = this.attrs[i++];
+        res += '[' + attrName;
+        if (attrValue.length > 0) {
+          res += '=' + attrValue;
+        }
+        res += ']';
+      }
+    }
+    if (isPresent(this.notSelector)) {
+      res += ":not(" + this.notSelector.toString() + ")";
+    }
+    return res;
+  }
 }
 
 /**
