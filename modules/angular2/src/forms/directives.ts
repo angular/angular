@@ -1,5 +1,5 @@
-import {Directive, Ancestor} from 'angular2/src/core/annotations/decorators';
-import {Optional} from 'angular2/src/di/decorators';
+import {Directive, Ancestor} from 'angular2/annotations';
+import {Optional} from 'angular2/di';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {Renderer} from 'angular2/src/render/api';
 import {

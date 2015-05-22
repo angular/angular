@@ -10,5 +10,12 @@
  * used by Angular to resolve dependencies.
  *
  */
-export * from './src/core/annotations/annotations';
+
+/** decorator wrappers for all annotations. This is an empty file for dart. */
 export * from './src/core/annotations/decorators';
+
+/** raw annotation classes */
+export * from './src/core/annotations/annotations';
+export * from './src/core/annotations/view';
+export * from './src/core/annotations/visibility';
+export * from './src/core/annotations/di';
