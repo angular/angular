@@ -9,7 +9,7 @@
       placeholder="What needs to be done?"
       autofocus
       #newtodo
-      (keyup)="enterTodo($event, newtodo)">
+      (keyup.enter)="enterTodo($event, newtodo)">
   </header>
 
   <section id="main">
