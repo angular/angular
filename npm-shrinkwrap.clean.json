@@ -3934,7 +3934,7 @@
       }
     },
     "gulp-clang-format": {
-      "version": "1.0.12",
+      "version": "1.0.13",
       "dependencies": {
         "gulp-util": {
           "version": "3.0.4",
@@ -4112,7 +4112,7 @@
           }
         },
         "clang-format": {
-          "version": "1.0.12"
+          "version": "1.0.14"
         }
       }
     },

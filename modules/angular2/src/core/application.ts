@@ -89,7 +89,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     bind(appComponentType).toFactory((ref) => ref.instance, [appComponentRefToken]),
     bind(LifeCycle)
         .toFactory((exceptionHandler) => new LifeCycle(exceptionHandler, null, assertionsEnabled()),
-                       [ExceptionHandler]),
+                   [ExceptionHandler]),
     bind(EventManager)
         .toFactory(
             (ngZone) =>
@@ -142,15 +142,15 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
 function _createNgZone(givenReporter: Function): NgZone {
   var defaultErrorReporter = (exception, stackTrace) => {
     var longStackTrace = ListWrapper.join(stackTrace, "\n\n-----async gap-----\n");
-  DOM.logError(`${exception}\n\n${longStackTrace}`);
-  throw exception;
-};
+    DOM.logError(`${exception}\n\n${longStackTrace}`);
+    throw exception;
+  };
 
-var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
+  var reporter = isPresent(givenReporter) ? givenReporter : defaultErrorReporter;
 
-var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
-zone.initCallbacks({onErrorHandler: reporter});
-return zone;
+  var zone = new NgZone({enableLongStackTrace: assertionsEnabled()});
+  zone.initCallbacks({onErrorHandler: reporter});
+  return zone;
 }
 
 /**

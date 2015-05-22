@@ -32,6 +32,37 @@ function _lookupControl(groupDirective: ControlGroupDirective, controlOrName: an
   return control;
 }
 
+
+/**
+ * The default accessor for writing a value and listening to changes that is used by a {@link
+ * Control} directive.
+ *
+ * This is the default strategy that Angular uses when no other accessor is applied.
+ *
+ *  # Example
+ *  ```
+ *  <input type="text" [control]="loginControl">
+ *  ```
+ *
+ * @exportedAs angular2/forms
+ */
+@Directive({
+  selector: '[control]',
+  hostListeners:
+      {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
+  hostProperties: {'value': 'value'}
+})
+export class DefaultValueAccessor {
+  value;
+  onChange: Function;
+
+  constructor() {
+    this.onChange = (_) => {};
+  }
+
+  writeValue(value) { this.value = value }
+}
+
 /**
  * Binds a control group to a DOM element.
  *
@@ -142,9 +173,11 @@ export class ControlDirective {
 
   validator: Function;
 
-  constructor(@Optional() @Ancestor() groupDirective: ControlGroupDirective) {
+  constructor(@Optional() @Ancestor() groupDirective: ControlGroupDirective,
+              valueAccessor: DefaultValueAccessor) {
     this._groupDirective = groupDirective;
     this._controlOrName = null;
+    this.valueAccessor = valueAccessor;
     this.validator = Validators.nullValidator;
   }
 
@@ -158,10 +191,6 @@ export class ControlDirective {
     var c = this._control();
     c.validator = Validators.compose([c.validator, this.validator]);
 
-    if (isBlank(this.valueAccessor)) {
-      throw new BaseException(`Cannot find value accessor for control "${controlOrName}"`);
-    }
-
     this._updateDomValue();
     this._setUpUpdateControlValue();
   }
@@ -173,75 +202,6 @@ export class ControlDirective {
   }
 
   _control() { return _lookupControl(this._groupDirective, this._controlOrName); }
-}
-
-/**
- * The default accessor for writing a value and listening to changes that is used by a {@link
-  * Control} directive.
- *
- * This is the default strategy that Angular uses when no other accessor is applied.
- *
- *  # Example
- *  ```
- *  <input type="text" [control]="loginControl">
- *  ```
- *
- * @exportedAs angular2/forms
- */
-@Directive({
-  selector: 'input:not([type=checkbox])[control],textarea[control]',
-  hostListeners:
-      {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
-  hostProperties: {'value': 'value'}
-})
-export class DefaultValueAccessor {
-  value = null;
-  onChange: Function;
-
-  constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
-    this.onChange = (_) => {};
-    cd.valueAccessor = this;
-  }
-
-  writeValue(value) {
-    this._renderer.setElementProperty(this._elementRef.parentView.render,
-                                      this._elementRef.boundElementIndex, 'value', value)
-  }
-}
-
-/**
- * The accessor for writing a value and listening to changes that is used by a {@link
-  * Control} directive.
- *
- * This is the default strategy that Angular uses when no other accessor is applied.
- *
- *  # Example
- *  ```
- *  <input type="text" [control]="loginControl">
- *  ```
- *
- * @exportedAs angular2/forms
- */
-@Directive({
-  selector: 'select[control]',
-  hostListeners:
-      {'change': 'onChange($event.target.value)', 'input': 'onChange($event.target.value)'},
-  hostProperties: {'value': 'value'}
-})
-export class SelectControlValueAccessor {
-  value = null;
-  onChange: Function;
-
-  constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
-    this.onChange = (_) => {};
-    this.value = '';
-    cd.valueAccessor = this;
-  }
-
-  writeValue(value) {
-    this._renderer.setElementProperty(this._elementRef.parentView.render,
-                                      this._elementRef.boundElementIndex, 'value', value)
-  }
 }
 
 /**
@@ -261,12 +221,17 @@ export class SelectControlValueAccessor {
   hostProperties: {'checked': 'checked'}
 })
 export class CheckboxControlValueAccessor {
+  _elementRef: ElementRef;
+  _renderer: Renderer;
+
   checked: boolean;
   onChange: Function;
 
-  constructor(cd: ControlDirective, private _elementRef: ElementRef, private _renderer: Renderer) {
+  constructor(cd: ControlDirective, elementRef: ElementRef, renderer: Renderer) {
     this.onChange = (_) => {};
-    cd.valueAccessor = this;
+    this._elementRef = elementRef;
+    this._renderer = renderer;
+    cd.valueAccessor = this;  // ControlDirective should inject CheckboxControlDirective
   }
 
   writeValue(value) {
@@ -283,10 +248,5 @@ export class CheckboxControlValueAccessor {
  *
  * @exportedAs angular2/forms
  */
-export const formDirectives: List<Type> = CONST_EXPR([
-  ControlGroupDirective,
-  ControlDirective,
-  CheckboxControlValueAccessor,
-  DefaultValueAccessor,
-  SelectControlValueAccessor
-]);
+export const formDirectives: List<Type> = CONST_EXPR(
+    [ControlGroupDirective, ControlDirective, CheckboxControlValueAccessor, DefaultValueAccessor]);
