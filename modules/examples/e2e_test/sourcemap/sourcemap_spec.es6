@@ -37,12 +37,12 @@ describe('sourcemaps', function () {
       });
 
       var finalMapData = fs.readFileSync(
-          'dist/js/prod/es6/examples/src/sourcemap/index.map');
+          'dist/js/prod/es6/examples/src/sourcemap/index.es6.map');
       var finalDecoder = new sourceMap.SourceMapConsumer(JSON.parse(finalMapData));
 
       var finalPosition = finalDecoder.originalPositionFor(originalPosition);
 
-      var sourceCodeLines = fs.readFileSync('modules/examples/src/sourcemap/index.js',
+      var sourceCodeLines = fs.readFileSync('modules/examples/src/sourcemap/index.ts',
           {encoding: 'UTF-8'}).split('\n');
       expect(sourceCodeLines[finalPosition.line - 1])
           .toMatch(/throw new BaseException\(\'Sourcemap test\'\)/);
