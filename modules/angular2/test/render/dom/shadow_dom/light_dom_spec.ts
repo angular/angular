@@ -7,7 +7,8 @@ import {
   iit,
   SpyObject,
   el,
-  proxy
+  proxy,
+  stringifyElement
 } from 'angular2/test_lib';
 import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
@@ -228,5 +229,5 @@ export function main() {
 
 function toHtml(nodes) {
   if (isBlank(nodes)) return [];
-  return ListWrapper.map(nodes, DOM.getOuterHTML);
+  return ListWrapper.map(nodes, stringifyElement);
 }

@@ -13,7 +13,8 @@ import {
   beforeEachBindings,
   it,
   xit,
-  containsRegexp
+  containsRegexp,
+  stringifyElement
 } from 'angular2/test_lib';
 
 
@@ -724,9 +725,9 @@ export function main() {
                    var updateHost = injector.get(DirectiveUpdatingHostActions);
 
                    ObservableWrapper.subscribe(updateHost.setAttr, (_) => {
-                     expect(DOM.getOuterHTML(domElement))
+                     expect(stringifyElement(domElement))
                          .toEqual(
-                             '<div update-host-actions="" class="ng-binding" key="value"></div>');
+                             '<div class="ng-binding" key="value" update-host-actions=""></div>');
                      async.done();
                    });
 

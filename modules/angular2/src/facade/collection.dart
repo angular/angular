@@ -172,8 +172,12 @@ class ListWrapper {
     l.removeRange(from, to);
     return sub;
   }
-  static void sort(List l, compareFn(a, b)) {
-    l.sort(compareFn);
+  static void sort(List l, [compareFn(a, b) = null]) {
+    if (compareFn == null) {
+      l.sort();
+    } else {
+      l.sort(compareFn);
+    }
   }
 
   // JS splice, slice, fill functions can take start < 0 which indicates a position relative to
