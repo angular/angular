@@ -1,47 +1,31 @@
 import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
 import {Reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
-import {CONST} from 'angular2/src/facade/lang';
-
-class Annotation {
-  value;
-
-  @CONST()
-  constructor(value) {
-    this.value = value;
-  }
-}
+import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
 
 class AType {
   value;
 
-  constructor(value){
-    this.value = value;
-  }
+  constructor(value) { this.value = value; }
 }
 
-@Annotation('class')
-class ClassWithAnnotations {
+@ClassDecorator('class')
+class ClassWithDecorators {
   a;
   b;
 
-  constructor(@Annotation("a") a:AType, @Annotation("b") b:AType) {
+  constructor(@ParamDecorator("a") a: AType, @ParamDecorator("b") b: AType) {
     this.a = a;
     this.b = b;
   }
 }
 
-class ClassWithoutAnnotations {
-  constructor(a,b){}
+class ClassWithoutDecorators {
+  constructor(a, b) {}
 }
 
 class TestObjWith11Args {
-  constructor(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11) {
-  }
-}
-
-@Annotation('func')
-function testFunc(@Annotation("a") a:AType, @Annotation("b") b:AType) {
+  constructor(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {}
 }
 
 class TestObj {
@@ -53,18 +37,14 @@ class TestObj {
     this.b = b;
   }
 
-  identity(arg) {
-    return arg;
-  }
+  identity(arg) { return arg; }
 }
 
 export function main() {
   describe('Reflector', () => {
     var reflector;
 
-    beforeEach(() => {
-      reflector = new Reflector(new ReflectionCapabilities());
-    });
+    beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
 
     describe("factory", () => {
       it("should create a factory for the given type", () => {
@@ -75,55 +55,46 @@ export function main() {
       });
 
       it("should throw when more than 10 arguments", () => {
-        expect(() => reflector.factory(TestObjWith11Args)(1,2,3,4,5,6,7,8,9,10,11)).toThrowError();
+        expect(() => reflector.factory(TestObjWith11Args)(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
+            .toThrowError();
       });
 
       it("should return a registered factory if available", () => {
-        reflector.registerType(TestObj, {"factory" : () => "fake"});
+        reflector.registerType(TestObj, {"factory": () => "fake"});
         expect(reflector.factory(TestObj)()).toEqual("fake");
       });
     });
 
     describe("parameters", () => {
       it("should return an array of parameters for a type", () => {
-        var p = reflector.parameters(ClassWithAnnotations);
-        expect(p).toEqual([[AType, new Annotation('a')], [AType, new Annotation('b')]]);
-      });
-
-      it("should return an array of parameters for a function", () => {
-        var p = reflector.parameters(testFunc);
-        expect(p).toEqual([[AType, new Annotation('a')], [AType, new Annotation('b')]]);
+        var p = reflector.parameters(ClassWithDecorators);
+        expect(p).toEqual([[AType, paramDecorator('a')], [AType, paramDecorator('b')]]);
       });
 
       it("should work for a class without annotations", () => {
-        var p = reflector.parameters(ClassWithoutAnnotations);
+        var p = reflector.parameters(ClassWithoutDecorators);
         expect(p.length).toEqual(2);
       });
 
       it("should return registered parameters if available", () => {
-        reflector.registerType(TestObj, {"parameters" : [1,2]});
-        expect(reflector.parameters(TestObj)).toEqual([1,2]);
+        reflector.registerType(TestObj, {"parameters": [1, 2]});
+        expect(reflector.parameters(TestObj)).toEqual([1, 2]);
       });
     });
 
     describe("annotations", () => {
       it("should return an array of annotations for a type", () => {
-        var p = reflector.annotations(ClassWithAnnotations);
-        expect(p).toEqual([new Annotation('class')]);
-      });
-
-      it("should return an array of annotations for a function", () => {
-        var p = reflector.annotations(testFunc);
-        expect(p).toEqual([new Annotation('func')]);
+        var p = reflector.annotations(ClassWithDecorators);
+        expect(p).toEqual([classDecorator('class')]);
       });
 
       it("should return registered annotations if available", () => {
-        reflector.registerType(TestObj, {"annotations" : [1,2]});
-        expect(reflector.annotations(TestObj)).toEqual([1,2]);
+        reflector.registerType(TestObj, {"annotations": [1, 2]});
+        expect(reflector.annotations(TestObj)).toEqual([1, 2]);
       });
 
       it("should work for a clas without annotations", () => {
-        var p = reflector.annotations(ClassWithoutAnnotations);
+        var p = reflector.annotations(ClassWithoutDecorators);
         expect(p).toEqual([]);
       });
     });
@@ -135,7 +106,7 @@ export function main() {
       });
 
       it("should return a registered getter if available", () => {
-        reflector.registerGetters({"abc" : (obj) => "fake"});
+        reflector.registerGetters({"abc": (obj) => "fake"});
         expect(reflector.getter("abc")("anything")).toEqual("fake");
       });
     });
@@ -150,7 +121,7 @@ export function main() {
 
       it("should return a registered setter if available", () => {
         var updateMe;
-        reflector.registerSetters({"abc" : (obj, value) => {updateMe = value;}});
+        reflector.registerSetters({"abc": (obj, value) => { updateMe = value; }});
         reflector.setter("abc")("anything", "fake");
 
         expect(updateMe).toEqual("fake");
@@ -165,7 +136,7 @@ export function main() {
       });
 
       it("should return a registered method if available", () => {
-        reflector.registerMethods({"abc" : (obj, args) => args});
+        reflector.registerMethods({"abc": (obj, args) => args});
         expect(reflector.method("abc")("anything", ["fake"])).toEqual(['fake']);
       });
     });
