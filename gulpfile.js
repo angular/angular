@@ -335,10 +335,7 @@ function createDocsTasks(publicBuild) {
 
   gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
   gulp.task(taskPrefix + '/watch', function() {
-    return watch('docs/app/**/*', {
-      ignoreInitial: false,
-      log: watchLog
-    }, [taskPrefix + '/app']);
+    return watch('docs/app/**/*', [taskPrefix + '/app']);
   });
 
   gulp.task(taskPrefix + '/test', function (done) {
@@ -439,7 +436,7 @@ gulp.task('test.unit.dart', function (done) {
         return;
       }
 
-      watch('modules/angular2/**', { ignoreInitial: true, log: watchLog }, [
+      watch('modules/angular2/**', { ignoreInitial: true }, [
         '!build/tree.dart',
         '!test.unit.dart/karma-run'
       ]);
@@ -488,7 +485,7 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
     'test.unit.cjs/ci'
   ];
 
-  watch('modules/**', { ignoreInitial: false, log: watchLog }, buildAndTest);
+  watch('modules/**', buildAndTest);
 });
 
 
@@ -506,10 +503,7 @@ gulp.task('test.unit.tools', ['build/clean.tools'],  function(done) {
     'test.unit.tools/ci'
   ];
 
-  watch(['tools/**', '!tools/**/test-fixtures/**'], {
-    ignoreInitial: false,
-    log: watchLog
-  }, buildAndTest);
+  watch(['tools/**', '!tools/**/test-fixtures/**'], buildAndTest);
 });
 
 
@@ -895,21 +889,3 @@ process.on('beforeExit', function() {
   beforeExitRan = true;
   gulp.start('cleanup.builder');
 });
-
-function watchLog(triggerCount) {
-  // Ignore initial event
-  if (!--triggerCount) return;
-
-  process.stdout.write([
-    '',
-    '==================================================',
-    ' WATCH TRIGGERED BY FILE CHANGE #' + triggerCount,
-    ' On: ' + prettyTime(),
-    '==================================================\n',
-  ].join('\n'));
-
-  function prettyTime() {
-    var now = new Date();
-    return now.toLocaleDateString() + " at " + now.toLocaleTimeString();
-  }
-}

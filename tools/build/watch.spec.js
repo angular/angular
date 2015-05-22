@@ -27,7 +27,7 @@ describe('watch()', function() {
 
   it('should fire callback once for events which occur within `delay` window', function() {
     var cb = jasmine.createSpy('callback');
-    watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+    watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('add', './$$fake_path/test.txt');
     timeout.flush(9);
@@ -61,7 +61,7 @@ describe('watch()', function() {
       expect(timeout.pending).toBe(1);
     }
 
-    var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     expect(timeout.pending).toBe(1);
@@ -81,7 +81,7 @@ describe('watch()', function() {
       done();
     }
 
-    var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     timeout.flush();
@@ -96,7 +96,7 @@ describe('watch()', function() {
 
   it('should cancel pending callback if FSWatcher is closed', function() {
     var cb = jasmine.createSpy('callback');
-    var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     expect(timeout.pending).toBe(1);
@@ -119,7 +119,7 @@ describe('watch()', function() {
       expect(timeout.pending).toBe(0);
     }
 
-    var watcher = watch('./$$fake_path/**/*', { delay: 10 }, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
     watcher._emit('change', './$$fake_path/test1.txt');
 
     timeout.flush(10);
