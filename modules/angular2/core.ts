@@ -9,9 +9,10 @@ export * from './src/core/annotations/view';
 export * from './src/core/application';
 export * from './src/core/application_tokens';
 export * from './src/core/annotations/di';
-export * from './src/core/compiler/query_list';
 
 export * from './src/core/compiler/compiler';
+export * from './src/core/compiler/interfaces';
+export * from './src/core/compiler/query_list';
 
 // TODO(tbosch): remove this once render migration is complete
 export * from './src/render/dom/compiler/template_loader';
