@@ -1,6 +1,6 @@
-import {List, ListWrapper} from 'angular2/src/facade/collection';
+import {List, ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
+import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 
 export class Log {
@@ -58,4 +58,46 @@ export function normalizeCSS(css: string): string {
   css = StringWrapper.replaceAllMapped(css, RegExpWrapper.create('\\[(.+)=([^"\\]]+)\\]'),
                                        (match) => `[${match[1]}="${match[2]}"]`);
   return css;
+}
+
+var _singleTagWhitelist = ['br', 'hr', 'input'];
+export function stringifyElement(el): string {
+  var result = '';
+  if (DOM.isElementNode(el)) {
+    var tagName = StringWrapper.toLowerCase(DOM.tagName(el));
+
+    // Opening tag
+    result += `<${tagName}`;
+
+    // Attributes in an ordered way
+    var attributeMap = DOM.attributeMap(el);
+    var keys = ListWrapper.create();
+    MapWrapper.forEach(attributeMap, (v, k) => { ListWrapper.push(keys, k); });
+    ListWrapper.sort(keys);
+    for (let i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var attValue = MapWrapper.get(attributeMap, key);
+      if (!isString(attValue)) {
+        result += ` ${key}`;
+      } else {
+        result += ` ${key}="${attValue}"`;
+      }
+    }
+    result += '>';
+
+    // Children
+    var children = DOM.childNodes(DOM.templateAwareRoot(el));
+    for (let j = 0; j < children.length; j++) {
+      result += stringifyElement(children[j]);
+    }
+
+    // Closing tag
+    if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
+      result += `</${tagName}>`;
+    }
+  } else {
+    result += DOM.getText(el);
+  }
+
+  return result;
 }
