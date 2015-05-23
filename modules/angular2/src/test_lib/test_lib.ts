@@ -11,7 +11,8 @@ import {createTestInjector, FunctionWithParamTokens, inject} from './test_inject
 
 export {inject} from './test_injector';
 
-export function proxy() {}
+export function proxy() {
+}
 
 var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
 
@@ -174,13 +175,13 @@ export function iit(name, fn) {
 // to the object :-(
 Map.prototype['jasmineToString'] =
     function() {
-      var m = this;
-      if (!m) {
-        return '' + m;
-      }
-      var res = [];
-      m.forEach((v, k) => { res.push(`${k}:${v}`); });
-      return `{ ${res.join(',')} }`;
+  var m = this;
+  if (!m) {
+    return '' + m;
+  }
+  var res = [];
+  m.forEach((v, k) => { res.push(`${k}:${v}`); });
+  return `{ ${res.join(',')} }`;
     }
 
     _global.beforeEach(() => {
@@ -191,84 +192,82 @@ Map.prototype['jasmineToString'] =
                     compare: (actual, expected) => {
                         return {pass: util.equals(actual, expected, [compareMap])};
                     }
-                };
+}
+;
 
-                function compareMap(actual, expected) {
-                    if (actual instanceof Map) {
-                        var pass = actual.size === expected.size;
-                        if (pass) {
-                            actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
-                        }
-                        return pass;
-                    } else {
-                        return undefined;
-                    }
-                }
-            },
+function compareMap(actual, expected) {
+  if (actual instanceof Map) {
+    var pass = actual.size === expected.size;
+    if (pass) {
+      actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
+    }
+    return pass;
+  } else {
+    return undefined;
+  }
+}
+}
+,
 
-            toBePromise: () => {
-                return {
-                    compare: function(actual, expectedClass) {
-                        var pass = typeof actual === 'object' && typeof actual.then === 'function';
-                        return {
-                            pass: pass,
-                            get message() { return 'Expected ' + actual + ' to be a promise'; }
-                        };
-                    }
-                };
-            },
+    toBePromise: () => {
+      return {
+        compare: function(actual, expectedClass) {
+          var pass = typeof actual === 'object' && typeof actual.then === 'function';
+          return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
+        }
+      };
+}
+,
 
-            toBeAnInstanceOf: () => {
-                return {
-                    compare: (actual, expectedClass) => {
-                        var pass = typeof actual === 'object' && actual instanceof expectedClass;
-                        return {
-                            pass: pass,
-                            get message() {
-                                return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
-                            }
-                        };
-                    }
-                };
-            },
+    toBeAnInstanceOf: () => {
+      return {compare: (actual, expectedClass) => {
+                           var pass = typeof actual === 'object' && actual instanceof expectedClass;
+return {
+  pass: pass,
+  get message() { return 'Expected ' + actual + ' to be an instance of ' + expectedClass; }
+};
+}
+}
+;
+}
+,
 
-            toHaveText: () => {
-                return {
-                    compare: function(actual, expectedText) {
-                        var actualText = elementText(actual);
-                        return {
-                            pass: actualText == expectedText,
-                            get message() {
-                                return 'Expected ' + actualText + ' to be equal to ' + expectedText;
-                            }
-                        };
-                    }
-                };
-            },
+    toHaveText: () => {
+      return {
+        compare: function(actual, expectedText) {
+          var actualText = elementText(actual);
+          return {
+            pass: actualText == expectedText,
+            get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
+          };
+        }
+      };
+}
+,
 
-            toImplement: () => {
-                return {
-                    compare: function(actualObject, expectedInterface) {
-                        var objProps = Object.keys(actualObject.constructor.prototype);
-                        var intProps = Object.keys(expectedInterface.prototype);
+    toImplement: () => {
+      return {
+        compare: function(actualObject, expectedInterface) {
+          var objProps = Object.keys(actualObject.constructor.prototype);
+          var intProps = Object.keys(expectedInterface.prototype);
 
-                        var missedMethods = [];
-                        intProps.forEach((k) => {
-                            if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
-                        });
+          var missedMethods = [];
+          intProps.forEach((k) => {
+            if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
+          });
 
-                        return {
-                            pass: missedMethods.length == 0,
-                            get message() {
-                                return 'Expected ' + actualObject + ' to have the following methods: ' +
-                                    missedMethods.join(", ");
-                            }
-                        };
-                    }
-                };
+          return {
+            pass: missedMethods.length == 0,
+            get message() {
+              return 'Expected ' + actualObject + ' to have the following methods: ' +
+                     missedMethods.join(", ");
             }
-        });
-    });
+          };
+        }
+      };
+}
+});
+});
 
 export interface GuinessCompatibleSpy extends jasmine.Spy {
   /** By chaining the spy with and.returnValue, all calls to the function will return a specific
@@ -283,21 +282,21 @@ export class SpyObject {
   constructor(type = null) {
     if (type) {
       for (let prop in type.prototype) {
-            if (type.prototype.hasOwnProperty(prop)) {
-                var m = null;
-                try {
-                    m = type.prototype[prop];
-                } catch (e) {
-                    // As we are creating spys for abstract classes,
-                    // these classes might have getters that throw when they are accessed.
-                    // As we are only auto creating spys for methods, this
-                    // should not matter.
-                }
-                if (typeof m === 'function') {
-                    this.spy(prop);
-                }
-            }
+        if (type.prototype.hasOwnProperty(prop)) {
+          var m = null;
+          try {
+            m = type.prototype[prop];
+          } catch (e) {
+            // As we are creating spys for abstract classes,
+            // these classes might have getters that throw when they are accessed.
+            // As we are only auto creating spys for methods, this
+            // should not matter.
+          }
+          if (typeof m === 'function') {
+            this.spy(prop);
+          }
         }
+      }
     }
   }
   spy(name) {
@@ -332,33 +331,31 @@ export class SpyObject {
 }
 
 function elementText(n) {
-  var hasNodes = (n) =>
-  {
-    var children = DOM.childNodes(n);
-    return children && children.length > 0;
-  }
+  var hasNodes = (n) => { var children = DOM.childNodes(n);
+  return children && children.length > 0;
+}
 
-  if (n instanceof Array) {
-    return n.map((nn) => elementText(nn)).join("");
-  }
+if (n instanceof Array) {
+  return n.map((nn) => elementText(nn)).join("");
+}
 
-  if (DOM.isCommentNode(n)) {
-    return '';
-  }
+if (DOM.isCommentNode(n)) {
+  return '';
+}
 
-  if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
-    return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
-  }
+if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
+  return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
+}
 
-  if (DOM.hasShadowRoot(n)) {
-    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
-  }
+if (DOM.hasShadowRoot(n)) {
+  return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
+}
 
-  if (hasNodes(n)) {
-    return elementText(DOM.childNodesAsList(n));
-  }
+if (hasNodes(n)) {
+  return elementText(DOM.childNodesAsList(n));
+}
 
-  return DOM.getText(n);
+return DOM.getText(n);
 }
 
 export function isInInnerZone(): boolean {
