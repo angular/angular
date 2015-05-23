@@ -1,3 +1,6 @@
+// Tun on full stack traces in errors to help debugging
+Error.stackTraceLimit=Infinity;
+
 // Use "register" extension from systemjs.
 // That's what Traceur outputs: `System.register()`.
 register(System);
