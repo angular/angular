@@ -9,6 +9,7 @@
   "license": "<%= packageJson.license %>",
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
+    "firefox-profile": "<%= packageJson.dependencies['firefox-profile'] %>",
     "rtts_assert": "<%= packageJson.version %>",
     "traceur": "<%= packageJson.dependencies.traceur %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>"

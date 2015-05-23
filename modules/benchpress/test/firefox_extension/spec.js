@@ -1,3 +1,25 @@
+var fs = require('fs');
+
+var validateFile = function() {
+  try {
+    var content = fs.readFileSync(browser.params.profileSavePath, 'utf8');
+    // TODO(hankduan): This check not very useful. Ideally we want to validate
+    // that the file contains all the events that we are looking for. Pending
+    // on data transformer. 
+    expect(content).toContain('forceGC');
+    // Delete file
+    fs.unlinkSync(browser.params.profileSavePath);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // If files doesn't exist
+      console.error('Error: firefox extension did not save profile JSON');
+    } else {
+      console.error('Error: ' + err);
+    }
+    throw err;
+  }
+};
+
 describe('firefox extension', function() {
   it ('should measure performance', function() {
     browser.sleep(3000); // wait for extension to load
@@ -22,6 +44,7 @@ describe('firefox extension', function() {
       console.log('stopped measuring perf');
     });
 
-    browser.sleep(3000); // wait for it to finish
+    // wait for it to finish, then validate file. 
+    browser.sleep(3000).then(validateFile); 
   })
 });
