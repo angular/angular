@@ -11,8 +11,7 @@ import {createTestInjector, FunctionWithParamTokens, inject} from './test_inject
 
 export {inject} from './test_injector';
 
-export function proxy() {
-}
+export function proxy() {}
 
 var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
 
