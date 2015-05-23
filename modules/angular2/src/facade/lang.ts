@@ -11,7 +11,7 @@ export class BaseException extends Error {
   constructor(message?: string) {
     super(message);
     this.message = message;
-    this.stack = (<any>new Error()).stack;
+    this.stack = (<any>new Error(message)).stack;
   }
 
   toString(): string { return this.message; }
