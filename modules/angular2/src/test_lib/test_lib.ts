@@ -7,14 +7,18 @@ import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {bind} from 'angular2/di';
 
-import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {
+  createTestInjector,
+  FunctionWithParamTokens,
+  inject
+} from './test_injector';
 
 export {inject} from './test_injector';
 
-export function proxy() {
-}
+export function proxy() {}
 
-var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
+var _global: jasmine.GlobalPolluter =
+    <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach = _global.afterEach;
 
@@ -64,7 +68,8 @@ class BeforeEachRunner {
   beforeEach(fn: FunctionWithParamTokens) { this._fns.push(fn); }
 
   run(injector) {
-    if (this._parent) this._parent.run(injector);
+    if (this._parent)
+      this._parent.run(injector);
     this._fns.forEach((fn) => fn.execute(injector));
   }
 }
@@ -73,7 +78,8 @@ class BeforeEachRunner {
 jsmBeforeEach(() => { testBindings = []; });
 
 function _describe(jsmFn, ... args) {
-  var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
+  var parentRunner =
+      runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
   var runner = new BeforeEachRunner(parentRunner);
   runnerStack.push(runner);
   var suite = jsmFn(... args);
@@ -81,9 +87,7 @@ function _describe(jsmFn, ... args) {
   return suite;
 }
 
-export function describe(... args) {
-  return _describe(jsmDescribe, ... args);
-}
+export function describe(... args) { return _describe(jsmDescribe, ... args); }
 
 export function ddescribe(... args) {
   return _describe(jsmDDescribe, ... args);
@@ -122,8 +126,9 @@ export function beforeEach(fn) {
 export function beforeEachBindings(fn) {
   jsmBeforeEach(() => {
     var bindings = fn();
-    if (!bindings) return;
-    testBindings = [... testBindings, ... bindings];
+    if (!bindings)
+      return;
+    testBindings = [... testBindings, ... bindings ];
   });
 }
 
@@ -136,13 +141,16 @@ function _it(jsmFn, name, fn) {
     var completerBinding =
         bind(AsyncTestCompleter)
             .toFactory(() => {
-              // Mark the test as async when an AsyncTestCompleter is injected in an it()
-              if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
+              // Mark the test as async when an AsyncTestCompleter is injected
+              // in an it()
+              if (!inIt)
+                throw new Error(
+                    'AsyncTestCompleter can only be injected in an "it()"');
               async = true;
               return new AsyncTestCompleter(done);
             });
 
-    var injector = createTestInjector([... testBindings, completerBinding]);
+    var injector = createTestInjector([... testBindings, completerBinding ]);
     runner.run(injector);
 
     if (!(fn instanceof FunctionWithParamTokens)) {
@@ -153,21 +161,16 @@ function _it(jsmFn, name, fn) {
     fn.execute(injector);
     inIt = false;
 
-    if (!async) done();
+    if (!async)
+      done();
   });
 }
 
-export function it(name, fn) {
-  return _it(jsmIt, name, fn);
-}
+export function it(name, fn) { return _it(jsmIt, name, fn); }
 
-export function xit(name, fn) {
-  return _it(jsmXIt, name, fn);
-}
+export function xit(name, fn) { return _it(jsmXIt, name, fn); }
 
-export function iit(name, fn) {
-  return _it(jsmIIt, name, fn);
-}
+export function iit(name, fn) { return _it(jsmIIt, name, fn); }
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.
@@ -187,10 +190,10 @@ Map.prototype['jasmineToString'] =
     _global.beforeEach(function() {
       jasmine.addMatchers({
         // Custom handler for Map as Jasmine does not support it yet
-        toEqual: function(util, customEqualityTesters) {
+        toEqual : function(util, customEqualityTesters) {
           return {
-            compare: function(actual, expected) {
-              return {pass: util.equals(actual, expected, [compareMap])};
+            compare : function(actual, expected) {
+              return {pass : util.equals(actual, expected, [compareMap])};
             }
           };
 
@@ -198,7 +201,9 @@ Map.prototype['jasmineToString'] =
             if (actual instanceof Map) {
               var pass = actual.size === expected.size;
               if (pass) {
-                actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
+                actual.forEach((v, k) => {
+                  pass = pass && util.equals(v, expected.get(k));
+                });
               }
               return pass;
             } else {
@@ -207,61 +212,69 @@ Map.prototype['jasmineToString'] =
           }
         },
 
-        toBePromise: function() {
+        toBePromise : function() {
           return {
-            compare: function(actual, expectedClass) {
-              var pass = typeof actual === 'object' && typeof actual.then === 'function';
+            compare : function(actual, expectedClass) {
+              var pass = typeof actual === 'object' &&
+                         typeof actual.then === 'function';
               return {
-                pass: pass,
-                get message() { return 'Expected ' + actual + ' to be a promise'; }
-              };
-            }
-          };
-        },
-
-        toBeAnInstanceOf: function() {
-          return {
-            compare: function(actual, expectedClass) {
-              var pass = typeof actual === 'object' && actual instanceof expectedClass;
-              return {
-                pass: pass,
+                pass : pass,
                 get message() {
-                  return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
+                  return 'Expected ' + actual + ' to be a promise';
                 }
               };
             }
           };
         },
 
-        toHaveText: function() {
+        toBeAnInstanceOf : function() {
           return {
-            compare: function(actual, expectedText) {
+            compare : function(actual, expectedClass) {
+              var pass = typeof actual === 'object' && actual instanceof
+                  expectedClass;
+              return {
+                pass : pass,
+                get message() {
+                  return 'Expected ' + actual + ' to be an instance of ' +
+                         expectedClass;
+                }
+              };
+            }
+          };
+        },
+
+        toHaveText : function() {
+          return {
+            compare : function(actual, expectedText) {
               var actualText = elementText(actual);
               return {
-                pass: actualText == expectedText,
+                pass : actualText == expectedText,
                 get message() {
-                  return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+                  return 'Expected ' + actualText + ' to be equal to ' +
+                         expectedText;
                 }
               };
             }
           };
         },
 
-        toImplement: function() {
+        toImplement : function() {
           return {
-            compare: function(actualObject, expectedInterface) {
+            compare : function(actualObject, expectedInterface) {
               var objProps = Object.keys(actualObject.constructor.prototype);
               var intProps = Object.keys(expectedInterface.prototype);
 
               var missedMethods = [];
               intProps.forEach((k) => {
-                if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
+                if (!actualObject.constructor.prototype[k])
+                  missedMethods.push(k);
               });
 
               return {
-                pass: missedMethods.length == 0,
+                pass : missedMethods.length == 0,
                 get message() {
-                  return 'Expected ' + actualObject + ' to have the following methods: ' +
+                  return 'Expected ' + actualObject +
+                         ' to have the following methods: ' +
                          missedMethods.join(", ");
                 }
               };
@@ -272,10 +285,12 @@ Map.prototype['jasmineToString'] =
     });
 
 export interface GuinessCompatibleSpy extends jasmine.Spy {
-  /** By chaining the spy with and.returnValue, all calls to the function will return a specific
+  /** By chaining the spy with and.returnValue, all calls to the function will
+   * return a specific
    * value. */
   andReturn(val: any): void;
-  /** By chaining the spy with and.callFake, all calls to the spy will delegate to the supplied
+  /** By chaining the spy with and.callFake, all calls to the spy will delegate
+   * to the supplied
    * function. */
   andCallFake(fn: Function): GuinessCompatibleSpy;
 }
@@ -314,7 +329,8 @@ export class SpyObject {
     }
 
     var m = StringMapWrapper.merge(config, overrides);
-    StringMapWrapper.forEach(m, (value, key) => { object.spy(key).andReturn(value); });
+    StringMapWrapper.forEach(
+        m, (value, key) => { object.spy(key).andReturn(value); });
     return object;
   }
 
