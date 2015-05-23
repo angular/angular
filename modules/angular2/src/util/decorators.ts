@@ -9,6 +9,7 @@ export function makeDecorator(annotationCls) {
     var annotationInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(annotationInstance, args);
     return function(cls) {
+
       var annotations = Reflect.getMetadata('annotations', cls);
       annotations = annotations || [];
       annotations.push(annotationInstance);

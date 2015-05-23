@@ -1,6 +1,6 @@
 import {Type} from 'angular2/src/facade/lang';
 
-export interface ForwardRefFn { (): Type; }
+export interface ForwardRefFn { (): any; }
 
 /**
  * Allows to refer to references which are not yet defined.
