@@ -5,7 +5,7 @@ export var Type = Function;
 export type Type = new (... args: any[]) => any;
 
 export class BaseException implements Error {
-  message : string;
+  message: string;
   name: string;
   stack;
   constructor(message?: string) {
