@@ -471,7 +471,7 @@ export function main() {
         expect(bindings).toEqual([]);
       });
 
-      it('should parse a string without a value', () => {
+      iit('should parse a string without a value', () => {
         var bindings = parseTemplateBindings('a');
         expect(keys(bindings)).toEqual(['a']);
       });
