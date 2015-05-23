@@ -1,4 +1,4 @@
-/// <reference path="../../typings/jasmine/jasmine"/>
+/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
@@ -184,91 +184,91 @@ Map.prototype['jasmineToString'] =
       return `{ ${res.join(',')} }`;
     }
 
-    _global.beforeEach(function() {
-      jasmine.addMatchers({
-        // Custom handler for Map as Jasmine does not support it yet
-        toEqual: function(util, customEqualityTesters) {
-          return {
-            compare: function(actual, expected) {
-              return {pass: util.equals(actual, expected, [compareMap])};
-            }
-          };
+    _global.beforeEach(() => {
+        jasmine.addMatchers(<any>{
+            // Custom handler for Map as Jasmine does not support it yet
+            toEqual: (util, customEqualityTesters) => {
+                return {
+                    compare: (actual, expected) => {
+                        return {pass: util.equals(actual, expected, [compareMap])};
+                    }
+                };
 
-          function compareMap(actual, expected) {
-            if (actual instanceof Map) {
-              var pass = actual.size === expected.size;
-              if (pass) {
-                actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
-              }
-              return pass;
-            } else {
-              return undefined;
-            }
-          }
-        },
-
-        toBePromise: function() {
-          return {
-            compare: function(actual, expectedClass) {
-              var pass = typeof actual === 'object' && typeof actual.then === 'function';
-              return {
-                pass: pass,
-                get message() { return 'Expected ' + actual + ' to be a promise'; }
-              };
-            }
-          };
-        },
-
-        toBeAnInstanceOf: function() {
-          return {
-            compare: function(actual, expectedClass) {
-              var pass = typeof actual === 'object' && actual instanceof expectedClass;
-              return {
-                pass: pass,
-                get message() {
-                  return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
+                function compareMap(actual, expected) {
+                    if (actual instanceof Map) {
+                        var pass = actual.size === expected.size;
+                        if (pass) {
+                            actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
+                        }
+                        return pass;
+                    } else {
+                        return undefined;
+                    }
                 }
-              };
+            },
+
+            toBePromise: () => {
+                return {
+                    compare: function(actual, expectedClass) {
+                        var pass = typeof actual === 'object' && typeof actual.then === 'function';
+                        return {
+                            pass: pass,
+                            get message() { return 'Expected ' + actual + ' to be a promise'; }
+                        };
+                    }
+                };
+            },
+
+            toBeAnInstanceOf: () => {
+                return {
+                    compare: (actual, expectedClass) => {
+                        var pass = typeof actual === 'object' && actual instanceof expectedClass;
+                        return {
+                            pass: pass,
+                            get message() {
+                                return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
+                            }
+                        };
+                    }
+                };
+            },
+
+            toHaveText: () => {
+                return {
+                    compare: function(actual, expectedText) {
+                        var actualText = elementText(actual);
+                        return {
+                            pass: actualText == expectedText,
+                            get message() {
+                                return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+                            }
+                        };
+                    }
+                };
+            },
+
+            toImplement: () => {
+                return {
+                    compare: function(actualObject, expectedInterface) {
+                        var objProps = Object.keys(actualObject.constructor.prototype);
+                        var intProps = Object.keys(expectedInterface.prototype);
+
+                        var missedMethods = [];
+                        intProps.forEach((k) => {
+                            if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
+                        });
+
+                        return {
+                            pass: missedMethods.length == 0,
+                            get message() {
+                                return 'Expected ' + actualObject + ' to have the following methods: ' +
+                                    missedMethods.join(", ");
+                            }
+                        };
+                    }
+                };
             }
-          };
-        },
-
-        toHaveText: function() {
-          return {
-            compare: function(actual, expectedText) {
-              var actualText = elementText(actual);
-              return {
-                pass: actualText == expectedText,
-                get message() {
-                  return 'Expected ' + actualText + ' to be equal to ' + expectedText;
-                }
-              };
-            }
-          };
-        },
-
-        toImplement: function() {
-          return {
-            compare: function(actualObject, expectedInterface) {
-              var objProps = Object.keys(actualObject.constructor.prototype);
-              var intProps = Object.keys(expectedInterface.prototype);
-
-              var missedMethods = [];
-              intProps.forEach((k) => {
-                if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
-              });
-
-              return {
-                pass: missedMethods.length == 0,
-                get message() {
-                  return 'Expected ' + actualObject + ' to have the following methods: ' +
-                         missedMethods.join(", ");
-                }
-              };
-            }
-          };
-        }
-      });
+        });
     });
 
 export interface GuinessCompatibleSpy extends jasmine.Spy {
@@ -283,20 +283,22 @@ export interface GuinessCompatibleSpy extends jasmine.Spy {
 export class SpyObject {
   constructor(type = null) {
     if (type) {
-      for (var prop in type.prototype) {
-        var m = null;
-        try {
-          m = type.prototype[prop];
-        } catch (e) {
-          // As we are creating spys for abstract classes,
-          // these classes might have getters that throw when they are accessed.
-          // As we are only auto creating spys for methods, this
-          // should not matter.
+      for (let prop in type.prototype) {
+            if (type.prototype.hasOwnProperty(prop)) {
+                var m = null;
+                try {
+                    m = type.prototype[prop];
+                } catch (e) {
+                    // As we are creating spys for abstract classes,
+                    // these classes might have getters that throw when they are accessed.
+                    // As we are only auto creating spys for methods, this
+                    // should not matter.
+                }
+                if (typeof m === 'function') {
+                    this.spy(prop);
+                }
+            }
         }
-        if (typeof m === 'function') {
-          this.spy(prop);
-        }
-      }
     }
   }
   spy(name) {

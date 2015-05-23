@@ -6,8 +6,8 @@ export type Type = new (... args: any[]) => any;
 
 export class BaseException implements Error {
   message: string;
-  stack;
   name: string;
+  stack;
   constructor(message?: string) {
     this.message = message;
     this.stack = (<any>new Error()).stack;
