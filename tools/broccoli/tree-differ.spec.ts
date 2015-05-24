@@ -190,7 +190,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1', ['.js', '.coffee']);
+      let differ = new TreeDiffer('dir1', {includeExtensions: ['.js', '.coffee']});
 
       let diffResult = differ.diffTree();
 
@@ -236,7 +236,8 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
+      let differ = new TreeDiffer(
+          'dir1', {includeExtensions: ['.ts', '.cs'], excludeExtensions: ['.d.ts', '.d.cs']});
 
       let diffResult = differ.diffTree();
 
@@ -265,6 +266,68 @@ describe('TreeDiffer', () => {
 
       diffResult = differ.diffTree();
       expect(diffResult.changedPaths).toEqual([]);
+    });
+
+
+    it('should ignore files for which the includeFilter callback returns false', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.ts': mockfs.file({content: 'file-1.ts content', mtime: new Date(1000)}),
+          'file-1.cs': mockfs.file({content: 'file-1.cs content', mtime: new Date(1000)}),
+          'file-1d.cs': mockfs.file({content: 'file-1d.cs content', mtime: new Date(1000)}),
+          'file-1.d.cs': mockfs.file({content: 'file-1.d.cs content', mtime: new Date(1000)}),
+          'file-2.md': mockfs.file({content: 'file-2.md content', mtime: new Date(1000)}),
+          'file-3.ts': mockfs.file({content: 'file-3.ts content', mtime: new Date(1000)}),
+          'file-4.d.ts': mockfs.file({content: 'file-4.d.ts content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.cc': mockfs.file({content: 'file-1.1.cc content', mtime: new Date(1000)}),
+            'file-1.2.ts': mockfs.file({content: 'file-1.2.ts content', mtime: new Date(1000)}),
+            'file-1.3.cs': mockfs.file({content: 'file-1.3.cs content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+      let log: string[] = [];
+      let differ = new TreeDiffer('dir1', {
+        includeExtensions: ['.ts', '.cs'],
+        excludeExtensions: ['.d.ts', '.d.cs'],
+        includeFilter(filePath: string) {
+          log.push(filePath);
+          return filePath.split('/').indexOf('subdir-1') > -1;
+        }
+      });
+
+      let diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['subdir-1/file-1.2.ts', 'subdir-1/file-1.3.cs']);
+      expect(log).toEqual([
+        'file-1.cs',
+        'file-1.ts',
+        'file-1d.cs',
+        'file-3.ts',
+        'subdir-1/file-1.2.ts',
+        'subdir-1/file-1.3.cs'
+      ]);
+      log.length = 0;
+
+      // Don't re-test includeFilter callback
+      testDir['dir1']['subdir-1']['file-1.2.ts'] =
+          mockfs.file({content: 'changed content', mtime: new Date(1200)});
+      mockfs(testDir);
+      diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['subdir-1/file-1.2.ts']);
+      expect(log).toEqual([]);
+
+      // Test newly added files
+      testDir['dir1']['subdir-1']['subdir-2'] = {
+        'file-2.1.ts': mockfs.file({content: 'new file', mtime: new Date(1400)})
+      };
+      mockfs(testDir);
+      diffResult = differ.diffTree();
+
+      expect(diffResult.changedPaths).toEqual(['subdir-1/subdir-2/file-2.1.ts']);
+      expect(log).toEqual(['subdir-1/subdir-2/file-2.1.ts']);
     });
   });
 

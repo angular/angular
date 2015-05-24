@@ -13,22 +13,43 @@ function tryStatSync(path) {
   }
 }
 
+export type IncludeFilterFn = (filePath: string) => boolean
+
+interface TreeDifferOptions {
+  // Simple operations for determining which files are processed
+  includeExtensions?: string[];
+  excludeExtensions?: string[];
+
+  // More advanced methods to determine if a file must be processed
+  includeFilter?: IncludeFilterFn;
+}
+
 
 export class TreeDiffer {
   private fingerprints: {[key: string]: string} = Object.create(null);
   private nextFingerprints: {[key: string]: string} = Object.create(null);
+  private includedFileCache: {[key: string]: boolean} = Object.create(null);
   private rootDirName: string;
   private include: RegExp = null;
   private exclude: RegExp = null;
+  private includeFilter: IncludeFilterFn = null;
 
-  constructor(private rootPath: string, includeExtensions?: string[],
-              excludeExtensions?: string[]) {
+  constructor(private rootPath: string, options?: TreeDifferOptions) {
     this.rootDirName = path.basename(rootPath);
 
     let buildRegexp = (arr) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
 
-    this.include = (includeExtensions || []).length ? buildRegexp(includeExtensions) : null;
-    this.exclude = (excludeExtensions || []).length ? buildRegexp(excludeExtensions) : null;
+    if (options) {
+      if (options.includeExtensions && options.includeExtensions.length) {
+        this.include = buildRegexp(options.includeExtensions);
+      }
+
+      if (options.excludeExtensions && options.excludeExtensions.length) {
+        this.exclude = buildRegexp(options.excludeExtensions);
+      }
+
+      this.includeFilter = options.includeFilter || null;
+    }
 
     function combine(prev, curr) {
       if (curr.charAt(0) !== ".") throw new TypeError("Extension must begin with '.'");
@@ -61,8 +82,7 @@ export class TreeDiffer {
         result.directoriesChecked++;
         this.dirtyCheckPath(absolutePath, result);
       } else {
-        if (!(this.include && !absolutePath.match(this.include)) &&
-            !(this.exclude && absolutePath.match(this.exclude))) {
+        if (this.shouldProcessFile(absolutePath)) {
           result.filesChecked++;
           if (this.isFileDirty(absolutePath, pathStat)) {
             result.changedPaths.push(path.relative(this.rootPath, absolutePath));
@@ -96,8 +116,7 @@ export class TreeDiffer {
 
   private detectDeletionsAndUpdateFingerprints(result: DiffResult) {
     for (let absolutePath in this.fingerprints) {
-      if (!(this.include && !absolutePath.match(this.include)) &&
-          !(this.exclude && absolutePath.match(this.exclude))) {
+      if (this.shouldProcessFile(absolutePath)) {
         if (this.fingerprints[absolutePath] !== null) {
           let relativePath = path.relative(this.rootPath, absolutePath);
           result.removedPaths.push(relativePath);
@@ -107,6 +126,20 @@ export class TreeDiffer {
 
     this.fingerprints = this.nextFingerprints;
     this.nextFingerprints = Object.create(null);
+  }
+
+
+  private shouldProcessFile(absolutePath: string) {
+    let cachedResult = this.includedFileCache[absolutePath];
+    if (cachedResult === undefined) {
+      cachedResult =
+          !(this.include && !absolutePath.match(this.include)) &&
+          !(this.exclude && absolutePath.match(this.exclude)) &&
+          !(this.includeFilter && !this.includeFilter(
+                path.relative(this.rootPath, absolutePath)));
+      this.includedFileCache[absolutePath] = cachedResult;
+    }
+    return cachedResult;
   }
 }
 
