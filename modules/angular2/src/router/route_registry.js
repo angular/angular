@@ -4,6 +4,7 @@ import {List, ListWrapper, Map, MapWrapper, StringMap, StringMapWrapper} from 'a
 import {isPresent, isBlank, isType, StringWrapper, BaseException} from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
+import {Location} from './location';
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
@@ -11,9 +12,11 @@ import {reflector} from 'angular2/src/reflection/reflection';
  */
 export class RouteRegistry {
   _rules:Map<any, RouteRecognizer>;
-
-  constructor() {
+  _location:Location;
+  
+  constructor(location: Location) {
     this._rules = MapWrapper.create();
+    this._location = location;
   }
 
   /**
@@ -38,16 +41,17 @@ export class RouteRegistry {
     }
 
     config = normalizeConfig(config);
+    var path = this._location.normalize(config['path']);
 
     if (StringMapWrapper.contains(config, 'redirectTo')) {
-      recognizer.addRedirect(config['path'], config['redirectTo']);
+      recognizer.addRedirect(path, config['redirectTo']);
       return;
     }
 
     var components = config['components'];
     StringMapWrapper.forEach(components, (component, _) => this.configFromComponent(component));
 
-    recognizer.addConfig(config['path'], config, config['as']);
+    recognizer.addConfig(path, config, config['as']);
   }
 
   /**
@@ -65,8 +69,8 @@ export class RouteRegistry {
     }
     var annotations = reflector.annotations(component);
     if (isPresent(annotations)) {
-      for (var i=0; i<annotations.length; i++) {
-        var annotation = annotations[i];
+      for (let i=0; i<annotations.length; i++) {
+        let annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
           ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
@@ -92,8 +96,8 @@ export class RouteRegistry {
     // A list of instructions that captures all of the given URL
     var fullSolutions = ListWrapper.create();
 
-    for (var i = 0; i < possibleMatches.length; i++) {
-      var candidate : RouteMatch = possibleMatches[i];
+    for (let i = 0; i < possibleMatches.length; i++) {
+      let candidate:RouteMatch = possibleMatches[i];
 
       // if the candidate captures all of the URL, add it to our list of solutions
       if (candidate.unmatchedUrl.length == 0) {
@@ -106,7 +110,7 @@ export class RouteRegistry {
             components = StringMapWrapper.get(candidate.handler, 'components');
 
         var componentNames = StringMapWrapper.keys(components);
-        for (var nameIndex = 0; nameIndex < componentNames.length; nameIndex++) {
+        for (let nameIndex = 0; nameIndex < componentNames.length; nameIndex++) {
           var name = componentNames[nameIndex];
           var component = StringMapWrapper.get(components, name);
 
@@ -133,8 +137,8 @@ export class RouteRegistry {
 
     if (fullSolutions.length > 0) {
       var mostSpecificSolution = fullSolutions[0];
-      for (var solutionIndex = 1; solutionIndex < fullSolutions.length; solutionIndex++) {
-        var solution = fullSolutions[solutionIndex];
+      for (let solutionIndex = 1; solutionIndex < fullSolutions.length; solutionIndex++) {
+        let solution = fullSolutions[solutionIndex];
         if (solution.specificity > mostSpecificSolution.specificity) {
           mostSpecificSolution = solution;
         }
