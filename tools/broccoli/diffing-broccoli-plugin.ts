@@ -6,6 +6,7 @@ import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
 import {TreeDiffer, DiffResult} from './tree-differ';
+import stabilizeTree from './broccoli-tree-stabilizer';
 let symlinkOrCopy = require('symlink-or-copy');
 
 
@@ -51,9 +52,9 @@ class DiffingPluginWrapper implements BroccoliTree {
 
   constructor(private pluginClass, private wrappedPluginArguments) {
     if (Array.isArray(wrappedPluginArguments[0])) {
-      this.inputTrees = wrappedPluginArguments[0];
+      this.inputTrees = this.stabilizeTrees(wrappedPluginArguments[0]);
     } else {
-      this.inputTree = wrappedPluginArguments[0];
+      this.inputTree = this.stabilizeTree(wrappedPluginArguments[0]);
     }
 
     this.description = this.pluginClass.name;
@@ -82,6 +83,13 @@ class DiffingPluginWrapper implements BroccoliTree {
   }
 
 
+  cleanup() {
+    if (this.wrappedPlugin.cleanup) {
+      this.wrappedPlugin.cleanup();
+    }
+  }
+
+
   private relinkOutputAndCachePaths() {
     // just symlink the cache and output tree
     fs.rmdirSync(this.outputPath);
@@ -101,9 +109,15 @@ class DiffingPluginWrapper implements BroccoliTree {
   }
 
 
-  cleanup() {
-    if (this.wrappedPlugin.cleanup) {
-      this.wrappedPlugin.cleanup();
-    }
+  private stabilizeTrees(trees: BroccoliTree[]) {
+    return trees.map((tree) => this.stabilizeTree(tree));
+  }
+
+
+  private stabilizeTree(tree: BroccoliTree) {
+    // Ignore all DiffingPlugins as they are already stable, for others we don't know for sure
+    // so we need to stabilize them.
+    // Since it's not safe to use instanceof operator in node, we are checking the constructor.name.
+    return (tree.constructor['name'] === 'DiffingPluginWrapper') ? tree : stabilizeTree(tree);
   }
 }

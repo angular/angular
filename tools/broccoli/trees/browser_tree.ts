@@ -56,11 +56,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var es6Tree = mergeTrees([traceurTree, typescriptTree]);
 
-  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
-  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
-  //   in the meantime, we just do noop mv to create a new tree
-  es6Tree = stew.mv(es6Tree, '');
-
   // Call Traceur again to lower the ES6 build tree to ES5
   var es5Tree = transpileWithTraceur(es6Tree, {
     destExtension: '.js',
@@ -151,11 +146,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   es5Tree = mergeTrees([es5Tree, htmlTree]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
-
-  // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
-  //   ENOENT error is thrown while doing fs.readdirSync on inputRoot
-  //   in the meantime, we just do noop mv to create a new tree
-  mergedTree = stew.mv(mergedTree, '');
 
   return destCopy(mergedTree, destinationPath);
 };
