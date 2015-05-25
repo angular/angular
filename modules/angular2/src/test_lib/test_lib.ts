@@ -21,7 +21,7 @@ export var afterEach = _global.afterEach;
 export interface NgMatchers extends jasmine.Matchers {
   toBe(expected: any): boolean;
   toEqual(expected: any): boolean;
-  toBePromise(expected: any): boolean;
+  toBePromise(): boolean;
   toBeAnInstanceOf(expected: any): boolean;
   toHaveText(expected: any): boolean;
   toImplement(expected: any): boolean;
