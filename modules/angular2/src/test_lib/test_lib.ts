@@ -1,4 +1,4 @@
-///<reference path="../../typings/jasmine/jasmine.d.ts"/>
+/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
@@ -181,7 +181,7 @@ Map.prototype['jasmineToString'] =
       }
       var res = [];
       m.forEach((v, k) => { res.push(`${k}:${v}`); });
-      return `{ ${res.join(',') } }`;
+      return `{ ${res.join(',')} }`;
     }
 
     _global.beforeEach(function() {
