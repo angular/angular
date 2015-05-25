@@ -10,7 +10,7 @@ class TodoApp {
 
   constructor(public todoStore: Store, public factory: TodoFactory) {}
 
-  enterTodo($event, inputElement): void {
+  enterTodo(inputElement): void {
     this.addTodo(inputElement.value);
     inputElement.value = '';
   }
