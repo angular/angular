@@ -21,7 +21,8 @@ export function main() {
         var rootElement = el('<div><template if="true">a</template></div>');
         var results = createPipeline().process(rootElement);
 
-        expect(DOM.getOuterHTML(results[1].element)).toEqual('<template if="true" class="ng-binding"></template>');
+        expect(DOM.getOuterHTML(results[1].element))
+            .toEqual('<template if="true" class="ng-binding"></template>');
         expect(results[1].isViewRoot).toBe(false);
         expect(DOM.getOuterHTML(results[2].element)).toEqual('<template>a</template>');
         expect(results[2].isViewRoot).toBe(true);
@@ -56,9 +57,11 @@ export function main() {
         var rootElement = el('<div><template if="true">a</template></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].inheritedProtoView).not.toBe(null);
-        expect(results[2].inheritedProtoView).toBe(results[1].inheritedElementBinder.nestedProtoView);
+        expect(results[2].inheritedProtoView)
+            .toBe(results[1].inheritedElementBinder.nestedProtoView);
         expect(results[2].inheritedProtoView.type).toBe(ProtoViewDto.EMBEDDED_VIEW_TYPE);
-        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement)).toEqual('<template>a</template>');
+        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement))
+            .toEqual('<template>a</template>');
       });
 
     });
@@ -70,8 +73,9 @@ export function main() {
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
-        expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template class="ng-binding"></template></div>');
-        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span template=""></span>')
+        expect(DOM.getOuterHTML(results[0].element))
+            .toEqual('<div><template class="ng-binding"></template></div>');
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span template=""></span>');
         expect(results[2].element).toBe(originalChild);
       });
 
@@ -83,7 +87,8 @@ export function main() {
         expect(results[0].element).toBe(rootElement);
         expect(results[0].isViewRoot).toBe(true);
         expect(results[2].isViewRoot).toBe(true);
-        expect(DOM.getOuterHTML(results[0].element)).toEqual('<template><template class="ng-binding"></template></template>');
+        expect(DOM.getOuterHTML(results[0].element))
+            .toEqual('<template><template class="ng-binding"></template></template>');
         expect(results[2].element).toBe(originalChild);
       });
 
@@ -96,14 +101,17 @@ export function main() {
       it('should add property bindings from the template attribute', () => {
         var rootElement = el('<div><div template="some-prop:expr"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'someProp').source).toEqual('expr');
+        expect(
+            MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'someProp').source)
+            .toEqual('expr');
         expect(MapWrapper.get(results[1].attrs(), 'some-prop')).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute to the nestedProtoView', () => {
         var rootElement = el('<div><div template="var var-name=mapName"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(results[2].inheritedProtoView.variableBindings).toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
+        expect(results[2].inheritedProtoView.variableBindings)
+            .toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
       });
 
       it('should add entries without value as attributes to the element', () => {
@@ -137,8 +145,10 @@ export function main() {
         var rootElement = el('<div><span template=""></span></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].inheritedProtoView).not.toBe(null);
-        expect(results[2].inheritedProtoView).toBe(results[1].inheritedElementBinder.nestedProtoView);
-        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement)).toEqual('<span template=""></span>');
+        expect(results[2].inheritedProtoView)
+            .toBe(results[1].inheritedElementBinder.nestedProtoView);
+        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement))
+            .toEqual('<span template=""></span>');
       });
 
     });
@@ -150,8 +160,9 @@ export function main() {
         var originalChild = rootElement.childNodes[0];
         var results = createPipeline().process(rootElement);
         expect(results[0].element).toBe(rootElement);
-        expect(DOM.getOuterHTML(results[0].element)).toEqual('<div><template class="ng-binding" ng-if=""></template></div>');
-        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span *ng-if=""></span>')
+        expect(DOM.getOuterHTML(results[0].element))
+            .toEqual('<div><template class="ng-binding" ng-if=""></template></div>');
+        expect(DOM.getOuterHTML(results[2].element)).toEqual('<span *ng-if=""></span>');
         expect(results[2].element).toBe(originalChild);
       });
 
@@ -169,21 +180,24 @@ export function main() {
         expect(results[0].element).toBe(rootElement);
         expect(results[0].isViewRoot).toBe(true);
         expect(results[2].isViewRoot).toBe(true);
-        expect(DOM.getOuterHTML(results[0].element)).toEqual('<template><template class="ng-binding" foo=""></template></template>');
+        expect(DOM.getOuterHTML(results[0].element))
+            .toEqual('<template><template class="ng-binding" foo=""></template></template>');
         expect(results[2].element).toBe(originalChild);
       });
 
       it('should add property bindings from the template attribute', () => {
         var rootElement = el('<div><div *prop="expr"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'prop').source).toEqual('expr');
+        expect(MapWrapper.get(results[1].inheritedElementBinder.propertyBindings, 'prop').source)
+            .toEqual('expr');
         expect(MapWrapper.get(results[1].attrs(), 'prop')).toEqual('expr');
       });
 
       it('should add variable mappings from the template attribute to the nestedProtoView', () => {
         var rootElement = el('<div><div *foreach="var varName=mapName"></div></div>');
         var results = createPipeline().process(rootElement);
-        expect(results[2].inheritedProtoView.variableBindings).toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
+        expect(results[2].inheritedProtoView.variableBindings)
+            .toEqual(MapWrapper.createFromStringMap({'mapName': 'varName'}));
       });
 
       it('should add entries without value as attribute to the element', () => {
@@ -217,8 +231,10 @@ export function main() {
         var rootElement = el('<div><span *foo></span></div>');
         var results = createPipeline().process(rootElement);
         expect(results[2].inheritedProtoView).not.toBe(null);
-        expect(results[2].inheritedProtoView).toBe(results[1].inheritedElementBinder.nestedProtoView);
-        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement)).toEqual('<span *foo=""></span>');
+        expect(results[2].inheritedProtoView)
+            .toBe(results[1].inheritedElementBinder.nestedProtoView);
+        expect(DOM.getOuterHTML(results[2].inheritedProtoView.rootElement))
+            .toEqual('<span *foo=""></span>');
       });
 
     });

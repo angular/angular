@@ -7,6 +7,7 @@ import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
 import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 import {Lexer, Parser} from 'angular2/change_detection';
+import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
 var EMPTY_MAP = MapWrapper.create();
 
@@ -14,19 +15,19 @@ export function main() {
   describe('PropertyBindingParser', () => {
     function createPipeline(hasNestedProtoView = false) {
       return new CompilePipeline([
-        new MockStep((parent, current, control) => {
-          if (hasNestedProtoView) {
-            current.bindElement().bindNestedProtoView(el('<template></template>'));
-          }
-        }),
-        new PropertyBindingParser(new Parser(new Lexer()))]);
+        new MockStep((parent, current, control) =>
+                     {
+                       if (hasNestedProtoView) {
+                         current.bindElement().bindNestedProtoView(el('<template></template>'));
+                       }
+                     }),
+        new PropertyBindingParser(new Parser(new Lexer()))
+      ]);
     }
 
-    function process(element, hasNestedProtoView = false) {
-      return ListWrapper.map(
-        createPipeline(hasNestedProtoView).process(element),
-        (compileElement) => compileElement.inheritedElementBinder
-      );
+    function process(element, hasNestedProtoView = false): List<ElementBinderBuilder> {
+      return ListWrapper.map(createPipeline(hasNestedProtoView).process(element),
+                             (compileElement) => compileElement.inheritedElementBinder);
     }
 
     it('should detect [] syntax', () => {
@@ -44,9 +45,8 @@ export function main() {
       expect(MapWrapper.get(results[0].propertyBindings, 'a').source).toEqual('b');
     });
 
-    it('should detect bind- syntax only if an attribute name starts with bind', () => {
-      expect(process(el('<div _bind-a="b"></div>'))[0]).toEqual(null);
-    });
+    it('should detect bind- syntax only if an attribute name starts with bind',
+       () => { expect(process(el('<div _bind-a="b"></div>'))[0]).toEqual(null); });
 
     it('should detect interpolation syntax', () => {
       var results = process(el('<div a="{{b}}"></div>'));
@@ -67,14 +67,17 @@ export function main() {
     it('should store variable binding for a template element on the nestedProtoView', () => {
       var results = process(el('<template var-george="washington"></p>'), true);
       expect(results[0].variableBindings).toEqual(EMPTY_MAP);
-      expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington')).toEqual('george');
+      expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington'))
+          .toEqual('george');
     });
 
-    it('should store variable binding for a non-template element using shorthand syntax on the nestedProtoView', () => {
-      var results = process(el('<template #george="washington"></template>'), true);
-      expect(results[0].variableBindings).toEqual(EMPTY_MAP);
-      expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington')).toEqual('george');
-    });
+    it('should store variable binding for a non-template element using shorthand syntax on the nestedProtoView',
+       () => {
+         var results = process(el('<template #george="washington"></template>'), true);
+         expect(results[0].variableBindings).toEqual(EMPTY_MAP);
+         expect(MapWrapper.get(results[0].nestedProtoView.variableBindings, 'washington'))
+             .toEqual('george');
+       });
 
     it('should store variable binding for a non-template element', () => {
       var results = process(el('<p var-george="washington"></p>'));
@@ -165,13 +168,10 @@ export function main() {
   });
 }
 
-@IMPLEMENTS(CompileStep)
-class MockStep {
-  processClosure:Function;
-  constructor(process) {
-    this.processClosure = process;
-  }
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+class MockStep implements CompileStep {
+  processClosure: Function;
+  constructor(process) { this.processClosure = process; }
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     this.processClosure(parent, current, control);
   }
 }

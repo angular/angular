@@ -51,9 +51,9 @@ export function main() {
     it('should rewrite style urls', () => {
       var styleElement = el('<style>.foo {background-image: url("img.jpg");}</style>');
       strategy.processStyleElement('someComponent', 'http://base', styleElement);
-      expect(styleElement).toHaveText(".foo[_ngcontent-0] {\n" +
-        "background-image: url(http://base/img.jpg);\n" +
-        "}");
+      expect(styleElement)
+          .toHaveText(".foo[_ngcontent-0] {\n" + "background-image: url(http://base/img.jpg);\n" +
+                      "}");
     });
 
     it('should scope styles', () => {
@@ -63,18 +63,19 @@ export function main() {
     });
 
     it('should inline @import rules', inject([AsyncTestCompleter], (async) => {
-      xhr.reply('http://base/one.css', '.one {}');
+         xhr.reply('http://base/one.css', '.one {}');
 
-      var styleElement = el('<style>@import "one.css";</style>');
-      var stylePromise = strategy.processStyleElement('someComponent', 'http://base', styleElement);
-      expect(stylePromise).toBePromise();
-      expect(styleElement).toHaveText('');
+         var styleElement = el('<style>@import "one.css";</style>');
+         var stylePromise =
+             strategy.processStyleElement('someComponent', 'http://base', styleElement);
+         expect(stylePromise).toBePromise();
+         expect(styleElement).toHaveText('');
 
-      stylePromise.then((_) => {
-        expect(styleElement).toHaveText('.one[_ngcontent-0] {\n\n}');
-        async.done();
-      });
-    }));
+         stylePromise.then((_) => {
+           expect(styleElement).toHaveText('.one[_ngcontent-0] {\n\n}');
+           async.done();
+         });
+       }));
 
     it('should return the same style given the same component', () => {
       var styleElement = el('<style>.foo {} :host {}</style>');
@@ -121,7 +122,7 @@ export function main() {
 }
 
 class FakeXHR extends XHR {
-  _responses: Map;
+  _responses: Map<string, string>;
 
   constructor() {
     super();
@@ -137,7 +138,5 @@ class FakeXHR extends XHR {
     return PromiseWrapper.resolve(response);
   }
 
-  reply(url: string, response: string) {
-    MapWrapper.set(this._responses, url, response);
-  }
+  reply(url: string, response: string) { MapWrapper.set(this._responses, url, response); }
 }

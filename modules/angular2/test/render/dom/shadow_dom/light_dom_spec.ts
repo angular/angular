@@ -1,4 +1,14 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el, proxy} from 'angular2/test_lib';
+import {
+  describe,
+  beforeEach,
+  it,
+  expect,
+  ddescribe,
+  iit,
+  SpyObject,
+  el,
+  proxy
+} from 'angular2/test_lib';
 import {IMPLEMENTS, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -9,12 +19,13 @@ import {DomViewContainer} from 'angular2/src/render/dom/view/view_container';
 
 @proxy
 @IMPLEMENTS(DomView)
-class FakeView {
+class FakeView extends SpyObject {
   boundElements;
   contentTags;
   viewContainers;
 
   constructor(containers = null) {
+    super(DomView);
     this.boundElements = [];
     this.contentTags = [];
     this.viewContainers = [];
@@ -38,62 +49,50 @@ class FakeView {
     }
   }
 
-  noSuchMethod(i) {
-    super.noSuchMethod(i);
-  }
+  noSuchMethod(i) { super.noSuchMethod(i); }
 }
 
 @proxy
 @IMPLEMENTS(DomViewContainer)
-class FakeViewContainer {
+class FakeViewContainer extends SpyObject {
   _nodes;
   _contentTagContainers;
   templateElement;
 
   constructor(templateEl, nodes = null, views = null) {
+    super(DomViewContainer);
     this.templateElement = templateEl;
     this._nodes = nodes;
     this._contentTagContainers = views;
   }
 
-  nodes(){
-    return this._nodes;
-  }
+  nodes() { return this._nodes; }
 
-  contentTagContainers(){
-    return this._contentTagContainers;
-  }
+  contentTagContainers() { return this._contentTagContainers; }
 
-  noSuchMethod(i) {
-    super.noSuchMethod(i);
-  }
+  noSuchMethod(i) { super.noSuchMethod(i); }
 }
 
 
 @proxy
 @IMPLEMENTS(Content)
-class FakeContentTag {
+class FakeContentTag extends SpyObject {
   select;
   _nodes;
   contentStartElement;
 
   constructor(contentEl, select = '', nodes = null) {
+    super(Content);
     this.contentStartElement = contentEl;
     this.select = select;
     this._nodes = nodes;
   }
 
-  insert(nodes){
-    this._nodes = nodes;
-  }
+  insert(nodes) { this._nodes = nodes; }
 
-  nodes() {
-    return this._nodes;
-  }
+  nodes() { return this._nodes; }
 
-  noSuchMethod(i) {
-    super.noSuchMethod(i);
-  }
+  noSuchMethod(i) { super.noSuchMethod(i); }
 }
 
 function createLightDom(hostView, shadowView, el) {
@@ -106,29 +105,23 @@ export function main() {
   describe('LightDom', function() {
     var lightDomView;
 
-    beforeEach(() => {
-      lightDomView = new FakeView();
-    });
+    beforeEach(() => { lightDomView = new FakeView(); });
 
     describe("contentTags", () => {
       it("should collect content tags from element injectors", () => {
         var tag = new FakeContentTag(el('<script></script>'));
         var shadowDomView = new FakeView([tag]);
 
-        var lightDom = createLightDom(lightDomView, shadowDomView,
-            el("<div></div>"));
+        var lightDom = createLightDom(lightDomView, shadowDomView, el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
       });
 
       it("should collect content tags from ViewContainers", () => {
         var tag = new FakeContentTag(el('<script></script>'));
-        var vc = new FakeViewContainer(null, null, [
-          new FakeView([tag])
-        ]);
+        var vc = new FakeViewContainer(null, null, [new FakeView([tag])]);
         var shadowDomView = new FakeView([vc]);
-        var lightDom = createLightDom(lightDomView, shadowDomView,
-            el("<div></div>"));
+        var lightDom = createLightDom(lightDomView, shadowDomView, el("<div></div>"));
 
         expect(lightDom.contentTags()).toEqual([tag]);
       });
@@ -136,7 +129,7 @@ export function main() {
 
     describe("expandedDomNodes", () => {
       it("should contain root nodes", () => {
-        var lightDomEl = el("<div><a></a></div>")
+        var lightDomEl = el("<div><a></a></div>");
         var lightDom = createLightDom(lightDomView, new FakeView(), lightDomEl);
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
@@ -144,14 +137,11 @@ export function main() {
       it("should include view container nodes", () => {
         var lightDomEl = el("<div><template></template></div>");
         var lightDom = createLightDom(
-          new FakeView([
-            new FakeViewContainer(
-              DOM.firstChild(lightDomEl),  // template element
-              [el('<a></a>')]              // light DOM nodes of view container
-            )
-          ]),
-          null,
-          lightDomEl);
+            new FakeView(
+                [new FakeViewContainer(DOM.firstChild(lightDomEl),  // template element
+                                       [el('<a></a>')]  // light DOM nodes of view container
+                                       )]),
+            null, lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
@@ -159,15 +149,11 @@ export function main() {
       it("should include content nodes", () => {
         var lightDomEl = el("<div><content></content></div>");
         var lightDom = createLightDom(
-          new FakeView([
-            new FakeContentTag(
-              DOM.firstChild(lightDomEl),  // content element
-              '',                          // selector
-              [el('<a></a>')]              // light DOM nodes of content tag
-            )
-          ]),
-          null,
-          lightDomEl);
+            new FakeView([new FakeContentTag(DOM.firstChild(lightDomEl),  // content element
+                                             '',                          // selector
+                                             [el('<a></a>')]  // light DOM nodes of content tag
+                                             )]),
+            null, lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
@@ -175,12 +161,9 @@ export function main() {
       it("should work when the element injector array contains nulls", () => {
         var lightDomEl = el("<div><a></a></div>")
 
-        var lightDomView = new FakeView();
+            var lightDomView = new FakeView();
 
-        var lightDom = createLightDom(
-          lightDomView,
-          new FakeView(),
-          lightDomEl);
+        var lightDom = createLightDom(lightDomView, new FakeView(), lightDomEl);
 
         expect(toHtml(lightDom.expandedDomNodes())).toEqual(["<a></a>"]);
       });
@@ -193,10 +176,8 @@ export function main() {
 
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = createLightDom(lightDomView, new FakeView([
-          contentA,
-          contentB
-        ]), lightDomEl);
+            var lightDom =
+                createLightDom(lightDomView, new FakeView([contentA, contentB]), lightDomEl);
 
         lightDom.redistribute();
 
@@ -210,10 +191,8 @@ export function main() {
 
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = createLightDom(lightDomView, new FakeView([
-          wildcard,
-          contentB
-        ]), lightDomEl);
+            var lightDom =
+                createLightDom(lightDomView, new FakeView([wildcard, contentB]), lightDomEl);
 
         lightDom.redistribute();
 
@@ -224,7 +203,7 @@ export function main() {
       it("should remove all nodes if there are no content tags", () => {
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>")
 
-        var lightDom = createLightDom(lightDomView, new FakeView([]), lightDomEl);
+            var lightDom = createLightDom(lightDomView, new FakeView([]), lightDomEl);
 
         lightDom.redistribute();
 
@@ -235,9 +214,8 @@ export function main() {
         var lightDomEl = el("<div><a>1</a><b>2</b><a>3</a></div>");
         var bNode = DOM.childNodes(lightDomEl)[1];
 
-        var lightDom = createLightDom(lightDomView, new FakeView([
-          new FakeContentTag(null, "a")
-        ]), lightDomEl);
+        var lightDom =
+            createLightDom(lightDomView, new FakeView([new FakeContentTag(null, "a")]), lightDomEl);
 
         lightDom.redistribute();
 

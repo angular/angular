@@ -6,16 +6,14 @@ import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
 export function main() {
   describe('ShadowCss', function() {
 
-    function s(css: string, contentAttr:string, hostAttr:string = '') {
+    function s(css: string, contentAttr: string, hostAttr: string = '') {
       var shadowCss = new ShadowCss();
       var shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
       var nlRegexp = RegExpWrapper.create('\\n');
       return StringWrapper.replaceAll(shim, nlRegexp, '');
     }
 
-    it('should handle empty string', () => {
-      expect(s('', 'a')).toEqual('');
-    });
+    it('should handle empty string', () => { expect(s('', 'a')).toEqual(''); });
 
     it('should add an attribute to every rule', () => {
       var css = 'one {color: red;}two {color: red;}';
@@ -67,12 +65,14 @@ export function main() {
     it('should handle :host', () => {
       expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
       expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
-      expect(s(':host(.x,.y) > .z {}', 'a', 'a-host')).toEqual('[a-host].x > .z, [a-host].y > .z {}');
+      expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
+          .toEqual('[a-host].x > .z, [a-host].y > .z {}');
     });
 
     it('should handle :host-context', () => {
       expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('[a-host].x, .x [a-host] {}');
-      expect(s(':host-context(.x) > .y {}', 'a', 'a-host')).toEqual('[a-host].x > .y, .x [a-host] > .y {}');
+      expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
+          .toEqual('[a-host].x > .y, .x [a-host] > .y {}');
     });
 
     it('should support polyfill-next-selector', () => {

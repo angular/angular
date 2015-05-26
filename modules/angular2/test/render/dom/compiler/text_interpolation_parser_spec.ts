@@ -4,21 +4,18 @@ import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Lexer, Parser} from 'angular2/change_detection';
 import {IgnoreChildrenStep} from './pipeline_spec';
+import {ElementBinderBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
 
 export function main() {
   describe('TextInterpolationParser', () => {
     function createPipeline() {
-      return new CompilePipeline([
-        new IgnoreChildrenStep(),
-        new TextInterpolationParser(new Parser(new Lexer()))
-      ]);
+      return new CompilePipeline(
+          [new IgnoreChildrenStep(), new TextInterpolationParser(new Parser(new Lexer()))]);
     }
 
-    function process(element) {
-      return ListWrapper.map(
-        createPipeline().process(element),
-        (compileElement) => compileElement.inheritedElementBinder
-      );
+    function process(element): List<ElementBinderBuilder> {
+      return ListWrapper.map(createPipeline().process(element),
+                             (compileElement) => compileElement.inheritedElementBinder);
     }
 
     function assertTextBinding(elementBinder, bindingIndex, nodeIndex, expression) {

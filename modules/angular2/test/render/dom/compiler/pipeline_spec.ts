@@ -5,7 +5,7 @@ import {isPresent, NumberWrapper, StringWrapper, IMPLEMENTS} from 'angular2/src/
 
 import {CompilePipeline} from 'angular2/src/render/dom/compiler/compile_pipeline';
 import {CompileElement} from 'angular2/src/render/dom/compiler/compile_element';
-import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step'
+import {CompileStep} from 'angular2/src/render/dom/compiler/compile_step';
 import {CompileControl} from 'angular2/src/render/dom/compiler/compile_control';
 
 import {ProtoViewBuilder} from 'angular2/src/render/dom/view/proto_view_builder';
@@ -25,7 +25,8 @@ export function main() {
       });
 
       it('should stop walking the tree when compileChildren is false', () => {
-        var element = el('<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
+        var element = el(
+            '<div id="1"><template id="2" ignore-children><span id="3"></span></template></div>');
 
         var step0Log = [];
         var pipeline = new CompilePipeline([new IgnoreChildrenStep(), createLoggerStep(step0Log)]);
@@ -40,7 +41,8 @@ export function main() {
       var element = el('<div><div><span viewroot><span></span></span></div></div>');
       var pipeline = new CompilePipeline([new MockStep((parent, current, control) => {
         if (isPresent(DOM.getAttribute(current.element, 'viewroot'))) {
-          current.inheritedProtoView = new ProtoViewBuilder(current.element, ProtoViewDto.EMBEDDED_VIEW_TYPE);
+          current.inheritedProtoView =
+              new ProtoViewBuilder(current.element, ProtoViewDto.EMBEDDED_VIEW_TYPE);
         }
       })]);
       var results = pipeline.process(element);
@@ -99,10 +101,8 @@ export function main() {
         var element = el('<div id="1"><span wrap0="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
-        var pipeline = new CompilePipeline([
-          createWrapperStep('wrap0', step0Log),
-          createLoggerStep(step1Log)
-        ]);
+        var pipeline = new CompilePipeline(
+            [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<2', '2<3']);
@@ -110,7 +110,8 @@ export function main() {
       });
 
       it('should allow to add a parent by multiple processors to the same element', () => {
-        var element = el('<div id="1"><span wrap0="1" wrap1="1" id="2"><b id="3"></b></span></div>');
+        var element =
+            el('<div id="1"><span wrap0="1" wrap1="1" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
@@ -127,7 +128,8 @@ export function main() {
       });
 
       it('should allow to add a parent by multiple processors to different elements', () => {
-        var element = el('<div id="1"><span wrap0="1" id="2"><b id="3" wrap1="1"></b></span></div>');
+        var element =
+            el('<div id="1"><span wrap0="1" id="2"><b id="3" wrap1="1"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
         var step2Log = [];
@@ -147,10 +149,8 @@ export function main() {
         var element = el('<div id="1"><span wrap0="2" id="2"><b id="3"></b></span></div>');
         var step0Log = [];
         var step1Log = [];
-        var pipeline = new CompilePipeline([
-          createWrapperStep('wrap0', step0Log),
-          createLoggerStep(step1Log)
-        ]);
+        var pipeline = new CompilePipeline(
+            [createWrapperStep('wrap0', step0Log), createLoggerStep(step1Log)]);
         var result = pipeline.process(element);
         expect(step0Log).toEqual(['1', '1<2', '2<3']);
         expect(step1Log).toEqual(['1', '1<wrap0#0', 'wrap0#0<wrap0#1', 'wrap0#1<2', '2<3']);
@@ -165,11 +165,12 @@ export function main() {
         var resultLog = [];
         var newChild = new CompileElement(el('<div id="3"></div>'));
         var pipeline = new CompilePipeline([
-          new MockStep((parent, current, control) => {
-            if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
-              control.addChild(newChild);
-            }
-          }),
+          new MockStep((parent, current, control) =>
+                       {
+                         if (StringWrapper.equals(DOM.getAttribute(current.element, 'id'), '1')) {
+                           control.addChild(newChild);
+                         }
+                       }),
           createLoggerStep(resultLog)
         ]);
         var result = pipeline.process(element);
@@ -182,20 +183,16 @@ export function main() {
   });
 }
 
-@IMPLEMENTS(CompileStep)
-class MockStep {
-  processClosure:Function;
-  constructor(process) {
-    this.processClosure = process;
-  }
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+class MockStep implements CompileStep {
+  processClosure: Function;
+  constructor(process) { this.processClosure = process; }
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     this.processClosure(parent, current, control);
   }
 }
 
-@IMPLEMENTS(CompileStep)
-export class IgnoreChildrenStep {
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+export class IgnoreChildrenStep implements CompileStep {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-children')) {
       current.compileChildren = false;
@@ -203,9 +200,8 @@ export class IgnoreChildrenStep {
   }
 }
 
-@IMPLEMENTS(CompileStep)
-class IgnoreCurrentElementStep {
-  process(parent:CompileElement, current:CompileElement, control:CompileControl) {
+class IgnoreCurrentElementStep implements CompileStep {
+  process(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attributeMap = DOM.attributeMap(current.element);
     if (MapWrapper.contains(attributeMap, 'ignore-current')) {
       control.ignoreCurrentElement();
@@ -222,9 +218,7 @@ function logEntry(log, parent, current) {
 }
 
 function createLoggerStep(log) {
-  return new MockStep((parent, current, control) => {
-    logEntry(log, parent, current);
-  });
+  return new MockStep((parent, current, control) => { logEntry(log, parent, current); });
 }
 
 function createWrapperStep(wrapperId, log) {
@@ -244,8 +238,6 @@ function createWrapperStep(wrapperId, log) {
 
 function resultIdLog(result) {
   var idLog = [];
-  ListWrapper.forEach(result, (current) => {
-    logEntry(idLog, null, current);
-  });
+  ListWrapper.forEach(result, (current) => { logEntry(idLog, null, current); });
   return idLog;
 }

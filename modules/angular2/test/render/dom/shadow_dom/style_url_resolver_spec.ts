@@ -74,7 +74,5 @@ export function main() {
 }
 
 class FakeUrlResolver extends UrlResolver {
-  resolve(baseUrl: string, url: string): string {
-    return baseUrl + '/' + url;
-  }
+  resolve(baseUrl: string, url: string): string { return baseUrl + '/' + url; }
 }

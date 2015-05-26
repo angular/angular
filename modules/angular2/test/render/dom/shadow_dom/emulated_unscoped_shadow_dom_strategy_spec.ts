@@ -46,13 +46,12 @@ export function main() {
     it('should rewrite style urls', () => {
       var styleElement = el('<style>.foo {background-image: url("img.jpg");}</style>');
       strategy.processStyleElement('someComponent', 'http://base', styleElement);
-      expect(styleElement).toHaveText(".foo {" +
-        "background-image: url('http://base/img.jpg');" +
-        "}");
+      expect(styleElement)
+          .toHaveText(".foo {" + "background-image: url('http://base/img.jpg');" + "}");
     });
 
     it('should not inline import rules', () => {
-      var styleElement = el('<style>@import "other.css";</style>')
+      var styleElement = el('<style>@import "other.css";</style>');
       strategy.processStyleElement('someComponent', 'http://base', styleElement);
       expect(styleElement).toHaveText("@import 'http://base/other.css';");
     });
@@ -81,4 +80,3 @@ export function main() {
 
   });
 }
-

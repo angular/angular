@@ -1,5 +1,19 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
-import {EventManager, EventManagerPlugin, DomEventsPlugin} from 'angular2/src/render/dom/events/event_manager';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  xit,
+  xdescribe,
+  expect,
+  beforeEach,
+  el
+} from 'angular2/test_lib';
+import {
+  EventManager,
+  EventManagerPlugin,
+  DomEventsPlugin
+} from 'angular2/src/render/dom/events/event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -7,9 +21,7 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 export function main() {
   var domEventPlugin;
 
-  beforeEach(() => {
-    domEventPlugin = new DomEventsPlugin();
-  });
+  beforeEach(() => { domEventPlugin = new DomEventsPlugin(); });
 
   describe('EventManager', () => {
 
@@ -35,7 +47,7 @@ export function main() {
       var element = el('<div></div>');
       var clickHandler = (e) => e;
       var dblClickHandler = (e) => e;
-      var plugin1= new FakeEventManagerPlugin(['dblclick']);
+      var plugin1 = new FakeEventManagerPlugin(['dblclick']);
       var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
       var manager = new EventManager([plugin1, plugin2], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
@@ -51,7 +63,7 @@ export function main() {
       var plugin = new FakeEventManagerPlugin(['dblclick']);
       var manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null))
-        .toThrowError('No event manager plugin found for event click');
+          .toThrowError('No event manager plugin found for event click');
     });
 
     it('by default events are only caught on same element', () => {
@@ -109,8 +121,8 @@ export function main() {
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
   _supports: List<string>;
-  _nonBubbleEventHandlers: Map;
-  _bubbleEventHandlers: Map;
+  _nonBubbleEventHandlers: Map<string, Function>;
+  _bubbleEventHandlers: Map<string, Function>;
   constructor(supports: List<string>) {
     super();
     this._supports = supports;
@@ -118,28 +130,22 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
     this._bubbleEventHandlers = MapWrapper.create();
   }
 
-  supports(eventName: string): boolean {
-    return ListWrapper.contains(this._supports, eventName);
-  }
+  supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
 
   addEventListener(element, eventName: string, handler: Function, shouldSupportBubble: boolean) {
     MapWrapper.set(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
-        eventName, handler);
-    return () => {MapWrapper.delete(shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers,
-        eventName)};
+                   eventName, handler);
+    return () => {
+      MapWrapper.delete(
+          shouldSupportBubble ? this._bubbleEventHandlers : this._nonBubbleEventHandlers, eventName)
+    };
   }
 }
 
 class FakeNgZone extends NgZone {
-  constructor() {
-    super({enableLongStackTrace: false});
-  }
+  constructor() { super({enableLongStackTrace: false}); }
 
-  run(fn) {
-    fn();
-  }
+  run(fn) { fn(); }
 
-  runOutsideAngular(fn) {
-    return fn();
-  }
+  runOutsideAngular(fn) { return fn(); }
 }

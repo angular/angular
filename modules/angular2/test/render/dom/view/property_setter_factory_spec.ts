@@ -1,12 +1,20 @@
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el} from 'angular2/test_lib';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  xit,
+  xdescribe,
+  expect,
+  beforeEach,
+  el
+} from 'angular2/test_lib';
 import {setterFactory} from 'angular2/src/render/dom/view/property_setter_factory';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   var div;
-  beforeEach( () => {
-  	div = el('<div></div>');
-  });
+  beforeEach(() => { div = el('<div></div>'); });
   describe('property setter factory', () => {
 
     it('should return a setter for a property', () => {
@@ -24,9 +32,8 @@ export function main() {
       expect(DOM.getAttribute(div, 'role')).toEqual('button');
       setterFn(div, null);
       expect(DOM.getAttribute(div, 'role')).toEqual(null);
-      expect(() => {
-        setterFn(div, 4);
-      }).toThrowError("Invalid role attribute, only string values are allowed, got '4'");
+      expect(() => { setterFn(div, 4); })
+          .toThrowError("Invalid role attribute, only string values are allowed, got '4'");
 
       var otherSetterFn = setterFactory('attr.role');
       expect(setterFn).toBe(otherSetterFn);
