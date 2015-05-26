@@ -331,31 +331,33 @@ export class SpyObject {
 }
 
 function elementText(n) {
-  var hasNodes = (n) => { var children = DOM.childNodes(n);
-  return children && children.length > 0;
-}
+  var hasNodes = (n) =>
+  {
+    var children = DOM.childNodes(n);
+    return children && children.length > 0;
+  }
 
-if (n instanceof Array) {
-  return n.map((nn) => elementText(nn)).join("");
-}
+  if (n instanceof Array) {
+    return n.map((nn) => elementText(nn)).join("");
+  }
 
-if (DOM.isCommentNode(n)) {
-  return '';
-}
+  if (DOM.isCommentNode(n)) {
+    return '';
+  }
 
-if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
-  return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
-}
+  if (DOM.isElementNode(n) && DOM.tagName(n) == 'CONTENT') {
+    return elementText(Array.prototype.slice.apply(DOM.getDistributedNodes(n)));
+  }
 
-if (DOM.hasShadowRoot(n)) {
-  return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
-}
+  if (DOM.hasShadowRoot(n)) {
+    return elementText(DOM.childNodesAsList(DOM.getShadowRoot(n)));
+  }
 
-if (hasNodes(n)) {
-  return elementText(DOM.childNodesAsList(n));
-}
+  if (hasNodes(n)) {
+    return elementText(DOM.childNodesAsList(n));
+  }
 
-return DOM.getText(n);
+  return DOM.getText(n);
 }
 
 export function isInInnerZone(): boolean {
