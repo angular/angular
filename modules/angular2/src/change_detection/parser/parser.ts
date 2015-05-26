@@ -28,6 +28,7 @@ import {
   EmptyExpr,
   ImplicitReceiver,
   AccessMember,
+  SafeAccessMember,
   LiteralPrimitive,
   Binary,
   PrefixNot,
@@ -40,6 +41,7 @@ import {
   LiteralMap,
   Interpolation,
   MethodCall,
+  SafeMethodCall,
   FunctionCall,
   TemplateBinding,
   ASTWithSource
@@ -360,7 +362,10 @@ class _ParseAST {
     var result = this.parsePrimary();
     while (true) {
       if (this.optionalCharacter($PERIOD)) {
-        result = this.parseAccessMemberOrMethodCall(result);
+        result = this.parseAccessMemberOrMethodCall(result, false);
+
+      } else if (this.optionalOperator('?.')) {
+        result = this.parseAccessMemberOrMethodCall(result, true);
 
       } else if (this.optionalCharacter($LBRACKET)) {
         var key = this.parseExpression();
@@ -405,7 +410,7 @@ class _ParseAST {
       return this.parseLiteralMap();
 
     } else if (this.next.isIdentifier()) {
-      return this.parseAccessMemberOrMethodCall(_implicitReceiver);
+      return this.parseAccessMemberOrMethodCall(_implicitReceiver, false);
 
     } else if (this.next.isNumber()) {
       var value = this.next.toNumber();
@@ -451,19 +456,21 @@ class _ParseAST {
     return new LiteralMap(keys, values);
   }
 
-  parseAccessMemberOrMethodCall(receiver): AST {
+  parseAccessMemberOrMethodCall(receiver, isSafe: boolean = false): AST {
     var id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter($LPAREN)) {
       var args = this.parseCallArguments();
       this.expectCharacter($RPAREN);
       var fn = this.reflector.method(id);
-      return new MethodCall(receiver, id, fn, args);
+      return isSafe ? new SafeMethodCall(receiver, id, fn, args) :
+                      new MethodCall(receiver, id, fn, args);
 
     } else {
       var getter = this.reflector.getter(id);
       var setter = this.reflector.setter(id);
-      var am = new AccessMember(receiver, id, getter, setter);
+      var am = isSafe ? new SafeAccessMember(receiver, id, getter, setter) :
+                        new AccessMember(receiver, id, getter, setter);
 
       if (this.optionalOperator("|")) {
         return this.parseInlinedPipe(am);

@@ -142,4 +142,6 @@ export class ChangeDetectionUtil {
     changes[propertyName] = change;
     return changes;
   }
+
+  static isValueBlank(value: any): boolean { return isBlank(value); }
 }

@@ -219,15 +219,15 @@ class _Scanner {
       case $DQ:
         return this.scanString();
       case $HASH:
-        return this.scanOperator(start, StringWrapper.fromCharCode(peek));
       case $PLUS:
       case $MINUS:
       case $STAR:
       case $SLASH:
       case $PERCENT:
       case $CARET:
-      case $QUESTION:
         return this.scanOperator(start, StringWrapper.fromCharCode(peek));
+      case $QUESTION:
+        return this.scanComplexOperator(start, $PERIOD, '?', '.');
       case $LT:
       case $GT:
       case $BANG:
@@ -434,7 +434,8 @@ var OPERATORS = SetWrapper.createFromList([
   '|',
   '!',
   '?',
-  '#'
+  '#',
+  '?.'
 ]);
 
 

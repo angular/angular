@@ -17,7 +17,9 @@ import {
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE
+  RECORD_TYPE_INTERPOLATE,
+  RECORD_TYPE_SAFE_PROPERTY,
+  RECORD_TYPE_SAFE_INVOKE_METHOD
 } from './proto_record';
 
 
@@ -295,12 +297,20 @@ export class ChangeDetectorJITGenerator {
         rhs = `${context}.${r.name}`;
         break;
 
+      case RECORD_TYPE_SAFE_PROPERTY:
+        rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}`;
+        break;
+
       case RECORD_TYPE_LOCAL:
         rhs = `${LOCALS_ACCESSOR}.get('${r.name}')`;
         break;
 
       case RECORD_TYPE_INVOKE_METHOD:
         rhs = `${context}.${r.name}(${argString})`;
+        break;
+
+      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+        rhs = `${UTIL}.isValueBlank(${context}) ? null : ${context}.${r.name}(${argString})`;
         break;
 
       case RECORD_TYPE_INVOKE_CLOSURE:

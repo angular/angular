@@ -19,7 +19,9 @@ import {
   LiteralMap,
   LiteralPrimitive,
   MethodCall,
-  PrefixNot
+  PrefixNot,
+  SafeAccessMember,
+  SafeMethodCall
 } from './parser/ast';
 
 import {
@@ -49,7 +51,9 @@ import {
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE
+  RECORD_TYPE_INTERPOLATE,
+  RECORD_TYPE_SAFE_PROPERTY,
+  RECORD_TYPE_SAFE_INVOKE_METHOD
 } from './proto_record';
 
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
@@ -149,6 +153,11 @@ class _ConvertAstIntoProtoRecords {
     }
   }
 
+  visitSafeAccessMember(ast: SafeAccessMember) {
+    var receiver = ast.receiver.visit(this);
+    return this._addRecord(RECORD_TYPE_SAFE_PROPERTY, ast.name, ast.getter, [], null, receiver);
+  }
+
   visitMethodCall(ast: MethodCall) {
     var receiver = ast.receiver.visit(this);
     var args = this._visitAll(ast.args);
@@ -158,6 +167,12 @@ class _ConvertAstIntoProtoRecords {
     } else {
       return this._addRecord(RECORD_TYPE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
     }
+  }
+
+  visitSafeMethodCall(ast: SafeMethodCall) {
+    var receiver = ast.receiver.visit(this);
+    var args = this._visitAll(ast.args);
+    return this._addRecord(RECORD_TYPE_SAFE_INVOKE_METHOD, ast.name, ast.fn, args, null, receiver);
   }
 
   visitFunctionCall(ast: FunctionCall) {

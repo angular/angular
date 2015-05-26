@@ -13,6 +13,8 @@ export const RECORD_TYPE_KEYED_ACCESS = 7;
 export const RECORD_TYPE_PIPE = 8;
 export const RECORD_TYPE_BINDING_PIPE = 9;
 export const RECORD_TYPE_INTERPOLATE = 10;
+export const RECORD_TYPE_SAFE_PROPERTY = 11;
+export const RECORD_TYPE_SAFE_INVOKE_METHOD = 12;
 
 export class ProtoRecord {
   constructor(public mode: number, public name: string, public funcOrValue, public args: List<any>,

@@ -126,14 +126,14 @@ export function main() {
         expectIdentifierToken(tokens[1], 8, 'b');
       });
 
-      it('should tokenize quoted string', function() {
+      it('should tokenize quoted string', () => {
         var str = "['\\'', \"\\\"\"]";
         var tokens: List<Token> = lex(str);
         expectStringToken(tokens[1], 1, "'");
         expectStringToken(tokens[3], 7, '"');
       });
 
-      it('should tokenize escaped quoted string', function() {
+      it('should tokenize escaped quoted string', () => {
         var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
         var tokens: List<Token> = lex(str);
         expect(tokens.length).toEqual(1);
@@ -203,7 +203,7 @@ export function main() {
       });
 
       // NOTE(deboer): NOT A LEXER TEST
-      //    it('should tokenize negative number', function() {
+      //    it('should tokenize negative number', () => {
       //      var tokens:List<Token> = lex("-0.5");
       //      expectNumberToken(tokens[0], 0, -0.5);
       //    });
@@ -238,6 +238,11 @@ export function main() {
       it('should tokenize hash as operator', function() {
         var tokens: List<Token> = lex("#");
         expectOperatorToken(tokens[0], 0, '#');
+      });
+
+      it('should tokenize ?. as operator', () => {
+        var tokens: List<Token> = lex('?.');
+        expectOperatorToken(tokens[0], 0, '?.');
       });
 
     });

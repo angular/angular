@@ -91,6 +91,20 @@ export class AccessMember extends AST {
   visit(visitor) { return visitor.visitAccessMember(this); }
 }
 
+export class SafeAccessMember extends AST {
+  constructor(public receiver: AST, public name: string, public getter: Function,
+              public setter: Function) {
+    super();
+  }
+
+  eval(context, locals) {
+    var evaluatedReceiver = this.receiver.eval(context, locals);
+    return isBlank(evaluatedReceiver) ? null : this.getter(evaluatedReceiver);
+  }
+
+  visit(visitor) { return visitor.visitSafeAccessMember(this); }
+}
+
 export class KeyedAccess extends AST {
   constructor(public obj: AST, public key: AST) { super(); }
 
@@ -251,6 +265,22 @@ export class MethodCall extends AST {
   visit(visitor) { return visitor.visitMethodCall(this); }
 }
 
+export class SafeMethodCall extends AST {
+  constructor(public receiver: AST, public name: string, public fn: Function,
+              public args: List<any>) {
+    super();
+  }
+
+  eval(context, locals) {
+    var evaluatedReceiver = this.receiver.eval(context, locals);
+    if (isBlank(evaluatedReceiver)) return null;
+    var evaluatedArgs = evalList(context, locals, this.args);
+    return this.fn(evaluatedReceiver, evaluatedArgs);
+  }
+
+  visit(visitor) { return visitor.visitSafeMethodCall(this); }
+}
+
 export class FunctionCall extends AST {
   constructor(public target: AST, public args: List<any>) { super(); }
 
@@ -300,6 +330,8 @@ export class AstVisitor {
   visitLiteralPrimitive(ast: LiteralPrimitive) {}
   visitMethodCall(ast: MethodCall) {}
   visitPrefixNot(ast: PrefixNot) {}
+  visitSafeAccessMember(ast: SafeAccessMember) {}
+  visitSafeMethodCall(ast: SafeMethodCall) {}
 }
 
 export class AstTransformer {
@@ -315,8 +347,16 @@ export class AstTransformer {
     return new AccessMember(ast.receiver.visit(this), ast.name, ast.getter, ast.setter);
   }
 
+  visitSafeAccessMember(ast: SafeAccessMember) {
+    return new SafeAccessMember(ast.receiver.visit(this), ast.name, ast.getter, ast.setter);
+  }
+
   visitMethodCall(ast: MethodCall) {
     return new MethodCall(ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
+  }
+
+  visitSafeMethodCall(ast: SafeMethodCall) {
+    return new SafeMethodCall(ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
   }
 
   visitFunctionCall(ast: FunctionCall) {

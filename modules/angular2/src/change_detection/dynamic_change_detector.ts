@@ -19,7 +19,9 @@ import {
   RECORD_TYPE_KEYED_ACCESS,
   RECORD_TYPE_PIPE,
   RECORD_TYPE_BINDING_PIPE,
-  RECORD_TYPE_INTERPOLATE
+  RECORD_TYPE_INTERPOLATE,
+  RECORD_TYPE_SAFE_PROPERTY,
+  RECORD_TYPE_SAFE_INVOKE_METHOD
 } from './proto_record';
 
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
@@ -192,11 +194,23 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         var context = this._readContext(proto);
         return proto.funcOrValue(context);
 
+      case RECORD_TYPE_SAFE_PROPERTY:
+        var context = this._readContext(proto);
+        return isBlank(context) ? null : proto.funcOrValue(context);
+
       case RECORD_TYPE_LOCAL:
         return this.locals.get(proto.name);
 
       case RECORD_TYPE_INVOKE_METHOD:
         var context = this._readContext(proto);
+        var args = this._readArgs(proto);
+        return proto.funcOrValue(context, args);
+
+      case RECORD_TYPE_SAFE_INVOKE_METHOD:
+        var context = this._readContext(proto);
+        if (isBlank(context)) {
+          return null;
+        }
         var args = this._readArgs(proto);
         return proto.funcOrValue(context, args);
 

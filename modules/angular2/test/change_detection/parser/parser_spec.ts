@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach, IS_DARTIUM} from 'angular2/test_lib';
 import {BaseException, isBlank, isPresent} from 'angular2/src/facade/lang';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
@@ -200,6 +200,33 @@ export function main() {
              var locals = new Locals(null, MapWrapper.create());
              expectEval("a", td(999), locals).toEqual(999);
            });
+      });
+
+      describe('safe navigation operator', () => {
+        it('should parse field access', () => {
+          expectEval('a?.a', td(td(999))).toEqual(999);
+          expectEval('a.a?.a', td(td(td(999)))).toEqual(999);
+        });
+
+        it('should return null when accessing a field on null',
+           () => { expect(() => { expectEval('null?.a', td()).toEqual(null); }).not.toThrow(); });
+
+        it('should have the same priority as .', () => {
+          expect(() => { expectEval('null?.a.a', td()).toEqual(null); }).toThrowError();
+        });
+
+        if (!IS_DARTIUM) {
+          it('should return null when accessing a field on undefined', () => {
+            expect(() => { expectEval('_undefined?.a', td()).toEqual(null); }).not.toThrow();
+          });
+        }
+
+        it('should evaluate method calls',
+           () => { expectEval('a?.add(1,2)', td(td())).toEqual(3); });
+
+        it('should return null when accessing a method on null', () => {
+          expect(() => { expectEval('null?.add(1, 2)', td()).toEqual(null); }).not.toThrow();
+        });
       });
 
       describe("method calls", () => {

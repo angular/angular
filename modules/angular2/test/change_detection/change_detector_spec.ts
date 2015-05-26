@@ -151,12 +151,24 @@ export function main() {
               expect(executeWatch('const', '"a\n\nb"')).toEqual(['const=a\n\nb']);
             });
 
-            it('simple chained property access', () => {
+            it('should support simple chained property access', () => {
               var address = new Address('Grenoble');
               var person = new Person('Victor', address);
 
               expect(executeWatch('address.city', 'address.city', person))
                   .toEqual(['address.city=Grenoble']);
+            });
+
+            it('should support the safe navigation operator', () => {
+              var person = new Person('Victor', null);
+
+              expect(executeWatch('city', 'address?.city', person)).toEqual(['city=null']);
+              expect(executeWatch('city', 'address?.toString()', person)).toEqual(['city=null']);
+
+              person.address = new Address('MTV');
+
+              expect(executeWatch('city', 'address?.city', person)).toEqual(['city=MTV']);
+              expect(executeWatch('city', 'address?.toString()', person)).toEqual(['city=MTV']);
             });
 
             it("should support method calls", () => {
@@ -976,7 +988,7 @@ class Address {
   city: string;
   constructor(city: string) { this.city = city; }
 
-  toString(): string { return this.city; }
+  toString(): string { return isBlank(this.city) ? '-' : this.city }
 }
 
 class Uninitialized {
