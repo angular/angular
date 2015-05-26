@@ -193,11 +193,12 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp, input) {
+  static firstMatch(regExp: RegExp, input: string): List<string> {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
   }
+  static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
   static matcher(regExp, input) {
     // Reset regex state for the case
     // someone did not loop over all matches

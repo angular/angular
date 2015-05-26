@@ -19,7 +19,14 @@ export function main() {
       }
 
       expect(indexes).toEqual([1, 4, 8, 9]);
-    })
+    });
+
+    it('should whether the regular expression has a match in the string', () => {
+      var barRe = RegExpWrapper.create('bar');
+
+      expect(RegExpWrapper.test(barRe, 'bar')).toEqual(true);
+      expect(RegExpWrapper.test(barRe, 'foo')).toEqual(false);
+    });
   });
 
   describe('const', () => {
