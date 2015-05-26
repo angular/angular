@@ -45,6 +45,20 @@ export function main() {
       expect(s(css, 'a')).toEqual(expected);
     });
 
+    it('should handle keyframes rules', () => {
+      var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
+      var passRe = RegExpWrapper.create(
+          '@keyframes foo {\\s*0% {\\s*transform: translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+      expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
+    });
+
+    it('should handle -webkit-keyframes rules', () => {
+      var css = '@-webkit-keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
+      var passRe = RegExpWrapper.create(
+          '@-webkit-keyframes foo {\\s*0% {\\s*transform: translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+      expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
+    });
+
     it('should handle complicated selectors', () => {
       expect(s('one::before {}', 'a')).toEqual('one[a]::before {}');
       expect(s('one two {}', 'a')).toEqual('one[a] two[a] {}');
