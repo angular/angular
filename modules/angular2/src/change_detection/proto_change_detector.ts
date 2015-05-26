@@ -102,7 +102,7 @@ class ProtoRecordBuilder {
 
   constructor() { this.records = []; }
 
-  addAst(b: BindingRecord, variableNames: List < string >= null) {
+  addAst(b: BindingRecord, variableNames: List<string> = null) {
     var oldLast = ListWrapper.last(this.records);
     if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
       oldLast.lastInDirective = false;
