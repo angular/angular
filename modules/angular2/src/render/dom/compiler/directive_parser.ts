@@ -89,8 +89,8 @@ import {
       var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
       current.compileChildren = current.compileChildren && directive.compileChildren;
       if (isPresent(directive.properties)) {
-        MapWrapper.forEach(directive.properties, (bindConfig, dirProperty) => {
-          this._bindDirectiveProperty(dirProperty, bindConfig, current, directiveBinderBuilder);
+        ListWrapper.forEach(directive.properties, (bindConfig) => {
+          this._bindDirectiveProperty(bindConfig, current, directiveBinderBuilder);
         });
       }
       if (isPresent(directive.hostListeners)) {
@@ -121,10 +121,27 @@ import {
     });
   }
 
-  _bindDirectiveProperty(dirProperty: string, bindConfig: string, compileElement: CompileElement,
+  _bindDirectiveProperty(bindConfig: string, compileElement: CompileElement,
                          directiveBinderBuilder: DirectiveBuilder) {
-    var pipes = this._splitBindConfig(bindConfig);
-    var elProp = ListWrapper.removeAt(pipes, 0);
+    // Name of the property on the directive
+    let dirProperty: string;
+    // Name of the property on the element
+    let elProp: string;
+    let pipes: List<string>;
+    let assignIndex: number = bindConfig.indexOf(':');
+
+    if (assignIndex > -1) {
+      // canonical syntax: `dirProp: elProp | pipe0 | ... | pipeN`
+      dirProperty = StringWrapper.substring(bindConfig, 0, assignIndex).trim();
+      pipes = this._splitBindConfig(StringWrapper.substring(bindConfig, assignIndex + 1));
+      elProp = ListWrapper.removeAt(pipes, 0);
+    } else {
+      // shorthand syntax when the name of the property on the directive and on the element is the
+      // same, ie `property`
+      dirProperty = bindConfig;
+      elProp = bindConfig;
+      pipes = [];
+    }
 
     var bindingAst =
         MapWrapper.get(compileElement.bindElement().propertyBindings, dashCaseToCamelCase(elProp));

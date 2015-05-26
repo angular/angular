@@ -87,7 +87,7 @@ export function main() {
   });
 }
 
-@Directive({selector: '[text]', properties: {'text': 'text'}})
+@Directive({selector: '[text]', properties: ['text']})
 @Injectable()
 class TextDirective {
   text: string;

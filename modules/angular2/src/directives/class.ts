@@ -4,7 +4,7 @@ import {ElementRef} from 'angular2/core';
 import {isPresent} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-@Directive({selector: '[class]', properties: {'iterableChanges': 'class | keyValDiff'}})
+@Directive({selector: '[class]', properties: ['iterableChanges: class | keyValDiff']})
 export class CSSClass {
   _domEl;
   constructor(ngEl: ElementRef) { this._domEl = ngEl.domElement; }

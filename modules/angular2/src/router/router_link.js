@@ -31,10 +31,10 @@ import {Location} from './location';
  */
 @Directive({
   selector: '[router-link]',
-  properties: {
-    'route': 'routerLink',
-    'params': 'routerParams'
-  },
+  properties: [
+    'route: routerLink',
+    'params: routerParams'
+  ],
   lifecycle: [onAllChangesDone]
 })
 export class RouterLink {

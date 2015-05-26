@@ -36,7 +36,7 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
     hostProperties:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostProperties')),
     hostActions:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostActions')),
     hostAttributes:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostAttributes')),
-    properties:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'properties')),
+    properties:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'properties')),
     readAttributes:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'readAttributes')),
     type:<number>MapWrapper.get(map, 'type')
   });

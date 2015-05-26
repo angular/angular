@@ -103,9 +103,9 @@ import {DEFAULT} from 'angular2/change_detection';
  *
  * @Directive({
  *   selector: '[dependency]',
- *   properties: {
- *     'id':'dependency'
- *   }
+ *   properties: [
+ *     'id: dependency'
+ *   ]
  * })
  * class Dependency {
  *   id:string;
@@ -275,9 +275,9 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  * @Directive({
  *   selector: '[tooltip]',
- *   properties: {
- *     'text': 'tooltip'
- *   },
+ *   properties: [
+ *     'text: tooltip'
+ *   ],
  *   hostListeners: {
  *     'onmouseenter': 'onMouseEnter()',
  *     'onmouseleave': 'onMouseLeave()'
@@ -361,9 +361,7 @@ import {DEFAULT} from 'angular2/change_detection';
  * ```
  * @Directive({
  *   selector: '[unless]',
- *   properties: {
- *     'unless': 'unless'
- *   }
+ *   properties: ['unless']
  * })
  * export class Unless {
  *   viewContainer: ViewContainerRef;
@@ -453,25 +451,28 @@ export class Directive extends Injectable {
    * Enumerates the set of properties that accept data binding for a directive.
    *
    * The `properties` property defines a set of `directiveProperty` to `bindingProperty`
-   * key-value pairs:
+   * configuration:
    *
    * - `directiveProperty` specifies the component property where the value is written.
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
    * You can include a {@link Pipe} when specifying a `bindingProperty` to allow for data
-   * transformation and structural
-   * change detection of the value. These pipes will be evaluated in the context of this component.
-   *
+   * transformation and structural change detection of the value. These pipes will be evaluated in
+   * the context of this component.
    *
    * ## Syntax
    *
+   * There is no need to specify both `directiveProperty` and `bindingProperty` when they both have
+   * the same value.
+   *
    * ```
    * @Directive({
-   *   properties: {
-   *     'directiveProperty1': 'bindingProperty1',
-   *     'directiveProperty2': 'bindingProperty2 | pipe1 | ...',
+   *   properties: [
+   *     'propertyName', // shorthand notation for 'propertyName: propertyName'
+   *     'directiveProperty1: bindingProperty1',
+   *     'directiveProperty2: bindingProperty2 | pipe1 | ...',
    *     ...
-   *   }
+   *   ]
    * }
    * ```
    *
@@ -479,26 +480,24 @@ export class Directive extends Injectable {
    * ## Basic Property Binding
    *
    * We can easily build a simple `Tooltip` directive that exposes a `tooltip` property, which can
-   * be used in templates
-   * with standard Angular syntax. For example:
+   * be used in templates with standard Angular syntax. For example:
    *
    * ```
    * @Directive({
    *   selector: '[tooltip]',
-   *   properties: {
-   *     'text': 'tooltip'
-   *   }
+   *   properties: [
+   *     'text: tooltip'
+   *   ]
    * })
    * class Tooltip {
-   *   set text(text) {
-   *     // This will get called every time the 'tooltip' binding changes with the new value.
+   *   set text(value: string) {
+   *     // This will get called every time with the new value when the 'tooltip' property changes
    *   }
    * }
    * ```
    *
    * We can then bind to the `tooltip' property as either an expression (`someExpression`) or as a
-   * string literal, as
-   * shown in the HTML template below:
+   * string literal, as shown in the HTML template below:
    *
    * ```html
    * <div [tooltip]="someExpression">...</div>
@@ -508,27 +507,24 @@ export class Directive extends Injectable {
    * Whenever the `someExpression` expression changes, the `properties` declaration instructs
    * Angular to update the `Tooltip`'s `text` property.
    *
-   *
-   *
    * ## Bindings With Pipes
    *
    * You can also use pipes when writing binding definitions for a directive.
    *
    * For example, we could write a binding that updates the directive on structural changes, rather
-   * than on reference
-   * changes, as normally occurs in change detection.
+   * than on reference changes, as normally occurs in change detection.
    *
    * See {@link Pipe} and {@link keyValDiff} documentation for more details.
    *
    * ```
    * @Directive({
    *   selector: '[class-set]',
-   *   properties: {
-   *     'classChanges': 'classSet | keyValDiff'
-   *   }
+   *   properties: [
+   *     'classChanges: classSet | keyValDiff'
+   *   ]
    * })
    * class ClassSet {
-   *   set classChanges(changes:KeyValueChanges) {
+   *   set classChanges(changes: KeyValueChanges) {
    *     // This will get called every time the `class-set` expressions changes its structure.
    *   }
    * }
@@ -544,7 +540,7 @@ export class Directive extends Injectable {
    * keyValDiff`.
    *
    */
-  properties: StringMap<string, string>;
+  properties: List<string>;
 
   /**
    * Enumerates the set of emitted events.
@@ -756,7 +752,7 @@ export class Directive extends Injectable {
                   hostActions, lifecycle, hostInjector, compileChildren = true,
               }: {
     selector?: string,
-    properties?: any,
+    properties?: List<string>,
     events?: List<string>,
     hostListeners?: StringMap<string, string>,
     hostProperties?: StringMap<string, string>,
@@ -981,7 +977,7 @@ export class Component extends Directive {
                hostActions, appInjector, lifecycle, hostInjector, viewInjector,
                changeDetection = DEFAULT, compileChildren = true}: {
     selector?: string,
-    properties?: Object,
+    properties?: List<string>,
     events?: List<string>,
     hostListeners?: Map<string, string>,
     hostProperties?: any,
@@ -1053,10 +1049,10 @@ export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
  * ```
  * @Directive({
  *   selector: '[class-set]',
- *   properties: {
- *     'propA': 'propA'
- *     'propB': 'propB'
- *   },
+ *   properties: [
+ *     'propA',
+ *     'propB'
+ *   ],
  *   lifecycle: [onChange]
  * })
  * class ClassSet {

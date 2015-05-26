@@ -81,17 +81,17 @@ export function main() {
 
 @Directive({
   selector: '[dir0]',
-  properties: {
-    'prop': 'attr0'
-  }
+  properties: [
+    'prop: attr0'
+  ]
 })
 class Dir0 {}
 
 @Directive({
   selector: '[dir1]',
-  properties: {
-    'prop': 'attr1'
-  }
+  properties: [
+    'prop: attr1'
+  ]
 })
 class Dir1 {
   constructor(dir0:Dir0) {}
@@ -99,9 +99,9 @@ class Dir1 {
 
 @Directive({
   selector: '[dir2]',
-  properties: {
-    'prop': 'attr2'
-  }
+  properties: [
+    'prop: attr2'
+  ]
 })
 class Dir2 {
   constructor(dir1:Dir1) {}
@@ -109,9 +109,9 @@ class Dir2 {
 
 @Directive({
   selector: '[dir3]',
-  properties: {
-    'prop': 'attr3'
-  }
+  properties: [
+    'prop: attr3'
+  ]
 })
 class Dir3 {
   constructor(dir2:Dir2) {}
@@ -119,9 +119,9 @@ class Dir3 {
 
 @Directive({
   selector: '[dir4]',
-  properties: {
-    'prop': 'attr4'
-  }
+  properties: [
+    'prop: attr4'
+  ]
 })
 class Dir4 {
   constructor(dir3:Dir3) {}

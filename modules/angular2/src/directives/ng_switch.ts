@@ -44,7 +44,7 @@ export class SwitchView {
  *
  * @exportedAs angular2/directives
  */
-@Directive({selector: '[ng-switch]', properties: {'ngSwitch': 'ngSwitch'}})
+@Directive({selector: '[ng-switch]', properties: ['ngSwitch']})
 export class NgSwitch {
   _switchValue: any;
   _useDefault: boolean;
@@ -153,7 +153,7 @@ export class NgSwitch {
  *
  * @exportedAs angular2/directives
  */
-@Directive({selector: '[ng-switch-when]', properties: {'ngSwitchWhen': 'ngSwitchWhen'}})
+@Directive({selector: '[ng-switch-when]', properties: ['ngSwitchWhen']})
 export class NgSwitchWhen {
   _value: any;
   _switch: NgSwitch;

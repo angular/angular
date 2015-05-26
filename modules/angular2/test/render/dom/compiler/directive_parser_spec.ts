@@ -239,8 +239,7 @@ var decoratorWithMultipleAttrs = new DirectiveMetadata({
 
 var someDirectiveWithProps = new DirectiveMetadata({
   selector: '[some-decor-props]',
-  properties:
-      MapWrapper.createFromStringMap({'dirProp': 'elProp', 'doubleProp': 'elProp | double'}),
+  properties: ['dirProp: elProp', 'doubleProp: elProp | double'],
   readAttributes: ['some-attr']
 });
 

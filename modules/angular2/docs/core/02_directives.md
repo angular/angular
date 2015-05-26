@@ -63,9 +63,9 @@ Here is a trivial example of a tooltip decorator. The directive will log a toolt
 ```
 @Directive({
   selector: '[tooltip]',     | CSS Selector which triggers the decorator
-  properties: {              | List which properties need to be bound
-    text: 'tooltip'          |  - DOM element tooltip property should be
-  },                         |    mapped to the directive text property.
+  properties: [              | List which properties need to be bound
+    'text: tooltip'          |  - DOM element tooltip property should be
+  ],                         |    mapped to the directive text property.
   hostListeners: {           | List which events need to be mapped.
     mouseover: 'show'        |  - Invoke the show() method every time
   }                          |    the mouseover event is fired.
@@ -108,10 +108,10 @@ Example of a component:
 ```
 @Component({                      | Component annotation
   selector: 'pane',               | CSS selector on <pane> element
-  properties: {                   | List which property need to be bound
-    'title': 'title',             |  - title mapped to component title
-    'open': 'open'                |  - open attribute mapped to component's open property
-  },                              |
+  properties: [                   | List which property need to be bound
+    'title',                      |  - title mapped to component title
+    'open'                        |  - open attribute mapped to component's open property
+  ],                              |
 })                                |
 @View({                           | View annotation
   templateUrl: 'pane.html'        |  - URL of template HTML
@@ -173,9 +173,9 @@ Directives that use a ViewContainer can control instantiation of child views whi
 ```
 @Directive({
   selector: '[if]',
-  properties: {
-    'condition': 'if'
-  }
+  properties: [
+    'condition: if'
+  ]
 })
 export class If {
   viewContainer: ViewContainerRef;

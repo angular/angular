@@ -12,7 +12,7 @@ export function main() {
         hostProperties: MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']]),
         hostActions: MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]),
         id: 'someComponent',
-        properties: MapWrapper.createFromPairs([['propKey', 'propVal']]),
+        properties: ['propKey: propVal'],
         readAttributes: ['read1', 'read2'],
         selector: 'some-comp',
         type: DirectiveMetadata.COMPONENT_TYPE
@@ -26,8 +26,7 @@ export function main() {
       expect(MapWrapper.get(map, 'hostActions'))
           .toEqual(MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
       expect(MapWrapper.get(map, 'id')).toEqual('someComponent');
-      expect(MapWrapper.get(map, 'properties'))
-          .toEqual(MapWrapper.createFromPairs([['propKey', 'propVal']]));
+      expect(MapWrapper.get(map, 'properties')).toEqual(['propKey: propVal']);
       expect(MapWrapper.get(map, 'readAttributes')).toEqual(['read1', 'read2']);
       expect(MapWrapper.get(map, 'selector')).toEqual('some-comp');
       expect(MapWrapper.get(map, 'type')).toEqual(DirectiveMetadata.COMPONENT_TYPE);
@@ -40,7 +39,7 @@ export function main() {
         ['hostProperties', MapWrapper.createFromPairs([['hostPropKey', 'hostPropVal']])],
         ['hostActions', MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']])],
         ['id', 'testId'],
-        ['properties', MapWrapper.createFromPairs([['propKey', 'propVal']])],
+        ['properties', ['propKey: propVal']],
         ['readAttributes', ['readTest1', 'readTest2']],
         ['selector', 'testSelector'],
         ['type', DirectiveMetadata.DIRECTIVE_TYPE]
@@ -53,7 +52,7 @@ export function main() {
       expect(meta.hostActions)
           .toEqual(MapWrapper.createFromPairs([['hostActionKey', 'hostActionVal']]));
       expect(meta.id).toEqual('testId');
-      expect(meta.properties).toEqual(MapWrapper.createFromPairs([['propKey', 'propVal']]));
+      expect(meta.properties).toEqual(['propKey: propVal']);
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
       expect(meta.selector).toEqual('testSelector');
       expect(meta.type).toEqual(DirectiveMetadata.DIRECTIVE_TYPE);

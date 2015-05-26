@@ -73,7 +73,7 @@ function _lookupControl(groupDirective: ControlGroupDirective, controlOrName: an
  *
  * @exportedAs angular2/forms
  */
-@Directive({selector: '[control-group]', properties: {'controlOrName': 'control-group'}})
+@Directive({selector: '[control-group]', properties: ['controlOrName: control-group']})
 export class ControlGroupDirective {
   _groupDirective: ControlGroupDirective;
   _directives: List<ControlDirective>;
@@ -133,7 +133,7 @@ export class ControlGroupDirective {
  *
  * @exportedAs angular2/forms
  */
-@Directive({selector: '[control]', properties: {'controlOrName': 'control'}})
+@Directive({selector: '[control]', properties: ['controlOrName: control']})
 export class ControlDirective {
   _groupDirective: ControlGroupDirective;
 

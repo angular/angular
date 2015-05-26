@@ -16,7 +16,7 @@ import {print} from 'angular2/src/facade/lang';
 //   <survey-header [header]="header"></survey-header>
 //
 // This component is self-contained and can be tested in isolation.
-@Component({selector: 'survey-header', properties: {"header": "header"}})
+@Component({selector: 'survey-header', properties: ['header']})
 @View({
   template: `
       <div [control-group]="header">
@@ -62,11 +62,7 @@ class HeaderFields {
 //
 // SurveyQuestion uses EventEmitter to fire the delete action.
 // This component is self-contained and can be tested in isolation.
-@Component({
-  selector: 'survey-question',
-  events: ['destroy'],
-  properties: {"question": "question", "index": "index"}
-})
+@Component({selector: 'survey-question', events: ['destroy'], properties: ['question', 'index']})
 @View({
   template: `
       <h2>Question #{{index}}</h2>

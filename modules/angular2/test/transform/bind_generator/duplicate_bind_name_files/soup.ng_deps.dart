@@ -14,12 +14,12 @@ void initReflector(reflector) {
       'annotations': const [
         const Component(
             componentServices: const [SaladComponent],
-            properties: const {'menu': 'menu'})
+            properties: const ['menu'])
       ]
     })
     ..registerType(SaladComponent, {
       'factory': () => new SaladComponent(),
       'parameters': const [],
-      'annotations': const [const Component(properties: const {'menu': 'menu'})]
+      'annotations': const [const Component(properties: const ['menu'])]
     });
 }

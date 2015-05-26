@@ -26,7 +26,7 @@ var _uniqueIdCounter: number = 0;
   selector: 'md-radio-group',
   lifecycle: [onChange],
   events: ['change'],
-  properties: {'disabled': 'disabled', 'value': 'value'},
+  properties: ['disabled', 'value'],
   hostListeners: {
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '^keydown': 'onKeydown($event)'
@@ -186,8 +186,7 @@ export class MdRadioGroup {
 @Component({
   selector: 'md-radio-button',
   lifecycle: [onChange],
-  properties:
-      {'id': 'id', 'name': 'name', 'value': 'value', 'checked': 'checked', 'disabled': 'disabled'},
+  properties: ['id', 'name', 'value', 'checked', 'disabled'],
   hostListeners: {'keydown': 'onKeydown($event)'},
   hostProperties: {
     'id': 'id',

@@ -15,9 +15,9 @@ import {Offering, ITEM_HEIGHT, COMPANY_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH,
 
 @Component({
   selector: 'scroll-item',
-  properties: {
-    'offering': 'offering'
-  }
+  properties: [
+    'offering'
+  ]
 })
 @View({
   directives: [

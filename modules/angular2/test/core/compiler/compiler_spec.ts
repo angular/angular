@@ -219,7 +219,7 @@ export function main() {
       it('should set directive.bind', inject([AsyncTestCompleter], (async) => {
            captureDirective(DirectiveWithBind)
                .then((renderDir) => {
-                 expect(renderDir.properties).toEqual(MapWrapper.createFromStringMap({'a': 'b'}));
+                 expect(renderDir.properties).toEqual(['a: b']);
                  async.done();
                });
          }));
@@ -478,7 +478,7 @@ class DirectiveWithEvents {
 class DirectiveWithProperties {
 }
 
-@Directive({properties: {'a': 'b'}})
+@Directive({properties: ['a: b']})
 class DirectiveWithBind {
 }
 

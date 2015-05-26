@@ -19,7 +19,7 @@ import {Math} from 'angular2/src/facade/math';
 
 @Component({
   selector: 'md-grid-list',
-  properties: {'cols': 'cols', 'rowHeight': 'row-height', 'gutterSize': 'gutter-size'},
+  properties: ['cols', 'rowHeight', 'gutterSize'],
   lifecycle: [onAllChangesDone]
 })
 @View({templateUrl: 'angular2_material/src/components/grid_list/grid_list.html'})
@@ -217,7 +217,7 @@ export class MdGridList {
 
 @Component({
   selector: 'md-grid-tile',
-  properties: {'rowspan': 'rowspan', 'colspan': 'colspan'},
+  properties: ['rowspan', 'colspan'],
   hostProperties: {
     'styleHeight': 'style.height',
     'styleWidth': 'style.width',

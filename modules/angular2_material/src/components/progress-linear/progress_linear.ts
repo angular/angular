@@ -6,7 +6,7 @@ import {Math} from 'angular2/src/facade/math';
 @Component({
   selector: 'md-progress-linear',
   lifecycle: [onChange],
-  properties: {'value': 'value', 'bufferValue': 'buffer-value'},
+  properties: ['value', 'bufferValue'],
   hostProperties: {
     'role': 'attr.role',
     'ariaValuemin': 'attr.aria-valuemin',

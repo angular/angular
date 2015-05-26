@@ -300,7 +300,7 @@ export class DirectiveBinding extends ResolvedBinding {
           isPresent(ann.hostAttributes) ? MapWrapper.createFromStringMap(ann.hostAttributes) : null,
       hostActions: isPresent(ann.hostActions) ? MapWrapper.createFromStringMap(ann.hostActions) :
                                                 null,
-      properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
+      properties: ann.properties,
       readAttributes: DirectiveBinding._readAttributes(deps),
 
       callOnDestroy: hasLifecycleHook(onDestroy, rb.key.token, ann),

@@ -22,10 +22,10 @@ export class HasStyle {
 
 @Component({
   selector: 'company-name',
-  properties: {
-    'width': 'cell-width',
-    'company': 'company'
-  }
+  properties: [
+    'width: cell-width',
+    'company'
+  ]
 })
 @View({
     directives: [],
@@ -37,10 +37,10 @@ export class CompanyNameComponent extends HasStyle {
 
 @Component({
   selector: 'opportunity-name',
-  properties: {
-    'width': 'cell-width',
-    'opportunity': 'opportunity'
-  }
+  properties: [
+    'width: cell-width',
+    'opportunity'
+  ]
 })
 @View({
     directives: [],
@@ -52,10 +52,10 @@ export class OpportunityNameComponent extends HasStyle {
 
 @Component({
   selector: 'offering-name',
-  properties: {
-    'width': 'cell-width',
-    'offering': 'offering'
-  }
+  properties: [
+    'width: cell-width',
+    'offering'
+  ]
 })
 @View({
     directives: [],
@@ -74,10 +74,10 @@ export class Stage {
 
 @Component({
   selector: 'stage-buttons',
-  properties: {
-    'width': 'cell-width',
-    'offering': 'offering'
-  }
+  properties: [
+    'width: cell-width',
+    'offering'
+  ]
 })
 @View({
     directives: [NgFor],
@@ -133,10 +133,10 @@ export class StageButtonsComponent extends HasStyle {
 
 @Component({
   selector: 'account-cell',
-  properties: {
-    'width': 'cell-width',
-    'account': 'account'
-  }
+  properties: [
+    'width: cell-width',
+    'account'
+  ]
 })
 @View({
     directives: [],
@@ -153,10 +153,10 @@ export class AccountCellComponent extends HasStyle {
 
 @Component({
   selector: 'formatted-cell',
-  properties: {
-    'width': 'cell-width',
-    'value': 'value'
-  }
+  properties: [
+    'width: cell-width',
+    'value'
+  ]
 })
 @View({
     directives: [],

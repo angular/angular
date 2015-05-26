@@ -13,7 +13,7 @@ void initReflector(reflector) {
       'factory': () => new HelloCmp(),
       'parameters': const [const []],
       'annotations': const [
-        const Component(properties: const {'key1': 'val1', 'key2': 'val2'})
+        const Component(properties: const ['key1: val1', 'key2: val2'])
       ]
     });
 }

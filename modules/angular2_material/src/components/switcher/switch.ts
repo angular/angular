@@ -8,7 +8,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'md-switch',
-  properties: {'checked': 'checked', 'disabled': 'disabled'},
+  properties: ['checked', 'disabled'],
   hostListeners: {'keydown': 'onKeydown($event)'},
   hostProperties:
       {'checked': 'attr.aria-checked', 'disabled_': 'attr.aria-disabled', 'role': 'attr.role'}

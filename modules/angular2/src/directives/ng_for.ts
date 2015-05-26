@@ -36,7 +36,7 @@ import {ListWrapper} from 'angular2/src/facade/collection';
  * @exportedAs angular2/directives
  */
 @Directive(
-    {selector: '[ng-for][ng-for-of]', properties: {'iterableChanges': 'ngForOf | iterableDiff'}})
+    {selector: '[ng-for][ng-for-of]', properties: ['iterableChanges: ngForOf | iterableDiff']})
 export class NgFor {
   viewContainer: ViewContainerRef;
   protoViewRef: ProtoViewRef;

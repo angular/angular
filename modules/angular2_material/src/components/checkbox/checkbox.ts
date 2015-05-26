@@ -6,7 +6,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'md-checkbox',
-  properties: {'checked': 'checked', 'disabled': 'disabled'},
+  properties: ['checked', 'disabled'],
   hostListeners: {'keydown': 'onKeydown($event)'},
   hostProperties: {
     'tabindex': 'tabindex',

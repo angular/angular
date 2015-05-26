@@ -27,7 +27,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/directives
  */
-@Directive({selector: '[ng-if]', properties: {'ngIf': 'ngIf'}})
+@Directive({selector: '[ng-if]', properties: ['ngIf']})
 export class NgIf {
   viewContainer: ViewContainerRef;
   protoViewRef: ProtoViewRef;

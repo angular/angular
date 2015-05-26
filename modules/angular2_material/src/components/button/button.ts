@@ -11,7 +11,7 @@ export class MdButton {
 
 @Component({
   selector: '[md-button][href]',
-  properties: {'disabled': 'disabled'},
+  properties: ['disabled'],
   hostListeners: {'click': 'onClick($event)'},
   hostProperties: {'tabIndex': 'tabIndex'},
   lifecycle: [onChange]

@@ -13,7 +13,7 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [
         const Directive(
-            selector: '[tool-tip]', properties: const {'text': 'tool-tip'})
+            selector: '[tool-tip]', properties: const ['text: tool-tip'])
       ]
     });
 }

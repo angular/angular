@@ -133,7 +133,7 @@ export class DirectiveMetadata {
   hostProperties: Map<string, string>;
   hostAttributes: Map<string, string>;
   hostActions: Map<string, string>;
-  properties: Map<string, string>;
+  properties: List<string>;
   readAttributes: List<string>;
   type: number;
   callOnDestroy: boolean;
@@ -153,7 +153,7 @@ export class DirectiveMetadata {
     hostProperties?: Map<string, string>,
     hostAttributes?: Map<string, string>,
     hostActions?: Map<string, string>,
-    properties?: Map<string, string>,
+    properties?: List<string>,
     readAttributes?: List<string>,
     type?: number,
     callOnDestroy?: boolean,

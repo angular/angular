@@ -1173,14 +1173,14 @@ class DynamicViewport {
   }
 }
 
-@Directive({selector: '[my-dir]', properties: {'dirProp': 'elprop'}})
+@Directive({selector: '[my-dir]', properties: ['dirProp: elprop']})
 @Injectable()
 class MyDir {
   dirProp: string;
   constructor() { this.dirProp = ''; }
 }
 
-@Component({selector: 'push-cmp', properties: {'prop': 'prop'}, changeDetection: ON_PUSH})
+@Component({selector: 'push-cmp', properties: ['prop'], changeDetection: ON_PUSH})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmp {
@@ -1195,7 +1195,7 @@ class PushCmp {
   }
 }
 
-@Component({selector: 'push-cmp-with-ref', properties: {'prop': 'prop'}, changeDetection: ON_PUSH})
+@Component({selector: 'push-cmp-with-ref', properties: ['prop'], changeDetection: ON_PUSH})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmpWithRef {
@@ -1230,7 +1230,7 @@ class MyComp {
   }
 }
 
-@Component({selector: 'component-with-pipes', properties: {"prop": "prop | double"}})
+@Component({selector: 'component-with-pipes', properties: ["prop: prop | double"]})
 @View({template: ''})
 @Injectable()
 class ComponentWithPipes {
@@ -1412,7 +1412,7 @@ class DirectiveListeningDomEventNoPrevent {
   onEvent(event) { return true; }
 }
 
-@Directive({selector: '[id]', properties: {'id': 'id'}})
+@Directive({selector: '[id]', properties: ['id']})
 @Injectable()
 class IdDir {
   id: string;
@@ -1459,7 +1459,7 @@ class ToolbarPart {
   }
 }
 
-@Directive({selector: '[toolbar-vc]', properties: {'toolbarVc': 'toolbarVc'}})
+@Directive({selector: '[toolbar-vc]', properties: ['toolbarVc']})
 @Injectable()
 class ToolbarViewContainer {
   vc: ViewContainerRef;
@@ -1487,7 +1487,7 @@ class ToolbarComponent {
   }
 }
 
-@Directive({selector: '[two-way]', properties: {value: 'control'}, events: ['control']})
+@Directive({selector: '[two-way]', properties: ['value: control'], events: ['control']})
 @Injectable()
 class DirectiveWithTwoWayBinding {
   control: EventEmitter;

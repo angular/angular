@@ -233,10 +233,10 @@ class AppComponent {
 
 @Component({
   selector: 'largetable',
-  properties: {
-      'data': 'data',
-      'benchmarkType': 'benchmarktype'
-  }
+  properties: [
+      'data',
+      'benchmarkType'
+  ]
 })
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],

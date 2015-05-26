@@ -242,7 +242,7 @@ class AppComponent {
 
 @Component({
   selector: 'tree',
-  properties: {'data': 'data'}
+  properties: ['data']
 })
 @View({
   directives: [TreeComponent, NgIf],

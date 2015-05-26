@@ -43,7 +43,7 @@ class Logger {
   add(thing: string) { ListWrapper.push(this.log, thing); }
 }
 
-@Directive({selector: '[message]', properties: {'message': 'message'}})
+@Directive({selector: '[message]', properties: ['message']})
 @Injectable()
 class MessageDir {
   logger: Logger;
