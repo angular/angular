@@ -17,7 +17,6 @@ class CompileStepFactory implements base.CompileStepFactory {
 
   List<CompileStep> createSteps(
       ViewDefinition template, List<Future> subTaskPromises) {
-    // TODO(kegluneq): Add other compile steps from default_steps.dart.
     return [
       new ViewSplitter(_parser),
       new PropertyBindingParser(_parser),

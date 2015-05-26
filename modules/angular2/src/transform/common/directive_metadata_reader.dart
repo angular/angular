@@ -49,6 +49,7 @@ num _getDirectiveType(String annotationName, Element element) {
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
   DirectiveMetadata meta;
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   void _createEmptyMetadata(num type) {
     assert(type >= 0);
@@ -130,13 +131,12 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   String _expressionToString(Expression node, String nodeDescription) {
-    // TODO(kegluneq): Accept more options.
-    if (node is! SimpleStringLiteral) {
-      throw new FormatException(
-          'Angular 2 currently only supports string literals '
+    var value = node.accept(_evaluator);
+    if (value is! String) {
+      throw new FormatException('Angular 2 could not understand the value '
           'in $nodeDescription.', '$node' /* source */);
     }
-    return stringLiteralToString(node);
+    return value;
   }
 
   void _populateSelector(Expression selectorValue) {
@@ -153,72 +153,52 @@ class _DirectiveMetadataVisitor extends Object
 
   void _populateCompileChildren(Expression compileChildrenValue) {
     _checkMeta();
-    if (compileChildrenValue is! BooleanLiteral) {
+    var evaluated = compileChildrenValue.accept(_evaluator);
+    if (evaluated is! bool) {
       throw new FormatException(
-          'Angular 2 currently only supports boolean literal values for '
+          'Angular 2 expects a bool but could not understand the value for '
           'Directive#compileChildren.', '$compileChildrenValue' /* source */);
     }
-    meta.compileChildren = (compileChildrenValue as BooleanLiteral).value;
+    meta.compileChildren = evaluated;
+  }
+
+  /// Evaluates the [Map] represented by `expression` and adds all `key`,
+  /// `value` pairs to `map`. If `expression` does not evaluate to a [Map],
+  /// throws a descriptive [FormatException].
+  void _populateMap(Expression expression, Map map, String propertyName) {
+    var evaluated = expression.accept(_evaluator);
+    if (evaluated is! Map) {
+      throw new FormatException(
+          'Angular 2 expects a Map but could not understand the value for '
+          '$propertyName.', '$expression' /* source */);
+    }
+    evaluated.forEach((key, value) {
+      if (value != null) {
+        map[key] = '$value';
+      }
+    });
   }
 
   void _populateProperties(Expression propertiesValue) {
     _checkMeta();
-    if (propertiesValue is! MapLiteral) {
-      throw new FormatException(
-          'Angular 2 currently only supports map literal values for '
-          'Directive#properties.', '$propertiesValue' /* source */);
-    }
-    for (MapLiteralEntry entry in (propertiesValue as MapLiteral).entries) {
-      var sKey = _expressionToString(entry.key, 'Directive#properties keys');
-      var sVal = _expressionToString(entry.value, 'Direcive#properties values');
-      meta.properties[sKey] = sVal;
-    }
+    _populateMap(propertiesValue, meta.properties, 'Directive#properties');
   }
 
   void _populateHostListeners(Expression hostListenersValue) {
     _checkMeta();
-    if (hostListenersValue is! MapLiteral) {
-      throw new FormatException(
-          'Angular 2 currently only supports map literal values for '
-          'Directive#hostListeners.', '$hostListenersValue' /* source */);
-    }
-    for (MapLiteralEntry entry in (hostListenersValue as MapLiteral).entries) {
-      var sKey = _expressionToString(entry.key, 'Directive#hostListeners keys');
-      var sVal =
-          _expressionToString(entry.value, 'Directive#hostListeners values');
-      meta.hostListeners[sKey] = sVal;
-    }
+    _populateMap(
+        hostListenersValue, meta.hostListeners, 'Directive#hostListeners');
   }
 
   void _populateHostProperties(Expression hostPropertyValue) {
     _checkMeta();
-    if (hostPropertyValue is! MapLiteral) {
-      throw new FormatException(
-          'Angular 2 currently only supports map literal values for '
-          'Directive#hostProperties.', '$hostPropertyValue' /* source */);
-    }
-    for (MapLiteralEntry entry in (hostPropertyValue as MapLiteral).entries) {
-      var sKey =
-          _expressionToString(entry.key, 'Directive#hostProperties keys');
-      var sVal =
-          _expressionToString(entry.value, 'Directive#hostProperties values');
-      meta.hostProperties[sKey] = sVal;
-    }
+    _populateMap(
+        hostPropertyValue, meta.hostProperties, 'Directive#hostProperties');
   }
 
   void _populateHostAttributes(Expression hostAttributeValue) {
     _checkMeta();
-    if (hostAttributeValue is! MapLiteral) {
-      throw new FormatException(
-          'Angular 2 currently only supports map literal values for '
-          'Directive#hostAttributes.', '$hostAttributeValue' /* source */);
-    }
-    for (MapLiteralEntry entry in (hostAttributeValue as MapLiteral).entries) {
-      var sKey =
-          _expressionToString(entry.key, 'Directive#hostAttributes keys');
-      var sVal =
-          _expressionToString(entry.value, 'Directive#hostAttributes values');
-      meta.hostAttributes[sKey] = sVal;
-    }
+    _populateMap(
+        hostAttributeValue, meta.hostAttributes, 'Directive#hostAttributes');
   }
 }

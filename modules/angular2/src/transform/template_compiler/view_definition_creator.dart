@@ -155,6 +155,7 @@ class _ViewDefinitionCreator {
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   ViewDefinition viewDef = null;
   final Map<String, DirectiveMetadata> _metadataMap;
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   _TemplateExtractVisitor(this._metadataMap);
 
@@ -191,13 +192,13 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
       // `templateUrl` property.
       if (viewDef == null) return null;
 
-      if (node.expression is! SimpleStringLiteral) {
+      var valueString = node.expression.accept(_evaluator);
+      if (valueString is! String) {
         logger.error(
             'Angular 2 currently only supports string literals in directives.'
             ' Source: ${node}');
         return null;
       }
-      var valueString = stringLiteralToString(node.expression);
       if (keyString == 'templateUrl') {
         if (viewDef.absUrl != null) {
           logger.error(

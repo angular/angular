@@ -210,6 +210,7 @@ bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final AsyncStringWriter writer;
   final XHR _xhr;
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
   bool _processingView = false;
 
   AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr)
@@ -257,14 +258,15 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       return super.visitNamedExpression(node);
     }
     var keyString = '${node.name.label}';
-    if (keyString == 'templateUrl' && node.expression is SimpleStringLiteral) {
-      var url = stringLiteralToString(node.expression);
-      writer.print("template: r'''");
-      writer.asyncPrint(_xhr.get(url));
-      writer.print("'''");
-      return null;
-    } else {
-      return super.visitNamedExpression(node);
+    if (keyString == 'templateUrl') {
+      var url = node.expression.accept(_evaluator);
+      if (url is String) {
+        writer.print("template: r'''");
+        writer.asyncPrint(_xhr.get(url));
+        writer.print("'''");
+        return null;
+      }
     }
+    return super.visitNamedExpression(node);
   }
 }

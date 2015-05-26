@@ -8,29 +8,20 @@ import 'package:angular2/src/transform/common/logging.dart';
 /// values found.
 class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
   final Map<String, String> bindMappings = {};
-
-  void _extractFromMapLiteral(MapLiteral map) {
-    map.entries.forEach((entry) {
-      // TODO(kegluneq): Remove this restriction
-      if (entry.key is SimpleStringLiteral &&
-          entry.value is SimpleStringLiteral) {
-        bindMappings[stringLiteralToString(entry.key)] =
-            stringLiteralToString(entry.value);
-      } else {
-        logger.error('`properties` currently only supports string literals '
-            '(${entry})');
-      }
-    });
-  }
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   @override
   Object visitNamedExpression(NamedExpression node) {
     if ('${node.name.label}' == 'properties') {
-      // TODO(kegluneq): Remove this restriction.
-      if (node.expression is MapLiteral) {
-        _extractFromMapLiteral(node.expression);
+      var evaluated = node.expression.accept(_evaluator);
+      if (evaluated is Map) {
+        evaluated.forEach((key, value) {
+          if (value != null) {
+            bindMappings[key] = '$value';
+          }
+        });
       } else {
-        logger.error('`properties` currently only supports map literals');
+        logger.error('`properties` currently only supports Map values');
       }
       return null;
     }

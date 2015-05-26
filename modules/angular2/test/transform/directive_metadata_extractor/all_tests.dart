@@ -101,6 +101,17 @@ void allTests() {
       expect(extractedMeta.selector).toEqual('[foo]');
     });
 
+    it('should generate `DirectiveMetadata` from .ng_deps.dart files that use '
+        'automatic adjacent string concatenation.', () async {
+      var extracted = await extractDirectiveMetadata(reader, new AssetId('a',
+          'directive_metadata_extractor/adjacent_strings_files/'
+          'foo.ng_deps.dart'));
+      expect(extracted).toContain('FooComponent');
+
+      var extractedMeta = extracted['FooComponent'];
+      expect(extractedMeta.selector).toEqual('[foo]');
+    });
+
     it('should include `DirectiveMetadata` from exported files.', () async {
       var extracted = await extractDirectiveMetadata(reader, new AssetId(
           'a', 'directive_metadata_extractor/export_files/foo.ng_deps.dart'));
