@@ -181,7 +181,7 @@ Map.prototype['jasmineToString'] =
       }
       var res = [];
       m.forEach((v, k) => { res.push(`${k}:${v}`); });
-      return `{ ${res.join(',') } }`;
+      return `{ ${res.join(',')} }`;
     }
 
     _global.beforeEach(function() {
