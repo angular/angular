@@ -12,9 +12,7 @@ export function main() {
       log = '';
     });
 
-    function logAppend(item) {
-      log += (log.length == 0 ? '' : ', ') + item;
-    }
+    function logAppend(item) { log += (log.length == 0 ? '' : ', ') + item; }
 
     it('should support adding objects and iterating over them', () => {
       queryList.add('one');
@@ -35,7 +33,7 @@ export function main() {
     describe('simple observable interface', () => {
       it('should fire callbacks on change', () => {
         var fires = 0;
-        queryList.onChange(() => {fires += 1;});
+        queryList.onChange(() => { fires += 1; });
 
         queryList.fireCallbacks();
         expect(fires).toEqual(0);

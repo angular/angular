@@ -11,9 +11,8 @@ export function main() {
       executed = false;
     });
 
-    it('should start with a pending count of 0', () => {
-      expect(testability.getPendingCount()).toEqual(0);
-    });
+    it('should start with a pending count of 0',
+       () => { expect(testability.getPendingCount()).toEqual(0); });
 
     it('should fire whenstable callbacks if pending count is 0', () => {
       testability.whenStable(() => executed = true);

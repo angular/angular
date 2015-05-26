@@ -12,7 +12,8 @@ import {
   beforeEachBindings,
   it,
   xit,
-  SpyObject, proxy
+  SpyObject,
+  proxy
 } from 'angular2/test_lib';
 
 import {MapWrapper} from 'angular2/src/facade/collection';
@@ -32,23 +33,15 @@ export function main() {
     var view;
     var viewManager;
 
-    function wrapView(view:AppView):ViewRef {
-      return new ViewRef(view);
-    }
+    function wrapView(view: AppView): ViewRef { return new ViewRef(view); }
 
-    function createProtoView() {
-      return new AppProtoView(null, null, null);
-    }
+    function createProtoView() { return new AppProtoView(null, null, null); }
 
-    function createView() {
-      return new AppView(null, createProtoView(), MapWrapper.create());
-    }
+    function createView() { return new AppView(null, createProtoView(), MapWrapper.create()); }
 
-    function createViewContainer() {
-      return new ViewContainerRef(viewManager, location);
-    }
+    function createViewContainer() { return new ViewContainerRef(viewManager, location); }
 
-    beforeEach( () => {
+    beforeEach(() => {
       viewManager = new AppViewManagerSpy();
       view = createView();
       view.viewContainers = [null];
@@ -79,6 +72,6 @@ export function main() {
 @proxy
 @IMPLEMENTS(AppViewManager)
 class AppViewManagerSpy extends SpyObject {
-  constructor(){super(AppViewManager);}
-  noSuchMethod(m){return super.noSuchMethod(m)}
+  constructor() { super(AppViewManager); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
 }

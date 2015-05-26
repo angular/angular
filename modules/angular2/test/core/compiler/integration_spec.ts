@@ -12,7 +12,8 @@ import {
   IS_DARTIUM,
   beforeEachBindings,
   it,
-  xit
+  xit,
+  containsRegexp
 } from 'angular2/test_lib';
 
 
@@ -25,7 +26,8 @@ import {
   BaseException,
   assertionsEnabled,
   isJsObject,
-  global
+  global,
+  stringify
 } from 'angular2/src/facade/lang';
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
@@ -989,94 +991,88 @@ export function main() {
          }));
     });
 
-    // TODO(tbosch): enable this again
-    // Deactivated until we are fully on traceur as Typescript does not
-    // emit class names when transpiling to ES6 and using decorators.
-    // See https://github.com/Microsoft/TypeScript/pull/3063
-    var supportsClassNames =
-        IS_DARTIUM || (isPresent((<any>MyService).name) && (<any>MyService).name.length > 0);
-
     describe("error handling", () => {
-      if (supportsClassNames) {
-        it('should report a meaningful error when a directive is missing annotation',
+      it('should report a meaningful error when a directive is missing annotation',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+           tb.overrideView(MyComp,
+                           new viewAnn.View({directives: [SomeDirectiveMissingAnnotation]}));
+
+           PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
+             expect(e.message).toEqual(
+                 `No Directive annotation found on ${stringify(SomeDirectiveMissingAnnotation)}`);
+             async.done();
+           });
+         }));
+
+      it('should report a meaningful error when a directive is null',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+           tb.overrideView(MyComp, new viewAnn.View({directives: [[null]]}));
+
+           PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
+             expect(e.message).toEqual(
+                 `Unexpected directive value 'null' on the View of component '${stringify(MyComp)}'`);
+             async.done();
+           });
+         }));
+
+      if (!IS_DARTIUM) {
+        it('should report a meaningful error when a directive is undefined',
            inject([TestBed, AsyncTestCompleter], (tb, async) => {
-             tb.overrideView(MyComp,
-                             new viewAnn.View({directives: [SomeDirectiveMissingAnnotation]}));
+
+             var undefinedValue;
+
+             tb.overrideView(MyComp, new viewAnn.View({directives: [undefinedValue]}));
 
              PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
-               expect(e.message)
-                   .toEqual('No Directive annotation found on SomeDirectiveMissingAnnotation');
+               expect(e.message).toEqual(
+                   `Unexpected directive value 'undefined' on the View of component '${stringify(MyComp)}'`);
                async.done();
              });
-           }));
-
-        it('should report a meaningful error when a directive is null',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
-
-             tb.overrideView(MyComp, new viewAnn.View({directives: [[null]]}));
-
-             PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
-               expect(e.message)
-                   .toEqual("Unexpected directive value 'null' on the View of component 'MyComp'");
-               async.done();
-             });
-           }));
-
-        if (!IS_DARTIUM) {
-          it('should report a meaningful error when a directive is undefined',
-             inject([TestBed, AsyncTestCompleter], (tb, async) => {
-
-               var undefinedValue;
-
-               tb.overrideView(MyComp, new viewAnn.View({directives: [undefinedValue]}));
-
-               PromiseWrapper.catchError(tb.createView(MyComp, {context: ctx}), (e) => {
-                 expect(e.message).toEqual(
-                     "Unexpected directive value 'undefined' on the View of component 'MyComp'");
-                 async.done();
-               });
-             }));
-        }
-
-        it('should specify a location of an error that happened during change detection (text)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
-
-             tb.overrideView(MyComp, new viewAnn.View({template: '{{a.b}}'}));
-
-             tb.createView(MyComp, {context: ctx})
-                 .then((view) => {
-                   expect(() => view.detectChanges()).toThrowError(new RegExp('{{a.b}} in MyComp'));
-                   async.done();
-                 })
-           }));
-
-        it('should specify a location of an error that happened during change detection (element property)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
-
-             tb.overrideView(MyComp, new viewAnn.View({template: '<div [prop]="a.b"></div>'}));
-
-             tb.createView(MyComp, {context: ctx})
-                 .then((view) => {
-                   expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
-                   async.done();
-                 })
-           }));
-
-        it('should specify a location of an error that happened during change detection (directive property)',
-           inject([TestBed, AsyncTestCompleter], (tb, async) => {
-
-             tb.overrideView(
-                 MyComp,
-                 new viewAnn.View(
-                     {template: '<child-cmp [prop]="a.b"></child-cmp>', directives: [ChildComp]}));
-
-             tb.createView(MyComp, {context: ctx})
-                 .then((view) => {
-                   expect(() => view.detectChanges()).toThrowError(new RegExp('a.b in MyComp'));
-                   async.done();
-                 })
            }));
       }
+
+      it('should specify a location of an error that happened during change detection (text)',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+           tb.overrideView(MyComp, new viewAnn.View({template: '{{a.b}}'}));
+
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 expect(() => view.detectChanges())
+                     .toThrowError(containsRegexp(`{{a.b}} in ${stringify(MyComp)}`));
+                 async.done();
+               })
+         }));
+
+      it('should specify a location of an error that happened during change detection (element property)',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+           tb.overrideView(MyComp, new viewAnn.View({template: '<div [prop]="a.b"></div>'}));
+
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 expect(() => view.detectChanges())
+                     .toThrowError(containsRegexp(`a.b in ${stringify(MyComp)}`));
+                 async.done();
+               })
+         }));
+
+      it('should specify a location of an error that happened during change detection (directive property)',
+         inject([TestBed, AsyncTestCompleter], (tb, async) => {
+
+           tb.overrideView(
+               MyComp,
+               new viewAnn.View(
+                   {template: '<child-cmp [prop]="a.b"></child-cmp>', directives: [ChildComp]}));
+
+           tb.createView(MyComp, {context: ctx})
+               .then((view) => {
+                 expect(() => view.detectChanges())
+                     .toThrowError(containsRegexp(`a.b in ${stringify(MyComp)}`));
+                 async.done();
+               })
+         }));
     });
 
     it('should support imperative views', inject([TestBed, AsyncTestCompleter], (tb, async) => {
