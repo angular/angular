@@ -1,6 +1,6 @@
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
-import {isPresent} from 'angular2/src/facade/lang';
+import {isPresent, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 
 export class Log {
@@ -41,3 +41,10 @@ export function dispatchEvent(element, eventType) {
 export function el(html: string) {
   return DOM.firstChild(DOM.content(DOM.createTemplate(html)));
 }
+
+var _RE_SPECIAL_CHARS = ['-', '[', ']', '/', '{', '}', '\\', '(', ')', '*', '+', '?', '.', '^', '$', '|'];
+var _ESCAPE_RE = RegExpWrapper.create(`[\\${_RE_SPECIAL_CHARS.join('\\')}]`);
+export function containsRegexp(input: string): RegExp {
+  return RegExpWrapper.create(StringWrapper.replaceAllMapped(input, _ESCAPE_RE, (match) => `\\${match[0]}`));
+}
+
