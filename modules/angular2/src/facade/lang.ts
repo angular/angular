@@ -45,7 +45,12 @@ export function CONST() {
 
 export class ABSTRACT {}
 
-export class IMPLEMENTS {}
+// Note: This is only a marker annotation needed for ts2dart.
+// This is written so that is can be used as a Traceur annotation
+// or a Typescript decorator.
+export function IMPLEMENTS(_) {
+  return (t) => t;
+}
 
 export function isPresent(obj): boolean {
   return obj !== undefined && obj !== null;

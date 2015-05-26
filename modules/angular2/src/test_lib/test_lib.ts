@@ -299,6 +299,9 @@ export class SpyObject {
       }
     }
   }
+  // Noop so that SpyObject has the smae interface as in Dart
+  noSuchMethod(args) {}
+
   spy(name) {
     if (!this[name]) {
       this[name] = this._createGuinnessCompatibleSpy(name);
