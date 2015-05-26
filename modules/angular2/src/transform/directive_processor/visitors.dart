@@ -4,6 +4,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/services/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/async_string_writer.dart';
+import 'package:angular2/src/transform/common/eval_visitor.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
 /// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
@@ -210,6 +211,7 @@ bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final AsyncStringWriter writer;
   final XHR _xhr;
+  final EvalVisitor _evaluator = new EvalVisitor();
   bool _processingView = false;
 
   AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr)
@@ -257,14 +259,15 @@ class AnnotationsTransformVisitor extends ToSourceVisitor {
       return super.visitNamedExpression(node);
     }
     var keyString = '${node.name.label}';
-    if (keyString == 'templateUrl' && node.expression is SimpleStringLiteral) {
-      var url = stringLiteralToString(node.expression);
-      writer.print("template: r'''");
-      writer.asyncPrint(_xhr.get(url));
-      writer.print("'''");
-      return null;
-    } else {
-      return super.visitNamedExpression(node);
+    if (keyString == 'templateUrl') {
+      var url = node.expression.accept(_evaluator);
+      if (url is String) {
+        writer.print("template: r'''");
+        writer.asyncPrint(_xhr.get(url));
+        writer.print("'''");
+        return null;
+      }
     }
+    return super.visitNamedExpression(node);
   }
 }

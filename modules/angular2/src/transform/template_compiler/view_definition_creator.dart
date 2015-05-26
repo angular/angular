@@ -7,6 +7,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/eval_visitor.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
@@ -155,6 +156,7 @@ class _ViewDefinitionCreator {
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   ViewDefinition viewDef = null;
   final Map<String, DirectiveMetadata> _metadataMap;
+  final EvalVisitor _evaluator = new EvalVisitor();
 
   _TemplateExtractVisitor(this._metadataMap);
 
@@ -191,13 +193,13 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
       // `templateUrl` property.
       if (viewDef == null) return null;
 
-      if (node.expression is! SimpleStringLiteral) {
+      var valueString = node.expression.accept(_evaluator);
+      if (valueString is! String) {
         logger.error(
             'Angular 2 currently only supports string literals in directives.'
             ' Source: ${node}');
         return null;
       }
-      var valueString = stringLiteralToString(node.expression);
       if (keyString == 'templateUrl') {
         if (viewDef.absUrl != null) {
           logger.error(
