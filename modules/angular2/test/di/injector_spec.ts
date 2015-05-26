@@ -79,16 +79,16 @@ class NoAnnotations {
 }
 
 export function main() {
-  describe('injector', function() {
+  describe('injector', () => {
 
-    it('should instantiate a class without dependencies', function() {
+    it('should instantiate a class without dependencies', () => {
       var injector = Injector.resolveAndCreate([Engine]);
       var engine = injector.get(Engine);
 
       expect(engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should resolve dependencies based on type information', function() {
+    it('should resolve dependencies based on type information', () => {
       var injector = Injector.resolveAndCreate([Engine, Car]);
       var car = injector.get(Car);
 
@@ -96,7 +96,7 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should resolve dependencies based on @Inject annotation', function() {
+    it('should resolve dependencies based on @Inject annotation', () => {
       var injector = Injector.resolveAndCreate([TurboEngine, Engine, CarWithInject]);
       var car = injector.get(CarWithInject);
 
@@ -104,13 +104,13 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(TurboEngine);
     });
 
-    it('should throw when no type and not @Inject', function() {
+    it('should throw when no type and not @Inject', () => {
       expect(() => Injector.resolveAndCreate([NoAnnotations]))
           .toThrowError('Cannot resolve all parameters for NoAnnotations. ' +
                         'Make sure they all have valid type or annotations.');
     });
 
-    it('should cache instances', function() {
+    it('should cache instances', () => {
       var injector = Injector.resolveAndCreate([Engine]);
 
       var e1 = injector.get(Engine);
@@ -119,14 +119,14 @@ export function main() {
       expect(e1).toBe(e2);
     });
 
-    it('should bind to a value', function() {
+    it('should bind to a value', () => {
       var injector = Injector.resolveAndCreate([bind(Engine).toValue("fake engine")]);
 
       var engine = injector.get(Engine);
       expect(engine).toEqual("fake engine");
     });
 
-    it('should bind to a factory', function() {
+    it('should bind to a factory', () => {
       function sportsCarFactory(e) { return new SportsCar(e); }
 
       var injector =
@@ -137,7 +137,7 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should bind to an alias', function() {
+    it('should bind to an alias', () => {
       var injector = Injector.resolveAndCreate(
           [Engine, bind(SportsCar).toClass(SportsCar), bind(Car).toAlias(SportsCar)]);
 
@@ -147,13 +147,17 @@ export function main() {
       expect(car).toBe(sportsCar);
     });
 
-    it('should throw when the aliased binding does not exist', function() {
+    it('should throw when the aliased binding does not exist', () => {
       var injector = Injector.resolveAndCreate([bind('car').toAlias(SportsCar)]);
       var e = `No provider for ${stringify(SportsCar)}! (car -> ${stringify(SportsCar)})`;
       expect(() => injector.get('car')).toThrowError(e);
     });
 
-    it('should handle forwardRef in toAlias', function() {
+    it('should throw with a meaningful message when the aliased binding is blank', () => {
+      expect(() => bind('car').toAlias(null)).toThrowError('Can not alias car to a blank value!');
+    });
+
+    it('should handle forwardRef in toAlias', () => {
       var injector = Injector.resolveAndCreate([
         bind('originalEngine')
             .toClass(forwardRef(() => Engine)),
@@ -162,7 +166,7 @@ export function main() {
       expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
     });
 
-    it('should support overriding factory dependencies', function() {
+    it('should support overriding factory dependencies', () => {
       var injector =
           Injector
               .resolveAndCreate([Engine, bind(Car).toFactory((e) => new SportsCar(e), [Engine])]);
@@ -172,35 +176,35 @@ export function main() {
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
 
-    it('should support optional dependencies', function() {
+    it('should support optional dependencies', () => {
       var injector = Injector.resolveAndCreate([CarWithOptionalEngine]);
 
       var car = injector.get(CarWithOptionalEngine);
       expect(car.engine).toEqual(null);
     });
 
-    it("should flatten passed-in bindings", function() {
+    it("should flatten passed-in bindings", () => {
       var injector = Injector.resolveAndCreate([[[Engine, Car]]]);
 
       var car = injector.get(Car);
       expect(car).toBeAnInstanceOf(Car);
     });
 
-    it("should use the last binding " + "when there are multiple bindings for same token",
-       function() {
-         var injector = Injector.resolveAndCreate(
-             [bind(Engine).toClass(Engine), bind(Engine).toClass(TurboEngine)]);
+    it("should use the last binding when there are multiple bindings for same token", () => {
+      var injector =
+          Injector
+              .resolveAndCreate([bind(Engine).toClass(Engine), bind(Engine).toClass(TurboEngine)]);
 
-         expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
-       });
+      expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
+    });
 
-    it('should use non-type tokens', function() {
+    it('should use non-type tokens', () => {
       var injector = Injector.resolveAndCreate([bind('token').toValue('value')]);
 
       expect(injector.get('token')).toEqual('value');
     });
 
-    it('should throw when given invalid bindings', function() {
+    it('should throw when given invalid bindings', () => {
       expect(() => Injector.resolveAndCreate(<any>["blah"]))
           .toThrowError(
               'Invalid binding - only instances of Binding and Type are allowed, got: blah');
@@ -209,26 +213,26 @@ export function main() {
                         'got: blah');
     });
 
-    it('should provide itself', function() {
+    it('should provide itself', () => {
       var parent = Injector.resolveAndCreate([]);
       var child = parent.resolveAndCreateChild([]);
 
       expect(child.get(Injector)).toBe(child);
     });
 
-    it('should throw when no provider defined', function() {
+    it('should throw when no provider defined', () => {
       var injector = Injector.resolveAndCreate([]);
       expect(() => injector.get('NonExisting')).toThrowError('No provider for NonExisting!');
     });
 
-    it('should show the full path when no provider', function() {
+    it('should show the full path when no provider', () => {
       var injector = Injector.resolveAndCreate([CarWithDashboard, Engine, Dashboard]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
               `No provider for DashboardSoftware! (${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware)`);
     });
 
-    it('should throw when trying to instantiate a cyclic dependency', function() {
+    it('should throw when trying to instantiate a cyclic dependency', () => {
       var injector = Injector.resolveAndCreate([Car, bind(Engine).toClass(CyclicEngine)]);
 
       expect(() => injector.get(Car))
@@ -240,7 +244,7 @@ export function main() {
               `Cannot instantiate cyclic dependency! (${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)})`);
     });
 
-    it('should show the full path when error happens in a constructor', function() {
+    it('should show the full path when error happens in a constructor', () => {
       var injector = Injector.resolveAndCreate([Car, bind(Engine).toClass(BrokenEngine)]);
 
       try {
@@ -254,7 +258,7 @@ export function main() {
       }
     });
 
-    it('should instantiate an object after a failed attempt', function() {
+    it('should instantiate an object after a failed attempt', () => {
       var isBroken = true;
 
       var injector = Injector.resolveAndCreate(
@@ -272,8 +276,8 @@ export function main() {
       expect(injector.get('null')).toBe(null);
     });
 
-    describe("default bindings", function() {
-      it("should be used when no matching binding found", function() {
+    describe("default bindings", () => {
+      it("should be used when no matching binding found", () => {
         var injector = Injector.resolveAndCreate([], { defaultBindings: true });
 
         var car = injector.get(Car);
@@ -281,7 +285,7 @@ export function main() {
         expect(car).toBeAnInstanceOf(Car);
       });
 
-      it("should use the matching binding when it is available", function() {
+      it("should use the matching binding when it is available", () => {
         var injector =
             Injector.resolveAndCreate([bind(Car).toClass(SportsCar)], {defaultBindings: true});
 
@@ -291,8 +295,8 @@ export function main() {
       });
     });
 
-    describe("child", function() {
-      it('should load instances from parent injector', function() {
+    describe("child", () => {
+      it('should load instances from parent injector', () => {
         var parent = Injector.resolveAndCreate([Engine]);
         var child = parent.resolveAndCreateChild([]);
 
@@ -303,7 +307,7 @@ export function main() {
       });
 
       it("should not use the child bindings when resolving the dependencies of a parent binding",
-         function() {
+         () => {
            var parent = Injector.resolveAndCreate([Car, Engine]);
            var child = parent.resolveAndCreateChild([bind(Engine).toClass(TurboEngine)]);
 
@@ -311,7 +315,7 @@ export function main() {
            expect(carFromChild.engine).toBeAnInstanceOf(Engine);
          });
 
-      it('should create new instance in a child injector', function() {
+      it('should create new instance in a child injector', () => {
         var parent = Injector.resolveAndCreate([Engine]);
         var child = parent.resolveAndCreateChild([bind(Engine).toClass(TurboEngine)]);
 
@@ -322,7 +326,7 @@ export function main() {
         expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
       });
 
-      it("should create child injectors without default bindings", function() {
+      it("should create child injectors without default bindings", () => {
         var parent = Injector.resolveAndCreate([], { defaultBindings: true });
         var child = parent.resolveAndCreateChild([]);
 
@@ -340,15 +344,15 @@ export function main() {
       });
     });
 
-    describe("lazy", function() {
-      it("should create dependencies lazily", function() {
+    describe("lazy", () => {
+      it("should create dependencies lazily", () => {
         var injector = Injector.resolveAndCreate([Engine, CarWithLazyEngine]);
 
         var car = injector.get(CarWithLazyEngine);
         expect(car.engineFactory()).toBeAnInstanceOf(Engine);
       });
 
-      it("should cache instance created lazily", function() {
+      it("should cache instance created lazily", () => {
         var injector = Injector.resolveAndCreate([Engine, CarWithLazyEngine]);
 
         var car = injector.get(CarWithLazyEngine);
@@ -359,7 +363,7 @@ export function main() {
       });
     });
 
-    describe('resolve', function() {
+    describe('resolve', () => {
       it('should resolve and flatten', () => {
         var bindings = Injector.resolve([Engine, [BrokenEngine]]);
         bindings.forEach(function(b) {
@@ -388,7 +392,7 @@ export function main() {
         expect(dashboardSoftwareBinding.dependencies[0].key).toEqual(Key.get(BrokenEngine));
       });
 
-      it('should support overriding factory dependencies with dependency annotations', function() {
+      it('should support overriding factory dependencies with dependency annotations', () => {
         var bindings = Injector.resolve(
             [bind("token")
                     .toFactory((e) => "result",

@@ -1,4 +1,4 @@
-import {Type, isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, CONST, BaseException, stringify} from 'angular2/src/facade/lang';
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/reflection/reflection';
 import {Key} from './key';
@@ -383,7 +383,12 @@ export class BindingBuilder {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toAlias(aliasToken): Binding { return new Binding(this.token, {toAlias: aliasToken}); }
+  toAlias(aliasToken): Binding {
+    if (isBlank(aliasToken)) {
+      throw new BaseException(`Can not alias ${stringify(this.token)} to a blank value!`);
+    }
+    return new Binding(this.token, {toAlias: aliasToken});
+  }
 
   /**
    * Binds a key to a function which computes the value.
