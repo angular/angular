@@ -17,8 +17,7 @@ import {IMPLEMENTS} from 'angular2/src/facade/lang';
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ObservablePipe} from 'angular2/src/change_detection/pipes/observable_pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
-import {EventEmitter, Observable, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {ChangeDetector} from 'angular2/src/change_detection/interfaces';
+import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 
 export function main() {
   describe("ObservablePipe", () => {
