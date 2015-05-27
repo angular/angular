@@ -44,17 +44,19 @@ export class ElementBinder {
   textBindings: List<ASTWithSource>;
   readAttributes: Map<string, string>;
 
-  constructor({
-    index, parentIndex, distanceToParent,
-    directives, nestedProtoView,
-    propertyBindings, variableBindings,
-    eventBindings, textBindings,
-    readAttributes
-  }:{index?:number, parentIndex?:number, distanceToParent?:number,
-    directives?:List<DirectiveBinder>, nestedProtoView?:ProtoViewDto,
-    propertyBindings?:Map<string, ASTWithSource>, variableBindings?:Map<string, ASTWithSource>,
-    eventBindings?:List<EventBinding>, textBindings?:List<ASTWithSource>,
-    readAttributes?:Map<string, string>}={}) {
+  constructor({index, parentIndex, distanceToParent, directives, nestedProtoView, propertyBindings,
+               variableBindings, eventBindings, textBindings, readAttributes}: {
+    index?: number,
+    parentIndex?: number,
+    distanceToParent?: number,
+    directives?: List<DirectiveBinder>,
+    nestedProtoView?: ProtoViewDto,
+    propertyBindings?: Map<string, ASTWithSource>,
+    variableBindings?: Map<string, ASTWithSource>,
+    eventBindings?: List<EventBinding>,
+    textBindings?: List<ASTWithSource>,
+    readAttributes?: Map<string, string>
+  } = {}) {
     this.index = index;
     this.parentIndex = parentIndex;
     this.distanceToParent = distanceToParent;
@@ -77,11 +79,11 @@ export class DirectiveBinder {
   // with a local name
   eventBindings: List<EventBinding>;
   hostPropertyBindings: Map<string, ASTWithSource>;
-  constructor({
-    directiveIndex, propertyBindings, eventBindings, hostPropertyBindings
-  }:{
-    directiveIndex?:number, propertyBindings?:Map<string, ASTWithSource>,
-    eventBindings?:List<EventBinding>, hostPropertyBindings?:Map<string, ASTWithSource>
+  constructor({directiveIndex, propertyBindings, eventBindings, hostPropertyBindings}: {
+    directiveIndex?: number,
+    propertyBindings?: Map<string, ASTWithSource>,
+    eventBindings?: List<EventBinding>,
+    hostPropertyBindings?: Map<string, ASTWithSource>
   }) {
     this.directiveIndex = directiveIndex;
     this.propertyBindings = propertyBindings;
@@ -107,12 +109,12 @@ export class ProtoViewDto {
   variableBindings: Map<string, string>;
   type: number;
 
-  constructor({
-      render, elementBinders, variableBindings, type
-    }:{
-      render?:RenderProtoViewRef, elementBinders?:List<ElementBinder>,
-      variableBindings?:Map<string, string>, type?:number
-    }) {
+  constructor({render, elementBinders, variableBindings, type}: {
+    render?: RenderProtoViewRef,
+    elementBinders?: List<ElementBinder>,
+    variableBindings?: Map<string, string>,
+    type?: number
+  }) {
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;
@@ -138,17 +140,25 @@ export class DirectiveMetadata {
   callOnChange: boolean;
   callOnAllChangesDone: boolean;
   changeDetection: string;
-  constructor({
-      id, selector, compileChildren, events, hostListeners, hostProperties,
-      hostAttributes, hostActions, properties, readAttributes, type,
-      callOnDestroy, callOnChange, callOnAllChangesDone,
-      changeDetection
-    }:{
-      id?:string, selector?:string, compileChildren?:boolean, events?:List<string>, hostListeners?:Map<string, string>, hostProperties?:Map<string, string>,
-      hostAttributes?:Map<string, string>, hostActions?:Map<string, string>, properties?:Map<string, string>, readAttributes?:List<string>, type?:number,
-      callOnDestroy?:boolean, callOnChange?:boolean, callOnAllChangesDone?:boolean,
-      changeDetection?:string
-    }) {
+  constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
+               hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
+               callOnAllChangesDone, changeDetection}: {
+    id?: string,
+    selector?: string,
+    compileChildren?: boolean,
+    events?: List<string>,
+    hostListeners?: Map<string, string>,
+    hostProperties?: Map<string, string>,
+    hostAttributes?: Map<string, string>,
+    hostActions?: Map<string, string>,
+    properties?: Map<string, string>,
+    readAttributes?: List<string>,
+    type?: number,
+    callOnDestroy?: boolean,
+    callOnChange?: boolean,
+    callOnAllChangesDone?: boolean,
+    changeDetection?: string
+  }) {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
@@ -179,11 +189,12 @@ export class ViewDefinition {
   template: string;
   directives: List<DirectiveMetadata>;
 
-  constructor({
-      componentId, absUrl, template, directives
-    }:{
-      componentId?:string, absUrl?:string, template?:string, directives?:List<DirectiveMetadata>
-    }) {
+  constructor({componentId, absUrl, template, directives}: {
+    componentId?: string,
+    absUrl?: string,
+    template?: string,
+    directives?: List<DirectiveMetadata>
+  }) {
     this.componentId = componentId;
     this.absUrl = absUrl;
     this.template = template;

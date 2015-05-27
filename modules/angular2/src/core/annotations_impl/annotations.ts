@@ -752,29 +752,20 @@ export class Directive extends Injectable {
   hostInjector: List<any>;
 
   constructor({
-      selector,
-      properties,
-      events,
-      hostListeners,
-      hostProperties,
-      hostAttributes,
-      hostActions,
-      lifecycle,
-      hostInjector,
-      compileChildren = true,
-    }:{
-      selector?:string,
-      properties?:any,
-      events?:List<string>,
-      hostListeners?: StringMap<string, string>,
-      hostProperties?: StringMap<string, string>,
-      hostAttributes?: StringMap<string, string>,
-      hostActions?: StringMap<string, string>,
-      lifecycle?:List<LifecycleEvent>,
-      hostInjector?:List<any>,
-      compileChildren?:boolean
-    }={})
-  {
+                  selector, properties, events, hostListeners, hostProperties, hostAttributes,
+                  hostActions, lifecycle, hostInjector, compileChildren = true,
+              }: {
+    selector?: string,
+    properties?: any,
+    events?: List<string>,
+    hostListeners?: StringMap<string, string>,
+    hostProperties?: StringMap<string, string>,
+    hostAttributes?: StringMap<string, string>,
+    hostActions?: StringMap<string, string>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    compileChildren?: boolean
+  } = {}) {
     super();
     this.selector = selector;
     this.properties = properties;
@@ -995,36 +986,23 @@ export class Component extends Directive {
    */
   viewInjector: List<any>;
 
-  constructor({
-      selector,
-      properties,
-      events,
-      hostListeners,
-      hostProperties,
-      hostAttributes,
-      hostActions,
-      appInjector,
-      lifecycle,
-      hostInjector,
-      viewInjector,
-      changeDetection = DEFAULT,
-      compileChildren = true
-    }:{
-      selector?:string,
-      properties?:Object,
-      events?:List<string>,
-      hostListeners?:Map<string,string>,
-      hostProperties?:any,
-      hostAttributes?:any,
-      hostActions?:any,
-      appInjector?:List<any>,
-      lifecycle?:List<LifecycleEvent>,
-      hostInjector?:List<any>,
-      viewInjector?:List<any>,
-      changeDetection?:string,
-      compileChildren?:boolean
-    }={})
-  {
+  constructor({selector, properties, events, hostListeners, hostProperties, hostAttributes,
+               hostActions, appInjector, lifecycle, hostInjector, viewInjector,
+               changeDetection = DEFAULT, compileChildren = true}: {
+    selector?: string,
+    properties?: Object,
+    events?: List<string>,
+    hostListeners?: Map<string, string>,
+    hostProperties?: any,
+    hostAttributes?: any,
+    hostActions?: any,
+    appInjector?: List<any>,
+    lifecycle?: List<LifecycleEvent>,
+    hostInjector?: List<any>,
+    viewInjector?: List<any>,
+    changeDetection?: string,
+    compileChildren?: boolean
+  } = {}) {
     super({
       selector: selector,
       properties: properties,

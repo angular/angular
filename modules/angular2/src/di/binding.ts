@@ -196,8 +196,13 @@ export class Binding {
   dependencies: List<any>;
 
   constructor(token, {toClass, toValue, toAlias, toFactory, toAsyncFactory, deps}: {
-                         toClass ?: Type, toValue ?: any, toAlias ?: any, toFactory ?: Function,
-                         toAsyncFactory ?: Function, deps ?: List<any>}) {
+    toClass?: Type,
+    toValue?: any,
+    toAlias?: any,
+    toFactory?: Function,
+    toAsyncFactory?: Function,
+    deps?: List<any>
+  }) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;

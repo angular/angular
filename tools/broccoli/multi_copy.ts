@@ -9,11 +9,11 @@ var glob = require('glob');
 
 export interface MultiCopyOptions {
   /** The path of the file to copy. */
-  srcPath: string,
+  srcPath: string;
   /** A list of glob patterns of folders to copy to, matched against the input tree. */
-  targetPatterns: string[],
+  targetPatterns: string[];
   /** List of glob patterns to *not* copy to, matched against the matches from `targetPatterns`. */
-  exclude?: string[],
+  exclude?: string[];
 }
 
 /**
