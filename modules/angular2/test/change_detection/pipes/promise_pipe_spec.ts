@@ -14,7 +14,7 @@ export function main() {
     var completer;
     var ref;
     //adds longer timers for passing tests in IE
-    var timer = (DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
+    var timer = (DOM && DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
 
     beforeEach(() => {
       completer = PromiseWrapper.completer();

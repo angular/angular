@@ -1,11 +1,11 @@
-import {isBlank} from 'angular2/src/facade/lang';
+import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 
-export function iterableChangesAsString({collection, previous, additions, moves, removals}) {
-  if (isBlank(collection)) collection = [];
-  if (isBlank(previous)) previous = [];
-  if (isBlank(additions)) additions = [];
-  if (isBlank(moves)) moves = [];
-  if (isBlank(removals)) removals = [];
+export function iterableChangesAsString({
+  collection = CONST_EXPR([]),
+  previous = CONST_EXPR([]),
+  additions = CONST_EXPR([]),
+  moves = CONST_EXPR([]),
+  removals = CONST_EXPR([])}) {
 
   return "collection: " + collection.join(', ') + "\n" +
          "previous: " + previous.join(', ') + "\n" +
