@@ -16,15 +16,16 @@ export class CompilePipeline {
   constructor(steps: List<CompileStep>) { this._control = new CompileControl(steps); }
 
   process(rootElement, protoViewType: number = null,
-          compilationCtxtDescription: string = ''): List<CompileElement> {
+          componentId: string = ''): List<CompileElement> {
     if (isBlank(protoViewType)) {
       protoViewType = ProtoViewDto.COMPONENT_VIEW_TYPE;
     }
     var results = ListWrapper.create();
-    var rootCompileElement = new CompileElement(rootElement, compilationCtxtDescription);
-    rootCompileElement.inheritedProtoView = new ProtoViewBuilder(rootElement, protoViewType);
+    var rootCompileElement = new CompileElement(rootElement, componentId);
+    rootCompileElement.inheritedProtoView =
+        new ProtoViewBuilder(rootElement, protoViewType, componentId);
     rootCompileElement.isViewRoot = true;
-    this._process(results, null, rootCompileElement, compilationCtxtDescription);
+    this._process(results, null, rootCompileElement, componentId);
     return results;
   }
 

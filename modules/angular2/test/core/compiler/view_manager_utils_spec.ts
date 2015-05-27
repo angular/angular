@@ -61,7 +61,7 @@ export function main() {
       if (isBlank(binders)) {
         binders = [];
       }
-      var res = new AppProtoView(null, null, null);
+      var res = new AppProtoView(null, null, null, null);
       res.elementBinders = binders;
       return res;
     }

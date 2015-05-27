@@ -48,11 +48,11 @@ export function main() {
     describe('getChangeDetectorDefinitions', () => {
 
       it('should create a ChangeDetectorDefinition for the root render proto view', () => {
-        var renderPv = createRenderProtoView();
+        var renderPv = createRenderProtoView(null, null, 'someId');
         var defs =
             getChangeDetectorDefinitions(bindDirective(MainComponent).metadata, renderPv, []);
         expect(defs.length).toBe(1);
-        expect(defs[0].id).toEqual(`${stringify(MainComponent)}_comp_0`);
+        expect(defs[0].id).toEqual('someId');
       });
 
     });
@@ -71,7 +71,7 @@ export function main() {
   });
 }
 
-function createRenderProtoView(elementBinders = null, type: number = null) {
+function createRenderProtoView(elementBinders = null, type: number = null, id: string = null) {
   if (isBlank(type)) {
     type = renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE;
   }
@@ -79,7 +79,7 @@ function createRenderProtoView(elementBinders = null, type: number = null) {
     elementBinders = [];
   }
   return new renderApi.ProtoViewDto(
-      {elementBinders: elementBinders, type: type, variableBindings: MapWrapper.create()});
+      {id: id, elementBinders: elementBinders, type: type, variableBindings: MapWrapper.create()});
 }
 
 function createRenderComponentElementBinder(directiveIndex) {

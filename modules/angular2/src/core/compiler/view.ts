@@ -172,7 +172,7 @@ export class AppProtoView {
   elementBinders: List<ElementBinder>;
   protoLocals: Map<string, any>;
 
-  constructor(public render: renderApi.RenderProtoViewRef,
+  constructor(public id: string, public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>) {
     this.elementBinders = [];

@@ -104,17 +104,20 @@ export class ProtoViewDto {
   // inside of a component view
   static get EMBEDDED_VIEW_TYPE() { return 2; }
 
+  id: string;
   render: RenderProtoViewRef;
   elementBinders: List<ElementBinder>;
   variableBindings: Map<string, string>;
   type: number;
 
-  constructor({render, elementBinders, variableBindings, type}: {
+  constructor({id, render, elementBinders, variableBindings, type}: {
+    id?: string,
     render?: RenderProtoViewRef,
     elementBinders?: List<ElementBinder>,
     variableBindings?: Map<string, string>,
     type?: number
   }) {
+    this.id = id;
     this.render = render;
     this.elementBinders = elementBinders;
     this.variableBindings = variableBindings;

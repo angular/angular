@@ -75,7 +75,7 @@ export function main() {
           staticChildComponentCount++;
         }
       }
-      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null, null);
+      var res = new AppProtoView(null, new MockProtoViewRef(staticChildComponentCount), null, null);
       res.elementBinders = binders;
       return res;
     }
