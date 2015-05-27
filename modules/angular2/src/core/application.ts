@@ -103,19 +103,12 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
         .toFactory((styleUrlResolver, doc) =>
                        new EmulatedUnscopedShadowDomStrategy(styleUrlResolver, doc.head),
                    [StyleUrlResolver, DOCUMENT_TOKEN]),
-    // TODO(tbosch): We need an explicit factory here, as
-    // we are getting errors in dart2js with mirrors...
-    bind(DomRenderer)
-        .toFactory((eventManager, shadowDomStrategy, doc) =>
-                       new DomRenderer(eventManager, shadowDomStrategy, doc),
-                   [EventManager, ShadowDomStrategy, DOCUMENT_TOKEN]),
+    DomRenderer,
     DefaultDomCompiler,
     bind(Renderer).toAlias(DomRenderer),
     bind(RenderCompiler).toAlias(DefaultDomCompiler),
     ProtoViewFactory,
-    // TODO(tbosch): We need an explicit factory here, as
-    // we are getting errors in dart2js with mirrors...
-    bind(AppViewPool).toFactory((capacity) => new AppViewPool(capacity), [APP_VIEW_POOL_CAPACITY]),
+    AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
     AppViewManager,
     AppViewManagerUtils,
