@@ -1,4 +1,5 @@
 import {Promise} from 'angular2/src/facade/async';
+import {Injectable} from 'angular2/di';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
@@ -11,6 +12,7 @@ import {ShadowDomStrategy} from './shadow_dom_strategy';
  * The templates for the component are inserted in a Shadow Root created on the component element.
  * Hence they are strictly isolated.
  */
+@Injectable()
 export class NativeShadowDomStrategy extends ShadowDomStrategy {
   styleUrlResolver: StyleUrlResolver;
 
