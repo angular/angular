@@ -48,3 +48,14 @@ export function containsRegexp(input: string): RegExp {
   return RegExpWrapper.create(
       StringWrapper.replaceAllMapped(input, _ESCAPE_RE, (match) => `\\${match[0]}`));
 }
+
+export function normalizeCSS(css: string): string {
+  css = StringWrapper.replaceAll(css, RegExpWrapper.create('\\s+'), ' ');
+  css = StringWrapper.replaceAll(css, RegExpWrapper.create(':\\s'), ':');
+  css = StringWrapper.replaceAll(css, RegExpWrapper.create("\\'"), '"');
+  css = StringWrapper.replaceAllMapped(css, RegExpWrapper.create('url\\(\\"(.+)\\"\\)'),
+                                       (match) => `url(${match[1]})`);
+  css = StringWrapper.replaceAllMapped(css, RegExpWrapper.create('\\[(.+)=([^"\\]]+)\\]'),
+                                       (match) => `[${match[1]}="${match[2]}"]`);
+  return css;
+}
