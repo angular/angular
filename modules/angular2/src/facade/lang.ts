@@ -43,7 +43,9 @@ export function CONST() {
   return (target) => target;
 }
 
-export class ABSTRACT {}
+export function ABSTRACT() {
+  return (t) => t;
+}
 
 // Note: This is only a marker annotation needed for ts2dart.
 // This is written so that is can be used as a Traceur annotation

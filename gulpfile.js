@@ -475,7 +475,7 @@ gulp.task('test.unit.dart/ci', function (done) {
 
 
 gulp.task('test.unit.cjs/ci', function(done) {
-  runJasmineTests(['dist/js/cjs/angular2/test/**/*_spec.js'], done);
+  runJasmineTests(['dist/js/cjs/{angular2,benchpress}/test/**/*_spec.js'], done);
 });
 
 
