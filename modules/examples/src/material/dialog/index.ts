@@ -1,5 +1,9 @@
 import {bootstrap, ElementRef, ComponentRef} from 'angular2/angular2';
-import {MdDialog, MdDialogRef, MdDialogConfig} from 'angular2_material/src/components/dialog/dialog'
+import {
+  MdDialog,
+  MdDialogRef,
+  MdDialogConfig
+} from 'angular2_material/src/components/dialog/dialog';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind, Injector} from 'angular2/di';
@@ -7,18 +11,11 @@ import {isPresent} from 'angular2/src/facade/lang';
 
 // TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
 // add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
+import {Component, Directive, View} from 'angular2/angular2';
 
 
-@Component({
-  selector: 'demo-app',
-  appInjector: [MdDialog]
-})
-@View({
-  templateUrl: './demo_app.html',
-  directives: []
-})
+@Component({selector: 'demo-app', appInjector: [MdDialog]})
+@View({templateUrl: './demo_app.html', directives: []})
 class DemoApp {
   dialog: MdDialog;
   elementRef: ElementRef;
@@ -43,16 +40,16 @@ class DemoApp {
       return;
     }
 
-    this.dialog.open(SimpleDialogComponent,
-        this.elementRef, this.injector, this.dialogConfig).then(ref => {
-      this.dialogRef = ref;
-      ref.instance.numCoconuts = 777;
+    this.dialog.open(SimpleDialogComponent, this.elementRef, this.injector, this.dialogConfig)
+        .then(ref => {
+          this.dialogRef = ref;
+          ref.instance.numCoconuts = 777;
 
-      ref.whenClosed.then(result => {
-        this.dialogRef = null;
-        this.lastResult = result;
-      });
-    });
+          ref.whenClosed.then(result => {
+            this.dialogRef = null;
+            this.lastResult = result;
+          });
+        });
   }
 
   close() {
@@ -60,10 +57,8 @@ class DemoApp {
   }
 }
 
-@Component({
-  selector: 'simple-dialog',
-  properties: ['numCoconuts']
-})
+
+@Component({selector: 'simple-dialog', properties: ['numCoconuts']})
 @View({
   template: `
     <h2>This is the dialog content</h2>
@@ -95,9 +90,5 @@ class SimpleDialogComponent {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [
-    bind(UrlResolver).toValue(new DemoUrlResolver())
-  ]);
+  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
 }
-
-
