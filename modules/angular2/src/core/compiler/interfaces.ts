@@ -12,6 +12,7 @@ export interface OnChange { onChange(changes: StringMap<string, any>): void; }
 export interface OnDestroy { onDestroy(): void; }
 
 /**
- * Defines lifecycle method [onAllChangesDone ] called when the bindings of all its children have been changed.
+ * Defines lifecycle method [onAllChangesDone ] called when the bindings of all its children have
+ * been changed.
  */
-export interface OnAllChangesDone { onAllChangesDone (): void; }
+export interface OnAllChangesDone { onAllChangesDone(): void; }

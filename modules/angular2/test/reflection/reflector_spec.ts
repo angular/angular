@@ -42,8 +42,7 @@ class TestObj {
 
 class Interface {}
 
-class ClassImplementingInterface implements Interface {
-}
+class ClassImplementingInterface implements Interface {}
 
 export function main() {
   describe('Reflector', () => {
@@ -84,6 +83,11 @@ export function main() {
       it("should return registered parameters if available", () => {
         reflector.registerType(TestObj, {"parameters": [1, 2]});
         expect(reflector.parameters(TestObj)).toEqual([1, 2]);
+      });
+
+      it("should return an empty list when no paramters field in the stored type info", () => {
+        reflector.registerType(TestObj, {});
+        expect(reflector.parameters(TestObj)).toEqual([]);
       });
     });
 

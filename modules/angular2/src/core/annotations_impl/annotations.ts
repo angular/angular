@@ -1,5 +1,5 @@
-import {CONST, normalizeBlank, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
-import {ListWrapper, List} from 'angular2/src/facade/collection';
+import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
+import {List} from 'angular2/src/facade/collection';
 import {Injectable} from 'angular2/src/di/annotations_impl';
 import {DEFAULT} from 'angular2/change_detection';
 
@@ -777,15 +777,6 @@ export class Directive extends Injectable {
     this.lifecycle = lifecycle;
     this.compileChildren = compileChildren;
     this.hostInjector = hostInjector;
-  }
-
-  /**
-   * Returns true if a directive participates in a given `LifecycleEvent`.
-   *
-   * See {@link onChange}, {@link onDestroy}, {@link onAllChangesDone} for details.
-   */
-  hasLifecycleHook(hook: LifecycleEvent): boolean {
-    return isPresent(this.lifecycle) ? ListWrapper.contains(this.lifecycle, hook) : false;
   }
 }
 

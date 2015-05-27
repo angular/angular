@@ -1,7 +1,13 @@
 import {Type, isPresent, stringify, BaseException} from 'angular2/src/facade/lang';
-import {List, ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {
+  List,
+  ListWrapper,
+  Map,
+  MapWrapper,
+  StringMap,
+  StringMapWrapper
+} from 'angular2/src/facade/collection';
 import {SetterFn, GetterFn, MethodFn} from './types';
-export {SetterFn, GetterFn, MethodFn} from './types';
 
 export class Reflector {
   _typeInfo: Map<Type, any>;
@@ -18,7 +24,7 @@ export class Reflector {
     this.reflectionCapabilities = reflectionCapabilities;
   }
 
-  registerType(type: Type, typeInfo: Map<Type, any>): void {
+  registerType(type: Type, typeInfo: StringMap<string, any>): void {
     MapWrapper.set(this._typeInfo, type, typeInfo);
   }
 
@@ -29,32 +35,32 @@ export class Reflector {
   registerMethods(methods: Map<string, MethodFn>): void { _mergeMaps(this._methods, methods); }
 
   factory(type: Type): Function {
-    if (MapWrapper.contains(this._typeInfo, type)) {
-      return MapWrapper.get(this._typeInfo, type)["factory"];
+    if (this._containsTypeInfo(type)) {
+      return this._getTypeInfoField(type, "factory", null);
     } else {
       return this.reflectionCapabilities.factory(type);
     }
   }
 
-  parameters(typeOfFunc): List<any> {
-    if (MapWrapper.contains(this._typeInfo, typeOfFunc)) {
-      return MapWrapper.get(this._typeInfo, typeOfFunc)["parameters"];
+  parameters(typeOrFunc): List<any> {
+    if (MapWrapper.contains(this._typeInfo, typeOrFunc)) {
+      return this._getTypeInfoField(typeOrFunc, "parameters", []);
     } else {
-      return this.reflectionCapabilities.parameters(typeOfFunc);
+      return this.reflectionCapabilities.parameters(typeOrFunc);
     }
   }
 
-  annotations(typeOfFunc): List<any> {
-    if (MapWrapper.contains(this._typeInfo, typeOfFunc)) {
-      return MapWrapper.get(this._typeInfo, typeOfFunc)["annotations"];
+  annotations(typeOrFunc): List<any> {
+    if (MapWrapper.contains(this._typeInfo, typeOrFunc)) {
+      return this._getTypeInfoField(typeOrFunc, "annotations", []);
     } else {
-      return this.reflectionCapabilities.annotations(typeOfFunc);
+      return this.reflectionCapabilities.annotations(typeOrFunc);
     }
   }
 
   interfaces(type): List<any> {
     if (MapWrapper.contains(this._typeInfo, type)) {
-      return MapWrapper.get(this._typeInfo, type)["interfaces"];
+      return this._getTypeInfoField(type, "interfaces", []);
     } else {
       return this.reflectionCapabilities.interfaces(type);
     }
@@ -83,6 +89,13 @@ export class Reflector {
       return this.reflectionCapabilities.method(name);
     }
   }
+
+  _getTypeInfoField(typeOrFunc, key, defaultValue) {
+    var res = MapWrapper.get(this._typeInfo, typeOrFunc)[key];
+    return isPresent(res) ? res : defaultValue;
+  }
+
+  _containsTypeInfo(typeOrFunc) { return MapWrapper.contains(this._typeInfo, typeOrFunc); }
 }
 
 function _mergeMaps(target: Map<any, any>, config: Map<string, Function>): void {
