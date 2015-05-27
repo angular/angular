@@ -534,7 +534,8 @@ export function main() {
 
       it('should parse pipes', () => {
         var bindings = parseTemplateBindings('key value|pipe');
-        var ast = bindings[0].expression.ast expect(ast).toBeAnInstanceOf(Pipe);
+        var ast = bindings[0].expression.ast;
+        expect(ast).toBeAnInstanceOf(Pipe);
       });
     });
 

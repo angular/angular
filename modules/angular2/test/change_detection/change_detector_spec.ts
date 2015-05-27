@@ -830,8 +830,8 @@ export function main() {
           });
 
           it("should do nothing when no change", () => {
-            var registry = new FakePipeRegistry('pipe', () => new IdentityPipe()) var ctx =
-                new Person("Megatron");
+            var registry = new FakePipeRegistry('pipe', () => new IdentityPipe());
+            var ctx = new Person("Megatron");
 
             var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
             var cd = c["changeDetector"];
@@ -848,8 +848,8 @@ export function main() {
           });
 
           it("should unwrap the wrapped value", () => {
-            var registry = new FakePipeRegistry('pipe', () => new WrappedPipe()) var ctx =
-                new Person("Megatron");
+            var registry = new FakePipeRegistry('pipe', () => new WrappedPipe());
+            var ctx = new Person("Megatron");
 
             var c = createChangeDetector("memo", "name | pipe", ctx, null, registry);
             var cd = c["changeDetector"];
