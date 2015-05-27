@@ -4,18 +4,14 @@ import {DOM} from 'angular2/src/dom/dom_adapter';
 import {Title} from 'angular2/src/services/title';
 
 export function main() {
-
   describe('title service', () => {
     var initialTitle = DOM.getTitle();
     var titleService = new Title();
 
-    afterEach(() => {
-      DOM.setTitle(initialTitle);
-    });
+    afterEach(() => { DOM.setTitle(initialTitle); });
 
-    it('should allow reading initial title', () => {
-      expect(titleService.getTitle()).toEqual(initialTitle);
-    });
+    it('should allow reading initial title',
+       () => { expect(titleService.getTitle()).toEqual(initialTitle); });
 
     it('should set a title on the injected document', () => {
       titleService.setTitle('test title');
