@@ -1,4 +1,4 @@
-import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
+import {describe, it, iit, ddescribe, expect, beforeEach, IS_DARTIUM} from 'angular2/test_lib';
 import {Reflector} from 'angular2/src/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, classDecorator, paramDecorator} from './reflector_common';
@@ -38,6 +38,11 @@ class TestObj {
   }
 
   identity(arg) { return arg; }
+}
+
+class Interface {}
+
+class ClassImplementingInterface implements Interface {
 }
 
 export function main() {
@@ -93,11 +98,25 @@ export function main() {
         expect(reflector.annotations(TestObj)).toEqual([1, 2]);
       });
 
-      it("should work for a clas without annotations", () => {
+      it("should work for a class without annotations", () => {
         var p = reflector.annotations(ClassWithoutDecorators);
         expect(p).toEqual([]);
       });
     });
+
+    if (IS_DARTIUM) {
+      describe("interfaces", () => {
+        it("should return an array of interfaces for a type", () => {
+          var p = reflector.interfaces(ClassImplementingInterface);
+          expect(p).toEqual([Interface]);
+        });
+
+        it("should return an empty array otherwise", () => {
+          var p = reflector.interfaces(ClassWithDecorators);
+          expect(p).toEqual([]);
+        });
+      });
+    }
 
     describe("getter", () => {
       it("returns a function reading a property", () => {

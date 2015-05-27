@@ -52,6 +52,14 @@ export class Reflector {
     }
   }
 
+  interfaces(type): List<any> {
+    if (MapWrapper.contains(this._typeInfo, type)) {
+      return MapWrapper.get(this._typeInfo, type)["interfaces"];
+    } else {
+      return this.reflectionCapabilities.interfaces(type);
+    }
+  }
+
   getter(name: string): GetterFn {
     if (MapWrapper.contains(this._getters, name)) {
       return MapWrapper.get(this._getters, name);

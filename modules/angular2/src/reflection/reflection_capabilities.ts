@@ -1,4 +1,4 @@
-import {Type, isPresent, global, stringify} from 'angular2/src/facade/lang';
+import {Type, isPresent, global, stringify, BaseException} from 'angular2/src/facade/lang';
 import {List, ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
@@ -95,6 +95,10 @@ export class ReflectionCapabilities {
       if (isPresent(annotations)) return annotations;
     }
     return [];
+  }
+
+  interfaces(type): List<any> {
+    throw new BaseException("JavaScript does not support interfaces");
   }
 
   getter(name: string): GetterFn { return new Function('o', 'return o.' + name + ';'); }

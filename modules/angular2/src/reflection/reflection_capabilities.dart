@@ -71,6 +71,11 @@ class ReflectionCapabilities {
     return meta.map((m) => m.reflectee).toList();
   }
 
+  List interfaces(type) {
+    ClassMirror classMirror = reflectType(type);
+    return classMirror.superinterfaces.map((si) => si.reflectedType).toList();
+  }
+
   GetterFn getter(String name) {
     var symbol = new Symbol(name);
     return (receiver) => reflect(receiver).getField(symbol).reflectee;

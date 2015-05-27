@@ -20,6 +20,8 @@ class RecordingReflectionCapabilities implements ReflectionCapabilities {
 
   List<List> parameters(typeOrFunc) => _notImplemented('parameters');
 
+  List<List> interfaces(typeOrFunc) => _notImplemented('interfaces');
+
   List annotations(typeOrFunc) => _notImplemented('annotations');
 
   GetterFn getter(String name) {
