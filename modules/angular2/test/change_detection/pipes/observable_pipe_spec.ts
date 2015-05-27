@@ -1,11 +1,11 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
   AsyncTestCompleter, inject, proxy, SpyObject} from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
 
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ObservablePipe} from 'angular2/src/change_detection/pipes/observable_pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
 import {EventEmitter, Observable, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
+import {ChangeDetector} from 'angular2/src/change_detection/interfaces';
 
 export function main() {
   describe("ObservablePipe", () => {
@@ -108,8 +108,8 @@ export function main() {
 }
 
 @proxy
-@IMPLEMENTS(ChangeDetectorRef)
-class SpyChangeDetectorRef extends SpyObject {
+class SpyChangeDetectorRef extends SpyObject implements ChangeDetectorRef {
+  private _cd: ChangeDetector;
   constructor(){super(ChangeDetectorRef);}
   noSuchMethod(m){return super.noSuchMethod(m)}
 }

@@ -5,16 +5,10 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
-import {Pipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
+import {Pipe, LiteralPrimitive, AccessMember} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
-  a;
-  b;
-  fnReturnValue;
-  constructor(a, b, fnReturnValue) {
-    this.a = a;
-    this.b = b;
-    this.fnReturnValue = fnReturnValue;
+  constructor(public a?:any, public b?:any, public fnReturnValue?:any) {
   }
 
   fn() {
@@ -27,7 +21,7 @@ class TestData {
 }
 
 export function main() {
-  function td(a = 0, b = 0, fnReturnValue = "constant") {
+  function td(a:any = 0, b:any = 0, fnReturnValue:any = "constant") {
     return new TestData(a, b, fnReturnValue);
   }
 
@@ -35,23 +29,23 @@ export function main() {
     return new Parser(new Lexer(), reflector);
   }
 
-  function parseAction(text, location = null) {
+  function parseAction(text, location = null):any {
     return createParser().parseAction(text, location);
   }
 
-  function parseBinding(text, location = null) {
+  function parseBinding(text, location = null):any {
     return createParser().parseBinding(text, location);
   }
 
-  function parseTemplateBindings(text, location = null) {
+  function parseTemplateBindings(text, location = null):any {
     return createParser().parseTemplateBindings(text, location);
   }
 
-  function parseInterpolation(text, location = null) {
+  function parseInterpolation(text, location = null):any {
     return createParser().parseInterpolation(text, location);
   }
 
-  function addPipes(ast, pipes) {
+  function addPipes(ast, pipes):any {
     return createParser().addPipes(ast, pipes);
   }
 
@@ -124,21 +118,21 @@ export function main() {
 
         it('should parse equality expressions', () => {
           expectEval("2==3").toEqual(2 == 3);
-          expectEval("2=='2'").toEqual(2 == '2');
-          expectEval("2=='3'").toEqual(2 == '3');
+          expectEval("2=='2'").toEqual(2 == <any>'2');
+          expectEval("2=='3'").toEqual(2 == <any>'3');
           expectEval("2!=3").toEqual(2 != 3);
-          expectEval("2!='3'").toEqual(2 != '3');
-          expectEval("2!='2'").toEqual(2 != '2');
-          expectEval("2!=!false").toEqual(2!=!false);
+          expectEval("2!='3'").toEqual(2 != <any>'3');
+          expectEval("2!='2'").toEqual(2 != <any>'2');
+          expectEval("2!=!false").toEqual(2 != <any>!false);
         });
 
         it('should parse strict equality expressions', () => {
           expectEval("2===3").toEqual(2 === 3);
-          expectEval("2==='3'").toEqual(2 === '3');
-          expectEval("2==='2'").toEqual(2 === '2');
+          expectEval("2==='3'").toEqual(2 === <any>'3');
+          expectEval("2==='2'").toEqual(2 === <any>'2');
           expectEval("2!==3").toEqual(2 !== 3);
-          expectEval("2!=='3'").toEqual(2 !== '3');
-          expectEval("2!=='2'").toEqual(2 !== '2');
+          expectEval("2!=='3'").toEqual(2 !== <any>'3');
+          expectEval("2!=='2'").toEqual(2 !== <any>'2');
           expectEval("false===!true").toEqual(false===!true);
           expectEval("false!==!!true").toEqual(false!==!!true);
         });

@@ -14,7 +14,14 @@ export function iterableChangesAsString({collection, previous, additions, moves,
          "removals: " + removals.join(', ') + "\n";
 }
 
-export function kvChangesAsString({map, previous, additions, changes, removals}) {
+export function kvChangesAsString({map, previous, additions, changes, removals}:
+    {
+      map?:List<any>,
+      previous?:List<any>,
+      additions?: List<any>,
+      changes?: List<any>,
+      removals?: List<any>
+    }):string {
   if (isBlank(map)) map = [];
   if (isBlank(previous)) previous = [];
   if (isBlank(additions)) additions = [];

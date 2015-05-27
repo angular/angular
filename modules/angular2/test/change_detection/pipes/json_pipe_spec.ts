@@ -6,7 +6,7 @@ import {JsonPipe} from 'angular2/src/change_detection/pipes/json_pipe';
 
 export function main() {
   describe("JsonPipe", () => {
-    var regNewLine = new RegExp('\n');
+    var regNewLine = '\n';
     var canHasUndefined; // because Dart doesn't like undefined;
     var inceptionObj;
     var inceptionObjString;

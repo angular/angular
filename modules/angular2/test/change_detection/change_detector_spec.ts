@@ -6,7 +6,7 @@ import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/faca
 import {ChangeDispatcher, DynamicChangeDetector, ChangeDetectionError, BindingRecord, DirectiveRecord, DirectiveIndex,
   PipeRegistry, Pipe, CHECK_ALWAYS, CHECK_ONCE, CHECKED, DETACHED, ON_PUSH, DEFAULT, WrappedValue,
     JitProtoChangeDetector, DynamicProtoChangeDetector, ChangeDetectorDefinition,
-    Lexer, Parser, Locals} from 'angular2/change_detection';
+    Lexer, Parser, Locals, ProtoChangeDetector} from 'angular2/change_detection';
 
 
 export function main() {
@@ -40,7 +40,7 @@ export function main() {
           return parser.parseBinding(exp, location);
         }
 
-        function dirs(directives:List) {
+        function dirs(directives:List<any>) {
           return new FakeDirectives(directives, []);
         }
 
@@ -339,14 +339,14 @@ export function main() {
 
                   expect(directive1.onChangesDoneCalled).toBe(true);
                   expect(directive2.onChangesDoneCalled).toBe(true);
-                  
+
                   // reset directives
                   directive1.onChangesDoneCalled = false;
                   directive2.onChangesDoneCalled = false;
-                  
+
                   // Verify that checking should not call them.
                   cd.checkNoChanges();
-                  
+
                   expect(directive1.onChangesDoneCalled).toBe(false);
                   expect(directive2.onChangesDoneCalled).toBe(false);
 
@@ -354,7 +354,7 @@ export function main() {
                   cd.detectChanges();
 
                   expect(directive1.onChangesDoneCalled).toBe(true);
-                  expect(directive2.onChangesDoneCalled).toBe(true);                  
+                  expect(directive2.onChangesDoneCalled).toBe(true);
                 });
 
 
@@ -970,12 +970,7 @@ class TestData {
 }
 
 class FakeDirectives {
-  directives:List;
-  detectors:List;
-
-  constructor(directives:List, detectors:List) {
-    this.directives = directives;
-    this.detectors = detectors;
+  constructor(public directives:List<TestData|TestDirective>, public detectors:List<ProtoChangeDetector>) {
   }
 
   getDirectiveFor(di:DirectiveIndex) {
@@ -988,8 +983,8 @@ class FakeDirectives {
 }
 
 class TestDispatcher extends ChangeDispatcher {
-  log:List;
-  loggedValues:List;
+  log:List<string>;
+  loggedValues:List<any>;
 
   constructor() {
     super();
