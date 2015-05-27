@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach,
   AsyncTestCompleter, inject, proxy, SpyObject} from 'angular2/test_lib';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, isBlank} from 'angular2/src/facade/lang';
 import {PromisePipe} from 'angular2/src/change_detection/pipes/promise_pipe';
 import {WrappedValue} from 'angular2/src/change_detection/pipes/pipe';
 import {ChangeDetectorRef} from 'angular2/src/change_detection/change_detector_ref';
@@ -14,7 +14,7 @@ export function main() {
     var completer;
     var ref;
     //adds longer timers for passing tests in IE
-    var timer = (DOM && DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
+    var timer = (!isBlank(DOM) && DOM.getUserAgent().indexOf("Trident") > -1) ? 50 : 0;
 
     beforeEach(() => {
       completer = PromiseWrapper.completer();
