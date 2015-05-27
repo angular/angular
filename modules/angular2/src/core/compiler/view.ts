@@ -62,7 +62,7 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
    */
   locals: Locals;
 
-  constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
+  constructor(public id: string, public renderer: renderApi.Renderer, public proto: AppProtoView,
               protoLocals: Map<string, any>) {
     this.render = null;
     this.changeDetector = null;
@@ -171,10 +171,12 @@ export class AppView implements ChangeDispatcher, EventDispatcher {
 export class AppProtoView {
   elementBinders: List<ElementBinder>;
   protoLocals: Map<string, any>;
+  _viewCount: number;
 
   constructor(public id: string, public render: renderApi.RenderProtoViewRef,
               public protoChangeDetector: ProtoChangeDetector,
               public variableBindings: Map<string, string>) {
+    this._viewCount = 0;
     this.elementBinders = [];
     this.protoLocals = MapWrapper.create();
     if (isPresent(variableBindings)) {
@@ -183,6 +185,8 @@ export class AppProtoView {
       });
     }
   }
+
+  nextViewId(): string { return `${this.id}#${this._viewCount++}`; }
 
   bindElement(parent: ElementBinder, distanceToParent: int,
               protoElementInjector: ProtoElementInjector,

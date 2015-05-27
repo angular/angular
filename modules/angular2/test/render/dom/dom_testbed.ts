@@ -46,9 +46,11 @@ export class DomTestbed {
   renderer: DomRenderer;
   compiler: DefaultDomCompiler;
   rootEl;
+  _viewCount: number;
 
   constructor(renderer: DomRenderer, compiler: DefaultDomCompiler,
               @Inject(DOCUMENT_TOKEN) document) {
+    this._viewCount = 0;
     this.renderer = renderer;
     this.compiler = compiler;
     this.rootEl = el('<div id="root"></div>');
@@ -70,6 +72,8 @@ export class DomTestbed {
     }));
   }
 
+  nextViewId(): string { return `test${this._viewCount++}`; }
+
   _createTestView(viewRef: RenderViewRef) {
     var testView = new TestView(viewRef);
     this.renderer.setEventDispatcher(viewRef, new LoggingEventDispatcher(testView.events));
@@ -77,14 +81,15 @@ export class DomTestbed {
   }
 
   createRootView(rootProtoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createRootHostView(rootProtoView.render, '#root');
+    var viewRef =
+        this.renderer.createRootHostView(this.nextViewId(), rootProtoView.render, '#root');
     this.renderer.hydrateView(viewRef);
     return this._createTestView(viewRef);
   }
 
   createComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
                       componentProtoView: ProtoViewDto): TestView {
-    var componentViewRef = this.renderer.createView(componentProtoView.render);
+    var componentViewRef = this.renderer.createView(this.nextViewId(), componentProtoView.render);
     this.renderer.attachComponentView(parentViewRef, boundElementIndex, componentViewRef);
     this.renderer.hydrateView(componentViewRef);
     return this._createTestView(componentViewRef);
@@ -109,7 +114,7 @@ export class DomTestbed {
 
   createViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                         protoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createView(protoView.render);
+    var viewRef = this.renderer.createView(this.nextViewId(), protoView.render);
     this.renderer.attachViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef);
     this.renderer.hydrateView(viewRef);
     return this._createTestView(viewRef);

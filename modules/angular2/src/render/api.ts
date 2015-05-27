@@ -222,13 +222,14 @@ export class RenderCompiler {
 export class Renderer {
   /**
    * Creates a root host view that includes the given element.
+   * @param {string} id Id for the view
    * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type
    * ProtoViewDto.HOST_VIEW_TYPE
    * @param {any} hostElementSelector css selector for the host element (will be queried against the
    * main document)
    * @return {RenderViewRef} the created view
    */
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef,
+  createRootHostView(viewId: string, hostProtoViewRef: RenderProtoViewRef,
                      hostElementSelector: string): RenderViewRef {
     return null;
   }
@@ -241,7 +242,7 @@ export class Renderer {
   /**
    * Creates a regular view out of the given ProtoView
    */
-  createView(protoViewRef: RenderProtoViewRef): RenderViewRef { return null; }
+  createView(viewId: string, protoViewRef: RenderProtoViewRef): RenderViewRef { return null; }
 
   /**
    * Destroys the given view after it has been dehydrated and detached

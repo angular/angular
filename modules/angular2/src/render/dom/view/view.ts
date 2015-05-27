@@ -39,7 +39,7 @@ export class DomView {
   eventDispatcher: EventDispatcher;
   eventHandlerRemovers: List<Function>;
 
-  constructor(public proto: DomProtoView, public rootNodes: List</*node*/ any>,
+  constructor(public id: string, public proto: DomProtoView, public rootNodes: List</*node*/ any>,
               public boundTextNodes: List</*node*/ any>,
               public boundElements: List</*element*/ any>, public contentTags: List<Content>) {
     this.viewContainers = ListWrapper.createFixedSize(boundElements.length);

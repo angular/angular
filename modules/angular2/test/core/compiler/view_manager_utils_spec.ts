@@ -85,7 +85,7 @@ export function main() {
       if (isBlank(pv)) {
         pv = createProtoView();
       }
-      var view = new AppView(null, pv, MapWrapper.create());
+      var view = new AppView(null, null, pv, MapWrapper.create());
       var elementInjectors = ListWrapper.createFixedSize(pv.elementBinders.length);
       var preBuiltObjects = ListWrapper.createFixedSize(pv.elementBinders.length);
       for (var i = 0; i < pv.elementBinders.length; i++) {

@@ -29,8 +29,8 @@ export function main() {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
                expect(hostProtoViewDto.id).toEqual('someComponent_host_0');
-               var view =
-                   new TestView(tb.renderer.createRootHostView(hostProtoViewDto.render, '#root'));
+               var view = new TestView(
+                   tb.renderer.createRootHostView('someId', hostProtoViewDto.render, '#root'));
                expect(view.rawView.rootNodes[0]).toEqual(tb.rootEl);
 
                tb.renderer.destroyView(view.viewRef);
@@ -46,7 +46,7 @@ export function main() {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
                expect(hostProtoViewDto.id).toEqual('someComponent_host_0');
-               var view = new TestView(tb.renderer.createView(hostProtoViewDto.render));
+               var view = new TestView(tb.renderer.createView('someId', hostProtoViewDto.render));
                var hostElement = tb.renderer.getHostElement(view.viewRef);
                DOM.appendChild(tb.rootEl, hostElement);
 
