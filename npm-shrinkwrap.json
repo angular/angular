@@ -6351,9 +6351,9 @@
           }
         },
         "clang-format": {
-          "version": "1.0.14",
-          "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.14.tgz",
-          "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.14.tgz"
+          "version": "1.0.15",
+          "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.15.tgz",
+          "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.15.tgz"
         }
       }
     },
