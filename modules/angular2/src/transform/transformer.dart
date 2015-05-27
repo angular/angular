@@ -27,7 +27,7 @@ class AngularTransformerGroup extends TransformerGroup {
       [new DirectiveProcessor(options)]
     ];
     phases.addAll(new List.generate(
-        EMPTY_DEPS_REMOVAL_ROUNDS, (_) => [new EmptyNgDepsRemover()]));
+        options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.addAll([
       [new DirectiveLinker(), new DirectiveMetadataExtractor()],
       [new BindGenerator(options)],

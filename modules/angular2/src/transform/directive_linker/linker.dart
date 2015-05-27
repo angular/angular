@@ -31,7 +31,7 @@ Future<bool> isNecessary(AssetReader reader, AssetId entryPoint) async {
   // We do not register any @Injectables, do we call any dependencies?
   var linkedDepsMap =
       await _processNgImports(reader, entryPoint, _getSortedDeps(ngDeps));
-  return !linkedDepsMap.isEmpty;
+  return linkedDepsMap.isNotEmpty;
 }
 
 /// Modifies the `.ng_deps.dart` file represented by `entryPoint` to call its
@@ -114,10 +114,8 @@ Future<Map<UriBasedDirective, String>> _processNgImports(AssetReader reader,
           .where(_isNotDartDirective)
           .map((UriBasedDirective directive) {
     var ngDepsUri = _toDepsUri(stringLiteralToString(directive.uri));
-    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger,
-        null /*
-    span */
-        );
+    var spanArg = null;
+    var ngDepsAsset = uriToAssetId(entryPoint, ngDepsUri, logger, spanArg);
     if (ngDepsAsset == entryPoint) return nullFuture;
     return reader.hasInput(ngDepsAsset).then((hasInput) {
       if (hasInput) {

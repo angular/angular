@@ -26,12 +26,17 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       mirrorMode = MirrorMode.none;
       break;
   }
+  var optimizationPhases = _readInt(config, OPTIMIZATION_PHASES_PARAM);
+  optimizationPhases = optimizationPhases != null
+      ? optimizationPhases
+      : DEFAULT_OPTIMIZATION_PHASES;
   return new TransformerOptions(entryPoints,
       reflectionEntryPoints: reflectionEntryPoints,
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
-      customAnnotationDescriptors: _readCustomAnnotations(config));
+      customAnnotationDescriptors: _readCustomAnnotations(config),
+      optimizationPhases: optimizationPhases);
 }
 
 /// Cribbed from the polymer project.
@@ -54,6 +59,17 @@ List<String> _readFileList(Map config, String paramName) {
     print('Invalid value for "$paramName" in the Angular 2 transformer.');
   }
   return files;
+}
+
+int _readInt(Map config, String paramName) {
+  var value = config.containsKey(paramName) ? config[paramName] : null;
+  if (value is String) {
+    value = int.parse(value);
+  }
+  if (value is! int) {
+    throw new ArgumentError.value(value, paramName, 'Expected an integer');
+  }
+  return value;
 }
 
 /// Parse the [CUSTOM_ANNOTATIONS_PARAM] options out of the transformer into

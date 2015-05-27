@@ -25,7 +25,7 @@ class DiTransformerGroup extends TransformerGroup {
       [new DirectiveProcessor(null)]
     ];
     phases.addAll(new List.generate(
-        EMPTY_DEPS_REMOVAL_ROUNDS, (_) => [new EmptyNgDepsRemover()]));
+        options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.add([new DirectiveLinker()]);
     return new DiTransformerGroup._(phases);
   }
