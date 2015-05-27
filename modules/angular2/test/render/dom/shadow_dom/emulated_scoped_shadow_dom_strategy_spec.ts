@@ -10,6 +10,7 @@ import {
   it,
   xit,
   SpyObject,
+  normalizeCSS
 } from 'angular2/test_lib';
 
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
@@ -51,9 +52,8 @@ export function main() {
     it('should rewrite style urls', () => {
       var styleElement = el('<style>.foo {background-image: url("img.jpg");}</style>');
       strategy.processStyleElement('someComponent', 'http://base', styleElement);
-      expect(styleElement)
-          .toHaveText(".foo[_ngcontent-0] {\n" + "background-image: url(http://base/img.jpg);\n" +
-                      "}");
+      expect(normalizeCSS(DOM.getText(styleElement)))
+          .toEqual(".foo[_ngcontent-0] { background-image:url(http://base/img.jpg); }");
     });
 
     it('should scope styles', () => {

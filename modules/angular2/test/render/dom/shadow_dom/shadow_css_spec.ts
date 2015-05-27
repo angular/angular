@@ -1,7 +1,18 @@
-import {describe, beforeEach, it, expect, ddescribe, iit, SpyObject, el} from 'angular2/test_lib';
+import {
+  describe,
+  beforeEach,
+  it,
+  expect,
+  ddescribe,
+  iit,
+  SpyObject,
+  el,
+  normalizeCSS
+} from 'angular2/test_lib';
 import {ShadowCss} from 'angular2/src/render/dom/shadow_dom/shadow_css';
 
 import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {DOM} from 'angular2/src/dom/dom_adapter';
 
 export function main() {
   describe('ShadowCss', function() {
@@ -10,54 +21,56 @@ export function main() {
       var shadowCss = new ShadowCss();
       var shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
       var nlRegexp = RegExpWrapper.create('\\n');
-      return StringWrapper.replaceAll(shim, nlRegexp, '');
+      return normalizeCSS(StringWrapper.replaceAll(shim, nlRegexp, ''));
     }
 
     it('should handle empty string', () => { expect(s('', 'a')).toEqual(''); });
 
     it('should add an attribute to every rule', () => {
       var css = 'one {color: red;}two {color: red;}';
-      var expected = 'one[a] {color: red;}two[a] {color: red;}';
+      var expected = 'one[a] {color:red;}two[a] {color:red;}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     it('should hanlde invalid css', () => {
       var css = 'one {color: red;}garbage';
-      var expected = 'one[a] {color: red;}';
+      var expected = 'one[a] {color:red;}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     it('should add an attribute to every selector', () => {
       var css = 'one, two {color: red;}';
-      var expected = 'one[a], two[a] {color: red;}';
+      var expected = 'one[a], two[a] {color:red;}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     it('should handle media rules', () => {
-      var css = '@media screen and (max-width: 800px) {div {font-size: 50px;}}';
-      var expected = '@media screen and (max-width: 800px) {div[a] {font-size: 50px;}}';
+      var css = '@media screen and (max-width:800px) {div {font-size:50px;}}';
+      var expected = '@media screen and (max-width:800px) {div[a] {font-size:50px;}}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     it('should handle media rules with simple rules', () => {
       var css = '@media screen and (max-width: 800px) {div {font-size: 50px;}} div {}';
-      var expected = '@media screen and (max-width: 800px) {div[a] {font-size: 50px;}}div[a] {}';
+      var expected = '@media screen and (max-width:800px) {div[a] {font-size:50px;}}div[a] {}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     it('should handle keyframes rules', () => {
       var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
       var passRe = RegExpWrapper.create(
-          '@keyframes foo {\\s*0% {\\s*transform: translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+          '@keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}\\s*}');
       expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
     });
 
-    it('should handle -webkit-keyframes rules', () => {
-      var css = '@-webkit-keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
-      var passRe = RegExpWrapper.create(
-          '@-webkit-keyframes foo {\\s*0% {\\s*transform: translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
-      expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
-    });
+    if (DOM.getUserAgent().indexOf('AppleWebKit') > -1) {
+      it('should handle -webkit-keyframes rules', () => {
+        var css = '@-webkit-keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
+        var passRe = RegExpWrapper.create(
+            '@-webkit-keyframes foo {\\s*0% {\\s*transform:translate\\(-50%\\) scaleX\\(0\\);\\s*}}');
+        expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
+      });
+    }
 
     it('should handle complicated selectors', () => {
       expect(s('one::before {}', 'a')).toEqual('one[a]::before {}');
@@ -65,7 +78,9 @@ export function main() {
       expect(s('one>two {}', 'a')).toEqual('one[a] > two[a] {}');
       expect(s('one+two {}', 'a')).toEqual('one[a] + two[a] {}');
       expect(s('one~two {}', 'a')).toEqual('one[a] ~ two[a] {}');
-      expect(s('.one.two > three {}', 'a')).toEqual('.one.two[a] > three[a] {}');
+      var res = s('.one.two > three {}', 'a');  // IE swap classes
+      expect(res == '.one.two[a] > three[a] {}' || res == '.two.one[a] > three[a] {}')
+          .toEqual(true);
       expect(s('one[attr="value"] {}', 'a')).toEqual('one[attr="value"][a] {}');
       expect(s('one[attr=value] {}', 'a')).toEqual('one[attr="value"][a] {}');
       expect(s('one[attr^="value"] {}', 'a')).toEqual('one[attr^="value"][a] {}');
@@ -99,18 +114,18 @@ export function main() {
 
     it('should support polyfill-unscoped-rule', () => {
       var css = s("polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}", 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color: blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color: blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
     });
 
     it('should support polyfill-rule', () => {
       var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {color: blue;}');
+      expect(css).toEqual('[a-host].foo .bar {color:blue;}');
 
-      css = s('polyfill-rule {content: ":host.foo .bar";color: blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {color: blue;}');
+      css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
+      expect(css).toEqual('[a-host].foo .bar {color:blue;}');
     });
 
     it('should handle ::shadow', () => {
