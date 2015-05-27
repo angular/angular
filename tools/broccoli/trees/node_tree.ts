@@ -22,7 +22,7 @@ module.exports = function makeNodeTree(destinationPath) {
     exclude: [
       // the following code and tests are not compatible with CJS/node environment
       'angular2/test/core/zone/**',
-      'angular2/test/test_lib/fake_async_spec.js',
+      'angular2/test/test_lib/fake_async_spec.ts',
       'angular2/test/services/xhr_impl_spec.ts'
     ]
   });
