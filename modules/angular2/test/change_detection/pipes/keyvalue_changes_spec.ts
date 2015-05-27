@@ -16,27 +16,21 @@ export function main() {
         m = MapWrapper.create();
       });
 
-      afterEach(() => {
-        changes = null;
-      });
+      afterEach(() => { changes = null; });
 
       it('should detect additions', () => {
         changes.check(m);
 
         MapWrapper.set(m, 'a', 1);
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a[null->1]'],
-          additions: ['a[null->1]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString({map: ['a[null->1]'], additions: ['a[null->1]']}));
 
         MapWrapper.set(m, 'b', 2);
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a', 'b[null->2]'],
-          previous: ['a'],
-          additions: ['b[null->2]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString(
+                {map: ['a', 'b[null->2]'], previous: ['a'], additions: ['b[null->2]']}));
       });
 
       it('should handle changing key/values correctly', () => {
@@ -47,11 +41,12 @@ export function main() {
         MapWrapper.set(m, 2, 10);
         MapWrapper.set(m, 1, 20);
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['1[10->20]', '2[20->10]'],
-          previous: ['1[10->20]', '2[20->10]'],
-          changes: ['1[10->20]', '2[20->10]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString({
+              map: ['1[10->20]', '2[20->10]'],
+              previous: ['1[10->20]', '2[20->10]'],
+              changes: ['1[10->20]', '2[20->10]']
+            }));
       });
 
       it('should expose previous and current value', () => {
@@ -63,12 +58,14 @@ export function main() {
         MapWrapper.set(m, 1, 20);
         changes.check(m);
 
-        changes.forEachChangedItem((record) => {
-          previous = record.previousValue;
-          current = record.currentValue;
-        })
+        changes.forEachChangedItem((record) =>
+                                   {
+                                     previous = record.previousValue;
+                                     current = record.currentValue;
+                                   })
 
-        expect(previous).toEqual(10);
+            expect(previous)
+                .toEqual(10);
         expect(current).toEqual(20);
       });
 
@@ -77,43 +74,40 @@ export function main() {
 
         MapWrapper.set(m, 'a', 'A');
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a[null->A]'],
-          additions: ['a[null->A]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
         MapWrapper.set(m, 'b', 'B');
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a', 'b[null->B]'],
-          previous: ['a'],
-          additions: ['b[null->B]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString(
+                {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
         MapWrapper.set(m, 'b', 'BB');
         MapWrapper.set(m, 'd', 'D');
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a', 'b[B->BB]', 'd[null->D]'],
-          previous: ['a', 'b[B->BB]'],
-          additions: ['d[null->D]'],
-          changes: ['b[B->BB]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString({
+              map: ['a', 'b[B->BB]', 'd[null->D]'],
+              previous: ['a', 'b[B->BB]'],
+              additions: ['d[null->D]'],
+              changes: ['b[B->BB]']
+            }));
 
         MapWrapper.delete(m, 'b');
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['a', 'd'],
-          previous: ['a', 'b[BB->null]', 'd'],
-          removals: ['b[BB->null]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString({
+              map: ['a', 'd'],
+              previous: ['a', 'b[BB->null]', 'd'],
+              removals: ['b[BB->null]']
+            }));
 
         MapWrapper.clear(m);
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          previous: ['a[A->null]', 'd[D->null]'],
-          removals: ['a[A->null]', 'd[D->null]']
-        }));
+        expect(changes.toString())
+            .toEqual(kvChangesAsString(
+                {previous: ['a[A->null]', 'd[D->null]'], removals: ['a[A->null]', 'd[D->null]']}));
       });
 
       it('should test string by value rather than by reference (DART)', () => {
@@ -128,10 +122,7 @@ export function main() {
         MapWrapper.set(m, f + oo, b + ar);
         changes.check(m);
 
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['foo'],
-          previous: ['foo']
-        }));
+        expect(changes.toString()).toEqual(kvChangesAsString({map: ['foo'], previous: ['foo']}));
       });
 
       it('should not see a NaN value as a change (JS)', () => {
@@ -139,10 +130,7 @@ export function main() {
         changes.check(m);
 
         changes.check(m);
-        expect(changes.toString()).toEqual(kvChangesAsString({
-          map: ['foo'],
-          previous: ['foo']
-        }));
+        expect(changes.toString()).toEqual(kvChangesAsString({map: ['foo'], previous: ['foo']}));
       });
 
       // JS specific tests (JS Objects)
@@ -161,45 +149,44 @@ export function main() {
 
             m['a'] = 'A';
             changes.check(m);
-            expect(changes.toString()).toEqual(kvChangesAsString({
-              map: ['a[null->A]'],
-              additions: ['a[null->A]']
-            }));
+            expect(changes.toString())
+                .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
             m['b'] = 'B';
             changes.check(m);
-            expect(changes.toString()).toEqual(kvChangesAsString({
-              map: ['a', 'b[null->B]'],
-              previous: ['a'],
-              additions: ['b[null->B]']
-            }));
+            expect(changes.toString())
+                .toEqual(kvChangesAsString(
+                    {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
             m['b'] = 'BB';
             m['d'] = 'D';
             changes.check(m);
-            expect(changes.toString()).toEqual(kvChangesAsString({
-              map: ['a', 'b[B->BB]', 'd[null->D]'],
-              previous: ['a', 'b[B->BB]'],
-              additions: ['d[null->D]'],
-              changes: ['b[B->BB]']
-            }));
+            expect(changes.toString())
+                .toEqual(kvChangesAsString({
+                  map: ['a', 'b[B->BB]', 'd[null->D]'],
+                  previous: ['a', 'b[B->BB]'],
+                  additions: ['d[null->D]'],
+                  changes: ['b[B->BB]']
+                }));
 
             m = {};
             m['a'] = 'A';
             m['d'] = 'D';
             changes.check(m);
-            expect(changes.toString()).toEqual(kvChangesAsString({
-              map: ['a', 'd'],
-              previous: ['a', 'b[BB->null]', 'd'],
-              removals: ['b[BB->null]']
-            }));
+            expect(changes.toString())
+                .toEqual(kvChangesAsString({
+                  map: ['a', 'd'],
+                  previous: ['a', 'b[BB->null]', 'd'],
+                  removals: ['b[BB->null]']
+                }));
 
             m = {};
             changes.check(m);
-            expect(changes.toString()).toEqual(kvChangesAsString({
-              previous: ['a[A->null]', 'd[D->null]'],
-              removals: ['a[A->null]', 'd[D->null]']
-            }));
+            expect(changes.toString())
+                .toEqual(kvChangesAsString({
+                  previous: ['a[A->null]', 'd[D->null]'],
+                  removals: ['a[A->null]', 'd[D->null]']
+                }));
           });
         });
       }

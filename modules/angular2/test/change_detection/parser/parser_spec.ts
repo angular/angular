@@ -5,59 +5,42 @@ import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Parser} from 'angular2/src/change_detection/parser/parser';
 import {Lexer} from 'angular2/src/change_detection/parser/lexer';
 import {Locals} from 'angular2/src/change_detection/parser/locals';
-import {Pipe, LiteralPrimitive} from 'angular2/src/change_detection/parser/ast';
+import {Pipe, LiteralPrimitive, AccessMember} from 'angular2/src/change_detection/parser/ast';
 
 class TestData {
-  a;
-  b;
-  fnReturnValue;
-  constructor(a, b, fnReturnValue) {
-    this.a = a;
-    this.b = b;
-    this.fnReturnValue = fnReturnValue;
-  }
+  constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
 
-  fn() {
-    return this.fnReturnValue;
-  }
+  fn() { return this.fnReturnValue; }
 
-  add(a, b) {
-    return a + b;
-  }
+  add(a, b) { return a + b; }
 }
 
 export function main() {
-  function td(a = 0, b = 0, fnReturnValue = "constant") {
+  function td(a: any = 0, b: any = 0, fnReturnValue: any = "constant") {
     return new TestData(a, b, fnReturnValue);
   }
 
-  function createParser() {
-    return new Parser(new Lexer(), reflector);
-  }
+  function createParser() { return new Parser(new Lexer(), reflector); }
 
-  function parseAction(text, location = null) {
+  function parseAction(text, location = null): any {
     return createParser().parseAction(text, location);
   }
 
-  function parseBinding(text, location = null) {
+  function parseBinding(text, location = null): any {
     return createParser().parseBinding(text, location);
   }
 
-  function parseTemplateBindings(text, location = null) {
+  function parseTemplateBindings(text, location = null): any {
     return createParser().parseTemplateBindings(text, location);
   }
 
-  function parseInterpolation(text, location = null) {
+  function parseInterpolation(text, location = null): any {
     return createParser().parseInterpolation(text, location);
   }
 
-  function addPipes(ast, pipes) {
-    return createParser().addPipes(ast, pipes);
-  }
+  function addPipes(ast, pipes): any { return createParser().addPipes(ast, pipes); }
 
-  function emptyLocals() {
-    return new Locals(null, MapWrapper.create());
-  }
+  function emptyLocals() { return new Locals(null, MapWrapper.create()); }
 
   function expectEval(text, passedInContext = null, passedInLocals = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
@@ -74,7 +57,7 @@ export function main() {
   function evalAsts(asts, passedInContext = null) {
     var c = isBlank(passedInContext) ? td() : passedInContext;
     var res = [];
-    for (var i=0; i<asts.length; i++) {
+    for (var i = 0; i < asts.length; i++) {
       ListWrapper.push(res, asts[i].eval(c, emptyLocals()));
     }
     return res;
@@ -83,18 +66,14 @@ export function main() {
   describe("parser", () => {
     describe("parseAction", () => {
       describe("basic expressions", () => {
-        it('should parse numerical expressions', () => {
-          expectEval("1").toEqual(1);
-        });
+        it('should parse numerical expressions', () => { expectEval("1").toEqual(1); });
 
         it('should parse strings', () => {
           expectEval("'1'").toEqual('1');
           expectEval('"1"').toEqual('1');
         });
 
-        it('should parse null', () => {
-          expectEval("null").toBe(null);
-        });
+        it('should parse null', () => { expectEval("null").toBe(null); });
 
         it('should parse unary - expressions', () => {
           expectEval("-1").toEqual(-1);
@@ -107,13 +86,10 @@ export function main() {
           expectEval("!!!true").toEqual(!!!true);
         });
 
-        it('should parse multiplicative expressions', () => {
-          expectEval("3*4/2%5").toEqual(3 * 4 / 2 % 5);
-        });
+        it('should parse multiplicative expressions',
+           () => { expectEval("3*4/2%5").toEqual(3 * 4 / 2 % 5); });
 
-        it('should parse additive expressions', () => {
-          expectEval("3+6-2").toEqual(3 + 6 - 2);
-        });
+        it('should parse additive expressions', () => { expectEval("3+6-2").toEqual(3 + 6 - 2); });
 
         it('should parse relational expressions', () => {
           expectEval("2<3").toEqual(2 < 3);
@@ -124,23 +100,23 @@ export function main() {
 
         it('should parse equality expressions', () => {
           expectEval("2==3").toEqual(2 == 3);
-          expectEval("2=='2'").toEqual(2 == '2');
-          expectEval("2=='3'").toEqual(2 == '3');
+          expectEval("2=='2'").toEqual(2 == <any>'2');
+          expectEval("2=='3'").toEqual(2 == <any>'3');
           expectEval("2!=3").toEqual(2 != 3);
-          expectEval("2!='3'").toEqual(2 != '3');
-          expectEval("2!='2'").toEqual(2 != '2');
-          expectEval("2!=!false").toEqual(2!=!false);
+          expectEval("2!='3'").toEqual(2 != <any>'3');
+          expectEval("2!='2'").toEqual(2 != <any>'2');
+          expectEval("2!=!false").toEqual(2 != <any>!false);
         });
 
         it('should parse strict equality expressions', () => {
           expectEval("2===3").toEqual(2 === 3);
-          expectEval("2==='3'").toEqual(2 === '3');
-          expectEval("2==='2'").toEqual(2 === '2');
+          expectEval("2==='3'").toEqual(2 === <any>'3');
+          expectEval("2==='2'").toEqual(2 === <any>'2');
           expectEval("2!==3").toEqual(2 !== 3);
-          expectEval("2!=='3'").toEqual(2 !== '3');
-          expectEval("2!=='2'").toEqual(2 !== '2');
-          expectEval("false===!true").toEqual(false===!true);
-          expectEval("false!==!!true").toEqual(false!==!!true);
+          expectEval("2!=='3'").toEqual(2 !== <any>'3');
+          expectEval("2!=='2'").toEqual(2 !== <any>'2');
+          expectEval("false===!true").toEqual(false === !true);
+          expectEval("false!==!!true").toEqual(false !== !!true);
         });
 
         it('should parse logicalAND expressions', () => {
@@ -153,21 +129,16 @@ export function main() {
           expectEval("false||false").toEqual(false || false);
         });
 
-        it('should short-circuit AND operator', () => {
-          expectEval('false && a()', td(() => {throw "BOOM"})).toBe(false);
-        });
+        it('should short-circuit AND operator',
+           () => { expectEval('false && a()', td(() => {throw "BOOM"})).toBe(false); });
 
-        it('should short-circuit OR operator', () => {
-          expectEval('true || a()', td(() => {throw "BOOM"})).toBe(true);
-        });
+        it('should short-circuit OR operator',
+           () => { expectEval('true || a()', td(() => {throw "BOOM"})).toBe(true); });
 
-        it('should evaluate grouped expressions', () => {
-          expectEval("(1+2)*3").toEqual((1+2)*3);
-        });
+        it('should evaluate grouped expressions',
+           () => { expectEval("(1+2)*3").toEqual((1 + 2) * 3); });
 
-        it('should parse an empty string', () => {
-          expectEval('').toBeNull();
-        });
+        it('should parse an empty string', () => { expectEval('').toBeNull(); });
       });
 
       describe("literals", () => {
@@ -190,8 +161,10 @@ export function main() {
         });
 
         it('should only allow identifier, string, or keyword as map key', () => {
-          expectEvalError('{(:0}').toThrowError(new RegExp('expected identifier, keyword, or string'));
-          expectEvalError('{1234:0}').toThrowError(new RegExp('expected identifier, keyword, or string'));
+          expectEvalError('{(:0}')
+              .toThrowError(new RegExp('expected identifier, keyword, or string'));
+          expectEvalError('{1234:0}')
+              .toThrowError(new RegExp('expected identifier, keyword, or string'));
         });
       });
 
@@ -201,9 +174,8 @@ export function main() {
           expectEval("a.a", td(td(999))).toEqual(999);
         });
 
-        it('should throw when accessing a field on null', () => {
-          expectEvalError("a.a.a").toThrowError();
-        });
+        it('should throw when accessing a field on null',
+           () => { expectEvalError("a.a.a").toThrowError(); });
 
         it('should only allow identifier or keyword as member names', () => {
           expectEvalError('x.(').toThrowError(new RegExp('identifier or keyword'));
@@ -212,23 +184,22 @@ export function main() {
         });
 
         it("should read a field from Locals", () => {
-          var locals = new Locals(null,
-            MapWrapper.createFromPairs([["key", "value"]]));
+          var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
           expectEval("key", null, locals).toEqual("value");
         });
 
         it("should handle nested Locals", () => {
-          var nested = new Locals(null,
-            MapWrapper.createFromPairs([["key", "value"]]));
+          var nested = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
           var locals = new Locals(nested, MapWrapper.create());
           expectEval("key", null, locals).toEqual("value");
         });
 
-        it("should fall back to a regular field read when Locals "+
-        "does not have the requested field", () => {
-          var locals = new Locals(null, MapWrapper.create());
-          expectEval("a", td(999), locals).toEqual(999);
-        });
+        it("should fall back to a regular field read when Locals " +
+               "does not have the requested field",
+           () => {
+             var locals = new Locals(null, MapWrapper.create());
+             expectEval("a", td(999), locals).toEqual(999);
+           });
       });
 
       describe("method calls", () => {
@@ -243,37 +214,30 @@ export function main() {
           expectEvalError("fn(1,2,3,4,5,6,7,8,9,10,11)").toThrowError(new RegExp('more than'));
         });
 
-        it('should throw when no method', () => {
-          expectEvalError("blah()").toThrowError();
-        });
+        it('should throw when no method', () => { expectEvalError("blah()").toThrowError(); });
 
         it('should evaluate a method from Locals', () => {
-          var locals = new Locals(
-            null,
-            MapWrapper.createFromPairs([['fn', () => 'child']])
-          );
+          var locals = new Locals(null, MapWrapper.createFromPairs([['fn', () => 'child']]));
           expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('child');
         });
 
         it('should fall back to the parent context when Locals does not ' +
-        'have the requested method', () => {
-          var locals = new Locals(null, MapWrapper.create());
-          expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('parent');
-        });
+               'have the requested method',
+           () => {
+             var locals = new Locals(null, MapWrapper.create());
+             expectEval("fn()", td(0, 0, 'parent'), locals).toEqual('parent');
+           });
       });
 
       describe("functional calls", () => {
-        it("should evaluate function calls", () => {
-          expectEval("fn()(1,2)", td(0, 0, (a, b) => a + b)).toEqual(3);
-        });
+        it("should evaluate function calls",
+           () => { expectEval("fn()(1,2)", td(0, 0, (a, b) => a + b)).toEqual(3); });
 
-        it('should throw on non-function function calls', () => {
-          expectEvalError("4()").toThrowError(new RegExp('4 is not a function'));
-        });
+        it('should throw on non-function function calls',
+           () => { expectEvalError("4()").toThrowError(new RegExp('4 is not a function')); });
 
-        it('should parse functions for object indices', () => {
-          expectEval('a[b()]()', td([()=>6], () => 0)).toEqual(6);
-        });
+        it('should parse functions for object indices',
+           () => { expectEval('a[b()]()', td([() => 6], () => 0)).toEqual(6); });
       });
 
       describe("conditional", () => {
@@ -283,8 +247,8 @@ export function main() {
         });
 
         it('should throw on incorrect ternary operator syntax', () => {
-          expectEvalError("true?1").
-            toThrowError(new RegExp('Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
+          expectEvalError("true?1").toThrowError(new RegExp(
+              'Parser Error: Conditional expression true\\?1 requires all 3 expressions'));
         });
       });
 
@@ -315,13 +279,13 @@ export function main() {
         });
 
         it("should support map updates", () => {
-          var context = td({"key" : 100});
+          var context = td({"key": 100});
           expectEval('a["key"] = 200', context).toEqual(200);
           expect(context.a["key"]).toEqual(200);
         });
 
         it("should support array/map updates", () => {
-          var context = td([{"key" : 100}]);
+          var context = td([{"key": 100}]);
           expectEval('a[0]["key"] = 200', context).toEqual(200);
           expect(context.a[0]["key"]).toEqual(200);
         });
@@ -345,28 +309,29 @@ export function main() {
 
         it('should throw when reassigning a variable binding', () => {
           var locals = new Locals(null, MapWrapper.createFromPairs([["key", "value"]]));
-          expectEvalError('key = 200', null, locals).toThrowError(new RegExp("Cannot reassign a variable binding"));
+          expectEvalError('key = 200', null, locals)
+              .toThrowError(new RegExp("Cannot reassign a variable binding"));
         });
       });
 
       describe("general error handling", () => {
         it("should throw on an unexpected token", () => {
-          expectEvalError("[1,2] trac")
-            .toThrowError(new RegExp('Unexpected token \'trac\''));
+          expectEvalError("[1,2] trac").toThrowError(new RegExp('Unexpected token \'trac\''));
         });
 
         it('should throw a reasonable error for unconsumed tokens', () => {
-          expectEvalError(")").toThrowError(new RegExp("Unexpected token \\) at column 1 in \\[\\)\\]"));
+          expectEvalError(")")
+              .toThrowError(new RegExp("Unexpected token \\) at column 1 in \\[\\)\\]"));
         });
 
         it('should throw on missing expected token', () => {
-          expectEvalError("a(b").toThrowError(new RegExp("Missing expected \\) at the end of the expression \\[a\\(b\\]"));
+          expectEvalError("a(b").toThrowError(
+              new RegExp("Missing expected \\) at the end of the expression \\[a\\(b\\]"));
         });
       });
 
-      it("should error when using pipes", () => {
-        expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a pipe'));
-      });
+      it("should error when using pipes",
+         () => { expectEvalError('x|blah').toThrowError(new RegExp('Cannot have a pipe')); });
 
       it('should pass exceptions', () => {
         expect(() => {
@@ -381,13 +346,11 @@ export function main() {
         });
       });
 
-      it('should store the source in the result', () => {
-        expect(parseAction('someExpr').source).toBe('someExpr');
-      });
+      it('should store the source in the result',
+         () => { expect(parseAction('someExpr').source).toBe('someExpr'); });
 
-      it('should store the passed-in location', () => {
-        expect(parseAction('someExpr', 'location').location).toBe('location');
-      });
+      it('should store the passed-in location',
+         () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
     });
 
     describe("parseBinding", () => {
@@ -425,19 +388,19 @@ export function main() {
 
         it('should only allow identifier or keyword as formatter names', () => {
           expect(() => parseBinding('"Foo"|(')).toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseBinding('"Foo"|1234')).toThrowError(new RegExp('identifier or keyword'));
-          expect(() => parseBinding('"Foo"|"uppercase"')).toThrowError(new RegExp('identifier or keyword'));
+          expect(() => parseBinding('"Foo"|1234'))
+              .toThrowError(new RegExp('identifier or keyword'));
+          expect(() => parseBinding('"Foo"|"uppercase"'))
+              .toThrowError(new RegExp('identifier or keyword'));
         });
 
       });
 
-      it('should store the source in the result', () => {
-        expect(parseBinding('someExpr').source).toBe('someExpr');
-      });
+      it('should store the source in the result',
+         () => { expect(parseBinding('someExpr').source).toBe('someExpr'); });
 
-      it('should store the passed-in location', () => {
-        expect(parseBinding('someExpr', 'location').location).toBe('location');
-      });
+      it('should store the passed-in location',
+         () => { expect(parseBinding('someExpr', 'location').location).toBe('location'); });
 
       it('should throw on chain expressions', () => {
         expect(() => parseBinding("1;2")).toThrowError(new RegExp("contain chained expression"));
@@ -451,7 +414,7 @@ export function main() {
     describe('parseTemplateBindings', () => {
 
       function keys(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => binding.key );
+        return ListWrapper.map(templateBindings, (binding) => binding.key);
       }
 
       function keyValues(templateBindings) {
@@ -459,19 +422,21 @@ export function main() {
           if (binding.keyIsVar) {
             return '#' + binding.key + (isBlank(binding.name) ? '' : '=' + binding.name);
           } else {
-            return binding.key +  (isBlank(binding.expression) ? '' : `=${binding.expression}`)
+            return binding.key + (isBlank(binding.expression) ? '' : `=${binding.expression}`)
           }
         });
       }
 
       function exprSources(templateBindings) {
-        return ListWrapper.map(templateBindings,
-          (binding) => isPresent(binding.expression) ? binding.expression.source : null );
+        return ListWrapper.map(templateBindings, (binding) => isPresent(binding.expression) ?
+                                                                  binding.expression.source :
+                                                                  null);
       }
 
       function exprAsts(templateBindings) {
-        return ListWrapper.map(templateBindings,
-          (binding) => isPresent(binding.expression) ? binding.expression : null );
+        return ListWrapper.map(templateBindings, (binding) => isPresent(binding.expression) ?
+                                                                  binding.expression :
+                                                                  null);
       }
 
       it('should parse an empty string', () => {
@@ -497,13 +462,11 @@ export function main() {
         bindings = parseTemplateBindings("a-b:'c'");
         expect(keys(bindings)).toEqual(['a-b']);
 
-        expect( () => {
-          parseTemplateBindings('(:0');
-        }).toThrowError(new RegExp('expected identifier, keyword, or string'));
+        expect(() => { parseTemplateBindings('(:0'); })
+            .toThrowError(new RegExp('expected identifier, keyword, or string'));
 
-        expect( () => {
-          parseTemplateBindings('1234:0');
-        }).toThrowError(new RegExp('expected identifier, keyword, or string'));
+        expect(() => { parseTemplateBindings('1234:0'); })
+            .toThrowError(new RegExp('expected identifier, keyword, or string'));
       });
 
       it('should detect expressions as value', () => {
@@ -565,20 +528,20 @@ export function main() {
         expect(keyValues(bindings)).toEqual(['keyword', '#item=\$implicit', '#i=k']);
 
         bindings = parseTemplateBindings("directive: var item in expr; var a = b", 'location');
-        expect(keyValues(bindings)).toEqual(['directive', '#item=\$implicit', 'directive-in=expr in location', '#a=b']);
+        expect(keyValues(bindings))
+            .toEqual(['directive', '#item=\$implicit', 'directive-in=expr in location', '#a=b']);
       });
 
       it('should parse pipes', () => {
         var bindings = parseTemplateBindings('key value|pipe');
-        var ast = bindings[0].expression.ast
+        var ast = bindings[0].expression.ast;
         expect(ast).toBeAnInstanceOf(Pipe);
       });
     });
 
     describe('parseInterpolation', () => {
-      it('should return null if no interpolation', () => {
-        expect(parseInterpolation('nothing')).toBe(null);
-      });
+      it('should return null if no interpolation',
+         () => { expect(parseInterpolation('nothing')).toBe(null); });
 
       it('should parse no prefix/suffix interpolation', () => {
         var ast = parseInterpolation('{{a}}').ast;
@@ -621,7 +584,8 @@ export function main() {
 
     describe('wrapLiteralPrimitive', () => {
       it('should wrap a literal primitive', () => {
-        expect(createParser().wrapLiteralPrimitive("foo", null).eval(null, emptyLocals())).toEqual("foo");
+        expect(createParser().wrapLiteralPrimitive("foo", null).eval(null, emptyLocals()))
+            .toEqual("foo");
       });
     });
   });

@@ -8,8 +8,7 @@ export function main() {
   describe('Locals', () => {
     var locals;
     beforeEach(() => {
-      locals = new Locals(null,
-        MapWrapper.createFromPairs([['key', 'value'], ['nullKey', null]]));
+      locals = new Locals(null, MapWrapper.createFromPairs([['key', 'value'], ['nullKey', null]]));
     });
 
     it('should support getting values', () => {
@@ -28,9 +27,8 @@ export function main() {
       expect(locals.get('key')).toBe('bar');
     });
 
-    it('should not support setting keys that are not present already', () => {
-      expect(() => locals.set('notPresent', 'bar')).toThrowError();
-    });
+    it('should not support setting keys that are not present already',
+       () => { expect(() => locals.set('notPresent', 'bar')).toThrowError(); });
 
     it('should clearValues', () => {
       locals.clearValues();

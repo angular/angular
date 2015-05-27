@@ -1,6 +1,11 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {PreGeneratedChangeDetection, ChangeDetectorDefinition, ProtoChangeDetector, DynamicProtoChangeDetector} from 'angular2/change_detection';
+import {
+  PreGeneratedChangeDetection,
+  ChangeDetectorDefinition,
+  ProtoChangeDetector,
+  DynamicProtoChangeDetector
+} from 'angular2/change_detection';
 
 class DummyChangeDetector extends ProtoChangeDetector {}
 
@@ -15,7 +20,7 @@ export function main() {
     });
 
     it("should return a proto change detector when one is available", () => {
-      var map = {'id' : (registry) => proto};
+      var map = {'id': (registry) => proto};
       var cd = new PreGeneratedChangeDetection(null, map);
 
       expect(cd.createProtoChangeDetector(def)).toBe(proto)
