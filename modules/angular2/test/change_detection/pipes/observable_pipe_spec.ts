@@ -121,7 +121,6 @@ export function main() {
 @proxy
 @IMPLEMENTS(ChangeDetectorRef)
 class SpyChangeDetectorRef extends SpyObject {
-  private _cd: ChangeDetector;
   constructor() { super(ChangeDetectorRef); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
