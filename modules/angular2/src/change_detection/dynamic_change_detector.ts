@@ -27,12 +27,13 @@ import {
 import {ExpressionChangedAfterItHasBeenChecked, ChangeDetectionError} from './exceptions';
 
 export class DynamicChangeDetector extends AbstractChangeDetector {
-  locals: any;
+  locals: any = null;
   values: List<any>;
   changes: List<any>;
   pipes: List<any>;
   prevContexts: List<any>;
-  directives: any;
+  directives: any = null;
+  alreadyChecked: boolean = false;
 
   constructor(private changeControlStrategy: string, private dispatcher: any,
               private pipeRegistry: PipeRegistry, private protos: List<ProtoRecord>,
@@ -47,8 +48,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     ListWrapper.fill(this.pipes, null);
     ListWrapper.fill(this.prevContexts, uninitialized);
     ListWrapper.fill(this.changes, false);
-    this.locals = null;
-    this.directives = null;
   }
 
   hydrate(context: any, locals: any, directives: any) {
@@ -56,6 +55,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
     this.values[0] = context;
     this.locals = locals;
     this.directives = directives;
+    this.alreadyChecked = false;
   }
 
   dehydrate() {
@@ -87,19 +87,26 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
       var bindingRecord = proto.bindingRecord;
       var directiveRecord = bindingRecord.directiveRecord;
 
-      var change = this._check(proto, throwOnChange);
-      if (isPresent(change)) {
-        this._updateDirectiveOrElement(change, bindingRecord);
-        isChanged = true;
-        changes = this._addChange(bindingRecord, change, changes);
+      if (proto.isLifeCycleRecord()) {
+        if (proto.name === "onCheck" && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).onCheck();
+        } else if (proto.name === "onInit" && !throwOnChange && !this.alreadyChecked) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
+        } else if (proto.name === "onChange" && isPresent(changes) && !throwOnChange) {
+          this._getDirectiveFor(directiveRecord.directiveIndex).onChange(changes);
+        }
+
+      } else {
+        var change = this._check(proto, throwOnChange);
+        if (isPresent(change)) {
+          this._updateDirectiveOrElement(change, bindingRecord);
+          isChanged = true;
+          changes = this._addChange(bindingRecord, change, changes);
+        }
       }
 
       if (proto.lastInDirective) {
-        if (isPresent(changes)) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).onChange(changes);
-          changes = null;
-        }
-
+        changes = null;
         if (isChanged && bindingRecord.isOnPushChangeDetection()) {
           this._getDetectorFor(directiveRecord.directiveIndex).markAsCheckOnce();
         }
@@ -107,6 +114,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         isChanged = false;
       }
     }
+
+    this.alreadyChecked = true;
   }
 
   callOnAllChangesDone() {
@@ -142,7 +151,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
 
   _check(proto: ProtoRecord, throwOnChange: boolean): SimpleChange {
     try {
-      if (proto.mode === RECORD_TYPE_PIPE || proto.mode === RECORD_TYPE_BINDING_PIPE) {
+      if (proto.isPipeRecord()) {
         return this._pipeCheck(proto, throwOnChange);
       } else {
         return this._referenceCheck(proto, throwOnChange);

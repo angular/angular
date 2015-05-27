@@ -311,10 +311,26 @@ export function main() {
               });
 
               describe("updating directives", () => {
-                var dirRecord1 = new DirectiveRecord(new DirectiveIndex(0, 0), true, true, DEFAULT);
-                var dirRecord2 = new DirectiveRecord(new DirectiveIndex(0, 1), true, true, DEFAULT);
-                var dirRecordNoCallbacks =
-                    new DirectiveRecord(new DirectiveIndex(0, 0), false, false, DEFAULT);
+                var dirRecord1 = new DirectiveRecord({
+                  directiveIndex: new DirectiveIndex(0, 0),
+                  callOnChange: true,
+                  callOnCheck: true,
+                  callOnAllChangesDone: true
+                });
+
+                var dirRecord2 = new DirectiveRecord({
+                  directiveIndex: new DirectiveIndex(0, 1),
+                  callOnChange: true,
+                  callOnCheck: true,
+                  callOnAllChangesDone: true
+                });
+
+                var dirRecordNoCallbacks = new DirectiveRecord({
+                  directiveIndex: new DirectiveIndex(0, 0),
+                  callOnChange: false,
+                  callOnCheck: false,
+                  callOnAllChangesDone: false
+                });
 
                 function updateA(exp: string, dirRecord) {
                   return BindingRecord.createForDirective(ast(exp), "a", (o, v) => o.a = v,
@@ -353,7 +369,9 @@ export function main() {
                     var pcd = createProtoChangeDetector([
                       updateA("1", dirRecord1),
                       updateB("2", dirRecord1),
-                      updateA("3", dirRecord2)
+                      BindingRecord.createDirectiveOnChange(dirRecord1),
+                      updateA("3", dirRecord2),
+                      BindingRecord.createDirectiveOnChange(dirRecord2)
                     ],
                                                         [], [dirRecord1, dirRecord2]);
 
@@ -366,10 +384,13 @@ export function main() {
                     expect(directive1.changes).toEqual({'a': 1, 'b': 2});
                     expect(directive2.changes).toEqual({'a': 3});
                   });
+                });
 
-                  it("should not call onChange when callOnChange is false", () => {
-                    var pcd = createProtoChangeDetector([updateA("1", dirRecordNoCallbacks)], [],
-                                                        [dirRecordNoCallbacks]);
+                describe("onCheck", () => {
+                  it("should notify the directive when it is checked", () => {
+                    var pcd = createProtoChangeDetector(
+                        [BindingRecord.createDirectiveOnCheck(dirRecord1)], [], [dirRecord1]);
+
 
                     var cd = pcd.instantiate(dispatcher);
 
@@ -377,7 +398,63 @@ export function main() {
 
                     cd.detectChanges();
 
-                    expect(directive1.changes).toEqual(null);
+                    expect(directive1.onCheckCalled).toBe(true);
+
+                    directive1.onCheckCalled = false;
+
+                    cd.detectChanges();
+
+                    expect(directive1.onCheckCalled).toBe(true);
+                  });
+
+                  it("should not call onCheck in detectNoChanges", () => {
+                    var pcd = createProtoChangeDetector(
+                        [BindingRecord.createDirectiveOnCheck(dirRecord1)], [], [dirRecord1]);
+
+
+                    var cd = pcd.instantiate(dispatcher);
+
+                    cd.hydrate(null, null, dirs([directive1]));
+
+                    cd.checkNoChanges();
+
+                    expect(directive1.onCheckCalled).toBe(false);
+                  });
+                });
+
+                describe("onInit", () => {
+                  it("should notify the directive after it has been checked the first time", () => {
+                    var pcd = createProtoChangeDetector(
+                        [BindingRecord.createDirectiveOnInit(dirRecord1)], [], [dirRecord1]);
+
+
+                    var cd = pcd.instantiate(dispatcher);
+
+                    cd.hydrate(null, null, dirs([directive1]));
+
+                    cd.detectChanges();
+
+                    expect(directive1.onInitCalled).toBe(true);
+
+                    directive1.onInitCalled = false;
+
+                    cd.detectChanges();
+
+                    expect(directive1.onInitCalled).toBe(false);
+                  });
+
+                  it("should not call onInit in detectNoChanges", () => {
+                    var pcd = createProtoChangeDetector(
+                        [BindingRecord.createDirectiveOnInit(dirRecord1)], [], [dirRecord1]);
+
+
+                    var cd = pcd.instantiate(dispatcher);
+
+                    cd.hydrate(null, null, dirs([directive1]));
+
+                    cd.checkNoChanges();
+
+                    expect(directive1.onInitCalled).toBe(false);
                   });
                 });
 
@@ -466,7 +543,7 @@ export function main() {
 
             describe("reading directives", () => {
               var index = new DirectiveIndex(0, 0);
-              var dirRecord = new DirectiveRecord(index, false, false, DEFAULT);
+              var dirRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
 
               it("should read directive properties", () => {
                 var directive = new TestDirective();
@@ -688,8 +765,8 @@ export function main() {
                 checkedDetector.mode = CHECKED;
 
                 // this directive is a component with ON_PUSH change detection
-                dirRecordWithOnPush =
-                    new DirectiveRecord(new DirectiveIndex(0, 0), false, false, ON_PUSH);
+                dirRecordWithOnPush = new DirectiveRecord(
+                    {directiveIndex: new DirectiveIndex(0, 0), changeDetection: ON_PUSH});
 
                 // a record updating a component
                 updateDirWithOnPushRecord = BindingRecord.createForDirective(
@@ -943,14 +1020,22 @@ class TestDirective {
   changes;
   onChangesDoneCalled;
   onChangesDoneSpy;
+  onCheckCalled;
+  onInitCalled;
 
   constructor(onChangesDoneSpy = null) {
     this.onChangesDoneCalled = false;
+    this.onCheckCalled = false;
+    this.onInitCalled = false;
     this.onChangesDoneSpy = onChangesDoneSpy;
     this.a = null;
     this.b = null;
     this.changes = null;
   }
+
+  onCheck() { this.onCheckCalled = true; }
+
+  onInit() { this.onInitCalled = true; }
 
   onChange(changes) {
     var r = {};

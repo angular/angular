@@ -8,5 +8,7 @@ export {
   Directive as DirectiveAnnotation,
   onDestroy,
   onChange,
+  onCheck,
+  onInit,
   onAllChangesDone
 } from '../annotations_impl/annotations';

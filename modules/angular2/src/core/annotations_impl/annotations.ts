@@ -1078,6 +1078,54 @@ export const onDestroy = CONST_EXPR(new LifecycleEvent("onDestroy"));
 export const onChange = CONST_EXPR(new LifecycleEvent("onChange"));
 
 /**
+ * Notify a directive when it has been checked.
+ *
+ * This method is called right after the directive's bindings have been checked,
+ * and before any of its children's bindings have been checked.
+ *
+ * It is invoked every time even when none of the directive's bindings has changed.
+ *
+ * ## Example:
+ *
+ * ```
+ * @Directive({
+ *   selector: '[class-set]',
+ *   lifecycle: [onCheck]
+ * })
+ * class ClassSet {
+ *   onCheck() {
+ *   }
+ * }
+ *  ```
+ * @exportedAs angular2/annotations
+ */
+export const onCheck = CONST_EXPR(new LifecycleEvent("onCheck"));
+
+/**
+ * Notify a directive when it has been checked the first itme.
+ *
+ * This method is called right after the directive's bindings have been checked,
+ * and before any of its children's bindings have been checked.
+ *
+ * It is invoked only once.
+ *
+ * ## Example:
+ *
+ * ```
+ * @Directive({
+ *   selector: '[class-set]',
+ *   lifecycle: [onInit]
+ * })
+ * class ClassSet {
+ *   onInit() {
+ *   }
+ * }
+ *  ```
+ * @exportedAs angular2/annotations
+ */
+export const onInit = CONST_EXPR(new LifecycleEvent("onInit"));
+
+/**
  * Notify a directive when the bindings of all its children have been changed.
  *
  * ## Example:

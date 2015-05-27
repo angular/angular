@@ -19,6 +19,12 @@ bool hasLifecycleHook(LifecycleEvent e, type, Directive annotation) {
 
     } else if (e == onAllChangesDone) {
       interface = OnAllChangesDone;
+
+    } else if (e == onCheck) {
+      interface = OnCheck;
+
+    } else if (e == onInit) {
+      interface = OnInit;
     }
 
     return interfaces.contains(interface);

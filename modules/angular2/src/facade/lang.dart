@@ -196,6 +196,10 @@ dynamic normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
 }
 
+bool normalizeBool(bool obj) {
+  return isBlank(obj) ? false : obj;
+}
+
 bool isJsObject(o) {
   return false;
 }

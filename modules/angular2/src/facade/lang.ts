@@ -231,6 +231,10 @@ export function normalizeBlank(obj) {
   return isBlank(obj) ? null : obj;
 }
 
+export function normalizeBool(obj:boolean):boolean {
+  return isBlank(obj) ? false : obj;
+}
+
 export function isJsObject(o): boolean {
   return o !== null && (typeof o === "function" || typeof o === "object");
 }

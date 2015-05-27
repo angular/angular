@@ -18,6 +18,8 @@ import {
   Directive,
   onChange,
   onDestroy,
+  onCheck,
+  onInit,
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
 import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
@@ -64,6 +66,34 @@ export function main() {
         });
       });
 
+      describe("onInit", () => {
+        it("should be true when the directive has the onInit method", () => {
+          expect(metadata(DirectiveWithOnInitMethod, new Directive({})).callOnInit).toBe(true);
+        });
+
+        it("should be true when the lifecycle includes onDestroy", () => {
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onInit]})).callOnInit)
+              .toBe(true);
+        });
+
+        it("should be false otherwise",
+           () => { expect(metadata(DirectiveNoHooks, new Directive()).callOnInit).toBe(false); });
+      });
+
+      describe("onCheck", () => {
+        it("should be true when the directive has the onCheck method", () => {
+          expect(metadata(DirectiveWithOnCheckMethod, new Directive({})).callOnCheck).toBe(true);
+        });
+
+        it("should be true when the lifecycle includes onCheck", () => {
+          expect(metadata(DirectiveNoHooks, new Directive({lifecycle: [onCheck]})).callOnCheck)
+              .toBe(true);
+        });
+
+        it("should be false otherwise",
+           () => { expect(metadata(DirectiveNoHooks, new Directive()).callOnCheck).toBe(false); });
+      });
+
       describe("onAllChangesDone", () => {
         it("should be true when the directive has the onAllChangesDone method", () => {
           expect(
@@ -91,10 +121,18 @@ class DirectiveWithOnChangeMethod {
   onChange(_) {}
 }
 
+class DirectiveWithOnInitMethod {
+  onInit() {}
+}
+
+class DirectiveWithOnCheckMethod {
+  onCheck() {}
+}
+
 class DirectiveWithOnDestroyMethod {
   onDestroy(_) {}
 }
 
 class DirectiveWithOnAllChangesDoneMethod {
-  onAllChangesDone(_) {}
+  onAllChangesDone() {}
 }

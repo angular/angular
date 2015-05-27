@@ -191,7 +191,7 @@ function setUpChangeDetection(changeDetection:ChangeDetection, iterations, objec
   var parentProto = changeDetection.createProtoChangeDetector(new ChangeDetectorDefinition('parent', null, [], [], []));
   var parentCd = parentProto.instantiate(dispatcher);
 
-  var directiveRecord = new DirectiveRecord(new DirectiveIndex(0, 0), false, false, DEFAULT);
+  var directiveRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
   var bindings = [
     BindingRecord.createForDirective(parser.parseBinding('field0', null), "field0", reflector.setter("field0"), directiveRecord),
     BindingRecord.createForDirective(parser.parseBinding('field1', null), "field1", reflector.setter("field1"), directiveRecord),

@@ -138,11 +138,13 @@ export class DirectiveMetadata {
   type: number;
   callOnDestroy: boolean;
   callOnChange: boolean;
+  callOnCheck: boolean;
+  callOnInit: boolean;
   callOnAllChangesDone: boolean;
   changeDetection: string;
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                hostActions, properties, readAttributes, type, callOnDestroy, callOnChange,
-               callOnAllChangesDone, changeDetection}: {
+               callOnCheck, callOnInit, callOnAllChangesDone, changeDetection}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -156,6 +158,8 @@ export class DirectiveMetadata {
     type?: number,
     callOnDestroy?: boolean,
     callOnChange?: boolean,
+    callOnCheck?: boolean,
+    callOnInit?: boolean,
     callOnAllChangesDone?: boolean,
     changeDetection?: string
   }) {
@@ -172,6 +176,8 @@ export class DirectiveMetadata {
     this.type = type;
     this.callOnDestroy = callOnDestroy;
     this.callOnChange = callOnChange;
+    this.callOnCheck = callOnCheck;
+    this.callOnInit = callOnInit;
     this.callOnAllChangesDone = callOnAllChangesDone;
     this.changeDetection = changeDetection;
   }

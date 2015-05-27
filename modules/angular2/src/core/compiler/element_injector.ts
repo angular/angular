@@ -26,6 +26,8 @@ import {
   Component,
   onChange,
   onDestroy,
+  onCheck,
+  onInit,
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
@@ -303,6 +305,8 @@ export class DirectiveBinding extends ResolvedBinding {
 
       callOnDestroy: hasLifecycleHook(onDestroy, rb.key.token, ann),
       callOnChange: hasLifecycleHook(onChange, rb.key.token, ann),
+      callOnCheck: hasLifecycleHook(onCheck, rb.key.token, ann),
+      callOnInit: hasLifecycleHook(onInit, rb.key.token, ann),
       callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
 
       changeDetection: ann instanceof

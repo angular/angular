@@ -1,6 +1,6 @@
 import {isPresent} from 'angular2/src/facade/lang';
 import {List, ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
-import {RECORD_TYPE_SELF, ProtoRecord} from './proto_record';
+import {RECORD_TYPE_SELF, RECORD_TYPE_DIRECTIVE_LIFECYCLE, ProtoRecord} from './proto_record';
 
 /**
  * Removes "duplicate" records. It assuming that record evaluation does not
@@ -44,7 +44,8 @@ function _selfRecord(r: ProtoRecord, contextIndex: number, selfIndex: number): P
 }
 
 function _findMatching(r: ProtoRecord, rs: List<ProtoRecord>) {
-  return ListWrapper.find(rs, (rr) => rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
+  return ListWrapper.find(rs, (rr) => rr.mode !== RECORD_TYPE_DIRECTIVE_LIFECYCLE &&
+                                      rr.mode === r.mode && rr.funcOrValue === r.funcOrValue &&
                                       rr.contextIndex === r.contextIndex &&
                                       ListWrapper.equals(rr.args, r.args));
 }

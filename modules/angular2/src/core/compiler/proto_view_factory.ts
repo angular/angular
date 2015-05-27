@@ -85,16 +85,26 @@ class BindingRecordsCreator {
     for (var i = 0; i < directiveBinders.length; i++) {
       var directiveBinder = directiveBinders[i];
       var directiveMetadata = allDirectiveMetadatas[directiveBinder.directiveIndex];
+      var directiveRecord = this._getDirectiveRecord(boundElementIndex, i, directiveMetadata);
 
       // directive properties
       MapWrapper.forEach(directiveBinder.propertyBindings, (astWithSource, propertyName) => {
         // TODO: these setters should eventually be created by change detection, to make
         // it monomorphic!
         var setter = reflector.setter(propertyName);
-        var directiveRecord = this._getDirectiveRecord(boundElementIndex, i, directiveMetadata);
         ListWrapper.push(bindings, BindingRecord.createForDirective(astWithSource, propertyName,
                                                                     setter, directiveRecord));
       });
+
+      if (directiveRecord.callOnChange) {
+        ListWrapper.push(bindings, BindingRecord.createDirectiveOnChange(directiveRecord));
+      }
+      if (directiveRecord.callOnInit) {
+        ListWrapper.push(bindings, BindingRecord.createDirectiveOnInit(directiveRecord));
+      }
+      if (directiveRecord.callOnCheck) {
+        ListWrapper.push(bindings, BindingRecord.createDirectiveOnCheck(directiveRecord));
+      }
 
       // host properties
       MapWrapper.forEach(directiveBinder.hostPropertyBindings, (astWithSource, propertyName) => {
@@ -110,12 +120,14 @@ class BindingRecordsCreator {
     var id = boundElementIndex * 100 + directiveIndex;
 
     if (!MapWrapper.contains(this._directiveRecordsMap, id)) {
-      var changeDetection = directiveMetadata.changeDetection;
-
-      MapWrapper.set(this._directiveRecordsMap, id,
-                     new DirectiveRecord(new DirectiveIndex(boundElementIndex, directiveIndex),
-                                         directiveMetadata.callOnAllChangesDone,
-                                         directiveMetadata.callOnChange, changeDetection));
+      MapWrapper.set(this._directiveRecordsMap, id, new DirectiveRecord({
+                       directiveIndex: new DirectiveIndex(boundElementIndex, directiveIndex),
+                       callOnAllChangesDone: directiveMetadata.callOnAllChangesDone,
+                       callOnChange: directiveMetadata.callOnChange,
+                       callOnCheck: directiveMetadata.callOnCheck,
+                       callOnInit: directiveMetadata.callOnInit,
+                       changeDetection: directiveMetadata.changeDetection
+                     }));
     }
 
     return MapWrapper.get(this._directiveRecordsMap, id);

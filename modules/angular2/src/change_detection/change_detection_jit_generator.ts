@@ -40,6 +40,7 @@ var CHANGES_LOCAL = "changes";
 var LOCALS_ACCESSOR = "this.locals";
 var MODE_ACCESSOR = "this.mode";
 var CURRENT_PROTO = "currentProto";
+var ALREADY_CHECKED_ACCESSOR = "this.alreadyChecked";
 
 
 export class ChangeDetectorJITGenerator {
@@ -86,6 +87,7 @@ export class ChangeDetectorJITGenerator {
         ${PROTOS_ACCESSOR} = protos;
         ${DIRECTIVES_ACCESSOR} = directiveRecords;
         ${LOCALS_ACCESSOR} = null;
+        ${ALREADY_CHECKED_ACCESSOR} = false;
         ${this._genFieldDefinitions()}
       }
 
@@ -101,6 +103,8 @@ export class ChangeDetectorJITGenerator {
         context = ${CONTEXT_ACCESSOR};
 
         ${this.records.map((r) => this._genRecord(r)).join("\n")}
+
+        ${ALREADY_CHECKED_ACCESSOR} = true;
       }
 
       ${this.typeName}.prototype.callOnAllChangesDone = function() {
@@ -113,6 +117,7 @@ export class ChangeDetectorJITGenerator {
         ${LOCALS_ACCESSOR} = locals;
         ${this._genHydrateDirectives()}
         ${this._genHydrateDetectors()}
+        ${ALREADY_CHECKED_ACCESSOR} = false;
       }
 
       ${this.typeName}.prototype.dehydrate = function() {
@@ -136,7 +141,7 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genGetDirectiveFieldNames(): List<string> {
-    return this.directiveRecords.map((d) => this._genGetDirective(d.directiveIndex));
+    return this.directiveRecords.map(d => this._genGetDirective(d.directiveIndex));
   }
 
   _genGetDetectorFieldNames(): List<string> {
@@ -212,10 +217,26 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genRecord(r: ProtoRecord): string {
-    if (r.mode === RECORD_TYPE_PIPE || r.mode === RECORD_TYPE_BINDING_PIPE) {
-      return this._genPipeCheck(r);
+    var rec;
+    if (r.isLifeCycleRecord()) {
+      rec = this._genDirectiveLifecycle(r);
+    } else if (r.isPipeRecord()) {
+      rec = this._genPipeCheck(r);
     } else {
-      return this._genReferenceCheck(r);
+      rec = this._genReferenceCheck(r);
+    }
+    return `${rec}${this._genLastInDirective(r)}`;
+  }
+
+  _genDirectiveLifecycle(r: ProtoRecord) {
+    if (r.name === "onCheck") {
+      return this._genOnCheck(r);
+    } else if (r.name === "onInit") {
+      return this._genOnInit(r);
+    } else if (r.name === "onChange") {
+      return this._genOnChange(r);
+    } else {
+      throw new BaseException(`Unknown lifecycle event '${r.name}'`);
     }
   }
 
@@ -248,7 +269,6 @@ export class ChangeDetectorJITGenerator {
         ${this._genAddToChanges(r)}
         ${oldValue} = ${newValue};
       }
-      ${this._genLastInDirective(r)}
     `;
   }
 
@@ -266,7 +286,6 @@ export class ChangeDetectorJITGenerator {
         ${this._genAddToChanges(r)}
         ${oldValue} = ${newValue};
       }
-      ${this._genLastInDirective(r)}
     `;
 
     if (r.isPureFunction()) {
@@ -390,22 +409,27 @@ export class ChangeDetectorJITGenerator {
   }
 
   _genLastInDirective(r: ProtoRecord): string {
+    if (!r.lastInDirective) return "";
     return `
-      ${this._genNotifyOnChanges(r)}
+      ${CHANGES_LOCAL} = null;
       ${this._genNotifyOnPushDetectors(r)}
       ${IS_CHANGED_LOCAL} = false;
     `;
   }
 
-  _genNotifyOnChanges(r: ProtoRecord): string {
+  _genOnCheck(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    if (!r.lastInDirective || !br.callOnChange()) return "";
-    return `
-      if(${CHANGES_LOCAL}) {
-        ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});
-        ${CHANGES_LOCAL} = null;
-      }
-    `;
+    return `if (!throwOnChange) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onCheck();`;
+  }
+
+  _genOnInit(r: ProtoRecord): string {
+    var br = r.bindingRecord;
+    return `if (!throwOnChange && !${ALREADY_CHECKED_ACCESSOR}) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onInit();`;
+  }
+
+  _genOnChange(r: ProtoRecord): string {
+    var br = r.bindingRecord;
+    return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._genGetDirective(br.directiveRecord.directiveIndex)}.onChange(${CHANGES_LOCAL});`;
   }
 
   _genNotifyOnPushDetectors(r: ProtoRecord): string {

@@ -53,7 +53,8 @@ import {
   RECORD_TYPE_BINDING_PIPE,
   RECORD_TYPE_INTERPOLATE,
   RECORD_TYPE_SAFE_PROPERTY,
-  RECORD_TYPE_SAFE_INVOKE_METHOD
+  RECORD_TYPE_SAFE_INVOKE_METHOD,
+  RECORD_TYPE_DIRECTIVE_LIFECYCLE
 } from './proto_record';
 
 export class DynamicProtoChangeDetector extends ProtoChangeDetector {
@@ -72,7 +73,7 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   _createRecords(definition: ChangeDetectorDefinition) {
     var recordBuilder = new ProtoRecordBuilder();
     ListWrapper.forEach(definition.bindingRecords,
-                        (b) => { recordBuilder.addAst(b, definition.variableNames); });
+                        (b) => { recordBuilder.add(b, definition.variableNames); });
     return coalesce(recordBuilder.records);
   }
 }
@@ -91,7 +92,7 @@ export class JitProtoChangeDetector extends ProtoChangeDetector {
   _createFactory(definition: ChangeDetectorDefinition) {
     var recordBuilder = new ProtoRecordBuilder();
     ListWrapper.forEach(definition.bindingRecords,
-                        (b) => { recordBuilder.addAst(b, definition.variableNames); });
+                        (b) => { recordBuilder.add(b, definition.variableNames); });
     var c = _jitProtoChangeDetectorClassCounter++;
     var records = coalesce(recordBuilder.records);
     var typeName = `ChangeDetector${c}`;
@@ -106,17 +107,28 @@ class ProtoRecordBuilder {
 
   constructor() { this.records = []; }
 
-  addAst(b: BindingRecord, variableNames: List<string> = null) {
+  add(b: BindingRecord, variableNames: List<string> = null) {
     var oldLast = ListWrapper.last(this.records);
     if (isPresent(oldLast) && oldLast.bindingRecord.directiveRecord == b.directiveRecord) {
       oldLast.lastInDirective = false;
     }
-
-    _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
+    this._appendRecords(b, variableNames);
     var newLast = ListWrapper.last(this.records);
     if (isPresent(newLast) && newLast !== oldLast) {
       newLast.lastInBinding = true;
       newLast.lastInDirective = true;
+    }
+  }
+
+  _appendRecords(b: BindingRecord, variableNames: List<string>) {
+    if (b.isDirectiveLifecycle()) {
+      ;
+      ListWrapper.push(
+          this.records,
+          new ProtoRecord(RECORD_TYPE_DIRECTIVE_LIFECYCLE, b.lifecycleEvent, null, [], [], -1, null,
+                          this.records.length + 1, b, null, false, false));
+    } else {
+      _ConvertAstIntoProtoRecords.append(this.records, b, variableNames);
     }
   }
 }

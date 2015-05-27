@@ -42,6 +42,34 @@ main() {
         });
       });
 
+      describe("onCheck", () {
+        it("should be true when the directive implements OnCheck", () {
+          expect(metadata(DirectiveImplementingOnCheck, new Directive()).callOnCheck).toBe(true);
+        });
+
+        it("should be true when the lifecycle includes onCheck", () {
+          expect(metadata(DirectiveNoHooks, new Directive(lifecycle: [onCheck])).callOnCheck).toBe(true);
+        });
+
+        it("should be false otherwise", () {
+          expect(metadata(DirectiveNoHooks, new Directive()).callOnCheck).toBe(false);
+        });
+      });
+
+      describe("onInit", () {
+        it("should be true when the directive implements OnInit", () {
+          expect(metadata(DirectiveImplementingOnInit, new Directive()).callOnInit).toBe(true);
+        });
+
+        it("should be true when the lifecycle includes onInit", () {
+          expect(metadata(DirectiveNoHooks, new Directive(lifecycle: [onInit])).callOnInit).toBe(true);
+        });
+
+        it("should be false otherwise", () {
+          expect(metadata(DirectiveNoHooks, new Directive()).callOnInit).toBe(false);
+        });
+      });
+
       describe("onAllChangesDone", () {
         it("should be true when the directive implements OnAllChangesDone", () {
           expect(metadata(DirectiveImplementingOnAllChangesDone, new Directive()).callOnAllChangesDone).toBe(true);
@@ -64,6 +92,14 @@ class DirectiveNoHooks {
 
 class DirectiveImplementingOnChange implements OnChange {
   onChange(_){}
+}
+
+class DirectiveImplementingOnCheck implements OnCheck {
+  onCheck(){}
+}
+
+class DirectiveImplementingOnInit implements OnInit {
+  onInit(){}
 }
 
 class DirectiveImplementingOnDestroy implements OnDestroy {
