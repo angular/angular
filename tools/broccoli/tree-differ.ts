@@ -21,7 +21,7 @@ export class TreeDiffer {
   private include: RegExp = null;
   private exclude: RegExp = null;
 
-  constructor(private rootPath: string, includeExtensions?: string[],
+  constructor(private label: string, private rootPath: string, includeExtensions?: string[],
               excludeExtensions?: string[]) {
     this.rootDirName = path.basename(rootPath);
 
@@ -40,7 +40,7 @@ export class TreeDiffer {
 
 
   public diffTree(): DiffResult {
-    let result = new DirtyCheckingDiffResult(this.rootDirName);
+    let result = new DirtyCheckingDiffResult(this.label, this.rootDirName);
     this.dirtyCheckPath(this.rootPath, result);
     this.detectDeletionsAndUpdateFingerprints(result);
     result.endTime = Date.now();
@@ -127,12 +127,12 @@ class DirtyCheckingDiffResult {
   public startTime: number = Date.now();
   public endTime: number = null;
 
-  constructor(public name: string) {}
+  constructor(public label:string, public directoryName: string) {}
 
   toString() {
-    return `${pad(this.name, 40)}, duration: ${pad(this.endTime - this.startTime, 5)}ms, ` +
-           `${pad(this.changedPaths.length + this.removedPaths.length, 5)} changes detected ` +
-           `(files: ${pad(this.filesChecked, 5)}, directories: ${pad(this.directoriesChecked, 4)})`;
+    return `${pad(this.label, 30)}, ${pad(this.endTime - this.startTime, 5)}ms, ` +
+           `${pad(this.changedPaths.length + this.removedPaths.length, 5)} changes ` +
+           `(files: ${pad(this.filesChecked, 5)}, dirs: ${pad(this.directoriesChecked, 4)})`;
   }
 
   log(verbose) {

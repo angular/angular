@@ -26,7 +26,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1');
+      let differ = new TreeDiffer('testLabel', 'dir1');
 
       let diffResult = differ.diffTree();
 
@@ -49,7 +49,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1');
+      let differ = new TreeDiffer('testLabel', 'dir1');
 
       let diffResult = differ.diffTree();
 
@@ -76,7 +76,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1');
+      let differ = new TreeDiffer('testLabel', 'dir1');
 
       let diffResult = differ.diffTree();
 
@@ -123,7 +123,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('symlinks');
+      let differ = new TreeDiffer('testLabel', 'symlinks');
 
       let diffResult = differ.diffTree();
 
@@ -190,7 +190,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1', ['.js', '.coffee']);
+      let differ = new TreeDiffer('testLabel', 'dir1', ['.js', '.coffee']);
 
       let diffResult = differ.diffTree();
 
@@ -236,7 +236,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
+      let differ = new TreeDiffer('testLabel', 'dir1', ['.ts', '.cs'], ['.d.ts', '.d.cs']);
 
       let diffResult = differ.diffTree();
 
@@ -277,7 +277,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1');
+      let differ = new TreeDiffer('testLabel', 'dir1');
       differ.diffTree();
 
       testDir['dir1']['file-2.txt'] = 'new file';
@@ -295,7 +295,7 @@ describe('TreeDiffer', () => {
     };
     mockfs(testDir);
 
-    let differ = new TreeDiffer('dir1');
+    let differ = new TreeDiffer('testLabel', 'dir1');
     differ.diffTree();
 
     testDir['dir1']['file-1.txt'] = 'new content';
@@ -316,7 +316,7 @@ describe('TreeDiffer', () => {
       };
       mockfs(testDir);
 
-      let differ = new TreeDiffer('dir1');
+      let differ = new TreeDiffer('testLabel', 'dir1');
       differ.diffTree();
 
       delete testDir['dir1']['file-1.txt'];
@@ -339,7 +339,7 @@ describe('TreeDiffer', () => {
 
     mockfs(testDir);
 
-    let differ = new TreeDiffer('dir1');
+    let differ = new TreeDiffer('testLabel', 'dir1');
     differ.diffTree();
 
     testDir['dir1']['file-1.txt'] = 'changed content';
