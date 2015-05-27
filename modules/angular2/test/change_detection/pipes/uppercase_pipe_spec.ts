@@ -17,9 +17,7 @@ export function main() {
     });
 
     describe("supports", () => {
-      it("should support strings", () => {
-        expect(pipe.supports(str)).toBe(true);
-      });
+      it("should support strings", () => { expect(pipe.supports(str)).toBe(true); });
 
       it("should not support other objects", () => {
         expect(pipe.supports(new Object())).toBe(false);
