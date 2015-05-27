@@ -1,11 +1,14 @@
-import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST, CONST_EXPR, isBlank} from 'angular2/src/facade/lang';
 import {DependencyAnnotation} from 'angular2/src/di/annotations_impl';
 
 @CONST()
 export class Visibility extends DependencyAnnotation {
-  constructor(public depth: number, public crossComponentBoundaries: boolean) { super(); }
+  constructor(public depth: number, public crossComponentBoundaries: boolean,
+              public _includeSelf: boolean) {
+    super();
+  }
 
-  shouldIncludeSelf(): boolean { return this.depth === 0; }
+  get includeSelf(): boolean { return isBlank(this._includeSelf) ? false : this._includeSelf; }
 }
 
 /**
@@ -47,7 +50,7 @@ export class Visibility extends DependencyAnnotation {
  */
 @CONST()
 export class Self extends Visibility {
-  constructor() { super(0, false); }
+  constructor() { super(0, false, true); }
 }
 
 // make constants after switching to ts2dart
@@ -98,7 +101,7 @@ export var self = new Self();
  */
 @CONST()
 export class Parent extends Visibility {
-  constructor() { super(1, false); }
+  constructor({self}: {self?: boolean} = {}) { super(1, false, self); }
 }
 
 /**
@@ -159,7 +162,7 @@ export class Parent extends Visibility {
  */
 @CONST()
 export class Ancestor extends Visibility {
-  constructor() { super(999999, false); }
+  constructor({self}: {self?: boolean} = {}) { super(999999, false, self); }
 }
 
 /**
@@ -198,5 +201,5 @@ export class Ancestor extends Visibility {
  */
 @CONST()
 export class Unbounded extends Visibility {
-  constructor() { super(999999, true); }
+  constructor({self}: {self?: boolean} = {}) { super(999999, true, self); }
 }

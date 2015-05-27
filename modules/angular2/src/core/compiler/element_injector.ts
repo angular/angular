@@ -1082,7 +1082,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
     var depth = visibility.depth;
 
-    if (!visibility.shouldIncludeSelf()) {
+    if (!visibility.includeSelf) {
       depth -= ei._proto.distanceToParent;
 
       if (isPresent(ei._parent)) {

@@ -104,6 +104,12 @@ class NeedsDirectiveFromParent {
 }
 
 @Injectable()
+class NeedsDirectiveFromParentOrSelf {
+  dependency: SimpleDirective;
+  constructor(@Parent({self:true}) dependency: SimpleDirective) { this.dependency = dependency; }
+}
+
+@Injectable()
 class NeedsDirectiveFromAncestor {
   dependency: SimpleDirective;
   constructor(@Ancestor() dependency: SimpleDirective) { this.dependency = dependency; }
@@ -640,10 +646,19 @@ export function main() {
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
-          it("should not return parent's directives on self", () => {
+          it("should not return parent's directives on self by default", () => {
             expect(() => {
               injector(ListWrapper.concat([SimpleDirective, NeedsDirectiveFromParent], extraBindings));
             }).toThrowError(containsRegexp(`No provider for ${stringify(SimpleDirective) }`));
+          });
+
+          it("should return parent's directives on self when explicitly specified", () => {
+            var inj = injector(ListWrapper.concat([SimpleDirective, NeedsDirectiveFromParentOrSelf], extraBindings));
+
+            var d = inj.get(NeedsDirectiveFromParentOrSelf);
+
+            expect(d).toBeAnInstanceOf(NeedsDirectiveFromParentOrSelf);
+            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
           it("should get directives from ancestor", () => {
