@@ -21,24 +21,30 @@ import {print} from 'angular2/src/facade/lang';
   template: `
       <div [control-group]="header">
         <div>
-          <label>Title:</label> <br/>
-          <input type="text" control="title"/>
+          <label>
+            Title: <br>
+            <input type="text" control="title">
+          </label>
           <div *ng-if="! header.controls.title.valid && header.controls.title.dirty">
             Title is required
           </div>
         </div>
 
         <div>
-          <label>Description:</label> <br/>
-          <textarea control="description"></textarea>
+          <label>
+            Description: <br>
+            <textarea control="description"></textarea>
+          </label>
           <div *ng-if="! header.controls.description.valid && header.controls.description.dirty">
             Description is required
           </div>
         </div>
 
         <div>
-          <label>Publish Date:</label> <br/>
-          <input type="date" control="date"/>
+          <label>
+            Publish Date: <br>
+            <input type="date" control="date">
+          </label>
         </div>
       </div>
   `,
@@ -69,29 +75,35 @@ class HeaderFields {
 
       <div [control-group]="question">
         <div>
-          <label>Type:</label> <br/>
-          <select control="type">
-            <option value=""></option>
-            <option value="text">Text</option>
-            <option value="checkbox">Checkbox</option>
-            <option value="textarea">Textarea</option>
-          </select>
+          <label>
+            Type: <br>
+            <select control="type">
+              <option value=""></option>
+              <option value="text">Text</option>
+              <option value="checkbox">Checkbox</option>
+              <option value="textarea">Textarea</option>
+            </select>
+          </label>
           <div *ng-if="! question.controls.type.valid && question.controls.type.dirty">
             Type is required
           </div>
         </div>
 
         <div>
-          <label>Question:</label> <br/>
-          <input type="text" control="questionText">
+          <label>
+            Question: <br>
+            <input type="text" control="questionText">
+          </label>
           <div *ng-if="! question.controls.questionText.valid && question.controls.questionText.dirty">
             Question is required
           </div>
         </div>
 
         <div *ng-if="question.contains('responseLength')">
-          <label>Response Length:</label> <br/>
-          <input type="number" control="responseLength">
+          <label>
+            Response Length: <br>
+            <input type="number" control="responseLength">
+          </label>
           <div *ng-if="! question.controls.responseLength.valid && question.controls.responseLength.dirty">
             Length is required
           </div>
@@ -187,12 +199,11 @@ class SurveyBuilder {
 
   submitForm(): void {
     print('Submitting a form');
-    print(`"value: ${this.form.value}`);
-    print(` valid: $ { this.form.valid } `);
-    print(` errors: $ { this.form.errors }`);
+    print(` value: ${ this.form.value }`);
+    print(` valid: ${ this.form.valid }`);
+    print(` errors: ${ this.form.errors }`);
   }
 }
-
 export function main() {
   bootstrap(SurveyBuilder);
 }
