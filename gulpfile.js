@@ -206,7 +206,7 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 
 gulp.task('build/format.dart', function() {
   return util.processToPromise(spawn(DART_SDK.DARTFMT, ['-w', CONFIG.dest.dart], {
-    stdio: logs.dartfmt ? 'inherit' : ['ignore', 'ignore', process.stderr]
+    stdio: logs.dartfmt ? 'inherit' : ['ignore', 'ignore', 'inherit']
   }));
 });
 

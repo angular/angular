@@ -1,7 +1,6 @@
 library angular2.transform.bind_generator.visitor;
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/transform/common/eval_visitor.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
 /// Visitor responsible for crawling the "annotations" value in a
@@ -9,7 +8,7 @@ import 'package:angular2/src/transform/common/logging.dart';
 /// values found.
 class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
   final Map<String, String> bindMappings = {};
-  final EvalVisitor _evaluator = new EvalVisitor();
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   @override
   Object visitNamedExpression(NamedExpression node) {

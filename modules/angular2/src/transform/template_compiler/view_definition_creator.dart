@@ -7,7 +7,6 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/render/api.dart';
 import 'package:angular2/src/render/dom/convert.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/eval_visitor.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/parser.dart';
@@ -156,7 +155,7 @@ class _ViewDefinitionCreator {
 class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   ViewDefinition viewDef = null;
   final Map<String, DirectiveMetadata> _metadataMap;
-  final EvalVisitor _evaluator = new EvalVisitor();
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   _TemplateExtractVisitor(this._metadataMap);
 

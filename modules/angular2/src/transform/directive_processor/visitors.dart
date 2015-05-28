@@ -4,7 +4,6 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/java_core.dart';
 import 'package:angular2/src/services/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/async_string_writer.dart';
-import 'package:angular2/src/transform/common/eval_visitor.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 
 /// `ToSourceVisitor` designed to accept {@link ConstructorDeclaration} nodes.
@@ -211,7 +210,7 @@ bool _isViewAnnotation(Annotation node) => '${node.name}' == 'View';
 class AnnotationsTransformVisitor extends ToSourceVisitor {
   final AsyncStringWriter writer;
   final XHR _xhr;
-  final EvalVisitor _evaluator = new EvalVisitor();
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
   bool _processingView = false;
 
   AnnotationsTransformVisitor(AsyncStringWriter writer, this._xhr)

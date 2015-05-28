@@ -39,6 +39,9 @@ void allTests() {
 
   _testNgDeps(
       'should inline `templateUrl` values.', 'url_expression_files/hello.dart');
+
+  _testNgDeps('should inline `templateUrl`s expressed as adjacent strings.',
+      'split_url_expression_files/hello.dart');
 }
 
 void _testNgDeps(String name, String inputPath,

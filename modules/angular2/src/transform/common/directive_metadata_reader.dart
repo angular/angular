@@ -3,7 +3,6 @@ library angular2.transform.common.directive_metadata_reader;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:angular2/src/render/api.dart';
-import 'package:angular2/src/transform/common/eval_visitor.dart';
 
 /// Reads [DirectiveMetadata] from the `node`. `node` is expected to be an
 /// instance of [Annotation], [NodeList<Annotation>], ListLiteral, or
@@ -50,7 +49,7 @@ num _getDirectiveType(String annotationName, Element element) {
 class _DirectiveMetadataVisitor extends Object
     with RecursiveAstVisitor<Object> {
   DirectiveMetadata meta;
-  final EvalVisitor _evaluator = new EvalVisitor();
+  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
   void _createEmptyMetadata(num type) {
     assert(type >= 0);
@@ -163,63 +162,43 @@ class _DirectiveMetadataVisitor extends Object
     meta.compileChildren = evaluated;
   }
 
-  void _populateProperties(Expression propertiesValue) {
-    _checkMeta();
-    var evaluated = propertiesValue.accept(_evaluator);
+  /// Evaluates the [Map] represented by `expression` and adds all `key`,
+  /// `value` pairs to `map`. If `expression` does not evaluate to a [Map],
+  /// throws a descriptive [FormatException].
+  void _populateMap(Expression expression, Map map, String propertyName) {
+    var evaluated = expression.accept(_evaluator);
     if (evaluated is! Map) {
       throw new FormatException(
           'Angular 2 expects a Map but could not understand the value for '
-          'Directive#properties.', '$propertiesValue' /* source */);
+          '$propertyName.', '$expression' /* source */);
     }
     evaluated.forEach((key, value) {
       if (value != null) {
-        meta.properties[key] = '$value';
+        map[key] = '$value';
       }
     });
+  }
+
+  void _populateProperties(Expression propertiesValue) {
+    _checkMeta();
+    _populateMap(propertiesValue, meta.properties, 'Directive#properties');
   }
 
   void _populateHostListeners(Expression hostListenersValue) {
     _checkMeta();
-    var evaluated = hostListenersValue.accept(_evaluator);
-    if (evaluated is! Map) {
-      throw new FormatException(
-          'Angular 2 expects a Map but could not understand the value for '
-          'Directive#hostListeners.', '$hostListenersValue' /* source */);
-    }
-    evaluated.forEach((key, value) {
-      if (value != null) {
-        meta.hostListeners[key] = '$value';
-      }
-    });
+    _populateMap(
+        hostListenersValue, meta.hostListeners, 'Directive#hostListeners');
   }
 
   void _populateHostProperties(Expression hostPropertyValue) {
     _checkMeta();
-    var evaluated = hostPropertyValue.accept(_evaluator);
-    if (evaluated is! Map) {
-      throw new FormatException(
-          'Angular 2 expects a Map but could not understand the value for '
-          'Directive#hostProperties.', '$hostPropertyValue' /* source */);
-    }
-    evaluated.forEach((key, value) {
-      if (value != null) {
-        meta.hostProperties[key] = '$value';
-      }
-    });
+    _populateMap(
+        hostPropertyValue, meta.hostProperties, 'Directive#hostProperties');
   }
 
   void _populateHostAttributes(Expression hostAttributeValue) {
     _checkMeta();
-    var evaluated = hostAttributeValue.accept(_evaluator);
-    if (evaluated is! Map) {
-      throw new FormatException(
-          'Angular 2 expects a Map but could not understand the value for '
-          'Directive#hostAttributes.', '$hostAttributeValue' /* source */);
-    }
-    evaluated.forEach((key, value) {
-      if (value != null) {
-        meta.hostAttributes[key] = '$value';
-      }
-    });
+    _populateMap(
+        hostAttributeValue, meta.hostAttributes, 'Directive#hostAttributes');
   }
 }
