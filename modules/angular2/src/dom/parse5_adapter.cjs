@@ -135,7 +135,7 @@ export class Parse5DomAdapter extends DomAdapter {
       };
     return evt;
   }
-  preventDefault(evt) { 
+  preventDefault(evt) {
     evt.returnValue = false;
   }
   getInnerHTML(el) {
@@ -302,11 +302,18 @@ export class Parse5DomAdapter extends DomAdapter {
     throw _notImplemented('getDistributedNodes');
   }
   clone(node) {
-    var temp = treeAdapter.createElement("template", null, []);
-    treeAdapter.appendChild(temp, node);
-    var serialized = serializer.serialize(temp);
-    var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
-    return newParser.parseFragment(serialized).childNodes[0];
+    // e.g. document fragment
+    if (node.type === 'root') {
+      var serialized = serializer.serialize(node);
+      var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
+      return newParser.parseFragment(serialized);
+    } else {
+      var temp = treeAdapter.createElement("template", null, []);
+      treeAdapter.appendChild(temp, node);
+      var serialized = serializer.serialize(temp);
+      var newParser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
+      return newParser.parseFragment(serialized).childNodes[0];
+    }
   }
   hasProperty(element, name:string) {
     return _HTMLElementPropertyList.indexOf(name) > -1;
