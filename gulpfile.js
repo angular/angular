@@ -210,12 +210,6 @@ gulp.task('build/pubbuild.dart', pubbuild(gulp, gulpPlugins, {
 // ------------
 // formatting
 
-gulp.task('build/format.dart', function() {
-  return util.processToPromise(spawn(DART_SDK.DARTFMT, ['-w', CONFIG.dest.dart], {
-    stdio: logs.dartfmt ? 'inherit' : ['ignore', 'ignore', 'inherit']
-  }));
-});
-
 function doCheckFormat() {
   return gulp.src(['Brocfile*.js', 'modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts',
                    // skipped  due to https://github.com/angular/clang-format/issues/4
@@ -433,7 +427,6 @@ gulp.task('!test.unit.js/karma-run', function(done) {
 gulp.task('test.unit.dart', function (done) {
   runSequence(
     'build/tree.dart',
-    'build/format.dart',
     '!test.unit.dart/karma-server',
     '!test.unit.dart/karma-run',
     function(error) {
@@ -446,7 +439,6 @@ gulp.task('test.unit.dart', function (done) {
 
       watch('modules/angular2/**', { ignoreInitial: true, log: watchLog }, [
         '!build/tree.dart',
-        'build/format.dart',
         '!test.unit.dart/karma-run'
       ]);
     }
@@ -597,7 +589,6 @@ gulp.task('build/packages.dart', function(done) {
     '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     'build/pure-packages.dart',
-    'build/format.dart',
     done);
 });
 
@@ -640,7 +631,11 @@ gulp.task('!build.tools', function() {
     tsResult.js.pipe(destDir)
   ]).on('end', function() {
     var AngularBuilder = require('./dist/tools/broccoli/angular_builder').AngularBuilder;
-    angularBuilder = new AngularBuilder('dist');
+    angularBuilder = new AngularBuilder({
+      outputPath: 'dist',
+      dartSDK: DART_SDK,
+      logs: logs
+    });
   });
 
   return mergedStream;

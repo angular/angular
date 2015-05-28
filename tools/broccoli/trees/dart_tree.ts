@@ -1,4 +1,5 @@
 /// <reference path="../../typings/node/node.d.ts" />
+/// <reference path="../angular_builder.d.ts" />
 'use strict';
 
 import {MultiCopy} from './../multi_copy';
@@ -11,6 +12,7 @@ var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
+import dartfmt from '../broccoli-dartfmt';
 
 /**
  * A funnel starting at modules, including the given filters, and moving into the root.
@@ -138,11 +140,12 @@ function getDocsTree() {
   return mergeTrees([licenses, mdTree, docs]);
 }
 
-module.exports = function makeDartTree(destinationPath) {
-  var sourceTree = mergeTrees([getSourceTree(), getHtmlSourcesTree()]);
+module.exports = function makeDartTree(options: AngularBuilderOptions) {
+  var dartSources = dartfmt(getSourceTree(), {dartSDK: options.dartSDK, logs: options.logs});
+  var sourceTree = mergeTrees([dartSources, getHtmlSourcesTree()]);
   sourceTree = fixDartFolderLayout(sourceTree);
 
   var dartTree = mergeTrees([sourceTree, getTemplatedPubspecsTree(), getDocsTree()]);
 
-  return destCopy(dartTree, destinationPath);
+  return destCopy(dartTree, options.outputPath);
 };
