@@ -258,9 +258,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setData(element, name: string, value: string) { element.dataset[name] = value; }
   getData(element, name: string): string { return element.dataset[name]; }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(name: string, value: any) {
-    global[name] = value;
-  }
+  setGlobalVar(name: string, value: any) { global[name] = value; }
 }
 
 // based on urlUtils.js in AngularJS 1

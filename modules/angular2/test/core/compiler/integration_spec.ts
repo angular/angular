@@ -725,9 +725,7 @@ export function main() {
                    var updateHost = injector.get(DirectiveUpdatingHostActions);
 
                    ObservableWrapper.subscribe(updateHost.setAttr, (_) => {
-                     expect(stringifyElement(domElement))
-                         .toEqual(
-                             '<div class="ng-binding" key="value" update-host-actions=""></div>');
+                     expect(DOM.hasAttribute(domElement, 'update-host-actions')).toBe(true);
                      async.done();
                    });
 

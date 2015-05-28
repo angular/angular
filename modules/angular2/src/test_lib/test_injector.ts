@@ -45,6 +45,7 @@ import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
+import {ELEMENT_PROBE_CONFIG} from 'angular2/debug';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/render/api';
 import {DomRenderer, DOCUMENT_TOKEN} from 'angular2/src/render/dom/dom_renderer';
@@ -80,7 +81,6 @@ function _getAppBindings() {
   } catch (e) {
     appDoc = null;
   }
-
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(appDoc),
@@ -96,6 +96,7 @@ function _getAppBindings() {
     AppViewPool,
     AppViewManager,
     AppViewManagerUtils,
+    ELEMENT_PROBE_CONFIG,
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
     Compiler,
     CompilerCache,
