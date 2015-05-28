@@ -45,13 +45,14 @@ export class Parse5DomAdapter extends DomAdapter {
   querySelectorAll(el, selector:string) {
     var res = ListWrapper.create();
     var _recursive = (result, node, selector, matcher) => {
-      if (this.elementMatches(node, selector, matcher)) {
-        ListWrapper.push(result, node);
-      }
       var cNodes = node.childNodes;
       if (cNodes && cNodes.length > 0) {
         for (var i = 0; i < cNodes.length; i++) {
-          _recursive(result, cNodes[i], selector, matcher);
+          var childNode = cNodes[i];
+          if (this.elementMatches(childNode, selector, matcher)) {
+            ListWrapper.push(result, childNode);
+          }
+          _recursive(result, childNode, selector, matcher);
         }
       }
     };
