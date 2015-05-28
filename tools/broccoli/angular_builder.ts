@@ -7,7 +7,6 @@ var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
 
-
 /**
  * BroccoliBuilder facade for all of our build pipelines.
  */
@@ -16,9 +15,9 @@ export class AngularBuilder {
   private browserDevBuilder: BroccoliBuilder;
   private browserProdBuilder: BroccoliBuilder;
   private dartBuilder: BroccoliBuilder;
+  private outputPath: string;
 
-
-  constructor(private outputPath: string) {}
+  constructor(public options: AngularBuilderOptions) { this.outputPath = options.outputPath; }
 
 
   public rebuildBrowserDevTree(): Promise<BuildResult> {
@@ -75,7 +74,12 @@ export class AngularBuilder {
 
 
   private makeDartBuilder(): BroccoliBuilder {
-    let tree = makeDartTree(path.join(this.outputPath, 'dart'));
+    let options = {
+      outputPath: path.join(this.outputPath, 'dart'),
+      dartSDK: this.options.dartSDK,
+      logs: this.options.logs
+    };
+    let tree = makeDartTree(options);
     return new broccoli.Builder(tree);
   }
 
