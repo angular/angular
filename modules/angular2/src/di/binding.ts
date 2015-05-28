@@ -387,8 +387,8 @@ export class BindingBuilder {
    *
    * ```javascript
    * var injector = Injector.resolveAndCreate([
-   *   bind(Number).toFactory(() => { return 1+2; }}),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number] })
+   *   bind(Number).toFactory(() => { return 1+2; }),
+   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
