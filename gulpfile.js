@@ -595,8 +595,8 @@ gulp.task('!build.tools', function() {
                  // see https://github.com/ivogabe/gulp-typescript#typescript-version
                  typescript: require('typescript')}))
       .on('error', function(error) {
-        // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
-        // forwarding the error into the merged stream
+        // nodejs doesn't propagate errors from the src stream into the final stream so we are
+        // forwarding the error into the final stream
         stream.emit('error', error);
       })
       .pipe(sourcemaps.write('.'))
