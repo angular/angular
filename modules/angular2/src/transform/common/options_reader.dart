@@ -26,10 +26,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       mirrorMode = MirrorMode.none;
       break;
   }
-  var optimizationPhases = _readIntOrNull(config, OPTIMIZATION_PHASES_PARAM);
-  optimizationPhases = optimizationPhases != null
-      ? optimizationPhases
-      : DEFAULT_OPTIMIZATION_PHASES;
+  var optimizationPhases = _readInt(config, OPTIMIZATION_PHASES_PARAM,
+      defaultValue: DEFAULT_OPTIMIZATION_PHASES);
   return new TransformerOptions(entryPoints,
       reflectionEntryPoints: reflectionEntryPoints,
       modeName: settings.mode.name,
@@ -61,8 +59,8 @@ List<String> _readFileList(Map config, String paramName) {
   return files;
 }
 
-int _readIntOrNull(Map config, String paramName) {
-  if (!config.containsKey(paramName)) return null;
+int _readInt(Map config, String paramName, {int defaultValue: null}) {
+  if (!config.containsKey(paramName)) return defaultValue;
   var value = config[paramName];
   if (value is String) {
     value = int.parse(value);
