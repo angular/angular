@@ -4,6 +4,7 @@ import fse = require('fs-extra');
 import path = require('path');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 var spawn = require('child_process').spawn;
+var exec = require('child_process').exec;
 
 function processToPromise(process) {
   return new Promise(function(resolve, reject) {
@@ -39,9 +40,42 @@ class DartFormatter implements DiffingBroccoliPlugin {
       let destPath = path.join(this.cachePath, removedFile);
       fse.removeSync(destPath);
     });
-    return processToPromise(spawn(
-        this.DARTFMT, args, {stdio: this.verbose ? 'inherit' : ['ignore', 'ignore', 'inherit']}));
+
+    if (args.length < 1) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      exec(this.DARTFMT + ' ' + args.join(' '), (err, stdout, stderr) => {
+        if (this.verbose) {
+          console.log(stdout);
+        }
+        if (err) {
+          console.error(shortenFormatterOutput(stderr));
+          reject('Formatting failed.');
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }
 
 export default wrapDiffingPlugin(DartFormatter);
+
+var ARROW_LINE = /^(\s+)\^+/;
+var BEFORE_CHARS = 15;
+var stripAnsi = require('strip-ansi');
+function shortenFormatterOutput(formatterOutput) {
+  var lines = formatterOutput.split('\n');
+  var match, line;
+  for (var i = 0; i < lines.length; i += 1) {
+    line = lines[i];
+    if (match = stripAnsi(line).match(ARROW_LINE)) {
+      let leadingWhitespace = match[1].length;
+      let leadingCodeChars = Math.min(leadingWhitespace, BEFORE_CHARS);
+      lines[i] = line.substr(leadingWhitespace - leadingCodeChars);
+      lines[i - 1] = lines[i - 1].substr(leadingWhitespace - leadingCodeChars, 80) + '…';
+    }
+  }
+  return lines.join('\n');
+}

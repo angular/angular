@@ -228,14 +228,6 @@
                 }
               }
             },
-            "strip-ansi": {
-              "version": "2.0.1",
-              "dependencies": {
-                "ansi-regex": {
-                  "version": "1.1.1"
-                }
-              }
-            },
             "supports-color": {
               "version": "1.3.1"
             }
@@ -461,12 +453,7 @@
               "version": "0.0.4"
             },
             "readline2": {
-              "version": "0.1.1",
-              "dependencies": {
-                "strip-ansi": {
-                  "version": "2.0.1"
-                }
-              }
+              "version": "0.1.1"
             },
             "through": {
               "version": "2.3.7"
@@ -905,17 +892,7 @@
               }
             },
             "string-length": {
-              "version": "1.0.0",
-              "dependencies": {
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                }
-              }
+              "version": "1.0.0"
             }
           }
         },
@@ -2406,14 +2383,6 @@
                         }
                       }
                     },
-                    "strip-ansi": {
-                      "version": "2.0.1",
-                      "dependencies": {
-                        "ansi-regex": {
-                          "version": "1.1.1"
-                        }
-                      }
-                    },
                     "supports-color": {
                       "version": "1.3.1"
                     }
@@ -3176,14 +3145,6 @@
                             }
                           }
                         },
-                        "strip-ansi": {
-                          "version": "2.0.1",
-                          "dependencies": {
-                            "ansi-regex": {
-                              "version": "1.1.1"
-                            }
-                          }
-                        },
                         "supports-color": {
                           "version": "1.3.1"
                         }
@@ -3404,14 +3365,6 @@
                     },
                     "get-stdin": {
                       "version": "4.0.1"
-                    }
-                  }
-                },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
                     }
                   }
                 },
@@ -3778,14 +3731,6 @@
                     }
                   }
                 },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                },
                 "supports-color": {
                   "version": "1.3.1"
                 }
@@ -3968,14 +3913,6 @@
                     }
                   }
                 },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                },
                 "supports-color": {
                   "version": "1.3.1"
                 }
@@ -4123,14 +4060,6 @@
                     },
                     "get-stdin": {
                       "version": "4.0.1"
-                    }
-                  }
-                },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
                     }
                   }
                 },
@@ -4319,14 +4248,6 @@
                     },
                     "get-stdin": {
                       "version": "4.0.1"
-                    }
-                  }
-                },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
                     }
                   }
                 },
@@ -5055,14 +4976,6 @@
                     }
                   }
                 },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                },
                 "supports-color": {
                   "version": "1.3.1"
                 }
@@ -5526,14 +5439,6 @@
                             }
                           }
                         },
-                        "strip-ansi": {
-                          "version": "2.0.1",
-                          "dependencies": {
-                            "ansi-regex": {
-                              "version": "1.1.1"
-                            }
-                          }
-                        },
                         "supports-color": {
                           "version": "1.3.1"
                         }
@@ -5862,14 +5767,6 @@
                     }
                   }
                 },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                },
                 "supports-color": {
                   "version": "1.3.1"
                 }
@@ -6028,14 +5925,6 @@
                     }
                   }
                 },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
-                    }
-                  }
-                },
                 "supports-color": {
                   "version": "1.3.1"
                 }
@@ -6186,14 +6075,6 @@
                     },
                     "get-stdin": {
                       "version": "4.0.1"
-                    }
-                  }
-                },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
                     }
                   }
                 },
@@ -6408,14 +6289,6 @@
                     },
                     "get-stdin": {
                       "version": "4.0.1"
-                    }
-                  }
-                },
-                "strip-ansi": {
-                  "version": "2.0.1",
-                  "dependencies": {
-                    "ansi-regex": {
-                      "version": "1.1.1"
                     }
                   }
                 },
@@ -8480,14 +8353,6 @@
                 }
               }
             },
-            "strip-ansi": {
-              "version": "2.0.1",
-              "dependencies": {
-                "ansi-regex": {
-                  "version": "1.1.1"
-                }
-              }
-            },
             "supports-color": {
               "version": "1.3.1"
             }
@@ -8583,6 +8448,14 @@
     },
     "string": {
       "version": "3.1.1"
+    },
+    "strip-ansi": {
+      "version": "2.0.1",
+      "dependencies": {
+        "ansi-regex": {
+          "version": "1.1.1"
+        }
+      }
     },
     "symlink-or-copy": {
       "version": "1.0.1",
