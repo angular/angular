@@ -29,6 +29,7 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {Component} from 'angular2/annotations';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
+import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
 
 export function main() {
@@ -37,6 +38,7 @@ export function main() {
   describe('AppViewManager', () => {
     var renderer;
     var utils;
+    var viewListener;
     var viewPool;
     var manager;
     var directiveResolver;
@@ -113,8 +115,9 @@ export function main() {
       directiveResolver = new DirectiveResolver();
       renderer = new SpyRenderer();
       utils = new SpyAppViewManagerUtils();
+      viewListener = new SpyAppViewListener();
       viewPool = new SpyAppViewPool();
-      manager = new AppViewManager(viewPool, utils, renderer);
+      manager = new AppViewManager(viewPool, viewListener, utils, renderer);
       createdViews = [];
       createdRenderViews = [];
 
@@ -149,6 +152,7 @@ export function main() {
             ListWrapper.push(createdRenderViews, rv);
             return rv;
           });
+      viewPool.spy('returnView').andReturn(true);
     });
 
     describe('createDynamicComponentView', () => {
@@ -165,6 +169,7 @@ export function main() {
                      elementRef(wrapView(hostView), 0), wrapPv(componentProtoView), null, null)))
               .toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(componentProtoView);
+          expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(createdViews[0]);
         });
 
         it('should get the view from the pool', () => {
@@ -178,6 +183,7 @@ export function main() {
               .toBe(createdView);
           expect(utils.spy('createView')).not.toHaveBeenCalled();
           expect(renderer.spy('createView')).not.toHaveBeenCalled();
+          expect(viewListener.spy('viewCreated')).not.toHaveBeenCalled();
         });
 
         it('should attach the view', () => {
@@ -315,6 +321,7 @@ export function main() {
                                                          wrapPv(hostProtoView), null)))
               .toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(hostProtoView);
+          expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(createdViews[0]);
         });
 
         it('should attachAndHydrate the view', () => {
@@ -377,7 +384,16 @@ export function main() {
         it('should return the view to the pool', () => {
           manager.destroyFreeHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
           expect(viewPool.spy('returnView')).toHaveBeenCalledWith(hostView);
+          expect(renderer.spy('destroyView')).not.toHaveBeenCalled();
         });
+
+        it('should destroy the view if the pool is full', () => {
+          viewPool.spy('returnView').andReturn(false);
+          manager.destroyFreeHostView(elementRef(wrapView(parentHostView), 0), wrapView(hostView));
+          expect(renderer.spy('destroyView')).toHaveBeenCalledWith(hostView.render);
+          expect(viewListener.spy('viewDestroyed')).toHaveBeenCalledWith(hostView);
+        });
+
       });
 
       describe('recursively destroy inPlaceHostViews', () => {
@@ -395,6 +411,7 @@ export function main() {
         expect(internalView(manager.createRootHostView(wrapPv(hostProtoView), null, null)))
             .toBe(createdViews[0]);
         expect(createdViews[0].proto).toBe(hostProtoView);
+        expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(createdViews[0]);
       });
 
       it('should hydrate the view', () => {
@@ -444,6 +461,7 @@ export function main() {
       it('should destroy the render view', () => {
         manager.destroyRootHostView(wrapView(hostView));
         expect(renderer.spy('destroyView')).toHaveBeenCalledWith(hostRenderViewRef);
+        expect(viewListener.spy('viewDestroyed')).toHaveBeenCalledWith(hostView);
       });
 
       it('should not return the view to the pool', () => {
@@ -473,6 +491,7 @@ export function main() {
                                                             wrapPv(childProtoView), null)))
               .toBe(createdViews[0]);
           expect(createdViews[0].proto).toBe(childProtoView);
+          expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(createdViews[0]);
         });
 
         it('should attach the view', () => {
@@ -619,6 +638,13 @@ class SpyAppViewPool extends SpyObject {
 @IMPLEMENTS(AppViewManagerUtils)
 class SpyAppViewManagerUtils extends SpyObject {
   constructor() { super(AppViewManagerUtils); }
+  noSuchMethod(m) { return super.noSuchMethod(m) }
+}
+
+@proxy
+@IMPLEMENTS(AppViewListener)
+class SpyAppViewListener extends SpyObject {
+  constructor() { super(AppViewListener); }
   noSuchMethod(m) { return super.noSuchMethod(m) }
 }
 

@@ -27,15 +27,17 @@ export class AppViewPool {
     return null;
   }
 
-  returnView(view: viewModule.AppView) {
+  returnView(view: viewModule.AppView): boolean {
     var protoView = view.proto;
     var pooledViews = MapWrapper.get(this._pooledViewsPerProtoView, protoView);
     if (isBlank(pooledViews)) {
       pooledViews = [];
       MapWrapper.set(this._pooledViewsPerProtoView, protoView, pooledViews);
     }
-    if (pooledViews.length < this._poolCapacityPerProtoView) {
+    var haveRemainingCapacity = pooledViews.length < this._poolCapacityPerProtoView;
+    if (haveRemainingCapacity) {
       ListWrapper.push(pooledViews, view);
     }
+    return haveRemainingCapacity;
   }
 }

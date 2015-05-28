@@ -7,6 +7,7 @@ import {ViewContainerRef} from './view_container_ref';
 import {Renderer, RenderViewRef} from 'angular2/src/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
+import {AppViewListener} from './view_listener';
 
 /**
  * Entry point for creating, moving views in the view hierarchy and destroying views.
@@ -16,13 +17,16 @@ import {AppViewPool} from './view_pool';
 @Injectable()
 export class AppViewManager {
   _viewPool: AppViewPool;
+  _viewListener: AppViewListener;
   _utils: AppViewManagerUtils;
   _renderer: Renderer;
 
-  constructor(viewPool: AppViewPool, utils: AppViewManagerUtils, renderer: Renderer) {
-    this._renderer = renderer;
+  constructor(viewPool: AppViewPool, viewListener: AppViewListener, utils: AppViewManagerUtils,
+              renderer: Renderer) {
     this._viewPool = viewPool;
+    this._viewListener = viewListener;
     this._utils = utils;
+    this._renderer = renderer;
   }
 
   getComponentView(hostLocation: ElementRef): ViewRef {
@@ -74,6 +78,7 @@ export class AppViewManager {
     var hostView = this._utils.createView(hostProtoView, renderView, this, this._renderer);
     this._renderer.setEventDispatcher(hostView.render, hostView);
     this._createViewRecurse(hostView);
+    this._viewListener.viewCreated(hostView);
 
     this._utils.hydrateRootHostView(hostView, injector);
     this._viewHydrateRecurse(hostView);
@@ -88,6 +93,7 @@ export class AppViewManager {
     // We do want to destroy the component view though.
     this._viewDehydrateRecurse(hostView, true);
     this._renderer.destroyView(hostView.render);
+    this._viewListener.viewDestroyed(hostView);
   }
 
   createFreeHostView(parentComponentLocation: ElementRef, hostProtoViewRef: ProtoViewRef,
@@ -175,6 +181,7 @@ export class AppViewManager {
                                     this._renderer);
       this._renderer.setEventDispatcher(view.render, view);
       this._createViewRecurse(view);
+      this._viewListener.viewCreated(view);
     }
     return view;
   }
@@ -192,8 +199,11 @@ export class AppViewManager {
   }
 
   _destroyPooledView(view: viewModule.AppView) {
-    // TODO: if the pool is full, call renderer.destroyView as well!
-    this._viewPool.returnView(view);
+    var wasReturned = this._viewPool.returnView(view);
+    if (!wasReturned) {
+      this._renderer.destroyView(view.render);
+      this._viewListener.viewDestroyed(view);
+    }
   }
 
   _destroyViewInContainer(parentView, boundElementIndex, atIndex: number) {

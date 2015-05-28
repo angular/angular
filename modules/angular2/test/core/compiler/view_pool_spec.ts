@@ -58,9 +58,9 @@ export function main() {
       var view1 = createView(pv);
       var view2 = createView(pv);
       var view3 = createView(pv);
-      vf.returnView(view1);
-      vf.returnView(view2);
-      vf.returnView(view3);
+      expect(vf.returnView(view1)).toBe(true);
+      expect(vf.returnView(view2)).toBe(true);
+      expect(vf.returnView(view3)).toBe(false);
 
       expect(vf.getView(pv)).toBe(view2);
       expect(vf.getView(pv)).toBe(view1);
