@@ -363,4 +363,112 @@ describe('TreeDiffer', () => {
       expect(diffResult.removedPaths).toEqual(['file-2.txt']);
     });
   });
+
+
+  describe('include / exclude filters', function() {
+
+    it('should take include globs into account', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', null, null, ['**/file-1.*']);
+      let diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['file-1.txt', 'subdir-1/file-1.1.txt', 'subdir-1/file-1.2.js']);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should take exclude globs into account', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', null, null, null, ['**/file-1.*']);
+      let diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['file-2.js']);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should consider excludes globs as more important that includes globs', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', null, null, ['**/*.js'], ['**/file-2.*']);
+      let diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['subdir-1/file-1.2.js']);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+  });
+
+
+  describe('files filter', function() {
+
+    it('should include only paths specified via files', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      let differ = new TreeDiffer('testLabel', 'dir1', null, null, null, null,
+        ['subdir-1/file-1.2.js']);
+      let diffResult = differ.diffTree();
+      expect(diffResult.changedPaths).toEqual(['subdir-1/file-1.2.js']);
+      expect(diffResult.removedPaths).toEqual([]);
+    });
+
+
+    it('should throw if files filter is being used along with include/exclude globs', () => {
+      let testDir = {
+        'dir1': {
+          'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)}),
+          'file-2.js': mockfs.file({content: 'file-2.js content', mtime: new Date(1000)}),
+          'subdir-1': {
+            'file-1.1.txt': mockfs.file({content: 'file-1.1.txt content', mtime: new Date(1000)}),
+            'file-1.2.js': mockfs.file({content: 'file-1.2.js content', mtime: new Date(1000)})
+          }
+        }
+      };
+      mockfs(testDir);
+
+      expect(() => {
+        new TreeDiffer('testLabel', 'dir1', null, null, ['**/.js'], ['**/file-1.*'],
+          ['subdir-1/file-1.2.js']);
+      }).toThrowError(
+        "Mixing 'files' filter with 'includes' or 'excludes' filters is not supported");
+    });
+  });
 });

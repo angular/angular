@@ -2,6 +2,7 @@
 
 import fs = require('fs');
 import path = require('path');
+let minimatch = require('minimatch');
 
 
 function tryStatSync(path) {
@@ -22,7 +23,13 @@ export class TreeDiffer {
   private exclude: RegExp = null;
 
   constructor(private label: string, private rootPath: string, includeExtensions?: string[],
-              excludeExtensions?: string[]) {
+              excludeExtensions?: string[], private includes?: string[],
+              private excludes?: string[], private files? : string[]) {
+    if (this.files && (this.include || this.includes || this.exclude || this.excludes)) {
+      throw new Error(
+        "Mixing 'files' filter with 'includes' or 'excludes' filters is not supported");
+    }
+
     this.rootDirName = path.basename(rootPath);
 
     let buildRegexp = (arr) => new RegExp(`(${arr.reduce(combine, "")})$`, "i");
@@ -63,8 +70,7 @@ export class TreeDiffer {
         result.directoriesChecked++;
         this.dirtyCheckPath(absolutePath, result);
       } else {
-        if (!(this.include && !absolutePath.match(this.include)) &&
-            !(this.exclude && absolutePath.match(this.exclude))) {
+        if (this.passesIncludeExcludeFilters(absolutePath)) {
           result.filesChecked++;
           if (this.isFileDirty(absolutePath, pathStat)) {
             result.changedPaths.push(path.relative(this.rootPath, absolutePath));
@@ -98,17 +104,41 @@ export class TreeDiffer {
 
   private detectDeletionsAndUpdateFingerprints(result: DiffResult) {
     for (let absolutePath in this.fingerprints) {
-      if (!(this.include && !absolutePath.match(this.include)) &&
-          !(this.exclude && absolutePath.match(this.exclude))) {
-        if (this.fingerprints[absolutePath] !== null) {
-          let relativePath = path.relative(this.rootPath, absolutePath);
-          result.removedPaths.push(relativePath);
-        }
+      if (this.fingerprints[absolutePath] !== null) {
+        let relativePath = path.relative(this.rootPath, absolutePath);
+        result.removedPaths.push(relativePath);
       }
     }
 
     this.fingerprints = this.nextFingerprints;
     this.nextFingerprints = Object.create(null);
+  }
+
+
+  private passesIncludeExcludeFilters(absolutePath: string) {
+    if (this.files) {
+      for (let file of this.files) {
+        if (path.join(this.rootPath, file) === absolutePath) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (this.include && !absolutePath.match(this.include)) return false;
+    if (this.includes) {
+      for (let glob of this.includes) {
+        if (!minimatch(absolutePath, glob)) return false;
+      }
+    }
+    if (this.exclude && absolutePath.match(this.exclude)) return false;
+    if (this.excludes) {
+      for (let glob of this.excludes) {
+        if (minimatch(absolutePath, glob)) return false;
+      }
+    }
+
+    return  true;
   }
 }
 
