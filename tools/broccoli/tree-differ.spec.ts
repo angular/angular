@@ -301,7 +301,8 @@ describe('TreeDiffer', () => {
 
     it('should detect file additions mixed with file changes', () => {
       let testDir = {
-        'dir1': {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
+        'dir1':
+            {'file-1.txt': mockfs.file({content: 'file-1.txt content', mtime: new Date(1000)})}
       };
       mockfs(testDir);
 
