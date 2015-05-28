@@ -209,34 +209,35 @@ export class DomRenderer extends Renderer {
   }
 
   _createView(protoView: DomProtoView, inplaceElement): DomView {
-    var rootElementClone =
-        isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
+    var rootElementClone;
     var elementsWithBindingsDynamic;
-    if (protoView.isTemplateElement) {
-      elementsWithBindingsDynamic =
-          DOM.querySelectorAll(DOM.content(rootElementClone), NG_BINDING_CLASS_SELECTOR);
-    } else {
-      elementsWithBindingsDynamic = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
-    }
-
-    var elementsWithBindings = ListWrapper.createFixedSize(elementsWithBindingsDynamic.length);
-    for (var binderIdx = 0; binderIdx < elementsWithBindingsDynamic.length; ++binderIdx) {
-      elementsWithBindings[binderIdx] = elementsWithBindingsDynamic[binderIdx];
-    }
-
     var viewRootNodes;
-    if (protoView.isTemplateElement) {
-      var childNode = DOM.firstChild(DOM.content(rootElementClone));
-      viewRootNodes =
-          [];  // TODO(perf): Should be fixed size, since we could pre-compute in in DomProtoView
+    if (isPresent(inplaceElement)) {
+      rootElementClone = inplaceElement;
+      elementsWithBindingsDynamic = [];
+      viewRootNodes = [inplaceElement];
+    } else if (protoView.isTemplateElement) {
+      rootElementClone = DOM.importIntoDoc(DOM.content(protoView.element));
+      elementsWithBindingsDynamic =
+          DOM.querySelectorAll(rootElementClone, NG_BINDING_CLASS_SELECTOR);
+      var childNode = DOM.firstChild(rootElementClone);
+      // TODO(perf): Should be fixed size, since we could pre-compute in in DomProtoView
+      viewRootNodes = [];
       // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
       while (childNode != null) {
         ListWrapper.push(viewRootNodes, childNode);
         childNode = DOM.nextSibling(childNode);
       }
     } else {
+      rootElementClone = DOM.importIntoDoc(protoView.element);
+      elementsWithBindingsDynamic = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
       viewRootNodes = [rootElementClone];
     }
+    var elementsWithBindings = ListWrapper.createFixedSize(elementsWithBindingsDynamic.length);
+    for (var binderIdx = 0; binderIdx < elementsWithBindingsDynamic.length; ++binderIdx) {
+      elementsWithBindings[binderIdx] = elementsWithBindingsDynamic[binderIdx];
+    }
+
     var binders = protoView.elementBinders;
     var boundTextNodes = [];
     var boundElements = ListWrapper.createFixedSize(binders.length);
@@ -245,15 +246,21 @@ export class DomRenderer extends Renderer {
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
       var element;
+      var childNodes;
       if (binderIdx === 0 && protoView.rootBindingOffset === 1) {
-        element = rootElementClone;
+        // Note: if the root element was a template,
+        // the rootElementClone is a document fragment,
+        // which will be empty as soon as the view gets appended
+        // to a parent. So we store null in the boundElements array.
+        element = protoView.isTemplateElement ? null : rootElementClone;
+        childNodes = DOM.childNodes(rootElementClone);
       } else {
         element = elementsWithBindings[binderIdx - protoView.rootBindingOffset];
+        childNodes = DOM.childNodes(element);
       }
       boundElements[binderIdx] = element;
 
       // boundTextNodes
-      var childNodes = DOM.childNodes(DOM.templateAwareRoot(element));
       var textNodeIndices = binder.textNodeIndices;
       for (var i = 0; i < textNodeIndices.length; i++) {
         ListWrapper.push(boundTextNodes, childNodes[textNodeIndices[i]]);
