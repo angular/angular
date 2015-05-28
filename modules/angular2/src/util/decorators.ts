@@ -1,7 +1,7 @@
 import {global} from 'angular2/src/facade/lang';
 
 export function makeDecorator(annotationCls) {
-  return function(... args) {
+  return function(...args) {
     var Reflect = global.Reflect;
     if (!(Reflect && Reflect.getMetadata)) {
       throw 'reflect-metadata shim is required when using class decorators';
@@ -9,6 +9,7 @@ export function makeDecorator(annotationCls) {
     var annotationInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(annotationInstance, args);
     return function(cls) {
+
       var annotations = Reflect.getMetadata('annotations', cls);
       annotations = annotations || [];
       annotations.push(annotationInstance);
@@ -19,7 +20,7 @@ export function makeDecorator(annotationCls) {
 }
 
 export function makeParamDecorator(annotationCls): any {
-  return function(... args) {
+  return function(...args) {
     var Reflect = global.Reflect;
     if (!(Reflect && Reflect.getMetadata)) {
       throw 'reflect-metadata shim is required when using parameter decorators';

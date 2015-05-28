@@ -1,4 +1,4 @@
-import {isJsObject, global} from 'angular2/src/facade/lang';
+import {isJsObject, global, isPresent} from 'angular2/src/facade/lang';
 
 export var List = global.Array;
 export var Map = global.Map;
@@ -171,7 +171,7 @@ export class ListWrapper {
     }
     return null;
   }
-  static indexOf(array: List<any>, value, startIndex = -1) {
+  static indexOf(array: List<any>, value, startIndex = 0) {
     return array.indexOf(value, startIndex);
   }
   static reduce<T, E>(list: List<T>,
@@ -231,7 +231,13 @@ export class ListWrapper {
     return l.slice(from, to === null ? undefined : to);
   }
   static splice<T>(l: List<T>, from: int, length: int): List<T> { return l.splice(from, length); }
-  static sort<T>(l: List<T>, compareFn: (a: T, b: T) => number) { l.sort(compareFn); }
+  static sort<T>(l: List<T>, compareFn?: (a: T, b: T) => number) {
+    if (isPresent(compareFn)) {
+      l.sort(compareFn);
+    } else {
+      l.sort();
+    }
+  }
 }
 
 export function isListLikeIterable(obj): boolean {

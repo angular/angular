@@ -31,6 +31,12 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
       writer, assetId, new XhrImpl(reader, assetId), annotationMatcher);
   var code = await reader.readAsString(assetId);
   parseCompilationUnit(code, name: assetId.path).accept(visitor);
+
+  // If this library does not define an `@Injectable` and it does not import
+  // any libaries that could, then we do not need to generate a `.ng_deps
+  // .dart` file for it.
+  if (!visitor._foundNgInjectable && !visitor._usesNonLangLibs) return null;
+
   return await writer.asyncToString();
 }
 
@@ -38,8 +44,13 @@ Future<String> createNgDeps(AssetReader reader, AssetId assetId,
 /// associated .ng_deps.dart file.
 class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   final AsyncStringWriter writer;
-  bool _foundNgDirectives = false;
-  bool _wroteImport = false;
+  /// Whether an Angular 2 `Injectable` has been found.
+  bool _foundNgInjectable = false;
+  /// Whether this library `imports` or `exports` any non-'dart:' libraries.
+  bool _usesNonLangLibs = false;
+  /// Whether we have written an import of base file
+  /// (the file we are processing).
+  bool _wroteBaseLibImport = false;
   final ToSourceVisitor _copyVisitor;
   final FactoryTransformVisitor _factoryVisitor;
   final ParameterTransformVisitor _paramsVisitor;
@@ -79,20 +90,27 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   /// Write the import to the file the .ng_deps.dart file is based on if it
   /// has not yet been written.
   void _maybeWriteImport() {
-    if (_wroteImport) return;
-    _wroteImport = true;
+    if (_wroteBaseLibImport) return;
+    _wroteBaseLibImport = true;
     writer.print('''import '${path.basename(assetId.path)}';''');
+  }
+
+  void _updateUsesNonLangLibs(UriBasedDirective directive) {
+    _usesNonLangLibs = _usesNonLangLibs ||
+        !stringLiteralToString(directive.uri).startsWith('dart:');
   }
 
   @override
   Object visitImportDirective(ImportDirective node) {
     _maybeWriteImport();
+    _updateUsesNonLangLibs(node);
     return node.accept(_copyVisitor);
   }
 
   @override
   Object visitExportDirective(ExportDirective node) {
     _maybeWriteImport();
+    _updateUsesNonLangLibs(node);
     return node.accept(_copyVisitor);
   }
 
@@ -104,7 +122,7 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
   }
 
   void _closeFunctionWrapper() {
-    if (_foundNgDirectives) {
+    if (_foundNgInjectable) {
       writer.print(';');
     }
     writer.print('}');
@@ -153,10 +171,10 @@ class CreateNgDepsVisitor extends Object with SimpleAstVisitor<Object> {
 
     var ctor = _getCtor(node);
 
-    if (!_foundNgDirectives) {
+    if (!_foundNgInjectable) {
       // The receiver for cascaded calls.
       writer.print(REFLECTOR_VAR_NAME);
-      _foundNgDirectives = true;
+      _foundNgInjectable = true;
     }
     writer.print('..registerType(');
     node.name.accept(this);

@@ -84,18 +84,12 @@ export class View {
    */
   renderer: string;
 
-  constructor({
-      templateUrl,
-      template,
-      directives,
-      renderer
-    }: {
-      templateUrl?: string,
-      template?: string,
-      directives?: List<Type | any | List<any>>,
-      renderer?: string
-    } = {})
-  {
+  constructor({templateUrl, template, directives, renderer}: {
+    templateUrl?: string,
+    template?: string,
+    directives?: List<Type | any | List<any>>,
+    renderer?: string
+  } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
     this.directives = directives;

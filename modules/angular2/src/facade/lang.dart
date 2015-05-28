@@ -137,6 +137,9 @@ class RegExpWrapper {
   static Match firstMatch(RegExp regExp, String input) {
     return regExp.firstMatch(input);
   }
+  static bool test(RegExp regExp, String input) {
+    return regExp.hasMatch(input);
+  }
   static Iterator<Match> matcher(RegExp regExp, String input) {
     return regExp.allMatches(input).iterator;
   }

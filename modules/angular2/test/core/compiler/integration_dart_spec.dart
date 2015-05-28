@@ -104,6 +104,24 @@ main() {
       });
     }));
   });
+
+  describe('OnChange', () {
+    it('should be notified of changes',
+        inject([TestBed, AsyncTestCompleter], (tb, async) {
+      tb.overrideView(Dummy, new View(
+        template: '''<on-change [prop]="'hello'"></on-change>''',
+        directives: [OnChangeComponent]
+      ));
+
+      tb.createView(Dummy).then((view) {
+        view.detectChanges();
+        var cmp = view.rawView.elementInjectors[0].get(OnChangeComponent);
+        expect(cmp.prop).toEqual('hello');
+        expect(cmp.changes.containsKey('prop')).toEqual(true);
+        async.done();
+      });
+    }));
+  });
 }
 
 @Component(selector: 'dummy')
@@ -167,4 +185,21 @@ class PropertyAccess {
 @View(template: '''{{model.doesNotExist}}''')
 class NoPropertyAccess {
   final model = new PropModel();
+}
+
+@Component(
+  selector: 'on-change',
+  // TODO: needed because of https://github.com/angular/angular/issues/2120
+  lifecycle: const [onChange],
+  properties: const { 'prop': 'prop' }
+)
+@View(template: '')
+class OnChangeComponent implements OnChange {
+  Map changes;
+  String prop;
+
+  @override
+  void onChange(Map changes) {
+    this.changes = changes;
+  }
 }

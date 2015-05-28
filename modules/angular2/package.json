@@ -8,6 +8,7 @@
   "license": "<%= packageJson.license %>",
   "dependencies": {
     "traceur": "<%= packageJson.dependencies.traceur %>",
+    "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
     "rtts_assert": "<%= packageJson.version %>",
     "rx": "<%= packageJson.dependencies['rx'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"

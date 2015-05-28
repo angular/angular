@@ -19,44 +19,43 @@ import {isPresent, BaseException} from 'angular2/src/facade/lang';
  *
  * @exportedAs angular2/pipes
  */
-export var keyValDiff: List < PipeFactory >= [new KeyValueChangesFactory(), new NullPipeFactory()];
+export var keyValDiff: List<PipeFactory> = [new KeyValueChangesFactory(), new NullPipeFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  *
  * @exportedAs angular2/pipes
  */
-export var iterableDiff: List <
-    PipeFactory >= [new IterableChangesFactory(), new NullPipeFactory()];
+export var iterableDiff: List<PipeFactory> = [new IterableChangesFactory(), new NullPipeFactory()];
 
 /**
  * Async binding to such types as Observable.
  *
  * @exportedAs angular2/pipes
  */
-export var async: List <
-    PipeFactory >= [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
+export var async: List<
+    PipeFactory> = [new ObservablePipeFactory(), new PromisePipeFactory(), new NullPipeFactory()];
 
 /**
  * Uppercase text transform.
  *
  * @exportedAs angular2/pipes
  */
-export var uppercase: List < PipeFactory >= [new UpperCaseFactory(), new NullPipeFactory()];
+export var uppercase: List<PipeFactory> = [new UpperCaseFactory(), new NullPipeFactory()];
 
 /**
  * Lowercase text transform.
  *
  * @exportedAs angular2/pipes
  */
-export var lowercase: List < PipeFactory >= [new LowerCaseFactory(), new NullPipeFactory()];
+export var lowercase: List<PipeFactory> = [new LowerCaseFactory(), new NullPipeFactory()];
 
 /**
  * Json stringify transform.
  *
  * @exportedAs angular2/pipes
  */
-export var json: List < PipeFactory >= [new JsonPipeFactory(), new NullPipeFactory()];
+export var json: List<PipeFactory> = [new JsonPipeFactory(), new NullPipeFactory()];
 
 export var defaultPipes = {
   "iterableDiff": iterableDiff,

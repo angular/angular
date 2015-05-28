@@ -76,7 +76,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
   hydrated(): boolean { return this.values[0] !== uninitialized; }
 
   detectChangesInRecords(throwOnChange: boolean) {
-    var protos: List < ProtoRecord >= this.protos;
+    var protos: List<ProtoRecord> = this.protos;
 
     var changes = null;
     var isChanged = false;

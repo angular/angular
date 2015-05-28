@@ -43,25 +43,6 @@ module.exports = function makeNodeTree(destinationPath) {
     }
   });
 
-  // Transform all tests to make them runnable in node
-  nodeTree = replace(nodeTree, {
-    files: ['**/test/**/*_spec.js'],
-    patterns: [
-      {
-        // Override the default DOM adapter with Parse5 for all tests
-        match: /"use strict";/,
-        replacement:
-            "'use strict'; var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
-                "parse5Adapter.Parse5DomAdapter.makeCurrent();"
-      },
-      {
-        // Append main() to all tests since all of our tests are wrapped in exported main fn
-        match: /$/g,
-        replacement: "\r\n main();"
-      }
-    ]
-  });
-
   // Now we add the LICENSE file into all the folders that will become npm packages
   outputPackages.forEach(function(destDir) {
     var license = new Funnel('.', {files: ['LICENSE'], destDir: destDir});
@@ -134,8 +115,26 @@ module.exports = function makeNodeTree(destinationPath) {
     target: 'ES5'
   });
 
-
   nodeTree = mergeTrees([nodeTree, typescriptTree, docs, packageJsons]);
+
+  // Transform all tests to make them runnable in node
+  nodeTree = replace(nodeTree, {
+    files: ['**/test/**/*_spec.js'],
+    patterns: [
+      {
+        // Override the default DOM adapter with Parse5 for all tests
+        match: /"use strict";/,
+        replacement:
+            "'use strict'; var parse5Adapter = require('angular2/src/dom/parse5_adapter'); " +
+                "parse5Adapter.Parse5DomAdapter.makeCurrent();"
+      },
+      {
+        // Append main() to all tests since all of our tests are wrapped in exported main fn
+        match: /$/g,
+        replacement: "\r\n main();"
+      }
+    ]
+  });
 
   // TODO(iminar): tree differ seems to have issues with trees created by mergeTrees, investigate!
   //   ENOENT error is thrown while doing fs.readdirSync on inputRoot

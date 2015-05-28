@@ -16,19 +16,9 @@ export class ElementBinder {
   propertySetters: Map<string, SetterFn>;
   hostActions: Map<string, AST>;
 
-  constructor({
-    textNodeIndices,
-    contentTagSelector,
-    nestedProtoView,
-    componentId,
-    eventLocals,
-    localEvents,
-    globalEvents,
-    hostActions,
-    parentIndex,
-    distanceToParent,
-    propertySetters
-  }:{
+  constructor({textNodeIndices, contentTagSelector, nestedProtoView, componentId, eventLocals,
+               localEvents, globalEvents, hostActions, parentIndex, distanceToParent,
+               propertySetters}: {
     contentTagSelector?: string,
     textNodeIndices?: List<number>,
     nestedProtoView?: protoViewModule.DomProtoView,
@@ -36,8 +26,8 @@ export class ElementBinder {
     localEvents?: List<Event>,
     globalEvents?: List<Event>,
     componentId?: string,
-    parentIndex?:number,
-    distanceToParent?:number,
+    parentIndex?: number,
+    distanceToParent?: number,
     propertySetters?: Map<string, SetterFn>,
     hostActions?: Map<string, AST>
   } = {}) {

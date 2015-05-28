@@ -1,6 +1,6 @@
-import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach, proxy} from 'angular2/test_lib';
+import {describe, it, iit, ddescribe, expect, tick, async, SpyObject, beforeEach, proxy, containsRegexp} from 'angular2/test_lib';
 import {MapWrapper} from 'angular2/src/facade/collection';
-import {IMPLEMENTS} from 'angular2/src/facade/lang';
+import {IMPLEMENTS, RegExpWrapper} from 'angular2/src/facade/lang';
 
 class TestObj {
   prop;
@@ -117,6 +117,20 @@ export function main() {
         // not fail...
         expect(spyObj.someFunc()).toBe(null);
       });
+    });
+
+    describe('containsRegexp', () => {
+
+      it('should allow any prefix and suffix', () => {
+        expect(RegExpWrapper.firstMatch(containsRegexp('b'), 'abc')).toBeTruthy();
+        expect(RegExpWrapper.firstMatch(containsRegexp('b'), 'adc')).toBeFalsy();
+      });
+
+      it('should match various special characters', () => {
+        expect(RegExpWrapper.firstMatch(containsRegexp('a.b'), 'a.b')).toBeTruthy();
+        expect(RegExpWrapper.firstMatch(containsRegexp('axb'), 'a.b')).toBeFalsy();
+      });
+
     });
   });
 }

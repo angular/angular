@@ -196,8 +196,13 @@ export class Binding {
   dependencies: List<any>;
 
   constructor(token, {toClass, toValue, toAlias, toFactory, toAsyncFactory, deps}: {
-                         toClass ?: Type, toValue ?: any, toAlias ?: any, toFactory ?: Function,
-                         toAsyncFactory ?: Function, deps ?: List<any>}) {
+    toClass?: Type,
+    toValue?: any,
+    toAlias?: any,
+    toFactory?: Function,
+    toAsyncFactory?: Function,
+    deps?: List<any>
+  }) {
     this.token = token;
     this.toClass = toClass;
     this.toValue = toValue;
@@ -387,8 +392,8 @@ export class BindingBuilder {
    *
    * ```javascript
    * var injector = Injector.resolveAndCreate([
-   *   bind(Number).toFactory(() => { return 1+2; }}),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number] })
+   *   bind(Number).toFactory(() => { return 1+2; }),
+   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);

@@ -21,7 +21,7 @@ export var afterEach = _global.afterEach;
 export interface NgMatchers extends jasmine.Matchers {
   toBe(expected: any): boolean;
   toEqual(expected: any): boolean;
-  toBePromise(expected: any): boolean;
+  toBePromise(): boolean;
   toBeAnInstanceOf(expected: any): boolean;
   toHaveText(expected: any): boolean;
   toImplement(expected: any): boolean;
@@ -72,25 +72,25 @@ class BeforeEachRunner {
 // Reset the test bindings before each test
 jsmBeforeEach(() => { testBindings = []; });
 
-function _describe(jsmFn, ... args) {
+function _describe(jsmFn, ...args) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
   var runner = new BeforeEachRunner(parentRunner);
   runnerStack.push(runner);
-  var suite = jsmFn(... args);
+  var suite = jsmFn(...args);
   runnerStack.pop();
   return suite;
 }
 
-export function describe(... args) {
-  return _describe(jsmDescribe, ... args);
+export function describe(...args) {
+  return _describe(jsmDescribe, ...args);
 }
 
-export function ddescribe(... args) {
-  return _describe(jsmDDescribe, ... args);
+export function ddescribe(...args) {
+  return _describe(jsmDDescribe, ...args);
 }
 
-export function xdescribe(... args) {
-  return _describe(jsmXDescribe, ... args);
+export function xdescribe(...args) {
+  return _describe(jsmXDescribe, ...args);
 }
 
 export function beforeEach(fn) {
@@ -123,7 +123,7 @@ export function beforeEachBindings(fn) {
   jsmBeforeEach(() => {
     var bindings = fn();
     if (!bindings) return;
-    testBindings = [... testBindings, ... bindings];
+    testBindings = [...testBindings, ...bindings];
   });
 }
 
@@ -142,7 +142,7 @@ function _it(jsmFn, name, fn) {
               return new AsyncTestCompleter(done);
             });
 
-    var injector = createTestInjector([... testBindings, completerBinding]);
+    var injector = createTestInjector([...testBindings, completerBinding]);
     runner.run(injector);
 
     if (!(fn instanceof FunctionWithParamTokens)) {
@@ -299,6 +299,9 @@ export class SpyObject {
       }
     }
   }
+  // Noop so that SpyObject has the smae interface as in Dart
+  noSuchMethod(args) {}
+
   spy(name) {
     if (!this[name]) {
       this[name] = this._createGuinnessCompatibleSpy(name);

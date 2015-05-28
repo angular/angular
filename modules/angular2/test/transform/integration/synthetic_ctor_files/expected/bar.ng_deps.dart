@@ -2,8 +2,6 @@ library bar.ng_deps.dart;
 
 import 'bar.dart';
 import 'package:angular2/src/core/annotations_impl/annotations.dart';
-import 'package:angular2/src/core/annotations_impl/annotations.ng_deps.dart'
-    as i0;
 
 var _visited = false;
 void initReflector(reflector) {
@@ -15,5 +13,4 @@ void initReflector(reflector) {
       'parameters': const [],
       'annotations': const [const Component(selector: '[soup]')]
     });
-  i0.initReflector(reflector);
 }

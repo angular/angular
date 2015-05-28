@@ -28,6 +28,7 @@ import {
   onDestroy,
   onAllChangesDone
 } from 'angular2/src/core/annotations_impl/annotations';
+import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {ChangeDetector, ChangeDetectorRef} from 'angular2/change_detection';
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/reflection/reflection';
@@ -282,7 +283,6 @@ export class DirectiveBinding extends ResolvedBinding {
     var resolvedViewInjectables = ann instanceof Component && isPresent(ann.viewInjector) ?
                                                      resolveBindings(ann.viewInjector) :
                                                      [];
-
     var metadata = new DirectiveMetadata({
       id: stringify(rb.key.token),
       type: ann instanceof
@@ -300,9 +300,11 @@ export class DirectiveBinding extends ResolvedBinding {
                                                 null,
       properties: isPresent(ann.properties) ? MapWrapper.createFromStringMap(ann.properties) : null,
       readAttributes: DirectiveBinding._readAttributes(deps),
-      callOnDestroy: ann.hasLifecycleHook(onDestroy),
-      callOnChange: ann.hasLifecycleHook(onChange),
-      callOnAllChangesDone: ann.hasLifecycleHook(onAllChangesDone),
+
+      callOnDestroy: hasLifecycleHook(onDestroy, rb.key.token, ann),
+      callOnChange: hasLifecycleHook(onChange, rb.key.token, ann),
+      callOnAllChangesDone: hasLifecycleHook(onAllChangesDone, rb.key.token, ann),
+
       changeDetection: ann instanceof
           Component ? ann.changeDetection : null
     });

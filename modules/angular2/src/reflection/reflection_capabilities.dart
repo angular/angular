@@ -1,6 +1,5 @@
 library reflection.reflection_capabilities;
 
-import 'reflection.dart';
 import 'package:angular2/src/facade/lang.dart';
 import 'types.dart';
 import 'dart:mirrors';
@@ -57,8 +56,8 @@ class ReflectionCapabilities {
   }
 
   List _convertParameter(ParameterMirror p) {
-    var t = p.type.reflectedType;
-    var res = t == dynamic ? [] : [t];
+    var t = p.type;
+    var res = (!t.hasReflectedType || t.reflectedType == dynamic) ? [] : [t.reflectedType];
     res.addAll(p.metadata.map((m) => m.reflectee));
     return res;
   }
@@ -69,6 +68,11 @@ class ReflectionCapabilities {
         : _functionMetadata(typeOrFunc);
 
     return meta.map((m) => m.reflectee).toList();
+  }
+
+  List interfaces(type) {
+    ClassMirror classMirror = reflectType(type);
+    return classMirror.superinterfaces.map((si) => si.reflectedType).toList();
   }
 
   GetterFn getter(String name) {

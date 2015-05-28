@@ -72,7 +72,7 @@ export function main() {
 
     describe('Directive overriding', () => {
       it('should allow overriding a directive from the default template', () => {
-        resolver.overrideTemplateDirective(SomeComponent, SomeDirective, SomeOtherDirective);
+        resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
         var template = resolver.resolve(SomeComponent);
         expect(template.directives.length).toEqual(1);
         expect(template.directives[0]).toBe(SomeOtherDirective);
@@ -80,14 +80,14 @@ export function main() {
 
       it('should allow overriding a directive from an overriden @View', () => {
         resolver.setView(SomeComponent, new View({directives: [SomeOtherDirective]}));
-        resolver.overrideTemplateDirective(SomeComponent, SomeOtherDirective, SomeComponent);
+        resolver.overrideViewDirective(SomeComponent, SomeOtherDirective, SomeComponent);
         var template = resolver.resolve(SomeComponent);
         expect(template.directives.length).toEqual(1);
         expect(template.directives[0]).toBe(SomeComponent);
       });
 
       it('should throw when the overridden directive is not present', () => {
-        resolver.overrideTemplateDirective(SomeComponent, SomeOtherDirective, SomeDirective);
+        resolver.overrideViewDirective(SomeComponent, SomeOtherDirective, SomeDirective);
         expect(() => { resolver.resolve(SomeComponent); })
             .toThrowError('Overriden directive SomeOtherDirective not found in the template of SomeComponent');
       });
@@ -95,7 +95,7 @@ export function main() {
       it('should not allow overriding a directive after its template has been resolved', () => {
         resolver.resolve(SomeComponent);
         expect(() => {
-          resolver.overrideTemplateDirective(SomeComponent, SomeDirective, SomeOtherDirective);
+          resolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
         }).toThrowError('The component SomeComponent has already been compiled, its configuration can not be changed');
       });
     });

@@ -2,7 +2,7 @@ var _global: BrowserNodeGlobal = <any>(typeof window === 'undefined' ? global : 
 export {_global as global};
 
 export var Type = Function;
-export type Type = new (... args: any[]) => any;
+export type Type = new (...args: any[]) => any;
 
 export class BaseException extends Error {
   message;
@@ -45,7 +45,12 @@ export function CONST() {
 
 export class ABSTRACT {}
 
-export class IMPLEMENTS {}
+// Note: This is only a marker annotation needed for ts2dart.
+// This is written so that is can be used as a Traceur annotation
+// or a Typescript decorator.
+export function IMPLEMENTS(_) {
+  return (t) => t;
+}
 
 export function isPresent(obj): boolean {
   return obj !== undefined && obj !== null;
@@ -111,7 +116,7 @@ export class StringWrapper {
   }
 
   static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
-    return s.replace(from, function(... matches) {
+    return s.replace(from, function(...matches) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
@@ -188,11 +193,12 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp, input) {
+  static firstMatch(regExp: RegExp, input: string): List<string> {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
   }
+  static test(regExp: RegExp, input: string): boolean { return regExp.test(input); }
   static matcher(regExp, input) {
     // Reset regex state for the case
     // someone did not loop over all matches
