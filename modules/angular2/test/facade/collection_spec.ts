@@ -58,6 +58,18 @@ export function main() {
       it('should support negative end',
          () => { expect(ListWrapper.slice(l, -3, -1)).toEqual([2, 3]); });
     });
+
+    describe('indexOf', () => {
+      beforeEach(() => { l = [1, 2, 3, 4]; });
+
+      it('should find values that exist', () => { expect(ListWrapper.indexOf(l, 1)).toEqual(0); });
+
+      it('should not find values that do not exist',
+         () => { expect(ListWrapper.indexOf(l, 9)).toEqual(-1); });
+
+      it('should respect the startIndex parameter',
+         () => { expect(ListWrapper.indexOf(l, 1, 1)).toEqual(-1); });
+    });
   });
 
   describe('StringMapWrapper', () => {

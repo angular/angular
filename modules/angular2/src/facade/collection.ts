@@ -171,7 +171,7 @@ export class ListWrapper {
     }
     return null;
   }
-  static indexOf(array: List<any>, value, startIndex = -1) {
+  static indexOf(array: List<any>, value, startIndex = 0) {
     return array.indexOf(value, startIndex);
   }
   static reduce<T, E>(list: List<T>,
