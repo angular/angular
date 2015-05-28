@@ -177,6 +177,17 @@ describe('TreeDiffer', () => {
     });
 
 
+    it("should throw an error if an extension isn't prefixed with doc", () => {
+      // includeExtensions
+      expect(() => new TreeDiffer('testLabel', 'dir1', ['js']))
+          .toThrowError("Extension must begin with '.'. Was: 'js'");
+
+      // excludeExtentions
+      expect(() => new TreeDiffer('testLabel', 'dir1', [], ['js']))
+          .toThrowError("Extension must begin with '.'. Was: 'js'");
+    });
+
+
     it('should ignore files with extensions not listed in includeExtensions', () => {
       let testDir = {
         'dir1': {

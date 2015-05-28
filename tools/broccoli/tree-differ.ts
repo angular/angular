@@ -31,7 +31,9 @@ export class TreeDiffer {
     this.exclude = (excludeExtensions || []).length ? buildRegexp(excludeExtensions) : null;
 
     function combine(prev, curr) {
-      if (curr.charAt(0) !== ".") throw new TypeError("Extension must begin with '.'");
+      if (curr.charAt(0) !== ".") {
+        throw new Error(`Extension must begin with '.'. Was: '${curr}'`);
+      }
       let kSpecialRegexpChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
       curr = '(' + curr.replace(kSpecialRegexpChars, '\\$&') + ')';
       return prev ? (prev + '|' + curr) : curr;
