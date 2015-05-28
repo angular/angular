@@ -12,7 +12,6 @@ var shell = require('gulp-shell');
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
-var merge2 = require('merge2');
 var path = require('path');
 var semver = require('semver');
 var watch = require('gulp-watch');
