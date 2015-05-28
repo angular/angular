@@ -9,7 +9,7 @@ var url = require('url');
 
 import {List, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
-import {BaseException, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {BaseException, isPresent, isBlank, global} from 'angular2/src/facade/lang';
 import {SelectorMatcher, CssSelector} from 'angular2/src/render/dom/compiler/selector';
 
 var _attrToPropMap = {
@@ -542,6 +542,16 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   getUserAgent() {
     return "Fake user agent";
+  }
+  getData(el, name:string):string {
+    return this.getAttribute(el, 'data-'+name);
+  }
+  setData(el, name:string, value:string) {
+    this.setAttribute(el, 'data-'+name, value);
+  }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(name: string, value: any) {
+    global[name] = value;
   }
 }
 

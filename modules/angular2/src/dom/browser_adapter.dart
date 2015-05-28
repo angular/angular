@@ -5,6 +5,7 @@ import 'dart:js' show JsObject;
 import 'dom_adapter.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import '../facade/browser.dart';
+import 'dart:js' as js;
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
 // sanitizer is a security risk.
@@ -100,6 +101,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     setRootDomAdapter(new BrowserDomAdapter());
   }
 
+  // TODO(tbosch): move this into a separate environment class once we have it
   logError(error) {
     window.console.error(error);
   }
@@ -328,5 +330,15 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   String getUserAgent() {
     return window.navigator.userAgent;
+  }
+  void setData(Element element, String name, String value) {
+    element.dataset[name] = value;
+  }
+  String getData(Element element, String name) {
+    return element.dataset[name];
+  }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(String name, value) {
+    js.context[name] = value;
   }
 }

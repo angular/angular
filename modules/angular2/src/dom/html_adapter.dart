@@ -306,4 +306,14 @@ class Html5LibDomAdapter implements DomAdapter {
   String getUserAgent() {
     throw 'not implemented';
   }
+  void setData(Element element, String name, String value) {
+    this.setAttribute(element, 'data-${name}', value);
+  }
+  String getData(Element element, String name) {
+    return this.getAttribute(element, 'data-${name}');
+  }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(String name, value) {
+    // noop on the server
+  }
 }

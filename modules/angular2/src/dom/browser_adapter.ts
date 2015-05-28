@@ -1,5 +1,5 @@
 import {List, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {isBlank, isPresent, global} from 'angular2/src/facade/lang';
 import {setRootDomAdapter} from './dom_adapter';
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -51,6 +51,7 @@ var _chromeNumKeyPadMap = {
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
 
+  // TODO(tbosch): move this into a separate environment class once we have it
   logError(error) { window.console.error(error); }
 
   get attrToPropMap(): any { return _attrToPropMap; }
@@ -254,6 +255,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getLocation() { return window.location; }
   getBaseHref() { return relativePath(document.baseURI); }
   getUserAgent(): string { return window.navigator.userAgent; }
+  setData(element, name: string, value: string) { element.dataset[name] = value; }
+  getData(element, name: string): string { return element.dataset[name]; }
+  // TODO(tbosch): move this into a separate environment class once we have it
+  setGlobalVar(name: string, value: any) {
+    global[name] = value;
+  }
 }
 
 // based on urlUtils.js in AngularJS 1

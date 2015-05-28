@@ -115,4 +115,7 @@ export class DomAdapter {
   getLocation() { throw _abstract(); }
   getBaseHref() { throw _abstract(); }
   getUserAgent(): string { throw _abstract(); }
+  setData(element, name: string, value: string) { throw _abstract(); }
+  getData(element, name: string): string { throw _abstract(); }
+  setGlobalVar(name: string, value: any) { throw _abstract(); }
 }
