@@ -78,8 +78,8 @@ export class TestBed {
    * @return {Promise<ViewProxy>}
    */
   createView(component: Type,
-             {context = null,
-              html = null}: {context?: any, html?: string} = {}): Promise<ViewProxy> {
+             {context = null, html = null}: {context?: any,
+                                             html?: string} = {}): Promise<ViewProxy> {
     if (isBlank(component) && isBlank(context)) {
       throw new BaseException('You must specified at least a component or a context');
     }
