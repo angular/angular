@@ -1,14 +1,14 @@
 'use strict';
 
 import destCopy from '../broccoli-dest-copy';
+import compileWithTypescript from '../broccoli-typescript';
+import transpileWithTraceur from '../traceur/index';
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var path = require('path');
 var renderLodashTemplate = require('broccoli-lodash');
 var replace = require('broccoli-replace');
 var stew = require('broccoli-stew');
-import transpileWithTraceur from '../traceur/index';
-import compileWithTypescript from '../broccoli-typescript';
 
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
