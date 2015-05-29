@@ -1,5 +1,5 @@
 import {Inject, Injectable} from 'angular2/di';
-import {isPresent, isBlank, BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, BaseException, RegExpWrapper, enumValue} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -13,7 +13,7 @@ import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
 import {DomViewContainer} from './view/view_container';
 import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
 
-import {Renderer, RenderProtoViewRef, RenderViewRef} from '../api';
+import {Renderer, RenderProtoViewRef, RenderViewRef, RenderViewActivateConfig, RenderViewState} from '../api';
 
 // TODO(tbosch): use an OpaqueToken here once our transpiler supports
 // const expressions!
@@ -33,43 +33,101 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef,
+  activateRootHostView(hostProtoViewRef: RenderProtoViewRef,
                      hostElementSelector: string): RenderViewRef {
     var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return new DomViewRef(this._createView(hostProtoView, element));
+    var hostView = this._createView(hostProtoView, element);
+    this._hydrateView(hostView);
+    return new DomViewRef(hostView);
   }
 
-  detachFreeHostView(parentHostViewRef: RenderViewRef, hostViewRef: RenderViewRef) {
+  deactivateRootHostView(rootHostViewRef: RenderViewRef) {
+    this._dehydrateView(resolveInternalDomView(rootHostViewRef));
+  }
+
+  activateFreeHostView(parentViewRef: RenderViewRef, hostViewConfig: RenderViewActivateConfig): RenderViewRef {
+    var parentView = resolveInternalDomView(parentViewRef);
+    var view = this._createViewIfNeeded(hostViewConfig);
+    this._hydrateView(view);
+    return new DomViewRef(view);
+  }
+
+  deactivateFreeHostView(parentViewRef: RenderViewRef, hostViewRef: RenderViewRef, targetViewState: RenderViewState) {
     var hostView = resolveInternalDomView(hostViewRef);
-    this._removeViewNodes(hostView);
+    this._dehydrateView(hostView);
+    if (this._needsDetach(targetViewState)) {
+      this._removeViewNodes(hostView);
+    }
   }
 
-  createView(protoViewRef: RenderProtoViewRef): RenderViewRef {
-    var protoView = resolveInternalDomProtoView(protoViewRef);
-    return new DomViewRef(this._createView(protoView, null));
+  activateComponentView(hostViewRef: RenderViewRef, elementIndex: number, componentViewConfig: RenderViewActivateConfig): RenderViewRef {
+    var hostView = resolveInternalDomView(hostViewRef);
+    var componentView = this._createViewIfNeeded(componentViewConfig);
+    if (this._needsAttach(componentViewConfig.prevViewState)) {
+      var element = hostView.boundElements[elementIndex];
+      var lightDom = hostView.lightDoms[elementIndex];
+      if (isPresent(lightDom)) {
+        lightDom.attachShadowDomView(componentView);
+      }
+      var shadowRoot = this._shadowDomStrategy.prepareShadowRoot(element);
+      this._moveViewNodesIntoParent(shadowRoot, componentView);
+      componentView.hostLightDom = lightDom;
+      componentView.shadowRoot = shadowRoot;
+    }
+    this._hydrateView(componentView);
+    return new DomViewRef(componentView);
   }
 
-  destroyView(view: RenderViewRef) {
-    // noop for now
-  }
-
-  attachComponentView(hostViewRef: RenderViewRef, elementIndex: number,
-                      componentViewRef: RenderViewRef) {
+  deactivateComponentView(hostViewRef: RenderViewRef, elementIndex: number, componentViewRef: RenderViewRef, targetViewState: RenderViewState) {
     var hostView = resolveInternalDomView(hostViewRef);
     var componentView = resolveInternalDomView(componentViewRef);
-    var element = hostView.boundElements[elementIndex];
-    var lightDom = hostView.lightDoms[elementIndex];
-    if (isPresent(lightDom)) {
-      lightDom.attachShadowDomView(componentView);
+    this._dehydrateView(componentView);
+    if (this._needsDetach(targetViewState)) {
+      this._removeViewNodes(componentView);
+      var lightDom = hostView.lightDoms[elementIndex];
+      if (isPresent(lightDom)) {
+        lightDom.detachShadowDomView();
+      }
+      componentView.hostLightDom = null;
+      componentView.shadowRoot = null;
     }
-    var shadowRoot = this._shadowDomStrategy.prepareShadowRoot(element);
-    this._moveViewNodesIntoParent(shadowRoot, componentView);
-    componentView.hostLightDom = lightDom;
-    componentView.shadowRoot = shadowRoot;
+  }
+
+  activateViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
+    viewConfig: RenderViewActivateConfig): RenderViewRef {
+    var parentView = resolveInternalDomView(parentViewRef);
+    var view = this._createViewIfNeeded(viewConfig);
+    if (this._needsAttach(viewConfig.prevViewState)) {
+      this._attachViewInContainer(parentView, boundElementIndex, atIndex, view);
+    }
+    this._hydrateView(view);
+    return new DomViewRef(view);
+  }
+
+  deactivateViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
+    viewRef: RenderViewRef, targetViewState: RenderViewState) {
+    var parentView = resolveInternalDomView(parentViewRef);
+    var view = resolveInternalDomView(viewRef);
+    this._dehydrateView(view);
+    if (this._needsDetach(targetViewState)) {
+      this._detachViewInContainer(parentView, boundElementIndex, atIndex, view);
+    }
+  }
+
+  beginMoveViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, fromIndex: number, viewRef: RenderViewRef) {
+    var parentView = resolveInternalDomView(parentViewRef);
+    var view = resolveInternalDomView(viewRef);
+    this._detachViewInContainer(parentView, boundElementIndex, fromIndex, view);
+  }
+
+  endMoveViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, toIndex: number, viewRef: RenderViewRef) {
+    var parentView = resolveInternalDomView(parentViewRef);
+    var view = resolveInternalDomView(viewRef);
+    this._attachViewInContainer(parentView, boundElementIndex, toIndex, view);
   }
 
   setComponentViewRootNodes(componentViewRef: RenderViewRef, rootNodes: List</*node*/ any>) {
@@ -84,23 +142,25 @@ export class DomRenderer extends Renderer {
     return hostView.boundElements[0];
   }
 
-  detachComponentView(hostViewRef: RenderViewRef, boundElementIndex: number,
-                      componentViewRef: RenderViewRef) {
-    var hostView = resolveInternalDomView(hostViewRef);
-    var componentView = resolveInternalDomView(componentViewRef);
-    this._removeViewNodes(componentView);
-    var lightDom = hostView.lightDoms[boundElementIndex];
-    if (isPresent(lightDom)) {
-      lightDom.detachShadowDomView();
-    }
-    componentView.hostLightDom = null;
-    componentView.shadowRoot = null;
+  _needsAttach(viewState: RenderViewState) {
+    return viewState === RenderViewState.NON_EXISTING || viewState === RenderViewState.CREATED;
   }
 
-  attachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {
-    var parentView = resolveInternalDomView(parentViewRef);
-    var view = resolveInternalDomView(viewRef);
+  _needsDetach(viewState: RenderViewState) {
+    return viewState === RenderViewState.ACTIVE || viewState === RenderViewState.ATTACHED;
+  }
+
+  _createViewIfNeeded(viewConfig: RenderViewActivateConfig) {
+    if (viewConfig.prevViewState === RenderViewState.NON_EXISTING) {
+      var protoView = resolveInternalDomProtoView(viewConfig.protoViewRef);
+      return this._createView(protoView, null);
+    } else {
+      return resolveInternalDomView(viewConfig.cachedViewRef);
+    }
+  }
+
+  _attachViewInContainer(parentView: DomView, boundElementIndex: number, atIndex: number,
+                        view: DomView) {
     var viewContainer = this._getOrCreateViewContainer(parentView, boundElementIndex);
     ListWrapper.insert(viewContainer.views, atIndex, view);
     view.hostLightDom = parentView.hostLightDom;
@@ -123,10 +183,8 @@ export class DomRenderer extends Renderer {
     }
   }
 
-  detachViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
-                        viewRef: RenderViewRef) {
-    var parentView = resolveInternalDomView(parentViewRef);
-    var view = resolveInternalDomView(viewRef);
+  _detachViewInContainer(parentView: DomView, boundElementIndex: number, atIndex: number,
+                        view: DomView) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var detachedView = viewContainer.views[atIndex];
     ListWrapper.removeAt(viewContainer.views, atIndex);
@@ -143,8 +201,7 @@ export class DomRenderer extends Renderer {
     }
   }
 
-  hydrateView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
+  _hydrateView(view: DomView) {
     if (view.hydrated) throw new BaseException('The view is already hydrated.');
     view.hydrated = true;
 
@@ -174,9 +231,7 @@ export class DomRenderer extends Renderer {
     }
   }
 
-  dehydrateView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
-
+  _dehydrateView(view: DomView) {
     // remove global events
     for (var i = 0; i < view.eventHandlerRemovers.length; i++) {
       view.eventHandlerRemovers[i]();

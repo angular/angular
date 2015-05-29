@@ -30,6 +30,7 @@ export class AppViewManagerUtils {
     var view = new viewModule.AppView(renderer, protoView, protoView.protoLocals);
     // TODO(tbosch): pass RenderViewRef as argument to AppView!
     view.render = renderView;
+    renderer.setEventDispatcher(renderView, view);
 
     var changeDetector = protoView.protoChangeDetector.instantiate(view);
 

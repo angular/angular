@@ -76,7 +76,7 @@ export function main() {
 
 
     describe('react to record changes', function() {
-      it('should consume text node changes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
+      iit('should consume text node changes', inject([TestBed, AsyncTestCompleter], (tb, async) => {
            tb.overrideView(MyComp, new viewAnn.View({template: '<div>{{ctxProp}}</div>'}));
            tb.createView(MyComp, {context: ctx})
                .then((view) => {
