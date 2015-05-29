@@ -1,13 +1,11 @@
-import {Inject, Injectable} from 'angular2/di';
+import {Inject, Injectable, OpaqueToken} from 'angular2/di';
 
 import {ListWrapper, MapWrapper, Map, List} from 'angular2/src/facade/collection';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 
 import * as viewModule from './view';
 
-
-// TODO(tbosch): Make this an OpaqueToken as soon as our transpiler supports this!
-export const APP_VIEW_POOL_CAPACITY = 'AppViewPool.viewPoolCapacity';
+export const APP_VIEW_POOL_CAPACITY = CONST_EXPR(new OpaqueToken('AppViewPool.viewPoolCapacity'));
 
 @Injectable()
 export class AppViewPool {
