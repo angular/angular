@@ -63,10 +63,8 @@ void allTests() {
           'directive_metadata_files/properties.ng_deps.dart');
       expect(metadata.properties).toBeNotNull();
       expect(metadata.properties.length).toBe(2);
-      expect(metadata.properties).toContain('key1');
-      expect(metadata.properties['key1']).toEqual('val1');
-      expect(metadata.properties).toContain('key2');
-      expect(metadata.properties['key2']).toEqual('val2');
+      expect(metadata.properties).toContain('key1: val1');
+      expect(metadata.properties).toContain('key2: val2');
     });
 
     it('should parse host listeners.', () async {

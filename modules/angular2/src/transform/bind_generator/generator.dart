@@ -48,9 +48,16 @@ Map<String, String> _createBindMap(NgDeps ngDeps) {
   var visitor = new ExtractSettersVisitor();
   var bindMap = {};
   ngDeps.registeredTypes.forEach((RegisteredType t) {
-    visitor.bindMappings.clear();
+    visitor.bindConfig.clear();
     t.annotations.accept(visitor);
-    visitor.bindMappings.forEach((String prop, _) {
+    visitor.bindConfig.forEach((String config) {
+      var prop;
+      var idx = config.indexOf(':');
+      if (idx > 0) {
+        prop = config.substring(0, idx).trim();
+      } else {
+        prop = config;
+      }
       if (bindMap.containsKey(prop)) {
         bindMap[prop] = '';
       } else {

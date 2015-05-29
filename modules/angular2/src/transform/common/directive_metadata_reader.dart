@@ -179,9 +179,23 @@ class _DirectiveMetadataVisitor extends Object
     });
   }
 
+  /// Evaluates the [List] represented by `expression` and adds all values,
+  /// to `list`. If `expression` does not evaluate to a [List], throws a
+  /// descriptive [FormatException].
+  void _populateList(Expression expression, List list, String propertyName) {
+    var evaluated = expression.accept(_evaluator);
+    if (evaluated is! List) {
+      throw new FormatException(
+          'Angular 2 expects a List but could not understand the value for '
+          '$propertyName.', '$expression' /* source */);
+    }
+    list.addAll(evaluated);
+
+  }
+
   void _populateProperties(Expression propertiesValue) {
     _checkMeta();
-    _populateMap(propertiesValue, meta.properties, 'Directive#properties');
+    _populateList(propertiesValue, meta.properties, 'Directive#properties');
   }
 
   void _populateHostListeners(Expression hostListenersValue) {

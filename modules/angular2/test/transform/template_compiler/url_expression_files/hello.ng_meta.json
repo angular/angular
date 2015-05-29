@@ -6,7 +6,7 @@
     "compileChildren":true,
     "hostListeners":{},
     "hostProperties":{},
-    "properties":{},
+    "properties":[],
     "readAttributes":[],
     "type":1,
     "version":1

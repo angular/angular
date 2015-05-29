@@ -7,21 +7,17 @@ import 'package:angular2/src/transform/common/logging.dart';
 /// `registerType` call and pulling out the properties of any "bind"
 /// values found.
 class ExtractSettersVisitor extends Object with RecursiveAstVisitor<Object> {
-  final Map<String, String> bindMappings = {};
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
+  final List<String> bindConfig = [];
 
   @override
   Object visitNamedExpression(NamedExpression node) {
     if ('${node.name.label}' == 'properties') {
       var evaluated = node.expression.accept(_evaluator);
-      if (evaluated is Map) {
-        evaluated.forEach((key, value) {
-          if (value != null) {
-            bindMappings[key] = '$value';
-          }
-        });
+      if (evaluated is List) {
+        bindConfig.addAll(evaluated);
       } else {
-        logger.error('`properties` currently only supports Map values');
+        logger.error('`properties` currently only supports List values');
       }
       return null;
     }
