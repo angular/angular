@@ -18,7 +18,12 @@ export function directiveMetadataToMap(meta: DirectiveMetadata): Map<string, any
     ['properties', _cloneIfPresent(meta.properties)],
     ['readAttributes', _cloneIfPresent(meta.readAttributes)],
     ['type', meta.type],
-    ['version', 1]
+    ['callOnDestroy', meta.callOnDestroy],
+    ['callOnCheck', meta.callOnCheck],
+    ['callOnInit', meta.callOnInit],
+    ['callOnChange', meta.callOnChange],
+    ['callOnAllChangesDone', meta.callOnAllChangesDone],
+    ['version', 1],
   ]);
 }
 
@@ -38,7 +43,12 @@ export function directiveMetadataFromMap(map: Map<string, any>): DirectiveMetada
     hostAttributes:<Map<string, string>>_cloneIfPresent(MapWrapper.get(map, 'hostAttributes')),
     properties:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'properties')),
     readAttributes:<List<string>>_cloneIfPresent(MapWrapper.get(map, 'readAttributes')),
-    type:<number>MapWrapper.get(map, 'type')
+    type:<number>MapWrapper.get(map, 'type'),
+    callOnDestroy:<boolean>MapWrapper.get(map, 'callOnDestroy'),
+    callOnCheck:<boolean>MapWrapper.get(map, 'callOnCheck'),
+    callOnChange:<boolean>MapWrapper.get(map, 'callOnChange'),
+    callOnInit:<boolean>MapWrapper.get(map, 'callOnInit'),
+    callOnAllChangesDone:<boolean>MapWrapper.get(map, 'callOnAllChangesDone')
   });
 }
 

@@ -78,6 +78,16 @@ void allTests() {
       expect(metadata.hostListeners['keyDown']).toEqual('onKeyDown(\$event)');
     });
 
+    it('should parse lifecycle events.', () async {
+      var metadata = await readMetadata('directive_metadata_extractor/'
+          'directive_metadata_files/lifecycle.ng_deps.dart');
+      expect(metadata.callOnDestroy).toBe(true);
+      expect(metadata.callOnChange).toBe(true);
+      expect(metadata.callOnCheck).toBe(true);
+      expect(metadata.callOnInit).toBe(true);
+      expect(metadata.callOnAllChangesDone).toBe(true);
+    });
+
     it('should fail when a class is annotated with multiple Directives.',
         () async {
       var ngDeps = await parser.parse(new AssetId('a',

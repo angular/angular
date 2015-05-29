@@ -60,7 +60,13 @@ class _DirectiveMetadataVisitor extends Object
         hostListeners: {},
         hostProperties: {},
         hostAttributes: {},
-        readAttributes: []);
+        readAttributes: [],
+        callOnDestroy: false,
+        callOnChange: false,
+        callOnCheck: false,
+        callOnInit: false,
+        callOnAllChangesDone: false
+    );
   }
 
   @override
@@ -126,6 +132,10 @@ class _DirectiveMetadataVisitor extends Object
         break;
       case 'hostListeners':
         _populateHostListeners(node.expression);
+        break;
+      case 'lifecycle':
+        _populateLifecycle(node.expression);
+        break;
     }
     return null;
   }
@@ -213,5 +223,21 @@ class _DirectiveMetadataVisitor extends Object
     _checkMeta();
     _populateMap(
         hostAttributeValue, meta.hostAttributes, 'Directive#hostAttributes');
+  }
+
+  void _populateLifecycle(Expression lifecycleValue) {
+    _checkMeta();
+    if (lifecycleValue is! ListLiteral) {
+      throw new FormatException(
+          'Angular 2 expects a List but could not understand the value for lifecycle. '
+          '$lifecycleValue');
+    }
+    ListLiteral l = lifecycleValue;
+    var lifecycleEvents = l.elements.map((s) => s.toSource());
+    meta.callOnDestroy = lifecycleEvents.contains("onDestroy");
+    meta.callOnChange = lifecycleEvents.contains("onChange");
+    meta.callOnCheck = lifecycleEvents.contains("onCheck");
+    meta.callOnInit = lifecycleEvents.contains("onInit");
+    meta.callOnAllChangesDone = lifecycleEvents.contains("onAllChangesDone");
   }
 }

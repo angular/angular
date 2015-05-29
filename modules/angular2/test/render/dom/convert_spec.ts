@@ -15,7 +15,12 @@ export function main() {
         properties: ['propKey: propVal'],
         readAttributes: ['read1', 'read2'],
         selector: 'some-comp',
-        type: DirectiveMetadata.COMPONENT_TYPE
+        type: DirectiveMetadata.COMPONENT_TYPE,
+        callOnDestroy: true,
+        callOnChange: true,
+        callOnCheck: true,
+        callOnInit: true,
+        callOnAllChangesDone: true
       });
       var map = directiveMetadataToMap(someComponent);
       expect(MapWrapper.get(map, 'compileChildren')).toEqual(false);
@@ -30,6 +35,11 @@ export function main() {
       expect(MapWrapper.get(map, 'readAttributes')).toEqual(['read1', 'read2']);
       expect(MapWrapper.get(map, 'selector')).toEqual('some-comp');
       expect(MapWrapper.get(map, 'type')).toEqual(DirectiveMetadata.COMPONENT_TYPE);
+      expect(MapWrapper.get(map, 'callOnDestroy')).toEqual(true);
+      expect(MapWrapper.get(map, 'callOnCheck')).toEqual(true);
+      expect(MapWrapper.get(map, 'callOnChange')).toEqual(true);
+      expect(MapWrapper.get(map, 'callOnInit')).toEqual(true);
+      expect(MapWrapper.get(map, 'callOnAllChangesDone')).toEqual(true);
     });
 
     it('mapToDirectiveMetadata', () => {
@@ -42,7 +52,12 @@ export function main() {
         ['properties', ['propKey: propVal']],
         ['readAttributes', ['readTest1', 'readTest2']],
         ['selector', 'testSelector'],
-        ['type', DirectiveMetadata.DIRECTIVE_TYPE]
+        ['type', DirectiveMetadata.DIRECTIVE_TYPE],
+        ['callOnDestroy', true],
+        ['callOnCheck', true],
+        ['callOnInit', true],
+        ['callOnChange', true],
+        ['callOnAllChangesDone', true]
       ]);
       var meta = directiveMetadataFromMap(map);
       expect(meta.compileChildren).toEqual(false);
@@ -56,6 +71,11 @@ export function main() {
       expect(meta.readAttributes).toEqual(['readTest1', 'readTest2']);
       expect(meta.selector).toEqual('testSelector');
       expect(meta.type).toEqual(DirectiveMetadata.DIRECTIVE_TYPE);
+      expect(meta.callOnDestroy).toEqual(true);
+      expect(meta.callOnCheck).toEqual(true);
+      expect(meta.callOnInit).toEqual(true);
+      expect(meta.callOnChange).toEqual(true);
+      expect(meta.callOnAllChangesDone).toEqual(true);
     });
   });
 }

@@ -10,6 +10,11 @@
     "properties": [],
     "readAttributes": [],
     "type": 1,
+    "callOnDestroy": false,
+    "callOnCheck": false,
+    "callOnInit": false,
+    "callOnChange": false,
+    "callOnAllChangesDone": false,
     "version": 1
   }
 }
