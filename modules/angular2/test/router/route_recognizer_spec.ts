@@ -1,26 +1,24 @@
 import {
   AsyncTestCompleter,
   describe,
-  it, iit,
-  ddescribe, expect,
-  inject, beforeEach,
-  SpyObject} from 'angular2/test_lib';
+  it,
+  iit,
+  ddescribe,
+  expect,
+  inject,
+  beforeEach,
+  SpyObject
+} from 'angular2/test_lib';
 
 import {RouteRecognizer} from 'angular2/src/router/route_recognizer';
 
 export function main() {
   describe('RouteRecognizer', () => {
     var recognizer;
-    var handler = {
-      'components': { 'a': 'b' }
-    };
-    var handler2 = {
-      'components': { 'b': 'c' }
-    };
+    var handler = {'components': {'a': 'b'}};
+    var handler2 = {'components': {'b': 'c'}};
 
-    beforeEach(() => {
-      recognizer = new RouteRecognizer();
-    });
+    beforeEach(() => { recognizer = new RouteRecognizer(); });
 
 
     it('should recognize a static segment', () => {
@@ -40,7 +38,7 @@ export function main() {
       recognizer.addConfig('/user/:name', handler);
       var solution = recognizer.recognize('/user/brian')[0];
       expect(solution.handler).toEqual(handler);
-      expect(solution.params).toEqual({ 'name': 'brian' });
+      expect(solution.params).toEqual({'name': 'brian'});
     });
 
 
@@ -48,23 +46,22 @@ export function main() {
       recognizer.addConfig('/first/*rest', handler);
       var solution = recognizer.recognize('/first/second/third')[0];
       expect(solution.handler).toEqual(handler);
-      expect(solution.params).toEqual({ 'rest': 'second/third' });
+      expect(solution.params).toEqual({'rest': 'second/third'});
     });
 
 
     it('should throw when given two routes that start with the same static segment', () => {
       recognizer.addConfig('/hello', handler);
-      expect(() => recognizer.addConfig('/hello', handler2)).toThrowError(
-        'Configuration \'/hello\' conflicts with existing route \'/hello\''
-      );
+      expect(() => recognizer.addConfig('/hello', handler2))
+          .toThrowError('Configuration \'/hello\' conflicts with existing route \'/hello\'');
     });
 
 
     it('should throw when given two routes that have dynamic segments in the same order', () => {
       recognizer.addConfig('/hello/:person/how/:doyoudou', handler);
-      expect(() => recognizer.addConfig('/hello/:friend/how/:areyou', handler2)).toThrowError(
-        'Configuration \'/hello/:friend/how/:areyou\' conflicts with existing route \'/hello/:person/how/:doyoudou\''
-      );
+      expect(() => recognizer.addConfig('/hello/:friend/how/:areyou', handler2))
+          .toThrowError(
+              'Configuration \'/hello/:friend/how/:areyou\' conflicts with existing route \'/hello/:person/how/:doyoudou\'');
     });
 
 
@@ -82,14 +79,14 @@ export function main() {
 
     it('should generate URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(recognizer.generate('user', {'name' : 'misko'})).toEqual('/app/user/misko');
+      expect(recognizer.generate('user', {'name': 'misko'})).toEqual('/app/user/misko');
     });
 
 
     it('should throw in the absence of required params URLs', () => {
       recognizer.addConfig('/app/user/:name', handler, 'user');
-      expect(() => recognizer.generate('user', {})).toThrowError(
-        'Route generator for \'name\' was not included in parameters passed.');
+      expect(() => recognizer.generate('user', {}))
+          .toThrowError('Route generator for \'name\' was not included in parameters passed.');
     });
   });
 }

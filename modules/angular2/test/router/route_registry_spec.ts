@@ -1,22 +1,23 @@
 import {
   AsyncTestCompleter,
   describe,
-  it, iit,
-  ddescribe, expect,
-  inject, beforeEach,
-  SpyObject} from 'angular2/test_lib';
+  it,
+  iit,
+  ddescribe,
+  expect,
+  inject,
+  beforeEach,
+  SpyObject
+} from 'angular2/test_lib';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {RouteConfig} from 'angular2/src/router/route_config_impl';
+import {RouteConfig} from 'angular2/src/router/route_config_decorator';
 
 export function main() {
   describe('RouteRegistry', () => {
-    var registry,
-        rootHostComponent = new Object();
+    var registry, rootHostComponent = new Object();
 
-    beforeEach(() => {
-      registry = new RouteRegistry();
-    });
+    beforeEach(() => { registry = new RouteRegistry(); });
 
     it('should match the full URL', () => {
       registry.config(rootHostComponent, {'path': '/', 'component': DummyCompA});
@@ -87,10 +88,9 @@ export function main() {
   });
 }
 
-@RouteConfig([
-  {'path': '/second', 'component': DummyCompB }
-])
-class DummyParentComp {}
-
 class DummyCompA {}
 class DummyCompB {}
+
+@RouteConfig([{'path': '/second', 'component': DummyCompB}])
+class DummyParentComp {
+}

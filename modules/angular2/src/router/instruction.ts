@@ -1,37 +1,44 @@
-import {Map, MapWrapper, StringMap, StringMapWrapper, List, ListWrapper} from 'angular2/src/facade/collection';
+import {
+  Map,
+  MapWrapper,
+  StringMap,
+  StringMapWrapper,
+  List,
+  ListWrapper
+} from 'angular2/src/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {isPresent, normalizeBlank} from 'angular2/src/facade/lang';
 
 export class RouteParams {
-  params:StringMap<string, string>;
+  constructor(public params: StringMap<string, string>) {}
 
-  constructor(params:StringMap) {
-    this.params = params;
-  }
-
-  get(param:string): string {
-    return normalizeBlank(StringMapWrapper.get(this.params, param));
-  }
+  get(param: string): string { return normalizeBlank(StringMapWrapper.get(this.params, param)); }
 }
 
 /**
  * An `Instruction` represents the component hierarchy of the application based on a given route
  */
 export class Instruction {
-  component:any;
-  _children:Map<string, Instruction>;
+  component: any;
+  private _children: StringMap<string, Instruction>;
 
   // the part of the URL captured by this instruction
-  capturedUrl:string;
+  capturedUrl: string;
 
   // the part of the URL captured by this instruction and all children
-  accumulatedUrl:string;
+  accumulatedUrl: string;
 
-  params:StringMap<string, string>;
-  reuse:boolean;
-  specificity:number;
+  params: StringMap<string, string>;
+  reuse: boolean;
+  specificity: number;
 
-  constructor({params, component, children, matchedUrl, parentSpecificity}:{params:StringMap, component:any, children:Map, matchedUrl:string, parentSpecificity:number} = {}) {
+  constructor({params, component, children, matchedUrl, parentSpecificity}: {
+    params?: StringMap<string, any>,
+    component?: any,
+    children?: StringMap<string, Instruction>,
+    matchedUrl?: string,
+    parentSpecificity?: number
+  } = {}) {
     this.reuse = false;
     this.capturedUrl = matchedUrl;
     this.accumulatedUrl = matchedUrl;
@@ -53,39 +60,38 @@ export class Instruction {
     this.params = params;
   }
 
-  hasChild(outletName:string):boolean {
+  hasChild(outletName: string): boolean {
     return StringMapWrapper.contains(this._children, outletName);
   }
 
   /**
    * Returns the child instruction with the given outlet name
    */
-  getChild(outletName:string):Instruction {
+  getChild(outletName: string): Instruction {
     return StringMapWrapper.get(this._children, outletName);
   }
 
   /**
    * (child:Instruction, outletName:string) => {}
    */
-  forEachChild(fn:Function): void {
-    StringMapWrapper.forEach(this._children, fn);
-  }
+  forEachChild(fn: Function): void { StringMapWrapper.forEach(this._children, fn); }
 
   /**
    * Does a synchronous, breadth-first traversal of the graph of instructions.
    * Takes a function with signature:
    * (child:Instruction, outletName:string) => {}
    */
-  traverseSync(fn:Function): void {
+  traverseSync(fn: Function): void {
     this.forEachChild(fn);
     this.forEachChild((childInstruction, _) => childInstruction.traverseSync(fn));
   }
 
 
   /**
-   * Takes a currently active instruction and sets a reuse flag on each of this instruction's children
+   * Takes a currently active instruction and sets a reuse flag on each of this instruction's
+   * children
    */
-  reuseComponentsFrom(oldInstruction:Instruction): void {
+  reuseComponentsFrom(oldInstruction: Instruction): void {
     this.traverseSync((childInstruction, outletName) => {
       var oldInstructionChild = oldInstruction.getChild(outletName);
       if (shouldReuseComponent(childInstruction, oldInstructionChild)) {
@@ -95,16 +101,16 @@ export class Instruction {
   }
 }
 
-function shouldReuseComponent(instr1:Instruction, instr2:Instruction): boolean {
+function shouldReuseComponent(instr1: Instruction, instr2: Instruction): boolean {
   return instr1.component == instr2.component &&
-    StringMapWrapper.equals(instr1.params, instr2.params);
+         StringMapWrapper.equals(instr1.params, instr2.params);
 }
 
-function mapObjAsync(obj:StringMap, fn): Promise {
+function mapObjAsync(obj: StringMap<string, any>, fn): Promise<List<any>> {
   return PromiseWrapper.all(mapObj(obj, fn));
 }
 
-function mapObj(obj:StringMap, fn: Function):List {
+function mapObj(obj: StringMap<any, any>, fn: Function): List<any> {
   var result = ListWrapper.create();
   StringMapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
   return result;

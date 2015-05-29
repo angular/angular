@@ -10,3 +10,7 @@ export var gc = window['gc'] ? () => window['gc']() : () => null;
 export const Event = Event;
 export const MouseEvent = MouseEvent;
 export const KeyboardEvent = KeyboardEvent;
+export const EventTarget = EventTarget;
+export const History = History;
+export const Location = Location;
+export const EventListener = EventListener;

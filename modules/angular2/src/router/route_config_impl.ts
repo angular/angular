@@ -9,11 +9,7 @@ import {List, Map} from 'angular2/src/facade/collection';
  * - `component`, `components`, `redirectTo` (requires exactly one of these)
  * - `as` (optional)
  */
+@CONST()
 export class RouteConfig {
-  configs:List<Map>;
-
-  @CONST()
-  constructor(configs:List<Map>) {
-    this.configs = configs;
-  }
+  constructor(public configs: List<Map<any, any>>) {}
 }

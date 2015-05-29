@@ -7,19 +7,14 @@ import {Instruction} from './instruction';
  * "Steps" are conceptually similar to "middleware"
  */
 export class Pipeline {
-  steps:List<Function>;
+  steps: List<Function>;
 
-  constructor() {
-    this.steps = [
-      instruction => instruction.router.activateOutlets(instruction)
-    ];
-  }
+  constructor() { this.steps = [instruction => instruction.router.activateOutlets(instruction)]; }
 
-  process(instruction:Instruction):Promise {
-    var steps = this.steps,
-        currentStep = 0;
+  process(instruction: Instruction): Promise<any> {
+    var steps = this.steps, currentStep = 0;
 
-    function processOne(result:any = true):Promise {
+    function processOne(result: any = true): Promise<any> {
       if (currentStep >= steps.length) {
         return PromiseWrapper.resolve(result);
       }

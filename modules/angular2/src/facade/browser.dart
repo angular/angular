@@ -15,7 +15,11 @@ export 'dart:html'
         Node,
         MouseEvent,
         KeyboardEvent,
-        Event;
+        Event,
+        EventTarget,
+        History,
+        Location,
+        EventListener;
 
 final _gc = context['gc'];
 
