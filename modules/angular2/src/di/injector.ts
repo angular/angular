@@ -10,18 +10,18 @@ import {
   InstantiationError,
   InvalidBindingError
 } from './exceptions';
-import {FunctionWrapper, Type, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {Key} from './key';
 import {resolveForwardRef} from './forward_ref';
 
-var _constructing = new Object();
-var _notFound = new Object();
+const _constructing = CONST_EXPR(new Object());
+const _notFound = CONST_EXPR(new Object());
 
 class _Waiting {
-  promise: Promise<any>;
-  constructor(promise: Promise<any>) { this.promise = promise; }
+  constructor(public promise: Promise<any>) {}
 }
+
 function _isWaiting(obj): boolean {
   return obj instanceof _Waiting;
 }
@@ -67,10 +67,7 @@ function _isWaiting(obj): boolean {
  * @exportedAs angular2/di
  */
 export class Injector {
-  private _bindings: List<ResolvedBinding>;
   private _instances: List<any>;
-  private _parent: Injector;
-  private _defaultBindings: boolean;
   private _asyncStrategy: _AsyncInjectorStrategy;
   private _syncStrategy: _SyncInjectorStrategy;
 
@@ -134,11 +131,9 @@ export class Injector {
    * @param `defaultBindings` Setting to true will auto-create bindings. (Only use with root
    * injector.)
    */
-  constructor(bindings: List<ResolvedBinding>, parent: Injector, defaultBindings: boolean) {
-    this._bindings = bindings;
+  constructor(private _bindings: List<ResolvedBinding>, private _parent: Injector,
+              private _defaultBindings: boolean) {
     this._instances = this._createInstances();
-    this._parent = parent;
-    this._defaultBindings = defaultBindings;
     this._asyncStrategy = new _AsyncInjectorStrategy(this);
     this._syncStrategy = new _SyncInjectorStrategy(this);
   }
@@ -266,7 +261,7 @@ interface _InjectorStrategy {
 }
 
 class _SyncInjectorStrategy implements _InjectorStrategy {
-  constructor(private _injector: Injector) { }
+  constructor(private _injector: Injector) {}
 
   readFromCache(key: Key) {
     if (key.token === Injector) {
@@ -310,7 +305,7 @@ class _SyncInjectorStrategy implements _InjectorStrategy {
 }
 
 class _AsyncInjectorStrategy implements _InjectorStrategy {
-  constructor(private _injector: Injector) { }
+  constructor(private _injector: Injector) {}
 
   readFromCache(key: Key) {
     if (key.token === Injector) {
