@@ -24,9 +24,9 @@ export function main() {
 
     function createViewPool({capacity}): AppViewPool { return new AppViewPool(capacity); }
 
-    function createProtoView() { return new AppProtoView(null, null, null); }
+    function createProtoView() { return new AppProtoView(null, null, null, null); }
 
-    function createView(pv) { return new AppView(null, pv, MapWrapper.create()); }
+    function createView(pv) { return new AppView(null, null, pv, MapWrapper.create()); }
 
     it('should support multiple AppProtoViews', () => {
       var vf = createViewPool({capacity: 2});

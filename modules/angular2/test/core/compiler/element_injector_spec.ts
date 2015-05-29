@@ -621,7 +621,7 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var protoView = new AppProtoView(null, null, null);
+            var protoView = new AppProtoView(null, null, null, null);
             var bindings = ListWrapper.concat([NeedsProtoViewRef], extraBindings);
             var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, protoView));
 
@@ -934,7 +934,7 @@ export function main() {
           });
 
           it("should inject ProtoViewRef", () => {
-            var protoView = new AppProtoView(null, null, null);
+            var protoView = new AppProtoView(null, null, null, null);
             var inj = injector(ListWrapper.concat([NeedsProtoViewRef], extraBindings), null, false,
                                new PreBuiltObjects(null, null, protoView));
 

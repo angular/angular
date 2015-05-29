@@ -31,7 +31,7 @@ export function main() {
         binders = [];
       }
       var rootEl = el('<div></div>');
-      return new DomProtoView({element: rootEl, elementBinders: binders});
+      return new DomProtoView({id: null, element: rootEl, elementBinders: binders});
     }
 
     function createView(pv = null, boundElementCount = 0) {
@@ -43,7 +43,7 @@ export function main() {
       for (var i = 0; i < boundElementCount; i++) {
         ListWrapper.push(boundElements, el('<span></span'));
       }
-      return new DomView(pv, [DOM.childNodes(root)[0]], [], boundElements, []);
+      return new DomView(null, pv, [DOM.childNodes(root)[0]], [], boundElements, []);
     }
 
     describe('getDirectParentLightDom', () => {

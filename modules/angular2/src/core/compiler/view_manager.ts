@@ -70,8 +70,10 @@ export class AppViewManager {
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
     }
-    var renderView = this._renderer.createRootHostView(hostProtoView.render, hostElementSelector);
-    var hostView = this._utils.createView(hostProtoView, renderView, this, this._renderer);
+    var viewId = hostProtoView.nextViewId();
+    var renderView =
+        this._renderer.createRootHostView(viewId, hostProtoView.render, hostElementSelector);
+    var hostView = this._utils.createView(viewId, hostProtoView, renderView, this, this._renderer);
     this._renderer.setEventDispatcher(hostView.render, hostView);
     this._createViewRecurse(hostView);
 
@@ -171,7 +173,10 @@ export class AppViewManager {
   _createPooledView(protoView: viewModule.AppProtoView): viewModule.AppView {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
-      view = this._utils.createView(protoView, this._renderer.createView(protoView.render), this,
+      var viewId = protoView.nextViewId();
+
+      view = this._utils.createView(viewId, protoView,
+                                    this._renderer.createView(viewId, protoView.render), this,
                                     this._renderer);
       this._renderer.setEventDispatcher(view.render, view);
       this._createViewRecurse(view);

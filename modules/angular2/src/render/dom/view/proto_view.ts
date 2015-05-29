@@ -21,12 +21,14 @@ export class DomProtoViewRef extends RenderProtoViewRef {
 }
 
 export class DomProtoView {
+  id: string;
   element;
   elementBinders: List<ElementBinder>;
   isTemplateElement: boolean;
   rootBindingOffset: number;
 
-  constructor({elementBinders, element}) {
+  constructor({id, elementBinders, element}) {
+    this.id = id;
     this.element = element;
     this.elementBinders = elementBinders;
     this.isTemplateElement = DOM.isTemplateElement(this.element);

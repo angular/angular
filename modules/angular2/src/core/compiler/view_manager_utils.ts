@@ -25,9 +25,9 @@ export class AppViewManagerUtils {
     }
   }
 
-  createView(protoView: viewModule.AppProtoView, renderView: RenderViewRef,
+  createView(viewId: string, protoView: viewModule.AppProtoView, renderView: RenderViewRef,
              viewManager: avmModule.AppViewManager, renderer: Renderer): viewModule.AppView {
-    var view = new viewModule.AppView(renderer, protoView, protoView.protoLocals);
+    var view = new viewModule.AppView(viewId, renderer, protoView, protoView.protoLocals);
     // TODO(tbosch): pass RenderViewRef as argument to AppView!
     view.render = renderView;
 

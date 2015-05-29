@@ -75,7 +75,7 @@ export function main() {
           staticChildComponentCount++;
         }
       }
-      var res = new AppProtoView(new MockProtoViewRef(staticChildComponentCount), null, null);
+      var res = new AppProtoView(null, new MockProtoViewRef(staticChildComponentCount), null, null);
       res.elementBinders = binders;
       return res;
     }
@@ -91,14 +91,14 @@ export function main() {
                             {});
     }
 
-    function createView(pv = null, renderViewRef = null) {
+    function createView(pv = null, renderViewRef = null, id = null) {
       if (isBlank(pv)) {
         pv = createProtoView();
       }
       if (isBlank(renderViewRef)) {
         renderViewRef = new RenderViewRef();
       }
-      var view = new AppView(renderer, pv, MapWrapper.create());
+      var view = new AppView(id, renderer, pv, MapWrapper.create());
       view.render = renderViewRef;
       var elementInjectors = ListWrapper.createFixedSize(pv.elementBinders.length);
       for (var i = 0; i < pv.elementBinders.length; i++) {
@@ -119,8 +119,8 @@ export function main() {
       createdRenderViews = [];
 
       utils.spy('createView')
-          .andCallFake((proto, renderViewRef, _a, _b) => {
-            var view = createView(proto, renderViewRef);
+          .andCallFake((id, proto, renderViewRef, _a, _b) => {
+            var view = createView(proto, renderViewRef, id);
             ListWrapper.push(createdViews, view);
             return view;
           });
@@ -138,13 +138,13 @@ export function main() {
             ListWrapper.insert(viewContainer.views, atIndex, childView);
           });
       renderer.spy('createRootHostView')
-          .andCallFake((_b, _c) => {
+          .andCallFake((_a, _b, _c) => {
             var rv = new RenderViewRef();
             ListWrapper.push(createdRenderViews, rv);
             return rv;
           });
       renderer.spy('createView')
-          .andCallFake((_a) => {
+          .andCallFake((_a, _b) => {
             var rv = new RenderViewRef();
             ListWrapper.push(createdRenderViews, rv);
             return rv;
@@ -209,7 +209,8 @@ export function main() {
         it('should create and set the render view', () => {
           manager.createDynamicComponentView(elementRef(wrapView(hostView), 0),
                                              wrapPv(componentProtoView), null, null);
-          expect(renderer.spy('createView')).toHaveBeenCalledWith(componentProtoView.render);
+          expect(renderer.spy('createView'))
+              .toHaveBeenCalledWith(createdViews[0].id, componentProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
@@ -329,7 +330,8 @@ export function main() {
         it('should create and set the render view', () => {
           manager.createFreeHostView(elementRef(wrapView(parentHostView), 0), wrapPv(hostProtoView),
                                      null);
-          expect(renderer.spy('createView')).toHaveBeenCalledWith(hostProtoView.render);
+          expect(renderer.spy('createView'))
+              .toHaveBeenCalledWith(createdViews[0].id, hostProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 
@@ -405,17 +407,17 @@ export function main() {
       });
 
       it('should create and set the render view using the component selector', () => {
-        manager.createRootHostView(wrapPv(hostProtoView), null, null)
-            expect(renderer.spy('createRootHostView'))
-                .toHaveBeenCalledWith(hostProtoView.render, 'someComponent');
+        manager.createRootHostView(wrapPv(hostProtoView), null, null);
+        expect(renderer.spy('createRootHostView'))
+            .toHaveBeenCalledWith(createdViews[0].id, hostProtoView.render, 'someComponent');
         expect(createdViews[0].render).toBe(createdRenderViews[0]);
       });
 
       it('should allow to override the selector', () => {
         var selector = 'someOtherSelector';
-        manager.createRootHostView(wrapPv(hostProtoView), selector, null)
-            expect(renderer.spy('createRootHostView'))
-                .toHaveBeenCalledWith(hostProtoView.render, selector);
+        manager.createRootHostView(wrapPv(hostProtoView), selector, null);
+        expect(renderer.spy('createRootHostView'))
+            .toHaveBeenCalledWith(createdViews[0].id, hostProtoView.render, selector);
       });
 
       it('should set the event dispatcher', () => {
@@ -500,7 +502,8 @@ export function main() {
         it('should create and set the render view', () => {
           manager.createViewInContainer(elementRef(wrapView(parentView), 0), 0,
                                         wrapPv(childProtoView), null, null);
-          expect(renderer.spy('createView')).toHaveBeenCalledWith(childProtoView.render);
+          expect(renderer.spy('createView'))
+              .toHaveBeenCalledWith(createdViews[0].id, childProtoView.render);
           expect(createdViews[0].render).toBe(createdRenderViews[0]);
         });
 

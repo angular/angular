@@ -410,7 +410,7 @@ function createDirectiveBinding(directiveResolver, type) {
 }
 
 function createProtoView(elementBinders = null) {
-  var pv = new AppProtoView(null, null, MapWrapper.create());
+  var pv = new AppProtoView(null, null, null, MapWrapper.create());
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }

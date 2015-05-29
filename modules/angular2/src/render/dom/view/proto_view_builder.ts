@@ -20,20 +20,17 @@ import * as api from '../../api';
 import {NG_BINDING_CLASS, EVENT_TARGET_SEPARATOR} from '../util';
 
 export class ProtoViewBuilder {
-  rootElement;
   variableBindings: Map<string, string>;
   elements: List<ElementBinderBuilder>;
-  type: number;
 
-  constructor(rootElement, type: number) {
-    this.rootElement = rootElement;
+  constructor(public rootElement, public type: number, public hostComponentId: string) {
     this.elements = [];
     this.variableBindings = MapWrapper.create();
-    this.type = type;
   }
 
   bindElement(element, description = null): ElementBinderBuilder {
-    var builder = new ElementBinderBuilder(this.elements.length, element, description);
+    var builder =
+        new ElementBinderBuilder(this.hostComponentId, this.elements.length, element, description);
     ListWrapper.push(this.elements, builder);
     DOM.addClass(element, NG_BINDING_CLASS);
 
@@ -50,7 +47,18 @@ export class ProtoViewBuilder {
     MapWrapper.set(this.variableBindings, value, name);
   }
 
-  build(): api.ProtoViewDto {
+  build(): api.ProtoViewDto { return this._build([0]); }
+
+  _build(nestedPvCounter: List<int>): api.ProtoViewDto {
+    var typeString;
+    if (this.type === api.ProtoViewDto.COMPONENT_VIEW_TYPE) {
+      typeString = 'comp';
+    } else if (this.type === api.ProtoViewDto.HOST_VIEW_TYPE) {
+      typeString = 'host';
+    } else {
+      typeString = 'embedded';
+    }
+    var protoViewId = `${this.hostComponentId}_${typeString}_${nestedPvCounter[0]++}`;
     var renderElementBinders = [];
 
     var apiElementBinders = [];
@@ -81,7 +89,8 @@ export class ProtoViewBuilder {
         MapWrapper.set(propertySetters, propertyName, setterFactory(propertyName));
       });
 
-      var nestedProtoView = isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView.build() : null;
+      var nestedProtoView =
+          isPresent(ebb.nestedProtoView) ? ebb.nestedProtoView._build(nestedPvCounter) : null;
       var parentIndex = isPresent(ebb.parent) ? ebb.parent.index : -1;
       ListWrapper.push(apiElementBinders, new api.ElementBinder({
         index: ebb.index,
@@ -112,8 +121,9 @@ export class ProtoViewBuilder {
                        }));
     });
     return new api.ProtoViewDto({
-      render: new DomProtoViewRef(
-          new DomProtoView({element: this.rootElement, elementBinders: renderElementBinders})),
+      id: protoViewId,
+      render: new DomProtoViewRef(new DomProtoView(
+          {id: protoViewId, element: this.rootElement, elementBinders: renderElementBinders})),
       type: this.type,
       elementBinders: apiElementBinders,
       variableBindings: this.variableBindings
@@ -122,6 +132,7 @@ export class ProtoViewBuilder {
 }
 
 export class ElementBinderBuilder {
+  hostComponentId: string;
   element;
   index: number;
   parent: ElementBinderBuilder;
@@ -138,7 +149,8 @@ export class ElementBinderBuilder {
   readAttributes: Map<string, string>;
   componentId: string;
 
-  constructor(index, element, description) {
+  constructor(hostComponentId, index, element, description) {
+    this.hostComponentId = hostComponentId;
     this.element = element;
     this.index = index;
     this.parent = null;
@@ -180,7 +192,8 @@ export class ElementBinderBuilder {
     if (isPresent(this.nestedProtoView)) {
       throw new BaseException('Only one nested view per element is allowed');
     }
-    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ProtoViewDto.EMBEDDED_VIEW_TYPE);
+    this.nestedProtoView = new ProtoViewBuilder(rootElement, api.ProtoViewDto.EMBEDDED_VIEW_TYPE,
+                                                this.hostComponentId);
     return this.nestedProtoView;
   }
 

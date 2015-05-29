@@ -33,14 +33,14 @@ export class DomRenderer extends Renderer {
     this._document = document;
   }
 
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef,
+  createRootHostView(viewId: string, hostProtoViewRef: RenderProtoViewRef,
                      hostElementSelector: string): RenderViewRef {
     var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return new DomViewRef(this._createView(hostProtoView, element));
+    return new DomViewRef(this._createView(viewId, hostProtoView, element));
   }
 
   detachFreeHostView(parentHostViewRef: RenderViewRef, hostViewRef: RenderViewRef) {
@@ -48,9 +48,9 @@ export class DomRenderer extends Renderer {
     this._removeViewNodes(hostView);
   }
 
-  createView(protoViewRef: RenderProtoViewRef): RenderViewRef {
+  createView(viewId: string, protoViewRef: RenderProtoViewRef): RenderViewRef {
     var protoView = resolveInternalDomProtoView(protoViewRef);
-    return new DomViewRef(this._createView(protoView, null));
+    return new DomViewRef(this._createView(viewId, protoView, null));
   }
 
   destroyView(view: RenderViewRef) {
@@ -208,7 +208,7 @@ export class DomRenderer extends Renderer {
     view.eventDispatcher = dispatcher;
   }
 
-  _createView(protoView: DomProtoView, inplaceElement): DomView {
+  _createView(viewId: string, protoView: DomProtoView, inplaceElement): DomView {
     var rootElementClone =
         isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
     var elementsWithBindingsDynamic;
@@ -267,7 +267,8 @@ export class DomRenderer extends Renderer {
       contentTags[binderIdx] = contentTag;
     }
 
-    var view = new DomView(protoView, viewRootNodes, boundTextNodes, boundElements, contentTags);
+    var view =
+        new DomView(viewId, protoView, viewRootNodes, boundTextNodes, boundElements, contentTags);
 
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];

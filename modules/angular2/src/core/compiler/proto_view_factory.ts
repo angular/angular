@@ -218,18 +218,11 @@ function _getChangeDetectorDefinitions(
     var directiveRecords =
         bindingRecordsCreator.getDirectiveRecords(elementBinders, allRenderDirectiveMetadata);
     var strategyName = DEFAULT;
-    var typeString;
     if (pvWithIndex.renderProtoView.type === renderApi.ProtoViewDto.COMPONENT_VIEW_TYPE) {
       strategyName = hostComponentMetadata.changeDetection;
-      typeString = 'comp';
-    } else if (pvWithIndex.renderProtoView.type === renderApi.ProtoViewDto.HOST_VIEW_TYPE) {
-      typeString = 'host';
-    } else {
-      typeString = 'embedded';
     }
-    var id = `${hostComponentMetadata.id}_${typeString}_${pvWithIndex.index}`;
     var variableNames = nestedPvVariableNames[pvWithIndex.index];
-    return new ChangeDetectorDefinition(id, strategyName, variableNames, bindingRecords,
+    return new ChangeDetectorDefinition(pvWithIndex.renderProtoView.id, strategyName, variableNames, bindingRecords,
                                         directiveRecords);
   });
 }
@@ -238,7 +231,7 @@ function _createAppProtoView(
     renderProtoView: renderApi.ProtoViewDto, protoChangeDetector: ProtoChangeDetector,
     variableBindings: Map<string, string>, allDirectives: List<DirectiveBinding>): AppProtoView {
   var elementBinders = renderProtoView.elementBinders;
-  var protoView = new AppProtoView(renderProtoView.render, protoChangeDetector, variableBindings);
+  var protoView = new AppProtoView(renderProtoView.id, renderProtoView.render, protoChangeDetector, variableBindings);
 
   // TODO: vsavkin refactor to pass element binders into proto view
   _createElementBinders(protoView, elementBinders, allDirectives);

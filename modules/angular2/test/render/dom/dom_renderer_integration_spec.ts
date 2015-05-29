@@ -28,8 +28,9 @@ export function main() {
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
-               var view =
-                   new TestView(tb.renderer.createRootHostView(hostProtoViewDto.render, '#root'));
+               expect(hostProtoViewDto.id).toEqual('someComponent_host_0');
+               var view = new TestView(
+                   tb.renderer.createRootHostView('someId', hostProtoViewDto.render, '#root'));
                expect(view.rawView.rootNodes[0]).toEqual(tb.rootEl);
 
                tb.renderer.destroyView(view.viewRef);
@@ -44,7 +45,8 @@ export function main() {
        inject([AsyncTestCompleter, DomTestbed], (async, tb) => {
          tb.compiler.compileHost(someComponent)
              .then((hostProtoViewDto) => {
-               var view = new TestView(tb.renderer.createView(hostProtoViewDto.render));
+               expect(hostProtoViewDto.id).toEqual('someComponent_host_0');
+               var view = new TestView(tb.renderer.createView('someId', hostProtoViewDto.render));
                var hostElement = tb.renderer.getHostElement(view.viewRef);
                DOM.appendChild(tb.rootEl, hostElement);
 
@@ -64,6 +66,7 @@ export function main() {
            ])
              .then((protoViewDtos) => {
                var rootView = tb.createRootView(protoViewDtos[0]);
+               expect(protoViewDtos[1].id).toEqual('someComponent_comp_0');
                var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
                expect(tb.rootEl).toHaveText('hello');
                tb.destroyComponentView(rootView.viewRef, 0, cmpView.viewRef);
@@ -144,6 +147,7 @@ export function main() {
                var cmpView = tb.createComponentView(rootView.viewRef, 0, protoViewDtos[1]);
 
                var childProto = protoViewDtos[1].elementBinders[0].nestedProtoView;
+               expect(childProto.id).toEqual('someComponent_embedded_1');
                expect(tb.rootEl).toHaveText('');
                var childView = tb.createViewInContainer(cmpView.viewRef, 0, 0, childProto);
                expect(tb.rootEl).toHaveText('hello');
