@@ -1,5 +1,11 @@
-import {Inject, Injectable} from 'angular2/di';
-import {isPresent, isBlank, BaseException, RegExpWrapper} from 'angular2/src/facade/lang';
+import {Inject, Injectable, OpaqueToken} from 'angular2/di';
+import {
+  isPresent,
+  isBlank,
+  BaseException,
+  RegExpWrapper,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper, List} from 'angular2/src/facade/collection';
 
 import {DOM} from 'angular2/src/dom/dom_adapter';
@@ -15,9 +21,7 @@ import {NG_BINDING_CLASS_SELECTOR, NG_BINDING_CLASS} from './util';
 
 import {Renderer, RenderProtoViewRef, RenderViewRef} from '../api';
 
-// TODO(tbosch): use an OpaqueToken here once our transpiler supports
-// const expressions!
-export const DOCUMENT_TOKEN = 'DocumentToken';
+export const DOCUMENT_TOKEN = CONST_EXPR(new OpaqueToken('DocumentToken'));
 
 @Injectable()
 export class DomRenderer extends Renderer {
