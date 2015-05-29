@@ -160,7 +160,7 @@ export class SelectorMatcher {
     this._listContexts = ListWrapper.create();
   }
 
-  addSelectables(cssSelectors: List<CssSelector>, callbackCtxt: any) {
+  addSelectables(cssSelectors: List<CssSelector>, callbackCtxt?: any) {
     var listContext = null;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
