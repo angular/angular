@@ -26,6 +26,7 @@ bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;
 bool isFunction(obj) => obj is Function;
 bool isType(obj) => obj is Type;
+bool isMap(obj) => obj is Map;
 
 String stringify(obj) => obj.toString();
 
