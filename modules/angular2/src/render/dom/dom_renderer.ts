@@ -209,13 +209,15 @@ export class DomRenderer extends Renderer {
   }
 
   _createView(protoView: DomProtoView, inplaceElement): DomView {
-    var rootElementClone =
-        isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
+    var rootElementClone;
     var elementsWithBindingsDynamic;
     if (protoView.isTemplateElement) {
+      rootElementClone = DOM.importIntoDoc(protoView.element.content);
       elementsWithBindingsDynamic =
           DOM.querySelectorAll(DOM.content(rootElementClone), NG_BINDING_CLASS_SELECTOR);
     } else {
+      rootElementClone = 
+          isPresent(inplaceElement) ? inplaceElement : DOM.importIntoDoc(protoView.element);
       elementsWithBindingsDynamic = DOM.getElementsByClassName(rootElementClone, NG_BINDING_CLASS);
     }
 
@@ -225,15 +227,11 @@ export class DomRenderer extends Renderer {
     }
 
     var viewRootNodes;
+    // TODO(justinfagnani): it would be more general to check for
+    // `rootElementClone instanceof DocumentFragment` rather than
+    // `protoView.isTemplateElement`
     if (protoView.isTemplateElement) {
-      var childNode = DOM.firstChild(DOM.content(rootElementClone));
-      viewRootNodes =
-          [];  // TODO(perf): Should be fixed size, since we could pre-compute in in DomProtoView
-      // Note: An explicit loop is the fastest way to convert a DOM array into a JS array!
-      while (childNode != null) {
-        ListWrapper.push(viewRootNodes, childNode);
-        childNode = DOM.nextSibling(childNode);
-      }
+      viewRootNodes = Array.prototype.slice.call(rootElementClone.childNodes);
     } else {
       viewRootNodes = [rootElementClone];
     }

@@ -204,11 +204,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasShadowRoot(node): boolean { return node instanceof HTMLElement && isPresent(node.shadowRoot); }
   isShadowRoot(node): boolean { return node instanceof DocumentFragment; }
   importIntoDoc(node: Node) {
-    var toImport = node;
-    if (this.isTemplateElement(node)) {
-      toImport = this.content(node);
-    }
-    return document.importNode(toImport, true);
+    return document.importNode(node, true);
   }
   isPageRule(rule): boolean { return rule.type === CSSRule.PAGE_RULE; }
   isStyleRule(rule): boolean { return rule.type === CSSRule.STYLE_RULE; }
