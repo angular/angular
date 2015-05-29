@@ -21,51 +21,44 @@ import {Location} from './location';
  * The router holds reference to a number of "outlets." An outlet is a placeholder that the
  * router dynamically fills in depending on the current URL.
  *
- * When the router navigates from a URL, it must first recognizes it and serialize it into an `Instruction`.
+ * When the router navigates from a URL, it must first recognizes it and serialize it into an
+ * `Instruction`.
  * The router uses the `RouteRegistry` to get an `Instruction`.
  *
  * @exportedAs angular2/router
  */
 export class Router {
-  hostComponent:any;
-  parent:Router;
-  navigating:boolean;
+  navigating: boolean;
   lastNavigationAttempt: string;
-  previousUrl:string;
+  previousUrl: string;
 
-  _currentInstruction:Instruction;
-
-  _pipeline:Pipeline;
-  _registry:RouteRegistry;
-  _outlets:Map<any, RouterOutlet>;
-  _subject:EventEmitter;
-
-
-  constructor(registry:RouteRegistry, pipeline:Pipeline, parent:Router, hostComponent:any) {
-    this.hostComponent = hostComponent;
+  private _currentInstruction: Instruction;
+  private _outlets: Map<any, RouterOutlet>;
+  private _subject: EventEmitter;
+  // todo(jeffbcross): rename _registry to registry since it is accessed from subclasses
+  // todo(jeffbcross): rename _pipeline to pipeline since it is accessed from subclasses
+  constructor(public _registry: RouteRegistry, public _pipeline: Pipeline, public parent: Router,
+              public hostComponent: any) {
     this.navigating = false;
-    this.parent = parent;
     this.previousUrl = null;
     this._outlets = MapWrapper.create();
-    this._registry = registry;
-    this._pipeline = pipeline;
     this._subject = new EventEmitter();
     this._currentInstruction = null;
   }
 
 
   /**
-   * Constructs a child router. You probably don't need to use this unless you're writing a reusable component.
+   * Constructs a child router. You probably don't need to use this unless you're writing a reusable
+   * component.
    */
-  childRouter(hostComponent:any): Router {
-    return new ChildRouter(this, hostComponent);
-  }
+  childRouter(hostComponent: any): Router { return new ChildRouter(this, hostComponent); }
 
 
   /**
-   * Register an object to notify of route changes. You probably don't need to use this unless you're writing a reusable component.
+   * Register an object to notify of route changes. You probably don't need to use this unless
+   * you're writing a reusable component.
    */
-  registerOutlet(outlet:RouterOutlet, name: string = 'default'): Promise {
+  registerOutlet(outlet: RouterOutlet, name: string = 'default'): Promise<boolean> {
     MapWrapper.set(this._outlets, name, outlet);
     if (isPresent(this._currentInstruction)) {
       var childInstruction = this._currentInstruction.getChild(name);
@@ -94,11 +87,10 @@ export class Router {
    * ```
    *
    */
-  config(config:any): Promise {
+  config(config: any): Promise<any> {
     if (config instanceof List) {
-      config.forEach((configObject) => {
-        this._registry.config(this.hostComponent, configObject);
-      });
+      config.forEach(
+          (configObject) => { this._registry.config(this.hostComponent, configObject); });
     } else {
       this._registry.config(this.hostComponent, config);
     }
@@ -112,7 +104,7 @@ export class Router {
    * If the given URL begins with a `/`, router will navigate absolutely.
    * If the given URL does not begin with `/`, the router will navigate relative to this component.
    */
-  navigate(url:string):Promise {
+  navigate(url: string): Promise<any> {
     if (this.navigating) {
       return PromiseWrapper.resolve(true);
     }
@@ -132,37 +124,31 @@ export class Router {
     this._startNavigating();
 
     var result = this.commit(matchedInstruction)
-        .then((_) => {
-          ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
-          this._finishNavigating();
-        });
+                     .then((_) => {
+                       ObservableWrapper.callNext(this._subject, matchedInstruction.accumulatedUrl);
+                       this._finishNavigating();
+                     });
 
     PromiseWrapper.catchError(result, (_) => this._finishNavigating());
 
     return result;
   }
 
-  _startNavigating(): void {
-    this.navigating = true;
-  }
+  _startNavigating(): void { this.navigating = true; }
 
-  _finishNavigating(): void {
-    this.navigating = false;
-  }
+  _finishNavigating(): void { this.navigating = false; }
 
 
   /**
    * Subscribe to URL updates from the router
    */
-  subscribe(onNext): void {
-    ObservableWrapper.subscribe(this._subject, onNext);
-  }
+  subscribe(onNext): void { ObservableWrapper.subscribe(this._subject, onNext); }
 
 
   /**
    *
    */
-  commit(instruction:Instruction):Promise {
+  commit(instruction: Instruction): Promise<List<any>> {
     this._currentInstruction = instruction;
 
     // collect all outlets that do not have a corresponding child instruction
@@ -184,37 +170,32 @@ export class Router {
    * Recursively remove all components contained by this router's outlets.
    * Calls deactivate hooks on all descendant components
    */
-  deactivate():Promise {
-    return this._eachOutletAsync((outlet) => outlet.deactivate);
-  }
+  deactivate(): Promise<any> { return this._eachOutletAsync((outlet) => outlet.deactivate); }
 
 
   /**
    * Recursively activate.
    * Calls the "activate" hook on descendant components.
    */
-  activate(instruction:Instruction):Promise {
+  activate(instruction: Instruction): Promise<any> {
     return this._eachOutletAsync((outlet, name) => outlet.activate(instruction.getChild(name)));
   }
 
 
-  _eachOutletAsync(fn):Promise {
-    return mapObjAsync(this._outlets, fn);
-  }
+  _eachOutletAsync(fn): Promise<any> { return mapObjAsync(this._outlets, fn); }
 
 
   /**
    * Given a URL, returns an instruction representing the component graph
    */
-  recognize(url:string): Instruction {
-    return this._registry.recognize(url, this.hostComponent);
-  }
+  recognize(url: string): Instruction { return this._registry.recognize(url, this.hostComponent); }
 
 
   /**
-   * Navigates to either the last URL successfully navigated to, or the last URL requested if the router has yet to successfully navigate.
+   * Navigates to either the last URL successfully navigated to, or the last URL requested if the
+   * router has yet to successfully navigate.
    */
-  renavigate():Promise {
+  renavigate(): Promise<any> {
     var destination = isBlank(this.previousUrl) ? this.lastNavigationAttempt : this.previousUrl;
     if (this.navigating || isBlank(destination)) {
       return PromiseWrapper.resolve(false);
@@ -224,17 +205,19 @@ export class Router {
 
 
   /**
-   * Generate a URL from a component name and optional map of parameters. The URL is relative to the app's base href.
+   * Generate a URL from a component name and optional map of parameters. The URL is relative to the
+   * app's base href.
    */
-  generate(name:string, params:StringMap<string, string>): string {
+  generate(name: string, params: StringMap<string, string>): string {
     return this._registry.generate(name, params, this.hostComponent);
   }
 }
 
 export class RootRouter extends Router {
-  _location:Location;
+  _location: Location;
 
-  constructor(registry:RouteRegistry, pipeline:Pipeline, location:Location, hostComponent:Type) {
+  constructor(registry: RouteRegistry, pipeline: Pipeline, location: Location,
+              hostComponent: Type) {
     super(registry, pipeline, null, hostComponent);
     this._location = location;
     this._location.subscribe((change) => this.navigate(change['url']));
@@ -242,25 +225,24 @@ export class RootRouter extends Router {
     this.navigate(location.path());
   }
 
-  commit(instruction):Promise {
-    return super.commit(instruction).then((_) => {
-      this._location.go(instruction.accumulatedUrl);
-    });
+  commit(instruction): Promise<any> {
+    return super.commit(instruction)
+        .then((_) => { this._location.go(instruction.accumulatedUrl); });
   }
 }
 
 class ChildRouter extends Router {
-  constructor(parent:Router, hostComponent) {
+  constructor(parent: Router, hostComponent) {
     super(parent._registry, parent._pipeline, parent, hostComponent);
     this.parent = parent;
   }
 }
 
-function mapObjAsync(obj:Map, fn): Promise {
+function mapObjAsync(obj: Map<any, any>, fn: Function): Promise<any> {
   return PromiseWrapper.all(mapObj(obj, fn));
 }
 
-function mapObj(obj:Map, fn):List {
+function mapObj(obj: Map<any, any>, fn: Function): List<any> {
   var result = ListWrapper.create();
   MapWrapper.forEach(obj, (value, key) => ListWrapper.push(result, fn(value, key)));
   return result;

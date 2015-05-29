@@ -1,31 +1,24 @@
 import {BrowserLocation} from './browser_location';
 import {StringWrapper} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {Injectable} from 'angular2/di';
 
+@Injectable()
 export class Location {
-  _subject:EventEmitter;
-  _browserLocation:BrowserLocation;
-  _baseHref:string;
-  constructor(browserLocation:BrowserLocation) {
+  private _subject: EventEmitter;
+  private _baseHref: string;
+
+  constructor(public _browserLocation: BrowserLocation) {
     this._subject = new EventEmitter();
-    this._browserLocation = browserLocation;
     this._baseHref = stripIndexHtml(this._browserLocation.getBaseHref());
     this._browserLocation.onPopState((_) => this._onPopState(_));
   }
 
-  _onPopState(_): void {
-    ObservableWrapper.callNext(this._subject, {
-      'url': this.path()
-    });
-  }
+  _onPopState(_): void { ObservableWrapper.callNext(this._subject, {'url': this.path()}); }
 
-  path(): string {
-    return this.normalize(this._browserLocation.path());
-  }
+  path(): string { return this.normalize(this._browserLocation.path()); }
 
-  normalize(url: string): string {
-    return this._stripBaseHref(stripIndexHtml(url));
-  }
+  normalize(url: string): string { return this._stripBaseHref(stripIndexHtml(url)); }
 
   normalizeAbsolutely(url: string): string {
     if (url[0] != '/') {
@@ -48,18 +41,14 @@ export class Location {
     return url;
   }
 
-  go(url:string): void {
+  go(url: string): void {
     var finalUrl = this.normalizeAbsolutely(url);
     this._browserLocation.pushState(null, '', finalUrl);
   }
 
-  forward(): void {
-    this._browserLocation.forward();
-  }
+  forward(): void { this._browserLocation.forward(); }
 
-  back(): void {
-    this._browserLocation.back();
-  }
+  back(): void { this._browserLocation.back(); }
 
   subscribe(onNext, onThrow = null, onReturn = null): void {
     ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);

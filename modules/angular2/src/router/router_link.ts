@@ -1,4 +1,5 @@
-import {Directive, onAllChangesDone} from 'angular2/src/core/annotations_impl/annotations';
+import {onAllChangesDone} from 'angular2/src/core/annotations/annotations';
+import {Directive} from 'angular2/src/core/annotations/decorators';
 import {ElementRef} from 'angular2/core';
 import {StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
 
@@ -31,27 +32,21 @@ import {Location} from './location';
  */
 @Directive({
   selector: '[router-link]',
-  properties: [
-    'route: routerLink',
-    'params: routerParams'
-  ],
+  properties: ['route: routerLink', 'params: routerParams'],
   lifecycle: [onAllChangesDone]
 })
 export class RouterLink {
-  _domEl;
-  _route:string;
-  _params:StringMap<string, string>;
-  _router:Router;
-  _location:Location;
+  private _domEl;
+  private _route: string;
+  private _params: StringMap<string, string>;
+
   // the url displayed on the anchor element.
   _visibleHref: string;
   // the url passed to the router navigation.
   _navigationHref: string;
 
-  constructor(elementRef:ElementRef, router:Router, location:Location) {
+  constructor(elementRef: ElementRef, private _router: Router, private _location: Location) {
     this._domEl = elementRef.domElement;
-    this._router = router;
-    this._location = location;
     this._params = StringMapWrapper.create();
     DOM.on(this._domEl, 'click', (evt) => {
       DOM.preventDefault(evt);
@@ -59,13 +54,9 @@ export class RouterLink {
     });
   }
 
-  set route(changes: string) {
-    this._route = changes;
-  }
+  set route(changes: string) { this._route = changes; }
 
-  set params(changes: StringMap) {
-    this._params = changes;
-  }
+  set params(changes: StringMap<string, string>) { this._params = changes; }
 
   onAllChangesDone(): void {
     if (isPresent(this._route) && isPresent(this._params)) {

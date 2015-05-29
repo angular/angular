@@ -1,25 +1,31 @@
 import {RouteRecognizer, RouteMatch} from './route_recognizer';
-import {Instruction, noopInstruction} from './instruction';
-import {List, ListWrapper, Map, MapWrapper, StringMap, StringMapWrapper} from 'angular2/src/facade/collection';
+import {Instruction} from './instruction';
+import {
+  List,
+  ListWrapper,
+  Map,
+  MapWrapper,
+  StringMap,
+  StringMapWrapper
+} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, isType, StringWrapper, BaseException} from 'angular2/src/facade/lang';
 import {RouteConfig} from './route_config_impl';
 import {reflector} from 'angular2/src/reflection/reflection';
 
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
- * It is responsible for creating Instructions from URLs, and generating URLs based on route and parameters.
+ * It is responsible for creating Instructions from URLs, and generating URLs based on route and
+ * parameters.
  */
 export class RouteRegistry {
-  _rules:Map<any, RouteRecognizer>;
+  _rules: Map<any, RouteRecognizer>;
 
-  constructor() {
-    this._rules = MapWrapper.create();
-  }
+  constructor() { this._rules = MapWrapper.create(); }
 
   /**
    * Given a component and a configuration object, add the route to this registry
    */
-  config(parentComponent, config:StringMap<string, any>): void {
+  config(parentComponent, config: StringMap<string, any>): void {
     if (!StringMapWrapper.contains(config, 'path')) {
       throw new BaseException('Route config does not contain "path"');
     }
@@ -27,10 +33,11 @@ export class RouteRegistry {
     if (!StringMapWrapper.contains(config, 'component') &&
         !StringMapWrapper.contains(config, 'components') &&
         !StringMapWrapper.contains(config, 'redirectTo')) {
-      throw new BaseException('Route config does not contain "component," "components," or "redirectTo"');
+      throw new BaseException(
+          'Route config does not contain "component," "components," or "redirectTo"');
     }
 
-    var recognizer:RouteRecognizer = MapWrapper.get(this._rules, parentComponent);
+    var recognizer: RouteRecognizer = MapWrapper.get(this._rules, parentComponent);
 
     if (isBlank(recognizer)) {
       recognizer = new RouteRecognizer();
@@ -65,7 +72,7 @@ export class RouteRegistry {
     }
     var annotations = reflector.annotations(component);
     if (isPresent(annotations)) {
-      for (var i=0; i<annotations.length; i++) {
+      for (var i = 0; i < annotations.length; i++) {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
@@ -80,7 +87,7 @@ export class RouteRegistry {
    * Given a URL and a parent component, return the most specific instruction for navigating
    * the application into the state specified by the
    */
-  recognize(url:string, parentComponent): Instruction {
+  recognize(url: string, parentComponent): Instruction {
     var componentRecognizer = MapWrapper.get(this._rules, parentComponent);
     if (isBlank(componentRecognizer)) {
       return null;
@@ -93,16 +100,15 @@ export class RouteRegistry {
     var fullSolutions = ListWrapper.create();
 
     for (var i = 0; i < possibleMatches.length; i++) {
-      var candidate : RouteMatch = possibleMatches[i];
+      var candidate: RouteMatch = possibleMatches[i];
 
       // if the candidate captures all of the URL, add it to our list of solutions
       if (candidate.unmatchedUrl.length == 0) {
         ListWrapper.push(fullSolutions, routeMatchToInstruction(candidate, parentComponent));
       } else {
-
-        // otherwise, recursively match the remaining part of the URL against the component's children
-        var children = StringMapWrapper.create(),
-            allChildrenMatch = true,
+        // otherwise, recursively match the remaining part of the URL against the component's
+        // children
+        var children = StringMapWrapper.create(), allChildrenMatch = true,
             components = StringMapWrapper.get(candidate.handler, 'components');
 
         var componentNames = StringMapWrapper.keys(components);
@@ -122,11 +128,11 @@ export class RouteRegistry {
 
         if (allChildrenMatch) {
           ListWrapper.push(fullSolutions, new Instruction({
-            component: parentComponent,
-            children: children,
-            matchedUrl: candidate.matchedUrl,
-            parentSpecificity: candidate.specificity
-          }));
+                             component: parentComponent,
+                             children: children,
+                             matchedUrl: candidate.matchedUrl,
+                             parentSpecificity: candidate.specificity
+                           }));
         }
       }
     }
@@ -146,22 +152,19 @@ export class RouteRegistry {
     return null;
   }
 
-  generate(name:string, params:StringMap<string, string>, hostComponent): string {
-    //TODO: implement for hierarchical routes
+  generate(name: string, params: StringMap<string, string>, hostComponent): string {
+    // TODO: implement for hierarchical routes
     var componentRecognizer = MapWrapper.get(this._rules, hostComponent);
     return isPresent(componentRecognizer) ? componentRecognizer.generate(name, params) : null;
   }
 }
 
-function routeMatchToInstruction(routeMatch:RouteMatch, parentComponent): Instruction {
+function routeMatchToInstruction(routeMatch: RouteMatch, parentComponent): Instruction {
   var children = StringMapWrapper.create();
   var components = StringMapWrapper.get(routeMatch.handler, 'components');
   StringMapWrapper.forEach(components, (component, outletName) => {
-    children[outletName] = new Instruction({
-      component: component,
-      params: routeMatch.params,
-      parentSpecificity: 0
-    });
+    children[outletName] =
+        new Instruction({component: component, params: routeMatch.params, parentSpecificity: 0});
   });
   return new Instruction({
     component: parentComponent,
@@ -181,15 +184,11 @@ function routeMatchToInstruction(routeMatch:RouteMatch, parentComponent): Instru
  * If the config object does not contain a `component` key, the original
  * config object is returned.
  */
-function normalizeConfig(config:StringMap<string, any>): StringMap<string, any> {
+function normalizeConfig(config: StringMap<string, any>): StringMap<string, any> {
   if (!StringMapWrapper.contains(config, 'component')) {
     return config;
   }
-  var newConfig = {
-    'components': {
-      'default': config['component']
-    }
-  };
+  var newConfig = {'components': {'default': config['component']}};
 
   StringMapWrapper.forEach(config, (value, key) => {
     if (key != 'component' && key != 'components') {

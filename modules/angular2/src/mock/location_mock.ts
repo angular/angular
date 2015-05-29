@@ -9,10 +9,10 @@ import {Location} from 'angular2/src/router/location';
 @proxy
 @IMPLEMENTS(Location)
 export class SpyLocation extends SpyObject {
-  urlChanges:List<string>;
-  _path:string;
-  _subject:EventEmitter;
-  _baseHref:string;
+  urlChanges: List<string>;
+  _path: string;
+  _subject: EventEmitter;
+  _baseHref: string;
 
   constructor() {
     super();
@@ -22,29 +22,17 @@ export class SpyLocation extends SpyObject {
     this._baseHref = '';
   }
 
-  setInitialPath(url:string) {
-    this._path = url;
-  }
+  setInitialPath(url: string) { this._path = url; }
 
-  setBaseHref(url:string) {
-    this._baseHref = url;
-  }
+  setBaseHref(url: string) { this._baseHref = url; }
 
-  path():string {
-    return this._path;
-  }
+  path(): string { return this._path; }
 
-  simulateUrlPop(pathname:string) {
-    ObservableWrapper.callNext(this._subject, {
-      'url': pathname
-    });
-  }
+  simulateUrlPop(pathname: string) { ObservableWrapper.callNext(this._subject, {'url': pathname}); }
 
-  normalizeAbsolutely(url) {
-    return this._baseHref + url;
-  }
+  normalizeAbsolutely(url) { return this._baseHref + url; }
 
-  go(url:string) {
+  go(url: string) {
     url = this.normalizeAbsolutely(url);
     if (this._path == url) {
       return;
@@ -65,5 +53,5 @@ export class SpyLocation extends SpyObject {
     ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 
-  noSuchMethod(m){return super.noSuchMethod(m);}
+  noSuchMethod(m) { return super.noSuchMethod(m); }
 }
