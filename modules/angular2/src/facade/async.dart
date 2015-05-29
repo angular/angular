@@ -6,13 +6,8 @@ export 'dart:async' show Future, Stream, StreamController, StreamSubscription;
 class PromiseWrapper {
   static Future resolve(obj) => new Future.value(obj);
 
-  static Future reject(obj, stackTrace) => new Future.error(
-      obj,
-      stackTrace != null
-        ? stackTrace
-        : obj is Error
-          ? obj.stackTrace
-          : null);
+  static Future reject(obj, stackTrace) => new Future.error(obj,
+      stackTrace != null ? stackTrace : obj is Error ? obj.stackTrace : null);
 
   static Future<List> all(List<Future> promises) => Future.wait(promises);
 
@@ -35,15 +30,17 @@ class PromiseWrapper {
 }
 
 class TimerWrapper {
-  static Timer setTimeout(fn(), int millis)
-      => new Timer(new Duration(milliseconds: millis), fn);
+  static Timer setTimeout(fn(), int millis) =>
+      new Timer(new Duration(milliseconds: millis), fn);
   static void clearTimeout(Timer timer) {
     timer.cancel();
   }
 
   static Timer setInterval(fn(), int millis) {
     var interval = new Duration(milliseconds: millis);
-    return new Timer.periodic(interval, (Timer timer) { fn(); });
+    return new Timer.periodic(interval, (Timer timer) {
+      fn();
+    });
   }
   static void clearInterval(Timer timer) {
     timer.cancel();

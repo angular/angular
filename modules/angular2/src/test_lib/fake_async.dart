@@ -24,24 +24,33 @@ Function fakeAsync(Function fn) {
   }
 
   return ([a0 = _u, a1 = _u, a2 = _u, a3 = _u, a4 = _u, a5 = _u, a6 = _u,
-           a7 = _u, a8 = _u, a9 = _u]) {
+      a7 = _u, a8 = _u, a9 = _u]) {
     // runZoned() to install a custom exception handler that re-throws
     return runZoned(() {
       new quiver.FakeAsync().run((quiver.FakeAsync async) {
         try {
           _fakeAsync = async;
-          List args = [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9]
-              .takeWhile((a) => a != _u).toList();
-          return Function.apply(fn , args);
+          List args = [
+            a0,
+            a1,
+            a2,
+            a3,
+            a4,
+            a5,
+            a6,
+            a7,
+            a8,
+            a9
+          ].takeWhile((a) => a != _u).toList();
+          return Function.apply(fn, args);
         } finally {
           _fakeAsync = null;
         }
       });
     },
-    zoneSpecification: new ZoneSpecification(
-        handleUncaughtError: (self, parent, zone, error, stackTrace)
-            => throw error
-    ));
+        zoneSpecification: new ZoneSpecification(
+            handleUncaughtError: (self, parent, zone, error, stackTrace) =>
+                throw error));
   };
 }
 

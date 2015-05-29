@@ -8,10 +8,7 @@ import './xhr.dart' show XHR;
 @Injectable()
 class XHRImpl extends XHR {
   Future<String> get(String url) {
-
-    return HttpRequest
-        .request(url)
-        .then((HttpRequest req) => req.responseText,
-              onError: (_) => new Future.error('Failed to load $url'));
+    return HttpRequest.request(url).then((HttpRequest req) => req.responseText,
+        onError: (_) => new Future.error('Failed to load $url'));
   }
 }

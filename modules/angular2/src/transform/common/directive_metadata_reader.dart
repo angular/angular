@@ -190,7 +190,6 @@ class _DirectiveMetadataVisitor extends Object
           '$propertyName.', '$expression' /* source */);
     }
     list.addAll(evaluated);
-
   }
 
   void _populateProperties(Expression propertiesValue) {

@@ -76,7 +76,7 @@ class Html5LibDomAdapter implements DomAdapter {
   createEvent(eventType) {
     throw 'not implemented';
   }
-  preventDefault(evt) { 
+  preventDefault(evt) {
     throw 'not implemented';
   }
   getInnerHTML(el) {

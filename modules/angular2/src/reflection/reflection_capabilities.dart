@@ -57,7 +57,9 @@ class ReflectionCapabilities {
 
   List _convertParameter(ParameterMirror p) {
     var t = p.type;
-    var res = (!t.hasReflectedType || t.reflectedType == dynamic) ? [] : [t.reflectedType];
+    var res = (!t.hasReflectedType || t.reflectedType == dynamic)
+        ? []
+        : [t.reflectedType];
     res.addAll(p.metadata.map((m) => m.reflectee));
     return res;
   }

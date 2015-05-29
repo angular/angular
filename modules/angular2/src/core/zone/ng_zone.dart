@@ -52,15 +52,13 @@ class NgZone {
     _mountZone = Zone.current;
 
     if (enableLongStackTrace) {
-      _innerZone = Chain.capture(
-          () => _createInnerZone(Zone.current),
+      _innerZone = Chain.capture(() => _createInnerZone(Zone.current),
           onError: _onErrorWithLongStackTrace);
     } else {
-      _innerZone = _createInnerZone(
-          Zone.current,
-          handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, error, StackTrace trace) =>
-              _onErrorWithoutLongStackTrace(error, trace)
-      );
+      _innerZone = _createInnerZone(Zone.current,
+          handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
+              error,
+              StackTrace trace) => _onErrorWithoutLongStackTrace(error, trace));
     }
   }
 
@@ -75,7 +73,8 @@ class NgZone {
    * @param {Function} onTurnDone called at the end of a VM turn if code has executed in the inner zone
    * @param {Function} onErrorHandler called when an exception is thrown by a macro or micro task
    */
-  void initCallbacks({Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
+  void initCallbacks(
+      {Function onTurnStart, Function onTurnDone, Function onErrorHandler}) {
     _onTurnStart = onTurnStart;
     _onTurnDone = onTurnDone;
     _onErrorHandler = onErrorHandler;
@@ -158,10 +157,10 @@ class NgZone {
   }
 
   dynamic _runUnary(Zone self, ZoneDelegate parent, Zone zone, fn(arg), arg) =>
-    _run(self, parent, zone, () => fn(arg));
+      _run(self, parent, zone, () => fn(arg));
 
-  dynamic _runBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2), arg1, arg2) =>
-    _run(self, parent, zone, () => fn(arg1, arg2));
+  dynamic _runBinary(Zone self, ZoneDelegate parent, Zone zone, fn(arg1, arg2),
+      arg1, arg2) => _run(self, parent, zone, () => fn(arg1, arg2));
 
   void _scheduleMicrotask(Zone self, ZoneDelegate parent, Zone zone, fn) {
     _pendingMicrotasks++;
@@ -196,14 +195,12 @@ class NgZone {
 
   Zone _createInnerZone(Zone zone, {handleUncaughtError}) {
     return zone.fork(
-      specification: new ZoneSpecification(
-        scheduleMicrotask: _scheduleMicrotask,
-        run: _run,
-        runUnary: _runUnary,
-        runBinary: _runBinary,
-        handleUncaughtError: handleUncaughtError
-      ),
-      zoneValues: {'_innerZone': true}
-    );
+        specification: new ZoneSpecification(
+            scheduleMicrotask: _scheduleMicrotask,
+            run: _run,
+            runUnary: _runUnary,
+            runBinary: _runBinary,
+            handleUncaughtError: handleUncaughtError),
+        zoneValues: {'_innerZone': true});
   }
 }
