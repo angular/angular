@@ -158,15 +158,11 @@ export function main() {
          }));
 
       it('should throw an error on dangling timers', () => {
-        // TODO(vicb): https://github.com/google/quiver-dart/issues/248
-        if (IS_DARTIUM) return;
         expect(() => { fakeAsync(() => { TimerWrapper.setTimeout(() => {}, 10); })(); })
             .toThrowError('1 timer(s) still in the queue.');
       });
 
       it('should throw an error on dangling periodic timers', () => {
-        // TODO(vicb): https://github.com/google/quiver-dart/issues/248
-        if (IS_DARTIUM) return;
         expect(() => { fakeAsync(() => { TimerWrapper.setInterval(() => {}, 10); })(); })
             .toThrowError('1 periodic timer(s) still in the queue.');
       });
