@@ -4,4 +4,4 @@ environment:
 dev_dependencies:
   guinness: '^0.1.17'
   unittest: '^0.11.5+4'
-  quiver: '^0.21.3+1'
+  quiver: '^0.21.4'
