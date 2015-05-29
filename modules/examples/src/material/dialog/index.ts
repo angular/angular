@@ -1,23 +1,22 @@
-import {bootstrap, ElementRef, ComponentRef} from 'angular2/angular2';
-import {MdDialog, MdDialogRef, MdDialogConfig} from 'angular2_material/src/components/dialog/dialog'
+import {bootstrap, ElementRef, ComponentRef, Component, View} from 'angular2/angular2';
+import {
+  MdDialog,
+  MdDialogRef,
+  MdDialogConfig
+} from 'angular2_material/src/components/dialog/dialog';
 import {UrlResolver} from 'angular2/src/services/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 import {bind, Injector} from 'angular2/di';
 import {isPresent} from 'angular2/src/facade/lang';
 
-// TODO(radokirov): Once the application is transpiled by TS instead of Traceur,
-// add those imports back into 'angular2/angular2';
-import {Component, Directive} from 'angular2/src/core/annotations_impl/annotations';
-import {View} from 'angular2/src/core/annotations_impl/view';
-
 
 @Component({
   selector: 'demo-app',
-  appInjector: [MdDialog]
+  appInjector: [MdDialog],
 })
 @View({
   templateUrl: './demo_app.html',
-  directives: []
+  directives: [],
 })
 class DemoApp {
   dialog: MdDialog;
@@ -43,16 +42,16 @@ class DemoApp {
       return;
     }
 
-    this.dialog.open(SimpleDialogComponent,
-        this.elementRef, this.injector, this.dialogConfig).then(ref => {
-      this.dialogRef = ref;
-      ref.instance.numCoconuts = 777;
+    this.dialog.open(SimpleDialogComponent, this.elementRef, this.injector, this.dialogConfig)
+        .then(ref => {
+          this.dialogRef = ref;
+          ref.instance.numCoconuts = 777;
 
-      ref.whenClosed.then(result => {
-        this.dialogRef = null;
-        this.lastResult = result;
-      });
-    });
+          ref.whenClosed.then(result => {
+            this.dialogRef = null;
+            this.lastResult = result;
+          });
+        });
   }
 
   close() {
@@ -62,7 +61,7 @@ class DemoApp {
 
 @Component({
   selector: 'simple-dialog',
-  properties: ['numCoconuts']
+  properties: ['numCoconuts'],
 })
 @View({
   template: `
@@ -70,7 +69,7 @@ class DemoApp {
     <p>There are {{numCoconuts}} coconuts.</p>
     <p>Return: <input (input)="updateValue($event)"></p>
     <button type="button" (click)="done()">Done</button>
-  `
+  `,
 })
 class SimpleDialogComponent {
   numCoconuts: number;
@@ -95,9 +94,5 @@ class SimpleDialogComponent {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [
-    bind(UrlResolver).toValue(new DemoUrlResolver())
-  ]);
+  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
 }
-
-
