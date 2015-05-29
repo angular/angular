@@ -12,7 +12,12 @@ class GreetingService {
 class RedDec {
   // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
-  constructor(el: ElementRef) { el.domElement.style.color = 'red'; }
+
+  constructor(el: ElementRef) {
+    if (el.domElement.style) {
+      el.domElement.style.color = 'red';
+    }
+  }
 }
 
 // Angular 2.0 supports 2 basic types of directives:
