@@ -75,6 +75,10 @@ export function isType(obj): boolean {
   return isFunction(obj);
 }
 
+export function isMap(obj): boolean {
+  return typeof obj === 'object' && obj !== null;
+}
+
 export function stringify(token): string {
   if (typeof token === 'string') {
     return token;
