@@ -1,4 +1,11 @@
-import {isPresent, isBlank, Type, BaseException, stringify} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  Type,
+  BaseException,
+  stringify,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {List, ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {
@@ -39,7 +46,7 @@ import {DirectiveMetadata} from 'angular2/src/render/api';
 // Threshold for the dynamic version
 var _MAX_DIRECTIVE_CONSTRUCTION_COUNTER = 10;
 
-var _undefined = new Object();
+const _undefined = CONST_EXPR(new Object());
 
 var _staticKeys;
 
@@ -424,7 +431,7 @@ export class ProtoElementInjector {
   /** The variable name that will be set to $implicit for the element. */
   exportImplicitName: string;
 
-  _strategy;
+  _strategy: _ProtoElementInjectorStrategy;
 
   static create(parent: ProtoElementInjector, index: number, bindings: List<ResolvedBinding>,
                 firstBindingIsComponent: boolean, distanceToParent: number) {
@@ -484,8 +491,8 @@ export class ProtoElementInjector {
     this.hostActionAccessors = ListWrapper.createFixedSize(length);
 
     this._strategy = length > _MAX_DIRECTIVE_CONSTRUCTION_COUNTER ?
-                         new ProtoElementInjectorDynamicStrategy(this, bd) :
-                         new ProtoElementInjectorInlineStrategy(this, bd);
+                         new _ProtoElementInjectorDynamicStrategy(this, bd) :
+                         new _ProtoElementInjectorInlineStrategy(this, bd);
   }
 
   instantiate(parent: ElementInjector): ElementInjector {
@@ -499,12 +506,17 @@ export class ProtoElementInjector {
   getBindingAtIndex(index: number): any { return this._strategy.getBindingAtIndex(index); }
 }
 
+interface _ProtoElementInjectorStrategy {
+  hasBindings(): boolean;
+  getBindingAtIndex(index: number): any;
+  createElementInjectorStrategy(ei: ElementInjector): _ElementInjectorStrategy;
+}
+
 /**
  * Strategy used by the `ProtoElementInjector` when the number of bindings is 10 or less.
  * In such a case, inlining fields is benefitial for performances.
  */
-// TODO(vicb): add an interface
-class ProtoElementInjectorInlineStrategy {
+class _ProtoElementInjectorInlineStrategy implements _ProtoElementInjectorStrategy {
   // only _binding0 can contain a component
   _binding0: ResolvedBinding = null;
   _binding1: ResolvedBinding = null;
@@ -630,7 +642,7 @@ class ProtoElementInjectorInlineStrategy {
     throw new OutOfBoundsAccess(index);
   }
 
-  createElementInjectorStrategy(ei: ElementInjector) {
+  createElementInjectorStrategy(ei: ElementInjector): _ElementInjectorStrategy {
     return new ElementInjectorInlineStrategy(this, ei);
   }
 }
@@ -638,8 +650,7 @@ class ProtoElementInjectorInlineStrategy {
 /**
  * Strategy used by the `ProtoElementInjector` when the number of bindings is more than 10.
  */
-// TODO(vicb): add an interface
-class ProtoElementInjectorDynamicStrategy {
+class _ProtoElementInjectorDynamicStrategy implements _ProtoElementInjectorStrategy {
   // only _bindings[0] can contain a component
   _bindings: List<ResolvedBinding>;
   _keyIds: List<number>;
@@ -693,7 +704,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   private _query1: QueryRef;
   private _query2: QueryRef;
 
-  _strategy;
+  _strategy: _ElementInjectorStrategy;
 
   constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
     super(parent);
@@ -705,7 +716,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._buildQueries();
   }
 
-  dehydrate() {
+  dehydrate(): void {
     this._host = null;
     this._preBuiltObjects = null;
     this._lightDomAppInjector = null;
@@ -727,7 +738,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
 
-  hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects) {
+  hydrate(injector: Injector, host: ElementInjector, preBuiltObjects: PreBuiltObjects): void {
     var p = this._proto;
 
     this._host = host;
@@ -744,7 +755,8 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     this._strategy.hydrate();
   }
 
-  private _createShadowDomAppInjector(componentDirective: DirectiveBinding, appInjector: Injector) {
+  private _createShadowDomAppInjector(componentDirective: DirectiveBinding,
+                                      appInjector: Injector): Injector {
     if (!ListWrapper.isEmpty(componentDirective.resolvedAppInjectables)) {
       return appInjector.createChildFromResolved(componentDirective.resolvedAppInjectables);
     } else {
@@ -752,7 +764,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  dynamicallyCreateComponent(componentDirective: DirectiveBinding, parentInjector: Injector) {
+  dynamicallyCreateComponent(componentDirective: DirectiveBinding, parentInjector: Injector): any {
     this._shadowDomAppInjector =
         this._createShadowDomAppInjector(componentDirective, parentInjector);
     this._dynamicallyCreatedComponentBinding = componentDirective;
@@ -760,7 +772,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return this._dynamicallyCreatedComponent;
   }
 
-  private _checkShadowDomAppInjector(shadowDomAppInjector: Injector) {
+  private _checkShadowDomAppInjector(shadowDomAppInjector: Injector): void {
     if (this._proto._firstBindingIsComponent && isBlank(shadowDomAppInjector)) {
       throw new BaseException(
           'A shadowDomAppInjector is required as this ElementInjector contains a component');
@@ -770,7 +782,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     }
   }
 
-  get(token) {
+  get(token): any {
     if (this._isDynamicallyLoadedComponent(token)) {
       return this._dynamicallyCreatedComponent;
     }
@@ -778,7 +790,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return this._getByKey(Key.get(token), self, false, null);
   }
 
-  private _isDynamicallyLoadedComponent(token) {
+  private _isDynamicallyLoadedComponent(token): boolean {
     return isPresent(this._dynamicallyCreatedComponentBinding) &&
            Key.get(token) === this._dynamicallyCreatedComponentBinding.key;
   }
@@ -797,21 +809,21 @@ export class ElementInjector extends TreeNode<ElementInjector> {
 
   getComponent(): any { return this._strategy.getComponent(); }
 
-  getElementRef() {
+  getElementRef(): ElementRef {
     return new ElementRef(new ViewRef(this._preBuiltObjects.view), this._proto.index);
   }
 
-  getViewContainerRef() {
+  getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
-  getDynamicallyLoadedComponent() { return this._dynamicallyCreatedComponent; }
+  getDynamicallyLoadedComponent(): any { return this._dynamicallyCreatedComponent; }
 
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
-  private _isComponentKey(key: Key) { return this._strategy.isComponentKey(key); }
+  private _isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }
 
-  private _isDynamicallyLoadedComponentKey(key: Key) {
+  private _isDynamicallyLoadedComponentKey(key: Key): boolean {
     return isPresent(this._dynamicallyCreatedComponentBinding) &&
            key.id === this._dynamicallyCreatedComponentBinding.key.id;
   }
@@ -884,7 +896,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
     return obj;
   }
 
-  private _getByDependency(dep: DependencyWithVisibility, requestor: Key) {
+  private _getByDependency(dep: DependencyWithVisibility, requestor: Key): any {
     if (!(dep instanceof DirectiveDependency)) {
       return this._getByKey(dep.key, dep.visibility, dep.optional, requestor);
     }
@@ -959,7 +971,7 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   }
 
   // TODO(rado): unify with _addParentQueries.
-  private _inheritQueries(parent: ElementInjector) {
+  private _inheritQueries(parent: ElementInjector): void {
     if (isBlank(parent)) return;
     if (isPresent(parent._query0)) {
       this._query0 = parent._query0;
@@ -1170,12 +1182,24 @@ export class ElementInjector extends TreeNode<ElementInjector> {
   getBoundElementIndex(): number { return this._proto.index; }
 }
 
+interface _ElementInjectorStrategy {
+  callOnDestroy(): void;
+  clearInstances(): void;
+  hydrate(): void;
+  getComponent(): any;
+  isComponentKey(key: Key): boolean;
+  buildQueries(): void;
+  getObjByKeyId(keyId: number, visibility: number): any;
+  getDirectiveAtIndex(index: number): any;
+  getComponentBinding(): DirectiveBinding;
+  getMaxDirectives(): number;
+}
+
 /**
  * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
  * In such a case, inlining fields is benefitial for performances.
  */
-// TODO(vicb): add an interface
-class ElementInjectorInlineStrategy {
+class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
   // If this element injector has a component, the component instance will be stored in _obj0
   _obj0: any = null;
   _obj1: any = null;
@@ -1188,7 +1212,7 @@ class ElementInjectorInlineStrategy {
   _obj8: any = null;
   _obj9: any = null;
 
-  constructor(public _protoStrategy: ProtoElementInjectorInlineStrategy,
+  constructor(public _protoStrategy: _ProtoElementInjectorInlineStrategy,
               public _ei: ElementInjector) {}
 
   callOnDestroy(): void {
@@ -1256,7 +1280,7 @@ class ElementInjectorInlineStrategy {
 
   getComponent(): any { return this._obj0; }
 
-  isComponentKey(key: Key) {
+  isComponentKey(key: Key): boolean {
     return this._ei._proto._firstBindingIsComponent && isPresent(key) &&
            key.id === this._protoStrategy._keyId0;
   }
@@ -1376,7 +1400,9 @@ class ElementInjectorInlineStrategy {
     throw new OutOfBoundsAccess(index);
   }
 
-  getComponentBinding(): ResolvedBinding { return this._protoStrategy._binding0; }
+  getComponentBinding(): DirectiveBinding {
+    return <DirectiveBinding>this._protoStrategy._binding0;
+  }
 
   getMaxDirectives(): number { return _MAX_DIRECTIVE_CONSTRUCTION_COUNTER; }
 }
@@ -1385,12 +1411,11 @@ class ElementInjectorInlineStrategy {
  * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
  * In such a case, inlining fields is benefitial for performances.
  */
-// TODO(vicb): add an interface
-class ElementInjectorDynamicStrategy {
+class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
   // If this element injector has a component, the component instance will be stored in _objs[0]
   _objs: List<any>;
 
-  constructor(public _protoStrategy: ProtoElementInjectorDynamicStrategy,
+  constructor(public _protoStrategy: _ProtoElementInjectorDynamicStrategy,
               public _ei: ElementInjector) {
     this._objs = ListWrapper.createFixedSize(_protoStrategy._bindings.length);
   }
@@ -1420,7 +1445,7 @@ class ElementInjectorDynamicStrategy {
 
   getComponent(): any { return this._objs[0]; }
 
-  isComponentKey(key: Key) {
+  isComponentKey(key: Key): boolean {
     return this._ei._proto._firstBindingIsComponent && isPresent(key) &&
            key.id === this._protoStrategy._keyIds[0];
   }
@@ -1460,7 +1485,9 @@ class ElementInjectorDynamicStrategy {
     return this._objs[index];
   }
 
-  getComponentBinding(): ResolvedBinding { return this._protoStrategy._bindings[0]; }
+  getComponentBinding(): DirectiveBinding {
+    return <DirectiveBinding>this._protoStrategy._bindings[0];
+  }
 
   getMaxDirectives(): number { return this._objs.length; }
 }
