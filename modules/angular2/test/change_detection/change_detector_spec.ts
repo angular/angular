@@ -37,7 +37,6 @@ import {
   ON_PUSH,
   DEFAULT,
   WrappedValue,
-  JitProtoChangeDetector,
   DynamicProtoChangeDetector,
   ChangeDetectorDefinition,
   Lexer,
@@ -45,6 +44,7 @@ import {
   Locals,
   ProtoChangeDetector
 } from 'angular2/change_detection';
+import {JitProtoChangeDetector} from 'angular2/src/change_detection/jit_proto_change_detector';
 
 import {getDefinition} from './change_detector_config';
 import {getFactoryById} from './generated/change_detector_classes';

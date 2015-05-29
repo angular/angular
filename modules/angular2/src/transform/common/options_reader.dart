@@ -10,10 +10,12 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var entryPoints = _readFileList(config, ENTRY_POINT_PARAM);
   var reflectionEntryPoints =
       _readFileList(config, REFLECTION_ENTRY_POINT_PARAM);
-  var initReflector = !config.containsKey('init_reflector') ||
-      config['init_reflector'] != false;
+  var initReflector =
+      _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
+  var generateChangeDetectors =
+      _readBool(config, GENERATE_CHANGE_DETECTORS_PARAM, defaultValue: true);
   String mirrorModeVal =
-      config.containsKey('mirror_mode') ? config['mirror_mode'] : '';
+      config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
   var mirrorMode = MirrorMode.none;
   switch (mirrorModeVal) {
     case 'debug':
@@ -34,7 +36,14 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       mirrorMode: mirrorMode,
       initReflector: initReflector,
       customAnnotationDescriptors: _readCustomAnnotations(config),
-      optimizationPhases: optimizationPhases);
+      optimizationPhases: optimizationPhases,
+      generateChangeDetectors: generateChangeDetectors);
+}
+
+bool _readBool(Map config, String paramName, {bool defaultValue}) {
+  return config.containsKey(paramName)
+      ? config[paramName] != false
+      : defaultValue;
 }
 
 /// Cribbed from the polymer project.

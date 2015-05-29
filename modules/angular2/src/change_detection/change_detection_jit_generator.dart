@@ -1,4 +1,4 @@
-library change_detectoin.change_detection_jit_generator;
+library change_detection.change_detection_jit_generator;
 
 /// Placeholder JIT generator for Dart.
 /// Dart does not support `eval`, so JIT generation is not an option. Instead,
@@ -12,4 +12,6 @@ class ChangeDetectorJITGenerator {
   generate() {
     throw "Jit Change Detection is not supported in Dart";
   }
+
+  static bool isSupported() => false;
 }

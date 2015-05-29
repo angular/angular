@@ -10,6 +10,8 @@ import 'package:angular2/src/change_detection/proto_record.dart';
 export 'dart:core' show List;
 export 'package:angular2/src/change_detection/abstract_change_detector.dart'
     show AbstractChangeDetector;
+export 'package:angular2/src/change_detection/change_detection.dart'
+    show preGeneratedProtoDetectors;
 export 'package:angular2/src/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/change_detection/interfaces.dart'
@@ -21,6 +23,9 @@ export 'package:angular2/src/change_detection/proto_record.dart'
 export 'package:angular2/src/change_detection/change_detection_util.dart'
     show ChangeDetectionUtil;
 export 'package:angular2/src/facade/lang.dart' show looseIdentical;
+
+typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
+    PipeRegistry registry, ChangeDetectorDefinition definition);
 
 typedef ChangeDetector InstantiateMethod(dynamic dispatcher,
     PipeRegistry registry, List<ProtoRecord> protoRecords,
@@ -46,6 +51,8 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
   /// Internal ctor.
   PregenProtoChangeDetector._(this.id, this._instantiateMethod,
       this._pipeRegistry, this._protoRecords, this._directiveRecords);
+
+  static bool isSupported() => true;
 
   factory PregenProtoChangeDetector(InstantiateMethod instantiateMethod,
       PipeRegistry registry, ChangeDetectorDefinition def) {

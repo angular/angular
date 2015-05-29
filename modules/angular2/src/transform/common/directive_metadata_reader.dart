@@ -88,20 +88,20 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   DirectiveMetadata get meta => DirectiveMetadata.create(
-    type: _type,
-    selector: _selector,
-    compileChildren: _compileChildren,
-    properties: _properties,
-    host: _host,
-    readAttributes: _readAttributes,
-    exportAs: _exportAs,
-    callOnDestroy: _callOnDestroy,
-    callOnChange: _callOnChange,
-    callOnCheck: _callOnCheck,
-    callOnInit: _callOnInit,
-    callOnAllChangesDone: _callOnAllChangesDone,
-    changeDetection: _changeDetection,
-    events: _events);
+      type: _type,
+      selector: _selector,
+      compileChildren: _compileChildren,
+      properties: _properties,
+      host: _host,
+      readAttributes: _readAttributes,
+      exportAs: _exportAs,
+      callOnDestroy: _callOnDestroy,
+      callOnChange: _callOnChange,
+      callOnCheck: _callOnCheck,
+      callOnInit: _callOnInit,
+      callOnAllChangesDone: _callOnAllChangesDone,
+      changeDetection: _changeDetection,
+      events: _events);
 
   @override
   Object visitAnnotation(Annotation node) {

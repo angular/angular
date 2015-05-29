@@ -24,6 +24,7 @@ transformers:
         - web/src/largetable/largetable_benchmark.dart
         - web/src/naive_infinite_scroll/index.dart
         - web/src/tree/tree_benchmark.dart
+    generate_change_detectors: false
 - $dart2js:
     minify: false
     commandLineOptions:

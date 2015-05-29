@@ -20,6 +20,8 @@ void initReflector(reflector) {
         const View(template: 'Salad')
       ]
     });
+  _gen.preGeneratedProtoDetectors['MyComponent_comp_0'] =
+      _MyComponent_ChangeDetector0.newProtoChangeDetector;
 }
 class _MyComponent_ChangeDetector0 extends _gen.AbstractChangeDetector {
   final dynamic _dispatcher;

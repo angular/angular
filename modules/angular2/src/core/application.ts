@@ -18,6 +18,8 @@ import {
   Lexer,
   ChangeDetection,
   DynamicChangeDetection,
+  JitChangeDetection,
+  PreGeneratedChangeDetection,
   PipeRegistry,
   defaultPipeRegistry
 } from 'angular2/change_detection';
@@ -66,6 +68,12 @@ var _rootInjector: Injector;
 var _rootBindings = [bind(Reflector).toValue(reflector), TestabilityRegistry];
 
 function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
+  var bestChangeDetection: Type = DynamicChangeDetection;
+  if (PreGeneratedChangeDetection.isSupported()) {
+    bestChangeDetection = PreGeneratedChangeDetection;
+  } else if (JitChangeDetection.isSupported()) {
+    bestChangeDetection = JitChangeDetection;
+  }
   return [
     bind(DOCUMENT_TOKEN)
         .toValue(DOM.defaultDoc()),
@@ -117,7 +125,7 @@ function _injectorBindings(appComponentType): List<Type | Binding | List<any>> {
     CompilerCache,
     TemplateResolver,
     bind(PipeRegistry).toValue(defaultPipeRegistry),
-    bind(ChangeDetection).toClass(DynamicChangeDetection),
+    bind(ChangeDetection).toClass(bestChangeDetection),
     TemplateLoader,
     DirectiveResolver,
     Parser,

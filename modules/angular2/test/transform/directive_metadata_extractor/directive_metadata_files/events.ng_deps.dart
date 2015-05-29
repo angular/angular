@@ -22,8 +22,6 @@ void initReflector(reflector) {
     ..registerType(HelloCmp, {
       'factory': () => new HelloCmp(),
       'parameters': const [const []],
-      'annotations': const [
-        const Component(events: ['onFoo', 'onBar'])
-      ]
+      'annotations': const [const Component(events: ['onFoo', 'onBar'])]
     });
 }

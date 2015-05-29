@@ -34,8 +34,8 @@ class TemplateCompiler extends Transformer {
       Html5LibDomAdapter.makeCurrent();
       var id = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode =
-          formatter.format(await processTemplates(reader, id));
+      var transformedCode = formatter.format(await processTemplates(reader, id,
+          generateChangeDetectors: options.generateChangeDetectors));
       transform.addOutput(new Asset.fromString(id, transformedCode));
     } catch (ex, stackTrace) {
       log.logger.error('Parsing ng templates failed.\n'

@@ -14,15 +14,31 @@ import 'package:angular2/src/facade/lang.dart' show BaseException;
 /// This code should be kept in sync with the `ChangeDetectorJITGenerator`
 /// class. If you make updates here, please make equivalent changes there.
 class Codegen {
+  /// Stores the generated class definitions.
   final StringBuffer _buf = new StringBuffer();
+  /// Stores all generated initialization code.
+  final StringBuffer _initBuf = new StringBuffer();
+  /// The names of already generated classes.
+  final Set<String> _names = new Set<String>();
 
-  /// Generates a change detector class with name `changeDetectorTypeName`
-  /// which is used to detect changes in Objects of type `typeName`.
+  /// Generates a change detector class with name `changeDetectorTypeName`,
+  /// which must not conflict with other generated classes in the same
+  /// `.ng_deps.dart` file.  The change detector is used to detect changes in
+  /// Objects of type `typeName`.
   void generate(String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
-    new _CodegenState(typeName, changeDetectorTypeName, def)._writeToBuf(_buf);
+    if (_names.contains(changeDetectorTypeName)) {
+      throw new BaseException(
+          'Change detector named "${changeDetectorTypeName}" for ${typeName} '
+          'conflicts with an earlier generated change detector class.');
+    }
+    _names.add(changeDetectorTypeName);
+    new _CodegenState(typeName, changeDetectorTypeName, def)
+      .._writeToBuf(_buf)
+      .._writeInitToBuf(_initBuf);
   }
 
+  /// Gets all imports necessary for the generated code.
   String get imports {
     return _buf.isEmpty
         ? ''
@@ -31,13 +47,27 @@ class Codegen {
 
   bool get isEmpty => _buf.isEmpty;
 
+  /// Gets the initilization code that registers the generated classes with
+  /// the Angular 2 change detection system.
+  String get initialize => '$_initBuf';
+
   @override
   String toString() => '$_buf';
 }
 
 /// The state needed to generate a change detector for a single `Component`.
 class _CodegenState {
+  /// The `id` of the `ChangeDetectorDefinition` we are generating this class
+  /// for.
+  final String _changeDetectorDefId;
+
+  /// The name of the `Type` this change detector is generated for. For example,
+  /// this is `MyComponent` if the generated class will detect changes in
+  /// `MyComponent` objects.
   final String _contextTypeName;
+
+  /// The name of the generated change detector class. This is an implementation
+  /// detail and should not be visible to users.
   final String _changeDetectorTypeName;
   final String _changeDetectionMode;
   final List<ProtoRecord> _records;
@@ -47,9 +77,9 @@ class _CodegenState {
   final List<String> _fieldNames;
   final List<String> _pipeNames;
 
-  _CodegenState._(this._contextTypeName, this._changeDetectorTypeName,
-      String changeDetectionStrategy, this._records, this._directiveRecords,
-      List<String> localNames)
+  _CodegenState._(this._changeDetectorDefId, this._contextTypeName,
+      this._changeDetectorTypeName, String changeDetectionStrategy,
+      this._records, this._directiveRecords, List<String> localNames)
       : this._localNames = localNames,
         _changeNames = _getChangeNames(localNames),
         _fieldNames = _getFieldNames(localNames),
@@ -63,8 +93,8 @@ class _CodegenState {
     def.bindingRecords
         .forEach((rec) => protoRecords.add(rec, def.variableNames));
     var records = coalesce(protoRecords.records);
-    return new _CodegenState._(typeName, changeDetectorTypeName, def.strategy,
-        records, def.directiveRecords, _getLocalNames(records));
+    return new _CodegenState._(def.id, typeName, changeDetectorTypeName,
+        def.strategy, records, def.directiveRecords, _getLocalNames(records));
   }
 
   /// Generates sanitized names for use as local variables.
@@ -164,6 +194,13 @@ class _CodegenState {
               registry, def);
         }
       }
+    ''');
+  }
+
+  void _writeInitToBuf(StringBuffer buf) {
+    buf.write('''
+      $_GEN_PREFIX.preGeneratedProtoDetectors['$_changeDetectorDefId'] =
+          $_changeDetectorTypeName.newProtoChangeDetector;
     ''');
   }
 

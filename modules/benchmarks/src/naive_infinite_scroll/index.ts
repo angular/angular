@@ -28,12 +28,4 @@ export function setupReflector() {
       MapWrapper.forEach(m, function(v, k) { o.style.setProperty(k, v); });
     }
   });
-
-  reflector.registerMethods({
-    'onScroll': (o, args) => {
-      // HACK
-      o.onScroll(args[0]);
-    },
-    'setStage': (o, args) => o.setStage(args[0])
-  });
 }

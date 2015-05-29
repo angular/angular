@@ -38,10 +38,7 @@ export {
   ON_PUSH,
   DEFAULT
 } from './src/change_detection/constants';
-export {
-  DynamicProtoChangeDetector,
-  JitProtoChangeDetector
-} from './src/change_detection/proto_change_detector';
+export {DynamicProtoChangeDetector} from './src/change_detection/proto_change_detector';
 export {BindingRecord} from './src/change_detection/binding_record';
 export {DirectiveIndex, DirectiveRecord} from './src/change_detection/directive_record';
 export {DynamicChangeDetector} from './src/change_detection/dynamic_change_detector';

@@ -32,7 +32,6 @@ import {
 } from './interfaces';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {DynamicChangeDetector} from './dynamic_change_detector';
-import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 import {PipeRegistry} from './pipes/pipe_registry';
 import {BindingRecord} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
@@ -62,31 +61,7 @@ export class DynamicProtoChangeDetector extends ProtoChangeDetector {
   }
 }
 
-var _jitProtoChangeDetectorClassCounter: number = 0;
-export class JitProtoChangeDetector extends ProtoChangeDetector {
-  _factory: Function;
-
-  constructor(private _pipeRegistry, private definition: ChangeDetectorDefinition) {
-    super();
-    this._factory = this._createFactory(definition);
-  }
-
-  instantiate(dispatcher: any) { return this._factory(dispatcher, this._pipeRegistry); }
-
-  _createFactory(definition: ChangeDetectorDefinition) {
-    var recordBuilder = new ProtoRecordBuilder();
-    ListWrapper.forEach(definition.bindingRecords,
-                        (b) => { recordBuilder.add(b, definition.variableNames); });
-    var c = _jitProtoChangeDetectorClassCounter++;
-    var records = coalesce(recordBuilder.records);
-    var typeName = `ChangeDetector${c}`;
-    return new ChangeDetectorJITGenerator(typeName, definition.strategy, records,
-                                          this.definition.directiveRecords)
-        .generate();
-  }
-}
-
-class ProtoRecordBuilder {
+export class ProtoRecordBuilder {
   records: List<ProtoRecord>;
 
   constructor() { this.records = []; }

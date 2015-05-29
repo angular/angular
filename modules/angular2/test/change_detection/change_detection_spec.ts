@@ -20,7 +20,7 @@ export function main() {
     });
 
     it("should return a proto change detector when one is available", () => {
-      var map = {'id': (registry) => proto};
+      var map = {'id': (registry, def) => proto};
       var cd = new PreGeneratedChangeDetection(null, map);
 
       expect(cd.createProtoChangeDetector(def)).toBe(proto)
