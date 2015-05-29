@@ -4,7 +4,7 @@
     "selector":"goodbye-app",
     "compileChildren":true,
     "hostListeners":{},
-    "hostProperties":[],
+    "hostProperties":{},
     "properties":[],
     "readAttributes":[],
     "type":1,

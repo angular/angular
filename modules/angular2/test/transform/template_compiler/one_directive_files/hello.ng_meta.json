@@ -5,7 +5,7 @@
     "selector":"hello-app",
     "compileChildren":true,
     "hostListeners":{},
-    "hostProperties":[],
+    "hostProperties":{},
     "properties":[],
     "readAttributes":[],
     "type":1,
