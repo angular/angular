@@ -260,17 +260,20 @@ export class Injector {
   _clear(key: Key): void { this._setInstance(key, null); }
 }
 
+interface _InjectorStrategy {
+  readFromCache(key: Key);
+  instantiate(key: Key);
+}
 
-class _SyncInjectorStrategy {
-  injector: Injector;
-  constructor(injector: Injector) { this.injector = injector; }
+class _SyncInjectorStrategy implements _InjectorStrategy {
+  constructor(private _injector: Injector) { }
 
   readFromCache(key: Key) {
     if (key.token === Injector) {
-      return this.injector;
+      return this._injector;
     }
 
-    var instance = this.injector._getInstance(key);
+    var instance = this._injector._getInstance(key);
 
     if (instance === _constructing) {
       throw new CyclicDependencyError(key);
@@ -282,41 +285,39 @@ class _SyncInjectorStrategy {
   }
 
   instantiate(key: Key) {
-    var binding = this.injector._getBinding(key);
+    var binding = this._injector._getBinding(key);
     if (isBlank(binding)) return _notFound;
 
     if (binding.providedAsPromise) throw new AsyncBindingError(key);
 
     // add a marker so we can detect cyclic dependencies
-    this.injector._markAsConstructing(key);
+    this._injector._markAsConstructing(key);
 
-    var deps = this.injector._resolveDependencies(key, binding, false);
+    var deps = this._injector._resolveDependencies(key, binding, false);
     return this._createInstance(key, binding, deps);
   }
 
   _createInstance(key: Key, binding: ResolvedBinding, deps: List<any>) {
     try {
       var instance = FunctionWrapper.apply(binding.factory, deps);
-      this.injector._setInstance(key, instance);
+      this._injector._setInstance(key, instance);
       return instance;
     } catch (e) {
-      this.injector._clear(key);
+      this._injector._clear(key);
       throw new InstantiationError(e, key);
     }
   }
 }
 
-
-class _AsyncInjectorStrategy {
-  injector: Injector;
-  constructor(injector: Injector) { this.injector = injector; }
+class _AsyncInjectorStrategy implements _InjectorStrategy {
+  constructor(private _injector: Injector) { }
 
   readFromCache(key: Key) {
     if (key.token === Injector) {
-      return PromiseWrapper.resolve(this.injector);
+      return PromiseWrapper.resolve(this._injector);
     }
 
-    var instance = this.injector._getInstance(key);
+    var instance = this._injector._getInstance(key);
 
     if (instance === _constructing) {
       throw new CyclicDependencyError(key);
@@ -330,20 +331,20 @@ class _AsyncInjectorStrategy {
   }
 
   instantiate(key: Key) /* Promise?? */ {
-    var binding = this.injector._getBinding(key);
+    var binding = this._injector._getBinding(key);
     if (isBlank(binding)) return _notFound;
 
     // add a marker so we can detect cyclic dependencies
-    this.injector._markAsConstructing(key);
+    this._injector._markAsConstructing(key);
 
-    var deps = this.injector._resolveDependencies(key, binding, true);
+    var deps = this._injector._resolveDependencies(key, binding, true);
     var depsPromise = PromiseWrapper.all(deps);
 
     var promise = PromiseWrapper.then(depsPromise, null, (e, s) => this._errorHandler(key, e, s))
                       .then(deps => this._findOrCreate(key, binding, deps))
                       .then(instance => this._cacheInstance(key, instance));
 
-    this.injector._setInstance(key, new _Waiting(promise));
+    this._injector._setInstance(key, new _Waiting(promise));
     return promise;
   }
 
@@ -354,17 +355,17 @@ class _AsyncInjectorStrategy {
 
   _findOrCreate(key: Key, binding: ResolvedBinding, deps: List<any>) {
     try {
-      var instance = this.injector._getInstance(key);
+      var instance = this._injector._getInstance(key);
       if (!_isWaiting(instance)) return instance;
       return FunctionWrapper.apply(binding.factory, deps);
     } catch (e) {
-      this.injector._clear(key);
+      this._injector._clear(key);
       throw new InstantiationError(e, key);
     }
   }
 
   _cacheInstance(key, instance) {
-    this.injector._setInstance(key, instance);
+    this._injector._setInstance(key, instance);
     return instance
   }
 }
