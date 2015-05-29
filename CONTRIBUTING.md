@@ -18,7 +18,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 ## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to *use* Angular, please direct them to the [Google Group][angular-group]
-discussion list or [StackOverflow][stackoverflow]. We are also available on [Gitter][gitter].
+discussion list or [StackOverflow][stackoverflow]. Please note that Angular 2 is still in early developer preview, and the core team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
@@ -27,26 +27,15 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
-Repository][github]. If you would like to *implement* a new feature then consider what kind of
-change it is:
+Repository][github]. If you would like to *implement* a new feature, please submit an issue with
+a proposal for your work first, to be sure that we can use it. Angular 2 is in developer preview 
+and we are not ready to accept major contributions ahead of the full release. 
+Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
 discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
 and help you to craft the change so that it is successfully accepted into the project.
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
-
-## <a name="docs"></a> Want a Doc Fix?
-If you want to help improve the docs, then consider what kind of improvement it is:
-
-* For **Major Changes**, it's a good idea to let others know what you're working on to
-minimize duplication of effort. Before starting, check out the issue queue for
-issues labeled [#docs](https://github.com/angular/angular/labels/%23docs).
-Comment on an issue to let others know what you're working on, or [create a new issue](#submit-issue)
-if your work doesn't fit within the scope of any of the existing doc issues.
-Please build and test the documentation before [submitting the Pull Request](#submit-pr), to be sure
-you haven't accidentally introduced any layout or formatting issues.  Also ensure that your commit
-message is labeled "docs" and follows the [Commit Message Guidelines](#commit) given below.
-* For **Small Changes**, there is no need to file an issue first. Simply [submit a Pull Request](#submit-pr).
 
 ## <a name="submit"></a> Submission Guidelines
 
@@ -60,7 +49,6 @@ chances of your issue being dealt with quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
-* **Angular Version(s)** - is it a regression?
 * **Browsers and Operating System** - is this a problem with all browsers?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker],
   [JSFiddle][jsfiddle] or [Runnable][runnable]) or a unambiguous set of steps.
@@ -71,7 +59,7 @@ chances of your issue being dealt with quickly:
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-* Search [GitHub](https://github.com/angular/angular.dart/pulls) for an open or closed PR
+* Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 * Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
   We cannot accept code without this.
