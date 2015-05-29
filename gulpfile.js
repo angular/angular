@@ -13,7 +13,6 @@ var spawn = require('child_process').spawn;
 var runSequence = require('run-sequence');
 var madge = require('madge');
 var merge = require('merge');
-var merge2 = require('merge2');
 var path = require('path');
 var semver = require('semver');
 var watch = require('./tools/build/watch');
@@ -621,29 +620,24 @@ gulp.task('build.tools', ['build/clean.tools'], function(done) {
 
 // private task to build tools
 gulp.task('!build.tools', function() {
-  var tsResult = gulp.src(['tools/**/*.ts'])
+  var stream = gulp.src(['tools/**/*.ts'])
       .pipe(sourcemaps.init())
       .pipe(tsc({target: 'ES5', module: 'commonjs', reporter: tsc.reporter.nullReporter(),
                  // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
                  // see https://github.com/ivogabe/gulp-typescript#typescript-version
                  typescript: require('typescript')}))
       .on('error', function(error) {
-        // gulp-typescript doesn't propagate errors from the src stream into the js stream so we are
-        // forwarding the error into the merged stream
-        mergedStream.emit('error', error);
+        // nodejs doesn't propagate errors from the src stream into the final stream so we are
+        // forwarding the error into the final stream
+        stream.emit('error', error);
+      })
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest('dist/tools'))
+      .on('end', function() {
+        var AngularBuilder = require('./dist/tools/broccoli/angular_builder').AngularBuilder;
+        angularBuilder = new AngularBuilder('dist');
       });
-
-  var destDir = gulp.dest('dist/tools/');
-
-  var mergedStream = merge2([
-    tsResult.js.pipe(sourcemaps.write('.')).pipe(destDir),
-    tsResult.js.pipe(destDir)
-  ]).on('end', function() {
-    var AngularBuilder = require('./dist/tools/broccoli/angular_builder').AngularBuilder;
-    angularBuilder = new AngularBuilder('dist');
-  });
-
-  return mergedStream;
+  return stream;
 });
 
 gulp.task('broccoli.js.dev', ['build.tools'], function(done) {
