@@ -1,53 +1,52 @@
-var testUtil = require('angular2/src/test_lib/e2e_util');
-describe('key_events', function () {
+import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
+
+describe('key_events', function() {
 
   var URL = 'examples/src/key_events/index.html';
 
-  afterEach(testUtil.verifyNoBrowserErrors);
-  beforeEach(() => {
-    browser.get(URL);
-  });
+  afterEach(verifyNoBrowserErrors);
+  beforeEach(() => { browser.get(URL); });
 
   it('should display correct key names', function() {
     var firstArea = element.all(by.css('.sample-area')).get(0);
-    expect(firstArea.getText()).toBe('(none)');
+    expect(firstArea.getText()).toEqual('(none)');
 
     // testing different key categories:
     firstArea.sendKeys(protractor.Key.ENTER);
-    expect(firstArea.getText()).toBe('enter');
+    expect(firstArea.getText()).toEqual('enter');
 
     firstArea.sendKeys(protractor.Key.SHIFT, protractor.Key.ENTER);
-    expect(firstArea.getText()).toBe('shift.enter');
+    expect(firstArea.getText()).toEqual('shift.enter');
 
     firstArea.sendKeys(protractor.Key.CONTROL, protractor.Key.SHIFT, protractor.Key.ENTER);
-    expect(firstArea.getText()).toBe('control.shift.enter');
+    expect(firstArea.getText()).toEqual('control.shift.enter');
 
     firstArea.sendKeys(' ');
-    expect(firstArea.getText()).toBe('space');
+    expect(firstArea.getText()).toEqual('space');
 
     // It would not work with a letter which position depends on the keyboard layout (ie AZERTY vs
     // QWERTY), see https://code.google.com/p/chromedriver/issues/detail?id=553
     firstArea.sendKeys('u');
-    expect(firstArea.getText()).toBe('u');
+    expect(firstArea.getText()).toEqual('u');
 
     firstArea.sendKeys(protractor.Key.CONTROL, 'b');
-    expect(firstArea.getText()).toBe('control.b');
+    expect(firstArea.getText()).toEqual('control.b');
 
     firstArea.sendKeys(protractor.Key.F1);
-    expect(firstArea.getText()).toBe('f1');
+    expect(firstArea.getText()).toEqual('f1');
 
     firstArea.sendKeys(protractor.Key.ALT, protractor.Key.F1);
-    expect(firstArea.getText()).toBe('alt.f1');
+    expect(firstArea.getText()).toEqual('alt.f1');
 
     firstArea.sendKeys(protractor.Key.CONTROL, protractor.Key.F1);
-    expect(firstArea.getText()).toBe('control.f1');
+    expect(firstArea.getText()).toEqual('control.f1');
 
     // There is an issue with protractor.Key.NUMPAD0 (and other NUMPADx):
     // chromedriver does not correctly set the location property on the event to
     // specify that the key is on the numeric keypad (event.location = 3)
     // so the following test fails:
     // firstArea.sendKeys(protractor.Key.NUMPAD0);
-    // expect(firstArea.getText()).toBe('0');
+    // expect(firstArea.getText()).toEqual('0');
   });
 
   it('should correctly react to the specified key', function() {

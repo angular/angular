@@ -1,10 +1,10 @@
-var testUtil = require('angular2/src/test_lib/e2e_util');
+import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 
-describe('md-progress-linear', function () {
+describe('md-progress-linear', function() {
   var url = 'examples/src/material/progress-linear/index.html';
 
   beforeEach(() => { browser.get(url); });
-  afterEach(testUtil.verifyNoBrowserErrors);
+  afterEach(verifyNoBrowserErrors);
 
   it('should increment and decrement progress', function() {
     var progressBar = element.all(by.css('md-progress-linear')).first();

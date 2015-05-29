@@ -1,10 +1,10 @@
-var testUtil = require('angular2/src/test_lib/e2e_util');
+import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
 
-describe('md-grid-list', function () {
+describe('md-grid-list', function() {
   var url = 'examples/src/material/grid_list/index.html';
 
   beforeEach(() => { browser.get(url); });
-  afterEach(testUtil.verifyNoBrowserErrors);
+  afterEach(verifyNoBrowserErrors);
 
   it('should set tiles into different positions', () => {
     var tiles = element.all(by.css('md-grid-list#complex md-grid-tile'));
