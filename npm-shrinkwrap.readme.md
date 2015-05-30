@@ -61,6 +61,6 @@ after:
   },
 ```
 
-2. Then delete the `minichain` directory: `rm -rf tsd/node_modules/minichain`.
+2. Then delete the `minichain` directory: `rm -rf node_modules/tsd/node_modules/minichain`.
 
 Afterwards resume the shrinkwrap update and cleaning steps.
