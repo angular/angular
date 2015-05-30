@@ -222,9 +222,19 @@ export class RenderCompiler {
   compile(template: ViewDefinition): Promise<ProtoViewDto> { return null; }
 }
 
-export enum RenderViewState { NON_EXISTING, CREATED, ATTACHED, ACTIVE };
+export enum RenderViewState { NON_EXISTING, CREATED, ATTACHED, ACTIVE }
 
 export class RenderViewActivateConfig {
+  static nonExisting(protoViewRef: RenderProtoViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(protoViewRef, null, RenderViewState.NON_EXISTING);
+  }
+  static created(viewRef: RenderViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(null, viewRef, RenderViewState.CREATED);
+  }
+  static attached(viewRef: RenderViewRef): RenderViewActivateConfig {
+    return new RenderViewActivateConfig(null, viewRef, RenderViewState.ATTACHED);
+  }
+
   constructor(public protoViewRef:RenderProtoViewRef, public cachedViewRef:RenderViewRef, public prevViewState: RenderViewState) {}
 }
 

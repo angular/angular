@@ -17,7 +17,7 @@ import {bind} from 'angular2/di';
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/dom/dom_adapter';
 
-import {ViewDefinition, DirectiveMetadata} from 'angular2/src/render/api';
+import {ViewDefinition, DirectiveMetadata, RenderViewState, RenderViewActivateConfig} from 'angular2/src/render/api';
 
 import {ShadowDomStrategy} from 'angular2/src/render/dom/shadow_dom/shadow_dom_strategy';
 import {
@@ -354,19 +354,15 @@ export function main() {
 
                    expect(tb.rootEl).toHaveText('(TAB(0))');
 
-                   tb.renderer.dehydrateView(tabChildView.viewRef);
-                   tb.renderer.detachViewInContainer(tab1View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.deactivateViewInContainer(tab1View.viewRef, 0, 0, tabChildView.viewRef, RenderViewState.CREATED);
 
-                   tb.renderer.attachViewInContainer(tab2View.viewRef, 0, 0, tabChildView.viewRef);
-                   tb.renderer.hydrateView(tabChildView.viewRef);
+                   tb.renderer.activateViewInContainer(tab2View.viewRef, 0, 0, RenderViewActivateConfig.created(tabChildView.viewRef));
 
                    expect(tb.rootEl).toHaveText('(TAB(1))');
 
-                   tb.renderer.dehydrateView(tabChildView.viewRef);
-                   tb.renderer.detachViewInContainer(tab2View.viewRef, 0, 0, tabChildView.viewRef);
+                   tb.renderer.deactivateViewInContainer(tab2View.viewRef, 0, 0, tabChildView.viewRef, RenderViewState.CREATED);
 
-                   tb.renderer.attachViewInContainer(tab3View.viewRef, 0, 0, tabChildView.viewRef);
-                   tb.renderer.hydrateView(tabChildView.viewRef);
+                   tb.renderer.activateViewInContainer(tab3View.viewRef, 0, 0, RenderViewActivateConfig.created(tabChildView.viewRef));
 
                    expect(tb.rootEl).toHaveText('(TAB(2))');
 

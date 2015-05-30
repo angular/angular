@@ -60,7 +60,7 @@ export class AppViewManager {
     var wasCached = isPresent(componentView);
 
     var componentRenderView = this._renderer.activateComponentView(hostView.render, boundElementIndex,
-      wasCached ? this._getCachedViewActivateConfig(componentView) : this._getNonExistingViewActivateConfig(componentProtoView));
+      wasCached ? RenderViewActivateConfig.created(componentView.render) : RenderViewActivateConfig.nonExisting(componentProtoView.render);
     if (!wasCached) {
       componentView = this._utils.createView(componentProtoView, componentRenderView, this,
         this._renderer);
@@ -86,7 +86,7 @@ export class AppViewManager {
     var hostView = this._utils.createView(hostProtoView, renderView, this, this._renderer);
     this._createAndAttachViewRecurse(hostView);
     this._utils.hydrateRootHostView(hostView, injector);
-    this._viewHydrateRecurse(hostView, true);
+    this._viewHydrateRecurse(hostView, false);
     return new ViewRef(hostView);
   }
 
@@ -111,7 +111,7 @@ export class AppViewManager {
     var hostView = this._viewPool.getView(hostProtoView);
     var wasCached = isPresent(hostView);
     var hostRenderView = this._renderer.activateFreeHostView(parentComponentHostView.render,
-      wasCached ? this._getCachedViewActivateConfig(hostView) : this._getNonExistingViewActivateConfig(hostProtoView));
+      wasCached ? RenderViewActivateConfig.created(hostView.render) : RenderViewActivateConfig.nonExisting(hostProtoView.render));
     if (!wasCached) {
       hostView = this._utils.createView(hostProtoView, hostRenderView, this,
         this._renderer);
@@ -146,7 +146,7 @@ export class AppViewManager {
     var wasCached = isPresent(view);
 
     var renderView = this._renderer.activateViewInContainer(parentView.render, boundElementIndex, atIndex,
-      wasCached ? this._getCachedViewActivateConfig(view) : this._getNonExistingViewActivateConfig(protoView));
+      wasCached ? RenderViewActivateConfig.created(view.render) : RenderViewActivateConfig.nonExisting(protoView.render));
     if (!wasCached) {
       view = this._utils.createView(protoView, renderView, this,
         this._renderer);
@@ -195,19 +195,8 @@ export class AppViewManager {
     return new ViewRef(view);
   }
 
-  _getNonExistingViewActivateConfig(protoView: viewModule.AppProtoView): RenderViewActivateConfig {
-    return new RenderViewActivateConfig(protoView.render, null, RenderViewState.NON_EXISTING);
-  }
-
-  _getCachedViewActivateConfig(cachedView: viewModule.AppView): RenderViewActivateConfig {
-    return new RenderViewActivateConfig(cachedView.proto.render, cachedView.render, RenderViewState.CREATED);
-  }
-
-  _getAttachedViewActivateConfig(cachedView: viewModule.AppView): RenderViewActivateConfig {
-    return new RenderViewActivateConfig(cachedView.proto.render, cachedView.render, RenderViewState.ATTACHED);
-  }
-
   _createAndAttachViewRecurse(hostView: viewModule.AppView) {
+    this._viewListener.viewCreated(hostView);
     var binders = hostView.proto.elementBinders;
     for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
       var binder = binders[binderIdx];
@@ -216,7 +205,7 @@ export class AppViewManager {
         var componentView = this._viewPool.getView(componentProtoView);
         var wasCached = isPresent(componentView);
         var componentRenderView = this._renderer.activateComponentView(hostView.render, binderIdx,
-          wasCached ? this._getCachedViewActivateConfig(componentView) : this._getNonExistingViewActivateConfig(componentProtoView));
+          wasCached ? RenderViewActivateConfig.created(componentView.render) : RenderViewActivateConfig.nonExisting(componentProtoView.render));
         if (!wasCached) {
           componentView = this._utils.createView(componentProtoView, componentRenderView, this,
             this._renderer);
@@ -270,7 +259,7 @@ export class AppViewManager {
       if (binders[i].hasStaticComponent()) {
         var componentView = hostView.componentChildViews[i];
         if (activateRenderViews) {
-          this._renderer.activateComponentView(hostView.render, i, this._getAttachedViewActivateConfig(componentView));
+          this._renderer.activateComponentView(hostView.render, i, RenderViewActivateConfig.attached(componentView.render));
         }
         this._utils.hydrateComponentView(hostView, i);
         this._viewHydrateRecurse(componentView, activateRenderViews);

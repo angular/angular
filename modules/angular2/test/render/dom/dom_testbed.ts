@@ -11,7 +11,9 @@ import {
   ProtoViewDto,
   ViewDefinition,
   EventDispatcher,
-  DirectiveMetadata
+  DirectiveMetadata,
+  RenderViewState,
+  RenderViewActivateConfig
 } from 'angular2/src/render/api';
 import {resolveInternalDomView} from 'angular2/src/render/dom/view/view';
 import {el, dispatchEvent} from 'angular2/test_lib';
@@ -77,16 +79,14 @@ export class DomTestbed {
   }
 
   createRootView(rootProtoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createRootHostView(rootProtoView.render, '#root');
-    this.renderer.hydrateView(viewRef);
+    var viewRef = this.renderer.activateRootHostView(rootProtoView.render, '#root');
     return this._createTestView(viewRef);
   }
 
   createComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
                       componentProtoView: ProtoViewDto): TestView {
-    var componentViewRef = this.renderer.createView(componentProtoView.render);
-    this.renderer.attachComponentView(parentViewRef, boundElementIndex, componentViewRef);
-    this.renderer.hydrateView(componentViewRef);
+    var componentViewRef = this.renderer.activateComponentView(parentViewRef, boundElementIndex,
+      RenderViewActivateConfig.nonExisting(componentProtoView.render));
     return this._createTestView(componentViewRef);
   }
 
@@ -103,23 +103,18 @@ export class DomTestbed {
 
   destroyComponentView(parentViewRef: RenderViewRef, boundElementIndex: number,
                        componentView: RenderViewRef) {
-    this.renderer.dehydrateView(componentView);
-    this.renderer.detachComponentView(parentViewRef, boundElementIndex, componentView);
+    this.renderer.deactivateComponentView(parentViewRef, boundElementIndex, componentView, RenderViewState.NON_EXISTING);
   }
 
   createViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                         protoView: ProtoViewDto): TestView {
-    var viewRef = this.renderer.createView(protoView.render);
-    this.renderer.attachViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef);
-    this.renderer.hydrateView(viewRef);
+    var viewRef = this.renderer.activateViewInContainer(parentViewRef, boundElementIndex, atIndex, RenderViewActivateConfig.nonExisting(protoView.render));
     return this._createTestView(viewRef);
   }
 
   destroyViewInContainer(parentViewRef: RenderViewRef, boundElementIndex: number, atIndex: number,
                          viewRef: RenderViewRef) {
-    this.renderer.dehydrateView(viewRef);
-    this.renderer.detachViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef);
-    this.renderer.destroyView(viewRef);
+    this.renderer.deactivateViewInContainer(parentViewRef, boundElementIndex, atIndex, viewRef, RenderViewState.NON_EXISTING);
   }
 
   triggerEvent(viewRef: RenderViewRef, boundElementIndex: number, eventName: string) {

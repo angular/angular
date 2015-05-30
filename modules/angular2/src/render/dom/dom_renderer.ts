@@ -50,7 +50,6 @@ export class DomRenderer extends Renderer {
   }
 
   activateFreeHostView(parentViewRef: RenderViewRef, hostViewConfig: RenderViewActivateConfig): RenderViewRef {
-    var parentView = resolveInternalDomView(parentViewRef);
     var view = this._createViewIfNeeded(hostViewConfig);
     this._hydrateView(view);
     return new DomViewRef(view);
@@ -142,12 +141,12 @@ export class DomRenderer extends Renderer {
     return hostView.boundElements[0];
   }
 
-  _needsAttach(viewState: RenderViewState) {
-    return viewState === RenderViewState.NON_EXISTING || viewState === RenderViewState.CREATED;
+  _needsAttach(prevViewState: RenderViewState) {
+    return prevViewState === RenderViewState.NON_EXISTING || prevViewState === RenderViewState.CREATED;
   }
 
-  _needsDetach(viewState: RenderViewState) {
-    return viewState === RenderViewState.ACTIVE || viewState === RenderViewState.ATTACHED;
+  _needsDetach(targetViewState: RenderViewState) {
+    return targetViewState === RenderViewState.NON_EXISTING || targetViewState === RenderViewState.CREATED;
   }
 
   _createViewIfNeeded(viewConfig: RenderViewActivateConfig) {
