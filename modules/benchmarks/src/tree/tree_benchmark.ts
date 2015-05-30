@@ -15,9 +15,9 @@ import {
 import {NgIf} from 'angular2/directives';
 import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {bind} from 'angular2/di';
+import {bind, Binding} from 'angular2/di';
 
-function createBindings(): List {
+function createBindings(): List<Binding> {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
 }
@@ -218,6 +218,16 @@ class BaseLineIf {
   }
 }
 
+@Component({ selector: 'tree', properties: ['data'] })
+@View({
+  directives: [TreeComponent, NgIf],
+  template:
+  `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
+})
+class TreeComponent {
+  data: TreeNode;
+}
+
 @Component({selector: 'app'})
 @View({directives: [TreeComponent], template: `<tree [data]='initData'></tree>`})
 class AppComponent {
@@ -227,14 +237,4 @@ class AppComponent {
     // --> this should be already caught in change detection!
     this.initData = new TreeNode('', null, null);
   }
-}
-
-@Component({selector: 'tree', properties: ['data']})
-@View({
-  directives: [TreeComponent, NgIf],
-  template:
-      `<span> {{data.value}} <span template='ng-if data.right != null'><tree [data]='data.right'></tree></span><span template='ng-if data.left != null'><tree [data]='data.left'></tree></span></span>`
-})
-class TreeComponent {
-  data: TreeNode;
 }
