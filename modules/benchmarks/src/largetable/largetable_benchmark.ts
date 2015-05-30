@@ -9,7 +9,9 @@ import {window, document, gc} from 'angular2/src/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
-  bindAction
+  bindAction,
+  windowProfile,
+  windowProfileEnd
 } from 'angular2/src/test_lib/benchmark_util';
 
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/directives';
@@ -18,7 +20,7 @@ import {BrowserDomAdapter} from 'angular2/src/dom/browser_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {bind} from 'angular2/di';
-import {Inject} from 'angular2/src/di/annotations_impl';
+import {Inject} from 'angular2/src/di/decorators';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -73,7 +75,7 @@ export function main() {
 
   function profile(create, destroy, name) {
     return function() {
-      window.console.profile(name + ' w GC');
+      windowProfile(name + ' w GC');
       var duration = 0;
       var count = 0;
       while (count++ < 150) {
@@ -83,10 +85,10 @@ export function main() {
         duration += window.performance.now() - start;
         destroy();
       }
-      window.console.profileEnd(name + ' w GC');
+      windowProfileEnd(name + ' w GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
 
-      window.console.profile(name + ' w/o GC');
+      windowProfile(name + ' w/o GC');
       duration = 0;
       count = 0;
       while (count++ < 150) {
@@ -95,7 +97,7 @@ export function main() {
         duration += window.performance.now() - start;
         destroy();
       }
-      window.console.profileEnd(name + ' w/o GC');
+      windowProfileEnd(name + ' w/o GC');
       window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
     };
   }
@@ -187,7 +189,8 @@ class BaseLineLargetableComponent {
     this.rows = rows;
     this.columns = columns;
     this.table = DOM.clone(BASELINE_LARGETABLE_TEMPLATE.content.firstChild);
-    var shadowRoot = DOM.createShadowRoot(this.element) DOM.appendChild(shadowRoot, this.table);
+    var shadowRoot = DOM.createShadowRoot(this.element);
+    DOM.appendChild(shadowRoot, this.table);
   }
   update(tbody) {
     var oldBody = DOM.querySelector(this.table, 'tbody');
@@ -212,43 +215,33 @@ class CellData {
   iFn() { return this.i; }
 }
 
-@Component({selector: 'app'})
-@View({
-  directives: [LargetableComponent],
-  template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
-})
-class AppComponent {
-  data;
-  benchmarkType: string;
-}
-
 @Component({selector: 'largetable', properties: ['data', 'benchmarkType']})
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
       <table [ng-switch]="benchmarkType">
-        <tbody template="switch-when 'interpolation'">
-          <tr template="for #row of data">
-            <td template="for #column of row">
+        <tbody template="ng-switch-when 'interpolation'">
+          <tr template="ng-for #row of data">
+            <td template="ng-for #column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="switch-when 'interpolationAttr'">
-          <tr template="for #row of data">
-            <td template="for #column of row" i="{{column.i}}" j="{{column.j}}">
+        <tbody template="ng-switch-when 'interpolationAttr'">
+          <tr template="ng-for #row of data">
+            <td template="ng-for #column of row" i="{{column.i}}" j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
-        <tbody template="switch-when 'interpolationFn'">
-          <tr template="for #row of data">
-            <td template="for #column of row">
+        <tbody template="ng-switch-when 'interpolationFn'">
+          <tr template="ng-for #row of data">
+            <td template="ng-for #column of row">
               {{column.iFn()}}:{{column.jFn()}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="switch-default">
+        <tbody template="ng-switch-default">
           <tr>
             <td>
               <em>{{benchmarkType}} not yet implemented</em>
@@ -262,10 +255,20 @@ class LargetableComponent {
   benchmarkType: string;
   rows: number;
   columns: number;
-  constructor(@Inject(BENCHMARK_TYPE) benchmarkType: BENCHMARK_TYPE,
-              @Inject(LARGETABLE_ROWS) rows: LARGETABLE_ROWS, @Inject(LARGETABLE_COLS) columns) {
+  constructor(@Inject(BENCHMARK_TYPE) benchmarkType, @Inject(LARGETABLE_ROWS) rows,
+              @Inject(LARGETABLE_COLS) columns) {
     this.benchmarkType = benchmarkType;
     this.rows = rows;
     this.columns = columns;
   }
+}
+
+@Component({selector: 'app'})
+@View({
+  directives: [LargetableComponent],
+  template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
+})
+class AppComponent {
+  data;
+  benchmarkType: string;
 }
